@@ -229,6 +229,8 @@
                     <div class="collapse" id="header-settings">
                     {elseif $section->key === 'customsass'}
                         <div class="underline-links mb-5">{__('Custom Sass Description')}</div>
+                    {elseif $section->key === 'colors'}
+                        <div id="color-info" class="mb-5 text-warning">{__('The color settings might not work as expected in this theme.')}</div>
                     {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
@@ -262,7 +264,20 @@
                                     </script>
                                 </div>
                             {/if}
-                            <div class="col-xs-12 col-md-12">
+                            {if $setting->key === 'theme_default'}
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#theme_theme_default').on('change', function () {
+                                            if ($(this).val() === 'blackline') {
+                                                $('#color-info').show();
+                                            } else {
+                                                $('#color-info').hide();
+                                            }
+                                        }).change();
+                                    });
+                                </script>
+                            {/if}
+                            <div class="col-xs-12 col-md-12 {if !empty($setting->rawAttributes.MarginBottom)}mb-5{/if}">
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>

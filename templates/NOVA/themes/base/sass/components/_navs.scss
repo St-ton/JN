@@ -50,10 +50,6 @@
 		i {
 			position: relative;
 		}
-		@include media-breakpoint-down(sm) {
-			padding-left:	map_get($spacers, 3) * 0.75;
-			padding-right: map_get($spacers, 3) * 0.75
-		}
 	}
 	.nav-item {
 		.table-responsive {

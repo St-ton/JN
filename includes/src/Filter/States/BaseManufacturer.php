@@ -26,7 +26,7 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kHersteller' => 'ValueCompat',
         'cName'       => 'Name'
     ];

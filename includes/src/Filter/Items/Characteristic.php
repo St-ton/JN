@@ -30,29 +30,29 @@ class Characteristic extends BaseCharacteristic
     use MagicCompatibilityTrait;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $characteristicValueID;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
     /**
      * @var bool
      */
-    private $isMultiSelect = false;
+    private bool $isMultiSelect = false;
 
     /**
      * @var array
      */
-    private $batchCharacteristicData;
+    private array $batchCharacteristicData = [];
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name',

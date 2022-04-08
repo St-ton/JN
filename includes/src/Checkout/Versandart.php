@@ -134,7 +134,7 @@ class Versandart
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cCountryCode' => 'CountryCode'
     ];
 

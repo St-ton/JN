@@ -143,7 +143,7 @@ class PaymentMethod
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kZahlungsart'                    => 'MethodID',
         'cName'                           => 'Name',
         'cModulId'                        => 'ModuleID',

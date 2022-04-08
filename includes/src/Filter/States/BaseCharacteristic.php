@@ -21,7 +21,7 @@ class BaseCharacteristic extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name'

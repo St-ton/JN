@@ -11,37 +11,37 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var string|null
      */
-    protected $icon;
+    protected ?string $icon = null;
 
     /**
      * @var bool
      */
-    protected $isCustom = true;
+    protected bool $isCustom = true;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @var array
      */
-    public $cSeo = [];
+    public array $cSeo = [];
 
     /**
      * @var int
      */
-    protected $type;
+    protected int $type;
 
     /**
      * @var string
      */
-    protected $urlParam = '';
+    protected string $urlParam = '';
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $urlParamSEO = '';
+    protected ?string $urlParamSEO = '';
 
     /**
      * @var int|string|array
@@ -51,37 +51,37 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var int
      */
-    protected $customerGroupID = 0;
+    protected int $customerGroupID = 0;
 
     /**
      * @var array
      */
-    protected $availableLanguages = [];
+    protected array $availableLanguages = [];
 
     /**
      * @var bool
      */
-    protected $isInitialized = false;
+    protected bool $isInitialized = false;
 
     /**
      * @var string
      */
-    protected $className = '';
+    protected string $className = '';
 
     /**
      * @var string
      */
-    protected $niceName = '';
+    protected string $niceName = '';
 
     /**
      * @var int
      */
-    protected $inputType;
+    protected int $inputType;
 
     /**
-     * @var Option[]
+     * @var Option[]|null
      */
-    protected $activeValues;
+    protected ?array $activeValues = null;
 
     /**
      * workaround since built-in filters can be registered multiple times (like Navigationsfilter->KategorieFilter)
@@ -90,14 +90,14 @@ abstract class AbstractFilter implements FilterInterface
      *
      * @var bool
      */
-    private $isChecked = false;
+    private bool $isChecked = false;
 
     /**
      * used to create FilterLoesenURLs
      *
      * @var bool
      */
-    private $doUnset = false;
+    private bool $doUnset = false;
 
     /**
      * @var string|array
@@ -112,17 +112,17 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var int
      */
-    private $count = 0;
+    private int $count = 0;
 
     /**
      * @var int
      */
-    private $sort = 0;
+    private int $sort = 0;
 
     /**
      * @var string
      */
-    protected $frontendName = '';
+    protected string $frontendName = '';
 
     /**
      * list of filter options for CharacteristicFilters etc. that consist of multiple different filter options
@@ -484,7 +484,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @inheritdoc
      */
-    public function getUrlParamSEO(): string
+    public function getUrlParamSEO(): ?string
     {
         return $this->urlParamSEO;
     }

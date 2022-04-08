@@ -254,7 +254,7 @@ class Customer
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cKundenattribut_arr' => 'CustomerAttributes'
     ];
 

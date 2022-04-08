@@ -18,7 +18,7 @@ final class LinkGroup implements LinkGroupInterface
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cLocalizedName' => 'Name',
         'Links'          => 'Links'
     ];

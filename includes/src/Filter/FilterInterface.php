@@ -204,9 +204,9 @@ interface FilterInterface
     /**
      * get the SEO url parameter used in frontend for filtering products
      *
-     * @return string
+     * @return string|null
      */
-    public function getUrlParamSEO(): string;
+    public function getUrlParamSEO(): ?string;
 
     /**
      * @param string|null $param

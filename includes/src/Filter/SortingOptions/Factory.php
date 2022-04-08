@@ -17,12 +17,12 @@ class Factory
     /**
      * @var ProductFilter
      */
-    private $productFilter;
+    private ProductFilter $productFilter;
 
     /**
      * @var array
      */
-    private static $defaultSortingOptions = [
+    private static array $defaultSortingOptions = [
         \SEARCH_SORT_STANDARD,
         \SEARCH_SORT_NAME_ASC,
         \SEARCH_SORT_NAME_DESC,
@@ -40,12 +40,12 @@ class Factory
     /**
      * @var array
      */
-    private $mapping = [];
+    private array $mapping = [];
 
     /**
      * @var PluginInterface[]
      */
-    private $plugins = [];
+    private array $plugins = [];
 
     /**
      * Factory constructor.

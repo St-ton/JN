@@ -25,7 +25,7 @@ class ProductFilterURL
     /**
      * @var ProductFilter
      */
-    private $productFilter;
+    private ProductFilter $productFilter;
 
     /**
      * ProductFilterURL constructor.

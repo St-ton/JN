@@ -53,7 +53,7 @@ class CustomerField
     private $values = [];
 
     /** @var array */
-    public static $mapping = [
+    public static array $mapping = [
         'kKundenfeld'         => 'ID',
         'kSprache'            => 'LangID',
         'cName'               => 'Label',

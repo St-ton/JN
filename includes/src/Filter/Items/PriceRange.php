@@ -29,32 +29,32 @@ class PriceRange extends AbstractFilter
     /**
      * @var float
      */
-    private $offsetStart;
+    private float $offsetStart;
 
     /**
      * @var float
      */
-    private $offsetEnd;
+    private float $offsetEnd;
 
     /**
      * @var string
      */
-    private $offsetStartLocalized;
+    private string $offsetStartLocalized;
 
     /**
      * @var string
      */
-    private $offsetEndLocalized;
+    private string $offsetEndLocalized;
 
     /**
      * @var string
      */
-    private $condition = '';
+    private string $condition = '';
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cName'          => 'Name',
         'nAnzahlArtikel' => 'Count',
         'cWert'          => 'Value',

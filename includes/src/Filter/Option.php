@@ -29,39 +29,39 @@ class Option extends AbstractFilter
     /**
      * @var string
      */
-    private $param = '';
+    private string $param = '';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $url;
+    private ?string $url = null;
 
     /**
      * if set to true, ProductFilterURL::getURL() will not return a SEO URL
      *
      * @var bool
      */
-    private $disableSeoURLs = false;
+    private bool $disableSeoURLs = false;
 
     /**
      * @var string
      */
-    private $class = '';
+    private string $class = '';
 
     /**
      * @var array
      */
-    private $data = [];
+    private array $data = [];
 
     /**
      * @var int
      */
-    public $nAktiv = 0;
+    public int $nAktiv = 0;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cName'          => 'Name',
         'nAnzahl'        => 'Count',
         'nAnzahlArtikel' => 'Count',

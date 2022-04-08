@@ -47,72 +47,72 @@ class ProductFilter
     /**
      * @var BaseCategory
      */
-    private $category;
+    private FilterInterface $category;
 
     /**
      * @var Category
      */
-    private $categoryFilter;
+    private FilterInterface $categoryFilter;
 
     /**
      * @var BaseManufacturer
      */
-    private $manufacturer;
+    private FilterInterface $manufacturer;
 
     /**
      * @var Manufacturer
      */
-    private $manufacturerFilter;
+    private FilterInterface $manufacturerFilter;
 
     /**
      * @var BaseCharacteristic
      */
-    private $characteristicValue;
+    private FilterInterface $characteristicValue;
 
     /**
      * @var BaseSearchQuery
      */
-    private $searchQuery;
+    private FilterInterface $searchQuery;
 
     /**
      * @var Search[]
      */
-    private $searchFilter = [];
+    private array $searchFilter = [];
 
     /**
      * @var Characteristic[]
      */
-    private $characteristicFilter = [];
+    private array $characteristicFilter = [];
 
     /**
      * @var SearchSpecial
      */
-    private $searchSpecialFilter;
+    private FilterInterface $searchSpecialFilter;
 
     /**
      * @var Availability
      */
-    private $availabilityFilter;
+    private FilterInterface $availabilityFilter;
 
     /**
      * @var Rating
      */
-    private $ratingFilter;
+    private FilterInterface $ratingFilter;
 
     /**
      * @var PriceRange
      */
-    private $priceRangeFilter;
+    private FilterInterface $priceRangeFilter;
 
     /**
      * @var BaseSearchSpecial
      */
-    private $searchSpecial;
+    private FilterInterface $searchSpecial;
 
     /**
      * @var Search
      */
-    private $search;
+    private FilterInterface $search;
 
     /**
      * @var object
@@ -122,77 +122,77 @@ class ProductFilter
     /**
      * @var int
      */
-    private $productLimit = 0;
+    private int $productLimit = 0;
 
     /**
      * @var int
      */
-    private $nSeite = 1;
+    private int $nSeite = 1;
 
     /**
      * @var int
      */
-    private $nSortierung = 0;
+    private int $nSortierung = 0;
 
     /**
      * @var array
      */
-    private $params = [];
+    private array $params = [];
 
     /**
      * @var FilterInterface[]
      */
-    private $filters = [];
+    private array $filters = [];
 
     /**
      * @var FilterInterface[]
      */
-    private $activeFilters = [];
+    private array $activeFilters = [];
 
     /**
      * @var FilterInterface
      */
-    private $baseState;
+    private FilterInterface $baseState;
 
     /**
      * @var NavigationURLsInterface
      */
-    private $url;
+    private NavigationURLsInterface $url;
 
     /**
      * @var Characteristic
      */
-    private $characteristicFilterCollection;
+    private FilterInterface $characteristicFilterCollection;
 
     /**
      * @var Search
      */
-    public $searchFilterCompat;
+    public FilterInterface $searchFilterCompat;
 
     /**
-     * @var SearchResultsInterface
+     * @var SearchResultsInterface|null
      */
-    private $searchResults;
+    private ?SearchResultsInterface $searchResults = null;
 
     /**
      * @var MetadataInterface
      */
-    private $metaData;
+    private MetadataInterface $metaData;
 
     /**
      * @var ProductFilterSQLInterface
      */
-    private $filterSQL;
+    private ProductFilterSQLInterface $filterSQL;
 
     /**
      * @var ProductFilterURL
      */
-    private $filterURL;
+    private ProductFilterURL $filterURL;
 
     /**
      * @var bool
      */
-    private $bExtendedJTLSearch = false;
+    private bool $bExtendedJTLSearch = false;
 
     /**
      * @var stdClass|null
@@ -202,37 +202,37 @@ class ProductFilter
     /**
      * @var int
      */
-    private $showChildProducts;
+    private int $showChildProducts;
 
     /**
      * @var Sort
      */
-    private $sorting;
+    private FilterInterface $sorting;
 
     /**
      * @var Limit
      */
-    private $limits;
+    private FilterInterface $limits;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var ConfigInterface
      */
-    private $filterConfig;
+    private ConfigInterface $filterConfig;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'nAnzahlFilter'      => 'FilterCount',
         'nAnzahlProSeite'    => 'ProductLimit',
         'Kategorie'          => 'Category',

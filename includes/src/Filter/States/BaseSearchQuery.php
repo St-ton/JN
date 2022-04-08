@@ -27,7 +27,7 @@ class BaseSearchQuery extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kSuchanfrage' => 'ID',
         'kSuchcache'   => 'SearchCacheID',
         'cSuche'       => 'Name',
@@ -38,18 +38,18 @@ class BaseSearchQuery extends AbstractFilter
      * @former kSuchanfrage
      * @var int
      */
-    private $id = 0;
+    private int $id = 0;
 
     /**
      * @var int
      * @former kSuchCache
      */
-    private $searchCacheID = 0;
+    private int $searchCacheID = 0;
 
     /**
      * @var string|null
      */
-    public $error;
+    public ?string $error = null;
 
     /**
      * BaseSearchQuery constructor.

@@ -17,7 +17,7 @@ class MenuItem
     use MagicCompatibilityTrait,
         MultiSizeImage;
 
-    public static $mapping = [
+    public static array $mapping = [
         'kKategorie'                 => 'ID',
         'kOberKategorie'             => 'ParentID',
         'cBeschreibung'              => 'Description',

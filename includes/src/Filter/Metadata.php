@@ -28,62 +28,62 @@ class Metadata implements MetadataInterface
     /**
      * @var ProductFilter
      */
-    private $productFilter;
+    private ProductFilter $productFilter;
 
     /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * @var string
      */
-    private $breadCrumb = '';
+    private string $breadCrumb = '';
 
     /**
      * @var string
      */
-    private $metaTitle = '';
+    private string $metaTitle = '';
 
     /**
      * @var string
      */
-    private $metaDescription = '';
+    private string $metaDescription = '';
 
     /**
      * @var string
      */
-    private $metaKeywords = '';
+    private string $metaKeywords = '';
 
     /**
-     * @var Kategorie
+     * @var Kategorie|null
      */
-    private $category;
+    private ?Kategorie $category = null;
 
     /**
-     * @var Hersteller
+     * @var Hersteller|null
      */
-    private $manufacturer;
+    private ?Hersteller $manufacturer = null;
 
     /**
-     * @var MerkmalWert
+     * @var MerkmalWert|null
      */
-    private $characteristicValue;
-
-    /**
-     * @var string
-     */
-    private $name = '';
+    private ?MerkmalWert $characteristicValue = null;
 
     /**
      * @var string
      */
-    private $imageURL = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+    private string $name = '';
+
+    /**
+     * @var string
+     */
+    private string $imageURL = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cMetaTitle'       => 'MetaTitle',
         'cMetaDescription' => 'MetaDescription',
         'cMetaKeywords'    => 'MetaKeywords',
@@ -262,7 +262,7 @@ class Metadata implements MetadataInterface
      */
     public function setImageURL(?string $imageURL): MetadataInterface
     {
-        $this->imageURL = $imageURL;
+        $this->imageURL = $imageURL ?? \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
 
         return $this;
     }
@@ -751,7 +751,7 @@ class Metadata implements MetadataInterface
             }
         }
         $naviURL  = $this->productFilter->getFilterURL()->getURL();
-        $naviURL .= \mb_strpos($naviURL, '?') === false ? '?ed=' : '&amp;ed=';
+        $naviURL .= !\str_contains($naviURL, '?') ? '?ed=' : '&amp;ed=';
 
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_LISTE]   = $naviURL . \ERWDARSTELLUNG_ANSICHT_LISTE;
         $extendedView->cURL_arr[\ERWDARSTELLUNG_ANSICHT_GALERIE] = $naviURL . \ERWDARSTELLUNG_ANSICHT_GALERIE;

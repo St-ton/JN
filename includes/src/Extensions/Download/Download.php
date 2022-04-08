@@ -100,7 +100,7 @@ class Download
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'oDownloadHistory_arr' => 'DownloadHistory'
     ];
 

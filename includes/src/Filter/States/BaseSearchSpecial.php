@@ -21,7 +21,7 @@ class BaseSearchSpecial extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kKey' => 'ValueCompat'
     ];
 

@@ -13,12 +13,12 @@ class ProductFilterSQL implements ProductFilterSQLInterface
     /**
      * @var ProductFilter
      */
-    private $productFilter;
+    private ProductFilter $productFilter;
 
     /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * ProductFilterSQL constructor.

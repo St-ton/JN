@@ -25,137 +25,137 @@ class SearchResults implements SearchResultsInterface
      * @var Collection()
      * @former Artikel
      */
-    private $products;
+    private Collection $products;
 
     /**
      * @var int
      * @former GesamtanzahlArtikel
      */
-    private $productCount = 0;
+    private int $productCount = 0;
 
     /**
      * @var int
      */
-    private $visibileProductCount = 0;
+    private int $visibileProductCount = 0;
 
     /**
      * @var int
      * former ArtikelVon
      */
-    private $offsetStart = 0;
+    private int $offsetStart = 0;
 
     /**
      * @var int
      * @former ArtikelBis
      */
-    private $offsetEnd = 0;
+    private int $offsetEnd = 0;
 
     /**
      * @var Info
      * @former Seitenzahlen
      */
-    private $pages;
+    private Info $pages;
 
     /**
-     * @var string
+     * @var string|null
      * @former cSuche
      */
-    private $searchTerm;
+    private ?string $searchTerm = null;
 
     /**
-     * @var string
+     * @var string|null
      * @former SuchausdruckWrite
      */
-    private $searchTermWrite;
+    private ?string $searchTermWrite = null;
 
     /**
      * @var bool
      * @former SucheErfolglos
      */
-    private $searchUnsuccessful = false;
+    private bool $searchUnsuccessful = false;
 
     /**
      * @var Option[]
      * @former Herstellerauswahl
      */
-    private $manufacturerFilterOptions = [];
+    private array $manufacturerFilterOptions = [];
 
     /**
      * @var Option[]
      * @former Bewertung
      */
-    private $ratingFilterOptions = [];
+    private array $ratingFilterOptions = [];
 
     /**
      * @var Option[]
      * @former MerkmalFilter
      */
-    private $characteristicFilterOptions = [];
+    private array $characteristicFilterOptions = [];
 
     /**
      * @var Option[]
      * @former Preisspanne
      */
-    private $priceRangeFilterOptions = [];
+    private array $priceRangeFilterOptions = [];
 
     /**
      * @var Option[]
      * @former Kategorieauswahl
      */
-    private $categoryFilterOptions = [];
+    private array $categoryFilterOptions = [];
 
     /**
      * @var Option[]
      * @former SuchFilter
      */
-    private $searchFilterOptions = [];
+    private array $searchFilterOptions = [];
 
     /**
      * @var Option[]
      * @former Suchspecialauswahl
      */
-    private $searchSpecialFilterOptions = [];
+    private array $searchSpecialFilterOptions = [];
 
     /**
      * @var Option[]
      */
-    private $availabilityFilterOptions = [];
+    private array $availabilityFilterOptions = [];
 
     /**
      * @var Option[]
      */
-    private $customFilterOptions = [];
+    private array $customFilterOptions = [];
 
     /**
      * @var Collection
      */
-    private $productKeys;
+    private Collection $productKeys;
 
     /**
-     * @var string
+     * @var string|null
      * @former cFehler
      */
-    private $error;
+    private ?string $error = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $searchFilterJSON;
-
-    /**
-     * @var array
-     */
-    private $sortingOptions = [];
+    public ?string $searchFilterJSON = null;
 
     /**
      * @var array
      */
-    private $limitOptions = [];
+    private array $sortingOptions = [];
 
     /**
      * @var array
      */
-    public static $mapping = [
+    private array $limitOptions = [];
+
+    /**
+     * @var array
+     */
+    public static array $mapping = [
         'Artikel'             => 'ProductsCompat',
         'GesamtanzahlArtikel' => 'ProductCount',
         'ArtikelBis'          => 'OffsetEnd',

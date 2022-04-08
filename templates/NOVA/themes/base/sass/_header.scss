@@ -32,6 +32,13 @@ header {
 
 	.navbar-toggler { color: $header-color; }
 
+	.navbar-brand {
+		img {
+			max-width: 50vw;
+			object-fit: contain;
+        }
+	}
+
 	.nav-right {
 		.dropdown-menu {
 			margin-top: rem(-.5px);
@@ -48,6 +55,11 @@ header {
 	/* mobile only */
 
 	@include media-breakpoint-down(md) {
+		.navbar-brand {
+			img {
+				max-width: 30vw;
+			}
+		}
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
 
 		.navbar-collapse { position: fixed; top: 0; left: 0; display: block; height: 100vh !important; -webkit-overflow-scrolling: touch; max-width: rem(270px); transition: $transition-base; z-index: $zindex-fixed + 20; width: 100%; background: $header-bg-color;
@@ -276,6 +288,9 @@ header {
 				max-width: 100%;
 				+ .col, a {
 					padding-left: 0;
+				}
+				.nav-link {
+					padding-right: $nav-link-padding-sm-x;
 				}
 			}
 		}

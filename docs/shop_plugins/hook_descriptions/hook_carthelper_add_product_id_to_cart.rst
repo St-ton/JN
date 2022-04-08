@@ -1,4 +1,4 @@
-HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART (345)
+HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART (355)
 ============================================
 
 Triggerpunkt

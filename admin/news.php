@@ -143,8 +143,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $kNewsKategorie_arr = (isset($postData['kNewsKategorie']) ? $postData['kNewsKategorie'] : null);
         $cBetreff           = $postData['betreff'];
         $cSeo               = $postData['seo'];
-        $cText              = $postData['text'];
-        $cVorschauText      = $postData['cVorschauText'];
+        $cText              = $_POST['text'];
+        $cVorschauText      = $_POST['cVorschauText'];
         $nAktiv             = (int)$postData['nAktiv'];
         $cMetaTitle         = $postData['cMetaTitle'];
         $cMetaDescription   = $postData['cMetaDescription'];

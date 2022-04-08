@@ -25,7 +25,10 @@ use stdClass;
  */
 class BannerController extends AbstractBackendController
 {
-    private string $action;
+    /**
+     * @var string
+     */
+    private string $action = '';
 
     /**
      * @inheritdoc
@@ -224,6 +227,10 @@ class BannerController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param int $id
+     * @return void
+     */
     private function actionArea(int $id): void
     {
         $imageMap = $this->getBanner($id, false);
@@ -261,7 +268,7 @@ class BannerController extends AbstractBackendController
      * @param mixed $imageMap
      * @return void
      */
-    private function actionNew($imageMap): void
+    private function actionNew(mixed $imageMap): void
     {
         $this->smarty->assign('banner', $imageMap ?? null)
             ->assign('customerGroups', CustomerGroup::getGroups())
@@ -284,17 +291,17 @@ class BannerController extends AbstractBackendController
      * @return bool|stdClass
      * @former holeBanner()
      */
-    private function getBanner(int $imageMapID, bool $fill = true)
+    private function getBanner(int $imageMapID, bool $fill = true): bool|stdClass
     {
         return (new ImageMap($this->db))->fetch($imageMapID, true, $fill);
     }
 
     /**
      * @param int $imageMapID
-     * @return mixed
+     * @return stdClass|null
      * @former holeExtension()
      */
-    private function getExtension(int $imageMapID)
+    private function getExtension(int $imageMapID): ?stdClass
     {
         return $this->db->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', $imageMapID);
     }
@@ -336,7 +343,7 @@ class BannerController extends AbstractBackendController
      * @return IOResponse
      * @former saveBannerAreasIO()
      */
-    public static function saveBannerAreasIO($data): IOResponse
+    public static function saveBannerAreasIO(mixed $data): IOResponse
     {
         $banner   = new ImageMap(Shop::Container()->getDB());
         $response = new IOResponse();

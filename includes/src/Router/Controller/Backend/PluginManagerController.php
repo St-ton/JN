@@ -433,7 +433,7 @@ class PluginManagerController extends AbstractBackendController
         $loader     = Helper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
         try {
             $plugin = $loader->init($pluginID, true);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $plugin = null;
             $this->smarty->assign('pluginNotFound', true);
         }
@@ -489,7 +489,7 @@ class PluginManagerController extends AbstractBackendController
                 : (\PFAD_PLUGIN . $dir);
             try {
                 $manager->deleteDirectory('plgn://' . $dirName);
-            } catch (UnableToDeleteFile | UnableToDeleteDirectory $exception) {
+            } catch (UnableToDeleteFile | UnableToDeleteDirectory) {
                 $res = false;
             }
         }
@@ -623,8 +623,12 @@ class PluginManagerController extends AbstractBackendController
                 }
             }
         }
-        $this->cache->flushTags([\CACHING_GROUP_CORE, \CACHING_GROUP_LANGUAGE,
-            \CACHING_GROUP_LICENSES, \CACHING_GROUP_PLUGIN, \CACHING_GROUP_BOX
+        $this->cache->flushTags([
+            \CACHING_GROUP_CORE,
+            \CACHING_GROUP_LANGUAGE,
+            \CACHING_GROUP_LICENSES,
+            \CACHING_GROUP_PLUGIN,
+            \CACHING_GROUP_BOX
         ]);
     }
 }

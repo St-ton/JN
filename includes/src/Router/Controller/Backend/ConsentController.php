@@ -12,11 +12,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class ConsentController
  * @package JTL\Router\Controller\Backend
  */
-class ConsentController extends AbstractBackendController
+class ConsentController extends GenericModelController
 {
     /**
      * @inheritdoc
-     * @todo!
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
@@ -25,14 +24,9 @@ class ConsentController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/consent');
         $this->smarty->assign('route', $this->route);
 
-        $admin = new Admin(
-            new ConsentModel(),
-            \ltrim($this->route, '/'),
-            $this->db,
-            $this->alertService
-        );
-        $admin->handle();
+        $this->modelClass    = ConsentModel::class;
+        $this->adminBaseFile = \ltrim($this->route, '/');
 
-        return $admin->display($smarty, 'consent.tpl');
+        return $this->handle('consent.tpl');
     }
 }

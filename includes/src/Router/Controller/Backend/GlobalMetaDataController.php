@@ -24,7 +24,7 @@ class GlobalMetaDataController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('SETTINGS_GLOBAL_META_VIEW');
         $this->getText->loadAdminLocale('pages/globalemetaangaben');
-        $this->setzeSprache();
+        $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];
         if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
             $this->actionSaveConfig(Text::filterXSS($_POST));

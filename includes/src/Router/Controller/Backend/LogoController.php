@@ -43,7 +43,7 @@ class LogoController extends AbstractBackendController
             $this->actionUpload();
         }
 
-        return $smarty->assign('ShopLogo', Shop::getLogo(false))
+        return $smarty->assign('ShopLogo', Shop::getLogo())
             ->assign('ShopLogoURL', Shop::getLogo(true))
             ->assign('step', 'shoplogouploader_uebersicht')
             ->assign('route', $this->route)

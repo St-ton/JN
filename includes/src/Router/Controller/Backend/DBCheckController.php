@@ -29,7 +29,7 @@ class DBCheckController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->checkPermissions('DBCHECK_VIEW');
-        $this->getText->loadAdminLocale('pages/cbcheck');
+        $this->getText->loadAdminLocale('pages/dbcheck');
         $this->cache->flush(Status::CACHE_ID_DATABASE_STRUCT);
 
         $errorMsg          = '';
@@ -185,7 +185,7 @@ class DBCheckController extends AbstractBackendController
                     $dbStructure[$table]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
                     if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                        $dbStructure[$table]->Locked = \mb_strpos($data->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
+                        $dbStructure[$table]->Locked = (int)\str_contains($data->TABLE_COMMENT, ':Migrating');
                     } else {
                         $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
                     }
@@ -248,7 +248,7 @@ class DBCheckController extends AbstractBackendController
             }
         }
 
-        $fileList = PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
+        $fileList = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
         if (!\file_exists($fileList)) {
             return [];
         }
@@ -339,9 +339,9 @@ class DBCheckController extends AbstractBackendController
     /**
      * @param string $action
      * @param array  $tables
-     * @return array|bool
+     * @return stdClass[]|false
      */
-    private function doDBMaintenance(string $action, array $tables)
+    private function doDBMaintenance(string $action, array $tables): array|bool
     {
         $cmd = match ($action) {
             'optimize' => 'OPTIMIZE TABLE ',

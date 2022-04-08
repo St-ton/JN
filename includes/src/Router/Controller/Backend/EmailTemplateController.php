@@ -41,7 +41,6 @@ class EmailTemplateController extends AbstractBackendController
         $this->cache->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);
 
         $mailTemplate        = null;
-        $hasError            = false;
         $continue            = true;
         $attachmentErrors    = [];
         $step                = 'uebersicht';
@@ -124,27 +123,22 @@ class EmailTemplateController extends AbstractBackendController
                 );
             }
 
-            if ($hasError === false) {
-                $res = $controller->updateTemplate($emailTemplateID, $_POST, $_FILES);
-                if ($res === $controller::OK) {
-                    $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
-                    $step     = 'uebersicht';
-                    $continue = (bool)Request::verifyGPCDataInt('continue');
-                    $doCheck  = $emailTemplateID;
-                } else {
-                    $mailTemplate = $controller->getModel();
-                    foreach ($controller->getErrorMessages() as $i => $msg) {
-                        $this->alertService->addError($msg, 'errorUpload' . $i);
-                    }
+            $res = $controller->updateTemplate($emailTemplateID, $_POST, $_FILES);
+            if ($res === $controller::OK) {
+                $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
+                $continue = (bool)Request::verifyGPCDataInt('continue');
+                $doCheck  = $emailTemplateID;
+            } else {
+                $mailTemplate = $controller->getModel();
+                foreach ($controller->getErrorMessages() as $i => $msg) {
+                    $this->alertService->addError($msg, 'errorUpload' . $i);
                 }
             }
         }
-        if ((($emailTemplateID > 0 && $continue === true)
-                || $step === 'prebearbeiten'
-                || Request::getVar('a') === 'pdfloeschen'
-            ) && Form::validateToken()
+        if ((($emailTemplateID > 0 && $continue === true) || Request::getVar('a') === 'pdfloeschen')
+            && Form::validateToken()
         ) {
-            $uploadDir = PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
+            $uploadDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
             if (isset($_GET['kS'], $_GET['token'])
                 && $_GET['token'] === $_SESSION['jtl_token']
                 && Request::getVar('a') === 'pdfloeschen'

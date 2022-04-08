@@ -135,7 +135,7 @@ class ComparelistController extends AbstractBackendController
     }
 
     /**
-     * Hilfsfunktion zur Regulierung der X-Achsen Werte
+     * Hilfsfunktion zur Regulierung der X-Achsen-Werte
      *
      * @param string $name
      * @return string
@@ -143,9 +143,7 @@ class ComparelistController extends AbstractBackendController
     private function checkName(string $name): string
     {
         $name = \stripslashes(\trim(\str_replace([';', '_', '#', '%', '$', ':', '"'], '', $name)));
-
         if (\mb_strlen($name) > 20) {
-            // Wenn der String laenger als 20 Zeichen ist
             $name = \mb_substr($name, 0, 20) . '...';
         }
 

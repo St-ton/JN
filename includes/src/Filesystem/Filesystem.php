@@ -95,7 +95,7 @@ class Filesystem extends \League\Flysystem\Filesystem
             }
 
             // Directories are identified by trailing slash
-            if (\substr($info['name'], -1) === '/') {
+            if (\str_ends_with($info['name'], '/')) {
                 continue;
             }
             $contents = $zipArchive->getFromIndex($index);
@@ -139,6 +139,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                     $manager->copy('root://' . $path, 'zip://' . $path);
                 }
             } catch (Throwable $e) {
+                // @todo!!! - handle this error better
                 echo $e->getMessage() . \PHP_EOL;
             }
             if (\is_callable($callback)) {
@@ -160,8 +161,8 @@ class Filesystem extends \League\Flysystem\Filesystem
     {
         $realSource = \realpath($source);
         if ($realSource === false
-            || \strpos($archive, '.zip') === false
-            || \strpos($realSource, \realpath(\PFAD_ROOT)) !== 0
+            || !\str_contains($archive, '.zip')
+            || !\str_starts_with($realSource, \realpath(\PFAD_ROOT))
         ) {
             return false;
         }

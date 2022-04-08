@@ -25,25 +25,48 @@ class ProfilerController extends AbstractBackendController
         $this->checkPermissions('PROFILER_VIEW');
         $this->getText->loadAdminLocale('pages/profiler');
 
-        $tab = 'uebersicht';
         if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
             if (\is_numeric(Request::postVar('run-id'))) {
-                $res = $this->deleteProfileRun(false, (int)$_POST['run-id']);
-                if ($res > 0) {
+                if ($this->deleteProfileRun(false, (int)$_POST['run-id']) > 0) {
                     $this->alertService->addSuccess(\__('successEntryDelete'), 'successEntryDelete');
                 } else {
                     $this->alertService->addError(\__('errorEntryDelete'), 'errorEntryDelete');
                 }
             } elseif (Request::postVar('delete-all') === 'y') {
-                $res = $this->deleteProfileRun(true);
-                if ($res > 0) {
+                if ($this->deleteProfileRun(true) > 0) {
                     $this->alertService->addSuccess(\__('successEntriesDelete'), 'successEntriesDelete');
                 } else {
                     $this->alertService->addError(\__('errorEntriesDelete'), 'errorEntriesDelete');
                 }
             }
         }
+        $this->getOverview();
 
+        return $smarty->assign('tab', Request::postVar('tab', 'uebersicht'))
+            ->assign('route', $this->route)
+            ->getResponse('profiler.tpl');
+    }
+
+    /**
+     * @param bool $all
+     * @param int  $runID
+     * @return int
+     */
+    private function deleteProfileRun(bool $all = false, int $runID = 0): int
+    {
+        if ($all === true) {
+            $count = $this->db->getAffectedRows('DELETE FROM tprofiler');
+            $this->db->query('ALTER TABLE tprofiler AUTO_INCREMENT = 1');
+            $this->db->query('ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1');
+
+            return $count;
+        }
+
+        return $this->db->delete('tprofiler', 'runID', $runID);
+    }
+
+    private function getOverview(): void
+    {
         $pluginProfilerData = Profiler::getPluginProfiles();
         if (\count($pluginProfilerData) > 0) {
             $axis    = new stdClass();
@@ -110,28 +133,7 @@ class ProfilerController extends AbstractBackendController
 
         $sqlProfilerData = Profiler::getSQLProfiles();
 
-        return $smarty->assign('pluginProfilerData', $pluginProfilerData)
-            ->assign('sqlProfilerData', $sqlProfilerData)
-            ->assign('tab', $tab)
-            ->assign('route', $this->route)
-            ->getResponse('profiler.tpl');
-    }
-
-    /**
-     * @param bool $all
-     * @param int  $runID
-     * @return int
-     */
-    private function deleteProfileRun(bool $all = false, int $runID = 0): int
-    {
-        if ($all === true) {
-            $count = $this->db->getAffectedRows('DELETE FROM tprofiler');
-            $this->db->query('ALTER TABLE tprofiler AUTO_INCREMENT = 1');
-            $this->db->query('ALTER TABLE tprofiler_runs AUTO_INCREMENT = 1');
-
-            return $count;
-        }
-
-        return $this->db->delete('tprofiler', 'runID', $runID);
+        $this->smarty->assign('pluginProfilerData', $pluginProfilerData)
+            ->assign('sqlProfilerData', $sqlProfilerData);
     }
 }

@@ -7,6 +7,7 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,7 +31,7 @@ class ContactFormsController extends AbstractBackendController
         $this->checkPermissions('SETTINGS_CONTACTFORM_VIEW');
 
         $this->step = 'uebersicht';
-        $tab        = null;
+        $tab        = 'config';
         if (Request::getInt('del') > 0 && Form::validateToken()) {
             $this->actionDeleteItem(Request::getInt('del'));
         }
@@ -147,69 +148,71 @@ class ContactFormsController extends AbstractBackendController
      */
     private function actionCreateSubject(array $postData): void
     {
-        if ($postData['cName'] && $postData['cMail']) {
-            $newSubject        = new stdClass();
-            $newSubject->cName = \htmlspecialchars($postData['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-            $newSubject->cMail = $postData['cMail'];
-            if (\is_array($postData['cKundengruppen'])) {
-                $newSubject->cKundengruppen = \implode(';', $postData['cKundengruppen']) . ';';
-            }
-            if (GeneralObject::hasCount('cKundengruppen', $postData) && \in_array(0, $postData['cKundengruppen'])) {
-                $newSubject->cKundengruppen = 0;
-            }
-            $newSubject->nSort = Request::postInt('nSort');
-            if (Request::postInt('kKontaktBetreff') === 0) {
-                $subjectID = $this->db->insert('tkontaktbetreff', $newSubject);
-                $this->alertService->addSuccess(\__('successSubjectCreate'), 'successSubjectCreate');
-            } else {
-                $subjectID = Request::postInt('kKontaktBetreff');
-                $this->db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
-                $this->alertService->addSuccess(
-                    \sprintf(\__('successSubjectSave'), $newSubject->cName),
-                    'successSubjectSave'
-                );
-            }
-            $localized                  = new stdClass();
-            $localized->kKontaktBetreff = $subjectID;
-            foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-                $code                   = $language->getIso();
-                $localized->cISOSprache = $code;
-                $localized->cName       = $newSubject->cName;
-                if ($postData['cName_' . $code]) {
-                    $localized->cName = \htmlspecialchars(
-                        $postData['cName_' . $code],
-                        \ENT_COMPAT | \ENT_HTML401,
-                        \JTL_CHARSET
-                    );
-                }
-                $this->db->delete(
-                    'tkontaktbetreffsprache',
-                    ['kKontaktBetreff', 'cISOSprache'],
-                    [$subjectID, $code]
-                );
-                $this->db->insert('tkontaktbetreffsprache', $localized);
-            }
-        } else {
+        if (empty($postData['cName']) || empty($postData['cMail'])) {
             $this->alertService->addError(\__('errorSubjectSave'), 'errorSubjectSave');
             $this->step = 'betreff';
+
+            return;
+        }
+        $subject        = new stdClass();
+        $subject->cName = \htmlspecialchars($postData['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
+        $subject->cMail = $postData['cMail'];
+        if (\is_array($postData['cKundengruppen'])) {
+            $postData['cKundengruppen'] = \array_map('\intval', $postData['cKundengruppen']);
+            $subject->cKundengruppen    = \implode(';', $postData['cKundengruppen']) . ';';
+            if (\in_array(0, $postData['cKundengruppen'], true)) {
+                $subject->cKundengruppen = 0;
+            }
+        }
+        $subject->nSort = Request::postInt('nSort');
+        if (Request::postInt('kKontaktBetreff') === 0) {
+            $subjectID = $this->db->insert('tkontaktbetreff', $subject);
+            $this->alertService->addSuccess(\__('successSubjectCreate'), 'successSubjectCreate');
+        } else {
+            $subjectID = Request::postInt('kKontaktBetreff');
+            $this->db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $subject);
+            $this->alertService->addSuccess(
+                \sprintf(\__('successSubjectSave'), $subject->cName),
+                'successSubjectSave'
+            );
+        }
+        $localized                  = new stdClass();
+        $localized->kKontaktBetreff = $subjectID;
+        foreach (LanguageHelper::getAllLanguages(0, true, true) as $language) {
+            $code                   = $language->getIso();
+            $localized->cISOSprache = $code;
+            $localized->cName       = $subject->cName;
+            if ($postData['cName_' . $code]) {
+                $localized->cName = \htmlspecialchars(
+                    $postData['cName_' . $code],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
+            }
+            $this->db->delete(
+                'tkontaktbetreffsprache',
+                ['kKontaktBetreff', 'cISOSprache'],
+                [$subjectID, $code]
+            );
+            $this->db->insert('tkontaktbetreffsprache', $localized);
         }
     }
 
     private function assignCreateSubject(): void
     {
-        $newSubject = null;
+        $subject = null;
         if (Request::getInt('kKontaktBetreff') > 0) {
-            $newSubject = $this->db->select(
+            $subject = $this->db->select(
                 'tkontaktbetreff',
                 'kKontaktBetreff',
                 Request::getInt('kKontaktBetreff')
             );
         }
 
-        $this->smarty->assign('Betreff', $newSubject)
+        $this->smarty->assign('Betreff', $subject)
             ->assign('kundengruppen', $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'))
-            ->assign('gesetzteKundengruppen', $this->getActiveCustomerGroups($newSubject))
-            ->assign('Betreffname', ($newSubject !== null) ? $this->getNames((int)$newSubject->kKontaktBetreff) : null);
+            ->assign('gesetzteKundengruppen', $this->getActiveCustomerGroups($subject))
+            ->assign('Betreffname', ($subject !== null) ? $this->getNames((int)$subject->kKontaktBetreff) : null);
     }
 
     private function assignOverview(): void

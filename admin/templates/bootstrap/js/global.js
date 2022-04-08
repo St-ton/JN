@@ -676,9 +676,8 @@ function selectAllItems(elm, enable)
 function openElFinder(callback, type)
 {
     window.elfinder = {getFileCallback: callback};
-
     window.open(
-        'elfinder.php?token=' + JTL_TOKEN + '&mediafilesType=' + type,
+        BACKEND_URL + 'elfinder?token=' + JTL_TOKEN + '&mediafilesType=' + type,
         'elfinderWindow',
         'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
     );

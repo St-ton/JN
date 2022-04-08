@@ -14,6 +14,7 @@ use JTL\Router\BackendRouter;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -35,13 +36,11 @@ class ConfigController extends AbstractBackendController
         $isSearch       = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
         $sectionFactory = new SectionFactory();
         $search         = Request::verifyGPDataString('cSuche');
-        $searchQuery    = $search;
         $settingManager = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
         $this->getText->loadConfigLocales(true, true);
         if ($isSearch) {
             $this->checkPermissions('SETTINGS_SEARCH_VIEW');
         }
-
         switch ($sectionID) {
             case \CONF_GLOBAL:
                 $this->checkPermissions('SETTINGS_GLOBAL_VIEW');
@@ -55,8 +54,7 @@ class ConfigController extends AbstractBackendController
             case \CONF_ARTIKELUEBERSICHT:
                 $this->checkPermissions('SETTINGS_ARTICLEOVERVIEW_VIEW');
                 // Sucheinstellungen haben eigene Logik
-                \header('Location: ' . Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
-                exit;
+                return new RedirectResponse(Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
             case \CONF_ARTIKELDETAILS:
                 $this->checkPermissions('SETTINGS_ARTICLEDETAILS_VIEW');
                 break;

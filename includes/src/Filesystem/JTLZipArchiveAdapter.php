@@ -173,7 +173,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
                 continue;
             }
             $itemPath = $stats['name'];
-            if ($prefixedPath === $itemPath || \strpos($itemPath, $prefixedPath) !== 0) {
+            if ($prefixedPath === $itemPath || !\str_starts_with($itemPath, $prefixedPath)) {
                 continue;
             }
             if (!$archive->deleteIndex($i)) {
@@ -218,8 +218,8 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
      */
     public function visibility(string $path): FileAttributes
     {
-        $opsys   = null;
-        $attr    = null;
+        $opsys   = 0;
+        $attr    = 0;
         $archive = $this->zipArchiveProvider->createZipArchive();
         $archive->getExternalAttributesName(
             $this->pathPrefixer->prefixPath($path),
@@ -304,7 +304,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
             }
             $itemPath = $stats['name'];
             if ($location === $itemPath
-                || ($deep && $location !== '' && \strpos($itemPath, $location) !== 0)
+                || ($deep && $location !== '' && !\str_starts_with($itemPath, $location))
                 || ($deep === false && !$this->isAtRootDirectory($location, $itemPath))
             ) {
                 continue;
@@ -420,7 +420,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
      */
     private function isDirectoryPath(string $path): bool
     {
-        return \substr($path, -1) === '/';
+        return \str_ends_with($path, '/');
     }
 
     /**

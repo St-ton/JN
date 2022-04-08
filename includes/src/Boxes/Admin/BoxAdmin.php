@@ -310,13 +310,13 @@ final class BoxAdmin
 
         return $this->db->queryPrepared(
             'INSERT INTO tboxenanzeige 
-                    SET bAnzeigen = :show, nSeite = :page, ePosition = :position
-                    ON DUPLICATE KEY UPDATE bAnzeigen = :show',
+                SET bAnzeigen = :show, nSeite = :page, ePosition = :position
+                ON DUPLICATE KEY UPDATE bAnzeigen = :show',
             [
-                    'show'     => $show,
-                    'page'     => $pageID,
-                    'position' => $position
-                ]
+                'show'     => $show,
+                'page'     => $pageID,
+                'position' => $position
+            ]
         ) !== 0;
     }
 

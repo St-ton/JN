@@ -29,6 +29,7 @@ use JTL\Router\Controller\Backend\DashboardController;
 use JTL\Router\Controller\Backend\DBCheckController;
 use JTL\Router\Controller\Backend\DBManagerController;
 use JTL\Router\Controller\Backend\DBUpdateController;
+use JTL\Router\Controller\Backend\ElfinderController;
 use JTL\Router\Controller\Backend\EmailBlocklistController;
 use JTL\Router\Controller\Backend\EmailHistoryController;
 use JTL\Router\Controller\Backend\EmailTemplateController;
@@ -202,6 +203,7 @@ class BackendRouter
     public const ROUTE_SEARCHCONFIG          = 'searchconfig';
     public const ROUTE_IO                    = 'io';
     public const ROUTE_SEARCHRESULTS         = 'searchresults';
+    public const ROUTE_ELFINDER              = 'elfinder';
 
     /**
      * @var Router
@@ -319,6 +321,7 @@ class BackendRouter
             self::ROUTE_SEARCHCONFIG          => SearchConfigController::class,
             self::ROUTE_IO                    => IOController::class,
             self::ROUTE_SEARCHRESULTS         => SearchController::class,
+            self::ROUTE_ELFINDER              => ElfinderController::class,
 
         ];
         foreach ($controllers as $route => $controller) {

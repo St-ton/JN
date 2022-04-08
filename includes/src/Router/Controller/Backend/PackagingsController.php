@@ -263,7 +263,7 @@ class PackagingsController extends AbstractBackendController
         $packaging->oSprach_arr = [];
         $postData               = Text::filterXSS($_POST);
         foreach ($postData as $key => $value) {
-            if (\mb_strpos($key, 'cName') === false) {
+            if (!\str_contains($key, 'cName')) {
                 continue;
             }
             $iso                                 = \explode('cName_', $key)[1];

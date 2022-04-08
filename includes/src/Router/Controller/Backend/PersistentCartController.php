@@ -28,7 +28,28 @@ class PersistentCartController extends AbstractBackendController
         $this->checkPermissions('MODULE_SAVED_BASKETS_VIEW');
         $this->getText->loadAdminLocale('pages/warenkorbpers');
 
-        $step      = 'uebersicht';
+        $this->step = 'uebersicht';
+        if (Request::getInt('l') > 0 && Form::validateToken()) {
+            $customerID = Request::getInt('l');
+            $persCart   = new PersistentCart($customerID);
+            if ($persCart->entferneSelf()) {
+                $this->alertService->addSuccess(\__('successCartPersPosDelete'), 'successCartPersPosDelete');
+            }
+
+            unset($persCart);
+        }
+        $this->getOverview();
+        if (Request::getInt('a') > 0) {
+            $this->actionShow(Request::getInt('a'));
+        }
+
+        return $smarty->assign('step', $this->step)
+            ->assign('route', $this->route)
+            ->getResponse('warenkorbpers.tpl');
+    }
+
+    private function getSearchSQL(): SqlObject
+    {
         $searchSQL = new SqlObject();
         if (\mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
             $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
@@ -39,18 +60,18 @@ class PersistentCartController extends AbstractBackendController
                 $searchSQL->addParam('qry', '%' . $query . '%');
             }
 
-            $smarty->assign('cSuche', $query);
+            $this->smarty->assign('cSuche', $query);
         }
 
-        if (Request::getInt('l') > 0 && Form::validateToken()) {
-            $customerID = Request::getInt('l');
-            $persCart   = new PersistentCart($customerID);
-            if ($persCart->entferneSelf()) {
-                $this->alertService->addSuccess(\__('successCartPersPosDelete'), 'successCartPersPosDelete');
-            }
+        return $searchSQL;
+    }
 
-            unset($persCart);
-        }
+    /**
+     * @return void
+     */
+    private function getOverview(): void
+    {
+        $searchSQL     = $this->getSearchSQL();
         $customerCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
                  FROM tkunde
@@ -89,51 +110,47 @@ class PersistentCartController extends AbstractBackendController
             $item->cFirma    = $customer->cFirma;
         }
 
-        $smarty->assign('oKunde_arr', $customers)
+        $this->smarty->assign('oKunde_arr', $customers)
             ->assign('oPagiKunden', $customerPagination);
+    }
 
-        if (Request::getInt('a') > 0) {
-            $step           = 'anzeigen';
-            $customerID     = Request::getInt('a');
-            $persCartCount  = (int)$this->db->getSingleObject(
-                'SELECT COUNT(*) AS cnt
-                    FROM twarenkorbperspos
-                    JOIN twarenkorbpers 
-                        ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-                    WHERE twarenkorbpers.kKunde = :cid',
-                ['cid' => $customerID]
-            )->cnt;
-            $cartPagination = (new Pagination('warenkorb'))
-                ->setItemCount($persCartCount)
-                ->assemble();
+    private function actionShow(int $customerID): void
+    {
+        $this->step     = 'anzeigen';
+        $persCartCount  = (int)$this->db->getSingleObject(
+            'SELECT COUNT(*) AS cnt
+                FROM twarenkorbperspos
+                JOIN twarenkorbpers 
+                    ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
+                WHERE twarenkorbpers.kKunde = :cid',
+            ['cid' => $customerID]
+        )->cnt;
+        $cartPagination = (new Pagination('warenkorb'))
+            ->setItemCount($persCartCount)
+            ->assemble();
 
-            $carts = $this->db->getObjects(
-                "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
-                    twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
-                    DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
-                    FROM twarenkorbpers
-                    JOIN tkunde 
-                        ON tkunde.kKunde = twarenkorbpers.kKunde
-                    JOIN twarenkorbperspos 
-                        ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-                    WHERE twarenkorbpers.kKunde = :cid
-                    LIMIT " . $cartPagination->getLimitSQL(),
-                ['cid' => $customerID]
-            );
-            foreach ($carts as $cart) {
-                $customer = new Customer((int)$cart->kKundeTMP);
+        $carts = $this->db->getObjects(
+            "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
+                twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
+                DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
+                FROM twarenkorbpers
+                JOIN tkunde 
+                    ON tkunde.kKunde = twarenkorbpers.kKunde
+                JOIN twarenkorbperspos 
+                    ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
+                WHERE twarenkorbpers.kKunde = :cid
+                LIMIT " . $cartPagination->getLimitSQL(),
+            ['cid' => $customerID]
+        );
+        foreach ($carts as $cart) {
+            $customer = new Customer((int)$cart->kKundeTMP);
 
-                $cart->cNachname = $customer->cNachname;
-                $cart->cFirma    = $customer->cFirma;
-            }
-
-            $smarty->assign('oWarenkorbPersPos_arr', $carts)
-                ->assign('kKunde', $customerID)
-                ->assign('oPagiWarenkorb', $cartPagination);
+            $cart->cNachname = $customer->cNachname;
+            $cart->cFirma    = $customer->cFirma;
         }
 
-        return $smarty->assign('step', $step)
-            ->assign('route', $this->route)
-            ->getResponse('warenkorbpers.tpl');
+        $this->smarty->assign('oWarenkorbPersPos_arr', $carts)
+            ->assign('kKunde', $customerID)
+            ->assign('oPagiWarenkorb', $cartPagination);
     }
 }

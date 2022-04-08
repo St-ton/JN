@@ -28,7 +28,7 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oVariable->cName}">
                     </div>
                 </div>
-                {foreach $oSprache_arr as $language}
+                {foreach $availableLanguages as $language}
                     {assign var=langCode value=$language->getIso()}
                     {if isset($oVariable->cWertAlt_arr[$langCode])}
                         <div class="form-group form-row align-items-center">

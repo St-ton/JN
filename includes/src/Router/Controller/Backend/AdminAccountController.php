@@ -161,10 +161,10 @@ class AdminAccountController extends AbstractBackendController
 
     /**
      * @param string     $row
-     * @param string|int $value
+     * @param int|string $value
      * @return bool
      */
-    public function getInfoInUse(string $row, $value): bool
+    public function getInfoInUse(string $row, int|string $value): bool
     {
         return \is_object($this->db->select('tadminlogin', $row, $value));
     }
@@ -278,7 +278,7 @@ class AdminAccountController extends AbstractBackendController
      * @param array $attribs
      * @return array|bool
      */
-    public function validateAccount(array &$attribs)
+    public function validateAccount(array &$attribs): array|bool
     {
         $result = true;
 
@@ -329,7 +329,7 @@ class AdminAccountController extends AbstractBackendController
      * @param string $attribName
      * @return bool|string
      */
-    public function uploadAvatarImage(array $tmpFile, string $attribName)
+    public function uploadAvatarImage(array $tmpFile, string $attribName): bool|string
     {
         $file    = [
             'type'     => $tmpFile['type'][$attribName],

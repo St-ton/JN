@@ -166,7 +166,7 @@ class RSS
             </rss>
         ';
 
-        $file = \fopen(PFAD_ROOT . \FILE_RSS_FEED, 'wb+');
+        $file = \fopen(\PFAD_ROOT . \FILE_RSS_FEED, 'wb+');
         \fwrite($file, $xml);
         \fclose($file);
 
@@ -178,7 +178,7 @@ class RSS
      * @return bool|string
      * @former bauerfc2822datum()
      */
-    public function asRFC2822($dateString)
+    public function asRFC2822($dateString): bool|string
     {
         return \mb_strlen($dateString) > 0
             ? (new DateTime($dateString))->format(\DATE_RSS)
@@ -190,7 +190,7 @@ class RSS
      * @return string
      * @former wandelXMLEntitiesUm()
      */
-    public function asEntity($text): string
+    public function asEntity(string $text): string
     {
         return \mb_strlen($text) > 0
             ? '<![CDATA[ ' . Text::htmlentitydecode($text) . ' ]]>'

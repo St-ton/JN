@@ -26,8 +26,8 @@ class SearchSpecialController extends AbstractBackendController
         $this->checkPermissions('SETTINGS_SPECIALPRODUCTS_VIEW');
         $this->getText->loadAdminLocale('pages/suchspecials');
 
-        $step = 'suchspecials';
-        $this->setzeSprache();
+        $this->setLanguage();
+        $step       = 'suchspecials';
         $languageID = (int)$_SESSION['editLanguageID'];
         $postData   = Text::filterXSS($_POST);
         if (Request::verifyGPCDataInt('einstellungen') === 1) {

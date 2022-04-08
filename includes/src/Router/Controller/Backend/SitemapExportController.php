@@ -193,6 +193,9 @@ class SitemapExportController extends AbstractBackendController
             ->getResponse('sitemapexport.tpl');
     }
 
+    /**
+     * @return ResponseInterface
+     */
     private function actionUpdate(): ResponseInterface
     {
         $config       = Shop::getSettings([\CONF_GLOBAL, \CONF_SITEMAP]);

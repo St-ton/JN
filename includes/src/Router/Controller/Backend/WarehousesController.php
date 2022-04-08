@@ -40,12 +40,12 @@ class WarehousesController extends AbstractBackendController
                 );
             }
             if (GeneralObject::hasCount('cNameSprache', $postData)) {
-                foreach ($postData['cNameSprache'] as $kWarenlager => $assocLang) {
-                    $this->db->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
+                foreach ($postData['cNameSprache'] as $id => $assocLang) {
+                    $this->db->delete('twarenlagersprache', 'kWarenlager', (int)$id);
                     foreach ($assocLang as $languageID => $name) {
                         if (\mb_strlen(\trim($name)) > 1) {
                             $data              = new stdClass();
-                            $data->kWarenlager = (int)$kWarenlager;
+                            $data->kWarenlager = (int)$id;
                             $data->kSprache    = (int)$languageID;
                             $data->cName       = \htmlspecialchars(
                                 \trim($name),

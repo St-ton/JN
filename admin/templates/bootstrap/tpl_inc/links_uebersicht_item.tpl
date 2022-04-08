@@ -89,7 +89,7 @@
                             <option value="0">-- Root --</option>
                             {foreach $list as $linkTMP}
                                 {if $linkTMP->getID() !== $link->getID() && $linkTMP->getID() !== $link->getParent()}
-                                    <option value="{$linkTMP->getID()}">{$linkTMP->getName()}</option>
+                                    <option value="{$linkTMP->getID()}">{$linkTMP->getDisplayName()}</option>
                                 {/if}
                             {/foreach}
                         </select>

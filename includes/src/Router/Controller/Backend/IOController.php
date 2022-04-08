@@ -73,12 +73,8 @@ class IOController extends AbstractBackendController
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
 
-        $dashboardInc       = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dashboard_inc.php';
-        $accountInc         = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
-        $sucheInc           = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'suche_inc.php';
-        $sucheinstellungInc = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'sucheinstellungen_inc.php';
-        $redirectInc        = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'redirect_inc.php';
-        $dbcheckInc         = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
+        $dashboardInc = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dashboard_inc.php';
+        $dbcheckInc   = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
         try {
             $io->register('getPages', [$jsonApi, 'getPages'])
@@ -118,7 +114,7 @@ class IOController extends AbstractBackendController
                 ->register('validateStepWizard', [$wizardIO, 'validateStep'], null, 'WIZARD_VIEW')
                 ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
                 ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
-                ->register('updateRedirectState', null, $redirectInc, 'REDIRECT_VIEW')
+                ->register('updateRedirectState', [$this, 'updateRedirectState'], null, 'REDIRECT_VIEW')
                 ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')
                 ->register(
                     'saveBannerAreas',
@@ -128,7 +124,7 @@ class IOController extends AbstractBackendController
                 )
                 ->register('createSearchIndex', [$this, 'createSearchIndex'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('clearSearchCache', [$this, 'clearSearchCache'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('adminSearch', [$searchController, 'adminSearch'], $sucheInc, 'SETTINGS_SEARCH_VIEW')
+                ->register('adminSearch', [$searchController, 'adminSearch'], null, 'SETTINGS_SEARCH_VIEW')
                 ->register(
                     'saveShippingSurcharge',
                     [ShippingMethodsController::class, 'saveShippingSurcharge'],
@@ -373,5 +369,19 @@ class IOController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/sucheinstellungen');
 
         return ['hinweis' => \__('successSearchCacheDelete')];
+    }
+
+    /**
+     * @param int $redirectID
+     * @return bool
+     */
+    public function updateRedirectState(int $redirectID): bool
+    {
+        $url       = $this->db->select('tredirect', 'kRedirect', $redirectID)->cToUrl;
+        $available = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
+
+        $this->db->update('tredirect', 'kRedirect', $redirectID, (object)['cAvailable' => $available]);
+
+        return $available === 'y';
     }
 }

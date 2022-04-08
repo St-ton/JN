@@ -26,7 +26,7 @@ class TaCController extends AbstractBackendController
         $this->checkPermissions('ORDER_AGB_WRB_VIEW');
         $this->getText->loadAdminLocale('pages/agbwrb');
         $this->step = 'agbwrb_uebersicht';
-        $this->setzeSprache();
+        $this->setLanguage();
         if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             // Editieren
             if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {

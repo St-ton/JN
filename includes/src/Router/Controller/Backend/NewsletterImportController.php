@@ -230,9 +230,10 @@ class NewsletterImportController extends AbstractBackendController
                     ->createOptin($refData)
                     ->activateOptin();
             } catch (Exception $e) {
-                Shop::Container()->getLogService()->notice('optin creation failed during import, for ' .
-                    $rowData->cEmail .
-                    ' cause: ' . $e->getMessage());
+                Shop::Container()->getLogService()->notice(
+                    'optin creation failed during import, for '
+                    . $rowData->cEmail . ' cause: ' . $e->getMessage()
+                );
             }
             if ($res) {
                 return \__('successImport') .

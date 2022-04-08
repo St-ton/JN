@@ -76,7 +76,7 @@
                     {else}
                         {__('approximately')} {($engineUpdate->estimated[1] / 3600)|ceil} {__('hours')}
                     {/if}
-                    {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
+                    {{__('notePatienceTwo')}|sprintf:{$adminURL}}
                 </p>
                 <div class="alert alert-warning">{__('warningDoBackup')}</div>
                 <form method="post" action="{$adminURL}{$route}">
@@ -118,7 +118,7 @@
                 <p>{__('noteMigrationScript')}</p>
                 <p>{__('noteMigrationScriptClick')}</p>
                 <p>{__('noteMigrationScriptDesc')}</p>
-                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}</p>
+                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$adminURL}}</p>
                 <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
                 <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
                 <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>

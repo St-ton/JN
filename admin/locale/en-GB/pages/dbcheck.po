@@ -108,7 +108,7 @@ msgid "notePatienceOne"
 msgstr "Please wait. %s tables and a data volume of approx. %s are being"
 
 msgid "notePatienceTwo"
-msgstr " migrated. During the migration process, important tables of the online shop will be locked. This might lead to significant limitations in the front end. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/config?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration.<br/> Every table is migrated in two individual steps. The first step consists of moving the InnoDB tablespace. The second step consists of the conversion of data into the character set UTF-8."
+msgstr " migrated. During the migration process, important tables of the online shop will be locked. This might lead to significant limitations in the front end. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/config?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration.<br/> Every table is migrated in two individual steps. The first step consists of moving the InnoDB tablespace. The second step consists of the conversion of data into the character set UTF-8."
 
 msgid "lessThanOneMinute"
 msgstr "less than one minute"
@@ -147,7 +147,7 @@ msgid "noteMigrationScriptDesc"
 msgstr "The script is based on the current situation and contains only changes that are necessary for this JTL-Shop. You cannot use the script to perform a migration for a different JTL-Shop."
 
 msgid "noteMigrationScriptMaintenance"
-msgstr "Please note that it might take some time to perform a complete run of the script. During that time, important tables in the online shop remain inaccessible. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/%s/config?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration."
+msgstr "Please note that it might take some time to perform a complete run of the script. During that time, important tables in the online shop remain inaccessible. We therefore recommend activating the <a title=\"Global settings - Maintenance mode\" href=\"%s/config?kSektion=1#wartungsmodus_aktiviert\">Maintenance mode</a> while performing the migration."
 
 msgid "warningDoBackupScript"
 msgstr "<strong>BEFORE</strong> running the script, you absolutely need to create a backup of the entire database."

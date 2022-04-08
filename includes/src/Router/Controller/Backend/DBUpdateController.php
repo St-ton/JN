@@ -24,7 +24,6 @@ class DBUpdateController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('SHOP_UPDATE_VIEW');
         $this->getText->loadAdminLocale('pages/dbupdater');
-
         $smarty->clearCompiledTemplate();
         $updater             = new Updater($this->db);
         $template            = Shop::Container()->getTemplateService()->getActiveTemplate(false);
@@ -40,7 +39,8 @@ class DBUpdateController extends AbstractBackendController
         if ((int)($_SESSION['disabledPlugins'] ?? 0) > 0) {
             $this->alertService->addWarning(
                 \sprintf(
-                    \__('%d plugins were disabled for compatibility reasons. Please check your installed plugins manually.'),
+                    \__('%d plugins were disabled for compatibility reasons. '
+                        . 'Please check your installed plugins manually.'),
                     (int)$_SESSION['disabledPlugins']
                 ),
                 'errorMinShopVersionRequired'

@@ -90,7 +90,7 @@ class DashboardController extends AbstractBackendController
                 ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
                 ->assign('oActiveWidget_arr', $this->getWidgets())
                 ->assign('oAvailableWidget_arr', $this->getWidgets(false))
-                ->assign('bInstallExists', \is_dir(PFAD_ROOT . 'install'));
+                ->assign('bInstallExists', \is_dir(\PFAD_ROOT . 'install'));
         }
 
         return $smarty->getResponse('dashboard.tpl');
@@ -280,6 +280,8 @@ class DashboardController extends AbstractBackendController
                 $_SESSION['loginIsValid'] = true;
 
                 return $this->redirectLogin($this->account);
+            default:
+                throw new LoginException(\__('???'));
         }
     }
 }

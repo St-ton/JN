@@ -28,7 +28,7 @@ class LivesearchController extends AbstractBackendController
         $this->checkPermissions('MODULE_LIVESEARCH_VIEW');
         $this->getText->loadAdminLocale('pages/livesuche');
 
-        $this->setzeSprache();
+        $this->setLanguage();
         $languageID  = (int)$_SESSION['editLanguageID'];
         $settingsIDs = [
             'livesuche_max_ip_count',

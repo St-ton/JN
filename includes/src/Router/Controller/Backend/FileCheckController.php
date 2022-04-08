@@ -16,6 +16,8 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class FileCheckController extends AbstractBackendController
 {
+    private const BASE_PATH = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5;
+
     /**
      * @inheritdoc
      */
@@ -28,48 +30,72 @@ class FileCheckController extends AbstractBackendController
         $this->cache->flush(Status::CACHE_ID_MODIFIED_FILE_STRUCT);
         $this->cache->flush(Status::CACHE_ID_ORPHANED_FILE_STRUCT);
 
-        $fileChecker        = new FileCheck();
+        $fileCheck        = new FileCheck();
+        $hasModifiedFiles = $this->checkModifiedFiles($fileCheck);
+        $hasOrphanedFiles = $this->checkOrphanedFiles($fileCheck);
+        if (!$hasModifiedFiles && !$hasOrphanedFiles) {
+            $this->alertService->addNotice(
+                \__('fileCheckNoneModifiedOrphanedFiles'),
+                'fileCheckNoneModifiedOrphanedFiles'
+            );
+        }
+
+        return $smarty->assign('modifiedFilesCheck', $hasModifiedFiles)
+            ->assign('orphanedFilesCheck', $hasOrphanedFiles)
+            ->assign('deleteScript', $fileCheck->generateBashScript())
+            ->assign('route', $this->route)
+            ->getResponse('filecheck.tpl');
+    }
+
+    /**
+     * @param FileCheck $fileCheck
+     * @return bool
+     */
+    private function checkModifiedFiles(FileCheck $fileCheck): bool
+    {
+        $modifiedFilesCount = 0;
+        $modifiedFiles      = [];
+        $coreMD5HashFile    = self::BASE_PATH . $fileCheck->getVersionString() . '.csv';
+        $modifiedFilesCheck = $fileCheck->validateCsvFile($coreMD5HashFile, $modifiedFiles, $modifiedFilesCount);
+        $modifiedFilesError = match ($modifiedFilesCheck) {
+            FileCheck::ERROR_INPUT_FILE_MISSING => \sprintf(\__('errorFileNotFound'), $coreMD5HashFile),
+            FileCheck::ERROR_NO_HASHES_FOUND => \__('errorFileListEmpty'),
+            default => '',
+        };
+        $this->alertService->addError(
+            $modifiedFilesError,
+            'modifiedFilesError',
+            ['showInAlertListTemplate' => false]
+        );
+        $this->smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
+            ->assign('modifiedFiles', $modifiedFiles)
+            ->assign('errorsCountModifiedFiles', $modifiedFilesCount);
+
+        return !empty($modifiedFilesError) || \count($modifiedFiles) > 0;
+    }
+
+    /**
+     * @param FileCheck $fileCheck
+     * @return bool
+     */
+    private function checkOrphanedFiles(FileCheck $fileCheck): bool
+    {
         $zipArchiveError    = '';
         $backupMessage      = '';
-        $modifiedFilesError = '';
-        $orphanedFilesError = '';
-        $md5basePath        = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5;
-        $coreMD5HashFile    = $md5basePath . $fileChecker->getVersionString() . '.csv';
-        $orphanedFilesFile  = $md5basePath . 'deleted_files_' . $fileChecker->getVersionString() . '.csv';
-        $modifiedFiles      = [];
+        $orphanedFilesFile  = self::BASE_PATH . 'deleted_files_' . $fileCheck->getVersionString() . '.csv';
         $orphanedFiles      = [];
-        $modifiedFilesCount = 0;
         $orphanedFilesCount = 0;
-        $modifiedFilesCheck = $fileChecker->validateCsvFile($coreMD5HashFile, $modifiedFiles, $modifiedFilesCount);
-        $orphanedFilesCheck = $fileChecker->validateCsvFile($orphanedFilesFile, $orphanedFiles, $orphanedFilesCount);
-        if ($modifiedFilesCheck !== FileCheck::OK) {
-            switch ($modifiedFilesCheck) {
-                case FileCheck::ERROR_INPUT_FILE_MISSING:
-                    $modifiedFilesError = \sprintf(\__('errorFileNotFound'), $coreMD5HashFile);
-                    break;
-                case FileCheck::ERROR_NO_HASHES_FOUND:
-                    $modifiedFilesError = \__('errorFileListEmpty');
-                    break;
-                default:
-                    break;
-            }
-        }
-        if ($orphanedFilesCheck !== FileCheck::OK) {
-            switch ($orphanedFilesCheck) {
-                case FileCheck::ERROR_INPUT_FILE_MISSING:
-                    $orphanedFilesError = \sprintf(\__('errorFileNotFound'), $orphanedFilesFile);
-                    break;
-                case FileCheck::ERROR_NO_HASHES_FOUND:
-                    $orphanedFilesError = \__('errorFileListEmpty');
-                    break;
-                default:
-                    break;
-            }
-        } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
+        $orphanedFilesCheck = $fileCheck->validateCsvFile($orphanedFilesFile, $orphanedFiles, $orphanedFilesCount);
+        $orphanedFilesError = match ($orphanedFilesCheck) {
+            FileCheck::ERROR_INPUT_FILE_MISSING => \sprintf(\__('errorFileNotFound'), $orphanedFilesFile),
+            FileCheck::ERROR_NO_HASHES_FOUND => \__('errorFileListEmpty'),
+            default => '',
+        };
+        if (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
             $backup   = \PFAD_ROOT . \PFAD_EXPORT_BACKUP
                 . 'orphans_' . \date_format(\date_create(), 'Y-m-d_H:i:s')
                 . '.zip';
-            $count    = $fileChecker->deleteOrphanedFiles($orphanedFiles, $backup);
+            $count    = $fileCheck->deleteOrphanedFiles($orphanedFiles, $backup);
             $newCount = \count($orphanedFiles);
             if ($count === -1) {
                 $zipArchiveError = \sprintf(\__('errorCreatingZipArchive'), $backup);
@@ -80,15 +106,11 @@ class FileCheckController extends AbstractBackendController
                 $orphanedFilesError = \__('errorNotDeleted');
             }
         }
-
-        $hasModifiedFiles = !empty($modifiedFilesError) || \count($modifiedFiles) > 0;
-        $hasOrphanedFiles = !empty($orphanedFilesError) || \count($orphanedFiles) > 0;
-        if (!$hasModifiedFiles && !$hasOrphanedFiles) {
-            $this->alertService->addNotice(
-                \__('fileCheckNoneModifiedOrphanedFiles'),
-                'fileCheckNoneModifiedOrphanedFiles'
-            );
-        }
+        $this->alertService->addError(
+            $orphanedFilesError,
+            'orphanedFilesError',
+            ['showInAlertListTemplate' => false]
+        );
         $this->alertService->addInfo(
             $backupMessage,
             'backupMessage',
@@ -99,27 +121,10 @@ class FileCheckController extends AbstractBackendController
             'zipArchiveError',
             ['showInAlertListTemplate' => false]
         );
-        $this->alertService->addError(
-            $modifiedFilesError,
-            'modifiedFilesError',
-            ['showInAlertListTemplate' => false]
-        );
-        $this->alertService->addError(
-            $orphanedFilesError,
-            'orphanedFilesError',
-            ['showInAlertListTemplate' => false]
-        );
-
-        return $smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
-            ->assign('orphanedFilesError', $orphanedFilesError !== '')
-            ->assign('modifiedFiles', $modifiedFiles)
+        $this->smarty->assign('orphanedFilesError', $orphanedFilesError !== '')
             ->assign('orphanedFiles', $orphanedFiles)
-            ->assign('modifiedFilesCheck', $hasModifiedFiles)
-            ->assign('orphanedFilesCheck', $hasOrphanedFiles)
-            ->assign('errorsCountModifiedFiles', $modifiedFilesCount)
-            ->assign('errorsCountOrphanedFiles', $orphanedFilesCount)
-            ->assign('deleteScript', $fileChecker->generateBashScript())
-            ->assign('route', $this->route)
-            ->getResponse('filecheck.tpl');
+            ->assign('errorsCountOrphanedFiles', $orphanedFilesCount);
+
+        return !empty($orphanedFilesError) || \count($orphanedFiles) > 0;
     }
 }

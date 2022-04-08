@@ -174,7 +174,7 @@ class Overlay
     public function deleteImage(OverlayImage $overlay): void
     {
         foreach ($overlay->getPathSizes() as $path) {
-            $path = PFAD_ROOT . $path . $overlay->getImageName();
+            $path = \PFAD_ROOT . $path . $overlay->getImageName();
             if (\file_exists($path)) {
                 @\unlink($path);
             }
@@ -202,15 +202,15 @@ class Overlay
         ];
 
         foreach ($sizesToCreate as $sizeToCreate) {
-            if (!\is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
-                \mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
+            if (!\is_dir(\PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
+                \mkdir(\PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
             }
             $imageCreated = $this->createFixedOverlay(
                 $original,
                 $overlay->getSize() * $sizeToCreate['factor'],
                 $overlay->getTransparance(),
                 $ext,
-                PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
+                \PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
             );
             if (!$imageCreated) {
                 return false;

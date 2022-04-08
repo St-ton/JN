@@ -189,12 +189,12 @@ class SearchController extends AbstractBackendController
             if (mb_strlen($search) > 2) {
                 $hits = $this->db->getObjects(
                     'SELECT va.kVersandart, va.cName
-                    FROM tversandart AS va
-                    LEFT JOIN tversandartsprache AS vs 
-                        ON vs.kVersandart = va.kVersandart
-                        AND vs.cName LIKE :search
-                    WHERE va.cName LIKE :search
-                    OR vs.cName LIKE :search',
+                        FROM tversandart AS va
+                        LEFT JOIN tversandartsprache AS vs 
+                            ON vs.kVersandart = va.kVersandart
+                            AND vs.cName LIKE :search
+                        WHERE va.cName LIKE :search
+                        OR vs.cName LIKE :search',
                     ['search' => '%' . $search . '%']
                 );
                 foreach ($hits as $item) {
@@ -221,13 +221,13 @@ class SearchController extends AbstractBackendController
             if (mb_strlen($string) > 2) {
                 $data = $this->db->getObjects(
                     'SELECT za.kZahlungsart, za.cName
-                    FROM tzahlungsart AS za
-                    LEFT JOIN tzahlungsartsprache AS zs 
-                        ON zs.kZahlungsart = za.kZahlungsart
-                        AND zs.cName LIKE :search
-                    WHERE za.cName LIKE :search 
-                    OR zs.cName LIKE :search
-                    GROUP BY za.kZahlungsart',
+                        FROM tzahlungsart AS za
+                        LEFT JOIN tzahlungsartsprache AS zs 
+                            ON zs.kZahlungsart = za.kZahlungsart
+                            AND zs.cName LIKE :search
+                        WHERE za.cName LIKE :search 
+                        OR zs.cName LIKE :search
+                        GROUP BY za.kZahlungsart',
                     ['search' => '%' . $string . '%']
                 );
                 foreach ($data as $paymentMethodByName) {

@@ -8,6 +8,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
+use JTL\Router\BackendRouter;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -53,6 +54,17 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
+
+/**
+ * @param string $route
+ * @return void
+ */
+function routeRedirect(string $route): void
+{
+    header('Location: ' . Shop::getAdminURL() . '/' . $route, true, 301);
+    exit();
+}
+
 Profiler::start();
 $db    = Shop::Container()->getDB();
 $cache = Shop::Container()->getCache()->setJtlCacheConfig(

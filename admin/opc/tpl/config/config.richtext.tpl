@@ -7,13 +7,13 @@
         if(!CKEDITOR.lang.languages.hasOwnProperty(adminLang)) {
             adminLang = adminLang.split('-')[0]
         }
-        
+
         CKEDITOR.replace(
             'textarea-{$propname}',
             {
                 baseFloatZIndex: 9000,
                 language: adminLang,
-                filebrowserBrowseUrl: 'elfinder.php?ckeditor=1&token=' + JTL_TOKEN + '&mediafilesType=image',
+                filebrowserBrowseUrl: BACKEND_URL + 'elfinder?ckeditor=1&token=' + JTL_TOKEN + '&mediafilesType=image',
                 /* custom config */
                 toolbarGroups:[
                     { name: 'clipboard', groups: ['clipboard', 'undo']},

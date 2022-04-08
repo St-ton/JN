@@ -32,7 +32,7 @@ class SelectionWizardController extends AbstractBackendController
         $postData = Text::filterXSS($_POST);
         $this->getText->loadAdminLocale('pages/auswahlassistent');
         $this->getText->loadConfigLocales();
-        $this->setzeSprache();
+        $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];
         if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $group    = new Group();

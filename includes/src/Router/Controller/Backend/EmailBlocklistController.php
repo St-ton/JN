@@ -40,7 +40,7 @@ class EmailBlocklistController extends AbstractBackendController
                 }
             }
         }
-        $blacklist = $this->db->selectAll('temailblacklist', [], []);
+        $blocklist = $this->db->selectAll('temailblacklist', [], []);
         $blocked   = $this->db->getObjects(
             "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
                 FROM temailblacklistblock
@@ -49,7 +49,7 @@ class EmailBlocklistController extends AbstractBackendController
         );
         $this->getAdminSectionSettings(\CONF_EMAILBLACKLIST);
 
-        return $smarty->assign('blacklist', $blacklist)
+        return $smarty->assign('blacklist', $blocklist)
             ->assign('blocked', $blocked)
             ->assign('step', $step)
             ->assign('route', $this->route)

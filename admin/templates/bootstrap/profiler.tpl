@@ -64,6 +64,7 @@ var pies = [];
                                     <form class="delete-run" action="{$adminURL}{$route}" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$profile->runID}" name="run-id" />
+                                        <input type="hidden" value="uebersicht" name="tab" />
                                         <div class="row">
                                             <div class="ml-auto col-sm-6 col-xl-auto">
                                                 <button type="submit" class="btn btn-danger btn-block" name="delete-run-submit">
@@ -125,6 +126,7 @@ var pies = [];
                                     <div class="card-footer save-wrapper">
                                         <form class="delete-run" action="{$adminURL}{$route}" method="post">
                                             {$jtl_token}
+                                            <input type="hidden" value="sqlprofiler" name="tab" />
                                             <input type="hidden" value="{$run->runID}" name="run-id" />
                                             <div class="row">
                                                 <div class="ml-auto col-sm-6 col-xl-auto">

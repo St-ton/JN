@@ -28,8 +28,7 @@ class SystemCheckController extends AbstractBackendController
         if (isset($_GET['phpinfo']) && !\in_array('phpinfo', \explode(',', \ini_get('disable_functions')), true)) {
             \ob_start();
             \phpinfo();
-            $content = \ob_get_contents();
-            \ob_end_clean();
+            $content = \ob_get_clean();
             $phpInfo = \pq('body', phpQuery::newDocumentHTML($content, \JTL_CHARSET))->html();
         }
 

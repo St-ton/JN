@@ -79,7 +79,7 @@ class PluginController extends AbstractBackendController
         if ($loader !== null) {
             try {
                 $plugin = $loader->init($pluginID, $this->invalidateCache);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $this->pluginNotFound = true;
             }
         }

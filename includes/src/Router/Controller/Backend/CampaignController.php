@@ -27,6 +27,13 @@ use function Functional\reindex;
  */
 class CampaignController extends AbstractBackendController
 {
+    private const OK               = 1;
+    private const ERR_EMPTY_NAME   = 3;
+    private const ERR_EMPTY_PARAM  = 4;
+    private const ERR_EMPTY_VALUE  = 5;
+    private const ERR_NAME_EXISTS  = 6;
+    private const ERR_PARAM_EXISTS = 7;
+
     /**
      * @inheritdoc
      */
@@ -81,7 +88,7 @@ class CampaignController extends AbstractBackendController
             $step       = 'kampagne_detail';
             $campaignID = Request::verifyGPCDataInt('kKampagne');
             // Zeitraum / Ansicht
-            $this->setzeDetailZeitraum($now);
+            $this->setTimespan($now);
         } elseif (Request::verifyGPCDataInt('defdetail') === 1
             && Request::verifyGPCDataInt('kKampagne') > 0
             && Request::verifyGPCDataInt('kKampagneDef') > 0
@@ -105,19 +112,18 @@ class CampaignController extends AbstractBackendController
             if (Request::verifyGPCDataInt('kKampagne') > 0) {
                 $campaign->kKampagne = Request::verifyGPCDataInt('kKampagne');
             }
-            $res = $this->speicherKampagne($campaign);
+            $res = $this->save($campaign);
             if ($res === 1) {
                 $this->alertService->addSuccess(\__('successCampaignSave'), 'successCampaignSave');
             } else {
-                $this->alertService->addError($this->mappeFehlerCodeSpeichern($res), 'campaignError');
+                $this->alertService->addError($this->getErrorMessage($res), 'campaignError');
                 $smarty->assign('oKampagne', $campaign);
                 $step = 'kampagne_erstellen';
             }
         } elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
             // Loeschen
             if (GeneralObject::hasCount('kKampagne', $_POST)) {
-                $res = $this->loescheGewaehlteKampagnen($_POST['kKampagne']);
-                if ($res === 1) {
+                if ($this->deleteCampaigns($_POST['kKampagne']) === true) {
                     $this->alertService->addSuccess(\__('successCampaignDelete'), 'successCampaignDelete');
                 }
             } else {
@@ -1380,24 +1386,15 @@ class CampaignController extends AbstractBackendController
      * @param Campaign $campaign
      * @return int
      * @former speicherKampagne()
-     *
-     * Returncodes:
-     * 1 = Alles O.K.
-     * 2 = Kampagne konnte nicht gespeichert werden
-     * 3 = Kampagnenname ist leer
-     * 4 = Kampagnenparamter ist leer
-     * 5 = Kampagnenwert ist leer
-     * 6 = Kampagnennamen schon vergeben
-     * 7 = Kampagnenparameter schon vergeben
      */
-    private function speicherKampagne($campaign): int
+    private function save(Campaign $campaign): int
     {
         // Standardkampagnen (Interne) Werte herstellen
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
             $data = $this->db->getSingleObject(
                 'SELECT *
-                FROM tkampagne
-                WHERE kKampagne = :cid AND nInternal = 1',
+                    FROM tkampagne
+                    WHERE kKampagne = :cid AND nInternal = 1',
                 ['cid' => (int)$campaign->kKampagne]
             );
             if ($data !== null) {
@@ -1406,43 +1403,41 @@ class CampaignController extends AbstractBackendController
                 $campaign->nDynamisch = $data->nDynamisch;
             }
         }
-
-        // Plausi
         if (\mb_strlen($campaign->cName) === 0) {
-            return 3;// Kampagnenname ist leer
+            return self::ERR_EMPTY_NAME;
         }
         if (\mb_strlen($campaign->cParameter) === 0) {
-            return 4;// Kampagnenparamter ist leer
+            return self::ERR_EMPTY_PARAM;
         }
-        if (\mb_strlen($campaign->cWert) === 0 && $campaign->nDynamisch != 1) {
-            return 5;//  Kampagnenwert ist leer
+        if (\mb_strlen($campaign->cWert) === 0 && (int)$campaign->nDynamisch !== 1) {
+            return self::ERR_EMPTY_VALUE;
         }
         // Name schon vorhanden?
         $data = $this->db->getSingleObject(
             'SELECT kKampagne
-            FROM tkampagne
-            WHERE cName = :cName',
-            ['cName' => $campaign->cName]
+                FROM tkampagne
+                WHERE cName = :name',
+            ['name' => $campaign->cName]
         );
         if ($data !== null
             && $data->kKampagne > 0
             && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
         ) {
-            return 6;// Kampagnennamen schon vergeben
+            return self::ERR_NAME_EXISTS;
         }
         // Parameter schon vorhanden?
         if (isset($campaign->nDynamisch) && (int)$campaign->nDynamisch === 1) {
             $data = $this->db->getSingleObject(
                 'SELECT kKampagne
-                FROM tkampagne
-                WHERE cParameter = :param',
+                    FROM tkampagne
+                    WHERE cParameter = :param',
                 ['param' => $campaign->cParameter]
             );
             if ($data !== null
                 && $data->kKampagne > 0
                 && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
             ) {
-                return 7;// Kampagnenparameter schon vergeben
+                return self::ERR_PARAM_EXISTS;
             }
         }
         // Editieren?
@@ -1453,7 +1448,7 @@ class CampaignController extends AbstractBackendController
         }
         $this->cache->flush('campaigns');
 
-        return 1;
+        return self::OK;
     }
 
     /**
@@ -1461,44 +1456,27 @@ class CampaignController extends AbstractBackendController
      * @return string
      * @former mappeFehlerCodeSpeichern()
      */
-    private function mappeFehlerCodeSpeichern(int $code): string
+    private function getErrorMessage(int $code): string
     {
-        $msg = '';
-        switch ($code) {
-            case 2:
-                $msg = \__('errorCampaignSave');
-                break;
-            case 3:
-                $msg = \__('errorCampaignNameMissing');
-                break;
-            case 4:
-                $msg = \__('errorCampaignParameterMissing');
-                break;
-            case 5:
-                $msg = \__('errorCampaignValueMissing');
-                break;
-            case 6:
-                $msg = \__('errorCampaignNameDuplicate');
-                break;
-            case 7:
-                $msg = \__('errorCampaignParameterDuplicate');
-                break;
-            default:
-                break;
-        }
-
-        return $msg;
+        return match ($code) {
+            self::ERR_EMPTY_NAME   => \__('errorCampaignNameMissing'),
+            self::ERR_EMPTY_PARAM  => \__('errorCampaignParameterMissing'),
+            self::ERR_EMPTY_VALUE  => \__('errorCampaignValueMissing'),
+            self::ERR_NAME_EXISTS  => \__('errorCampaignNameDuplicate'),
+            self::ERR_PARAM_EXISTS => \__('errorCampaignParameterDuplicate'),
+            default                => '',
+        };
     }
 
     /**
      * @param array $campaignIDs
-     * @return int
+     * @return bool
      * @former loescheGewaehlteKampagnen()
      */
-    private function loescheGewaehlteKampagnen(array $campaignIDs): int
+    private function deleteCampaigns(array $campaignIDs): bool
     {
         if (\count($campaignIDs) === 0) {
-            return 0;
+            return false;
         }
         foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
             if ($campaignID < 1000) {
@@ -1509,14 +1487,14 @@ class CampaignController extends AbstractBackendController
         }
         $this->cache->flush('campaigns');
 
-        return 1;
+        return true;
     }
 
     /**
      * @param DateTimeImmutable $date
      * @former setzeDetailZeitraum()
      */
-    private function setzeDetailZeitraum(DateTimeImmutable $date): void
+    private function setTimespan(DateTimeImmutable $date): void
     {
         // 1 = Jahr
         // 2 = Monat
@@ -1572,10 +1550,10 @@ class CampaignController extends AbstractBackendController
     }
 
     /**
-     * @return false|string
+     * @return string
      * @former checkGesamtStatZeitParam()
      */
-    private function checkGesamtStatZeitParam()
+    private function checkGesamtStatZeitParam(): string
     {
         $stamp = '';
         if (\mb_strlen(Request::verifyGPDataString('cZeitParam')) === 0) {
@@ -1618,11 +1596,14 @@ class CampaignController extends AbstractBackendController
         switch ((int)$_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $_SESSION['Kampagne']->nDetailAnsicht = 2;
-                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month;
+
+                $stamp = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month;
                 break;
+
             case 2: // Woche
                 $_SESSION['Kampagne']->nDetailAnsicht = 3;
-                $stamp                                = \date(
+
+                $stamp = \date(
                     'W',
                     \mktime(
                         0,
@@ -1636,8 +1617,8 @@ class CampaignController extends AbstractBackendController
                 break;
             case 3: // Tag
                 $_SESSION['Kampagne']->nDetailAnsicht = 4;
-                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
-                    $month . '-' . $day;
+
+                $stamp = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month . '-' . $day;
                 break;
         }
 
@@ -1714,19 +1695,20 @@ class CampaignController extends AbstractBackendController
         $chart->setActive(true);
         $data = [];
         foreach ($stats as $date => $dates) {
-            if (\mb_strpos($date, 'Gesamt') === false) {
-                $x = '';
-                foreach ($dates as $key => $stat) {
-                    if (\is_string($key) && \mb_strpos($key, 'cDatum') !== false) {
-                        $x = $dates[$key];
-                    }
-                    if ($key === $type) {
-                        $obj    = new stdClass();
-                        $obj->y = (float)$stat;
+            if (\str_contains($date, 'Gesamt')) {
+                continue;
+            }
+            $x = '';
+            foreach ($dates as $key => $stat) {
+                if (\is_string($key) && \mb_strpos($key, 'cDatum') !== false) {
+                    $x = $dates[$key];
+                }
+                if ($key === $type) {
+                    $obj    = new stdClass();
+                    $obj->y = (float)$stat;
 
-                        $chart->addAxis((string)$x);
-                        $data[] = $obj;
-                    }
+                    $chart->addAxis((string)$x);
+                    $data[] = $obj;
                 }
             }
         }

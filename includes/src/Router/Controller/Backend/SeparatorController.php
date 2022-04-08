@@ -25,7 +25,7 @@ class SeparatorController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('SETTINGS_SEPARATOR_VIEW');
         $this->getText->loadAdminLocale('pages/trennzeichen');
-        $this->setzeSprache();
+        $this->setLanguage();
 
         $step = 'trennzeichen_uebersicht';
         if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {

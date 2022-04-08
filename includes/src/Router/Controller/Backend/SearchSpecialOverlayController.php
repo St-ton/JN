@@ -26,8 +26,8 @@ class SearchSpecialOverlayController extends AbstractBackendController
         $this->checkPermissions('DISPLAY_ARTICLEOVERLAYS_VIEW');
         $this->getText->loadAdminLocale('pages/suchspecialoverlay');
 
-        $step = 'suchspecialoverlay_uebersicht';
-        $this->setzeSprache();
+        $this->setLanguage();
+        $step    = 'suchspecialoverlay_uebersicht';
         $overlay = $this->getOverlayInstance(1);
         if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
             $helper = new Helper($this->db);
@@ -44,7 +44,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
                 $overlay = $this->getOverlayInstance($oID);
             }
         }
-        $overlays = $this->getALl();
+        $overlays = $this->getAll();
         $template = Shop::Container()->getTemplateService()->getActiveTemplate();
         if ($template->getName() === 'Evo'
             && $template->getAuthor() === 'JTL-Software-GmbH'
@@ -67,7 +67,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
      * @return Overlay[]
      * @former gibAlleSuchspecialOverlays()
      */
-    private function getALl(): array
+    private function getAll(): array
     {
         $overlays = [];
         foreach ($this->db->getInts(

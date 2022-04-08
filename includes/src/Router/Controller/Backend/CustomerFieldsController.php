@@ -25,7 +25,7 @@ class CustomerFieldsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_CUSTOMERFIELDS_VIEW');
         $this->getText->loadAdminLocale('pages/kundenfeld');
-        $this->setzeSprache();
+        $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];
         $cf         = CustomerFields::getInstance($languageID, $this->db);
         $step       = 'uebersicht';

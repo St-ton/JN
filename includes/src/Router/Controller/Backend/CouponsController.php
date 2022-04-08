@@ -691,8 +691,8 @@ class CouponsController extends AbstractBackendController
     {
         return $this->db->getSingleInt(
             'SELECT COUNT(kKupon) AS cnt
-            FROM tkupon
-            WHERE cKuponTyp = :tp' .
+                FROM tkupon
+                WHERE cKuponTyp = :tp' .
             ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
             'cnt',
             ['tp' => $type]
@@ -700,13 +700,11 @@ class CouponsController extends AbstractBackendController
     }
 
     /**
-     * Save a new or already existing coupon in the DB
-     *
      * @param Kupon           $coupon
      * @param LanguageModel[] $languages
-     * @return int - 0 on failure ; kKupon on success
+     * @return int - 0 on failure ; coupon ID on success
      */
-    private function saveCoupon(Kupon $coupon, array $languages)
+    private function saveCoupon(Kupon $coupon, array $languages): int
     {
         if ((int)$coupon->kKupon > 0) {
             // vorhandener Kupon

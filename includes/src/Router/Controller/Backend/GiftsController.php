@@ -38,13 +38,13 @@ class GiftsController extends AbstractBackendController
             );
         }
         $paginationActive  = (new Pagination('aktiv'))
-            ->setItemCount($this->gibAnzahlAktiverGeschenke())
+            ->setItemCount($this->getActiveCount())
             ->assemble();
         $paginationCommon  = (new Pagination('haeufig'))
-            ->setItemCount($this->gibAnzahlHaeufigGekaufteGeschenke())
+            ->setItemCount($this->getCommonCount())
             ->assemble();
         $paginationLast100 = (new Pagination('letzte100'))
-            ->setItemCount($this->gibAnzahlLetzten100Geschenke())
+            ->setItemCount($this->getRecentCount())
             ->assemble();
         $this->getAdminSectionSettings($settingsIDs, true);
 
@@ -54,15 +54,15 @@ class GiftsController extends AbstractBackendController
             ->assign('route', $this->route)
             ->assign(
                 'oAktiveGeschenk_arr',
-                $this->holeAktiveGeschenke(' LIMIT ' . $paginationActive->getLimitSQL())
+                $this->getActive(' LIMIT ' . $paginationActive->getLimitSQL())
             )
             ->assign(
                 'oHaeufigGeschenk_arr',
-                $this->holeHaeufigeGeschenke(' LIMIT ' . $paginationCommon->getLimitSQL())
+                $this->getCommon(' LIMIT ' . $paginationCommon->getLimitSQL())
             )
             ->assign(
                 'oLetzten100Geschenk_arr',
-                $this->holeLetzten100Geschenke(' LIMIT ' . $paginationLast100->getLimitSQL())
+                $this->getRecent100(' LIMIT ' . $paginationLast100->getLimitSQL())
             )
             ->getResponse('gratisgeschenk.tpl');
     }
@@ -71,7 +71,7 @@ class GiftsController extends AbstractBackendController
      * @return array
      * @former holeAktiveGeschenke()
      */
-    private function holeAktiveGeschenke(string $sql): array
+    private function getActive(string $sql): array
     {
         $res = [];
         if (\mb_strlen($sql) < 1) {
@@ -79,9 +79,9 @@ class GiftsController extends AbstractBackendController
         }
         $data = $this->db->getInts(
             'SELECT kArtikel
-            FROM tartikelattribut
-            WHERE cName = :atr
-            ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
+                FROM tartikelattribut
+                WHERE cName = :atr
+                ORDER BY CAST(cWert AS SIGNED) DESC ' . $sql,
             'kArtikel',
             ['atr' => \ART_ATTRIBUT_GRATISGESCHENKAB]
         );
@@ -104,7 +104,7 @@ class GiftsController extends AbstractBackendController
      * @return array
      * @former holeHaeufigeGeschenke()
      */
-    private function holeHaeufigeGeschenke(string $sql): array
+    private function getCommon(string $sql): array
     {
         $res = [];
         if (\mb_strlen($sql) < 1) {
@@ -113,11 +113,11 @@ class GiftsController extends AbstractBackendController
         $data = $this->db->getObjects(
             'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
             MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
-            FROM tgratisgeschenk
-            LEFT JOIN tbestellung
-                ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
-            GROUP BY tgratisgeschenk.kArtikel
-            ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql
+                FROM tgratisgeschenk
+                LEFT JOIN tbestellung
+                    ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
+                GROUP BY tgratisgeschenk.kArtikel
+                ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql
         );
 
         $options                            = Artikel::getDefaultOptions();
@@ -143,7 +143,7 @@ class GiftsController extends AbstractBackendController
      * @return array
      * @former holeLetzten100Geschenke()
      */
-    private function holeLetzten100Geschenke(string $sql): array
+    private function getRecent100(string $sql): array
     {
         $res = [];
         if (\mb_strlen($sql) < 1) {
@@ -178,12 +178,12 @@ class GiftsController extends AbstractBackendController
      * @return int
      * @former gibAnzahlAktiverGeschenke()
      */
-    private function gibAnzahlAktiverGeschenke(): int
+    private function getActiveCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM tartikelattribut
-            WHERE cName = :nm',
+                FROM tartikelattribut
+                WHERE cName = :nm',
             ['nm' => \ART_ATTRIBUT_GRATISGESCHENKAB]
         )->cnt;
     }
@@ -192,12 +192,12 @@ class GiftsController extends AbstractBackendController
      * @return int
      * @former gibAnzahlHaeufigGekaufteGeschenke()
      */
-    private function gibAnzahlHaeufigGekaufteGeschenke(): int
+    private function getCommonCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(DISTINCT(kArtikel)) AS cnt
-            FROM twarenkorbpos
-            WHERE nPosTyp = :tp',
+                FROM twarenkorbpos
+                WHERE nPosTyp = :tp',
             ['tp' => \C_WARENKORBPOS_TYP_GRATISGESCHENK]
         )->cnt;
     }
@@ -206,13 +206,13 @@ class GiftsController extends AbstractBackendController
      * @return int
      * @former gibAnzahlLetzten100Geschenke()
      */
-    private function gibAnzahlLetzten100Geschenke(): int
+    private function getRecentCount(): int
     {
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
-            FROM twarenkorbpos
-            WHERE nPosTyp = :tp
-            LIMIT 100',
+                FROM twarenkorbpos
+                WHERE nPosTyp = :tp
+                LIMIT 100',
             ['tp' => \C_WARENKORBPOS_TYP_GRATISGESCHENK]
         )->cnt;
     }

@@ -42,7 +42,7 @@ class NewsletterController extends AbstractBackendController
         $activeSearchSQL          = new SqlObject();
         $customerGroup            = $this->db->select('tkundengruppe', 'cStandard', 'Y');
         $_SESSION['Kundengruppe'] = new CustomerGroup((int)$customerGroup->kKundengruppe);
-        $this->setzeSprache();
+        $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];
         $instance   = new Newsletter($this->db, $conf);
         $postData   = Text::filterXSS($_POST);

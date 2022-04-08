@@ -1,5 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
 <div id="content">
+    einstellen!!!!!!!!!!!!!!!
     <form name="einstellen" method="post" action="{$adminURL}{$route}" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />
@@ -92,10 +93,10 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nMailSenden">{__('paymentAckMail')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="nMailSenden" name="nMailSenden" class="custom-select combo">
-                            <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG} selected="selected"{/if}>
+                            <option value="1"{if $zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_EINGANG} selected="selected"{/if}>
                                 {__('yes')}
                             </option>
-                            <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG)} selected="selected"{/if}>
+                            <option value="0"{if !($zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_EINGANG)} selected="selected"{/if}>
                                 {__('no')}
                             </option>
                         </select>
@@ -106,10 +107,10 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nMailSendenStorno">{__('paymentCancelMail')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="nMailSendenStorno" name="nMailSendenStorno" class="custom-select combo">
-                            <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO} selected="selected"{/if}>
+                            <option value="1"{if $zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_STORNO} selected="selected"{/if}>
                                 {__('yes')}
                             </option>
-                            <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO)} selected="selected"{/if}>
+                            <option value="0"{if !($zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_STORNO)} selected="selected"{/if}>
                                 {__('no')}
                             </option>
                         </select>

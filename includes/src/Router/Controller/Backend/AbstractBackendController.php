@@ -131,7 +131,7 @@ abstract class AbstractBackendController implements ControllerInterface
     /**
      * @former setzeSprache()
      */
-    public function setzeSprache(): void
+    public function setLanguage(): void
     {
         if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
             // Wähle explizit gesetzte Sprache als aktuelle Sprache

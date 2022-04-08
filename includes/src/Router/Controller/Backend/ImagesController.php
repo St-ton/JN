@@ -69,47 +69,47 @@ class ImagesController extends AbstractBackendController
         $cachesToClear = [];
         $media         = Media::getInstance();
         foreach (\array_keys($confDiff) as $item) {
-            if (\strpos($item, 'hersteller') !== false) {
+            if (\str_contains($item, 'hersteller')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_MANUFACTURER);
                 continue;
             }
-            if (\strpos($item, 'variation') !== false) {
+            if (str_contains($item, 'variation')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_VARIATION);
                 continue;
             }
-            if (\strpos($item, 'kategorie') !== false) {
+            if (\str_contains($item, 'kategorie')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_CATEGORY);
                 continue;
             }
-            if (\strpos($item, 'merkmalwert') !== false) {
+            if (\str_contains($item, 'merkmalwert')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_CHARACTERISTIC_VALUE);
                 continue;
             }
-            if (\strpos($item, 'merkmal_') !== false) {
+            if (\str_contains($item, 'merkmal_')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_CHARACTERISTIC);
                 continue;
             }
-            if (\strpos($item, 'opc') !== false) {
+            if (\str_contains($item, 'opc')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_OPC);
                 continue;
             }
-            if (\strpos($item, 'konfiggruppe') !== false) {
+            if (\str_contains($item, 'konfiggruppe')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_CONFIGGROUP);
                 continue;
             }
-            if (\strpos($item, 'artikel') !== false) {
+            if (\str_contains($item, 'artikel')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_PRODUCT);
                 continue;
             }
-            if (\strpos($item, 'news') !== false) {
+            if (\str_contains($item, 'news')) {
                 $cachesToClear[] = $media::getClass(Image::TYPE_NEWS);
                 $cachesToClear[] = $media::getClass(Image::TYPE_NEWSCATEGORY);
                 continue;
             }
-            if (\strpos($item, 'quali') !== false
-                || \strpos($item, 'container') !== false
-                || \strpos($item, 'skalieren') !== false
-                || \strpos($item, 'hintergrundfarbe') !== false
+            if (\str_contains($item, 'quali')
+                || \str_contains($item, 'container')
+                || \str_contains($item, 'skalieren')
+                || \str_contains($item, 'hintergrundfarbe')
             ) {
                 $cachesToClear = $media->getRegisteredClassNames();
                 break;

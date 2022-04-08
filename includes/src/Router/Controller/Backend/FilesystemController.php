@@ -28,48 +28,56 @@ class FilesystemController extends AbstractBackendController
         $this->checkPermissions('FILESYSTEM_VIEW');
         $this->getText->loadAdminLocale('pages/filesystem');
         $this->getText->loadConfigLocales(true, true);
-        $shopSettings = Shopsetting::getInstance();
 
+        $settings = Shopsetting::getInstance();
         if (!empty($_POST) && Form::validateToken()) {
             $postData = Text::filterXSS($_POST);
             $this->saveAdminSectionSettings(\CONF_FS, $_POST);
-            $shopSettings->reset();
-
+            $settings->reset();
             if (isset($postData['test'])) {
-                try {
-                    $factory = new AdapterFactory(Shop::getSettingSection(\CONF_FS));
-                    $factory->setFtpConfig([
-                        'ftp_host'     => $postData['ftp_hostname'],
-                        'ftp_port'     => (int)($postData['ftp_port'] ?? 21),
-                        'ftp_username' => $postData['ftp_user'],
-                        'ftp_password' => $postData['ftp_pass'],
-                        'ftp_ssl'      => (int)$postData['ftp_ssl'] === 1,
-                        'ftp_root'     => $postData['ftp_path']
-                    ]);
-                    $factory->setSftpConfig([
-                        'sftp_host'     => $postData['sftp_hostname'],
-                        'sftp_port'     => (int)($postData['sftp_port'] ?? 22),
-                        'sftp_username' => $postData['sftp_user'],
-                        'sftp_password' => $postData['sftp_pass'],
-                        'sftp_privkey'  => $postData['sftp_privkey'],
-                        'sftp_root'     => $postData['sftp_path']
-                    ]);
-                    $factory->setAdapter($postData['fs_adapter']);
-                    $fs         = new Filesystem($factory->getAdapter());
-                    $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
-                    if ($isShopRoot) {
-                        $this->alertService->addInfo(\__('fsValidConnection'), 'fsValidConnection');
-                    } else {
-                        $this->alertService->addError(\__('fsInvalidShopRoot'), 'fsInvalidShopRoot');
-                    }
-                } catch (Exception $e) {
-                    $this->alertService->addError($e->getMessage(), 'errorFS');
-                }
+                $this->test($postData);
             }
         }
         $this->getAdminSectionSettings(\CONF_FS);
 
         return $smarty->assign('route', $this->route)
             ->getResponse('filesystem.tpl');
+    }
+
+    /**
+     * @param array $postData
+     * @return void
+     */
+    private function test(array $postData): void
+    {
+        try {
+            $factory = new AdapterFactory(Shop::getSettingSection(\CONF_FS));
+            $factory->setFtpConfig([
+                'ftp_host'     => $postData['ftp_hostname'],
+                'ftp_port'     => (int)($postData['ftp_port'] ?? 21),
+                'ftp_username' => $postData['ftp_user'],
+                'ftp_password' => $postData['ftp_pass'],
+                'ftp_ssl'      => (int)$postData['ftp_ssl'] === 1,
+                'ftp_root'     => $postData['ftp_path']
+            ]);
+            $factory->setSftpConfig([
+                'sftp_host'     => $postData['sftp_hostname'],
+                'sftp_port'     => (int)($postData['sftp_port'] ?? 22),
+                'sftp_username' => $postData['sftp_user'],
+                'sftp_password' => $postData['sftp_pass'],
+                'sftp_privkey'  => $postData['sftp_privkey'],
+                'sftp_root'     => $postData['sftp_path']
+            ]);
+            $factory->setAdapter($postData['fs_adapter']);
+            $fs         = new Filesystem($factory->getAdapter());
+            $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
+            if ($isShopRoot) {
+                $this->alertService->addInfo(\__('fsValidConnection'), 'fsValidConnection');
+            } else {
+                $this->alertService->addError(\__('fsInvalidShopRoot'), 'fsInvalidShopRoot');
+            }
+        } catch (Exception $e) {
+            $this->alertService->addError($e->getMessage(), 'errorFS');
+        }
     }
 }

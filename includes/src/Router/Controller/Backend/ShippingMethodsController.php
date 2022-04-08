@@ -45,9 +45,15 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private stdClass $defaultCurrency;
 
-    private $shippingType;
+    /**
+     * @var mixed
+     */
+    private $shippingType = null;
 
-    private $shippingMethod;
+    /**
+     * @var mixed
+     */
+    private $shippingMethod = null;
 
     /**
      * @inheritdoc
@@ -61,7 +67,6 @@ class ShippingMethodsController extends AbstractBackendController
         $this->step            = 'uebersicht';
         $this->defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
         $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
-        $this->shippingType    = null;
         $this->countryService  = Shop::Container()->getCountryService();
 
         $postData = Text::filterXSS($_POST);
@@ -149,10 +154,10 @@ class ShippingMethodsController extends AbstractBackendController
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('oVersandartSpracheAssoc_arr', $this->getShippingLanguage($tmpID, $languages))
             ->assign('gesetzteVersandklassen', isset($this->shippingMethod->cVersandklassen)
-                ? $this->gibGesetzteVersandklassen($this->shippingMethod->cVersandklassen)
+                ? $this->getActiveShippingClasses($this->shippingMethod->cVersandklassen)
                 : null)
             ->assign('gesetzteKundengruppen', isset($this->shippingMethod->cKundengruppen)
-                ? $this->gibGesetzteKundengruppen($this->shippingMethod->cKundengruppen)
+                ? $this->getActiveCustomerGroups($this->shippingMethod->cKundengruppen)
                 : null)
             ->assign('step', $this->step)
             ->assign('route', $this->route)
@@ -163,8 +168,9 @@ class ShippingMethodsController extends AbstractBackendController
      * @param float|string $price
      * @param float|string $taxRate
      * @return float
+     * @former berechneVersandpreisBrutto()
      */
-    private function berechneVersandpreisBrutto($price, $taxRate): float
+    private function getShippingCostsGross($price, $taxRate): float
     {
         return $price > 0
             ? \round((float)($price * ((100 + $taxRate) / 100)), 2)
@@ -175,8 +181,9 @@ class ShippingMethodsController extends AbstractBackendController
      * @param float|string $price
      * @param float|string $taxRate
      * @return float
+     * @former berechneVersandpreisNetto()
      */
-    private function berechneVersandpreisNetto($price, $taxRate): float
+    private function getShippingCostsNet($price, $taxRate): float
     {
         return $price > 0
             ? \round($price * ((100 / (100 + $taxRate)) * 100) / 100, 2)
@@ -212,13 +219,14 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @param array $arr
      * @return array
+     * @former P()
      */
-    public function P($arr): array
+    public function transformItem($arr): array
     {
         $newArr = [];
         if (\is_array($arr)) {
             foreach ($arr as $ele) {
-                $newArr = $this->bauePot($newArr, $ele);
+                $newArr = $this->buildObjectData($newArr, $ele);
             }
         }
 
@@ -229,8 +237,9 @@ class ShippingMethodsController extends AbstractBackendController
      * @param array  $arr
      * @param object $key
      * @return array
+     * @former bauePot()
      */
-    private function bauePot($arr, $key): array
+    private function buildObjectData($arr, $key): array
     {
         foreach ($arr as $val) {
             $obj                 = new stdClass();
@@ -246,8 +255,9 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @param string $shippingClasses
      * @return array
+     * @former gibGesetzteVersandklassen()
      */
-    private function gibGesetzteVersandklassen(string $shippingClasses): array
+    private function getActiveShippingClasses(string $shippingClasses): array
     {
         if (\trim($shippingClasses) === '-1') {
             return ['alle' => true];
@@ -262,11 +272,11 @@ class ShippingMethodsController extends AbstractBackendController
                 $uniqueIDs[] = (int)$kVersandklasse;
             }
         }
-        $items = $this->P($this->db->getObjects(
+        $items = $this->transformItem($this->db->getObjects(
             'SELECT * 
-            FROM tversandklasse
-            WHERE kVersandklasse IN (' . \implode(',', $uniqueIDs) . ')  
-            ORDER BY kVersandklasse'
+                FROM tversandklasse
+                WHERE kVersandklasse IN (' . \implode(',', $uniqueIDs) . ')  
+                ORDER BY kVersandklasse'
         ));
         foreach ($items as $vk) {
             $gesetzteVK[$vk->kVersandklasse] = \in_array($vk->kVersandklasse, $classes, true);
@@ -278,8 +288,9 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @param string $shippingClasses
      * @return array
+     * @former gibGesetzteVersandklassenUebersicht()
      */
-    private function gibGesetzteVersandklassenUebersicht($shippingClasses): array
+    private function getActiveShippingClassesOverview($shippingClasses): array
     {
         if (\trim($shippingClasses) === '-1') {
             return ['Alle'];
@@ -294,11 +305,11 @@ class ShippingMethodsController extends AbstractBackendController
                 $uniqueIDs[] = (int)$kVersandklasse;
             }
         }
-        $items = $this->P($this->db->getObjects(
+        $items = $this->transformItem($this->db->getObjects(
             'SELECT * 
-            FROM tversandklasse 
-            WHERE kVersandklasse IN (' . \implode(',', $uniqueIDs) . ')
-            ORDER BY kVersandklasse'
+                FROM tversandklasse 
+                WHERE kVersandklasse IN (' . \implode(',', $uniqueIDs) . ')
+                ORDER BY kVersandklasse'
         ));
         foreach ($items as $item) {
             if (\in_array($item->kVersandklasse, $classes, true)) {
@@ -312,8 +323,9 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @param string $customerGroupsString
      * @return array
+     * @former gibGesetzteKundengruppen()
      */
-    private function gibGesetzteKundengruppen(string $customerGroupsString): array
+    private function getActiveCustomerGroups(string $customerGroupsString): array
     {
         $activeGroups = [];
         $groups       = Text::parseSSKint($customerGroupsString);
@@ -359,8 +371,9 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @param int $feeID
      * @return array
+     * @former getZuschlagNames()
      */
-    private function getZuschlagNames(int $feeID): array
+    private function getFeeNames(int $feeID): array
     {
         $names = [];
         if (!$feeID) {
@@ -465,7 +478,7 @@ class ShippingMethodsController extends AbstractBackendController
         }
         $res = \array_diff($possibleShippingClassCombinations, $combinationInUse);
         foreach ($res as &$mscc) {
-            $mscc = $this->gibGesetzteVersandklassenUebersicht($mscc)[0];
+            $mscc = $this->getActiveShippingClassesOverview($mscc)[0];
         }
 
         return $res;
@@ -752,7 +765,7 @@ class ShippingMethodsController extends AbstractBackendController
                 'kVersandzuschlag',
                 $item->kVersandzuschlag
             );
-            $item->angezeigterName  = $this->getZuschlagNames($item->kVersandzuschlag);
+            $item->angezeigterName  = $this->getFeeNames($item->kVersandzuschlag);
         }
         $this->smarty->assign('Versandart', $this->shippingMethod)
             ->assign('Land', $this->countryService->getCountry($iso))
@@ -820,27 +833,27 @@ class ShippingMethodsController extends AbstractBackendController
                 '*',
                 'fBis'
             );
-            $method->fPreisBrutto               = $this->berechneVersandpreisBrutto(
+            $method->fPreisBrutto               = $this->getShippingCostsGross(
                 $method->fPreis,
                 $_SESSION['Steuersatz'][$taxRateKeys[0]]
             );
-            $method->fVersandkostenfreiAbXNetto = $this->berechneVersandpreisNetto(
+            $method->fVersandkostenfreiAbXNetto = $this->getShippingCostsNet(
                 $method->fVersandkostenfreiAbX,
                 $_SESSION['Steuersatz'][$taxRateKeys[0]]
             );
-            $method->fDeckelungBrutto           = $this->berechneVersandpreisBrutto(
+            $method->fDeckelungBrutto           = $this->getShippingCostsGross(
                 $method->fDeckelung,
                 $_SESSION['Steuersatz'][$taxRateKeys[0]]
             );
             foreach ($method->versandartstaffeln as $j => $oVersandartstaffeln) {
-                $method->versandartstaffeln[$j]->fPreisBrutto = $this->berechneVersandpreisBrutto(
+                $method->versandartstaffeln[$j]->fPreisBrutto = $this->getShippingCostsGross(
                     $oVersandartstaffeln->fPreis,
                     $_SESSION['Steuersatz'][$taxRateKeys[0]]
                 );
             }
 
             $method->versandberechnung = $this->getShippingTypes((int)$method->kVersandberechnung);
-            $method->versandklassen    = $this->gibGesetzteVersandklassenUebersicht($method->cVersandklassen);
+            $method->versandklassen    = $this->getActiveShippingClassesOverview($method->cVersandklassen);
             if ($method->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl') {
                 $method->einheit = 'kg';
             }
@@ -955,31 +968,31 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private function actionEdit()
     {
-        $this->step              = 'neue Versandart';
-        $this->shippingMethod    = $this->db->select('tversandart', 'kVersandart', Request::postInt('edit'));
-        $VersandartZahlungsarten = $this->db->selectAll(
+        $this->step           = 'neue Versandart';
+        $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', Request::postInt('edit'));
+        $mappedMethods        = $this->db->selectAll(
             'tversandartzahlungsart',
             'kVersandart',
             Request::postInt('edit'),
             '*',
             'kZahlungsart'
         );
-        $VersandartStaffeln      = $this->db->selectAll(
+        $shippingScales       = $this->db->selectAll(
             'tversandartstaffel',
             'kVersandart',
             Request::postInt('edit'),
             '*',
             'fBis'
         );
-        $this->shippingType      = $this->getShippingTypes((int)$this->shippingMethod->kVersandberechnung);
+        $this->shippingType   = $this->getShippingTypes((int)$this->shippingMethod->kVersandberechnung);
 
         $this->shippingMethod->cVersandklassen = \trim($this->shippingMethod->cVersandklassen);
 
         $this->smarty->assign(
             'VersandartZahlungsarten',
-            $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart')
+            $this->reorganizeObjectArray($mappedMethods, 'kZahlungsart')
         )
-            ->assign('VersandartStaffeln', $VersandartStaffeln)
+            ->assign('VersandartStaffeln', $shippingScales)
             ->assign('Versandart', $this->shippingMethod)
             ->assign('gewaehlteLaender', \explode(' ', $this->shippingMethod->cLaender));
 
@@ -1021,25 +1034,24 @@ class ShippingMethodsController extends AbstractBackendController
             $this->shippingMethod->cLaender .= $postIso . ' ';
         }
 
-        $VersandartZahlungsarten = [];
-        foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $kZahlungsart) {
-            $versandartzahlungsart               = new stdClass();
-            $versandartzahlungsart->kZahlungsart = $kZahlungsart;
-            if ($postData['fAufpreis_' . $kZahlungsart] != 0) {
-                $versandartzahlungsart->fAufpreis    = (float)\str_replace(
+        $mappedMethods = [];
+        foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $paymentMethodID) {
+            $mappedMethod               = new stdClass();
+            $mappedMethod->kZahlungsart = $paymentMethodID;
+            if ($postData['fAufpreis_' . $paymentMethodID] != 0) {
+                $mappedMethod->fAufpreis    = (float)\str_replace(
                     ',',
                     '.',
-                    $postData['fAufpreis_' . $kZahlungsart]
+                    $postData['fAufpreis_' . $paymentMethodID]
                 );
-                $versandartzahlungsart->cAufpreisTyp = $postData['cAufpreisTyp_' . $kZahlungsart];
+                $mappedMethod->cAufpreisTyp = $postData['cAufpreisTyp_' . $paymentMethodID];
             }
-            $VersandartZahlungsarten[] = $versandartzahlungsart;
+            $mappedMethods[] = $mappedMethod;
         }
 
-        $lastScaleTo        = 0.0;
-        $VersandartStaffeln = [];
-        $upperLimits        = []; // Haelt alle fBis der Staffel
-        $staffelDa          = true;
+        $lastScaleTo    = 0.0;
+        $shippingScales = [];
+        $staffelDa      = true;
         if ($this->shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl'
             || $this->shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
             || $this->shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
@@ -1063,9 +1075,8 @@ class ShippingMethodsController extends AbstractBackendController
                         $oVersandstaffel->fBis   = (float)\str_replace(',', '.', $fBis);
                         $oVersandstaffel->fPreis = (float)\str_replace(',', '.', $postData['preis'][$i]);
 
-                        $VersandartStaffeln[] = $oVersandstaffel;
-                        $upperLimits[]        = $oVersandstaffel->fBis;
-                        $lastScaleTo          = $oVersandstaffel->fBis;
+                        $shippingScales[] = $oVersandstaffel;
+                        $lastScaleTo      = $oVersandstaffel->fBis;
                     }
                 }
             }
@@ -1079,7 +1090,7 @@ class ShippingMethodsController extends AbstractBackendController
                 $oVersandstaffel         = new stdClass();
                 $oVersandstaffel->fBis   = 999999999;
                 $oVersandstaffel->fPreis = 0.0;
-                $VersandartStaffeln[]    = $oVersandstaffel;
+                $shippingScales[]        = $oVersandstaffel;
             }
         }
         // Kundengruppe
@@ -1132,14 +1143,14 @@ class ShippingMethodsController extends AbstractBackendController
                 )
             );
             if ($methodID > 0) {
-                foreach ($VersandartZahlungsarten as $versandartzahlungsart) {
-                    $versandartzahlungsart->kVersandart = $methodID;
-                    $this->db->insert('tversandartzahlungsart', $versandartzahlungsart);
+                foreach ($mappedMethods as $mappedMethod) {
+                    $mappedMethod->kVersandart = $methodID;
+                    $this->db->insert('tversandartzahlungsart', $mappedMethod);
                 }
 
-                foreach ($VersandartStaffeln as $versandartstaffel) {
-                    $versandartstaffel->kVersandart = $methodID;
-                    $this->db->insert('tversandartstaffel', $versandartstaffel);
+                foreach ($shippingScales as $scale) {
+                    $scale->kVersandart = $methodID;
+                    $this->db->insert('tversandartstaffel', $scale);
                 }
                 $localized = new stdClass();
 
@@ -1210,9 +1221,9 @@ class ShippingMethodsController extends AbstractBackendController
             }
             $this->smarty->assign(
                 'VersandartZahlungsarten',
-                $this->reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart')
+                $this->reorganizeObjectArray($mappedMethods, 'kZahlungsart')
             )
-                ->assign('VersandartStaffeln', $VersandartStaffeln)
+                ->assign('VersandartStaffeln', $shippingScales)
                 ->assign('Versandart', $this->shippingMethod)
                 ->assign('gewaehlteLaender', \explode(' ', $this->shippingMethod->cLaender));
         }

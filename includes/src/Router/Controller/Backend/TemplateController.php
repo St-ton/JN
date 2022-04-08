@@ -165,7 +165,7 @@ class TemplateController extends AbstractBackendController
                 if ($setting->cType === 'upload') {
                     try {
                         $value = $this->handleUpload($tplConfXML, $value, $setting->key);
-                    } catch (InvalidArgumentException $e) {
+                    } catch (InvalidArgumentException) {
                         continue;
                     }
                 }
@@ -298,6 +298,10 @@ class TemplateController extends AbstractBackendController
         $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
     }
 
+    /**
+     * @return ResponseInterface
+     * @throws InvalidArgumentException
+     */
     private function displayTemplateSettings(): ResponseInterface
     {
         $reader = new XMLReader();
@@ -343,29 +347,27 @@ class TemplateController extends AbstractBackendController
                     $_setting->value = null;
                 }
             }
-            if (isset($_conf->key, $_conf->settings)
-                && $_conf->key === 'theme'
-                && \count($_conf->settings) > 0
-            ) {
+            if (isset($_conf->key, $_conf->settings) && $_conf->key === 'theme' && \count($_conf->settings) > 0) {
                 foreach ($_conf->settings as $_themeConf) {
-                    if (isset($_themeConf->key, $_themeConf->options)
-                        && $_themeConf->key === 'theme_default'
-                        && \count($_themeConf->options) > 0
+                    if (!isset($_themeConf->key, $_themeConf->options)
+                        || $_themeConf->key !== 'theme_default'
+                        || \count($_themeConf->options) === 0
                     ) {
-                        foreach ($_themeConf->options as $_theme) {
-                            $previewImage = isset($_theme->dir)
-                                ? $tplBase . $_theme->dir . '/themes/' .
-                                $_theme->value . '/preview.png'
-                                : $tplBase . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
-                            if (\file_exists($previewImage)) {
-                                $base                    = $shopURL . \PFAD_TEMPLATES;
-                                $preview[$_theme->value] = isset($_theme->dir)
-                                    ? $base . $_theme->dir . '/themes/' . $_theme->value . '/preview.png'
-                                    : $base . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
-                            }
-                        }
-                        break;
+                        continue;
                     }
+                    foreach ($_themeConf->options as $_theme) {
+                        $previewImage = isset($_theme->dir)
+                            ? $tplBase . $_theme->dir . '/themes/' .
+                            $_theme->value . '/preview.png'
+                            : $tplBase . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
+                        if (\file_exists($previewImage)) {
+                            $base                    = $shopURL . \PFAD_TEMPLATES;
+                            $preview[$_theme->value] = isset($_theme->dir)
+                                ? $base . $_theme->dir . '/themes/' . $_theme->value . '/preview.png'
+                                : $base . $this->currentTemplateDir . '/themes/' . $_theme->value . '/preview.png';
+                        }
+                    }
+                    break;
                 }
             }
         }

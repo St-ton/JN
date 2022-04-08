@@ -241,84 +241,82 @@ class StatsController extends AbstractBackendController
     }
 
     /**
-     * @param array  $stats
-     * @param string $name
-     * @param object $axis
-     * @param int    $mod
+     * @param array    $stats
+     * @param string   $name
+     * @param stdClass $axis
+     * @param int      $mod
      * @return Linechart
      */
-    private function prepareLineChartStats($stats, $name, $axis, $mod = 1): Linechart
+    private function prepareLineChartStats(array $stats, string $name, stdClass $axis, int $mod = 1): Linechart
     {
         $chart = new Linechart(['active' => false]);
 
-        if (\is_array($stats) && \count($stats) > 0) {
-            $chart->setActive(true);
-            $data = [];
-            $y    = $axis->y;
-            $x    = $axis->x;
-            foreach ($stats as $j => $stat) {
-                $obj    = new stdClass();
-                $obj->y = \round((float)$stat->$y, 2, 1);
-
-                if ($j % $mod === 0) {
-                    $chart->addAxis($stat->$x);
-                } else {
-                    $chart->addAxis('|');
-                }
-
-                $data[] = $obj;
+        if (\count($stats) === 0) {
+            return $chart;
+        }
+        $chart->setActive(true);
+        $data = [];
+        $y    = $axis->y;
+        $x    = $axis->x;
+        foreach ($stats as $j => $stat) {
+            $obj    = new stdClass();
+            $obj->y = \round((float)$stat->$y, 2, 1);
+            if ($j % $mod === 0) {
+                $chart->addAxis($stat->$x);
+            } else {
+                $chart->addAxis('|');
             }
 
-            $chart->addSerie($name, $data);
-            $chart->memberToJSON();
+            $data[] = $obj;
         }
+
+        $chart->addSerie($name, $data);
+        $chart->memberToJSON();
 
         return $chart;
     }
 
     /**
-     * @param array  $stats
-     * @param string $name
-     * @param object $axis
-     * @param int    $maxEntries
+     * @param array    $stats
+     * @param string   $name
+     * @param stdClass $axis
+     * @param int      $maxEntries
      * @return Piechart
      */
-    private function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
+    private function preparePieChartStats(array $stats, string $name, stdClass $axis, int $maxEntries = 6): Piechart
     {
         $chart = new Piechart(['active' => false]);
-        if (\is_array($stats) && \count($stats) > 0) {
-            $chart->setActive(true);
-            $data = [];
-
-            $y = $axis->y;
-            $x = $axis->x;
-
-            // Zeige nur $maxEntries Main Member + 1 Sonstige an, sonst wird es zu unuebersichtlich
-            if (\count($stats) > $maxEntries) {
-                $statstmp  = [];
-                $other     = new stdClass();
-                $other->$y = 0;
-                $other->$x = \__('miscellaneous');
-                foreach ($stats as $i => $stat) {
-                    if ($i < $maxEntries) {
-                        $statstmp[] = $stat;
-                    } else {
-                        $other->$y += $stat->$y;
-                    }
-                }
-
-                $statstmp[] = $other;
-                $stats      = $statstmp;
-            }
-
-            foreach ($stats as $stat) {
-                $value  = \round((float)$stat->$y, 2, 1);
-                $data[] = [$stat->$x, $value];
-            }
-
-            $chart->addSerie($name, $data);
-            $chart->memberToJSON();
+        if (\count($stats) === 0) {
+            return $chart;
         }
+        $chart->setActive(true);
+        $data = [];
+        $y    = $axis->y;
+        $x    = $axis->x;
+        // Zeige nur $maxEntries Main Member + 1 Sonstige an, sonst wird es zu unuebersichtlich
+        if (\count($stats) > $maxEntries) {
+            $statstmp  = [];
+            $other     = new stdClass();
+            $other->$y = 0;
+            $other->$x = \__('miscellaneous');
+            foreach ($stats as $i => $stat) {
+                if ($i < $maxEntries) {
+                    $statstmp[] = $stat;
+                } else {
+                    $other->$y += $stat->$y;
+                }
+            }
+            $statstmp[] = $other;
+            $stats      = $statstmp;
+        }
+
+        foreach ($stats as $stat) {
+            $value  = \round((float)$stat->$y, 2, 1);
+            $data[] = [$stat->$x, $value];
+        }
+
+        $chart->addSerie($name, $data);
+        $chart->memberToJSON();
 
         return $chart;
     }

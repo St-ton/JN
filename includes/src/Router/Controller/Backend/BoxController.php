@@ -152,7 +152,7 @@ class BoxController extends AbstractBackendController
     private function actionNew(int $boxID, int $pageID): void
     {
         $position    = Text::filterXSS($_REQUEST['position']);
-        $containerID = $_REQUEST['container'] ?? 0;
+        $containerID = (int)($_REQUEST['container'] ?? 0);
         if ($boxID === 0) {
             // Neuer Container
             $ok = $this->boxAdmin->create(0, $pageID, $position);
@@ -263,7 +263,7 @@ class BoxController extends AbstractBackendController
         $sort     = \array_map('\intval', $_REQUEST['sort'] ?? []);
         $active   = \array_map('\intval', $_REQUEST['aktiv'] ?? []);
         $ignore   = \array_map('\intval', $_REQUEST['ignore'] ?? []);
-        $show     = $_REQUEST['box_show'] ?? false;
+        $show     = (int)($_REQUEST['box_show'] ?? 0);
         $ok       = $this->boxAdmin->setVisibility($pageID, $position, $show);
         foreach ($boxes as $i => $boxIDtoSort) {
             $idx = 'box-filter-' . $boxIDtoSort;

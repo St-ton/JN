@@ -23,7 +23,7 @@ class ReviewController extends AbstractBackendController
         $this->checkPermissions('MODULE_VOTESYSTEM_VIEW');
         $this->getText->loadAdminLocale('pages/bewertung');
 
-        $this->setzeSprache();
+        $this->setLanguage();
         $controller = new ReviewAdminController($this->db, $this->cache, $this->alertService, $this->smarty);
         $tab        = \mb_strlen(Request::verifyGPDataString('tab')) > 0
             ? Request::verifyGPDataString('tab')

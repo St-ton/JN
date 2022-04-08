@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class StatusController
+ * Class NavFilterController
  * @package JTL\Router\Controller\Backend
  */
 class NavFilterController extends AbstractBackendController

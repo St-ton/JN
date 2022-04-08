@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class StatusController
+ * Class OPCController
  * @package JTL\Router\Controller\Backend
  */
 class OPCController extends AbstractBackendController

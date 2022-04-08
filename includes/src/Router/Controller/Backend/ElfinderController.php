@@ -13,7 +13,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class StatusController
+ * Class ElfinderController
  * @package JTL\Router\Controller\Backend
  */
 class ElfinderController extends AbstractBackendController

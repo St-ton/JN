@@ -45,7 +45,7 @@ use function Functional\group;
 use function Functional\select;
 
 /**
- * Class StatusController
+ * Class PluginManagerController
  * @package JTL\Router\Controller\Backend
  */
 class PluginManagerController extends AbstractBackendController

@@ -24,12 +24,11 @@ use stdClass;
 use function Functional\first;
 
 /**
- * Class StatusController
+ * Class TemplateController
  * @package JTL\Router\Controller\Backend
  */
 class TemplateController extends AbstractBackendController
 {
-
     /**
      * @var string|null
      */

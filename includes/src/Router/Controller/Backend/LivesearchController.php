@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
- * Class StatusController
+ * Class LivesearchController
  * @package JTL\Router\Controller\Backend
  */
 class LivesearchController extends AbstractBackendController

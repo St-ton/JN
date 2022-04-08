@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class StatusController
+ * Class FilesystemController
  * @package JTL\Router\Controller\Backend
  */
 class FilesystemController extends AbstractBackendController

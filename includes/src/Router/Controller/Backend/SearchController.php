@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class StatusController
+ * Class SearchController
  * @package JTL\Router\Controller\Backend
  */
 class SearchController extends AbstractBackendController

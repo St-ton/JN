@@ -285,7 +285,7 @@ abstract class AbstractBox implements BoxInterface
         $this->setPosition($data->ePosition);
         $this->setType($data->eTyp);
 
-        if ($this->getType() !== Type::PLUGIN && \strpos($data->cTemplate, 'boxes/') !== 0) {
+        if ($this->getType() !== Type::PLUGIN && !\str_starts_with($data->cTemplate, 'boxes/')) {
             $data->cTemplate = 'boxes/' . $data->cTemplate;
         }
         $this->setTemplateFile($data->cTemplate);

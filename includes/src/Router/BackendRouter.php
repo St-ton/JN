@@ -371,12 +371,12 @@ class BackendRouter
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         try {
             $response = $this->router->dispatch($request);
-        } catch (NotFoundException $exception) {
+        } catch (NotFoundException) {
             $response = (new Response())->withStatus(404);
         }
         try {
             (new SapiEmitter())->emit($response);
-        } catch (EmitterException $e) {
+        } catch (EmitterException) {
             echo $response->getBody();
         }
         exit();

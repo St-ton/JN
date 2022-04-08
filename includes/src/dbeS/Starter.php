@@ -411,7 +411,7 @@ class Starter
     public function getXML(bool $string = false): Generator
     {
         foreach ($this->files as $xmlFile) {
-            if (\strpos($xmlFile, '.xml') === false) {
+            if (!\str_contains($xmlFile, '.xml')) {
                 continue;
             }
             $data = \file_get_contents($xmlFile);

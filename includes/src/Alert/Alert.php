@@ -434,13 +434,10 @@ class Alert
      */
     public function getCssType(): string
     {
-        switch ($this->getType()) {
-            case self::TYPE_ERROR:
-                return self::TYPE_DANGER;
-            case self::TYPE_NOTE:
-                return self::TYPE_INFO;
-            default:
-                return $this->getType();
-        }
+        return match ($this->getType()) {
+            self::TYPE_ERROR => self::TYPE_DANGER,
+            self::TYPE_NOTE => self::TYPE_INFO,
+            default => $this->getType(),
+        };
     }
 }

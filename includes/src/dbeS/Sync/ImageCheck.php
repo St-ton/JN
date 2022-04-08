@@ -20,7 +20,7 @@ final class ImageCheck extends AbstractSync
     {
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'bildercheck.xml') !== false) {
+            if (\str_contains($file, 'bildercheck.xml')) {
                 $this->handleCheck($xml);
             }
         }

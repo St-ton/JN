@@ -806,7 +806,7 @@ class ShippingMethodsController extends AbstractBackendController
                             'base',
                             PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
                         );
-                    } catch (InvalidArgumentException $e) {
+                    } catch (InvalidArgumentException) {
                         $this->getText->loadAdminLocale('pages/zahlungsarten');
                         $this->alertService->addWarning(
                             \sprintf(
@@ -935,7 +935,7 @@ class ShippingMethodsController extends AbstractBackendController
                         'base',
                         PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
                     );
-                } catch (InvalidArgumentException $e) {
+                } catch (InvalidArgumentException) {
                     $this->getText->loadAdminLocale('pages/zahlungsarten');
                     $this->alertService->addWarning(
                         \sprintf(

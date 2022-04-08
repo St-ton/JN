@@ -2,8 +2,6 @@
 
 namespace JTL\Plugin\Data;
 
-use JTL\Shop;
-
 /**
  * Class Paths
  * @package JTL\Plugin\Data

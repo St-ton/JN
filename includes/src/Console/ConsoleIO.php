@@ -614,7 +614,8 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritdoc
+     * @param int $max
+     * @return ProgressBar
      */
     public function createProgressBar(int $max = 0)
     {
@@ -732,7 +733,7 @@ class ConsoleIO extends OutputStyle
         $fetched = $this->bufferedOutput->fetch();
 
         //Prepend new line if last char isn't EOL:
-        if (\substr($fetched, -1) !== "\n") {
+        if (!\str_ends_with($fetched, "\n")) {
             $this->newLine();
         }
 

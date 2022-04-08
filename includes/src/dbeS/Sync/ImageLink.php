@@ -24,9 +24,9 @@ final class ImageLink extends AbstractSync
         $productIDs = [];
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_bildartikellink.xml') !== false) {
+            if (\str_contains($file, 'del_bildartikellink.xml')) {
                 $productIDs[] = $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'bildartikellink.xml') !== false) {
+            } elseif (\str_contains($file, 'bildartikellink.xml')) {
                 $productIDs[] = $this->handleInserts($xml);
             }
         }

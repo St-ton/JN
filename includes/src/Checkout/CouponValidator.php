@@ -5,7 +5,6 @@ namespace JTL\Checkout;
 
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
-use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**

@@ -24,9 +24,9 @@ final class Manufacturers extends AbstractSync
         $cacheTags = [];
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_hersteller.xml') !== false) {
+            if (\str_contains($file, 'del_hersteller.xml')) {
                 $cacheTags[] = $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'hersteller.xml') !== false) {
+            } elseif (\str_contains($file, 'hersteller.xml')) {
                 $cacheTags[] = $this->handleInserts($xml);
             }
         }

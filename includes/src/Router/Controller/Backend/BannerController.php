@@ -110,7 +110,7 @@ class BannerController extends AbstractBackendController
             try {
                 $dateFrom = new DateTime($postData['vDatum']);
                 $dateFrom = $dateFrom->format('Y-m-d H:i:s');
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $checks['vDatum'] = 1;
             }
         }
@@ -118,7 +118,7 @@ class BannerController extends AbstractBackendController
             try {
                 $dateUntil = new DateTime($postData['bDatum']);
                 $dateUntil = $dateUntil->format('Y-m-d H:i:s');
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $checks['bDatum'] = 1;
             }
         }

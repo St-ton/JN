@@ -23,7 +23,7 @@ class ComparelistController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->checkPermissions('MODULE_COMPARELIST_VIEW');
-        $this->getText->loadAdminLocale('pages/wawisync');
+        $this->getText->loadAdminLocale('pages/vergleichsliste');
         $this->getText->loadConfigLocales(true, true);
 
         if (!isset($_SESSION['Vergleichsliste'])) {

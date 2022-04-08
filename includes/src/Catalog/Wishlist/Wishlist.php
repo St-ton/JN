@@ -1155,14 +1155,11 @@ class Wishlist
      */
     public static function mapMessage(int $code): string
     {
-        switch ($code) {
-            case 1:
-                return Shop::Lang()->get('basketAdded', 'messages');
-            case 2:
-                return Shop::Lang()->get('basketAllAdded', 'messages');
-            default:
-                return '';
-        }
+        return match ($code) {
+            1 => Shop::Lang()->get('basketAdded', 'messages'),
+            2 => Shop::Lang()->get('basketAllAdded', 'messages'),
+            default => '',
+        };
     }
 
     /**

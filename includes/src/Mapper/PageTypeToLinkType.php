@@ -14,69 +14,36 @@ class PageTypeToLinkType
      */
     public function map(int $type): int
     {
-        switch ($type) {
-            case \PAGE_EIGENE:
-                return \LINKTYP_EIGENER_CONTENT;
-            case \PAGE_STARTSEITE:
-                return \LINKTYP_STARTSEITE;
-            case \PAGE_VERSAND:
-                return \LINKTYP_VERSAND;
-            case \PAGE_LOGIN:
-            case \PAGE_MEINKONTO:
-                return \LINKTYP_LOGIN;
-            case \PAGE_REGISTRIERUNG:
-                return \LINKTYP_REGISTRIEREN;
-            case \PAGE_WARENKORB:
-                return \LINKTYP_WARENKORB;
-            case \PAGE_PASSWORTVERGESSEN:
-                return \LINKTYP_PASSWORD_VERGESSEN;
-            case \PAGE_AGB:
-                return \LINKTYP_AGB;
-            case \PAGE_DATENSCHUTZ:
-                return \LINKTYP_DATENSCHUTZ;
-            case \PAGE_KONTAKT:
-                return \LINKTYP_KONTAKT;
-            case \PAGE_LIVESUCHE:
-                return \LINKTYP_LIVESUCHE;
-            case \PAGE_HERSTELLER:
-                return \LINKTYP_HERSTELLER;
-            case \PAGE_NEWSLETTER:
-                return \LINKTYP_NEWSLETTER;
-            case \PAGE_NEWSLETTERARCHIV:
-                return \LINKTYP_NEWSLETTERARCHIV;
-            case \PAGE_NEWS:
-            case \PAGE_NEWSDETAIL:
-            case \PAGE_NEWSKATEGORIE:
-            case \PAGE_NEWSMONAT:
-                return \LINKTYP_NEWS;
-            case \PAGE_SITEMAP:
-                return \LINKTYP_SITEMAP;
-            case \PAGE_GRATISGESCHENK:
-                return \LINKTYP_GRATISGESCHENK;
-            case \PAGE_WRB:
-                return \LINKTYP_WRB;
-            case \PAGE_PLUGIN:
-                return \LINKTYP_PLUGIN;
-            case \PAGE_AUSWAHLASSISTENT:
-                return \LINKTYP_AUSWAHLASSISTENT;
-            case \PAGE_404:
-                return \LINKTYP_404;
-            case \PAGE_BESTELLVORGANG:
-                return \LINKTYP_BESTELLVORGANG;
-            case \PAGE_BESTELLABSCHLUSS:
-                return \LINKTYP_BESTELLABSCHLUSS;
-            case \PAGE_WUNSCHLISTE:
-                return \LINKTYP_WUNSCHLISTE;
-            case \PAGE_VERGLEICHSLISTE:
-                return \LINKTYP_VERGLEICHSLISTE;
-            case \PAGE_WARTUNG:
-                return \LINKTYP_WARTUNG;
-            case \PAGE_BESTELLSTATUS:
-                return \LINKTYP_BESTELLSTATUS;
-            case \PAGE_BEWERTUNG:
-                return \LINKTYP_BEWERTUNG;
-            default:
-                return 0;
-        }
+        return match ($type) {
+            \PAGE_EIGENE => \LINKTYP_EIGENER_CONTENT,
+            \PAGE_STARTSEITE => \LINKTYP_STARTSEITE,
+            \PAGE_VERSAND => \LINKTYP_VERSAND,
+            \PAGE_LOGIN, \PAGE_MEINKONTO => \LINKTYP_LOGIN,
+            \PAGE_REGISTRIERUNG => \LINKTYP_REGISTRIEREN,
+            \PAGE_WARENKORB => \LINKTYP_WARENKORB,
+            \PAGE_PASSWORTVERGESSEN => \LINKTYP_PASSWORD_VERGESSEN,
+            \PAGE_AGB => \LINKTYP_AGB,
+            \PAGE_DATENSCHUTZ => \LINKTYP_DATENSCHUTZ,
+            \PAGE_KONTAKT => \LINKTYP_KONTAKT,
+            \PAGE_LIVESUCHE => \LINKTYP_LIVESUCHE,
+            \PAGE_HERSTELLER => \LINKTYP_HERSTELLER,
+            \PAGE_NEWSLETTER => \LINKTYP_NEWSLETTER,
+            \PAGE_NEWSLETTERARCHIV => \LINKTYP_NEWSLETTERARCHIV,
+            \PAGE_NEWS, \PAGE_NEWSDETAIL, \PAGE_NEWSKATEGORIE, \PAGE_NEWSMONAT => \LINKTYP_NEWS,
+            \PAGE_SITEMAP => \LINKTYP_SITEMAP,
+            \PAGE_GRATISGESCHENK => \LINKTYP_GRATISGESCHENK,
+            \PAGE_WRB => \LINKTYP_WRB,
+            \PAGE_PLUGIN => \LINKTYP_PLUGIN,
+            \PAGE_AUSWAHLASSISTENT => \LINKTYP_AUSWAHLASSISTENT,
+            \PAGE_404 => \LINKTYP_404,
+            \PAGE_BESTELLVORGANG => \LINKTYP_BESTELLVORGANG,
+            \PAGE_BESTELLABSCHLUSS => \LINKTYP_BESTELLABSCHLUSS,
+            \PAGE_WUNSCHLISTE => \LINKTYP_WUNSCHLISTE,
+            \PAGE_VERGLEICHSLISTE => \LINKTYP_VERGLEICHSLISTE,
+            \PAGE_WARTUNG => \LINKTYP_WARTUNG,
+            \PAGE_BESTELLSTATUS => \LINKTYP_BESTELLSTATUS,
+            \PAGE_BEWERTUNG => \LINKTYP_BEWERTUNG,
+            default => 0,
+        };
     }
 }

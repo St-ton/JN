@@ -427,7 +427,7 @@ final class ReviewAdminController extends BaseController
     {
         try {
             return ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return null;
         }
     }
@@ -441,7 +441,7 @@ final class ReviewAdminController extends BaseController
         $id = Request::verifyGPCDataInt('kBewertung');
         try {
             $review = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($data['cAntwort'] !== $review->answer) {
@@ -470,7 +470,7 @@ final class ReviewAdminController extends BaseController
         foreach (\array_map('\intval', $ids) as $id) {
             try {
                 $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             $this->updateAverage($model->getProductID(), $this->config['bewertung']['bewertung_freischalten']);
@@ -495,7 +495,7 @@ final class ReviewAdminController extends BaseController
         foreach (\array_map('\intval', $ids) as $id) {
             try {
                 $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             $model->setActive(1);
@@ -518,7 +518,7 @@ final class ReviewAdminController extends BaseController
     {
         try {
             $model = ReviewModel::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return;
         }
         $model->setAnswer(null);

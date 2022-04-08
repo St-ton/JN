@@ -172,41 +172,31 @@ class BaseSearchSpecial extends AbstractFilter
      */
     public function getSQLJoin()
     {
-        switch ($this->value) {
-            case \SEARCHSPECIALS_BESTSELLER:
-                return (new Join())
+        return match ($this->value) {
+            \SEARCHSPECIALS_BESTSELLER => (new Join())
+                ->setType('JOIN')
+                ->setTable('tbestseller')
+                ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                ->setComment('bestseller JOIN from ' . __METHOD__)
+                ->setOrigin(__CLASS__),
+            \SEARCHSPECIALS_SPECIALOFFERS => $this->productFilter->hasPriceRangeFilter()
+                ? []
+                : (new Join())
                     ->setType('JOIN')
-                    ->setTable('tbestseller')
-                    ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                    ->setComment('bestseller JOIN from ' . __METHOD__)
-                    ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_SPECIALOFFERS:
-                return $this->productFilter->hasPriceRangeFilter()
-                    ? []
-                    : (new Join())
-                        ->setType('JOIN')
-                        ->setTable('tartikelsonderpreis AS tasp')
-                        ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
+                    ->setTable('tartikelsonderpreis AS tasp')
+                    ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp 
                                     ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                        ->setComment('special offers JOIN from ' . __METHOD__)
-                        ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_TOPREVIEWS:
-                return $this->productFilter->hasRatingFilter()
-                    ? []
-                    : (new Join())
-                        ->setType('JOIN')
-                        ->setTable('tartikelext AS taex ')
-                        ->setOn('taex.kArtikel = tartikel.kArtikel')
-                        ->setComment('top reviews JOIN from ' . __METHOD__)
-                        ->setOrigin(__CLASS__);
-
-            case \SEARCHSPECIALS_NEWPRODUCTS:
-            case \SEARCHSPECIALS_TOPOFFERS:
-            case \SEARCHSPECIALS_UPCOMINGPRODUCTS:
-            default:
-                return [];
-        }
+                    ->setComment('special offers JOIN from ' . __METHOD__)
+                    ->setOrigin(__CLASS__),
+            \SEARCHSPECIALS_TOPREVIEWS => $this->productFilter->hasRatingFilter()
+                ? []
+                : (new Join())
+                    ->setType('JOIN')
+                    ->setTable('tartikelext AS taex ')
+                    ->setOn('taex.kArtikel = tartikel.kArtikel')
+                    ->setComment('top reviews JOIN from ' . __METHOD__)
+                    ->setOrigin(__CLASS__),
+            default => [],
+        };
     }
 }

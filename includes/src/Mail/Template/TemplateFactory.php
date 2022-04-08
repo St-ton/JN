@@ -103,7 +103,7 @@ final class TemplateFactory
                 return new Footer($this->db);
             case \MAILTEMPLATE_AKZ:
                 return new AKZ($this->db);
-            case \strpos($templateID, 'kPlugin') !== false:
+            case \str_contains($templateID, 'kPlugin'):
                 $tpl = new Plugin($this->db);
                 $tpl->setID($templateID);
 

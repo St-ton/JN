@@ -188,7 +188,7 @@ final class Model extends DataModel
         $base = \realpath(\PFAD_ROOT . \PFAD_EXPORT) . '/';
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
-        if (\strpos($real, $base) !== 0) {
+        if (!\str_starts_with($real, $base)) {
             throw new Exception(\sprintf(\__('Directory traversal detected for export %d.'), $this->getId()));
         }
 

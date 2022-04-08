@@ -61,15 +61,11 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find release for item with ID ' . $itemID);
         }
-        switch ($licenseData->getType()) {
-            case ExsLicense::TYPE_PLUGIN:
-            case ExsLicense::TYPE_PORTLET:
-                return new PluginInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_TEMPLATE:
-                return new TemplateInstaller($this->db, $this->cache);
-            default:
-                throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
-        }
+        return match ($licenseData->getType()) {
+            ExsLicense::TYPE_PLUGIN, ExsLicense::TYPE_PORTLET => new PluginInstaller($this->db, $this->cache),
+            ExsLicense::TYPE_TEMPLATE => new TemplateInstaller($this->db, $this->cache),
+            default => throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType()),
+        };
     }
 
     /**

@@ -366,7 +366,7 @@ abstract class AbstractImage implements IMedia
                 return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
             }),
             static function ($e) use ($baseDir) {
-                return $e !== false && \strpos($e, $baseDir) === 0;
+                return $e !== false && \str_starts_with($e, $baseDir);
             }
         );
         try {
@@ -399,7 +399,7 @@ abstract class AbstractImage implements IMedia
                     $res  = $res && $loop;
                 }
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $res = false;
         }
 

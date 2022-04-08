@@ -608,7 +608,7 @@ class Warehouse extends MainModel
                 if ($warehouse->dZulaufDatum !== null && \mb_strlen($warehouse->dZulaufDatum) > 1) {
                     try {
                         $warehouse->dZulaufDatum_de = (new DateTime($item->dZulaufDatum))->format('d.m.Y');
-                    } catch (Exception $exc) {
+                    } catch (Exception) {
                         $warehouse->dZulaufDatum_de = '00.00.0000';
                     }
                 }

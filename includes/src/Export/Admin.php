@@ -3,23 +3,10 @@
 namespace JTL\Export;
 
 use Exception;
-use Illuminate\Support\Collection;
-use InvalidArgumentException;
-use JTL\Backend\Revision;
-use JTL\Backend\Settings\Manager;
-use JTL\Backend\Settings\Sections\Export;
 use JTL\DB\DbInterface;
-use JTL\DB\SqlObject;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Helpers\Text;
-use JTL\Router\BackendRouter;
-use JTL\Router\Controller\Backend\AbstractBackendController;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
-use stdClass;
 
 /**
  * Class Admin

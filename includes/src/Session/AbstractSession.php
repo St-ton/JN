@@ -127,7 +127,7 @@ abstract class AbstractSession
         $cookies = [];
         foreach (\headers_list() as $header) {
             // Identify cookie headers
-            if (\strpos($header, 'Set-Cookie:') === 0) {
+            if (\str_starts_with($header, 'Set-Cookie:')) {
                 $cookies[] = $header;
             }
         }

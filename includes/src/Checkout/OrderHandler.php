@@ -171,7 +171,9 @@ class OrderHandler
                     // da sonst eventuelle Aufpreise in der Wawi doppelt berechnet werden
                     if (isset($item->Artikel->kVaterArtikel) && $item->Artikel->kVaterArtikel > 0) {
                         foreach ($item->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
-                            if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
+                            if ($WKPosEigenschaft->cTyp === 'FREIFELD'
+                                || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD'
+                            ) {
                                 $WKPosEigenschaft->kWarenkorbPos        = $item->kWarenkorbPos;
                                 $WKPosEigenschaft->cEigenschaftName     = \is_array($WKPosEigenschaft->cEigenschaftName)
                                     ? $WKPosEigenschaft->cEigenschaftName[$idx]
@@ -192,7 +194,9 @@ class OrderHandler
                             $WKPosEigenschaft->cEigenschaftWertName = \is_array($WKPosEigenschaft->cEigenschaftWertName)
                                 ? $WKPosEigenschaft->cEigenschaftWertName[$idx]
                                 : $WKPosEigenschaft->cEigenschaftWertName;
-                            if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
+                            if ($WKPosEigenschaft->cTyp === 'FREIFELD'
+                                || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD'
+                            ) {
                                 $WKPosEigenschaft->cFreifeldWert = $WKPosEigenschaft->cEigenschaftWertName;
                             }
                             $WKPosEigenschaft->insertInDB();
@@ -211,7 +215,9 @@ class OrderHandler
                     $this->stockUpdater->updateBestsellers($item->kArtikel, $item->nAnzahl);
                     //xsellkauf füllen
                     foreach ($this->cart->PositionenArr as $cartItem) {
-                        if ($cartItem->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && $cartItem->kArtikel != $item->kArtikel) {
+                        if ($cartItem->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                            && $cartItem->kArtikel != $item->kArtikel
+                        ) {
                             $this->stockUpdater->updateXSelling($item->kArtikel, $cartItem->kArtikel);
                         }
                     }

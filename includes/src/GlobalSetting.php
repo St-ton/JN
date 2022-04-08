@@ -93,17 +93,12 @@ final class GlobalSetting
     {
         $value = $this->getSettings()->get($valueName, $default);
 
-        switch (\gettype($default)) {
-            case 'boolean':
-                return (bool)$value;
-            case 'integer':
-                return (int)$value;
-            case 'double':
-                return (float)$value;
-            case 'string':
-                return (string)$value;
-        }
-
-        return $value;
+        return match (\gettype($default)) {
+            'boolean' => (bool)$value,
+            'integer' => (int)$value,
+            'double' => (float)$value,
+            'string' => (string)$value,
+            default => $value,
+        };
     }
 }

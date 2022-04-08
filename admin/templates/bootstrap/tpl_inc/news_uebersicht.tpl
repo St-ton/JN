@@ -208,7 +208,7 @@
                                             <td class="text-center">{$oNews->getDateCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="{$adminURL}{$route}news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('preview')}"
                                                        data-toggle="tooltip">

@@ -275,22 +275,15 @@ class Resources
                 return false;
             }
             if (++$i === $iterations) {
-                switch ($comparator) {
-                    case '==':
-                        return $conf == $settingValue;
-                    case '===':
-                        return $conf === $settingValue;
-                    case '>=':
-                        return $conf >= $settingValue;
-                    case '<=':
-                        return $conf <= $settingValue;
-                    case '>':
-                        return $conf > $settingValue;
-                    case '<':
-                        return $conf < $settingValue;
-                    default:
-                        return false;
-                }
+                return match ($comparator) {
+                    '==' => $conf == $settingValue,
+                    '===' => $conf === $settingValue,
+                    '>=' => $conf >= $settingValue,
+                    '<=' => $conf <= $settingValue,
+                    '>' => $conf > $settingValue,
+                    '<' => $conf < $settingValue,
+                    default => false,
+                };
             }
         }
 

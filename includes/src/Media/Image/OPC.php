@@ -113,7 +113,7 @@ class OPC extends AbstractImage
             if (!$fileinfo->isFile() || !\in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
                 continue;
             }
-            if (\strpos($fileinfo->getPath(), '.tmb') !== false) {
+            if (\str_contains($fileinfo->getPath(), '.tmb')) {
                 continue;
             }
             if ($offset !== null && $offset > $index++) {

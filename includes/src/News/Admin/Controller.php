@@ -570,11 +570,11 @@ final class Controller
     private function updateNewsCategoryPreview(array $upload, ?string $oldPreview, int $categoryID): int
     {
         if ($oldPreview !== null
-            && \strpos($oldPreview, \PFAD_NEWSKATEGORIEBILDER) === 0
+            && \str_starts_with($oldPreview, \PFAD_NEWSKATEGORIEBILDER)
             && \file_exists(\PFAD_ROOT . $oldPreview)
         ) {
             $real = \realpath(\PFAD_ROOT . $oldPreview);
-            if (\strpos($real, \realpath(self::UPLOAD_DIR_CATEGORY)) === 0) {
+            if (\str_starts_with($real, \realpath(self::UPLOAD_DIR_CATEGORY))) {
                 \unlink($real);
             }
         }

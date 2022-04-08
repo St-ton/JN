@@ -93,27 +93,16 @@ final class ModelHelper
             try {
                 $splits = \explode(':', $value, 3);
 
-                switch (\count($splits)) {
-                    case 0:
-                        $result = DateInterval::createFromDateString($value);
-                        break;
-                    case 1:
-                        $result = new DateInterval('PT' . (int)$splits[0] . 'H');
-                        break;
-                    case 2:
-                        $result = new DateInterval('PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M');
-                        break;
-                    case 3:
-                        $result = new DateInterval(
-                            'PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M' . (int)$splits[2] . 'S'
-                        );
-                        break;
-                    default:
-                        $result = self::fromStrToTime($default);
-                }
-
-                return $result;
-            } catch (Exception $e) {
+                return match (\count($splits)) {
+                    0 => DateInterval::createFromDateString($value),
+                    1 => new DateInterval('PT' . (int)$splits[0] . 'H'),
+                    2 => new DateInterval('PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M'),
+                    3 => new DateInterval(
+                        'PT' . (int)$splits[0] . 'H' . (int)$splits[1] . 'M' . (int)$splits[2] . 'S'
+                    ),
+                    default => self::fromStrToTime($default),
+                };
+            } catch (Exception) {
                 return self::fromStrToTime($default);
             }
         }

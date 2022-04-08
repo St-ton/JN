@@ -101,7 +101,7 @@
                                                     <td class="text-center">{$oCheckBoxUebersicht->nSort}</td>
                                                     <td>
                                                         {foreach $oCheckBoxUebersicht->kKundengruppe_arr as $id}
-                                                            {Kundengruppe::getNameByID($id)}{if !$id@last}, {/if}
+                                                            {JTL\Customer\CustomerGroup::getNameByID($id)}{if !$id@last}, {/if}
                                                         {/foreach}
                                                     </td>
                                                     <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>

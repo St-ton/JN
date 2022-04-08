@@ -211,7 +211,7 @@ class Admin
         } catch (Exception $e) {
             $response->status = 'FAILED';
             $msg              = $e->getMessage();
-            if (\strpos($msg, 'response:') !== false) {
+            if (\str_contains($msg, 'response:')) {
                 $msg = \substr($msg, 0, \strpos($msg, 'response:'));
             }
             $smarty->assign('licenseErrorMessage', $msg);

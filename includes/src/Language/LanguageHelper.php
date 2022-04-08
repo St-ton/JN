@@ -997,21 +997,16 @@ class LanguageHelper
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
-        switch ($returnType) {
-            case 2:
-                return reindex($languages, static function (LanguageModel $e) {
-                    return $e->getCode();
-                });
 
-            case 1:
-                return reindex($languages, static function (LanguageModel $e) {
-                    return $e->getId();
-                });
-
-            case 0:
-            default:
-                return $languages;
-        }
+        return match ($returnType) {
+            2 => reindex($languages, static function (LanguageModel $e) {
+                return $e->getCode();
+            }),
+            1 => reindex($languages, static function (LanguageModel $e) {
+                return $e->getId();
+            }),
+            default => $languages,
+        };
     }
 
     /**

@@ -53,7 +53,7 @@ final class Products extends AbstractSync
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'artdel.xml') !== false) {
+            if (\str_contains($file, 'artdel.xml')) {
                 $productIDs[] = $this->handleDeletes($xml);
             } else {
                 $productIDs[] = $this->handleInserts($xml);

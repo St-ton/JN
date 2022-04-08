@@ -747,7 +747,7 @@ final class Model
     {
         $pluginID = 0;
         $moduleID = $templateID;
-        if (\strpos($templateID, 'kPlugin') === 0) {
+        if (\str_starts_with($templateID, 'kPlugin')) {
             [, $pluginID, $moduleID] = \explode('_', $templateID);
         }
         $data = $this->db->getObjects(

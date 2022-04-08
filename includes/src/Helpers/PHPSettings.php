@@ -18,19 +18,12 @@ class PHPSettings
      */
     private function shortHandToInt(string $shorthand): int
     {
-        switch (\mb_substr($shorthand, -1)) {
-            case 'M':
-            case 'm':
-                return (int)$shorthand * 1048576;
-            case 'K':
-            case 'k':
-                return (int)$shorthand * 1024;
-            case 'G':
-            case 'g':
-                return (int)$shorthand * 1073741824;
-            default:
-                return (int)$shorthand;
-        }
+        return match (\mb_substr($shorthand, -1)) {
+            'M', 'm' => (int)$shorthand * 1048576,
+            'K', 'k' => (int)$shorthand * 1024,
+            'G', 'g' => (int)$shorthand * 1073741824,
+            default => (int)$shorthand,
+        };
     }
 
     /**

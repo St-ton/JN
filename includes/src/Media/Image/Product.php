@@ -115,26 +115,14 @@ class Product extends AbstractImage
         if (!empty($mixed->customImgName)) { // set by FKT_ATTRIBUT_BILDNAME
             return Image::getCleanFilename($mixed->customImgName);
         }
-        switch (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
-            case 0:
-                $result = (string)$mixed->kArtikel;
-                break;
-            case 1:
-                $result = $mixed->cArtNr;
-                break;
-            case 2:
-                $result = $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName;
-                break;
-            case 3:
-                $result = \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo);
-                break;
-            case 4:
-                $result = $mixed->cBarcode;
-                break;
-            default:
-                $result = 'image';
-                break;
-        }
+        $result = match (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
+            0 => (string)$mixed->kArtikel,
+            1 => $mixed->cArtNr,
+            2 => $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName,
+            3 => \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo),
+            4 => $mixed->cBarcode,
+            default => 'image',
+        };
 
         return empty($result) ? 'image' : Image::getCleanFilename($result);
     }

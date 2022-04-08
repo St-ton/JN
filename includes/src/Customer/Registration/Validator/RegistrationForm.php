@@ -202,23 +202,16 @@ class RegistrationForm extends AbstractValidator
                     $this->errors['ustid'] = 1; // parse-error: no id was given
                 } elseif ($resultVatCheck['errorcode'] > 1) {
                     $this->errors['ustid'] = 2; // parse-error: with the position of error in given ID-string
-                    switch ($resultVatCheck['errorcode']) {
-                        case 120:
-                            // build a string with error-code and error-information
-                            $this->errors['ustid_err'] = $resultVatCheck['errorcode'] . ','
-                                . \mb_substr($this->data['ustid'], 0, $resultVatCheck['errorinfo'])
-                                . '<span style="color:red;">'
-                                . \mb_substr($this->data['ustid'], $resultVatCheck['errorinfo'])
-                                . '</span>';
-                            break;
-                        case 130:
-                            $this->errors['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                $resultVatCheck['errorinfo'];
-                            break;
-                        default:
-                            $this->errors['ustid_err'] = $resultVatCheck['errorcode'];
-                            break;
-                    }
+                    $this->errors['ustid_err'] = match ($resultVatCheck['errorcode']) {
+                        120 => $resultVatCheck['errorcode'] . ','
+                            . \mb_substr($this->data['ustid'], 0, $resultVatCheck['errorinfo'])
+                            . '<span style="color:red;">'
+                            . \mb_substr($this->data['ustid'], $resultVatCheck['errorinfo'])
+                            . '</span>',
+                        130 => $resultVatCheck['errorcode'] . ',' .
+                            $resultVatCheck['errorinfo'],
+                        default => $resultVatCheck['errorcode'],
+                    };
                 }
                 break;
             case 'time':

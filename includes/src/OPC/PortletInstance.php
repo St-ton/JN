@@ -7,7 +7,6 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Shop;
 
 /**
  * Class PortletInstance
@@ -20,32 +19,32 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var Portlet
      */
-    protected $portlet;
+    protected Portlet $portlet;
 
     /**
      * @var array
      */
-    protected $properties = [];
+    protected array $properties = [];
 
     /**
      * @var array
      */
-    protected $attributes = [];
+    protected array $attributes = [];
 
     /**
      * @var array
      */
-    protected $styles = [];
+    protected array $styles = [];
 
     /**
      * @var array
      */
-    protected $animations = [];
+    protected array $animations = [];
 
     /**
      * @var array
      */
-    protected $widthHeuristics = [
+    protected array $widthHeuristics = [
         'xs' => 1,
         'sm' => 1,
         'md' => 1,
@@ -55,12 +54,12 @@ class PortletInstance implements \JsonSerializable
     /**
      * @var string
      */
-    protected $uid;
+    protected string $uid;
 
     /**
      * @var AreaList mapping area ids to subareas
      */
-    protected $subareaList;
+    protected AreaList $subareaList;
 
     /**
      * PortletInstance constructor.
@@ -416,7 +415,7 @@ class PortletInstance implements \JsonSerializable
         $data = [];
 
         foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
-            if ($this->hasProperty($propname) && \strpos($propname, 'wow-') === 0 &&
+            if ($this->hasProperty($propname) && \str_starts_with($propname, 'wow-') &&
                 !empty($this->getProperty($propname))
             ) {
                 $value = $this->getProperty($propname);

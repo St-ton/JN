@@ -126,10 +126,10 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attribute = \lcfirst(\substr($name, 3));
         if (\array_key_exists($attribute, $this->members)) {
-            if (\strpos($name, 'get') === 0) {
+            if (\str_starts_with($name, 'get')) {
                 return $this->$attribute;
             }
-            if (\strpos($name, 'set') === 0) {
+            if (\str_starts_with($name, 'set')) {
                 $this->$attribute = $arguments[0];
 
                 return null;

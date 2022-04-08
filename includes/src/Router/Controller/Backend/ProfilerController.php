@@ -104,7 +104,6 @@ class ProfilerController extends AbstractBackendController
                 foreach ($hooks as $hookID => $_hook) {
                     $hookData                        = new stdClass();
                     $hookData->y                     = 0.0;
-                    $hookData->color                 = $colors[$idx];
                     $hookData->drilldown             = new stdClass();
                     $hookData->drilldown->name       = 'Hook ' . $hookID;
                     $hookData->drilldown->categories = [];

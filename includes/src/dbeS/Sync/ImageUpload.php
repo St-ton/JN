@@ -19,7 +19,7 @@ final class ImageUpload extends AbstractSync
     {
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'images.xml') !== false) {
+            if (\str_contains($file, 'images.xml')) {
                 $this->handleInserts(\pathinfo($file)['dirname'] . '/', $xml);
                 return null;
             }

@@ -58,7 +58,7 @@ class CheckboxController extends AbstractBackendController
             $post       = Text::filterXSS($_POST);
             $step       = 'erstellen';
             $checkboxID = Request::verifyGPCDataInt('kCheckBox');
-            $languages  = LanguageHelper::getAllLanguages(0, true);
+            $languages  = LanguageHelper::getAllLanguages(0, true, true);
             $checks     = $this->validate($post, $languages);
             if (\count($checks) === 0) {
                 $checkbox = $this->save($post, $languages);

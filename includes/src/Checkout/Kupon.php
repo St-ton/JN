@@ -3,7 +3,6 @@
 namespace JTL\Checkout;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;

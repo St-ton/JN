@@ -1379,20 +1379,12 @@ class NiceDB implements DbInterface
         $parameter = \is_string($parameter) ? $this->_bindName($parameter) : $parameter;
 
         if ($type === null) {
-            switch (true) {
-                case \is_bool($value):
-                    $type = PDO::PARAM_BOOL;
-                    break;
-                case \is_int($value):
-                    $type = PDO::PARAM_INT;
-                    break;
-                case $value === null:
-                    $type = PDO::PARAM_NULL;
-                    break;
-                default:
-                    $type = PDO::PARAM_STR;
-                    break;
-            }
+            $type = match (true) {
+                \is_bool($value) => PDO::PARAM_BOOL,
+                \is_int($value) => PDO::PARAM_INT,
+                $value === null => PDO::PARAM_NULL,
+                default => PDO::PARAM_STR,
+            };
         }
 
         $stmt->bindValue($parameter, $value, $type);

@@ -97,16 +97,12 @@ final class Admin
      */
     public function mapFileType(string $type): string
     {
-        switch ($type) {
-            case 'image/gif':
-                return '.gif';
-            case 'image/png':
-                return '.png';
-            case 'image/bmp':
-                return '.bmp';
-            default:
-                return '.jpg';
-        }
+        return match ($type) {
+            'image/gif' => '.gif',
+            'image/png' => '.png',
+            'image/bmp' => '.bmp',
+            default => '.jpg',
+        };
     }
 
     /**
@@ -771,7 +767,7 @@ final class Admin
         try {
             (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
-        } catch (EmptyResultSetException $e) {
+        } catch (EmptyResultSetException) {
             // suppress exception, because an optin implementation class is not needed here
         }
 

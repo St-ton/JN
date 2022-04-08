@@ -117,14 +117,15 @@ class RSS
         // News beachten?
         if ($conf['rss_news_beachten'] === 'Y') {
             $news = $this->db->getObjects(
-                "SELECT tnews.*, t.title, t.preview, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
-                FROM tnews
-                JOIN tnewssprache t 
-                    ON tnews.kNews = t.kNews
-                WHERE DATE_SUB(now(), INTERVAL :ds DAY) < dGueltigVon
-                    AND nAktiv = 1
-                    AND dGueltigVon <= now()
-                ORDER BY dGueltigVon DESC",
+                "SELECT tnews.*, t.title, t.preview, 
+                DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
+                    FROM tnews
+                    JOIN tnewssprache t 
+                        ON tnews.kNews = t.kNews
+                    WHERE DATE_SUB(now(), INTERVAL :ds DAY) < dGueltigVon
+                        AND nAktiv = 1
+                        AND dGueltigVon <= now()
+                    ORDER BY dGueltigVon DESC",
                 ['ds' => $days]
             );
             foreach ($news as $item) {

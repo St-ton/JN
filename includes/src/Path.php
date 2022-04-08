@@ -116,7 +116,7 @@ class Path
             $path   = \substr($path, \strlen($prefix));
         }
 
-        if (\strpos($path, '/') === 0) {
+        if (\str_starts_with($path, '/')) {
             $absolute = true;
             $path     = \substr($path, 1);
         }

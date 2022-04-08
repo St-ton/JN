@@ -35,7 +35,7 @@ class AuthMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!$this->account->logged()) {
-            $url = \strpos(\basename($request->getServerParams()['REQUEST_URI'] ?? ''), 'logout') === false
+            $url = !\str_contains(\basename($request->getServerParams()['REQUEST_URI'] ?? ''), 'logout')
                 ? '/?uri=' . \base64_encode(\basename($_SERVER['REQUEST_URI']))
                 : '';
 

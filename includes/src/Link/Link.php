@@ -1289,12 +1289,9 @@ final class Link extends AbstractLink
         }
         $conf = Shopsetting::getInstance()->getAll();
 
-        switch ($this->getLinkType()) {
-            case \LINKTYP_NEWSLETTER:
-            case \LINKTYP_NEWSLETTERARCHIV:
-                return $conf['newsletter']['newsletter_active'] === 'Y';
-            default:
-                return true;
-        }
+        return match ($this->getLinkType()) {
+            \LINKTYP_NEWSLETTER, \LINKTYP_NEWSLETTERARCHIV => $conf['newsletter']['newsletter_active'] === 'Y',
+            default => true,
+        };
     }
 }

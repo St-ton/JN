@@ -490,12 +490,12 @@ class Newsletter
             if ($category->kKategorie <= 0) {
                 continue;
             }
-            if (\mb_strpos($category->cURL, $shopURL) === false) {
+            if (!\str_contains($category->cURL, $shopURL)) {
                 $category->cURL = $shopURL . $category->cURL;
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
                 $sep = '?';
-                if (\strpos($category->cURL, '.php') !== false) {
+                if (\str_contains($category->cURL, '.php')) {
                     $sep = '&';
                 }
                 $category->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;

@@ -77,6 +77,6 @@ class VATCheck
             return true;
         }
 
-        return \strpos($sourceString, $pattern) === 0;
+        return \str_starts_with($sourceString, $pattern);
     }
 }

@@ -160,7 +160,7 @@ class Router
         CoreDispatcher::getInstance()->fire(Event::EMIT);
         try {
             (new SapiEmitter())->emit($response);
-        } catch (EmitterException $e) {
+        } catch (EmitterException) {
             echo $response->getBody();
         }
         exit();

@@ -103,7 +103,7 @@ class AdminFavorite
                 'kAdminfav, cTitel, cUrl',
                 'nSort ASC'
             );
-        } catch (Exception $e) {
+        } catch (Exception) {
             return [];
         }
         foreach ($favs as $fav) {

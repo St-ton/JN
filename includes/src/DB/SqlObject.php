@@ -81,7 +81,7 @@ class SqlObject
      */
     public function addParam(string $param, $value): void
     {
-        if (\strpos($param, ':') !== 0) {
+        if (!\str_starts_with($param, ':')) {
             $param = ':' . $param;
         }
         $this->params[$param] = $value;

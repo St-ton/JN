@@ -230,7 +230,7 @@ abstract class AbstractSync
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
@@ -382,12 +382,12 @@ abstract class AbstractSync
             }
             try {
                 $startDate = new DateTime($price->dStart);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $startDate = (new DateTime())->setTime(0, 0);
             }
             try {
                 $endDate = new DateTime($price->dEnde);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $endDate = (new DateTime())->setTime(0, 0);
             }
             $today = (new DateTime())->setTime(0, 0);

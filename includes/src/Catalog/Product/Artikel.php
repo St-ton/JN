@@ -1474,21 +1474,12 @@ class Artikel
      */
     private function getProductImageSize(stdClass $image, string $size)
     {
-        switch ($size) {
-            case 'xs':
-                $imagePath = $image->cPfadMini;
-                break;
-            case 'sm':
-                $imagePath = $image->cPfadKlein;
-                break;
-            case 'md':
-                $imagePath = $image->cPfadNormal;
-                break;
-            case 'lg':
-            default:
-                $imagePath = $image->cPfadGross;
-                break;
-        }
+        $imagePath = match ($size) {
+            'xs' => $image->cPfadMini,
+            'sm' => $image->cPfadKlein,
+            'md' => $image->cPfadNormal,
+            default => $image->cPfadGross,
+        };
         if ($imagePath !== null && \file_exists(\PFAD_ROOT . $imagePath)) {
             [$width, $height, $type] = \getimagesize(\PFAD_ROOT . $imagePath);
         } else {
@@ -5528,27 +5519,17 @@ class Artikel
         $url = '';
         // Beachte Vater FunktionsAttribute
         if (isset($childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
-            switch ((int)$childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                case 1:
-                    $isCanonical = true;
-                    break;
-                case 0:
-                default:
-                    $isCanonical = false;
-                    break;
-            }
+            $isCanonical = match ((int)$childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
+                1 => true,
+                default => false,
+            };
         }
         // Beachte Kind FunktionsAttribute
         if (isset($childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
-            switch ((int)$childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                case 1:
-                    $isCanonical = true;
-                    break;
-                case 0:
-                default:
-                    $isCanonical = false;
-                    break;
-            }
+            $isCanonical = match ((int)$childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
+                1 => true,
+                default => false,
+            };
         }
         if ($isCanonical === true) {
             $url = Shop::getURL() . '/' . $childProduct->cVaterURL;
@@ -5992,7 +5973,7 @@ class Artikel
 
         foreach ($excludedAttributes as $excludedAttribute) {
             if (isset($this->FunktionsAttribute[$excludedAttribute])
-                && ($cISO === '' || (\strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false))
+                && ($cISO === '' || \str_contains($this->FunktionsAttribute[$excludedAttribute], $cISO))
             ) {
                 return false;
             }

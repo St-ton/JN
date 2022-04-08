@@ -6,7 +6,6 @@ use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
-use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
 
@@ -19,7 +18,7 @@ class PageDB
     /**
      * @var DbInterface
      */
-    protected $shopDB;
+    protected DbInterface $shopDB;
 
     /**
      * PageDB constructor.
@@ -209,35 +208,17 @@ class PageDB
             return null;
         }
 
-        switch ($pageIdObj->type) {
-            case 'product':
-                $cKey = 'kArtikel';
-                break;
-            case 'category':
-                $cKey = 'kKategorie';
-                break;
-            case 'manufacturer':
-                $cKey = 'kHersteller';
-                break;
-            case 'link':
-                $cKey = 'kLink';
-                break;
-            case 'attrib':
-                $cKey = 'kMerkmalWert';
-                break;
-            case 'special':
-                $cKey = 'suchspecial';
-                break;
-            case 'news':
-                $cKey = 'kNews';
-                break;
-            case 'newscat':
-                $cKey = 'kNewsKategorie';
-                break;
-            default:
-                $cKey = null;
-                break;
-        }
+        $cKey = match ($pageIdObj->type) {
+            'product' => 'kArtikel',
+            'category' => 'kKategorie',
+            'manufacturer' => 'kHersteller',
+            'link' => 'kLink',
+            'attrib' => 'kMerkmalWert',
+            'special' => 'suchspecial',
+            'news' => 'kNews',
+            'newscat' => 'kNewsKategorie',
+            default => null,
+        };
 
         if (empty($cKey)) {
             return null;

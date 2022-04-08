@@ -355,7 +355,7 @@ class AdminAccount
                 $attributes['useAvatarUpload']->cAttribValue = Shop::getImageBaseURL() .
                     \ltrim($attributes['useAvatarUpload']->cAttribValue, '/');
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $attributes = null;
         }
 
@@ -426,13 +426,13 @@ class AdminAccount
     public function redirectOnFailure(int $errCode = 0): void
     {
         if (!$this->logged()) {
-            $url = \strpos(\basename($_SERVER['REQUEST_URI']), 'logout.php') === false
+            $url = !\str_contains(\basename($_SERVER['REQUEST_URI']), 'logout')
                 ? '?uri=' . \base64_encode(\basename($_SERVER['REQUEST_URI']))
                 : '';
             if ($errCode !== 0) {
-                $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'errCode=' . $errCode;
+                $url .= (!\str_contains($url, '?') ? '?' : '&') . 'errCode=' . $errCode;
             }
-            \header('Location: index.php' . $url);
+            \header('Location: ' . Shop::getAdminURL() . '/' . $url);
             exit();
         }
     }

@@ -289,14 +289,11 @@ class Base implements SectionInterface
      */
     public function validate(Item $conf, $confValue): bool
     {
-        switch ($conf->getValueName()) {
-            case 'bilder_jpg_quali':
-                return $this->validateNumberRange(0, 100, $conf, $confValue);
-            case 'cron_freq':
-                return $this->validateNumberRange(10, 999999, $conf, $confValue);
-            default:
-                return true;
-        }
+        return match ($conf->getValueName()) {
+            'bilder_jpg_quali' => $this->validateNumberRange(0, 100, $conf, $confValue),
+            'cron_freq' => $this->validateNumberRange(10, 999999, $conf, $confValue),
+            default => true,
+        };
     }
 
     /**

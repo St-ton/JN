@@ -3,7 +3,6 @@
 namespace JTL\Review;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;

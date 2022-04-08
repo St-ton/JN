@@ -28,7 +28,7 @@ final class Categories extends AbstractSync
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
             }
-            if (\strpos($file, 'katdel.xml') !== false) {
+            if (\str_contains($file, 'katdel.xml')) {
                 $this->handleDeletes($xml);
             } else {
                 $categoryIDs[] = $this->handleInserts($xml);

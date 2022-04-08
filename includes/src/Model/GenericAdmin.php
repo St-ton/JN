@@ -250,7 +250,7 @@ class GenericAdmin
         foreach ($model->getAttributes() as $attr) {
             $name         = $attr->getName();
             $type         = $attr->getDataType();
-            $isChildModel = \strpos($type, '\\') !== false && \class_exists($type);
+            $isChildModel = \str_contains($type, '\\') && \class_exists($type);
             if ($isChildModel) {
                 if (isset($post[$name]) && \is_array($post[$name])) {
                     $test = $post[$name];

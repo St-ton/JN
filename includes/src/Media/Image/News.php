@@ -99,7 +99,7 @@ class News extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (\is_string($mixed)) {
-            if (\strpos($mixed, '/') !== false) {
+            if (\str_contains($mixed, '/')) {
                 $result = \explode('/', $mixed)[1];
             } else {
                 $result = $mixed;

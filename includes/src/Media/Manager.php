@@ -158,7 +158,7 @@ class Manager
         foreach (new LimitIterator(new DirectoryIterator($directory), $index, \IMAGE_CLEANUP_LIMIT) as $i => $info) {
             /** @var DirectoryIterator $info */
             $fileName = $info->getFilename();
-            if ($info->isDot() || $info->isDir() || \strpos($fileName, '.git') === 0) {
+            if ($info->isDot() || $info->isDir() || \str_starts_with($fileName, '.git')) {
                 continue;
             }
             ++$checkedInThisRun;

@@ -76,7 +76,7 @@ class ValidateCommand extends Command
                     \sprintf('<info>Successfully unzipped to</info> <comment>%s</comment>', $response->getPath())
                 );
             }
-            if (!\is_dir($pluginPath) || \strpos($response->getDirName(), $pluginDir) === false) {
+            if (!\is_dir($pluginPath) || !\str_contains($response->getDirName(), $pluginDir)) {
                 $io->writeln('<error>Could not extract or wrong dir name</error>');
                 $this->cleanup($delete, $pluginDir, $zip);
 

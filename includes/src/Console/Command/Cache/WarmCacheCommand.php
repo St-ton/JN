@@ -275,7 +275,7 @@ class WarmCacheCommand extends Command
         if ($this->preFlush === true) {
             $cache->flushAll();
         }
-        if (\strpos(\URL_SHOP, 'https://') === 0
+        if (\str_starts_with(\URL_SHOP, 'https://')
             || Shop::getSettingValue(\CONF_GLOBAL, 'kaufabwicklung_ssl_nutzen') === 'P'
         ) {
             $_SERVER['HTTPS'] = 'on';

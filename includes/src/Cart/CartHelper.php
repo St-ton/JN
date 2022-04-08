@@ -1182,14 +1182,14 @@ class CartHelper
     /**
      * @param object $cartItem
      * @param object $coupon
-     * @return mixed
+     * @return stdClass
      * @former checkSetPercentCouponWKPos()
      * @since 5.0.0
      */
-    public static function checkSetPercentCouponWKPos($cartItem, $coupon)
+    public static function checkSetPercentCouponWKPos($cartItem, $coupon): stdClass
     {
         $item              = new stdClass();
-        $item->fPreis      = (float)0;
+        $item->fPreis      = 0.0;
         $item->cName       = '';
         $cartItem->nPosTyp = (int)$cartItem->nPosTyp;
         if ($cartItem->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -2167,7 +2167,9 @@ class CartHelper
             if (empty($item->Artikel)) {
                 continue;
             }
-            $products[] = $item->Artikel->kVaterArtikel !== 0 ? $item->Artikel->kVaterArtikel : $item->Artikel->kArtikel;
+            $products[] = $item->Artikel->kVaterArtikel !== 0
+                ? $item->Artikel->kVaterArtikel
+                : $item->Artikel->kArtikel;
         }
         if (\count($products) === 0) {
             return false;

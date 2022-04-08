@@ -389,31 +389,15 @@ class Download
      */
     public static function mapGetFileErrorCode(int $errorCode): string
     {
-        switch ($errorCode) {
-            case self::ERROR_ORDER_NOT_FOUND: // Bestellung nicht gefunden
-                $error = Shop::Lang()->get('dlErrorOrderNotFound');
-                break;
-            case self::ERROR_INVALID_CUSTOMER: // Kunde stimmt nicht
-                $error = Shop::Lang()->get('dlErrorCustomerNotMatch');
-                break;
-            case self::ERROR_PRODUCT_NOT_FOUND: // Kein Artikel mit Downloads gefunden
-                $error = Shop::Lang()->get('dlErrorDownloadNotFound');
-                break;
-            case self::ERROR_DOWNLOAD_LIMIT_REACHED: // Maximales Downloadlimit wurde erreicht
-                $error = Shop::Lang()->get('dlErrorDownloadLimitReached');
-                break;
-            case self::ERROR_DOWNLOAD_EXPIRED: // Maximales Datum wurde erreicht
-                $error = Shop::Lang()->get('dlErrorValidityReached');
-                break;
-            case self::ERROR_MISSING_PARAMS: // Paramter fehlen
-                $error = Shop::Lang()->get('dlErrorWrongParameter');
-                break;
-            default:
-                $error = '';
-                break;
-        }
-
-        return $error;
+        return match ($errorCode) {
+            self::ERROR_ORDER_NOT_FOUND => Shop::Lang()->get('dlErrorOrderNotFound'),
+            self::ERROR_INVALID_CUSTOMER => Shop::Lang()->get('dlErrorCustomerNotMatch'),
+            self::ERROR_PRODUCT_NOT_FOUND => Shop::Lang()->get('dlErrorDownloadNotFound'),
+            self::ERROR_DOWNLOAD_LIMIT_REACHED => Shop::Lang()->get('dlErrorDownloadLimitReached'),
+            self::ERROR_DOWNLOAD_EXPIRED => Shop::Lang()->get('dlErrorValidityReached'),
+            self::ERROR_MISSING_PARAMS => Shop::Lang()->get('dlErrorWrongParameter'),
+            default => '',
+        };
     }
 
     /**

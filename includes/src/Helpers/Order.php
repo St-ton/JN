@@ -36,7 +36,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function calculateCredit(stdClass $cartInfo): void
     {
@@ -80,7 +80,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPositions(): array
     {
@@ -88,7 +88,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @return Customer
+     * @inheritdoc
      */
     public function getCustomer(): ?Customer
     {
@@ -96,7 +96,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCustomerGroup(): CustomerGroup
     {

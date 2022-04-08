@@ -291,7 +291,7 @@ class PageService
 
     /**
      * @param int $langID
-     * @return string
+     * @return string|null
      */
     public function createCurrentPageId(int $langID = 0): ?string
     {

@@ -3,11 +3,9 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Helpers\Form;
-use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -112,7 +110,7 @@ class ContactFormsController extends AbstractBackendController
     private function actionCreateItem(): void
     {
         $this->db->delete('tspezialcontentsprache', 'nSpezialContent', \SC_KONTAKTFORMULAR);
-        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
+        foreach (LanguageHelper::getAllLanguages(0, true, true) as $language) {
             $code                             = $language->getIso();
             $spezialContent1                  = new stdClass();
             $spezialContent2                  = new stdClass();

@@ -294,74 +294,63 @@ class ComparisonList
      */
     private function getMappedRowNames(string $confName, array $conf): array
     {
-        switch ($confName) {
-            case 'vergleichsliste_artikelnummer':
-                return [
-                    'key'      => 'cArtNr',
-                    'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_hersteller':
-                return [
-                    'key'      => 'cHersteller',
-                    'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_beschreibung':
-                return [
-                    'key'      => 'cBeschreibung',
-                    'name'     => Shop::Lang()->get('description', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_kurzbeschreibung':
-                return [
-                    'key'      => 'cKurzBeschreibung',
-                    'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_artikelgewicht':
-                return [
-                    'key'      => 'fArtikelgewicht',
-                    'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_versandgewicht':
-                return [
-                    'key'      => 'fGewicht',
-                    'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_merkmale':
-                return [
-                    'key'      => 'Merkmale',
-                    'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_variationen':
-                return [
-                    'key'      => 'Variationen',
-                    'name'     => Shop::Lang()->get('variations', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_verfuegbarkeit':
-                return [
-                    'key'      => 'verfuegbarkeit',
-                    'name'     => Shop::Lang()->get('availability', 'productOverview'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_lieferzeit':
-                return [
-                    'key'      => 'lieferzeit',
-                    'name'     => Shop::Lang()->get('shippingTime'),
-                    'priority' => $conf[$confName]
-                ];
-            default:
-                return [
-                    'key'      => '',
-                    'name'     => '',
-                    'priority' => 0
-                ];
-        }
+        return match ($confName) {
+            'vergleichsliste_artikelnummer' => [
+                'key'      => 'cArtNr',
+                'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_hersteller' => [
+                'key'      => 'cHersteller',
+                'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_beschreibung' => [
+                'key'      => 'cBeschreibung',
+                'name'     => Shop::Lang()->get('description', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_kurzbeschreibung' => [
+                'key'      => 'cKurzBeschreibung',
+                'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_artikelgewicht' => [
+                'key'      => 'fArtikelgewicht',
+                'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_versandgewicht' => [
+                'key'      => 'fGewicht',
+                'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_merkmale' => [
+                'key'      => 'Merkmale',
+                'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_variationen' => [
+                'key'      => 'Variationen',
+                'name'     => Shop::Lang()->get('variations', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_verfuegbarkeit' => [
+                'key'      => 'verfuegbarkeit',
+                'name'     => Shop::Lang()->get('availability', 'productOverview'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_lieferzeit' => [
+                'key'      => 'lieferzeit',
+                'name'     => Shop::Lang()->get('shippingTime'),
+                'priority' => $conf[$confName]
+            ],
+            default => [
+                'key'      => '',
+                'name'     => '',
+                'priority' => 0
+            ],
+        };
     }
 
     /**

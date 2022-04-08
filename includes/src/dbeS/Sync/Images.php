@@ -1047,25 +1047,14 @@ final class Images extends AbstractSync
             return null;
         }
         $size = \getimagesize($filename);
-        switch ($size[2]) {
-            case \IMAGETYPE_JPEG:
-                $ext = 'jpg';
-                break;
-            case \IMAGETYPE_PNG:
-                $ext = \function_exists('imagecreatefrompng') ? 'png' : false;
-                break;
-            case \IMAGETYPE_GIF:
-                $ext = \function_exists('imagecreatefromgif') ? 'gif' : false;
-                break;
-            case \IMAGETYPE_BMP:
-                $ext = \function_exists('imagecreatefromwbmp') ? 'bmp' : false;
-                break;
-            default:
-                $ext = null;
-                break;
-        }
 
-        return $ext;
+        return match ($size[2]) {
+            \IMAGETYPE_JPEG => 'jpg',
+            \IMAGETYPE_PNG => \function_exists('imagecreatefrompng') ? 'png' : false,
+            \IMAGETYPE_GIF => \function_exists('imagecreatefromgif') ? 'gif' : false,
+            \IMAGETYPE_BMP => \function_exists('imagecreatefromwbmp') ? 'bmp' : false,
+            default => null,
+        };
     }
 
     /**
@@ -1099,19 +1088,11 @@ final class Images extends AbstractSync
         int $containerHeight = null
     ) {
         $imgInfo = \getimagesize($source);
-        switch ($imgInfo[2]) {
-            case \IMAGETYPE_GIF:
-                $im = \imagecreatefromgif($source);
-                break;
-            case \IMAGETYPE_PNG:
-                $im = \imagecreatefrompng($source);
-                break;
-            case \IMAGETYPE_JPEG:
-            default:
-                $im = \imagecreatefromjpeg($source);
-                break;
-        }
-
+        $im      = match ($imgInfo[2]) {
+            \IMAGETYPE_GIF => \imagecreatefromgif($source),
+            \IMAGETYPE_PNG => \imagecreatefrompng($source),
+            default => \imagecreatefromjpeg($source),
+        };
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
         }
@@ -1164,23 +1145,13 @@ final class Images extends AbstractSync
         if (!$im) {
             return false;
         }
-        switch (\strtolower($format)) {
-            case 'jpg':
-                $res = \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality);
-                break;
-            case 'png':
-                $res = \function_exists('imagepng') && \imagepng($im, $path);
-                break;
-            case 'gif':
-                $res = \function_exists('imagegif') && \imagegif($im, $path);
-                break;
-            case 'bmp':
-                $res = \function_exists('imagewbmp') && \imagewbmp($im, $path);
-                break;
-            default:
-                $res = false;
-                break;
-        }
+        $res = match (\strtolower($format)) {
+            'jpg' => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
+            'png' => \function_exists('imagepng') && \imagepng($im, $path),
+            'gif' => \function_exists('imagegif') && \imagegif($im, $path),
+            'bmp' => \function_exists('imagewbmp') && \imagewbmp($im, $path),
+            default => false,
+        };
         if ($res !== false) {
             @\chmod($path, 0644);
         } else {

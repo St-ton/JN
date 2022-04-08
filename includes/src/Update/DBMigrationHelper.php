@@ -54,22 +54,13 @@ class DBMigrationHelper
             $paths      = \explode(';', $innodbPath->path);
             foreach ($paths as $path) {
                 if (\preg_match('/:([\d]+)([MGTKmgtk]+)/', $path, $hits)) {
-                    switch (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
-                        case 'T':
-                            $innodbSize += $hits[1] * 1024 * 1024 * 1024 * 1024;
-                            break;
-                        case 'G':
-                            $innodbSize += $hits[1] * 1024 * 1024 * 1024;
-                            break;
-                        case 'M':
-                            $innodbSize += $hits[1] * 1024 * 1024;
-                            break;
-                        case 'K':
-                            $innodbSize += $hits[1] * 1024;
-                            break;
-                        default:
-                            $innodbSize += $hits[1];
-                    }
+                    $innodbSize += match (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
+                        'T' => $hits[1] * 1024 * 1024 * 1024 * 1024,
+                        'G' => $hits[1] * 1024 * 1024 * 1024,
+                        'M' => $hits[1] * 1024 * 1024,
+                        'K' => $hits[1] * 1024,
+                        default => $hits[1],
+                    };
                 }
             }
         }
@@ -418,7 +409,7 @@ class DBMigrationHelper
                     $col->COLUMN_TYPE = 'MEDIUMTEXT';
                 }
 
-                if ($col->DATA_TYPE === 'tinyint' && \strpos($col->COLUMN_NAME, 'k') === 0) {
+                if ($col->DATA_TYPE === 'tinyint' && \str_starts_with($col->COLUMN_NAME, 'k')) {
                     $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
                     $characterSet = '';
                 }

@@ -477,7 +477,7 @@ class AdminAccountController extends AbstractBackendController
             if ($validUntil) {
                 try {
                     $tmpAcc->dGueltigBis = new DateTime($_POST['dGueltigBis']);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $tmpAcc->dGueltigBis = '';
                 }
                 if ($tmpAcc->dGueltigBis !== false && $tmpAcc->dGueltigBis !== '') {

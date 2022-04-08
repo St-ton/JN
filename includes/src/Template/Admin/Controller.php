@@ -2,24 +2,11 @@
 
 namespace JTL\Template\Admin;
 
-use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Form;
-use JTL\Helpers\Overlay;
-use JTL\Helpers\Request;
-use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template\Admin\Validation\TemplateValidator;
-use JTL\Template\BootChecker;
-use JTL\Template\Compiler;
 use JTL\Template\Config;
-use JTL\Template\XMLReader;
-use JTLShop\SemVer\Version;
-use stdClass;
-use function Functional\first;
 
 /**
  * Class Controller

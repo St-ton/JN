@@ -32,21 +32,21 @@ final class Orders extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'ack_bestellung.xml') !== false) {
+            if (\str_contains($file, 'ack_bestellung.xml')) {
                 $this->handleACK($xml);
-            } elseif (\strpos($file, 'del_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'del_bestellung.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'delonly_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'delonly_bestellung.xml')) {
                 $this->handleDeleteOnly($xml);
-            } elseif (\strpos($file, 'storno_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'storno_bestellung.xml')) {
                 $this->handleCancelation($xml);
-            } elseif (\strpos($file, 'reaktiviere_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'reaktiviere_bestellung.xml')) {
                 $this->handleReactivation($xml);
-            } elseif (\strpos($file, 'ack_zahlungseingang.xml') !== false) {
+            } elseif (\str_contains($file, 'ack_zahlungseingang.xml')) {
                 $this->handlePaymentACK($xml);
-            } elseif (\strpos($file, 'set_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'set_bestellung.xml')) {
                 $this->handleSet($xml);
-            } elseif (\strpos($file, 'upd_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'upd_bestellung.xml')) {
                 $this->handleUpdate($xml);
             }
         }

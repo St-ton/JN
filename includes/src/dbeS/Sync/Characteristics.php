@@ -21,9 +21,9 @@ final class Characteristics extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_merkmal.xml') !== false) {
+            if (\str_contains($file, 'del_merkmal.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'merkmal.xml') !== false) {
+            } elseif (\str_contains($file, 'merkmal.xml')) {
                 $this->handleInserts($xml);
             }
         }

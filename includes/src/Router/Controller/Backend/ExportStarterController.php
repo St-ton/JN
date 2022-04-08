@@ -55,7 +55,7 @@ class ExportStarterController extends AbstractBackendController
                 false,
                 Request::getInt('max', null)
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return $this->returnErrorCode(2);
         }
 

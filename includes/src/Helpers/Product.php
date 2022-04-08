@@ -857,15 +857,11 @@ class Product
                 || (int)$product->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                 || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
-            switch ($config) {
-                case 'Y':
-                    return 1;
-                case 'P':
-                    return 2;
-                case 'L':
-                default:
-                    return 3;
-            }
+            return match ($config) {
+                'Y' => 1,
+                'P' => 2,
+                default => 3,
+            };
         }
 
         return 0;
@@ -1752,40 +1748,19 @@ class Product
      */
     public static function mapErrorCode(string $code, $credit = 0.0): string
     {
-        switch ($code) {
-            case 'f01':
-                $error = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
-                break;
-            case 'f02':
-                $error = Shop::Lang()->get('bewertungBewexist', 'errorMessages');
-                break;
-            case 'f03':
-                $error = Shop::Lang()->get('bewertungBewnotbought', 'errorMessages');
-                break;
-            case 'f04':
-                $error = Shop::Lang()->get('loginFirst', 'product rating');
-                break;
-            case 'f05':
-                $error = Shop::Lang()->get('ratingRange', 'errorMessages');
-                break;
-            case 'h01':
-                $error = Shop::Lang()->get('bewertungBewadd', 'messages');
-                break;
-            case 'h02':
-                $error = Shop::Lang()->get('bewertungHilfadd', 'messages');
-                break;
-            case 'h03':
-                $error = Shop::Lang()->get('bewertungHilfchange', 'messages');
-                break;
-            case 'h04':
-                $error = \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit);
-                break;
-            case 'h05':
-                $error = Shop::Lang()->get('bewertungBewaddacitvate', 'messages');
-                break;
-            default:
-                $error = '';
-        }
+        $error = match ($code) {
+            'f01' => Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages'),
+            'f02' => Shop::Lang()->get('bewertungBewexist', 'errorMessages'),
+            'f03' => Shop::Lang()->get('bewertungBewnotbought', 'errorMessages'),
+            'f04' => Shop::Lang()->get('loginFirst', 'product rating'),
+            'f05' => Shop::Lang()->get('ratingRange', 'errorMessages'),
+            'h01' => Shop::Lang()->get('bewertungBewadd', 'messages'),
+            'h02' => Shop::Lang()->get('bewertungHilfadd', 'messages'),
+            'h03' => Shop::Lang()->get('bewertungHilfchange', 'messages'),
+            'h04' => \sprintf(Shop::Lang()->get('bewertungBewaddCredits', 'messages'), (string)$credit),
+            'h05' => Shop::Lang()->get('bewertungBewaddacitvate', 'messages'),
+            default => '',
+        };
         \executeHook(\HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, ['error' => $error]);
 
         return $error;

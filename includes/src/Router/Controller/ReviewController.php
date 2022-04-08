@@ -48,7 +48,7 @@ class ReviewController extends PageController
         try {
             $product = (new Artikel($this->db))->fuelleArtikel($this->state->productID);
             \header('Location: ' . ($product !== null ? $product->cURLFull : Shop::getURL()));
-        } catch (Exception $e) {
+        } catch (Exception) {
             \header('Location: ' . Shop::getURL());
         }
 

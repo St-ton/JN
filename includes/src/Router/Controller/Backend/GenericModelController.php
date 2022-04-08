@@ -193,7 +193,7 @@ abstract class GenericModelController extends AbstractBackendController
                 $model->setAttribValue('active', $state);
 
                 return $model->save(['active']);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return false;
             }
         }), function (bool $e) {
@@ -252,7 +252,7 @@ abstract class GenericModelController extends AbstractBackendController
             try {
                 /** @var DataModelInterface $model */
                 $model = $this->modelClass::load(['id' => (int)$id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return false;
             }
 

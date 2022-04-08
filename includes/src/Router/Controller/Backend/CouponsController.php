@@ -164,7 +164,7 @@ class CouponsController extends AbstractBackendController
                 $action        = 'bearbeiten';
                 $this->alertService->addError($errorMessage, 'errorCheckInput');
                 $coupon->augment();
-            } elseif ($this->saveCoupon($coupon, $languages) > 0) {// Validierung erfolgreich => Kupon speichern
+            } elseif ($this->saveCoupon($coupon, $languages) !== 0) {// Validierung erfolgreich => Kupon speichern
                 // erfolgreich gespeichert => evtl. Emails versenden
                 if (isset($_POST['informieren'])
                     && $_POST['informieren'] === 'Y'
@@ -702,9 +702,9 @@ class CouponsController extends AbstractBackendController
     /**
      * @param Kupon           $coupon
      * @param LanguageModel[] $languages
-     * @return int - 0 on failure ; coupon ID on success
+     * @return int|array - 0 on failure ; coupon ID/list of coupon IDs on success
      */
-    private function saveCoupon(Kupon $coupon, array $languages): int
+    private function saveCoupon(Kupon $coupon, array $languages): array|int
     {
         if ((int)$coupon->kKupon > 0) {
             // vorhandener Kupon

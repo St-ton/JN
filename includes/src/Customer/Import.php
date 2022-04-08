@@ -20,42 +20,47 @@ class Import
     /**
      * @var array
      */
-    private $format;
+    private array $format;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var int
      */
-    private $customerGroupID = 1;
+    private int $customerGroupID = 1;
 
     /**
      * @var int
      */
-    private $languageID = 1;
+    private int $languageID = 1;
 
     /**
      * @var bool
      */
-    private $usePasswordsFromCsv = false;
+    private bool $usePasswordsFromCsv = false;
 
     /**
      * @var Mailer
      */
-    private $mailer;
+    private Mailer $mailer;
 
     /**
      * @var PasswordServiceInterface
      */
-    private $passwordService;
+    private PasswordServiceInterface $passwordService;
 
     /**
      * @var string|null
      */
     private $defaultCountryCode;
+
+    /**
+     * @var bool
+     */
+    private bool $generatePasswords = false;
 
     /**
      * Import constructor.

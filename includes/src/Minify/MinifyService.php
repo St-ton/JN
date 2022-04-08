@@ -46,7 +46,7 @@ class MinifyService
         $query     = \ltrim($query, '?');
         $ext       = '.' . $type;
         $cacheTime = $cacheTime ?? $this->getCacheTime();
-        if (\substr($query, -\strlen($ext)) !== $ext) {
+        if (!\str_ends_with($query, $ext)) {
             $query .= '&z=' . $ext;
         }
 

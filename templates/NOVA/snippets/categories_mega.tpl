@@ -199,7 +199,7 @@
         {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
         {block name='snippets-categories-mega-top-links'}
             {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
-                {navitem class="nav-scrollbar-item d-lg-none" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}
+                {navitem class="nav-scrollbar-item d-lg-none" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle() target=$Link->getTarget()}
                     {$Link->getName()}
                 {/navitem}
             {/foreach}

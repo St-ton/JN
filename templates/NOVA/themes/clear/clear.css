@@ -16698,7 +16698,7 @@ select.selectpicker {
 }
 @media (min-width: 768px) {
   .consent-btn {
-    padding: 0.85rem 1.5rem;
+    padding: 0.65rem 1.25rem;
     font-size: 0.875rem;
   }
 }
@@ -16812,7 +16812,7 @@ select.selectpicker {
 }
 .consent-btn-helper > div {
   padding: 0 0.25rem;
-  width: 50%;
+  width: 100%;
 }
 .consent-btn-helper > div > .consent-btn {
   margin: 0.25rem;
@@ -16821,7 +16821,6 @@ select.selectpicker {
 }
 .consent-btn-helper .consent-accept {
   width: 100%;
-  margin-bottom: 0.5rem;
 }
 @media (max-width: 991.98px) {
   .consent-btn-helper > div {

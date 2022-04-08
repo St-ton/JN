@@ -98,7 +98,7 @@ function generiereRSSXML(): bool
         foreach ($news as $item) {
             $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
-        <item>p
+        <item>
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
             <description>' . wandelXMLEntitiesUm($item->preview) . '</description>
             <link>' . $url . '</link>

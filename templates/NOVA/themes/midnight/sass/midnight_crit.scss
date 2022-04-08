@@ -127,8 +127,8 @@ html {
   margin-left: auto;
   .nav-link {
     @include media-breakpoint-down(sm) {
-      padding-left:	map_get($spacers, 3) * 0.75;
-      padding-right: map_get($spacers, 3) * 0.75
+      padding-left:	$nav-link-padding-sm-x;
+      padding-right: $nav-link-padding-sm-x;
     }
   }
 }

@@ -308,7 +308,7 @@ msgid "customContent"
 msgstr "Custom CSS, Sass or Scss"
 
 msgid "The color settings might not work as expected in this theme."
-msgstr "Die Farbauswahl funktioniert in diesem Theme eventuell nicht wie erwartet."
+msgstr "The color settings might not work as expected in this theme."
 
 msgid "Gewählte Vorlage"
 msgstr "Chosen layout"

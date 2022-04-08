@@ -185,8 +185,8 @@ class BackendRouter
     public const ROUTE_NAVFILTER             = 'navfilter';
     public const ROUTE_NEWSLETTER            = 'newsletter';
     public const ROUTE_NEWSLETTER_IMPORT     = 'newsletterimport';
-    public const ROUTE_OPC                   = 'opc';
-    public const ROUTE_OPCCC                 = 'opccc';
+    public const ROUTE_OPC                   = 'onpagecomposer';
+    public const ROUTE_OPCCC                 = 'onpagecomposercc';
     public const ROUTE_ZIP_IMPORT            = 'zipimport';
     public const ROUTE_TEMPLATE              = 'template';
     public const ROUTE_SITEMAP_EXPORT        = 'sitemapexport';

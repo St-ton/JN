@@ -30,6 +30,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Review\ReviewController;
+use JTL\Router\BackendRouter;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -1376,7 +1377,7 @@ class IOMethods
             ->assign('currentLanguage', (object)$currentLanguage)
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
-            ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
+            ->assign('opcStartUrl', Shop::getAdminURL() . BackendRouter::ROUTE_OPC)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assignDom('opc-draft-list', 'innerHTML', $newDraftListHtml);

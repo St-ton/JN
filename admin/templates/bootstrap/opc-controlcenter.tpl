@@ -139,7 +139,7 @@
                                                                     </span>
                                                                 </a>
                                                                 <a class="btn btn-link px-2" title="{__('edit')}" target="_blank"
-                                                                   href="{strip}{$adminURL}opc?
+                                                                   href="{strip}{$adminURL}{JTL\Router\BackendRouter::ROUTE_OPC}?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
                                                                         action=edit{/strip}"

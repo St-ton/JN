@@ -1,6 +1,6 @@
 
 var JTL_TOKEN = null,
-    BACKEND_URL = null;
+    BACKEND_URL = '';
 
 /**
  * Functions that communicate with the server like 'ioCall()' need the XSRF token to be set first.

@@ -144,5 +144,6 @@ class OPCController extends AbstractBackendController
             }
             exit('ok');
         }
+        exit('ok');
     }
 }

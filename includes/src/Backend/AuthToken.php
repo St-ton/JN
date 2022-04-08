@@ -20,9 +20,9 @@ class AuthToken
     private const AUTH_SERVER = 'https://oauth2.api.jtl-software.com/link';
 
     /**
-     * @var AuthToken
+     * @var AuthToken|null
      */
-    private static $instance;
+    private static ?AuthToken $instance = null;
 
     /**
      * @var string|null
@@ -269,9 +269,7 @@ class AuthToken
         }
 
         if ($authCode === '' || $authCode !== $this->authCode) {
-            if ($logger !== null) {
-                $logger->error('Call responseToken with invalid authcode!');
-            }
+            $logger?->error('Call responseToken with invalid authcode!');
             \http_response_code(404);
             exit;
         }

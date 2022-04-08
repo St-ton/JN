@@ -20,17 +20,17 @@ final class Controller
     /**
      * @var Collection
      */
-    private $steps;
+    private Collection $steps;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Controller constructor.
@@ -135,7 +135,7 @@ final class Controller
         if (\is_array($post[0])) {
             $postTMP = [];
             foreach ($post as $postItem) {
-                if (\mb_strpos($postItem['name'], '[]') !== false) {
+                if (\str_contains($postItem['name'], '[]')) {
                     $postTMP[\explode('[]', $postItem['name'])[0]][] = $postItem['value'];
                 } else {
                     $postTMP[$postItem['name']] = $postItem['value'];

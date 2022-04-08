@@ -46,9 +46,9 @@ class Status
     protected DbInterface $db;
 
     /**
-     * @var self
+     * @var self|null
      */
-    private static $instance;
+    private static ?Status $instance = null;
 
     public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
     public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
@@ -545,7 +545,7 @@ class Status
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if (\mb_strpos($t->cContentHtml, $old) !== false || \mb_strpos($t->cContentText, $old) !== false) {
+            if (\str_contains($t->cContentHtml, $old) || \str_contains($t->cContentText, $old)) {
                 return true;
             }
         }

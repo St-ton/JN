@@ -109,7 +109,7 @@ class AdminFavorite
         foreach ($favs as $fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;
-            if (\mb_strpos($fav->cUrl, 'http') !== 0) {
+            if (!\str_starts_with($fav->cUrl, 'http')) {
                 $fav->bExtern = false;
                 $fav->cAbsUrl = Shop::getURL() . '/' . $fav->cUrl;
             }

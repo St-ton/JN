@@ -28,22 +28,22 @@ class Alert
     /**
      * @var bool
      */
-    private $dismissable = false;
+    private bool $dismissable = false;
 
     /**
      * @var int
      */
-    private $fadeOut = self::FADE_NEVER;
+    private int $fadeOut = self::FADE_NEVER;
 
     /**
      * @var bool
      */
-    private $showInAlertListTemplate = true;
+    private bool $showInAlertListTemplate = true;
 
     /**
      * @var bool
      */
-    private $saveInSession = false;
+    private bool $saveInSession = false;
 
     /**
      * @var string

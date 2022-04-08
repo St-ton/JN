@@ -16,12 +16,12 @@ class QuestionValidation
     /**
      * @var QuestionInterface
      */
-    private $question;
+    private QuestionInterface $question;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $validationError;
+    private ?int $validationError = null;
 
     /**
      * QuestionValidation constructor.

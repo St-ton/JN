@@ -8,60 +8,45 @@ namespace JTL\Backend;
  */
 class NotificationEntry
 {
-    /**
-     * None
-     */
     public const TYPE_NONE = -1;
-
-    /**
-     * Information type
-     */
     public const TYPE_INFO = 0;
-
-    /**
-     * Warning type
-     */
     public const TYPE_WARNING = 1;
-
-    /**
-     * Error type
-     */
     public const TYPE_DANGER = 2;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $pluginId;
+    protected ?string $pluginId = null;
 
     /**
      * @var int
      */
-    protected $type;
+    protected int $type;
 
     /**
      * @var string
      */
-    protected $title;
+    protected string $title;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $description;
+    protected ?string $description = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $url;
+    protected ?string $url = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $hash;
+    protected ?string $hash = null;
 
     /**
      * @var bool
      */
-    protected $ignored = false;
+    protected bool $ignored = false;
 
     /**
      * NotificationEntry constructor.

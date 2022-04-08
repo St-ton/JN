@@ -77,22 +77,22 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @var SelectOption[]
      */
-    protected $options = [];
+    protected array $options = [];
 
     /**
      * @var bool
      */
-    protected $multiSelect = false;
+    protected bool $multiSelect = false;
 
     /**
      * @var bool
      */
-    protected $required = true;
+    protected bool $required = true;
 
     /**
      * @var bool
      */
-    protected $fullWidth = false;
+    protected bool $fullWidth = false;
 
     /**
      * @var callable

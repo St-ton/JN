@@ -16,37 +16,37 @@ abstract class AbstractStep implements StepInterface
     /**
      * @var Collection
      */
-    protected $questions;
+    protected Collection $questions;
 
     /**
      * @var string
      */
-    protected $title = '';
+    protected string $title = '';
 
     /**
      * @var string
      */
-    protected $description = '';
+    protected string $description = '';
 
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    protected $alertService;
+    protected AlertServiceInterface $alertService;
 
     /**
      * @var Collection
      */
-    protected $errors;
+    protected Collection $errors;
 
     /**
      * AbstractStep constructor.

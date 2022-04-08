@@ -34,9 +34,9 @@ class Notification implements IteratorAggregate, Countable
     private DbInterface $db;
 
     /**
-     * @var Notification
+     * @var Notification|null
      */
-    private static $instance;
+    private static ?Notification $instance = null;
 
     /**
      * Notification constructor.
@@ -54,7 +54,6 @@ class Notification implements IteratorAggregate, Countable
      */
     public static function getInstance(DbInterface $db = null): self
     {
-
         return static::$instance ?? new self($db ?? Shop::Container()->getDB());
     }
 

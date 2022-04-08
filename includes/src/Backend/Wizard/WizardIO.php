@@ -15,29 +15,29 @@ use JTL\Shop;
 class WizardIO
 {
     /**
-     * @var Controller
+     * @var Controller|null
      */
-    private $wizardController;
+    private ?Controller $wizardController = null;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var AlertServiceInterface
      */
-    protected $alertService;
+    protected AlertServiceInterface $alertService;
 
     /**
      * @var GetText
      */
-    protected $gettext;
+    protected GetText $gettext;
 
     /**
      * WizardIO constructor.

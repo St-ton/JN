@@ -30,17 +30,17 @@ class ExtensionInstaller
     /**
      * @var Helper
      */
-    private $helper;
+    private Helper $helper;
 
     /**
      * @var Collection
      */
-    private $recommendations;
+    private Collection $recommendations;
 
     /**
      * @var LicenseManager
      */
-    private $manager;
+    private LicenseManager $manager;
 
     /**
      * ExtensionInstaller constructor.

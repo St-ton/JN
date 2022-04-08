@@ -6,7 +6,6 @@
                 {assign var=VariationsSource value='VariationenOhneFreifeld'}
             {/if}
             {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
-            {$minSwatchCountForSlider=12}
         {/block}
         {block name='productdetails-variation-spinner'}
             {row}
@@ -20,7 +19,7 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
-                        {$showSwatchSlider=count($Variation->Werte) > $minSwatchCountForSlider}
+                        {$showSwatchSlider=count($Variation->Werte) > $Einstellungen.template.productdetails.swatch_slider}
                         <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
                     {strip}
                         {block name='productdetails-variation-name-outer'}

@@ -303,3 +303,9 @@ msgstr "Custom"
 
 msgid "Blocksatz"
 msgstr "Space between"
+
+msgid "Artikeldetailseite"
+msgstr "Item overview"
+
+msgid "Slider für Swatches anzeigen, ab x Elementen"
+msgstr "Show slider for swatches for more than x items"

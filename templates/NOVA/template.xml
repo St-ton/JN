@@ -180,6 +180,9 @@
                 <Option Value="N">Nein</Option>
             </Setting>
         </Section>
+        <Section Name="Artikeldetailseite" Key="productdetails">
+            <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
+        </Section>
         <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
         </Section>

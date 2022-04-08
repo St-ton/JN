@@ -300,3 +300,9 @@ msgstr "Custom"
 
 msgid "Blocksatz"
 msgstr "Blocksatz"
+
+msgid "Artikeldetailseite"
+msgstr "Artikeldetailseite"
+
+msgid "Slider für Swatches anzeigen, ab x Elementen"
+msgstr "Slider für Swatches anzeigen, ab x Elementen"

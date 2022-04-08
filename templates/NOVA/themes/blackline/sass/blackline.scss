@@ -23,6 +23,9 @@ header {
       }
     }
   }
+  .table, .dropdown-item, .btn-outline-primary {
+    color: $gray-darker;
+  }
 }
 
 #jtl-nav-wrapper .label-slide .form-group:not(.exclude-from-label-slide):not(.checkbox) label {

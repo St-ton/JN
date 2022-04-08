@@ -192,6 +192,22 @@ header {
 	#burger-menu {
 		margin-right: map-get($spacers, 3);
 	}
+
+	/* Colors to be changed more easily by template settings */
+	.table, .dropdown-item, .btn-outline-primary {
+		color: $header-color;
+	}
+	.dropdown-item {
+		background-color: transparent;
+		&:hover {
+			background-color: $header-bg-color-secondary;
+		}
+	}
+	.btn-outline-primary {
+		&:hover {
+          color: color-yiq($primary);
+		}
+	}
 }
 
 .nav-item-lg-m {
@@ -239,7 +255,7 @@ header {
 		margin-bottom: map-get($spacers, 5);
 	}
 	.dropdown-footer {
-		background-color: $gray-lighter;
+		background-color: $header-bg-color-secondary;
 		a {
 			text-decoration: underline;
 		}
@@ -249,7 +265,7 @@ header {
 	}
 }
 .cart-dropdown-shipping-notice {
-	color: $text-muted-header;
+	color: $header-color-secondary;
 }
 .is-checkout {
 	header, .navbar {

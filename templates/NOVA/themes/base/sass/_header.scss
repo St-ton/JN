@@ -57,7 +57,7 @@ header {
 	@include media-breakpoint-down(md) {
 		.navbar-brand {
 			img {
-				max-width: 36vw;
+				max-width: 30vw;
 			}
 		}
 		.dropup, .dropright, .dropdown, .dropleft, .col, [class*='col-'] { position: static; }
@@ -288,6 +288,9 @@ header {
 				max-width: 100%;
 				+ .col, a {
 					padding-left: 0;
+				}
+				.nav-link {
+					padding-right: $nav-link-padding-sm-x;
 				}
 			}
 		}

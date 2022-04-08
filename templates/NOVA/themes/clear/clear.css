@@ -20377,12 +20377,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 #shop-nav .nav-link i {
   position: relative;
 }
-@media (max-width: 767.98px) {
-  #shop-nav .nav-link {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-}
 #shop-nav .nav-item .table-responsive {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
@@ -25987,7 +25981,7 @@ header .nav-right .dropdown-menu {
 }
 @media (max-width: 991.98px) {
   header .navbar-brand img {
-    max-width: 36vw;
+    max-width: 30vw;
   }
   header .dropup, header .dropright, header .dropdown, header .dropleft, header .col, header [class*=col-] {
     position: static;
@@ -26275,6 +26269,9 @@ header #burger-menu {
   }
   .full-width-mega.sticky-top .main-search-wrapper + .col, .full-width-mega.sticky-top .main-search-wrapper a {
     padding-left: 0;
+  }
+  .full-width-mega.sticky-top .main-search-wrapper .nav-link {
+    padding-right: 0.7rem;
   }
   .full-width-mega .secure-checkout-icon {
     flex: 0 0 auto;

@@ -139,6 +139,18 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group form-row align-items-center" id="option_target">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="linkTarget">{__('linkTarget')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" type="selectbox" name="linkTarget" id="linkTarget">
+                                <option value="_self" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_self') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_self')}selected{/if}>{__('targetSelf')}</option>
+                                <option value="_blank" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_blank') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_blank')}selected{/if}>{__('targetBlank')}</option>
+                            </select>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {getHelpDesc cDesc=__('targetDesc')}
+                        </div>
+                    </div>
                     {if !isset($Link->getLinkType()) || $Link->getLinkType() != LINKTYP_LOGIN}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cSichtbarNachLogin">{__('visibleAfterLogin')}:</label>

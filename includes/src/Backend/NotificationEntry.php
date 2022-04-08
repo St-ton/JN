@@ -8,10 +8,10 @@ namespace JTL\Backend;
  */
 class NotificationEntry
 {
-    public const TYPE_NONE = -1;
-    public const TYPE_INFO = 0;
+    public const TYPE_NONE    = -1;
+    public const TYPE_INFO    = 0;
     public const TYPE_WARNING = 1;
-    public const TYPE_DANGER = 2;
+    public const TYPE_DANGER  = 2;
 
     /**
      * @var string|null

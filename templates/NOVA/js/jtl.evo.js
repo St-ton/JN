@@ -1064,17 +1064,15 @@
             $(wrapper).each(function (e) {
                 let $buttonF   = $(this).find(buttonF),
                     $buttonB   = $(this).find(buttonB),
-                    $items     = $(this).find(items),
-                    touchstart = 0;
+                    $items     = $(this).find(items);
 
                 $buttonF.on('click', function () {
-                    let scrollBefore = $items.scrollLeft();
                     $items.animate(
                         { scrollLeft: $items.scrollLeft() + $items.width() },
                         300,
                         'swing',
                         function () {
-                            checkButtonDisable($buttonB, $buttonF, $items, scrollBefore);
+                            checkButtonDisable($buttonB, $buttonF, $items);
                         });
                 });
                 $buttonB.on('click', function () {
@@ -1083,37 +1081,24 @@
                         300,
                         'swing',
                         function () {
-                            checkButtonDisable($buttonB, $buttonF, $items, null);
+                            checkButtonDisable($buttonB, $buttonF, $items);
                         });
                 });
-                $items.on('touchstart', function (e) {
-                    touchstart = $items.scrollLeft();
-                });
                 $items.on('touchend', function (e) {
-                    checkButtonDisable($buttonB, $buttonF, $items, touchstart);
+                    checkButtonDisable($buttonB, $buttonF, $items);
                 });
             });
 
-            function checkButtonDisable($buttonB, $buttonF, $items, scrollBefore) {
-                let currentScroll = $items.scrollLeft(),
-                    epsilon       = 10,
-                    scrollDiff    = currentScroll - scrollBefore,
-                    itemsWidth    = $items.width();
-                if (currentScroll === 0) {
+            function checkButtonDisable($buttonB, $buttonF, $items) {
+                let currentScroll = $items.scrollLeft();
+                if (currentScroll <= 1) {
                     $buttonB.prop('disabled', true);
                 } else {
                     $buttonB.prop('disabled', false);
                 }
-                if (scrollBefore !== null && (itemsWidth <= currentScroll) && (
-                        scrollDiff < itemsWidth - epsilon
-                        || scrollDiff === 0
-                    )
-                ) {
+                if (currentScroll >= $items[0].scrollWidth - $items.width()) {
                     $buttonF.prop('disabled', true);
-                }
-                if (scrollBefore === null
-                    || (scrollBefore !== null && scrollDiff !== 0)
-                ){
+                } else {
                     $buttonF.prop('disabled', false);
                 }
             }

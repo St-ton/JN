@@ -22664,6 +22664,14 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   overflow: initial;
 }
 
+.productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item {
+  width: 25%;
+  min-width: 25%;
+}
+.productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item img {
+  padding: 0.3rem;
+}
+
 .stepper {
   align-items: center;
   border: 1px solid #ebebeb;
@@ -25694,6 +25702,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .variations .variation-badge:not(.badge-right) {
   margin-left: 0.25rem;
+}
+.variations .swatches .variation-badge {
+  white-space: initial;
+  margin-left: auto;
 }
 
 #tabAccordion > .card .card-header {

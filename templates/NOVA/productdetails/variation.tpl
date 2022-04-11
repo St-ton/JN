@@ -20,7 +20,7 @@
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
                         {$showSwatchSlider=count($Variation->Werte) > $Einstellungen.template.productdetails.swatch_slider}
-                        <div class="{if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
+                        <div class="vaiation-wrapper {if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
                     {strip}
                         {block name='productdetails-variation-name-outer'}
                         <dt class="js-btn-slider-wrapper">

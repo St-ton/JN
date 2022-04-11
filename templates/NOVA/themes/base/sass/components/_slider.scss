@@ -82,3 +82,16 @@
     }
   }
 }
+.productbox-variations {
+  .js-slider-wrapper {
+    .js-slider-items {
+      .js-slider-item {
+        width: calc(100% / 4);
+        min-width: calc(100% / 4);
+        img {
+          padding: 0.3rem;
+        }
+      }
+    }
+  }
+}

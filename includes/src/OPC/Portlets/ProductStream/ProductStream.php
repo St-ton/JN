@@ -11,6 +11,7 @@ use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Product;
+use JTL\Helpers\Text;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
@@ -31,7 +32,7 @@ class ProductStream extends Portlet
             'listStyle'    => [
                 'type'    => InputType::SELECT,
                 'label'   => \__('presentation'),
-                'width'   => 66,
+                'width'   => 33,
                 'options' => [
                     'gallery'      => \__('presentationGallery'),
                     'list'         => \__('presentationList'),
@@ -48,17 +49,40 @@ class ProductStream extends Portlet
                 'default'  => 15,
                 'required' => true,
             ],
-            'search' => [
-                'type'        => InputType::SEARCH,
-                'label'       => \__('search'),
-                'placeholder' => \__('search'),
-                'width'       => 50,
-            ],
-            'filters'      => [
-                'type'     => InputType::FILTER,
-                'label'    => \__('itemFilter'),
-                'default'  => [],
-                'searcher' => 'search',
+            'source' => [
+                'type'     => InputType::SELECT,
+                'label'    => 'Artikel-Quelle',
+                'width'    => 33,
+                'options'  => [
+                    'filter'    => 'Filterung',
+                    'explicit'  => 'Explizit ausgewählt',
+                    'attribute' => 'Per Funktionsattribut',
+                ],
+                'childrenFor' => [
+                    'filter' => [
+                        'search' => [
+                            'type'        => InputType::SEARCH,
+                            'label'       => \__('search'),
+                            'placeholder' => \__('search'),
+                            'width'       => 50,
+                        ],
+                        'filters'      => [
+                            'type'     => InputType::FILTER,
+                            'label'    => \__('itemFilter'),
+                            'default'  => [],
+                            'searcher' => 'search',
+                        ],
+                    ],
+                    'explicit' => [
+                        'productIds' => [
+                            'type'        => InputType::TEXT,
+                            'label'       => 'Artikel IDs Semikolon-Sep',
+                            'width'       => 50,
+                        ],
+                    ],
+                ],
+                'default'  => 'filter',
+                'required' => true,
             ],
         ];
     }
@@ -75,10 +99,25 @@ class ProductStream extends Portlet
 
     /**
      * @param PortletInstance $instance
+     * @return int[]
+     */
+    public function getExplicitProductIds(PortletInstance $instance)
+    {
+        $productIds = $instance->getProperty('productIds');
+        return Text::parseSSKint($productIds);
+    }
+
+    /**
+     * @param PortletInstance $instance
      * @return Collection
      */
     public function getFilteredProductIds(PortletInstance $instance): Collection
     {
+        if ($instance->getProperty('source') === 'explicit') {
+            return (new Collection($this->getExplicitProductIds($instance)))
+                ->slice(0, $instance->getProperty('maxProducts'));
+        }
+
         $params         = [
             'MerkmalFilter_arr'   => [],
             'SuchFilter_arr'      => [],

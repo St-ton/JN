@@ -45,7 +45,7 @@ class ProductStream extends Portlet
             'maxProducts' => [
                 'type'     => InputType::NUMBER,
                 'label'    => \__('maxProducts'),
-                'width'    => 33,
+                'width'    => 30,
                 'default'  => 15,
                 'required' => true,
             ],
@@ -64,7 +64,7 @@ class ProductStream extends Portlet
                             'type'        => InputType::SEARCH,
                             'label'       => \__('search'),
                             'placeholder' => \__('search'),
-                            'width'       => 50,
+                            'width'       => 100,
                         ],
                         'filters'      => [
                             'type'     => InputType::FILTER,
@@ -74,10 +74,18 @@ class ProductStream extends Portlet
                         ],
                     ],
                     'explicit' => [
+                        'searchExplicit' => [
+                            'type'        => InputType::SEARCH,
+                            'label'       => \__('search'),
+                            'placeholder' => \__('search'),
+                            'width'       => 100,
+                        ],
                         'productIds' => [
-                            'type'        => InputType::TEXT,
-                            'label'       => 'Artikel IDs Semikolon-Sep',
-                            'width'       => 50,
+                            'type'           => InputType::SEARCHPICKER,
+                            'label'          => 'Artikel IDs Semikolon-Sep',
+                            'searcher'       => 'searchExplicit',
+                            'dataIoFuncName' => 'getProducts',
+                            'keyName'        => 'kArtikel',
                         ],
                     ],
                 ],

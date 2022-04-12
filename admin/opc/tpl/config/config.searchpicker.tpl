@@ -1,7 +1,17 @@
 <div id="{$propname}-searchpicker">
     <input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval}">
     <p id="{$propname}-searchpicker-status">foundEntries</p>
-    <div id="{$propname}-searchpicker-results" class="list-group"></div>
+    <p id="{$propname}-searchpicker-results" class="list-group"></p>
+    <p>
+        <button type="button" class="btn btn-sm btn-link" id="{$propname}-searchpicker-select-all">
+            <i class="fas fa-check-square"></i>
+            {__('selectAllShown')}
+        </button>
+        <button type="button" class="btn btn-sm btn-link" id="{$propname}-searchpicker-unselect-all">
+            <i class="fas fa-square"></i>
+            {__('unselectAllShown')}
+        </button>
+    </p>
     <script type="module">
         let keyName = "{$propdesc.keyName}";
         let propname = "{$propname}";
@@ -11,6 +21,26 @@
         let selectedInput = document.querySelector("#config-{$propname}");
         let selected = selectedInput.value.split(";").filter(Boolean).map(Number);
         let lastResults = [];
+
+        document.querySelector('#{$propname}-searchpicker-select-all')
+            .addEventListener('click', () => {
+                lastResults.forEach(item => {
+                    let key = Number(item[keyName]);
+                    if(!selected.includes(key)) {
+                        clickItem(item, document.querySelector(`#${ propname }-${ key }`));
+                    }
+                });
+            });
+
+        document.querySelector('#{$propname}-searchpicker-unselect-all')
+            .addEventListener('click', () => {
+                lastResults.forEach(item => {
+                    let key = Number(item[keyName]);
+                    if(selected.includes(key)) {
+                        clickItem(item, document.querySelector(`#${ propname }-${ key }`));
+                    }
+                });
+            });
 
         searcher.addEventListener("input", updateList);
         updateList();
@@ -56,7 +86,7 @@
                 let itemElement = document.createElement("div");
                 itemElement.innerHTML = `
                     <a class="list-group-item" style="cursor: pointer" id="${ propname }-${ key }">
-                        ${ item.cName } (${ item.cArtNr })
+                        ${ item.cName } <em>(${ item.cArtNr })</em>
                     </a>
                 `;
                 itemElement = itemElement.firstElementChild;
@@ -64,13 +94,13 @@
                     itemElement.classList.add("active");
                 }
                 itemElement.addEventListener('click', () => {
-                    selectItem(item, itemElement);
+                    clickItem(item, itemElement);
                 });
                 resultsList.append(itemElement);
             });
         }
 
-        function selectItem(item, element)
+        function clickItem(item, element)
         {
             let key = Number(item[keyName]);
 

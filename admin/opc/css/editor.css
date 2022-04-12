@@ -913,6 +913,31 @@
   padding: 2px 2px 7px 2px;
 }
 
+#opc .list-group-item {
+  color: #435A6B;
+}
+#opc .list-group-item:hover {
+  text-decoration: none;
+  color: #22a4f3;
+}
+#opc .list-group-item.active {
+  background: #5cbcf6;
+  color: #fff;
+  text-shadow: none;
+  border: 1px solid #5cbcf6;
+}
+#opc .list-group-item.active:hover {
+  background: #22a4f3;
+}
+#opc .list-group-item:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+#opc .list-group-item:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 #opc #messageboxModal .modal-content {
   display: block;
 }

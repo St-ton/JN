@@ -104,8 +104,6 @@
         {
             let key = Number(item[keyName]);
 
-            console.log(key, selected.includes(key));
-
             if(selected.includes(key)) {
                 element.classList.remove('active');
                 selected.splice(selected.indexOf(key), 1);
@@ -116,7 +114,6 @@
 
             selectedInput.value = selected.join(";");
             updateStatusLabel();
-            console.log(item, element);
         }
 
         async function ioCall(name, args = [])

@@ -62,7 +62,7 @@ class ProductStream extends Portlet
                     'filter' => [
                         'search' => [
                             'type'        => InputType::SEARCH,
-                            'label'       => \__('search'),
+                            'label'       => '',
                             'placeholder' => \__('search'),
                             'width'       => 100,
                         ],
@@ -76,7 +76,7 @@ class ProductStream extends Portlet
                     'explicit' => [
                         'searchExplicit' => [
                             'type'        => InputType::SEARCH,
-                            'label'       => \__('search'),
+                            'label'       => \__('labelSearchProduct'),
                             'placeholder' => \__('search'),
                             'width'       => 100,
                         ],

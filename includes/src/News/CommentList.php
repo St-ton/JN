@@ -126,6 +126,23 @@ final class CommentList implements ItemListInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getCommentsCount(): array
+    {
+        $count = ['parent' => 0, 'child' => 0];
+        foreach ($this->items as $comment) {
+            if ($comment->parentCommentID === 0) {
+                $count['parent']++;
+            } else {
+                $count['child']++;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * @return Collection
      */
     public function getThreadedItems(): Collection

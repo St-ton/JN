@@ -239,7 +239,11 @@ class Item extends AbstractItem
             $this->setDateValidFrom(\date_create($item->dateValidFrom));
         }
         $this->comments->createItemsByNewsItem($this->id);
-        $this->commentCount = $this->comments->getItems()->count();
+
+        $commentsCount           = $this->comments->getCommentsCount();
+        $this->commentCount      = $commentsCount['parent'];
+        $this->commentChildCount = $commentsCount['child'];
+
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
         }
@@ -888,6 +892,14 @@ class Item extends AbstractItem
     public function getCommentCount(): int
     {
         return $this->commentCount;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getChildCommentsCount(): int
+    {
+        return $this->commentChildCount;
     }
 
     /**

@@ -21049,7 +21049,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   word-break: break-word;
   text-overflow: ellipsis;
   transition: all 0.5s ease-in-out;
-  width: 90px;
 }
 .swatches-image img {
   padding: 0.5rem;
@@ -21058,6 +21057,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 .swatches-image img:hover {
   transform: scale(1.2);
+}
+@media (max-width: 991.98px) {
+  .swatches-image img {
+    padding: 0.25rem;
+  }
 }
 .swatches-image.active {
   border: 1px solid #EFC03D;
@@ -22398,6 +22402,44 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   border: 1px solid #212121;
 }
 
+.js-slider-wrapper .js-slider-items {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: auto hidden;
+  scroll-snap-type: x mandatory;
+  touch-action: manipulation;
+}
+.js-slider-wrapper .js-slider-items .js-slider-item {
+  pointer-events: auto;
+  width: 20%;
+  min-width: 20%;
+  scroll-snap-align: start;
+}
+@media (min-width: 992px) {
+  .js-slider-wrapper .js-slider-items .js-slider-item {
+    pointer-events: auto;
+    width: 16.6666666667%;
+    min-width: 16.6666666667%;
+  }
+}
+.js-slider-wrapper .js-btn-slider-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.js-slider-wrapper.js-slider-disabled .js-slider-items {
+  flex-wrap: wrap;
+  overflow: initial;
+}
+
+.productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item {
+  width: 25%;
+  min-width: 25%;
+}
+.productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item img {
+  padding: 0.3rem;
+}
+
 .stepper {
   align-items: center;
   border: 1px solid #888888;
@@ -23567,6 +23609,15 @@ input.typeahead:-ms-input-placeholder {
   .min-h-card {
     min-height: 168px;
   }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  scrollbar-height: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* utilities */
@@ -25415,6 +25466,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .variations .variation-badge:not(.badge-right) {
   margin-left: 0.25rem;
+}
+.variations .swatches .variation-badge {
+  white-space: initial;
+  margin-left: auto;
 }
 
 #tabAccordion > .card .card-header {

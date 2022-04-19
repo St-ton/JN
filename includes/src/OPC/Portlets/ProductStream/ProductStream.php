@@ -51,12 +51,11 @@ class ProductStream extends Portlet
             ],
             'source' => [
                 'type'     => InputType::SELECT,
-                'label'    => 'Artikel-Quelle',
+                'label'    => __('productSource'),
                 'width'    => 33,
                 'options'  => [
-                    'filter'    => 'Filterung',
-                    'explicit'  => 'Explizit ausgewählt',
-                    'attribute' => 'Per Funktionsattribut',
+                    'filter'    => __('productSourceFiltering'),
+                    'explicit'  => __('productSourceExplicit'),
                 ],
                 'childrenFor' => [
                     'filter' => [
@@ -82,7 +81,6 @@ class ProductStream extends Portlet
                         ],
                         'productIds' => [
                             'type'           => InputType::SEARCHPICKER,
-                            'label'          => 'Artikel IDs Semikolon-Sep',
                             'searcher'       => 'searchExplicit',
                             'dataIoFuncName' => 'getProducts',
                             'keyName'        => 'kArtikel',

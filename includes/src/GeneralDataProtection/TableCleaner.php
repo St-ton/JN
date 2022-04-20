@@ -67,9 +67,39 @@ class TableCleaner
     }
 
     /**
+     * get the count of all methods
+     * 
+     * @return integer
+     */
+    public function getMethodCount(): int
+    {
+        return count($this->methods);
+    }
+
+    /**
+     * execute one single job by its index number
+     *
+     * @param integer $step
+     * @return void
+     */
+    public function executeByStep(int $step)
+    {
+        $this->oLogger->debug('step:' . $step . '  name: ' . $this->methods[$step]['name']);     // --DEBUG--
+
+        $methodName = __NAMESPACE__ . '\\' . $this->methods[$step]['name'];
+        /** @var MethodInterface $instance */
+        $instance = new $methodName($this->now, $this->methods[$step]['intervalDays'], $this->db);
+        $instance->execute();
+        ($this->logger === null) ?: $this->logger->log(
+            \JTLLOG_LEVEL_NOTICE,
+            'Anonymize method executed: ' . $this->methods[$step]['name']
+        );
+    }
+
+    /**
      * run all anonymize and clean up methods
      */
-    public function execute(): void
+    public function executeAll(): void
     {
         $timeStart = \microtime(true);
         foreach ($this->methods as $method) {

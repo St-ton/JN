@@ -32,7 +32,7 @@ final class GeneralDataProtect extends Job
         $this->db->update(
             'tjobqueue',
             'jobQueueID',
-            $this->getQueueID(), 
+            $this->getQueueID(),
             (object)['foreignKey' => (string)$queueEntry->foreignKey]
         );
 
@@ -51,7 +51,7 @@ final class GeneralDataProtect extends Job
         $tableCleaner = new TableCleaner();
         $tableCleaner->executeByStep((int)$queueEntry->foreignKey);
         $this->setForeignKey((string)((int)$queueEntry->foreignKey++));
-        $this->saveProgress($queueEntry);   
+        $this->saveProgress($queueEntry);
         if ($queueEntry->foreignKey < 0 || $queueEntry->foreignKey >= $tableCleaner->getMethodCount()) {
             $this->setFinished(true);
         } else {

@@ -68,7 +68,7 @@ class TableCleaner
 
     /**
      * get the count of all methods
-     * 
+     *
      * @return integer
      */
     public function getMethodCount(): int

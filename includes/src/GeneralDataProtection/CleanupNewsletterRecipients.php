@@ -25,6 +25,16 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     }
 
     /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return false;
+    }
+
+    /**
      * delete newsletter registrations with no "opt-in"
      * within the given interval
      */

@@ -98,6 +98,16 @@ class AnonymizeIps extends Method implements MethodInterface
     }
 
     /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return false;
+    }
+
+    /**
      * anonymize IPs in various tables
      */
     public function anonymizeAllIPs(): void

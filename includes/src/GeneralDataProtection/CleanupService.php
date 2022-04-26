@@ -123,4 +123,14 @@ class CleanupService extends Method implements MethodInterface
             }
         }
     }
+
+    /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return false;
+    }
 }

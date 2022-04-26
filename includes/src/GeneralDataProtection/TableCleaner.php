@@ -35,6 +35,11 @@ class TableCleaner
     private $db;
 
     /**
+     * @var boolean
+     */
+    private $isUnfinished = true;
+
+    /**
      * anonymize methods
      * (NOTE: the order of this methods is not insignificant and "can be configured")
      *
@@ -77,22 +82,32 @@ class TableCleaner
     }
 
     /**
+     * tells upper processes "this task is unfinished"
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return $this->isUnfinished;
+    }
+
+    /**
      * execute one single job by its index number
      *
-     * @param integer $step
+     * @param integer $taskIdx
      * @return void
      */
-    public function executeByStep(int $step)
+    public function executeByStep(int $taskIdx)
     {
-        $this->oLogger->debug('step:' . $step . '  name: ' . $this->methods[$step]['name']);     // --DEBUG--
-
-        $methodName = __NAMESPACE__ . '\\' . $this->methods[$step]['name'];
+        $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
         /** @var MethodInterface $instance */
-        $instance = new $methodName($this->now, $this->methods[$step]['intervalDays'], $this->db);
+        $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);
         $instance->execute();
+        $this->isUnfinished = $instance->getIsUnfinished();
+
         ($this->logger === null) ?: $this->logger->log(
             \JTLLOG_LEVEL_NOTICE,
-            'Anonymize method executed: ' . $this->methods[$step]['name']
+            'Anonymize method executed: ' . $this->methods[$taskIdx]['name']
         );
     }
 

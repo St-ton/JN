@@ -17,11 +17,24 @@ use JTL\Customer\Customer;
 class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterface
 {
     /**
+     * @var boolean
+     */
+    private $isUnfinished = true;
+
+    /**
      * runs all anonymize-routines
      */
     public function execute(): void
     {
         $this->cleanupCustomers();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return $this->isUnfinished;
     }
 
     /**
@@ -41,7 +54,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 LIMIT :workLimit",
             ['workLimit' => $this->workLimit]
         );
-
+        $this->isUnfinished = (count($guestAccounts) >= $this->workLimit);
         foreach ($guestAccounts as $guestAccount) {
             (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
         }

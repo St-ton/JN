@@ -38,6 +38,16 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     }
 
     /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return false;
+    }
+
+    /**
      * delete visitors in the visitors archive immediately (at each run of the cron),
      * without a valid customer account
      */

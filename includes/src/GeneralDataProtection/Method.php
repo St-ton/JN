@@ -36,7 +36,8 @@ class Method
      *
      * @var int
      */
-    protected $workLimit = 1000;
+    // protected $workLimit = 1000;
+    protected $workLimit = 100;
 
     /**
      * the last date we keep

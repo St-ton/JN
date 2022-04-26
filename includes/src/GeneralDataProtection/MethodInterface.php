@@ -12,4 +12,9 @@ interface MethodInterface
      *
      */
     public function execute(): void;
+
+    /**
+     *
+     */
+    public function getIsUnfinished(): bool;
 }

@@ -45,12 +45,15 @@ final class GeneralDataProtect extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+        // use `tcron`.`foreignKey` as a step-storage here
         if ($queueEntry->foreignKey === '') {
             $queueEntry->foreignKey = '0';
         }
         $tableCleaner = new TableCleaner();
         $tableCleaner->executeByStep((int)$queueEntry->foreignKey);
-        $this->setForeignKey((string)((int)$queueEntry->foreignKey++));
+        if (!$tableCleaner->getIsUnfinished()) {
+            $this->setForeignKey((string)((int)$queueEntry->foreignKey++));
+        }
         $this->saveProgress($queueEntry);
         if ($queueEntry->foreignKey < 0 || $queueEntry->foreignKey >= $tableCleaner->getMethodCount()) {
             $this->setFinished(true);

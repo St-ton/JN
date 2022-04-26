@@ -21,6 +21,16 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     }
 
     /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsUnfinished(): bool
+    {
+        return false;
+    }
+
+    /**
      * anonymize orphaned ratings.
      * (e.g. of canceled memberships)
      */
@@ -68,9 +78,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 AND z.cAbgeholt != 'N'
                 AND NOT EXISTS (
                     SELECT k.kKunde
-                    FROM tkunde k 
+                    FROM tkunde k
                         INNER JOIN tbestellung b ON k.kKunde = b.kKunde
-                    WHERE 
+                    WHERE
                         b.kBestellung = z.kBestellung
                         AND k.cKundenNr != :anonString
                         AND k.cVorname != :anonString

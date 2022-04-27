@@ -51,9 +51,10 @@ class CountryService implements CountryServiceInterface
 
     public function init(): void
     {
+        $languageID = Shop::getLanguageID();
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) {
-                return Text::replaceUmlauts($country->getName());
+            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
+                return Text::replaceUmlauts($country->getName($languageID));
             });
 
             return;
@@ -84,8 +85,8 @@ class CountryService implements CountryServiceInterface
             $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
-            return Text::replaceUmlauts($country->getName());
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID) {
+            return Text::replaceUmlauts($country->getName($languageID));
         });
 
         $this->cache->set(self::CACHE_ID, $this->countryList, [\CACHING_GROUP_OBJECT]);

@@ -122,7 +122,7 @@ final class Newsletter extends Job
      * @param array      $customerGroups
      * @return array
      */
-    private function getRecipients($jobData, $queueEntry, array $customerGroups): array
+    private function getRecipients(stdClass $jobData, QueueEntry $queueEntry, array $customerGroups): array
     {
         $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
         if (\in_array(0, $customerGroups, true)) {

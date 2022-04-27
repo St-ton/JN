@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -15,18 +15,17 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-$step              = 'uebersicht';
-$searchSQL         = new stdClass();
-$searchSQL->cJOIN  = '';
-$searchSQL->cWHERE = '';
-$alertHelper       = Shop::Container()->getAlertService();
+$step        = 'uebersicht';
+$searchSQL   = new SqlObject();
+$alertHelper = Shop::Container()->getAlertService();
 
 if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
     $query = Shop::Container()->getDB()->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
     if (mb_strlen($query) > 0) {
-        $searchSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $query . "%'
-            OR tkunde.cVorname LIKE '%" . $query . "%' 
-            OR tkunde.cMail LIKE '%" . $query . "%')";
+        $searchSQL->setWhere(' WHERE (tkunde.cKundenNr LIKE :qry
+            OR tkunde.cVorname LIKE :qry 
+            OR tkunde.cMail LIKE :qry)');
+        $searchSQL->addParam('qry', '%' . $query . '%');
     }
 
     $smarty->assign('cSuche', $query);
@@ -36,7 +35,7 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
     $customerID = Request::getInt('l');
     $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
+        $alertHelper->addSuccess(__('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
     unset($persCart);
@@ -48,7 +47,8 @@ $customerCount = (int)Shop::Container()->getDB()->getSingleObject(
              ON tkunde.kKunde = twarenkorbpers.kKunde
          JOIN twarenkorbperspos
              ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-         ' . $searchSQL->cWHERE
+         ' . $searchSQL->getWhere(),
+    $searchSQL->getParams()
 )->cnt;
 
 $customerPagination = (new Pagination('kunden'))
@@ -64,10 +64,11 @@ $customers = Shop::Container()->getDB()->getObjects(
             ON tkunde.kKunde = twarenkorbpers.kKunde
         JOIN twarenkorbperspos 
             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-        " . $searchSQL->cWHERE . '
+        " . $searchSQL->getWhere() . '
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
-        LIMIT ' . $customerPagination->getLimitSQL()
+        LIMIT ' . $customerPagination->getLimitSQL(),
+    $searchSQL->getParams()
 );
 
 foreach ($customers as $item) {

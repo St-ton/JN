@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -28,7 +27,7 @@ $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelpe
 if (Form::validateToken()) {
     if (Request::verifyGPDataString('action') === 'clearsyslog') {
         Jtllog::deleteAll();
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSystemLogReset'), 'successSystemLogReset');
+        $alertHelper->addSuccess(__('successSystemLogReset'), 'successSystemLogReset');
     } elseif (Request::verifyGPDataString('action') === 'save') {
         $minLogLevel = (int)($_POST['minLogLevel'] ?? 0);
         $db->update(
@@ -38,12 +37,11 @@ if (Form::validateToken()) {
             (object)['cWert' => $minLogLevel]
         );
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
         $smarty->assign('cTab', 'config');
     } elseif (Request::verifyGPDataString('action') === 'delselected') {
         if (isset($_POST['selected'])) {
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
+            $alertHelper->addSuccess(
                 Jtllog::deleteIDs($_POST['selected']) . __('successEntriesDelete'),
                 'successEntriesDelete'
             );

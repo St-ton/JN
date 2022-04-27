@@ -14,27 +14,24 @@ class SyncCronjob extends NetSyncHandler
     protected function request($request): void
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'smartyinclude.php';
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_inc.php';
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_queue_inc.php';
         switch ($request) {
             case NetSyncRequest::CRONJOBSTATUS:
                 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'cron_inc.php';
                 $exports = \holeExportformatCron();
-                if (\is_array($exports)) {
-                    foreach ($exports as &$job) {
-                        $job = new CronjobStatus(
-                            $job->kCron,
-                            $job->cName,
-                            $job->dStart_de,
-                            $job->nAlleXStd,
-                            (int)$job->oJobQueue->nLimitN,
-                            (int)$job->nAnzahlArtikel->nAnzahl,
-                            $job->dLetzterStart_de,
-                            $job->dNaechsterStart_de
-                        );
-                    }
-                    unset($job);
+                foreach ($exports as &$job) {
+                    $job = new CronjobStatus(
+                        $job->kCron,
+                        $job->cName,
+                        $job->dStart_de,
+                        $job->frequency,
+                        (int)($job->oJobQueue->tasksExecuted ?? 0),
+                        (int)($job->productCount ?? 0),
+                        $job->dLetzterStart_de,
+                        $job->dNaechsterStart_de
+                    );
                 }
+                unset($job);
 
                 self::throwResponse(NetSyncResponse::OK, $exports);
                 break;
@@ -46,7 +43,7 @@ class SyncCronjob extends NetSyncHandler
                         $job = new CronjobHistory(
                             $job->cName,
                             $job->cDateiname,
-                            $job->nLimitN,
+                            (int)$job->nLimitN,
                             $job->dZuletztGelaufen_DE
                         );
                     }

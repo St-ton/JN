@@ -73,3 +73,9 @@ msgstr "Answer deleted successfully."
 
 msgid "linkItemShop"
 msgstr "View item in online shop"
+
+msgid "%d item(s) successfully imported."
+msgstr "%d item(s) successfully imported."
+
+msgid "Required attribute %s not found in row."
+msgstr "Required attribute %s not found in row."

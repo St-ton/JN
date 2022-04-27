@@ -2,6 +2,7 @@
 
 namespace JTL\Backend;
 
+use DateTime;
 use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
@@ -37,14 +38,16 @@ class Status
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
-
+    /**
+     * @var self
+     */
     private static $instance;
 
     public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
@@ -289,6 +292,26 @@ class Status
     }
 
     /**
+     * @return array
+     */
+    public function hasMysqlPhpTimeMismatch(): array
+    {
+        try {
+            $dbTimeString = $this->db->getSingleObject('SELECT NOW() AS time')->time;
+            $dbTime       = new DateTime($dbTimeString);
+            $phpTime      = new DateTime();
+
+            return [
+                'db'   => $dbTime->format('Y-m-d H:i:s'),
+                'php'  => $phpTime->format('Y-m-d H:i:s'),
+                'diff' => \abs($dbTime->getTimestamp() - $phpTime->getTimestamp())
+            ];
+        } catch (Exception $e) {
+            return ['diff' => 0];
+        }
+    }
+
+    /**
      * @return bool
      */
     public function hasDifferentTemplateVersion(): bool
@@ -441,10 +464,10 @@ class Status
      */
     public function hasFullTextIndexError(): bool
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_fulltext');
 
-        return isset($conf['suche_fulltext'])
-            && $conf['suche_fulltext'] !== 'N'
+        return $conf !== null
+            && $conf !== 'N'
             && (!$this->db->query(
                 "SHOW INDEX
                     FROM tartikel
@@ -488,7 +511,7 @@ class Status
             'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`'
         );
-        if (!\is_array($data) || 1 > \count($data)) {
+        if (\count($data) === 0) {
             return false; // there are no plugins installed
         }
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Campaign;
@@ -87,9 +87,9 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     }
     $res = speicherKampagne($campaign);
     if ($res === 1) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
+        $alertHelper->addSuccess(__('successCampaignSave'), 'successCampaignSave');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, mappeFehlerCodeSpeichern($res), 'campaignError');
+        $alertHelper->addError(mappeFehlerCodeSpeichern($res), 'campaignError');
         $smarty->assign('oKampagne', $campaign);
         $step = 'kampagne_erstellen';
     }
@@ -98,10 +98,10 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     if (GeneralObject::hasCount('kKampagne', $_POST)) {
         $res = loescheGewaehlteKampagnen($_POST['kKampagne']);
         if ($res === 1) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignDelete'), 'successCampaignDelete');
+            $alertHelper->addSuccess(__('successCampaignDelete'), 'successCampaignDelete');
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
+        $alertHelper->addError(__('errorAtLeastOneCampaign'), 'errorAtLeastOneCampaign');
     }
 } elseif (Request::verifyGPCDataInt('nAnsicht') > 0) { // Ansicht
     $_SESSION['Kampagne']->nAnsicht = Request::verifyGPCDataInt('nAnsicht');
@@ -129,7 +129,7 @@ if ($step === 'kampagne_uebersicht') {
     $campaigns   = holeAlleKampagnen(true, false);
     $definitions = holeAlleKampagnenDefinitionen();
     $maxKey      = 0;
-    if (is_array($campaigns) && count($campaigns) > 0) {
+    if (count($campaigns) > 0) {
         $members = array_keys($campaigns);
         $maxKey  = $members[count($members) - 1];
     }

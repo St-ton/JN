@@ -1,7 +1,7 @@
 {block name='snippets-product-slider'}
     {strip}
     {$isOPC=$isOPC|default:false}
-    {if $productlist|@count > 0}
+    {if $productlist|count > 0}
         {if !isset($tplscope)}
             {assign var=tplscope value='slider'}
         {/if}

@@ -47,12 +47,16 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 FROM tkunde
                 WHERE
                     nRegistriert = 0
-                    AND cAbgeholt ='Y'
-                    AND cKundenNr != '" . Customer::CUSTOMER_ANONYM . "'
-                    AND cVorname != '" . Customer::CUSTOMER_ANONYM . "'
-                    AND cNachname != '" . Customer::CUSTOMER_ANONYM . "'
-                LIMIT :workLimit",
-            ['workLimit' => $this->workLimit]
+                    AND cAbgeholt = 'Y'
+                    AND cKundenNr != :anon
+                    AND cVorname != :anon
+                    AND cNachname != :anon
+                LIMIT :lmt",
+            'kKunde',
+            [
+                'lmt'  => $this->workLimit,
+                'anon' => Customer::CUSTOMER_ANONYM
+            ]
         );
         $this->isUnfinished = (count($guestAccounts) >= $this->workLimit);
         foreach ($guestAccounts as $guestAccount) {

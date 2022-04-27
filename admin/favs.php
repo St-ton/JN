@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\AdminFavorite;
 use JTL\Helpers\Form;

@@ -116,7 +116,9 @@ class ZahlungsInfo
             foreach ($members as $member) {
                 $this->$member = $obj->$member;
             }
-
+            $this->kZahlungsInfo = (int)$this->kZahlungsInfo;
+            $this->kBestellung   = (int)$this->kBestellung;
+            $this->kKunde        = (int)$this->kKunde;
             if ($this->kZahlungsInfo > 0) {
                 $this->entschluesselZahlungsinfo();
             }

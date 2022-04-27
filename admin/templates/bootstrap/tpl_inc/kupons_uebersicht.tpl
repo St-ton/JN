@@ -7,19 +7,18 @@
             {if $nKuponCount > 0}
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
-            {if $oKupon_arr|@count > 0}
+            {if $oKupon_arr|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
-            <form method="post" action="kupons.php">
+            <form method="post" action="{$adminURL}/kupons.php">
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp_{$cKuponTyp}" value="{$cKuponTyp}">
-                {if $oKupon_arr|@count > 0}
+                {if $oKupon_arr|count > 0}
                     <div class="table-responsive">
                         <table class="list table table-align-top">
                             <thead>
                                 <tr>
                                     <th title="{__('active')}"></th>
-                                    <th></th>
                                     <th>{__('name')} {call sortControls pagination=$pagination nSortBy=0}</th>
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}<th>{__('value')}</th>{/if}
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}
@@ -29,13 +28,13 @@
                                     <th class="text-center">{__('curmaxusage')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                     <th>{__('restrictions')}</th>
                                     <th>{__('validityPeriod')}</th>
+                                    <th>{__('valid')}</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {foreach $oKupon_arr as $oKupon}
                                     <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
-                                        <td>{if $oKupon->cAktiv === 'N'}<i class="fal fa-times"></i>{/if}</td>
                                         <td>
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}">
@@ -52,7 +51,7 @@
                                                 {if $oKupon->cWertTyp === 'festpreis'}
                                                     <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                           title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
-                                                        {$oKupon->cLocalizedValue}
+                                                        {$oKupon->cLocalizedWert}
                                                     </span>
                                                 {else}
                                                     {$oKupon->fWert} %
@@ -63,7 +62,7 @@
                                         <td class="text-center">
                                             <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                   title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
-                                                {$oKupon->cLocalizedMbw}
+                                                {$oKupon->cLocalizedMBW}
                                             </span>
                                         </td>
                                         <td class="text-center">
@@ -92,9 +91,14 @@
                                             {__('from')}: {$oKupon->cGueltigAbShort}<br>
                                             {__('to')}: {$oKupon->cGueltigBisShort}
                                         </td>
+                                        <td>{if $oKupon->cAktiv === 'N'}
+                                                <i class="fal fa-times"></i>
+                                            {else}
+                                                <i class="fal fa-check"></i>
+                                            {/if}</td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}/kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -125,7 +129,7 @@
                                 <label class="custom-control-label" for="ALLMSGS_{$cKuponTyp}">{__('globalSelectAll')}</label>
                             </div>
                         </div>
-                        {if $oKupon_arr|@count > 0}
+                        {if $oKupon_arr|count > 0}
                             <div class="ml-auto col-sm-6 col-xl-auto">
                                 <button type="submit" class="btn btn-danger btn-block" name="action" value="loeschen">
                                     <i class="fas fa-trash-alt"></i> {__('delete')}
@@ -135,11 +139,11 @@
                                 {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
                             </div>
                         {/if}
-                        <div class="{if !$oKupon_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+                        <div class="{if !$oKupon_arr|count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
                             {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon_{$cKuponTyp}" importerType="kupon"}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
+                            <a href="{$adminURL}/kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                                class="btn btn-primary btn-block" title="{__('modify')}">
                                 <i class="fa fa-share"></i> {__($cKuponTypName|cat:'Create')}
                             </a>
@@ -147,7 +151,7 @@
                     </div>
                 </div>
             </form>
-            {if $oKupon_arr|@count > 0}
+            {if $oKupon_arr|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp] isBottom=true}
             {/if}
         </div>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\SelectionWizard;
 
@@ -15,57 +15,57 @@ class Group
     /**
      * @var int
      */
-    public $kAuswahlAssistentGruppe;
+    public int $kAuswahlAssistentGruppe = 0;
 
     /**
      * @var int
      */
-    public $kSprache;
+    public int $kSprache = 0;
 
     /**
      * @var string
      */
-    public $cName;
+    public string $cName = '';
 
     /**
      * @var string
      */
-    public $cBeschreibung;
+    public string $cBeschreibung = '';
 
     /**
      * @var int
      */
-    public $nAktiv;
+    public int $nAktiv = 0;
 
     /**
      * @var array
      */
-    public $oAuswahlAssistentFrage_arr;
+    public array $oAuswahlAssistentFrage_arr = [];
 
     /**
      * @var array
      */
-    public $oAuswahlAssistentOrt_arr;
+    public array $oAuswahlAssistentOrt_arr = [];
 
     /**
      * @var string
      */
-    public $cSprache;
+    public string $cSprache = '';
 
     /**
      * @var int
      */
-    public $nStartseite;
+    public int $nStartseite = 0;
 
     /**
      * @var string
      */
-    public $cKategorie;
+    public string $cKategorie = '';
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Group constructor.
@@ -102,12 +102,12 @@ class Group
             return;
         }
         $question = new Question();
-        foreach (\array_keys(\get_object_vars($group)) as $member) {
-            $this->$member = $group->$member;
-        }
-        $this->kAuswahlAssistentGruppe    = (int)$this->kAuswahlAssistentGruppe;
-        $this->kSprache                   = (int)$this->kSprache;
-        $this->nAktiv                     = (int)$this->nAktiv;
+
+        $this->kAuswahlAssistentGruppe    = (int)$group->kAuswahlAssistentGruppe;
+        $this->kSprache                   = (int)$group->kSprache;
+        $this->nAktiv                     = (int)$group->nAktiv;
+        $this->cName                      = $group->cName;
+        $this->cBeschreibung              = $group->cBeschreibung;
         $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
         $location                         = new Location(0, $groupID, $backend);
         $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
@@ -139,14 +139,15 @@ class Group
     {
         $groups    = [];
         $activeSQL = $active ? ' AND nAktiv = 1' : '';
-        $groupData = $this->db->getObjects(
+        $groupData = $this->db->getInts(
             'SELECT kAuswahlAssistentGruppe AS id
                 FROM tauswahlassistentgruppe
                 WHERE kSprache = :langID' . $activeSQL,
+            'id',
             ['langID' => $langID]
         );
-        foreach ($groupData as $item) {
-            $groups[] = new self((int)$item->id, $active, $activeOnly, $backend);
+        foreach ($groupData as $groupID) {
+            $groups[] = new self($groupID, $active, $activeOnly, $backend);
         }
 
         return $groups;

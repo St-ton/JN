@@ -27,8 +27,8 @@
                                 {$selectedISO = "
                                     {if isset($VersandPLZ)}
                                         {$VersandPLZ}
-                                    {elseif isset($smarty.session.Kunde->cPLZ)}
-                                        {$smarty.session.Kunde->cPLZ}
+                                    {elseif JTL\Session\Frontend::getCustomer()->cPLZ !== null}
+                                        {JTL\Session\Frontend::getCustomer()->cPLZ}
                                     {/if}"|trim}
                                 {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text"

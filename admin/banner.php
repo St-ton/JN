@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -95,11 +94,7 @@ if ((isset($postData['cName']) || isset($postData['kImageMap'])) && Form::valida
         }
 
         if (!empty($keyValue) && empty($value)) {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                sprintf(__('errorKeyMissing'), $key),
-                'errorKeyMissing'
-            );
+            $alertHelper->addError(sprintf(__('errorKeyMissing'), $key), 'errorKeyMissing');
         } else {
             $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $imageMapID]);
             $ext                = new stdClass();
@@ -115,24 +110,24 @@ if ((isset($postData['cName']) || isset($postData['kImageMap'])) && Form::valida
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
             if ($imageMapID && $ins > 0) {
                 $action = 'view';
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSave'), 'successSave');
+                $alertHelper->addSuccess(__('successSave'), 'successSave');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSave'), 'errorSave');
+                $alertHelper->addError(__('errorSave'), 'errorSave');
             }
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+        $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
 
         if (($checks['vDatum'] ?? 0) === 1) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+            $alertHelper->addError(__('errorDate'), 'errorDate');
         }
         if (($checks['bDatum'] ?? 0) === 1) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDate'), 'errorDate');
+            $alertHelper->addError(__('errorDate'), 'errorDate');
         } elseif (($checks['bDatum'] ?? 0) === 2) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDateActiveToGreater'), 'errorDateActiveToGreater');
+            $alertHelper->addError(__('errorDateActiveToGreater'), 'errorDateActiveToGreater');
         }
         if (($checks['oFile'] ?? 0) === 1) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImageSizeTooLarge'), 'errorImageSizeTooLarge');
+            $alertHelper->addError(__('errorImageSizeTooLarge'), 'errorImageSizeTooLarge');
         }
 
         $smarty->assign('cName', $postData['cName'] ?? null)
@@ -153,7 +148,7 @@ switch ($action) {
     case 'area':
         $imageMap = holeBanner(Request::postInt('id'), false);
         if (!is_object($imageMap)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
+            $alertHelper->addError(__('errrorBannerNotFound'), 'errrorBannerNotFound');
             $action = 'view';
             break;
         }
@@ -172,7 +167,7 @@ switch ($action) {
             ->assign('banner', $imageMap);
 
         if (!is_object($imageMap)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
+            $alertHelper->addError(__('errrorBannerNotFound'), 'errrorBannerNotFound');
             $action = 'view';
         }
         break;
@@ -187,9 +182,9 @@ switch ($action) {
     case 'delete':
         if (entferneBanner(Request::postInt('id'))) {
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleted'), 'successDeleted');
+            $alertHelper->addSuccess(__('successDeleted'), 'successDeleted');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');
+            $alertHelper->addError(__('errorDeleted'), 'errorDeleted');
         }
         break;
 

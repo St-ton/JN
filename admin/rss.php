@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
@@ -11,31 +11,26 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'rss_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('EXPORT_RSSFEED_VIEW', true, true);
-$alertHelper = Shop::Container()->getAlertService();
+$alertService = Shop::Container()->getAlertService();
 if (Request::getInt('f') === 1 && Form::validateToken()) {
     if (generiereRSSXML()) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRSSCreate'), 'successRSSCreate');
+        $alertService->addSuccess(__('successRSSCreate'), 'successRSSCreate');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorRSSCreate'), 'errorRSSCreate');
+        $alertService->addError(__('errorRSSCreate'), 'errorRSSCreate');
     }
 }
 if (Request::postInt('einstellungen') > 0) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_RSS, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_RSS, $_POST);
 }
 if (!file_exists(PFAD_ROOT . FILE_RSS_FEED)) {
     @touch(PFAD_ROOT . FILE_RSS_FEED);
 }
 if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
-    $alertHelper->addAlert(
-        Alert::TYPE_ERROR,
+    $alertService->addError(
         sprintf(__('errorRSSCreatePermissions'), PFAD_ROOT . FILE_RSS_FEED),
         'errorRSSCreatePermissions'
     );
 }
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_RSS))
-       ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
-       ->display('rss.tpl');
+getAdminSectionSettings(CONF_RSS);
+$smarty->assign('alertError', $alertService->alertTypeExists(Alert::TYPE_ERROR))
+    ->display('rss.tpl');

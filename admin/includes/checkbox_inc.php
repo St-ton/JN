@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\CheckBox;
 use JTL\Helpers\Text;
@@ -6,14 +6,14 @@ use JTL\Language\LanguageModel;
 use JTL\Shop;
 
 /**
- * @param array $post
+ * @param array           $post
  * @param LanguageModel[] $languages
  * @return array
  */
 function plausiCheckBox(array $post, array $languages): array
 {
     $checks = [];
-    if (!is_array($languages) || count($languages) === 0) {
+    if (count($languages) === 0) {
         $checks['oSprache_arr'] = 1;
 
         return $checks;

@@ -1,5 +1,7 @@
 @import '../../base/sass/functions';
 
+//#customVariables#
+
 @import 'variables';
 
 @import 'allstyles';
@@ -20,6 +22,9 @@ header {
         color: $white;
       }
     }
+  }
+  .table, .dropdown-item, .btn-outline-primary {
+    color: $gray-darker;
   }
 }
 
@@ -46,7 +51,7 @@ header {
   }*/
 
 #shop-nav .fas,
-.main-search .fas {
+.search-wrapper .fas {
   font-weight: 400;
   &.fa-search {
     background: $url-search center center no-repeat;
@@ -113,7 +118,11 @@ header {
     }
   }
 }
-
+.search-wrapper {
+  .btn-secondary {
+    border-left: 0;
+  }
+}
 .fixed-search .fa-search {
   @include media-breakpoint-down(md) {
     filter: invert(1);
@@ -577,3 +586,5 @@ aside {
   font-family: $font-accent;
   font-weight: $font-weight-light;
 }
+
+//#customContent#

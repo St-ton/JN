@@ -5,7 +5,7 @@
             <div class="subheading1">{__('bearbeiteBewertung')}</div>
             <hr class="mb-n3">
         </div>
-        <form name="umfrage" method="post" action="bewertung.php">
+        <form name="umfrage" method="post" action="{$adminURL}/bewertung.php">
             <div class="card-body">
                 {$jtl_token}
                 <input type="hidden" name="bewertung_editieren" value="1" />
@@ -51,7 +51,7 @@
             <div class="save-wrapper card-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="bewertung.php?tab={$cTab}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/bewertung.php?tab={$cTab}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

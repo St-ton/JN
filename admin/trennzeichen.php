@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Separator;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -25,21 +24,21 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
     $checkItems = $checks->getPlausiVar();
     if (count($checkItems) === 0) {
         if (speicherTrennzeichen($_POST)) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+            $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorConfigSave'), 'errorConfigSave');
+            $alertHelper->addError(__('errorConfigSave'), 'errorConfigSave');
             $smarty->assign('xPostVar_arr', $checks->getPostVar());
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+        $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
         $idx = 'nDezimal_' . JTL_SEPARATOR_WEIGHT;
         if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorWeightDecimals'), 'errorWeightDecimals');
+            $alertHelper->addError(__('errorWeightDecimals'), 'errorWeightDecimals');
         }
         $idx = 'nDezimal_' . JTL_SEPARATOR_AMOUNT;
         if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAmountDecimals'), 'errorAmountDecimals');
+            $alertHelper->addError(__('errorAmountDecimals'), 'errorAmountDecimals');
         }
         $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
             ->assign('xPostVar_arr', $checks->getPostVar());

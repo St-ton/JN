@@ -14,16 +14,6 @@ use JTL\GeneralDataProtection\TableCleaner;
 final class GeneralDataProtect extends Job
 {
     /**
-     * @inheritdoc
-     */
-    public function hydrate($data)
-    {
-        parent::hydrate($data);
-
-        return $this;
-    }
-
-    /**
      * @inheritDoc
      */
     public function saveProgress(QueueEntry $queueEntry): bool
@@ -54,7 +44,6 @@ final class GeneralDataProtect extends Job
         if (!$tableCleaner->getIsUnfinished()) {
             $this->setForeignKey((string)((int)$queueEntry->foreignKey++));
         }
-        $this->saveProgress($queueEntry);
         if ($queueEntry->foreignKey < 0 || $queueEntry->foreignKey >= $tableCleaner->getMethodCount()) {
             $this->setFinished(true);
         } else {

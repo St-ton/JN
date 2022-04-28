@@ -31,10 +31,18 @@ class Method
 
     /**
      * select the maximum of 100 rows for one "step per task"!
+     * (CONSIDER: some tasks need to overwrite this!)
      *
      * @var int
      */
-    protected $workLimit = 100;
+    protected $workLimit = 1000;
+
+    /**
+     * is this task finished
+     *
+     * @var boolean
+     */
+    protected $isFinished = false;
 
     /**
      * the last date we keep
@@ -81,5 +89,15 @@ class Method
                 'Wrong Interval given: ' . $this->interval
             );
         }
+    }
+
+    /**
+     * not implemented yet
+     *
+     * @return boolean
+     */
+    public function getIsFinished(): bool
+    {
+        return $this->isFinished;
     }
 }

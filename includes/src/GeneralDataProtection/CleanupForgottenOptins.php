@@ -17,22 +17,14 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupForgottenOptins extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * @return void
      */
     public function execute(): void
     {
         $this->cleanupOptins();
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 
     /**

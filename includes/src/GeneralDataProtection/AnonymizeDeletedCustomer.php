@@ -10,6 +10,8 @@ use JTL\Customer\Customer;
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * runs all anonymize-routines
      */
@@ -18,16 +20,6 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
         $this->anonymizeRatings();
         $this->anonymizeReceivedPayments();
         $this->anonymizeNewsComments();
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 
     /**

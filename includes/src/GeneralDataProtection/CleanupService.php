@@ -8,6 +8,8 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupService extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * @var array
      */
@@ -122,15 +124,5 @@ class CleanupService extends Method implements MethodInterface
                 );
             }
         }
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 }

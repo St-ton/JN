@@ -24,6 +24,8 @@ use JTL\Customer\Customer;
  */
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * runs all anonymize-routines
      */
@@ -35,16 +37,6 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
         $this->cleanupCustomerAccountData();
         $this->cleanupDeliveryAddresses();
         $this->cleanupBillingAddresses();
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 
     /**

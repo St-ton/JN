@@ -16,5 +16,5 @@ interface MethodInterface
     /**
      *
      */
-    public function getIsUnfinished(): bool;
+    public function getIsFinished(): bool;
 }

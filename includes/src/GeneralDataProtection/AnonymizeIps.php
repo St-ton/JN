@@ -23,6 +23,8 @@ namespace JTL\GeneralDataProtection;
  */
 class AnonymizeIps extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * @var array
      */
@@ -95,16 +97,6 @@ class AnonymizeIps extends Method implements MethodInterface
     public function execute(): void
     {
         $this->anonymizeAllIPs();
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 
     /**

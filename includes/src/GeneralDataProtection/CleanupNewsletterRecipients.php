@@ -16,6 +16,8 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * runs all anonymize routines
      */
@@ -25,21 +27,18 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     }
 
     /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
-    }
-
-    /**
      * delete newsletter registrations with no "opt-in"
      * within the given interval
      */
     private function cleanupNewsletters(): void
     {
+        // --DEBUG-- -------------------------------------------------------------
+        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/www/shop5_02/_logging_conf.xml');
+        $oLogger = \Logger::getLogger('default');
+        // --DEBUG-- -------------------------------------------------------------
+        $oLogger->debug('workLimit: '.$this->workLimit);
+
         $data = $this->db->getObjects(
             "SELECT e.cOptCode
                 FROM tnewsletterempfaenger e

@@ -23,6 +23,8 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupLogs extends Method implements MethodInterface
 {
+    protected $isFinished = true;    // TEMPORARY
+
     /**
      * runs all anonymize routines
      */
@@ -37,16 +39,6 @@ class CleanupLogs extends Method implements MethodInterface
         $this->cleanupLogs();
         $this->cleanupPaymentConfirmations();
         $this->cleanupCustomerDataHistory();
-    }
-
-    /**
-     * not implemented yet
-     *
-     * @return boolean
-     */
-    public function getIsUnfinished(): bool
-    {
-        return false;
     }
 
     /**

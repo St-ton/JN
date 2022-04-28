@@ -37,7 +37,7 @@ class TableCleaner
     /**
      * @var boolean
      */
-    private $isUnfinished = true;
+    private $isFinished = true;
 
     /**
      * anonymize methods
@@ -86,9 +86,9 @@ class TableCleaner
      *
      * @return boolean
      */
-    public function getIsUnfinished(): bool
+    public function getIsFinished(): bool
     {
-        return $this->isUnfinished;
+        return $this->isFinished;
     }
 
     /**
@@ -110,8 +110,7 @@ class TableCleaner
         /** @var MethodInterface $instance */
         $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);
         $instance->execute();
-        $this->isUnfinished = $instance->getIsUnfinished();
-
+        $this->isFinished = $instance->getIsFinished();
         ($this->logger === null) ?: $this->logger->log(
             \JTLLOG_LEVEL_NOTICE,
             'Anonymize method executed: ' . $this->methods[$taskIdx]['name']

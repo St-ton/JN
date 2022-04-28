@@ -99,6 +99,13 @@ class TableCleaner
      */
     public function executeByStep(int $taskIdx)
     {
+        if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
+            ($this->logger === null) ?: $this->logger->log(
+                \JTLLOG_LEVEL_NOTICE,
+                'GeneralDataProtection: No Task-ID given.'
+            );
+            return;
+        }
         $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
         /** @var MethodInterface $instance */
         $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);

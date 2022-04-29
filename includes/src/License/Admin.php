@@ -155,7 +155,7 @@ class Admin
             }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
-            $this->getLicenses(true);
+            $this->getLicenses();
             $this->getList($smarty);
             return;
         }

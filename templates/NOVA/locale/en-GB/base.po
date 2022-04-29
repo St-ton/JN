@@ -277,11 +277,38 @@ msgstr "Here you can make your own CSS adjustments to your template. For informa
 msgid "colorPrimary"
 msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
+msgid "colorSecondary"
+msgstr "Secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColor"
+msgstr "Header background primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColor"
+msgstr "Header primary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColorSecondary"
+msgstr "Header background secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColorSecondary"
+msgstr "Header secondary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorFooterBgColor"
+msgstr "Footer background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorFooterColor"
+msgstr "Footer font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorCopyrightBgColor"
+msgstr "Footer Copyright background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
 msgid "customVariables"
 msgstr "Custom variables"
 
 msgid "customContent"
 msgstr "Custom CSS, Sass or Scss"
+
+msgid "The color settings might not work as expected in this theme."
+msgstr "The color settings might not work as expected in this theme."
 
 msgid "Gewählte Vorlage"
 msgstr "Chosen layout"
@@ -303,3 +330,9 @@ msgstr "Custom"
 
 msgid "Blocksatz"
 msgstr "Space between"
+
+msgid "Artikeldetailseite"
+msgstr "Item overview"
+
+msgid "Slider für Swatches anzeigen, ab x Elementen"
+msgstr "Show slider for swatches for more than x items"

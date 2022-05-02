@@ -462,7 +462,40 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container
+                fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' &&
+                    $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp ||
+                    (isset($Link) && $Link->getIsFluid()))
+                class="breadcrumb-container"
+            }
+                {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
+                    <script>
+                        let current_product_id = {$Artikel->kArtikel};
+                        let storage_id         = 'product_page_visits_' + current_product_id;
+                        let visits             = window.sessionStorage.getItem(storage_id);
+
+                        if (visits === null) {
+                            visits = 1;
+                        } else {
+                            visits ++;
+                        }
+
+                        window.sessionStorage.setItem(storage_id, visits);
+                        window.sessionStorage.setItem('last_visited_product', current_product_id);
+
+                        function back_to_list()
+                        {
+                            window.history.go(-visits);
+                        }
+                    </script>
+                    <button onclick="back_to_list()">back to list</button>
+                {else}
+                    <script>
+                        let last_visited_product = window.sessionStorage.getItem('last_visited_product');
+                        let storage_id           = 'product_page_visits_' + last_visited_product;
+                        window.sessionStorage.removeItem(storage_id);
+                    </script>
+                {/if}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

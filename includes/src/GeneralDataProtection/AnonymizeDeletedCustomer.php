@@ -3,6 +3,7 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\Customer\Customer;
+use JTL\DB\ReturnType;
 
 /**
  * Class AnonymizeDeletedCustomer
@@ -10,25 +11,40 @@ use JTL\Customer\Customer;
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
-    protected $isFinished = true;    // TEMPORARY
+    private array $methodName = [
+        'anonymizeRatings',
+        'anonymizeReceivedPayments',
+        'anonymizeNewsComments'
+    ];
 
     /**
      * runs all anonymize-routines
      */
     public function execute(): void
     {
-        $this->anonymizeRatings();
-        $this->anonymizeReceivedPayments();
-        $this->anonymizeNewsComments();
+        $this->workLimit = 50; // override main value from Method class (can be configured here)
+
+        $workLimitStart = $this->workLimit;
+        $workLimitSum   = 0;
+        foreach ($this->methodName as $method) {
+            if ($this->workLimit === 0) {
+                $this->isFinished = false;
+                return;
+            }
+            $affected         = $this->$method();
+            $this->workLimit -= $affected; // reduce $workLimit locallly for the next method
+            $workLimitSum    += $affected; // summarize complete work
+        }
+        $this->isFinished = ($workLimitSum < $workLimitStart);
     }
 
     /**
      * anonymize orphaned ratings.
      * (e.g. of canceled memberships)
      */
-    private function anonymizeRatings(): void
+    private function anonymizeRatings(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'UPDATE tbewertung b
             SET
                 b.cName  = :anonString,
@@ -51,7 +67,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 'dateLimit'  => $this->dateLimit,
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -59,9 +76,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      * anonymize received payments.
      * (replace `cZahler`(e-mail) in `tzahlungseingang`)
      */
-    private function anonymizeReceivedPayments(): void
+    private function anonymizeReceivedPayments(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "UPDATE tzahlungseingang z
             SET
                 z.cZahler = '-'
@@ -85,7 +102,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 'dateLimit' => $this->dateLimit,
                 'workLimit' => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -95,9 +113,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      *
      * CONSIDER: using no time base or limit!
      */
-    private function anonymizeNewsComments(): void
+    private function anonymizeNewsComments(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'UPDATE tnewskommentar n
             SET
                 n.cName = :anonString,
@@ -120,7 +138,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

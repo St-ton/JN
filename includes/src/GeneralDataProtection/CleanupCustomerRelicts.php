@@ -3,6 +3,7 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\Customer\Customer;
+use JTL\DB\ReturnType;
 
 /**
  * Class CleanupCustomerRelicts
@@ -24,28 +25,45 @@ use JTL\Customer\Customer;
  */
 class CleanupCustomerRelicts extends Method implements MethodInterface
 {
-    protected $isFinished = true;    // TEMPORARY
+    // protected $isFinished = true;    // TEMPORARY
+
+    private array $methodName = [
+        'cleanupVisitorArchive',
+        'cleanupCustomerAttributes',
+        'cleanupPaymentInformation',
+        'cleanupCustomerAccountData',
+        'cleanupDeliveryAddresses',
+        'cleanupBillingAddresses'
+    ];
 
     /**
      * runs all anonymize-routines
      */
     public function execute(): void
     {
-        $this->cleanupVisitorArchive();
-        $this->cleanupCustomerAttributes();
-        $this->cleanupPaymentInformation();
-        $this->cleanupCustomerAccountData();
-        $this->cleanupDeliveryAddresses();
-        $this->cleanupBillingAddresses();
+        $this->workLimit = 70; // override main value from Method class (can be configured here)
+
+        $workLimitStart = $this->workLimit;
+        $workLimitSum   = 0;
+        foreach ($this->methodName as $method) {
+            if ($this->workLimit === 0) {
+                $this->isFinished = false;
+                return;
+            }
+            $affected         = $this->$method();
+            $this->workLimit -= $affected; // reduce $workLimit locallly for the next method
+            $workLimitSum    += $affected; // summarize complete work
+        }
+        $this->isFinished = ($workLimitSum < $workLimitStart);
     }
 
     /**
      * delete visitors in the visitors archive immediately (at each run of the cron),
      * without a valid customer account
      */
-    private function cleanupVisitorArchive(): void
+    private function cleanupVisitorArchive(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tbesucherarchiv
             WHERE
                 kKunde > 0
@@ -62,7 +80,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -70,9 +89,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      * delete customer attributes
      * for which there are no valid customer accounts
      */
-    private function cleanupCustomerAttributes(): void
+    private function cleanupCustomerAttributes(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tkundenattribut
             WHERE
                 NOT EXISTS (
@@ -88,7 +107,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -96,9 +116,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      * delete orphaned payment information about customers
      * which have no valid account
      */
-    private function cleanupPaymentInformation(): void
+    private function cleanupPaymentInformation(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tzahlungsinfo
             WHERE
                 kKunde > 0
@@ -115,7 +135,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -123,9 +144,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      * delete orphaned bank account information of customers
      * which have no valid account
      */
-    private function cleanupCustomerAccountData(): void
+    private function cleanupCustomerAccountData(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'DELETE FROM tkundenkontodaten
             WHERE
                 kKunde > 0
@@ -142,7 +163,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -152,9 +174,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      *
      * (ATTENTION: no work limit possible here)
      */
-    private function cleanupDeliveryAddresses(): void
+    private function cleanupDeliveryAddresses(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "DELETE k
             FROM tlieferadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
@@ -174,7 +196,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
                 'stateCanceled' => \BESTELLUNG_STATUS_STORNO,
                 'anonString'    => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -183,9 +206,9 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      *
      * (ATTENTION: no work limit possible here)
      */
-    private function cleanupBillingAddresses(): void
+    private function cleanupBillingAddresses(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "DELETE k
             FROM trechnungsadresse k
                 JOIN tbestellung b ON b.kKunde = k.kKunde
@@ -205,7 +228,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
                 'stateShipped'  => \BESTELLUNG_STATUS_VERSANDT,
                 'stateCanceled' => \BESTELLUNG_STATUS_STORNO,
                 'anonString'    => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

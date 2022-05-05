@@ -43,7 +43,7 @@ final class GeneralDataProtect extends Job
         require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
         \Logger::configure('/www/shop5_02/_logging_conf.xml');
         $oLogger = \Logger::getLogger('default');
-        // --DEBUG-- -------------------------------------------------------------
+        // --DEBUG-- --------------------------------------------------------------
 
         parent::start($queueEntry);
         $this->foreignKey = (int)$queueEntry->foreignKey;

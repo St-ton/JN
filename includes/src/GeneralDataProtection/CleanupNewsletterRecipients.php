@@ -16,14 +16,14 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
-    protected $isFinished = true;    // TEMPORARY
-
     /**
      * runs all anonymize routines
      */
     public function execute(): void
     {
         $this->cleanupNewsletters();
+
+        $this->isFinished = true;
     }
 
     /**
@@ -32,13 +32,6 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
      */
     private function cleanupNewsletters(): void
     {
-        // --DEBUG-- -------------------------------------------------------------
-        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/www/shop5_02/_logging_conf.xml');
-        $oLogger = \Logger::getLogger('default');
-        // --DEBUG-- -------------------------------------------------------------
-        $oLogger->debug('workLimit: '.$this->workLimit);
-
         $data = $this->db->getObjects(
             "SELECT e.cOptCode
                 FROM tnewsletterempfaenger e

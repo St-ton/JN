@@ -18,16 +18,11 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
 {
     /**
      * @inheritDoc
-     *
-     * @var integer
-     */
-    protected $workLimit = 100;
-
-    /**
-     * runs all anonymize-routines
      */
     public function execute(): void
     {
+        $this->workLimit = 100; // override main value from Method class (can be configured here)
+
         $this->cleanupCustomers();
     }
 

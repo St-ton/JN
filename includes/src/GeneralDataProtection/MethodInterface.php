@@ -9,7 +9,7 @@ namespace JTL\GeneralDataProtection;
 interface MethodInterface
 {
     /**
-     *
+     * runs all anonymize-routines
      */
     public function execute(): void;
 

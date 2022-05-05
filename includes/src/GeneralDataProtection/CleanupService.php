@@ -8,8 +8,6 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupService extends Method implements MethodInterface
 {
-    protected $isFinished = true;    // TEMPORARY
-
     /**
      * @var array
      */
@@ -124,5 +122,7 @@ class CleanupService extends Method implements MethodInterface
                 );
             }
         }
+
+        $this->isFinished = true;
     }
 }

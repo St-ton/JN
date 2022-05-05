@@ -24,7 +24,7 @@ class CleanupForgottenOptins extends Method implements MethodInterface
     {
         $this->cleanupOptins();
 
-        $this->isFinished = true;    // TEMPORARY
+        $this->isFinished = true;
     }
 
     /**

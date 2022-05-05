@@ -18,7 +18,7 @@ class Migration_20220502151730 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            'DELETE FROM tadminmenu WHERE kAdminmenu IN (50, 84)'
+            "DELETE FROM tadminmenu WHERE cURL IN ('trustedshops.php', 'premiumplugin.php?plugin_id=agws_ts_features')"
         );
     }
 

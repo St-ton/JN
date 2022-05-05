@@ -135,6 +135,7 @@ class AnonymizeIps extends Method implements MethodInterface
             foreach ($this->db->getObjects($sql) as $row) {
                 try {
                     $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
+                    $this->workSum++;
                 } catch (\Exception $e) {
                     ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
                 }

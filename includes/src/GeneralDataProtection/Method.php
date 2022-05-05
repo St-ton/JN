@@ -30,12 +30,19 @@ class Method
     protected $interval = 0;
 
     /**
-     * select the maximum of 100 rows for one "step per task"!
+     * select the maximum of 1000 rows for one "step per task"!
      * (CONSIDER: some tasks need to overwrite this!)
      *
      * @var int
      */
     protected $workLimit = 1000;
+
+    /**
+     * summery of processed entities per method
+     *
+     * @var integer
+     */
+    protected $workSum = 0;
 
     /**
      * is this task finished
@@ -92,12 +99,22 @@ class Method
     }
 
     /**
-     * not implemented yet
+     * deliver the state of a method
      *
      * @return boolean
      */
     public function getIsFinished(): bool
     {
         return $this->isFinished;
+    }
+
+    /**
+     * deliver the summery of processed entities in method
+     *
+     * @return integer
+     */
+    public function getWorkSum(): int
+    {
+        return $this->workSum;
     }
 }

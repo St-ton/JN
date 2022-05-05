@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\DB\ReturnType;
+
 /**
  * Class CleanupNewsletterRecipients
  * @package JTL\GeneralDataProtection
@@ -51,14 +53,15 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
             ]
         );
         foreach ($data as $res) {
-            $this->db->queryPrepared(
+            $this->workSum += $this->db->queryPrepared(
                 'DELETE e, h
                     FROM tnewsletterempfaenger e
                        INNER JOIN tnewsletterempfaengerhistory h
                            ON h.cOptCode = e.cOptCode
                            AND h.cEmail = e.cEmail
                     WHERE e.cOptCode = :optCode',
-                ['optCode' => $res->cOptCode]
+                ['optCode' => $res->cOptCode],
+                ReturnType::AFFECTED_ROWS
             );
         }
     }

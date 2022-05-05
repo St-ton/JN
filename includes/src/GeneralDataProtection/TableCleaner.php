@@ -113,7 +113,8 @@ class TableCleaner
         $this->isFinished = $instance->getIsFinished();
         ($this->logger === null) ?: $this->logger->log(
             \JTLLOG_LEVEL_NOTICE,
-            'Anonymize method executed: ' . $this->methods[$taskIdx]['name']
+            'Anonymize method executed: ' . $this->methods[$taskIdx]['name'] . ', ' .
+            $instance->getWorkSum() . ' entities processed.'
         );
     }
 

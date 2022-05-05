@@ -2,6 +2,8 @@
 
 namespace JTL\GeneralDataProtection;
 
+use JTL\DB\ReturnType;
+
 /**
  * Class CleanupForgottenOptins
  * @package JTL\GeneralDataProtection
@@ -60,8 +62,8 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             ]
         );
 
-        $optinIDs     = [];
-        $recipientIDs = [];
+        $optinIDs      = [];
+        $recipientIDs  = [];
         foreach ($result as $row) {
             $optinIDs[]     = $row->o_kOptin;
             $recipientIDs[] = $row->e_kNewsletterEmpfaenger;
@@ -69,13 +71,17 @@ class CleanupForgottenOptins extends Method implements MethodInterface
         $recipientIDs = \array_filter($recipientIDs);
         $optinIDs     = \array_filter($optinIDs);
         if (\count($optinIDs) > 0) {
-            $this->db->query('DELETE FROM toptin WHERE kOptin IN (' . \implode(',', $optinIDs) . ')');
+            $this->workSum += $this->db->query(
+                'DELETE FROM toptin WHERE kOptin IN (' . \implode(',', $optinIDs) . ')',
+                ReturnType::AFFECTED_ROWS
+            );
         }
         if (\count($recipientIDs) > 0) {
-            $this->db->query(
+            $this->workSum += $this->db->query(
                 'DELETE from tnewsletterempfaenger WHERE kNewsletterEmpfaenger IN (' .
                 \implode(',', $recipientIDs) .
-                ')'
+                ')',
+                ReturnType::AFFECTED_ROWS
             );
         }
     }

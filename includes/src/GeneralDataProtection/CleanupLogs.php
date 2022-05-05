@@ -42,10 +42,7 @@ class CleanupLogs extends Method implements MethodInterface
      */
     public function execute(): void
     {
-        $this->workLimit = 200; // override main value from Method class (can be configured here)
-
         $workLimitStart = $this->workLimit;
-        $workLimitSum   = 0;
         foreach ($this->methodName as $method) {
             if ($this->workLimit === 0) {
                 $this->isFinished = false;
@@ -53,9 +50,9 @@ class CleanupLogs extends Method implements MethodInterface
             }
             $affected         = $this->$method();
             $this->workLimit -= $affected; // reduce $workLimit locallly for the next method
-            $workLimitSum    += $affected; // summarize complete work
+            $this->workSum   += $affected; // summarize complete work
         }
-        $this->isFinished = ($workLimitSum < $workLimitStart);
+        $this->isFinished = ($this->workSum < $workLimitStart);
     }
 
     /**

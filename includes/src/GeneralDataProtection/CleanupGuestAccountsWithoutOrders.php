@@ -46,6 +46,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 'worklimit' => $this->workLimit
             ]
         );
+        $this->workSum    = count($guestAccounts);
         $this->isFinished = (count($guestAccounts) === 0);
         foreach ($guestAccounts as $guestAccount) {
             (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);

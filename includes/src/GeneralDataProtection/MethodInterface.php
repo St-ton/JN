@@ -17,4 +17,9 @@ interface MethodInterface
      *
      */
     public function getIsFinished(): bool;
+
+    /**
+     *
+     */
+    public function getWorkSum(): int;
 }

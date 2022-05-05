@@ -62,8 +62,8 @@ class CleanupForgottenOptins extends Method implements MethodInterface
             ]
         );
 
-        $optinIDs      = [];
-        $recipientIDs  = [];
+        $optinIDs     = [];
+        $recipientIDs = [];
         foreach ($result as $row) {
             $optinIDs[]     = $row->o_kOptin;
             $recipientIDs[] = $row->e_kNewsletterEmpfaenger;

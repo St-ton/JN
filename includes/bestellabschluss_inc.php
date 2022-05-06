@@ -94,7 +94,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     $order                  = new Bestellung();
     $customer               = Frontend::getCustomer();
     $deliveryAddress        = Frontend::getDeliveryAddress();
-    $deliveryAddressVorlage = New Lieferadressevorlage();
+    $deliveryAddressVorlage = new Lieferadressevorlage();
     $db                     = Shop::Container()->getDB();
     $cart                   = Frontend::getCart();
     $order->cBestellNr      = empty($orderNo) ? baueBestellnummer() : $orderNo;
@@ -157,13 +157,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         );
         $cart->kLieferadresse = $deliveryAddress->insertInDB();
 
-        if(isset($_SESSION['newShippingAddsressPreset'])) {
+        if (isset($_SESSION['newShippingAddsressPreset'])) {
             $deliveryAddressVorlage         = Frontend::getDeliveryAddressVorlage($deliveryAddress);
             $deliveryAddressVorlage->kKunde = $cart->kKunde;
             $deliveryAddressVorlage->insertInDB();
             unset($_SESSION['newShippingAddsressPreset']);
         }
-
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
         executeHook(
             HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT,

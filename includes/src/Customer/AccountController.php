@@ -1256,9 +1256,7 @@ class AccountController
                 'deleteAddressSuccessful'
             );
         }
-        header('Location: ' . Shop::Container()
-                ->getLinkService()
-                ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+        header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
         die;
     }
 

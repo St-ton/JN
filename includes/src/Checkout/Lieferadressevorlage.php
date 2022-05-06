@@ -121,11 +121,7 @@ class Lieferadressevorlage extends Adresse
         $this->encrypt();
         $obj = $this->toObject();
 
-        $res = Shop::Container()
-            ->getDB()
-            ->delete('tlieferadressevorlage',
-                array('kLieferadresse' , 'kKunde'),
-                array($obj->kLieferadresse, $obj->kKunde));
+        $res = Shop::Container()->getDB()->delete('tlieferadressevorlage', array('kLieferadresse' , 'kKunde'), array($obj->kLieferadresse, $obj->kKunde));
         return $res;
     }
 

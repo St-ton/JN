@@ -1275,10 +1275,12 @@ class AccountController
 
         $resetAllDefault                            = new stdClass();
         $resetAllDefault->nIstStandardLieferadresse = 1;
-        $this->db->update('tlieferadressevorlage',
+        $this->db->update(
+            'tlieferadressevorlage',
             ['kLieferadresse', 'kKunde'],
             [$getData['setAddressAsDefault'], $customer->kKunde],
-            $resetAllDefault);
+            $resetAllDefault
+        );
 
         header('Location: ' . Shop::Container()
                 ->getLinkService()

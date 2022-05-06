@@ -31,19 +31,31 @@ final class TopSeller extends Job
         }
         if ($minCount > 0) {
             $params['minCount'] = $minCount;
-            $having             = 'HAVING SUM(twarenkorbpos.nAnzahl) > :minCount';
+            $having             = 'HAVING SUM(m.nAnzahl) >= :minCount';
         }
 
         $this->db->query('TRUNCATE tbestseller');
         $this->db->queryPrepared(
             'INSERT INTO tbestseller (kArtikel, fAnzahl)
-                SELECT twarenkorbpos.kArtikel, SUM(twarenkorbpos.nAnzahl) AS anz
-                    FROM tbestellung
-                    INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                    WHERE tbestellung.cStatus > 1
-                        AND twarenkorbpos.kArtikel > 0
-                        ' . $where . '
-                    GROUP BY twarenkorbpos.kArtikel
+                SELECT m.kArtikel, SUM(m.nAnzahl) AS anz
+                    FROM (
+                        SELECT twarenkorbpos.kArtikel, twarenkorbpos.nAnzahl
+                        FROM tbestellung
+                        INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                        WHERE tbestellung.cStatus > 1
+                          AND twarenkorbpos.kArtikel > 0
+                          ' . $where . '
+                        UNION ALL
+                        SELECT tartikel.kVaterArtikel, twarenkorbpos.nAnzahl
+                        FROM tbestellung
+                        INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                        INNER JOIN tartikel ON twarenkorbpos.kArtikel = tartikel.kArtikel
+                        WHERE tbestellung.cStatus > 1
+                          AND twarenkorbpos.kArtikel > 0
+                          AND tartikel.kVaterArtikel > 0
+                          ' . $where . '
+                    ) AS m
+                    GROUP BY m.kArtikel
                     ' . $having,
             $params
         );

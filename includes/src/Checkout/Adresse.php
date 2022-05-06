@@ -98,6 +98,11 @@ class Adresse
     public $cZusatz;
 
     /**
+     * @var int
+     */
+    public $nIstStandardLieferadresse;
+
+    /**
      * @var array
      */
     protected static $encodedProperties = [

@@ -35,13 +35,22 @@
                                             {if $adresse->kLieferadresse > 0}
                                                 {block name='checkout-inc-shipping-address-address'}
                                                     {listgroupitem tag="li"}
-                                                        <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
-                                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
-                                                                <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
-                                                                    , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
-                                                                    , {$adresse->angezeigtesLand}</span>
-                                                            {/radio}
-                                                        </label>
+                                                        <div class="d-flex flex-row">
+                                                            <div class="p-2">
+                                                                <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
+                                                                    {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse)}
+                                                                        <span class="control-label label-default">{if $adresse->cFirma}{$adresse->cFirma},{/if} {$adresse->cVorname} {$adresse->cNachname}
+                                                                            , {$adresse->cStrasse} {$adresse->cHausnummer}, {$adresse->cPLZ} {$adresse->cOrt}
+                                                                            , {$adresse->angezeigtesLand}</span>
+                                                                    {/radio}
+                                                                </label>
+                                                            </div>
+                                                            <div class="ml-auto p-2">
+                                                                {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
+                                                                    <span class="fas fa-pencil-alt"></span>
+                                                                {/link}
+                                                            </div>
+                                                        </div>
                                                     {/listgroupitem}
                                                 {/block}
                                             {/if}

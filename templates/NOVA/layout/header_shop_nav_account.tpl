@@ -75,6 +75,9 @@
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editRechnungsadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myPersonalData'}
                 {/dropdownitem}
+                {dropdownitem href="{get_static_route id='jtl.php' secure=true}?editLieferadresse=1" rel="nofollow" title="{lang key='myAccount'}"}
+                    {lang key='myShippingAdresses'}
+                {/dropdownitem}
                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
                     {dropdownitem href="{get_static_route id='jtl.php' secure=true}#my-wishlists" rel="nofollow" title="{lang key='myAccount'}"}
                         {lang key='myWishlists'}

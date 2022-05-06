@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php /** @noinspection PhpUndefinedConstantInspection */
+declare(strict_types=1);
 
 namespace JTL\Customer;
 
@@ -16,6 +17,7 @@ use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Lieferadressevorlage;
 use JTL\DB\DbInterface;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
@@ -158,6 +160,7 @@ class AccountController
      * @param Customer $customer
      * @return string
      * @throws Exception
+     * @noinspection Annotator
      */
     private function handleCustomerRequest(Customer $customer): string
     {
@@ -166,6 +169,7 @@ class AccountController
         $ratings    = [];
         $step       = 'mein Konto';
         $valid      = Form::validateToken();
+
         if (Request::verifyGPCDataInt('logout') === 1) {
             $this->logout();
         }
@@ -230,16 +234,32 @@ class AccountController
         if ($wishlistID > 0) {
             $step = $this->modifyWishlist($customerID, $wishlistID);
         }
-        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0
-            || Request::verifyGPCDataInt('editLieferadresse') > 0
-        ) {
+        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0) {
             $step = 'rechnungsdaten';
+        }
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('adresse')) {
+            $step = 'lieferadressen';
         }
         if (Request::getInt('pass') === 1) {
             $step = 'passwort aendern';
         }
         if ($valid && Request::postInt('edit') === 1) {
             $this->changeCustomerData();
+        }
+        if (Request::verifyGPDataString('editAddress') === 'neu' && Request::postInt('edit') === 1) {
+            $this->saveShippingAddress();
+        }
+        if (Request::getInt('editAddress') > 0 && !Request::postInt('edit')) {
+            $this->loadShippingAddress();
+        }
+        if (Request::getInt('editAddress') > 0 && Request::postInt('edit') === 1) {
+            $this->updateShippingAddress();
+        }
+        if (Request::getInt('deleteAddress') > 0) {
+            $this->deleteShippingAddress();
+        }
+        if (Request::getInt('setAddressAsDefault') > 0) {
+            $this->setShippingAddressAsDefault();
         }
         if ($valid && Request::postInt('pass_aendern') > 0) {
             $step = $this->changePassword($customerID);
@@ -268,14 +288,14 @@ class AccountController
         if ($step === 'mein Konto') {
             $deliveryAddresses = [];
             $addressData       = $this->db->selectAll(
-                'tlieferadresse',
+                'tlieferadressevorlage',
                 'kKunde',
                 $customerID,
                 'kLieferadresse'
             );
             foreach ($addressData as $item) {
                 if ($item->kLieferadresse > 0) {
-                    $deliveryAddresses[] = new Lieferadresse((int)$item->kLieferadresse);
+                    $deliveryAddresses[] = new Lieferadressevorlage((int)$item->kLieferadresse);
                 }
             }
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
@@ -284,6 +304,9 @@ class AccountController
         }
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields();
+        }
+        if ($step === 'lieferadressen') {
+            $this->getLieferadressen();
         }
         if ($step === 'bewertungen') {
             $ratings = $this->db->getCollection(
@@ -343,7 +366,8 @@ class AccountController
         } elseif ($returnCode === Customer::ERROR_INACTIVE) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
         } elseif ($returnCode === Customer::ERROR_NOT_ACTIVATED_YET) {
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
+            $this->alertService
+                ->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         } else {
             $this->checkLoginCaptcha($tries);
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
@@ -456,6 +480,7 @@ class AccountController
             $_SESSION['Zahlungsart'],
             $_SESSION['Versandart'],
             $_SESSION['Lieferadresse'],
+            $_SESSION['Lieferadressevorlage'],
             $_SESSION['ks'],
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
@@ -1081,6 +1106,184 @@ class AccountController
             'csrfValidationFailed'
         );
         Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
+    }
+
+    /**
+     *
+     */
+    private function getLieferadressen(): void
+    {
+        $customer = $_SESSION['Kunde'];
+        if ($customer->kKunde > 0) {
+            $addresses = [];
+
+            $data = $this->db->selectAll(
+                'tlieferadressevorlage',
+                'kKunde',
+                $customer->kKunde,
+                '*',
+                'nIstStandardLieferadresse DESC'
+            );
+
+            foreach ($data as $item) {
+                if ($item->kLieferadresse > 0) {
+                    $addresses[] = new Lieferadressevorlage((int)$item->kLieferadresse);
+                }
+            }
+
+            $this->smarty
+                ->assign('Lieferadressen', $addresses)
+                ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
+        }
+    }
+
+    /**
+     *
+     */
+    private function loadShippingAddress(): void
+    {
+        $customer = $_SESSION['Kunde'];
+        $getData  = Text::filterXSS($_GET);
+
+        $data = $this->db->selectSingleRow(
+            'tlieferadressevorlage',
+            'kLieferadresse',
+            (int)$getData['editAddress'],
+            'kKunde',
+            $customer->kKunde
+        );
+
+        if ($data === null) {
+            header('Location: ' . Shop::Container()
+                    ->getLinkService()
+                    ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+            die;
+        }
+
+        $lieferAdresse = new Lieferadressevorlage((int)$data->kLieferadresse);
+
+        $this->smarty
+            ->assign('Lieferadresse', $lieferAdresse)
+            ->assign('laender', ShippingMethod::getPossibleShippingCountries(
+                $customer->getGroupID(),
+                false,
+                true
+            ));
+    }
+
+    /**
+     *
+     */
+    private function updateShippingAddress(): void
+    {
+        $customer                            = $_SESSION['Kunde'];
+        $postData                            = Text::filterXSS($_POST);
+        $shipping_address                    = $postData['register']['shipping_address'];
+        $updateLieferAdresse                 = new Lieferadressevorlage();
+        $updateLieferAdresse->kLieferadresse = (int)$postData['editAddress'];
+        $updateLieferAdresse->kKunde         = $customer->kKunde;
+        $updateLieferAdresse->cTitel         = $shipping_address['titel'];
+        $updateLieferAdresse->cVorname       = $shipping_address['vorname'];
+        $updateLieferAdresse->cNachname      = $shipping_address['nachname'];
+        $updateLieferAdresse->cStrasse       = $shipping_address['strasse'];
+        $updateLieferAdresse->cHausnummer    = $shipping_address['hausnummer'];
+        $updateLieferAdresse->cLand          = $shipping_address['land'];
+        $updateLieferAdresse->cPLZ           = $shipping_address['plz'];
+        $updateLieferAdresse->cOrt           = $shipping_address['ort'];
+        if ($postData['isDefault'] == 1) {
+            $updateLieferAdresse->nIstStandardLieferadresse = 1;
+        }
+        $updateStatus = $updateLieferAdresse->updateInDB();
+        if ($updateStatus) {
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                Shop::Lang()->get('updateAddressSuccessful', 'account data'),
+                'updateAddressSuccessful'
+            );
+        }
+
+        if (isset($postData['backToCheckout'])) {
+            header('Location: ' . Shop::Container()
+                    ->getLinkService()
+                    ->getStaticRoute('bestellvorgang.php', true).'?editRechnungsadresse=1');
+            die;
+        }
+    }
+
+    /**
+     *
+     */
+    private function saveShippingAddress(): void
+    {
+        $customer                       = $_SESSION['Kunde'];
+        $postData                       = Text::filterXSS($_POST);
+        $shipping_address               = $postData['register']['shipping_address'];
+        $saveLieferAdresse              = new Lieferadressevorlage();
+        $saveLieferAdresse->kKunde      = $customer->kKunde;
+        $saveLieferAdresse->cTitel      = $shipping_address['titel'];
+        $saveLieferAdresse->cVorname    = $shipping_address['vorname'];
+        $saveLieferAdresse->cNachname   = $shipping_address['nachname'];
+        $saveLieferAdresse->cStrasse    = $shipping_address['strasse'];
+        $saveLieferAdresse->cHausnummer = $shipping_address['hausnummer'];
+        $saveLieferAdresse->cLand       = $shipping_address['land'];
+        $saveLieferAdresse->cPLZ        = $shipping_address['plz'];
+        $saveLieferAdresse->cOrt        = $shipping_address['ort'];
+        $saveStatus                     = $saveLieferAdresse->insertInDB();
+        if ($saveStatus) {
+            $this->alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                Shop::Lang()->get('saveAddressSuccessful', 'account data'),
+                'saveAddressSuccessful'
+            );
+        }
+    }
+
+    /**
+     *
+     */
+    private function deleteShippingAddress(): void
+    {
+        $customer                      = $_SESSION['Kunde'];
+        $getData                       = Text::filterXSS($_GET);
+        $lieferAdresse                 = new Lieferadressevorlage();
+        $lieferAdresse->kLieferadresse = (int)$getData['deleteAddress'];
+        $lieferAdresse->kKunde         = $customer->kKunde;
+        $deleteStatus                  = $lieferAdresse->deleteInDB();
+        if ($deleteStatus) {
+            $this->alertService->addAlert(
+                Alert::TYPE_NOTE,
+                Shop::Lang()->get('deleteAddressSuccessful', 'account data'),
+                'deleteAddressSuccessful'
+            );
+        }
+        header('Location: ' . Shop::Container()
+                ->getLinkService()
+                ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+        die;
+    }
+
+    /**
+     *
+     */
+    private function setShippingAddressAsDefault(): void
+    {
+        $customer                                   = $_SESSION['Kunde'];
+        $getData                                    = Text::filterXSS($_GET);
+        $resetAllDefault                            = new stdClass();
+        $resetAllDefault->nIstStandardLieferadresse = 0;
+        $this->db->update('tlieferadressevorlage', 'kKunde', $customer->kKunde, $resetAllDefault);
+
+        $resetAllDefault                            = new stdClass();
+        $resetAllDefault->nIstStandardLieferadresse = 1;
+        $this->db->update('tlieferadressevorlage',
+            ['kLieferadresse', 'kKunde'],
+            [$getData['setAddressAsDefault'], $customer->kKunde],
+            $resetAllDefault);
+
+        header('Location: ' . Shop::Container()
+                ->getLinkService()
+                ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+        die;
     }
 
     /**

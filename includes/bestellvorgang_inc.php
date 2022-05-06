@@ -6,6 +6,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Lieferadressevorlage;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
@@ -206,9 +207,15 @@ function pruefeLieferdaten($post, &$missingData = null): void
 {
     global $Lieferadresse;
     unset($_SESSION['Lieferadresse']);
+    unset($_SESSION['newShippingAddsressPreset']);
     if (!isset($_SESSION['Bestellung'])) {
         $_SESSION['Bestellung'] = new stdClass();
     }
+
+    if (isset($post['saveAsNewShippingAddressPreset'])) {
+        $_SESSION['newShippingAddsressPreset'] = 1;
+    }
+
     $_SESSION['Bestellung']->kLieferadresse = isset($post['kLieferadresse'])
         ? (int)$post['kLieferadresse']
         : -1;
@@ -241,13 +248,14 @@ function pruefeLieferdaten($post, &$missingData = null): void
         // vorhandene lieferadresse
         $addressData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
-                FROM tlieferadresse
+                FROM tlieferadressevorlage
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
+            $deliveryAddress           = new Lieferadressevorlage((int)$addressData->kLieferadresse);
+            $deliveryAddress           = Frontend::getDeliveryAddressFromVorlage($deliveryAddress);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
 
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
@@ -437,9 +445,9 @@ function pruefeLieferadresseStep($get): void
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
-            || isset($_SESSION['preferredDeliveryCountryCode'])
-            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
+            || (isset($_SESSION['preferredDeliveryCountryCode'])
+                && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
@@ -697,13 +705,13 @@ function gibStepLieferadresse()
         $addresses = [];
         $data      = Shop::Container()->getDB()->getObjects(
             'SELECT DISTINCT(kLieferadresse)
-                FROM tlieferadresse
+                FROM tlieferadressevorlage
                 WHERE kKunde = :cid',
             ['cid' => Frontend::getCustomer()->getID()]
         );
         foreach ($data as $item) {
             if ($item->kLieferadresse > 0) {
-                $addresses[] = new Lieferadresse($item->kLieferadresse);
+                $addresses[] = new Lieferadressevorlage($item->kLieferadresse);
             }
         }
         $smarty->assign('Lieferadressen', $addresses);
@@ -723,6 +731,7 @@ function gibStepLieferadresse()
 
 /**
  *
+ * @noinspection PhpCSValidationInspection
  */
 function gibStepZahlung()
 {
@@ -2772,13 +2781,14 @@ function pruefeAjaxEinKlick(): int
     if ($lastOrder->kLieferadresse > 0) {
         $addressData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
-                FROM tlieferadresse
+                FROM tlieferadressevorlage
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
+            $addressData               = new Lieferadressevorlage((int)$addressData->kLieferadresse);
+            $addressData               = Frontend::getDeliveryAddressFromVorlage($addressData);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();

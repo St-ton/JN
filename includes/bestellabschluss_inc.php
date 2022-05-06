@@ -11,6 +11,7 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\KuponBestellung;
 use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Lieferadressevorlage;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
@@ -90,13 +91,14 @@ function gibFehlendeEingabe(): int
 function bestellungInDB($cleared = 0, $orderNo = '')
 {
     unhtmlSession();
-    $order             = new Bestellung();
-    $customer          = Frontend::getCustomer();
-    $deliveryAddress   = Frontend::getDeliveryAddress();
-    $db                = Shop::Container()->getDB();
-    $cart              = Frontend::getCart();
-    $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
-    $cartItems         = [];
+    $order                  = new Bestellung();
+    $customer               = Frontend::getCustomer();
+    $deliveryAddress        = Frontend::getDeliveryAddress();
+    $deliveryAddressVorlage = New Lieferadressevorlage();
+    $db                     = Shop::Container()->getDB();
+    $cart                   = Frontend::getCart();
+    $order->cBestellNr      = empty($orderNo) ? baueBestellnummer() : $orderNo;
+    $cartItems              = [];
     if (Frontend::getCustomer()->getID() <= 0) {
         $customerAttributes      = $customer->getCustomerAttributes();
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
@@ -154,6 +156,14 @@ function bestellungInDB($cleared = 0, $orderNo = '')
             ['deliveryAddress' => $deliveryAddress]
         );
         $cart->kLieferadresse = $deliveryAddress->insertInDB();
+
+        if(isset($_SESSION['newShippingAddsressPreset'])) {
+            $deliveryAddressVorlage         = Frontend::getDeliveryAddressVorlage($deliveryAddress);
+            $deliveryAddressVorlage->kKunde = $cart->kKunde;
+            $deliveryAddressVorlage->insertInDB();
+            unset($_SESSION['newShippingAddsressPreset']);
+        }
+
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
         executeHook(
             HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT,

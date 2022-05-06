@@ -382,14 +382,14 @@ function setzeSmartyLieferadresse(): void
     if (Frontend::getCustomer()->getID() > 0) {
         $shippingAddresses = [];
         $deliveryData      = Shop::Container()->getDB()->selectAll(
-            'tlieferadresse',
+            'tlieferadressevorlage',
             'kKunde',
             Frontend::getCustomer()->getID(),
             'kLieferadresse'
         );
         foreach ($deliveryData as $item) {
             if ($item->kLieferadresse > 0) {
-                $shippingAddresses[] = new Lieferadresse($item->kLieferadresse);
+                $shippingAddresses[] = new Lieferadressevorlage($item->kLieferadresse);
             }
         }
         $customerGroupID = Frontend::getCustomer()->kKundengruppe;

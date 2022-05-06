@@ -9,6 +9,7 @@ use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Lieferadressevorlage;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\GeneralObject;
@@ -365,6 +366,58 @@ class Frontend extends AbstractSession
     public static function getDeliveryAddress(): Lieferadresse
     {
         return $_SESSION['Lieferadresse'] ?? new Lieferadresse();
+    }
+
+    /**
+     * @return Lieferadressevorlage
+     */
+    public static function getDeliveryAddressVorlage($lieferadresse): Lieferadressevorlage
+    {
+        $lieferadressevorlage              = new Lieferadressevorlage();
+        $lieferadressevorlage->cVorname    = $lieferadresse->cVorname;
+        $lieferadressevorlage->cNachname   = $lieferadresse->cNachname;
+        $lieferadressevorlage->cFirma      = $lieferadresse->cFirma ?? null;
+        $lieferadressevorlage->kKunde      = $lieferadresse->kKunde;
+        $lieferadressevorlage->cAnrede     = $lieferadresse->cAnrede;
+        $lieferadressevorlage->cTitel      = $lieferadresse->cTitel;
+        $lieferadressevorlage->cStrasse    = $lieferadresse->cStrasse;
+        $lieferadressevorlage->cHausnummer = $lieferadresse->cHausnummer;
+        $lieferadressevorlage->cPLZ        = $lieferadresse->cPLZ;
+        $lieferadressevorlage->cOrt        = $lieferadresse->cOrt;
+        $lieferadressevorlage->cLand       = $lieferadresse->cLand;
+        $lieferadressevorlage->cTel        = $lieferadresse->cTel;
+        $lieferadressevorlage->cMobil      = $lieferadresse->cMobil ?? null;
+        $lieferadressevorlage->cFax        = $lieferadresse->cFax ?? null;
+        $lieferadressevorlage->cMail       = $lieferadresse->cMail;
+        $lieferadressevorlage->cAnrede     = $lieferadresse->cAnrede;
+
+        return $lieferadressevorlage;
+    }
+
+    /**
+     * @return Lieferadressevorlage
+     */
+    public static function getDeliveryAddressFromVorlage($lieferadressevorlage): Lieferadresse
+    {
+        $lieferadresse              = new Lieferadresse();
+        $lieferadresse->cVorname    = $lieferadressevorlage->cVorname;
+        $lieferadresse->cNachname   = $lieferadressevorlage->cNachname;
+        $lieferadresse->cFirma      = $lieferadressevorlage->cFirma ?? null;
+        $lieferadresse->kKunde      = $lieferadressevorlage->kKunde;
+        $lieferadresse->cAnrede     = $lieferadressevorlage->cAnrede;
+        $lieferadresse->cTitel      = $lieferadressevorlage->cTitel;
+        $lieferadresse->cStrasse    = $lieferadressevorlage->cStrasse;
+        $lieferadresse->cHausnummer = $lieferadressevorlage->cHausnummer;
+        $lieferadresse->cPLZ        = $lieferadressevorlage->cPLZ;
+        $lieferadresse->cOrt        = $lieferadressevorlage->cOrt;
+        $lieferadresse->cLand       = $lieferadressevorlage->cLand;
+        $lieferadresse->cTel        = $lieferadressevorlage->cTel;
+        $lieferadresse->cMobil      = $lieferadressevorlage->cMobil ?? null;
+        $lieferadresse->cFax        = $lieferadressevorlage->cFax ?? null;
+        $lieferadresse->cMail       = $lieferadressevorlage->cMail;
+        $lieferadresse->cAnrede     = $lieferadressevorlage->cAnrede;
+
+        return $lieferadresse;
     }
 
     /**

@@ -128,18 +128,23 @@ final class CommentList implements ItemListInterface
     /**
      * @inheritDoc
      */
-    public function getCommentsCount(): array
+    public function getCommentsCount($whatcount = 'parent'): int
     {
-        $count = ['parent' => 0, 'child' => 0];
+        $parent = $child = 0;
         foreach ($this->items as $comment) {
-            if ($comment->parentCommentID === 0) {
-                $count['parent']++;
+            if ($comment->getParentCommentID() === 0) {
+                $parent++;
             } else {
-                $count['child']++;
+                $child++;
             }
         }
 
-        return $count;
+        if ($whatcount === 'parent'){
+            return $parent;
+        }else{
+            return $child;
+        }
+
     }
 
     /**

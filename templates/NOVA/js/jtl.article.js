@@ -67,6 +67,14 @@
                         that.setArticleContent(event.state.a, event.state.a2, event.state.url, event.state.variations);
                     }
                 }, false);
+
+                if (this.isBackToListDisabled()) {
+                    this.disableBackToList();
+                } else {
+                    this.incrementProductVisitCount();
+                }
+            } else {
+                this.resetVisitCount();
             }
         },
 
@@ -89,6 +97,16 @@
             }
 
             return $current;
+        },
+
+        isBackToListDisabled: function() {
+            if (document.referrer === '') {
+                return true;
+            }
+        },
+
+        disableBackToList: function() {
+            $('.breadcrumb-backtolist').remove();
         },
 
         incrementProductVisitCount: function() {

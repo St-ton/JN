@@ -106,6 +106,7 @@
             this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
+            this.registerImageHover($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
             this.initAbnahmeIntervallError();
@@ -517,6 +518,17 @@
                         }
                     });
             }
+        },
+
+        registerImageHover: function($wrapper) {
+            $('.productbox-show-variations', $wrapper).on('mouseenter', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('show');
+            });
+            $('.productbox-show-variations', $wrapper).on(' mouseleave', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('hide');
+            });
         },
 
         registerFinish: function($wrapper) {
@@ -1317,6 +1329,17 @@
             }
         },
 
+        redirectToArticle: function(id, variation, url, variations, wrapper) {
+            var $wrapper  = this.getWrapper(wrapper),
+                listStyle = $('#product-list-type').val();
+
+            $.evo.extended().startSpinner($wrapper);
+
+            window.open(url, '_top');
+
+            $.evo.extended().stopSpinner($wrapper);
+        },
+
         variationResetAll: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
@@ -1349,6 +1372,13 @@
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
             $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
+        },
+
+        showGalleryVariation: function(key, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('.variation-' + key, $wrapper);
+
+            $item.collapse();
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1464,6 +1494,7 @@
                     value    = $current.data('value'),
                     io       = $.evo.io(),
                     args     = io.getFormValues(formID),
+                    layout   = $('#product-list-type').val(),
                     $wrapper = this.getWrapper(wrapper);
 
                 if (animation) {
@@ -1474,6 +1505,7 @@
 
                 $('.tooltip.show').remove();
                 args.wrapper = wrapper;
+                args.layout  = layout;
 
                 $.evo.article()
                     .variationDispose(wrapper);

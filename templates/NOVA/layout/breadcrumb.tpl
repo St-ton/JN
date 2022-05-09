@@ -5,10 +5,12 @@
         {row no-gutters=true class="breadcrumb-wrapper"}
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="https://schema.org/BreadcrumbList"}
-                    {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
-                        class="breadcrumb-backtolist" href="#"}
-                        {lang key='goBackToList'}
-                    {/breadcrumbitem}
+                    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
+                        {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
+                            class="breadcrumb-backtolist" href="#"}
+                            {lang key='goBackToList'}
+                        {/breadcrumbitem}
+                    {/if}
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
                         {if $parent !== null}

@@ -64,11 +64,14 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Diese Lieferadresse zu meine Vorlagen hinzufügen');
         $this->setLocalization('eng', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Add this shipping address to my templates');
 
+        $this->setLocalization('ger', 'account data', 'defaultShippingAdresses', 'Standard Lieferadresse');
+        $this->setLocalization('eng', 'account data', 'defaultShippingAdresses', 'Default shipping address');
+
         $this->execute("CREATE TABLE `tlieferadressevorlage` (
                                 `kLieferadresse` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                                 `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT '0',
                                 `cAnrede` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                   SS             `cVorname` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
+                                `cVorname` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
                                 `cNachname` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
                                 `cTitel` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
                                 `cFirma` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
@@ -93,7 +96,6 @@ class Migration_20220413114737 extends Migration implements IMigration
                             ENGINE=InnoDB
                             ROW_FORMAT=DYNAMIC;
                             ");
-
     }
 
     /**

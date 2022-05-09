@@ -11,7 +11,7 @@
                             {col md=8 xl=6 class="checkout-button-row-submit"}
                                 {input type="hidden" name="editLieferadresse" value="1"}
                                 {input type="hidden" name="edit" value="1"}
-                                {if $Lieferadresse->nIstStandardLieferadresse === "1"}
+                                {if isset($Lieferadresse->nIstStandardLieferadresse) && $Lieferadresse->nIstStandardLieferadresse === "1"}
                                     {input type="hidden" name="isDefault" value=1}
                                 {/if}
                                 {if isset($Lieferadresse->kLieferadresse) && !isset($smarty.get.fromCheckout)}
@@ -38,52 +38,51 @@
             {/col}
             {col md=6}
                 {block name='checkout-inc-shipping-address-fieldset-address'}
-                        {foreach $Lieferadressen as $adresse}
-                            {if $adresse->kLieferadresse > 0}
-                                {block name='checkout-inc-shipping-address-address'}
-                                <div class="card mb-3">
-                                    {if $adresse->nIstStandardLieferadresse === '1'}
-                                        <div class="card-header bg-primary">
-                                            <strong>Standard Lieferadresse</strong>
+                    {foreach $Lieferadressen as $adresse}
+                        {if $adresse->kLieferadresse > 0}
+                            {block name='checkout-inc-shipping-address-address'}
+                            <div class="card mb-3">
+                                {if $adresse->nIstStandardLieferadresse === '1'}
+                                    <div class="card-header bg-primary">
+                                        <strong>{lang key='defaultShippingAdresses' section='account data'}</strong>
+                                    </div>
+                                {/if}
+                                <div class="card-body">
+                                    <span class="control-label label-default">
+                                        {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
+                                        {if $adresse->cTitel}{$adresse->cTitel}<br />{/if}
+                                        <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
+                                        {$adresse->cStrasse} {$adresse->cHausnummer}<br />
+                                        {$adresse->cPLZ} {$adresse->cOrt}<br />
+                                        {$adresse->angezeigtesLand}
+                                    </span>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    {if $adresse->nIstStandardLieferadresse !== '1'}
+                                        <div class="control-label label-default">
+                                            {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}" class="btn btn-primary btn-sm" rel="nofollow" }
+                                                {lang key='useAsDefaultShippingAdress' section='account data'}
+                                            {/link}
                                         </div>
                                     {/if}
-                                    <div class="card-body">
-                                        <span class="control-label label-default">
-                                            {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                            {if $adresse->cTitel}{$adresse->cTitel}<br />{/if}
-                                            <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
-                                            {$adresse->cStrasse} {$adresse->cHausnummer}<br />
-                                            {$adresse->cPLZ} {$adresse->cOrt}<br />
-                                            {$adresse->angezeigtesLand}
-                                        </span>
-                                    </div>
-                                    <div class="card-footer text-muted">
-                                        {if $adresse->nIstStandardLieferadresse !== '1'}
-                                            <div class="control-label label-default">
-                                                {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}" class="btn btn-primary btn-sm" rel="nofollow" }
-                                                    {lang key='useAsDefaultShippingAdress' section='account data'}
-                                                {/link}
-                                            </div>
-                                        {/if}
-                                        <div class="control-label label-default mt-2">
-                                            {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}" class="btn btn-secondary btn-sm" alt="Adresse bearbeiten"}
-                                                <span class="fas fa-pencil-alt"></span>
-                                                {lang key='editShippingAdress' section='account data'}
-                                            {/link}
-                                            {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'deleteAddress' => {$adresse->kLieferadresse}]}" class="btn btn-danger btn-sm" alt="Adresse löschen"}
-                                                <span class="fas fa-times"></span>
-                                                {lang key='deleteAddres' section='account data'}
-                                            {/link}
-                                        </div>
+                                    <div class="control-label label-default mt-2">
+                                        {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}" class="btn btn-secondary btn-sm" alt="Adresse bearbeiten"}
+                                            <span class="fas fa-pencil-alt"></span>
+                                            {lang key='editShippingAdress' section='account data'}
+                                        {/link}
+                                        {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'deleteAddress' => {$adresse->kLieferadresse}]}" class="btn btn-danger btn-sm" alt="Adresse löschen"}
+                                            <span class="fas fa-times"></span>
+                                            {lang key='deleteAddres' section='account data'}
+                                        {/link}
                                     </div>
                                 </div>
-                                {/block}
-
-
-
-                            {/if}
-                        {/foreach}
-
+                            </div>
+                            {/block}
+                        {/if}
+                    {/foreach}
+                    {block name='account-orders-include-pagination'}
+                        {include file='snippets/pagination.tpl' oPagination=$addressPagination cThisUrl='jtl.php' cParam_arr=['editLieferadresse' => 1] parts=['pagi', 'label']}
+                    {/block}
                 {/block}
             {/col}
         {/block}

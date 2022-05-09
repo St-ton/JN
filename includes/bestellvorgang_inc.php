@@ -916,6 +916,9 @@ function gibStepVersand(): void
 {
     global $step;
     pruefeVersandkostenfreiKuponVorgemerkt();
+    if (!isset($_SESSION['Lieferadresse'])) {
+        setzeLieferadresseAusRechnungsadresse();
+    }
     $cart            = Frontend::getCart();
     $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$deliveryCountry) {

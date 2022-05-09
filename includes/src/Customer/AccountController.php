@@ -1117,12 +1117,21 @@ class AccountController
         if ($customer->kKunde > 0) {
             $addresses = [];
 
+            $prep['kKunde'] = $customer->kKunde;
+            $count_address  = $this->db->getSingleObject('select count(*) as anz from tlieferadressevorlage where kKunde = :kKunde order by nIstStandardLieferadresse DESC', $prep);
+
+            $addressPagination = (new Pagination('lieferadressen'))
+                ->setItemsPerPage(3)
+                ->setItemCount((int)$count_address->anz)
+                ->assemble();
+
             $data = $this->db->selectAll(
                 'tlieferadressevorlage',
                 'kKunde',
                 $customer->kKunde,
                 '*',
-                'nIstStandardLieferadresse DESC'
+                'nIstStandardLieferadresse DESC',
+                $addressPagination->getLimitSQL()
             );
 
             foreach ($data as $item) {
@@ -1133,6 +1142,7 @@ class AccountController
 
             $this->smarty
                 ->assign('Lieferadressen', $addresses)
+                ->assign('addressPagination', $addressPagination)
                 ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
         }
     }

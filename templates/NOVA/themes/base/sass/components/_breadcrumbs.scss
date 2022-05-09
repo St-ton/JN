@@ -50,3 +50,14 @@
 	}
 }
 
+.breadcrumb-backtolist {
+	&::before {
+		@include fas('f053');
+		margin-right: 6px;
+	}
+	&::after {
+		content: "|";
+		margin-left: 6px;
+		margin-right: 6px;
+	}
+}

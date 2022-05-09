@@ -279,6 +279,15 @@
             <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
         {/if}
         <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
+        {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
+            {inline_script}<script>
+                $.evo.article().incrementProductVisitCount();
+            </script>{/inline_script}
+        {else}
+            {inline_script}<script>
+                $.evo.article().resetVisitCount();
+            </script>{/inline_script}
+        {/if}
     </head>
     {/block}
 
@@ -468,16 +477,6 @@
                     (isset($Link) && $Link->getIsFluid()))
                 class="breadcrumb-container"
             }
-                {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
-                    {inline_script}<script>
-                        $.evo.article().incrementProductVisitCount();
-                    </script>{/inline_script}
-                    <button onclick="$.evo.article().navigateBackToList()">back to list</button>
-                {else}
-                    {inline_script}<script>
-                        $.evo.article().resetVisitCount();
-                    </script>{/inline_script}
-                {/if}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

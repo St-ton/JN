@@ -139,12 +139,11 @@ final class CommentList implements ItemListInterface
             }
         }
 
-        if ($whatcount === 'parent'){
+        if ($whatcount === 'parent') {
             return $parent;
-        }else{
+        } else {
             return $child;
         }
-
     }
 
     /**

@@ -36,7 +36,7 @@ class NewsletterImportController extends AbstractBackendController
             && Form::validateToken()
             && \mb_strlen($_FILES['csv']['tmp_name']) > 0
         ) {
-            $file = \fopen($_FILES['csv']['tmp_name'], 'r');
+            $file = \fopen($_FILES['csv']['tmp_name'], 'rb');
             if ($file !== false) {
                 $format    = ['cAnrede', 'cVorname', 'cNachname', 'cEmail'];
                 $row       = 0;

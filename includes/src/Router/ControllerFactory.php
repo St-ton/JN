@@ -90,7 +90,7 @@ class ControllerFactory
                     Shop::Lang()->get('optinCodeUnknown', 'errorMessages'),
                     'optinCodeUnknown'
                 );
-            } catch (InvalidInputException $e) {
+            } catch (InvalidInputException) {
                 Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('optinActionUnknown', 'errorMessages'),
                     'optinUnknownAction'

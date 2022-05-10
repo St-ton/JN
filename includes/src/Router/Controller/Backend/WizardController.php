@@ -6,9 +6,7 @@ use JTL\Backend\AuthToken;
 use JTL\Backend\Wizard\Controller;
 use JTL\Backend\Wizard\DefaultFactory;
 use JTL\Helpers\Request;
-use JTL\License\Admin;
-use JTL\License\Checker;
-use JTL\License\Manager;
+use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -28,10 +26,6 @@ class WizardController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/wizard');
-
-        $checker      = new Checker(Shop::Container()->getLogService(), $this->db, $this->cache);
-        $manager      = new Manager($this->db, $this->cache);
-        $admin        = new Admin($manager, $this->db, $this->cache, $checker);
         $factory      = new DefaultFactory(
             $this->db,
             $this->getText,
@@ -46,25 +40,20 @@ class WizardController extends AbstractBackendController
             : false;
 
         Backend::set('redirectedToWizard', true);
-
-        if (Request::postVar('action') === 'code') {
-            $admin->handleAuth();
-        } elseif (Request::getVar('action') === 'auth') {
+        if (Request::getVar('action') === 'auth') {
             Backend::set('wizard-authenticated', Request::getVar('wizard-authenticated'));
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL() . $this->route . '?action=code'
+                Shop::getAdminURL() . '/' . BackendRouter::ROUTE_CODE . '/wizard'
             );
         }
-        if (Request::postVar('action') !== 'code') {
-            unset($_SESSION['wizard-authenticated']);
-            $this->checkPermissions('WIZARD_VIEW');
+        unset($_SESSION['wizard-authenticated']);
+        $this->checkPermissions('WIZARD_VIEW');
 
-            return $smarty->assign('steps', $controller->getSteps())
-                ->assign('authRedirect', $authRedirect)
-                ->assign('hasAuth', $valid)
-                ->assign('route', $this->route)
-                ->getResponse('wizard.tpl');
-        }
+        return $smarty->assign('steps', $controller->getSteps())
+            ->assign('authRedirect', $authRedirect)
+            ->assign('hasAuth', $valid)
+            ->assign('route', $this->route)
+            ->getResponse('wizard.tpl');
     }
 }

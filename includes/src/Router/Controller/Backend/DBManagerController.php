@@ -97,12 +97,12 @@ class DBManagerController extends AbstractBackendController
                 }
                 $q = Query::getAll($query);
                 if ($q['is_select'] !== true) {
-                    throw new Exception(\sprintf('Query is restricted to SELECT statements'));
+                    throw new Exception('Query is restricted to SELECT statements');
                 }
                 foreach ($q['select_tables'] ?? [] as $t) {
                     [$table, $dbname] = $t;
                     if ($dbname !== null && \strcasecmp($dbname, DB_NAME) !== 0) {
-                        throw new Exception(\sprintf('Well, at least you tried :)'));
+                        throw new Exception('Well, at least you tried :)');
                     }
                     if (\in_array(\mb_convert_case($table, \MB_CASE_LOWER), $restrictedTables, true)) {
                         throw new Exception(\sprintf('Permission denied for table `%s`', $table));

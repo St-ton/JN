@@ -289,7 +289,7 @@ class IOController extends AbstractBackendController
             )) {
                 $this->db->query('ALTER TABLE ' . $idx . ' DROP KEY ' . $keyName);
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Fehler beim Index löschen ignorieren
         }
 

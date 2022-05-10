@@ -155,7 +155,7 @@ class LanguageController extends AbstractBackendController
             ->select(
                 'tsprachsektion',
                 'kSprachsektion',
-                (int)$variable->kSprachsektion
+                $variable->kSprachsektion
             )
             ->cName;
 

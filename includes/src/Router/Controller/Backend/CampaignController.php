@@ -652,12 +652,11 @@ class CampaignController extends AbstractBackendController
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
                 if (\count($data) > 0) {
-                    foreach ($data as $i => $oDaten) {
-                        $customDataParts           = \explode(';', $oDaten->cCustomData);
-                        $data[$i]->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
-                        $data[$i]->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
+                    foreach ($data as $item) {
+                        $customDataParts         = \explode(';', $item->cCustomData);
+                        $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
+                        $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
                     }
-
                     $members = [
                         'cIP'                 => \__('detailHeadIP'),
                         'cReferer'            => \__('detailHeadReferer'),
@@ -1700,8 +1699,8 @@ class CampaignController extends AbstractBackendController
             }
             $x = '';
             foreach ($dates as $key => $stat) {
-                if (\is_string($key) && \mb_strpos($key, 'cDatum') !== false) {
-                    $x = $dates[$key];
+                if (\is_string($key) && \str_contains($key, 'cDatum')) {
+                    $x = $stat;
                 }
                 if ($key === $type) {
                     $obj    = new stdClass();

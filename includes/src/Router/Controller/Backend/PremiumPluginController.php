@@ -8,6 +8,7 @@ use JTL\Backend\Wizard\ExtensionInstaller;
 use JTL\Helpers\Request;
 use JTL\License\Manager as LicenseManager;
 use JTL\Recommendation\Manager;
+use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -57,7 +58,7 @@ class PremiumPluginController extends AbstractBackendController
         } elseif ($action === 'auth') {
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL() . '/licenses.php?action=code'
+                Shop::getAdminURL() . '/' . BackendRouter::ROUTE_CODE . '/premiumplugin'
             );
         }
 

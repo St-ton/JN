@@ -317,7 +317,7 @@ abstract class AbstractBackendController implements ControllerInterface
     }
 
     /**
-     * @param int|array $configSectionID
+     * @param int|int[] $configSectionID
      * @param bool $byName
      * @return stdClass[]
      */

@@ -137,7 +137,7 @@ class OrderCompleteController extends CheckoutController
                 $plugin = $loader->init($kPlugin);
                 $this->smarty->assign('oPlugin', $plugin)
                     ->assign('plugin', $plugin);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 Shop::Container()->getLogService()->error(
                     'Associated plugin for payment method ' . $order->Zahlungsart->cModulId . ' not found'
                 );
@@ -241,16 +241,16 @@ class OrderCompleteController extends CheckoutController
                     if ($paymentMethod->validateAdditional()) {
                         $paymentMethod->preparePaymentProcess($order);
                     } elseif (!$paymentMethod->handleAdditional($_POST)) {
-                        $order->Zahlungsart = $this->gibZahlungsart($order->kZahlungsart);
+                        $order->Zahlungsart = $this->getPaymentMethod($order->kZahlungsart);
                     }
                 }
 
                 $this->smarty->assign('oPlugin', $plugin)
                     ->assign('plugin', $plugin);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
             }
         } elseif ($moduleID === 'za_lastschrift_jtl') {
-            $customerAccountData = $this->gibKundenKontodaten(Frontend::getCustomer()->getID());
+            $customerAccountData = $this->getCustomerAccountData(Frontend::getCustomer()->getID());
             if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
                 $this->smarty->assign('oKundenKontodaten', $customerAccountData);
             }

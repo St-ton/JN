@@ -143,7 +143,7 @@ class CheckoutController extends RegistrationController
         $form = new RegistrationForm();
         if ($valid && Request::postInt('unreg_form') === 1) {
             if ($this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
-                $this->pruefeUnregistriertBestellen($_POST);
+                $this->checkGuestOrderProcess($_POST);
             } elseif (isset($_POST['shipping_address'], $_POST['register']['shipping_address'])) {
                 $this->checkNewShippingAddress($_POST);
             } elseif (Request::postInt('kLieferadresse') > 0) {
@@ -164,11 +164,11 @@ class CheckoutController extends RegistrationController
         }
 
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
-            $this->zahlungsartKorrekt($paymentMethodID);
+            $this->checkPaymentMethod($paymentMethodID);
         }
         if (Request::postInt('versandartwahl') === 1 || isset($_GET['kVersandart'])) {
             unset($_SESSION['Zahlungsart']);
-            $this->pruefeVersandartWahl(Request::verifyGPCDataInt('kVersandart'));
+            $this->checkShippingSelection(Request::verifyGPCDataInt('kVersandart'));
         }
         if (Request::getInt('unreg') === 1 && $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
             $this->updateStep('edit_customer_address');
@@ -201,11 +201,11 @@ class CheckoutController extends RegistrationController
                         'noShippingAvailable'
                     );
                 } else {
-                    $activeShippingMethodID = $this->gibAktiveVersandart($shippingMethods);
-                    $this->pruefeVersandartWahl(
+                    $activeShippingMethodID = $this->getActiveShippingMethod($shippingMethods);
+                    $this->checkShippingSelection(
                         $activeShippingMethodID,
                         ['kVerpackung' => \array_keys(
-                            $this->gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($this->customerGroupID))
+                            $this->getActivePackagings(ShippingMethod::getPossiblePackagings($this->customerGroupID))
                         )]
                     );
                 }
@@ -228,37 +228,37 @@ class CheckoutController extends RegistrationController
                 unset($_GET['editRechnungsadresse']);
             }
         }
-        $this->pruefeVersandkostenStep();
-        $this->pruefeZahlungStep();
-        $this->pruefeBestaetigungStep();
+        $this->checkStepShippingCosts();
+        $this->checkStepPayment();
+        $this->checkStepConfirmation();
         // sondersteps Rechnungsadresse aendern
-        $this->pruefeRechnungsadresseStep();
+        $this->checkStepBillingAddress();
         // sondersteps Lieferadresse aendern
-        $this->pruefeLieferadresseStep(Text::filterXSS($_GET));
+        $this->checkStepDeliveryAddress(Text::filterXSS($_GET));
         // sondersteps Versandart aendern
-        $this->pruefeVersandartStep(Text::filterXSS($_GET));
+        $this->checkStepShippingMethod(Text::filterXSS($_GET));
         // sondersteps Zahlungsart aendern
-        $this->pruefeZahlungsartStep(Text::filterXSS($_GET));
-        $this->pruefeZahlungsartwahlStep(Text::filterXSS($_POST));
+        $this->checkStepPaymentMethod(Text::filterXSS($_GET));
+        $this->checkStepPaymentMethodSelection(Text::filterXSS($_POST));
 
         if ($this->step === 'accountwahl') {
-            $this->gibStepAccountwahl();
-            $this->gibStepUnregistriertBestellen();
-            $this->gibStepLieferadresse();
+            $this->checkStepAccountSelection();
+            $this->getStepGuestCheckout();
+            $this->getStepDeliveryAddress();
         }
         if ($this->step === 'edit_customer_address' || $this->step === 'Lieferadresse') {
             $this->validateCouponInCheckout();
-            $this->gibStepUnregistriertBestellen();
-            $this->gibStepLieferadresse();
+            $this->getStepGuestCheckout();
+            $this->getStepDeliveryAddress();
         }
         if ($this->step === 'Versand' || $this->step === 'Zahlung') {
             $this->validateCouponInCheckout();
-            $this->gibStepVersand();
-            $this->gibStepZahlung();
+            $this->getStepShipping();
+            $this->getStepPayment();
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'ZahlungZusatzschritt') {
-            $this->gibStepZahlungZusatzschritt($_POST);
+            $this->getStepPaymentAdditionalStep($_POST);
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'Bestaetigung') {
@@ -269,14 +269,14 @@ class CheckoutController extends RegistrationController
             $this->pruefeGuthabenNutzen();
             // Eventuellen Zahlungsarten Aufpreis/Rabatt neusetzen
             $this->getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
-            $this->gibStepBestaetigung(Text::filterXSS($_GET));
+            $this->getStepConfirmation(Text::filterXSS($_GET));
             $this->cart->cEstimatedDelivery = $this->cart->getEstimatedDeliveryTime();
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'Bestaetigung' && $this->cart->gibGesamtsummeWaren(true) === 0.0) {
             $savedPayment  = $_SESSION['AktiveZahlungsart'];
             $paymentMethod = LegacyMethod::create('za_null_jtl');
-            $this->zahlungsartKorrekt($paymentMethod->kZahlungsart ?? 0);
+            $this->checkPaymentMethod($paymentMethod->kZahlungsart ?? 0);
 
             if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
                 || Request::postInt('guthabenVerrechnen') === 1
@@ -304,7 +304,7 @@ class CheckoutController extends RegistrationController
             ->assign('WarensummeLocalized', $this->cart->gibGesamtsummeWarenLocalized())
             ->assign('Warensumme', $this->cart->gibGesamtsummeWaren())
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
-            ->assign('bestellschritt', $this->gibBestellschritt($this->step))
+            ->assign('bestellschritt', $this->getNextOrderStep($this->step))
             ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
@@ -382,7 +382,7 @@ class CheckoutController extends RegistrationController
         if (isset($_SESSION['Versandart'])) {
             $bVersandart = true;
         } else {
-            $bVersandart = $this->pruefeVersandartWahl((int)$lastOrder->kVersandart, null, false);
+            $bVersandart = $this->checkShippingSelection((int)$lastOrder->kVersandart, null, false);
         }
         if (!$bVersandart) {
             return 3;
@@ -391,8 +391,8 @@ class CheckoutController extends RegistrationController
             if (isset($_SESSION['Zahlungsart'])) {
                 return 5;
             }
-            if ($this->zahlungsartKorrekt((int)$lastOrder->kZahlungsart) === 2) {
-                $this->gibStepZahlung();
+            if ($this->checkPaymentMethod((int)$lastOrder->kZahlungsart) === 2) {
+                $this->getStepPayment();
 
                 return 5;
             }
@@ -408,8 +408,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param array $post
      * @return int
+     * @since 5.2.0
+     * @former pruefeUnregistriertBestellen()
      */
-    public function pruefeUnregistriertBestellen(array $post): int
+    public function checkGuestOrderProcess(array $post): int
     {
         unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
         $this->cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
@@ -507,7 +509,7 @@ class CheckoutController extends RegistrationController
      * @since 5.2.0
      * @former zahlungsartKorrekt()
      */
-    public function zahlungsartKorrekt(int $paymentMethodID): int
+    public function checkPaymentMethod(int $paymentMethodID): int
     {
         $zaInfo = $_SESSION['Zahlungsart']->ZahlungsInfo ?? null;
         unset($_SESSION['Zahlungsart']);
@@ -546,7 +548,7 @@ class CheckoutController extends RegistrationController
                 $paymentMethod->einstellungen[$conf->cName] = $conf->cWert;
             }
         }
-        if (!$this->zahlungsartGueltig($paymentMethod)) {
+        if (!$this->paymentMethodIsValid($paymentMethod)) {
             return 0;
         }
         $note                        = $this->db->select(
@@ -642,9 +644,9 @@ class CheckoutController extends RegistrationController
      * @since 5.2.0
      * @former pruefeVersandartWahl()
      */
-    public function pruefeVersandartWahl(int $shippingMethodID, ?array $formValues = null, bool $msg = true): bool
+    public function checkShippingSelection(int $shippingMethodID, ?array $formValues = null, bool $msg = true): bool
     {
-        $return = $this->versandartKorrekt($shippingMethodID, $formValues);
+        $return = $this->shippingMethodIsValid($shippingMethodID, $formValues);
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
         if ($return) {
@@ -666,7 +668,7 @@ class CheckoutController extends RegistrationController
      * @return int
      * @former gibAktiveZahlungsart()
      */
-    public function gibAktiveZahlungsart(array $shippingMethods): int
+    public function getActivePaymentMethod(array $shippingMethods): int
     {
         if (isset($_SESSION['Zahlungsart'])) {
             $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
@@ -691,7 +693,7 @@ class CheckoutController extends RegistrationController
      * @return array
      * @former gibZahlungsarten()
      */
-    public function gibZahlungsarten(int $shippingMethodID, int $customerGroupID): array
+    public function getPaymentMethods(int $shippingMethodID, int $customerGroupID): array
     {
         $taxRate = 0.0;
         $methods = [];
@@ -748,7 +750,7 @@ class CheckoutController extends RegistrationController
             foreach ($confData as $config) {
                 $method->einstellungen[$config->cName] = $config->cWert;
             }
-            if (!$this->zahlungsartGueltig($method)) {
+            if (!$this->paymentMethodIsValid($method)) {
                 continue;
             }
             $method->Specials = null;
@@ -786,7 +788,7 @@ class CheckoutController extends RegistrationController
      * @since 5.2.0
      * @former gibAktiveVersandart()
      */
-    public function gibAktiveVersandart(array $shippingMethods): int
+    public function getActiveShippingMethod(array $shippingMethods): int
     {
         if (isset($_SESSION['Versandart'])) {
             $_SESSION['AktiveVersandart'] = (int)$_SESSION['Versandart']->kVersandart;
@@ -817,7 +819,7 @@ class CheckoutController extends RegistrationController
      * @former gibZahlungsart()
      * @since 5.2.0
      */
-    public function gibZahlungsart(int $paymentMethodID)
+    public function getPaymentMethod(int $paymentMethodID)
     {
         $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
         foreach (Frontend::getLanguages() as $language) {
@@ -844,7 +846,7 @@ class CheckoutController extends RegistrationController
         foreach ($confData as $conf) {
             $method->einstellungen[$conf->cName] = $conf->cWert;
         }
-        $plugin = $this->gibPluginZahlungsart($method->cModulId);
+        $plugin = $this->getPluginPaymentMethod($method->cModulId);
         if ($plugin) {
             $paymentMethod                  = $plugin->getPaymentMethods()->getMethodByID($method->cModulId);
             $method->cZusatzschrittTemplate = $paymentMethod !== null ? $paymentMethod->getAdditionalTemplate() : '';
@@ -859,14 +861,14 @@ class CheckoutController extends RegistrationController
      * @former gibPluginZahlungsart()
      * @since 5.2.0
      */
-    public function gibPluginZahlungsart(string $moduleID)
+    public function getPluginPaymentMethod(string $moduleID)
     {
         $pluginID = PluginHelper::getIDByModuleID($moduleID);
         if ($pluginID > 0) {
             $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
                 return $loader->init($pluginID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return false;
             }
         }
@@ -880,7 +882,7 @@ class CheckoutController extends RegistrationController
      * @since 5.2.0
      * @former gibAktiveVerpackung()
      */
-    public function gibAktiveVerpackung(array $packagings): array
+    public function getActivePackagings(array $packagings): array
     {
         if (isset($_SESSION['Verpackung']) && \count($_SESSION['Verpackung']) > 0) {
             $_SESSION['AktiveVerpackung'] = [];
@@ -907,11 +909,12 @@ class CheckoutController extends RegistrationController
     /**
      * @param null|int $customerID
      * @return object|bool
+     * @since 5.2.0
      * @former gibKundenKontodaten()
      */
-    public function gibKundenKontodaten(?int $customerID)
+    public function getCustomerAccountData(?int $customerID)
     {
-        if (empty($customerID)) {
+        if ($customerID === null) {
             return false;
         }
         $accountData = $this->db->select('tkundenkontodaten', 'kKunde', $customerID);
@@ -946,6 +949,7 @@ class CheckoutController extends RegistrationController
     /**
      * @param Zahlungsart|object $paymentMethod
      * @return array
+     * @since 5.2.0
      * @former checkAdditionalPayment()
      */
     public function checkAdditionalPayment($paymentMethod): array
@@ -1020,9 +1024,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return bool
+     * @since 5.2.0
      * @former guthabenMoeglich()
      */
-    public function guthabenMoeglich(): bool
+    public function canUseBalance(): bool
     {
         return ($this->customer->fGuthaben > 0
             && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
@@ -1030,9 +1035,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return string
+     * @since 5.2.0
      * @former pruefeVersandkostenStep()
      */
-    public function pruefeVersandkostenStep(): string
+    public function checkStepShippingCosts(): string
     {
         if (!isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'])) {
             return $this->step;
@@ -1059,9 +1065,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return string
+     * @since 5.2.0
      * @former pruefeZahlungStep()
      */
-    public function pruefeZahlungStep(): string
+    public function checkStepPayment(): string
     {
         if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'])) {
             $this->updateStep('Zahlung');
@@ -1072,9 +1079,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return string
+     * @since 5.2.0
      * @former pruefeBestaetigungStep()
      */
-    public function pruefeBestaetigungStep(): string
+    public function checkStepConfirmation(): string
     {
         if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])) {
             $this->updateStep('Bestaetigung');
@@ -1093,9 +1101,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return string
+     * @since 5.2.0
      * @former pruefeRechnungsadresseStep()
      */
-    public function pruefeRechnungsadresseStep(): string
+    public function checkStepBillingAddress(): string
     {
         // sondersteps Rechnungsadresse ändern
         if (!empty($this->customer->cOrt)
@@ -1151,7 +1160,7 @@ class CheckoutController extends RegistrationController
             }
             unset($_SESSION['checkout.register']);
         }
-        if ($this->pruefeFehlendeAngaben()) {
+        if ($this->checkMissingFormData()) {
             $this->updateStep(isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl');
         }
 
@@ -1161,9 +1170,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param array $get
      * @return string
+     * @since 5.2.0
      * @former pruefeLieferadresseStep()
      */
-    public function pruefeLieferadresseStep(array $get): string
+    public function checkStepDeliveryAddress(array $get): string
     {
         global $Lieferadresse;
         //sondersteps Lieferadresse ändern
@@ -1178,7 +1188,7 @@ class CheckoutController extends RegistrationController
                 $this->updateStep('Lieferadresse');
             }
         }
-        if ($this->pruefeFehlendeAngaben('shippingAddress')) {
+        if ($this->checkMissingFormData('shippingAddress')) {
             $this->updateStep(isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl');
         }
 
@@ -1188,9 +1198,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param array $get
      * @return string
+     * @since 5.2.0
      * @former pruefeVersandartStep()
      */
-    public function pruefeVersandartStep(array $get): string
+    public function checkStepShippingMethod(array $get): string
     {
         // sondersteps Versandart ändern
         if (isset($get['editVersandart'], $_SESSION['Versandart']) && (int)$get['editVersandart'] === 1) {
@@ -1205,7 +1216,7 @@ class CheckoutController extends RegistrationController
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
 
             $this->updateStep('Versand');
-            $this->pruefeZahlungsartStep(['editZahlungsart' => 1]);
+            $this->checkStepPaymentMethod(['editZahlungsart' => 1]);
         }
 
         return $this->step;
@@ -1214,9 +1225,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param array $get
      * @return string
+     * @since 5.2.0
      * @former pruefeZahlungsartStep()
      */
-    public function pruefeZahlungsartStep(array $get): string
+    public function checkStepPaymentMethod(array $get): string
     {
         // sondersteps Zahlungsart ändern
         if (isset($_SESSION['Zahlungsart'], $get['editZahlungsart']) && (int)$get['editZahlungsart'] === 1) {
@@ -1226,7 +1238,7 @@ class CheckoutController extends RegistrationController
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
                 ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
             unset($_SESSION['Zahlungsart']);
-            $this->updateStep($this->pruefeVersandartStep(['editVersandart' => 1]));
+            $this->updateStep($this->checkStepShippingMethod(['editVersandart' => 1]));
         }
 
         if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
@@ -1242,9 +1254,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param array $post
      * @return int|null
+     * @since 5.2.0
      * @former pruefeZahlungsartwahlStep()
      */
-    public function pruefeZahlungsartwahlStep(array $post): ?int
+    public function checkStepPaymentMethodSelection(array $post): ?int
     {
         global $zahlungsangaben;
         if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
@@ -1252,12 +1265,12 @@ class CheckoutController extends RegistrationController
                 && Request::getInt('editRechnungsadresse') !== 1
                 && Request::getInt('editLieferadresse') !== 1
             ) {
-                $zahlungsangaben = $this->zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
+                $zahlungsangaben = $this->checkPaymentMethod((int)$_SESSION['Zahlungsart']->kZahlungsart);
             } else {
                 return null;
             }
         } else {
-            $zahlungsangaben = $this->zahlungsartKorrekt((int)$post['Zahlungsart']);
+            $zahlungsangaben = $this->checkPaymentMethod((int)$post['Zahlungsart']);
         }
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG_PLAUSI);
 
@@ -1281,9 +1294,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return void
+     * @since 5.2.0
      * @former gibStepAccountwahl()
      */
-    public function gibStepAccountwahl(): void
+    public function checkStepAccountSelection(): void
     {
         // Einstellung global_kundenkonto_aktiv ist auf 'A'
         // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
@@ -1308,9 +1322,11 @@ class CheckoutController extends RegistrationController
     }
 
     /**
+     * @return void
+     * @since 5.2.0
      * @former gibStepUnregistriertBestellen()
      */
-    public function gibStepUnregistriertBestellen(): void
+    public function getStepGuestCheckout(): void
     {
         $origins = $this->db->getObjects(
             'SELECT *
@@ -1341,9 +1357,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return mixed
+     * @since 5.2.0
      * @former gibStepLieferadresse()
      */
-    public function gibStepLieferadresse()
+    public function getStepDeliveryAddress()
     {
         global $Lieferadresse;
 
@@ -1374,6 +1391,8 @@ class CheckoutController extends RegistrationController
     }
 
     /**
+     * @return void
+     * @since 5.2.0
      * @former validateCouponInCheckout()
      */
     public function validateCouponInCheckout(): void
@@ -1393,9 +1412,10 @@ class CheckoutController extends RegistrationController
 
     /**
      * @return void
+     * @since 5.2.0
      * @former gibStepVersand()
      */
-    public function gibStepVersand(): void
+    public function getStepShipping(): void
     {
         CartHelper::applyShippingFreeCoupon();
         $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
@@ -1432,7 +1452,7 @@ class CheckoutController extends RegistrationController
         } elseif (\is_array($shippingMethods) && \count($shippingMethods) === 1
             && (\is_array($packagings) && \count($packagings) === 0)
         ) {
-            $this->pruefeVersandartWahl($shippingMethods[0]->kVersandart);
+            $this->checkShippingSelection($shippingMethods[0]->kVersandart);
         } elseif (!\is_array($shippingMethods) || \count($shippingMethods) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $deliveryCountry .
@@ -1447,9 +1467,11 @@ class CheckoutController extends RegistrationController
     }
 
     /**
+     * @return void
+     * @since 5.2.0
      * @former gibStepZahlung()
      */
-    public function gibStepZahlung(): void
+    public function getStepPayment(): void
     {
         $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$lieferland) {
@@ -1479,8 +1501,8 @@ class CheckoutController extends RegistrationController
         }
 
         if (GeneralObject::hasCount($shippingMethods)) {
-            $shippingMethod = $this->gibAktiveVersandart($shippingMethods);
-            $paymentMethods = $this->gibZahlungsarten($shippingMethod, $this->customerGroupID);
+            $shippingMethod = $this->getActiveShippingMethod($shippingMethods);
+            $paymentMethods = $this->getPaymentMethods($shippingMethod, $this->customerGroupID);
             if (!\is_array($paymentMethods) || \count($paymentMethods) === 0) {
                 Shop::Container()->getLogService()->error(
                     'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
@@ -1489,7 +1511,7 @@ class CheckoutController extends RegistrationController
                 $paymentMethod  = null;
                 $paymentMethods = [];
             } else {
-                $paymentMethod = $this->gibAktiveZahlungsart($paymentMethods);
+                $paymentMethod = $this->getActivePaymentMethod($paymentMethods);
             }
 
             if (!isset($_SESSION['Versandart']) && !empty($shippingMethod)) {
@@ -1512,7 +1534,7 @@ class CheckoutController extends RegistrationController
                 ->assign('Verpackungsarten', $packagings)
                 ->assign('AktiveVersandart', $shippingMethod)
                 ->assign('AktiveZahlungsart', $paymentMethod)
-                ->assign('AktiveVerpackung', $this->gibAktiveVerpackung($packagings))
+                ->assign('AktiveVerpackung', $this->getActivePackagings($packagings))
                 ->assign('Kunde', $this->customer)
                 ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
                 ->assign('OrderAmount', $this->cart->gibGesamtsummeWaren(true))
@@ -1539,14 +1561,15 @@ class CheckoutController extends RegistrationController
 
     /**
      * @param array $post
+     * @since 5.2.0
      * @former gibStepZahlungZusatzschritt()
      */
-    public function gibStepZahlungZusatzschritt(array $post): void
+    public function getStepPaymentAdditionalStep(array $post): void
     {
         $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
-        $paymentMethod = $this->gibZahlungsart((int)$paymentID);
+        $paymentMethod = $this->getPaymentMethod((int)$paymentID);
         // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
-        $customerAccountData = $this->gibKundenKontodaten($this->customer->getID());
+        $customerAccountData = $this->getCustomerAccountData($this->customer->getID());
         if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
             $this->smarty->assign('oKundenKontodaten', $customerAccountData);
         }
@@ -1565,6 +1588,7 @@ class CheckoutController extends RegistrationController
     }
 
     /**
+     * @since 5.2.0
      * @former pruefeGuthabenNutzen()
      */
     public function pruefeGuthabenNutzen(): void
@@ -1659,14 +1683,15 @@ class CheckoutController extends RegistrationController
 
     /**
      * @param array $get
+     * @since 5.2.0
      * @former gibStepBestaetigung()
      */
-    public function gibStepBestaetigung(array $get): void
+    public function getStepConfirmation(array $get): void
     {
         $linkHelper = Shop::Container()->getLinkService();
         // check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
         if (isset($_SESSION['Versandart']->kVersandart)
-            && !$this->versandartKorrekt((int)$_SESSION['Versandart']->kVersandart)
+            && !$this->shippingMethodIsValid((int)$_SESSION['Versandart']->kVersandart)
         ) {
             \header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);
         }
@@ -1693,7 +1718,7 @@ class CheckoutController extends RegistrationController
             ->assign('currentShippingCouponName', !empty($_SESSION['oVersandfreiKupon']->translationList)
                 ? $_SESSION['oVersandfreiKupon']->translationList
                 : null)
-            ->assign('GuthabenMoeglich', $this->guthabenMoeglich())
+            ->assign('GuthabenMoeglich', $this->canUseBalance())
             ->assign('nAnzeigeOrt', \CHECKBOX_ORT_BESTELLABSCHLUSS)
             ->assign('cPost_arr', (isset($_SESSION['cPost_arr']) ? Text::filterXSS($_SESSION['cPost_arr']) : []));
         if ($this->customer->getID() > 0) {
@@ -1716,9 +1741,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param Zahlungsart|stdClass $paymentMethod
      * @return bool
+     * @since 5.2.0
      * @former zahlungsartGueltig()
      */
-    public function zahlungsartGueltig($paymentMethod): bool
+    public function paymentMethodIsValid($paymentMethod): bool
     {
         if (!isset($paymentMethod->cModulId)) {
             return false;
@@ -1729,7 +1755,7 @@ class CheckoutController extends RegistrationController
             $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
                 $plugin = $loader->init($pluginID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return false;
             }
             if ($plugin === null || $plugin->getState() !== State::ACTIVATED) {
@@ -1763,9 +1789,10 @@ class CheckoutController extends RegistrationController
      * @param int        $shippingMethodID
      * @param array|null $formValues
      * @return bool
+     * @since 5.2.0
      * @former versandartKorrekt()
      */
-    public function versandartKorrekt(int $shippingMethodID, ?array $formValues = null): bool
+    public function shippingMethodIsValid(int $shippingMethodID, ?array $formValues = null): bool
     {
         $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
             ? $_POST['kVerpackung']
@@ -1960,9 +1987,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param string|null $context
      * @return bool
+     * @since 5.2.0
      * @former pruefeFehlendeAngaben()
      */
-    public function pruefeFehlendeAngaben(?string $context = null): bool
+    public function checkMissingFormData(?string $context = null): bool
     {
         $missingData = $this->smarty->getTemplateVars('fehlendeAngaben');
         if (!$context) {
@@ -1975,7 +2003,10 @@ class CheckoutController extends RegistrationController
     }
 
     /**
+     * @return void
+     * @since 5.2.0
      * @param array $missingData
+     * @former setzeFehlendeAngaben()
      */
     public function setzeFehlendeAngaben(array $missingData): void
     {
@@ -1989,6 +2020,7 @@ class CheckoutController extends RegistrationController
     /**
      * @param int $noteCode
      * @return string
+     * @since 5.2.0
      * @todo: check if this is only used by the old EOS payment method
      * @former mappeBestellvorgangZahlungshinweis()
      */
@@ -2025,9 +2057,10 @@ class CheckoutController extends RegistrationController
     /**
      * @param string $step
      * @return array
+     * @since 5.2.0
      * @former gibBestellschritt()
      */
-    public function gibBestellschritt(string $step): array
+    public function getNextOrderStep(string $step): array
     {
         $res    = [];
         $res[1] = 3;

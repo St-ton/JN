@@ -103,7 +103,7 @@ class DefaultParser
                 continue;
             }
             [$slug, $customFilterSeo] = $customFilterArr;
-            if (\mb_strpos($customFilterSeo, \SEP_HST) !== false) {
+            if (\str_contains($customFilterSeo, \SEP_HST)) {
                 $arr             = \explode(\SEP_HST, $customFilterSeo);
                 $customFilterSeo = $arr[0];
                 $slug           .= \SEP_HST . $arr[1];
@@ -115,17 +115,17 @@ class DefaultParser
                 $customFilterSeo = $manufacturers[0];
                 $slug           .= \SEP_KAT . $manufacturers[1];
             }
-            if (\mb_strpos($customFilterSeo, \SEP_MERKMAL) !== false) {
+            if (\str_contains($customFilterSeo, \SEP_MERKMAL)) {
                 $arr             = \explode(\SEP_MERKMAL, $customFilterSeo);
                 $customFilterSeo = $arr[0];
                 $slug           .= \SEP_MERKMAL . $arr[1];
             }
-            if (\mb_strpos($customFilterSeo, \SEP_MM_MMW) !== false) {
+            if (\str_contains($customFilterSeo, \SEP_MM_MMW)) {
                 $arr             = \explode(\SEP_MM_MMW, $customFilterSeo);
                 $customFilterSeo = $arr[0];
                 $slug           .= \SEP_MM_MMW . $arr[1];
             }
-            if (\mb_strpos($customFilterSeo, \SEP_SEITE) !== false) {
+            if (\str_contains($customFilterSeo, \SEP_SEITE)) {
                 $arr             = \explode(\SEP_SEITE, $customFilterSeo);
                 $customFilterSeo = $arr[0];
                 $slug           .= \SEP_SEITE . $arr[1];
@@ -175,17 +175,17 @@ class DefaultParser
                 $characteristic = $arr[0];
                 $slug          .= \SEP_KAT . $arr[1];
             }
-            if (\mb_strpos($characteristic, \SEP_HST) !== false) {
+            if (\str_contains($characteristic, \SEP_HST)) {
                 $arr            = \explode(\SEP_HST, $characteristic);
                 $characteristic = $arr[0];
                 $slug          .= \SEP_HST . $arr[1];
             }
-            if (\mb_strpos($characteristic, \SEP_MM_MMW) !== false) {
+            if (\str_contains($characteristic, \SEP_MM_MMW)) {
                 $arr            = \explode(\SEP_MM_MMW, $characteristic);
                 $characteristic = $arr[0];
                 $slug          .= \SEP_MM_MMW . $arr[1];
             }
-            if (\mb_strpos($characteristic, \SEP_SEITE) !== false) {
+            if (\str_contains($characteristic, \SEP_SEITE)) {
                 $arr            = \explode(\SEP_SEITE, $characteristic);
                 $characteristic = $arr[0];
                 $slug          .= \SEP_SEITE . $arr[1];
@@ -249,17 +249,17 @@ class DefaultParser
                     $manufSeo[$i]    = $manufacturers[0];
                     $slug           .= \SEP_KAT . $manufacturers[1];
                 }
-                if (\mb_strpos($hstseo, \SEP_MERKMAL) !== false) {
+                if (\str_contains($hstseo, \SEP_MERKMAL)) {
                     $arr          = \explode(\SEP_MERKMAL, $hstseo);
                     $manufSeo[$i] = $arr[0];
                     $slug        .= \SEP_MERKMAL . $arr[1];
                 }
-                if (\mb_strpos($hstseo, \SEP_MM_MMW) !== false) {
+                if (\str_contains($hstseo, \SEP_MM_MMW)) {
                     $arr          = \explode(\SEP_MM_MMW, $hstseo);
                     $manufSeo[$i] = $arr[0];
                     $slug        .= \SEP_MM_MMW . $arr[1];
                 }
-                if (\mb_strpos($hstseo, \SEP_SEITE) !== false) {
+                if (\str_contains($hstseo, \SEP_SEITE)) {
                     $arr          = \explode(\SEP_SEITE, $hstseo);
                     $manufSeo[$i] = $arr[0];
                     $slug        .= \SEP_SEITE . $arr[1];
@@ -322,22 +322,22 @@ class DefaultParser
         $categories  = \explode(\SEP_KAT, $slug);
         if (\is_array($categories) && \count($categories) > 1) {
             [$slug, $categorySeo] = $categories;
-            if (\mb_strpos($categorySeo, \SEP_HST) !== false) {
+            if (\str_contains($categorySeo, \SEP_HST)) {
                 $arr         = \explode(\SEP_HST, $categorySeo);
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_HST . $arr[1];
             }
-            if (\mb_strpos($categorySeo, \SEP_MERKMAL) !== false) {
+            if (\str_contains($categorySeo, \SEP_MERKMAL)) {
                 $arr         = \explode(\SEP_MERKMAL, $categorySeo);
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_MERKMAL . $arr[1];
             }
-            if (\mb_strpos($categorySeo, \SEP_MM_MMW) !== false) {
+            if (\str_contains($categorySeo, \SEP_MM_MMW)) {
                 $arr         = \explode(\SEP_MM_MMW, $categorySeo);
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_MM_MMW . $arr[1];
             }
-            if (\mb_strpos($categorySeo, \SEP_SEITE) !== false) {
+            if (\str_contains($categorySeo, \SEP_SEITE)) {
                 $arr         = \explode(\SEP_SEITE, $categorySeo);
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_SEITE . $arr[1];

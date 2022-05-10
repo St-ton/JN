@@ -128,7 +128,7 @@ class PluginManagerController extends AbstractBackendController
                 $this->smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
                     ->assign('plugin', $loader->init($pluginID))
                     ->assign('kPlugin', $pluginID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $pluginNotFound = true;
             }
         }

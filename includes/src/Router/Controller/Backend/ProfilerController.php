@@ -69,11 +69,8 @@ class ProfilerController extends AbstractBackendController
     {
         $pluginProfilerData = Profiler::getPluginProfiles();
         if (\count($pluginProfilerData) > 0) {
-            $axis    = new stdClass();
-            $axis->x = 'filename';
-            $axis->y = 'runtime';
-            $idx     = 0;
-            $colors  = [
+            $idx    = 0;
+            $colors = [
                 '#7cb5ec',
                 '#434348',
                 '#90ed7d',

@@ -85,7 +85,7 @@ class NewsletterController extends PageController
                         ->setEmail(Text::htmlentities($_POST['cEmail']))
                         ->setAction(OptinBase::DELETE_CODE)
                         ->handleOptin();
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $this->alertService->addError(
                         Shop::Lang()->get('newsletterNoexists', 'errorMessages'),
                         'newsletterNoexists'

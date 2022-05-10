@@ -186,17 +186,15 @@ class PluginController extends AbstractBackendController
             $this->notice = \__('successConfigSave');
         }
         $loader = Helper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
-        if ($loader !== null) {
-            try {
-                $plugin = $loader->init($pluginID, $this->invalidateCache);
-            } catch (InvalidArgumentException $e) {
-                $this->pluginNotFound = true;
-                $plugin               = null;
-            }
+        try {
+            $plugin = $loader->init($pluginID, $this->invalidateCache);
+        } catch (InvalidArgumentException) {
+            $this->pluginNotFound = true;
+            $plugin               = null;
+        }
 
-            if ($plugin !== null && $plugin->isBootstrap()) {
-                Helper::updatePluginInstance($plugin);
-            }
+        if ($plugin !== null && $plugin->isBootstrap()) {
+            Helper::updatePluginInstance($plugin);
         }
     }
 

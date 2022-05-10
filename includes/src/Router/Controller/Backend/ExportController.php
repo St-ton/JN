@@ -201,7 +201,7 @@ class ExportController extends AbstractBackendController
                 $model->setHeader(\str_replace("\t", '<tab>', $model->getHeader()));
                 $model->setContent(Text::htmlentities(\str_replace("\t", '<tab>', $model->getContent())));
                 $model->setFooter(\str_replace("\t", '<tab>', $model->getFooter()));
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $model = null;
             }
         } else {
@@ -292,7 +292,7 @@ class ExportController extends AbstractBackendController
         try {
             $exportformat = Model::load(['id' => $exportID], $this->db, Model::ON_NOTEXISTS_FAIL);
             /** @var Model $exportformat */
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
         $file = $exportformat->getFilename();

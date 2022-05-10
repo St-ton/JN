@@ -294,7 +294,7 @@ class NewsController extends AbstractBackendController
                 $monthPrefix         = $this->db->select(
                     'tnewsmonatspraefix',
                     'kSprache',
-                    (int)$lang->kSprache
+                    $lang->getId()
                 );
                 $item->cPraefix      = $monthPrefix->cPraefix ?? null;
                 $prefixes[$i]        = $item;

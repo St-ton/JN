@@ -15,6 +15,7 @@ use JTL\Router\Controller\Backend\CacheController;
 use JTL\Router\Controller\Backend\CampaignController;
 use JTL\Router\Controller\Backend\CategoryCheckController;
 use JTL\Router\Controller\Backend\CheckboxController;
+use JTL\Router\Controller\Backend\CodeController;
 use JTL\Router\Controller\Backend\ComparelistController;
 use JTL\Router\Controller\Backend\ConfigController;
 use JTL\Router\Controller\Backend\ConsentController;
@@ -204,6 +205,7 @@ class BackendRouter
     public const ROUTE_IO                    = 'io';
     public const ROUTE_SEARCHRESULTS         = 'searchresults';
     public const ROUTE_ELFINDER              = 'elfinder';
+    public const ROUTE_CODE                  = 'code';
 
     /**
      * @var Router
@@ -322,6 +324,7 @@ class BackendRouter
             self::ROUTE_IO                    => IOController::class,
             self::ROUTE_SEARCHRESULTS         => SearchController::class,
             self::ROUTE_ELFINDER              => ElfinderController::class,
+            self::ROUTE_CODE                  => CodeController::class,
 
         ];
         foreach ($controllers as $route => $controller) {
@@ -345,7 +348,7 @@ class BackendRouter
 
         $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
             foreach ($controllers as $slug => $controller) {
-                if ($slug === self::ROUTE_PASS || $slug === self::ROUTE_DASHBOARD) {
+                if ($slug === self::ROUTE_PASS || $slug === self::ROUTE_DASHBOARD || $slug === self::ROUTE_CODE) {
                     continue;
                 }
                 $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
@@ -359,6 +362,11 @@ class BackendRouter
             ->setName(self::ROUTE_PASS);
         $this->router->post('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
             ->setName('post' . self::ROUTE_PASS);
+
+        $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_CODE . '/{redir}', CodeController::class . '::getResponse')
+            ->setName(self::ROUTE_CODE);
+        $this->router->post('/' . \PFAD_ADMIN . self::ROUTE_CODE . '/{redir}', CodeController::class . '::getResponse')
+            ->setName('post' . self::ROUTE_CODE);
 
         $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
             ->setName(self::ROUTE_DASHBOARD);

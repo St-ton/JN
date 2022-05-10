@@ -144,7 +144,7 @@ class Admin
             if ($action === self::ACTION_RECHECK) {
                 $this->getLicenses(true);
                 $this->getList($smarty);
-                \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
+                \header('Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE, true, 303);
                 exit();
             }
             if ($action === self::ACTION_REVOKE) {

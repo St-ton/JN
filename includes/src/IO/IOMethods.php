@@ -1086,7 +1086,7 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if($layout==='gallery') {
+                if ($layout === 'gallery') {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,

@@ -134,7 +134,7 @@
                 let storage_id         = 'product_page_visits_' + current_product_id;
                 let visits             = window.sessionStorage.getItem(storage_id);
 
-                if (visits !== null) {
+                if (visits !== null && !this.isBackToListDisabled()) {
                     window.history.go(-visits);
                 }
             }

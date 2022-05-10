@@ -16341,16 +16341,21 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   padding-left: 0;
   padding-right: 0;
 }
+.breadcrumb-backtolist {
+  display: flex;
+}
 .breadcrumb-backtolist::before {
   content: '\f053' !important;
   font-family: 'Font Awesome 5 Free' !important;
   font-weight: 900;
   margin-right: 6px;
 }
-.breadcrumb-backtolist::after {
-  content: "|";
-  margin-left: 6px;
-  margin-right: 6px;
+@media (min-width: 768px) {
+  .breadcrumb-backtolist::after {
+    content: "|";
+    margin-left: 6px;
+    margin-right: 6px;
+  }
 }
 .btn {
   text-decoration: none;

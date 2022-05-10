@@ -9,8 +9,8 @@
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
                         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
                             {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
-                            class="breadcrumb-backtolist" href="#"}
-                            {lang key='goBackToList'}
+                                class="breadcrumb-backtolist" href="#"}
+                                {lang key='goBackToList'}
                             {/breadcrumbitem}
                         {/if}
                         {if $parent !== null}
@@ -19,6 +19,11 @@
                                 title={sanitizeTitle title=$parent->getName()}
                             }
                                 <span itemprop="name">{$parent->getName()}</span>
+                                {inline_script}<script>
+                                    if (!$.evo.article().isBackToListDisabled()) {
+                                        $('.breadcrumb-arrow').remove();
+                                    }
+                                </script>{/inline_script}
                             {/breadcrumbitem}
                         {/if}
                     {/block}

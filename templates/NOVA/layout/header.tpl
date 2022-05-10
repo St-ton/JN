@@ -56,11 +56,32 @@
             {else}
                 {$templateDir = $parentTemplateDir}
             {/if}
-            <style id="criticalCSS">
-                {block name='layout-header-head-resources-crit'}
-                    {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
-                {/block}
-            </style>
+            {block name='layout-header-head-resources-crit-outer'}
+                <style id="criticalCSS">
+                    {block name='layout-header-head-resources-crit'}
+                        {file_get_contents("{$currentThemeDir}{$Einstellungen.template.theme.theme_default}_crit.css")}
+                    {/block}
+                    {block name='layout-header-menu-single-row-css'}
+                        {if (int)$Einstellungen.template.header.menu_search_width !== 0}
+                            .main-search-wrapper {
+                                max-width: {$Einstellungen.template.header.menu_search_width}px;
+                            }
+                        {/if}
+                        {if (int)$Einstellungen.template.header.menu_logoheight !== 0 && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                            @media (min-width: 992px) {
+                                header .navbar-brand img {
+                                    height: {$Einstellungen.template.header.menu_logoheight}px;
+                                }
+                                {if $Einstellungen.template.header.menu_single_row !== 'Y'}
+                                    nav.navbar {
+                                        height: calc({$Einstellungen.template.header.menu_logoheight}px + 1.2rem);
+                                    }
+                                {/if}
+                            }
+                        {/if}
+                    {/block}
+                </style>
+            {/block}
             {* css *}
             {if $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
@@ -194,8 +215,9 @@
                       href="{$ShopURL}/rss.xml">
             {/if}
             {* Languages *}
-            {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
-                {foreach $smarty.session.Sprachen as $language}
+            {$languages = JTL\Session\Frontend::getLanguages()}
+            {if $languages|count > 1}
+                {foreach $languages as $language}
                     <link rel="alternate"
                           hreflang="{$language->getIso639()}"
                           href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
@@ -311,120 +333,73 @@
         {/if}
 
         {block name='layout-header-header'}
-            {block name='layout-header-branding-top-bar'}
-                <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.megamenu.header_full_width === 'Y'}is-fullwidth{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex{/if}">
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if} {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-lg-flex flex-row-reverse{/if}">
-                        {include file='layout/header_top_bar.tpl'}
-                    </div>
-                </div>
-            {/block}
-            <header class="d-print-none {if !$isMobile || $Einstellungen.template.theme.mobile_search_type !== 'fixed'}sticky-top{/if} fixed-navbar" id="jtl-nav-wrapper">
-                {block name='layout-header-container-inner'}
-                    <div class="container-fluid {if $Einstellungen.template.megamenu.header_full_width === 'N'}container-fluid-xl{/if}">
-                    {block name='layout-header-category-nav'}
-                        <div class="toggler-logo-wrapper">
-                            {block name='layout-header-navbar-toggle'}
-                                <button id="burger-menu" class="burger-menu-wrapper navbar-toggler collapsed {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                    <span class="navbar-toggler-icon"></span>
-                                </button>
-                            {/block}
-
-                            {block name='layout-header-logo'}
-                                <div id="logo" class="logo-wrapper" itemprop="publisher" itemscope itemtype="https://schema.org/Organization">
-                                    <span itemprop="name" class="d-none">{$meta_publisher}</span>
-                                    <meta itemprop="url" content="{$ShopHomeURL}">
-                                    <meta itemprop="logo" content="{$ShopLogoURL}">
-                                    {link class="navbar-brand" href=$ShopHomeURL title=$Einstellungen.global.global_shopname}
-                                    {if isset($ShopLogoURL)}
-                                        {image width=180 height=50 src=$ShopLogoURL
-                                            alt=$Einstellungen.global.global_shopname
-                                            id="shop-logo"
-                                            class="img-aspect-ratio"
-                                        }
-                                    {else}
-                                        <span class="h1">{$Einstellungen.global.global_shopname}</span>
-                                    {/if}
-                                    {/link}
-                                </div>
-                            {/block}
+            {$headerWidth=$Einstellungen.template.header.header_full_width}
+            {if (($Einstellungen.template.header.menu_scroll !== 'menu' && $Einstellungen.template.header.menu_single_row === 'Y')
+                    || $Einstellungen.template.header.menu_single_row === 'N'
+                )
+                && $Einstellungen.template.header.menu_show_topbar === 'Y'
+                && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
+                {block name='layout-header-branding-top-bar'}
+                    <div id="header-top-bar" class="d-none topbar-wrapper {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if} {if $Einstellungen.template.header.header_full_width === 'Y'}is-fullwidth{/if} d-lg-flex">
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if} d-lg-flex flex-row-reverse">
+                            {include file='layout/header_top_bar.tpl'}
                         </div>
-                        {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
-                           {block name='layout-header-search'}
-                                {if $Einstellungen.template.theme.mobile_search_type === 'fixed'}
-                                    <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
-                                        {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
-                                    </div>
-                                {/if}
-                            {/block}
-
-                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
-                                {block name='layout-header-secure-checkout'}
-                                    <div class="secure-checkout-icon ml-auto-util ml-lg-0">
-                                        {block name='layout-header-secure-checkout-title'}
-                                            <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
-                                        {/block}
-                                    </div>
-                                    <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
-                                        {block name='layout-header-secure-include-header-top-bar'}
-                                            {include file='layout/header_top_bar.tpl'}
-                                        {/block}
-                                    </div>
-                                {/block}
-                            {else}
-                                {block name='layout-header-branding-shop-nav'}
-                                    {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
-                                        {block name='layout-header-branding-shop-nav-include-language-dropdown'}
-                                            {include file='snippets/language_dropdown.tpl' dropdownClass='d-flex d-lg-none'}
-                                        {/block}
-                                        {include file='layout/header_nav_icons.tpl'}
-                                    {/nav}
-                                {/block}
-
-                                {*categories*}
-                                {block name='layout-header-include-categories-mega'}
-                                    <div id="mainNavigation" class="collapse navbar-collapse nav-scrollbar">
-                                        {block name='layout-header-include-include-categories-header'}
-                                            <div class="nav-mobile-header d-lg-none">
-                                                {row class="align-items-center-util"}
-                                                    {col class="nav-mobile-header-toggler"}
-                                                        {block name='layout-header-include-categories-mega-toggler'}
-                                                            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#mainNavigation" aria-controls="mainNavigation" aria-expanded="false" aria-label="Toggle navigation">
-                                                                <span class="navbar-toggler-icon"></span>
-                                                            </button>
-                                                        {/block}
-                                                    {/col}
-                                                    {col class="col-auto nav-mobile-header-name ml-auto-util"}
-                                                        <span class="nav-offcanvas-title">{lang key='menuName'}</span>
-                                                        {block name='layout-header-include-categories-mega-back'}
-                                                            {link href="#" class="nav-offcanvas-title d-none" data=["menu-back"=>""]}
-                                                                <span class="fas fa-chevron-left icon-mr-2"></span>
-                                                                <span>{lang key='back'}</span>
-                                                            {/link}
-                                                        {/block}
-                                                    {/col}
-                                                {/row}
-                                                <hr class="nav-mobile-header-hr" />
-                                            </div>
-                                        {/block}
-                                        {block name='layout-header-include-include-categories-body'}
-                                            <div class="nav-mobile-body">
-                                                {navbarnav class="nav-scrollbar-inner mr-auto"}
-                                                    {block name='layout-header-include-include-categories-mega'}
-                                                        {include file='snippets/categories_mega.tpl'}
-                                                    {/block}
-                                                {/navbarnav}
-                                            </div>
-                                        {/block}
-                                    </div>
-                                {/block}
-                            {/if}
-                        {/navbar}
-                    {/block}
                     </div>
+                {/block}
+            {/if}
+            <header class="d-print-none {if $Einstellungen.template.header.menu_single_row === 'Y'}full-width-mega{/if}
+                        {if (!$isMobile || $Einstellungen.template.header.mobile_search_type !== 'fixed') && $Einstellungen.template.header.menu_scroll !== 'none'}sticky-top{/if}
+                        fixed-navbar theme-{$Einstellungen.template.theme.theme_default}"
+                    id="jtl-nav-wrapper">
+                {if $Einstellungen.template.header.menu_single_row === 'Y'}
+                    {block name='layout-header-include-header-menu-single-row'}
+                        {include file='layout/header_menu_single_row.tpl'}
+                    {/block}
+                {else}
+                    {block name='layout-header-container-inner'}
+                        <div class="{if $headerWidth === 'B'}container{else}container-fluid {if $headerWidth === 'N'}container-fluid-xl{/if}{/if}">
+                        {block name='layout-header-category-nav'}
+                            {block name='layout-header-category-nav-logo'}
+                                {include file='layout/header_logo.tpl'}
+                            {/block}
+                            {navbar toggleable=true fill=true type="expand-lg" class="justify-content-start {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}align-items-center-util{else}align-items-lg-end{/if}"}
+                                {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                    {block name='layout-header-secure-checkout'}
+                                        <div class="secure-checkout-icon ml-auto-util ml-lg-0">
+                                            {block name='layout-header-secure-checkout-title'}
+                                                <i class="fas fa-lock icon-mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                            {/block}
+                                        </div>
+                                        <div class="secure-checkout-topbar ml-auto-util d-none d-lg-block">
+                                            {block name='layout-header-secure-include-header-top-bar'}
+                                                {include file='layout/header_top_bar.tpl'}
+                                            {/block}
+                                        </div>
+                                    {/block}
+                                {else}
+                                    {block name='layout-header-branding-shop-nav'}
+                                        {include file='layout/header_nav_icons.tpl'}
+                                    {/block}
+
+                                    {block name='layout-header-include-categories-mega'}
+                                        {include file='layout/header_categories.tpl' menuMultipleRows=false}
+                                    {/block}
+                                {/if}
+                            {/navbar}
+                        {/block}
+                        </div>
+                    {/block}
+                {/if}
+                {block name='layout-header-search'}
+                    {if $Einstellungen.template.header.mobile_search_type === 'fixed'}
+                        <div class="d-lg-none search-form-wrapper-fixed container-fluid container-fluid-xl order-1">
+                            {include file='snippets/search_form.tpl' id='search-header-mobile-top'}
+                        </div>
+                    {/if}
                 {/block}
             </header>
             {block name='layout-header-search-fixed'}
-                {if $Einstellungen.template.theme.mobile_search_type === 'fixed' && $isMobile}
+                {if $Einstellungen.template.header.mobile_search_type === 'fixed' && $isMobile}
                     <div class="container-fluid container-fluid-xl fixed-search fixed-top smoothscroll-top-search d-lg-none d-none">
                         {include file='snippets/search_form.tpl' id='search-header-mobile-fixed'}
                     </div>

@@ -181,7 +181,7 @@ class KuponBestellung
      */
     public function setBestellNr($cBestellNr): self
     {
-        $this->cBestellNr = Shop::Container()->getDB()->escape($cBestellNr);
+        $this->cBestellNr = $cBestellNr;
 
         return $this;
     }
@@ -214,7 +214,7 @@ class KuponBestellung
      */
     public function setKuponTyp($cKuponTyp): self
     {
-        $this->cKuponTyp = Shop::Container()->getDB()->escape($cKuponTyp);
+        $this->cKuponTyp = $cKuponTyp;
 
         return $this;
     }
@@ -225,7 +225,7 @@ class KuponBestellung
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
     }

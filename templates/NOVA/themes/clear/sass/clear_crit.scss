@@ -127,8 +127,8 @@ html {
   margin-left: auto;
   .nav-link {
     @include media-breakpoint-down(sm) {
-      padding-left:	map_get($spacers, 3) * 0.75;
-      padding-right: map_get($spacers, 3) * 0.75
+      padding-left:	$nav-link-padding-sm-x;
+      padding-right: $nav-link-padding-sm-x;
     }
   }
 }
@@ -187,10 +187,10 @@ html {
 #header-top-bar, header {
   background-color: $header-bg-color;
   color: $header-color;
-  a {
+  a:not(.dropdown-item):not(.btn)  {
     text-decoration: none;
     color: $header-color;
-    &:hover:not(.dropdown-item):not(.btn) {
+    &:hover{
       color: $primary;
     }
   }

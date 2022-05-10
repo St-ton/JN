@@ -1,17 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
+use JTL\Firma;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Tax
@@ -27,6 +26,9 @@ class Tax
      */
     public static function getSalesTax(int $taxID)
     {
+        if (isset($_SESSION['Steuersatz'][$taxID])) {
+            return $_SESSION['Steuersatz'][$taxID];
+        }
         if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }
@@ -42,18 +44,18 @@ class Tax
      * @param bool $skipUpdateCart
      * @since 5.0.0
      */
-    public static function setTaxRates($countryCode = null, bool $skipUpdateCart = false): void
+    public static function setTaxRates(?string $countryCode = null, bool $skipUpdateCart = false): void
     {
         $_SESSION['Steuersatz'] = [];
         $billingCountryCode     = null;
         $merchantCountryCode    = 'DE';
         $db                     = Shop::Container()->getDB();
-        $company                = $db->getSingleObject('SELECT cLand FROM tfirma');
-        if ($company !== null && !empty($company->cLand)) {
+        $company                = new Firma(true, $db);
+        if (!empty($company->cLand)) {
             $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
-            $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
+            $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
         if (!empty(Frontend::getCustomer()->cLand)) {
@@ -98,14 +100,15 @@ class Tax
                 $UstBefreiungIGL = true;
             }
         }
-        $taxZones = $db->getObjects(
+        $zones = $db->getInts(
             'SELECT tsteuerzone.kSteuerzone
                 FROM tsteuerzone, tsteuerzoneland
                 WHERE tsteuerzoneland.cISO = :ciso
                     AND tsteuerzoneland.kSteuerzone = tsteuerzone.kSteuerzone',
+            'kSteuerzone',
             ['ciso' => $deliveryCountryCode]
         );
-        if (\count($taxZones) === 0) {
+        if (\count($zones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
             $linkService = Shop::Container()->getLinkService();
             $logoutURL   = $linkService->getStaticRoute('jtl.php') . '?logout=1';
@@ -122,8 +125,7 @@ class Tax
                 $link->setLinkType(\LINKTYP_STARTSEITE);
                 $link->setTitle(Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'));
 
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingTaxZoneForDeliveryCountry'
                 );
@@ -134,8 +136,7 @@ class Tax
             }
 
             if (\in_array($currentURL, [$redirURL, $logoutURL])) {
-                Shop::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                Shop::Container()->getAlertService()->addError(
                     Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages') . '<br/>'
                     . Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingParamShippingDetermination'
@@ -147,27 +148,23 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $zones = map($taxZones, static function ($e) {
-            return (int)$e->kSteuerzone;
-        });
-        $qry   = \count($zones) > 0
+        $qry = \count($zones) > 0
             ? 'kSteuerzone IN (' . \implode(',', $zones) . ')'
             : '';
 
         if ($qry !== '') {
-            $taxClasses = $db->getObjects('SELECT * FROM tsteuerklasse');
-            foreach ($taxClasses as $taxClass) {
-                $taxClass->kSteuerklasse                          = (int)$taxClass->kSteuerklasse;
-                $rate                                             = $db->getSingleObject(
+            foreach ($db->getObjects('SELECT * FROM tsteuerklasse') as $taxClass) {
+                $taxClassID                          = (int)$taxClass->kSteuerklasse;
+                $rate                                = $db->getSingleObject(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = :tcid
                         AND (' . $qry . ') ORDER BY nPrio DESC',
-                    ['tcid' => $taxClass->kSteuerklasse]
+                    ['tcid' => $taxClassID]
                 );
-                $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
+                $_SESSION['Steuersatz'][$taxClassID] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
-                    $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = 0;
+                    $_SESSION['Steuersatz'][$taxClassID] = 0;
                 }
             }
         }
@@ -185,7 +182,7 @@ class Tax
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
      */
-    public static function getOldTaxItems(array $items, $net = -1, $html = true, $currency = null): array
+    public static function getOldTaxItems(array $items, $net = -1, bool $html = true, $currency = null): array
     {
         if ($net === -1) {
             $net = Frontend::getCustomerGroup()->isMerchant();

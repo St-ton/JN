@@ -5,7 +5,7 @@
     {if !isset($noModule) || !$noModule}
         <div class="card">
             <div class="card-body">
-                {include file='tpl_inc/language_switcher.tpl' action='auswahlassistent.php'}
+                {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/auswahlassistent.php'}
             </div>
         </div>
         <div class="tabs">
@@ -25,11 +25,11 @@
             </nav>
             <div class="tab-content">
                 <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                    <form name="uebersichtForm" method="post" action="auswahlassistent.php">
+                    <form name="uebersichtForm" method="post" action="{$adminURL}/auswahlassistent.php">
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div>
-                            {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
+                            {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0}
                                 <div class="table-responsive">
                                     <table class="list table">
                                         <thead>
@@ -71,7 +71,7 @@
                                                     </td>
                                                     <td class="text-center" width="265">
                                                         <div class="btn-group">
-                                                            {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
+                                                            {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|count > 0}
                                                                 <a href="#" class="btn btn-link px-2 down"
                                                                    id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                                    title="{__('showQuestions')}"
@@ -82,7 +82,7 @@
                                                                     </span>
                                                                 </a>
                                                             {/if}
-                                                            <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
+                                                            <a href="{$adminURL}/auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
                                                                class="btn btn-link px-2 edit"
                                                                title="{__('modify')}"
                                                                data-toggle="tooltip">
@@ -94,7 +94,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
+                                                {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|count > 0}
                                                     <tr>
                                                         <td class="text-left" colspan="5"
                                                             id="row_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
@@ -120,7 +120,7 @@
                                                                             <td class="text-center">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="text-center">
                                                                                 <div class="btn-group">
-                                                                                    <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                    <a href="{$adminURL}/auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
                                                                                        class="btn btn-link px-2 remove delete-confirm"
                                                                                        data-toggle="tooltip"
                                                                                        data-modal-body="{$oAuswahlAssistentFrage->cFrage}"
@@ -130,7 +130,7 @@
                                                                                             <span class="fas fa-trash-alt"></span>
                                                                                         </span>
                                                                                     </a>
-                                                                                    <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                    <a href="{$adminURL}/auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
                                                                                        class="btn btn-link px-2 edit"
                                                                                        data-toggle="tooltip"
                                                                                        title="{__('edit')}">
@@ -170,14 +170,14 @@
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
-                                    {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
+                                    {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0}
                                         <div class="ml-auto col-sm-6 col-xl-auto submit">
                                             <button type="submit" name="a" value="delGrp" class="btn btn-danger btn-block">
                                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                                             </button>
                                         </div>
                                     {/if}
-                                    <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
+                                    <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
                                         <button type="submit" name="a" value="newQuest" class="btn btn-outline-primary btn-block">
                                             <i class="fa fa-share"></i> {__('aaQuestion')}
                                         </button>
@@ -194,8 +194,8 @@
                 </div>
                 <!-- #overview -->
                 <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                    {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
-                             action='auswahlassistent.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
+                    {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings'
+                             action=$adminURL|cat:'/auswahlassistent.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
                 </div>
                 <!-- #config -->
             </div>

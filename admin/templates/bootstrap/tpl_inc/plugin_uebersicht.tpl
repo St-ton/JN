@@ -6,7 +6,7 @@
 <div id="content">
     <div class="container2">
         <div id="update-status">
-            {include file='tpl_inc/dbupdater_status.tpl' migrationURL='plugin.php' pluginID=$oPlugin->getID()}
+            {include file='tpl_inc/dbupdater_status.tpl' migrationURL=$adminURL|cat:'/plugin.php' pluginID=$oPlugin->getID()}
             {include file='tpl_inc/dbupdater_scripts.tpl'}
         </div>
         {assign var=hasActiveMenuTab value=false}

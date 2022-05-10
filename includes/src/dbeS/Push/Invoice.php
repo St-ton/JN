@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -71,7 +71,7 @@ final class Invoice extends AbstractPush
      * @param string $comment
      * @return array
      */
-    private function createResponse(int $orderID, $type, $comment): array
+    private function createResponse(int $orderID, string $type, string $comment): array
     {
         $res                               = ['tbestellung' => []];
         $res['tbestellung']['kBestellung'] = $orderID;

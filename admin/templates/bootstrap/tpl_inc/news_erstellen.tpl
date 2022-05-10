@@ -3,7 +3,7 @@
 </style>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
 <div id="content">
-    <form name="news" method="post" action="news.php" enctype="multipart/form-data" class="hide-fileinput-remove">
+    <form name="news" method="post" action="{$adminURL}/news.php" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_speichern" value="1" />
@@ -281,7 +281,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>

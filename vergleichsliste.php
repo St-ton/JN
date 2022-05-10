@@ -1,24 +1,16 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$compareList = null;
 $conf        = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$attrVar     = [[], []];
-$linkHelper  = Shop::Container()->getLinkService();
-$kLink       = $linkHelper->getSpecialPageID(LINKTYP_VERGLEICHSLISTE);
-$link        = $linkHelper->getPageLink($kLink);
 $compareList = new ComparisonList();
 $attrVar     = $compareList->buildAttributeAndVariation();
-$alertHelper = Shop::Container()->getAlertService();
 $compareList->save();
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {
@@ -26,25 +18,21 @@ if (Request::verifyGPCDataInt('addToCart') !== 0) {
         Request::verifyGPCDataInt('addToCart'),
         Request::verifyGPDataString('anzahl')
     );
-    $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
-        Shop::Lang()->get('basketAdded', 'messages'),
-        'basketAdded'
-    );
+    Shop::Container()->getAlertService()->addNotice(Shop::Lang()->get('basketAdded', 'messages'), 'basketAdded');
 }
 
-$nBreiteArtikel = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
+$colWidth = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] > 0)
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
-Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * (count($compareList->oArtikel_arr) + 1))
+Shop::Smarty()->assign('nBreiteTabelle', $colWidth * (count($compareList->oArtikel_arr) + 1))
     ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
     ->assign('prioRows', $compareList->getPrioRows())
-    ->assign('Link', $link)
+    ->assign('Link', Shop::Container()->getLinkService()->getPageLink(LINKTYP_VERGLEICHSLISTE))
     ->assign('oMerkmale_arr', $attrVar[0])
     ->assign('oVariationen_arr', $attrVar[1])
     ->assign('print', (int)(Request::getInt('print') === 1))
     ->assign('oVergleichsliste', $compareList)
-    ->assign('Einstellungen_Vergleichsliste', $conf);
+    ->assignDeprecated('Einstellungen_Vergleichsliste', $conf, '5.2.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

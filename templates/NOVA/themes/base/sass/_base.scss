@@ -71,7 +71,7 @@ ul.partlist-items {
 }
 
 .img-xs {
-  width: 24px;
+  width: auto;
   height: 24px;
   object-fit: contain;
 }
@@ -510,4 +510,12 @@ input.typeahead {
   @include media-breakpoint-up(xl) {
     min-height: 168px;
   }
+}
+.no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  scrollbar-height: none;
+  -ms-overflow-style: none;
 }

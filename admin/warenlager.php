@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Warehouse;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -40,12 +39,9 @@ if ($action === 'update') {
         }
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE]);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successStoreRefresh'), 'successStoreRefresh');
-}
-
-if ($step === 'uebersicht') {
-    $smarty->assign('warehouses', Warehouse::getAll(false, true));
+    $alertHelper->addSuccess(__('successStoreRefresh'), 'successStoreRefresh');
 }
 
 $smarty->assign('step', $step)
+    ->assign('warehouses', Warehouse::getAll(false, true))
     ->display('warenlager.tpl');

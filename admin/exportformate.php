@@ -8,7 +8,6 @@ use JTL\Shop;
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 require_once __DIR__ . '/includes/admininclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 Shop::Container()->getGetText()->loadConfigLocales(true, true);
 

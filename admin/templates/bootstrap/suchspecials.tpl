@@ -3,7 +3,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action='suchspecials.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/suchspecials.php'}
         </div>
     </div>
     <div class="tabs">
@@ -23,7 +23,7 @@
         </nav>
         <div class="tab-content">
             <div id="suchspecials" class="tab-pane fade {if $cTab === '' || $cTab === 'suchspecials'} active show{/if}">
-                <form name="suchspecials" method="post" action="suchspecials.php">
+                <form name="suchspecials" method="post" action="{$adminURL}/suchspecials.php">
                     {$jtl_token}
                     <div id="settings" class="settings">
                         <div class="subheading1">{__('suchspecials')}</div>
@@ -80,7 +80,16 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='suchspecials.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include
+                    file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    a='saveSettings'
+                    action=$adminURL|cat:'/suchspecials.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                    skipHeading=true
+                }
             </div>
         </div>
     </div>

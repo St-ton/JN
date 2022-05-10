@@ -48,7 +48,7 @@ class AuthLogEntry
     /**
      * @param string $ip
      */
-    public function setIP($ip): void
+    public function setIP(string $ip): void
     {
         $this->ip = $ip;
     }

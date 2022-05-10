@@ -1,4 +1,4 @@
-<form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
+<form action="{$adminURL}/shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
     {$jtl_token}
     <div id="settings" class="settings">
         {if $template->getType() === 'admin' || ($template->getType() !== 'mobil' && $template->isResponsive())}
@@ -37,6 +37,201 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
+                    {if $section->key === 'header'}
+                        <style>.preset-button.selected { border: 3px solid; }</style>
+                        <script>
+                            {literal}
+                            $(document).ready(function(){
+                                let $menuSingleRow      = $('#header_menu_single_row'),
+                                    $menuTemplate       = $('#header_menu_template'),
+                                    $allSettings        = $('[id^="header_"]'),
+                                    menuTemplateCurrent = $menuTemplate.val(),
+                                    settings = {
+                                        menu_single_row: { usable_without_menu_single_row: true },
+                                        menu_multiple_rows: { usable_without_menu_single_row: false },
+                                        menu_center: { usable_without_menu_single_row: false },
+                                        menu_scroll: { usable_without_menu_single_row: false },
+                                        menu_logoheight: { usable_without_menu_single_row: true },
+                                        menu_logo_centered: { usable_without_menu_single_row: false },
+                                        menu_search_width: { usable_without_menu_single_row: false },
+                                        menu_search_position: { usable_without_menu_single_row: false },
+                                        header_full_width: { usable_without_menu_single_row: true },
+                                        menu_show_topbar: { usable_without_menu_single_row: true },
+                                };
+                                let presets = [
+                                    {
+                                        name: 'headerStandard',
+                                        settings: {
+                                            menu_single_row: 'N',
+                                            menu_multiple_rows: 'multiple',
+                                            menu_center: 'center',
+                                            menu_scroll: 'menu',
+                                            menu_logoheight: '49',
+                                            menu_logo_centered: 'Y',
+                                            menu_search_width: '0',
+                                            menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'headerLogo',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'scroll',
+                                            menu_center: 'center',
+                                            menu_scroll: 'menu',
+                                            menu_logoheight: '110',
+                                            menu_logo_centered: 'Y',
+                                            menu_search_width: '240',
+                                            menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'headerSingle',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'scroll',
+                                            menu_center: 'center',
+                                            menu_scroll: 'menu',
+                                            menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            menu_search_width: '0',
+                                            menu_search_position: 'right',
+                                            header_full_width: 'N',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'headerBoxed',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'multiple',
+                                            menu_center: 'space-between',
+                                            menu_scroll: 'menu',
+                                            menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            menu_search_width: '500',
+                                            menu_search_position: 'left',
+                                            header_full_width: 'B',
+                                            menu_show_topbar: 'Y',
+                                        }
+                                    },
+                                    {
+                                        name: 'headerTopbar',
+                                        settings: {
+                                            menu_single_row: 'Y',
+                                            menu_multiple_rows: 'scroll',
+                                            menu_center: 'center',
+                                            menu_scroll: 'all',
+                                            menu_logoheight: '80',
+                                            menu_logo_centered: 'N',
+                                            menu_search_width: '700',
+                                            menu_search_position: 'left',
+                                            header_full_width: 'Y',
+                                            menu_show_topbar: 'N',
+                                        }
+                                    },
+                                ];
+                                $.each(presets, function (key, value) {
+                                    let isSelected = value.name === menuTemplateCurrent ? 'selected' : '';
+                                    $('#preset-items').append(
+                                        '<div class="col col-auto">' +
+                                        '<button type="button" id="' + value.name + '" ' +
+                                            'class="btn btn-outline-primary preset-button ' + isSelected + '">'
+                                            + value.name + '</button>' +
+                                        '</div>')
+                                });
+                                let $presetButtons = $('.preset-button');
+                                $presetButtons.on('click', function () {
+                                    setSettings($(this).prop('id'));
+                                });
+                                $menuTemplate.on('change', function () {
+                                    setSettings($(this).val());
+                                });
+
+                                $menuSingleRow.on('change', function() {
+                                    disableSettings($(this).val());
+                                });
+                                $allSettings
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}')
+                                    .on('change', function () {
+                                        if (!$menuTemplate.is(this)) {
+                                            $presetButtons.removeClass('selected');
+                                            $menuTemplate.val('headerCustom');
+                                        }
+                                    });
+
+                                function disableSettings(menuSingelRow) {
+                                    if (menuSingelRow === 'Y') {
+                                        $.each(settings, function (key, value) {
+                                            $('#header_' + key)
+                                                .prop('disabled', false)
+                                                .tooltip('disable');
+                                        });
+                                    } else {
+                                        $.each(settings, function (key, value) {
+                                            $('#header_' + key).prop('disabled', !value.usable_without_menu_single_row);
+                                            if (!value.usable_without_menu_single_row) {
+                                                $('#header_' + key)
+                                                    .tooltip('enable');
+                                            }
+                                        });
+                                    }
+                                }
+                                function setSettings(presetId) {
+                                    $.each(presets, function (key, value) {
+                                        if (presetId === value.name) {
+                                            $.each(value.settings, function (presetKey, presetValue) {
+                                                $('#header_' + presetKey).val(presetValue);
+                                            });
+                                        }
+                                    });
+
+                                    $menuTemplate.val(presetId);
+                                    disableSettings($menuSingleRow.val());
+
+                                    $presetButtons.removeClass('selected');
+                                    $('#' + presetId).addClass('selected');
+                                }
+                                disableSettings($menuSingleRow.val());
+
+                                $('.fa-desktop')
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipDesktop')}{literal}')
+                                    .tooltip('enable');
+                                $('.fa-mobile-alt')
+                                    .prop('toggle', 'tooltip')
+                                    .prop('title', '{/literal}{__('tooltipMobile')}{literal}')
+                                    .tooltip('enable');
+
+                                $('#form_settings').on('submit', function () {
+                                    $allSettings.prop('disabled', false);
+                                });
+                            });
+                            {/literal}
+                        </script>
+
+                        <div id="preset-wrapper">
+                            <div id="preset-description">
+                                {__('chooseLayout')}
+                            </div>
+                            <div id="preset-items" class="row mt-3 mb-4">
+
+                            </div>
+                        </div>
+                    <a class="btn btn-primary mb-5" data-toggle="collapse" href="#header-settings" aria-controls="header-settings">
+                        {__('buttonCustomLayout')}
+                    </a>
+                    <div class="collapse" id="header-settings">
+                    {elseif $section->key === 'customsass'}
+                        <div class="underline-links mb-5">{__('Custom Sass Description')}</div>
+                    {elseif $section->key === 'colors'}
+                        <div id="color-info" class="mb-5 text-warning">{__('The color settings might not work as expected in this theme.')}</div>
+                    {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
                             {if $setting->key === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
@@ -69,7 +264,20 @@
                                     </script>
                                 </div>
                             {/if}
-                            <div class="col-xs-12 col-md-12">
+                            {if $setting->key === 'theme_default'}
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#theme_theme_default').on('change', function () {
+                                            if ($(this).val() === 'blackline') {
+                                                $('#color-info').show();
+                                            } else {
+                                                $('#color-info').hide();
+                                            }
+                                        }).change();
+                                    });
+                                </script>
+                            {/if}
+                            <div class="col-xs-12 col-md-12 {if !empty($setting->rawAttributes.MarginBottom)}mb-5{/if}">
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>
@@ -82,6 +290,7 @@
                                                 {include file='snippets/colorpicker.tpl'
                                                 cpID="{$setting->elementID}"
                                                 cpName="{$setting->elementID}"
+                                                useAlpha=true
                                                 cpValue=$setting->value}
                                             {elseif $setting->cType === 'number'}
                                                 {include file='tpl_inc/option_number.tpl' setting=$setting section=$section}
@@ -102,13 +311,16 @@
                             </div>
                         {/foreach}
                     </div>{* /row *}
+                    {if $section->key === 'header'}
+                        </div>
+                    {/if}
                 </div>
             </div>
         {/foreach}
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="shoptemplate.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/shoptemplate.php">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

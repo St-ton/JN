@@ -1,10 +1,12 @@
 {block name='productdetails-variation'}
     {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
-        {assign var=VariationsSource value='Variationen'}
-        {if isset($ohneFreifeld) && $ohneFreifeld}
-            {assign var=VariationsSource value='VariationenOhneFreifeld'}
-        {/if}
-        {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
+        {block name='productdetails-variation-assigns'}
+            {assign var=VariationsSource value='Variationen'}
+            {if isset($ohneFreifeld) && $ohneFreifeld}
+                {assign var=VariationsSource value='VariationenOhneFreifeld'}
+            {/if}
+            {assign var=oVariationKombi_arr value=$Artikel->getChildVariations()}
+        {/block}
         {block name='productdetails-variation-spinner'}
             {row}
                 {col class="updatingStockInfo text-center-util d-none"}
@@ -17,21 +19,39 @@
                 {col}
                     <dl>
                     {foreach name=Variationen from=$Artikel->$VariationsSource key=i item=Variation}
-
+                        {$showSwatchSlider=count($Variation->Werte) > $Einstellungen.template.productdetails.swatch_slider}
+                        <div class="vaiation-wrapper {if $Variation->cTyp === 'IMGSWATCHES'}js-slider-wrapper {if !$showSwatchSlider}js-slider-disabled{/if}{/if}">
                     {strip}
-                        <dt>{$Variation->cName}&nbsp;
+                        {block name='productdetails-variation-name-outer'}
+                        <dt class="js-btn-slider-wrapper">
+                            {block name='productdetails-variation-name'}
+                                {if $Variation->cTyp === 'IMGSWATCHES'}
+                                    <div>
+                                {/if}
+                                {$Variation->cName}&nbsp;
+                            {/block}
+                            {block name='productdetails-variation-value-name'}
                             {if $Variation->cTyp === 'IMGSWATCHES'}
-                                <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
-                                {foreach $Variation->Werte as $variationValue}
-                                    {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
-                                        && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
-                                        {$variationValue->cName}
-                                        {break}
-                                    {/if}
-                                {/foreach}
-                                </span>
+                                    <span class="swatches-selected text-success" data-id="{$Variation->kEigenschaft}">
+                                    {foreach $Variation->Werte as $variationValue}
+                                        {if isset($oVariationKombi_arr[$variationValue->kEigenschaft])
+                                            && in_array($variationValue->kEigenschaftWert, $oVariationKombi_arr[$variationValue->kEigenschaft])}
+                                            {$variationValue->cName}
+                                            {break}
+                                        {/if}
+                                    {/foreach}
+                                    </span>
+                                </div>
+                                {if $showSwatchSlider}
+                                    <div class="js-btn-slider-btns">
+                                        {button class="js-btn-slider-sb" variant="link" disabled=true}<span class="fa fa-chevron-left"></span>{/button}
+                                        {button class="js-btn-slider-sf" variant="link"}<span class="fa fa-chevron-right"></span>{/button}
+                                    </div>
+                                {/if}
                             {/if}
+                            {/block}
                         </dt>
+                        {/block}
                         <dd class="form-group text-left-util">
                             {if $Variation->cTyp === 'SELECTBOX'}
                                 {block name='productdetails-variation-select-outer'}
@@ -130,7 +150,7 @@
                                 {/block}
                             {elseif $Variation->cTyp === 'IMGSWATCHES'}
                                 {block name='productdetails-variation-swatch-outer'}
-                                    {formrow class="swatches {$Variation->cTyp|lower}"}
+                                    {formrow class="swatches js-slider-items no-scrollbar {$Variation->cTyp|lower}"}
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {assign var=hasImage value=!empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
@@ -147,7 +167,7 @@
                                                 {* /do nothing *}
                                             {else}
                                                 {block name='productdetails-variation-swatch-inner'}
-                                                {col class='col-auto'}
+                                                {col class='col-auto js-slider-item'}
                                                     <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock not-available{elseif !$Variationswert->inStock}swatches-sold-out not-available{/if}"
                                                             data-type="swatch"
                                                             data-original="{$Variationswert->cName}"
@@ -160,13 +180,13 @@
                                                             {if $Variationswert->notExists}
                                                                 title="{lang key='notAvailableInSelection'}"
                                                                 data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                data-toggle="tooltip"
+                                                                {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                             {elseif $Variationswert->inStock}
                                                                 data-title="{$Variationswert->cName}"
                                                             {else}
                                                                 title="{lang key='ampelRot'}"
                                                                 data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                data-toggle="tooltip"
+                                                                {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                 data-stock="out-of-stock"
                                                             {/if}
                                                             {if isset($Variationswert->oVariationsKombi)}
@@ -269,6 +289,7 @@
                             {/if}
                         </dd>
                     {/strip}
+                        </div>
                     {/foreach}
                     </dl>
                 {/col}

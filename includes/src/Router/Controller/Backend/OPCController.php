@@ -59,7 +59,7 @@ class OPCController extends AbstractBackendController
 
             return $smarty->assign('error', [
                 'heading' => \__('dbUpdate') . ' ' . \__('required'),
-                'desc'    => \sprintf(\__('dbUpdateNeeded'), $shopURL),
+                'desc'    => \sprintf(\__('dbUpdateNeeded'), $adminURL),
             ])
                 ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
         }

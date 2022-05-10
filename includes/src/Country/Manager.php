@@ -11,6 +11,7 @@ use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -292,7 +293,11 @@ class Manager
                     }
                 )->toArray();
                 $this->alertService->addInfo(
-                    \sprintf(\__('infoRegistrationCountriesActivated'), \implode(', ', $activatedCountries)),
+                    \sprintf(
+                        \__('infoRegistrationCountriesActivated'),
+                        \implode(', ', $activatedCountries),
+                        Shop::getAdminURL()
+                    ),
                     'infoRegistrationCountriesActivated'
                 );
             }
@@ -303,7 +308,11 @@ class Manager
                     }
                 )->toArray();
                 $this->alertService->addWarning(
-                    \sprintf(\__('warningRegistrationCountriesDeactivated'), \implode(', ', $deactivatedCountries)),
+                    \sprintf(
+                        \__('warningRegistrationCountriesDeactivated'),
+                        \implode(', ', $deactivatedCountries),
+                        Shop::getAdminURL()
+                    ),
                     'warningRegistrationCountriesDeactivated'
                 );
             }

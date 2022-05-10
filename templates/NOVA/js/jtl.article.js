@@ -1142,7 +1142,7 @@
 
         variationRefreshAll: function($wrapper) {
             $('.variations select', $wrapper).selectpicker('refresh');
-            $.evo().initSliders()
+            $.evo.initSliders()
         },
 
         getConfigGroupQuantity: function (groupId) {

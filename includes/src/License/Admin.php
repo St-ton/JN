@@ -3,6 +3,7 @@
 namespace JTL\License;
 
 use Exception;
+use JsonException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use JTL\Backend\AuthToken;
@@ -58,27 +59,27 @@ class Admin
     /**
      * @var Manager
      */
-    private $manager;
+    private Manager $manager;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var Checker
      */
-    private $checker;
+    private Checker $checker;
 
     /**
      * @var AuthToken
      */
-    private $auth;
+    private AuthToken $auth;
 
     /**
      * @var string[]
@@ -155,7 +156,7 @@ class Admin
                 $this->extendUpgrade($smarty, $action);
             }
         }
-        if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
+        if ($action === null || !$valid || !\in_array($action, $this->validActions, true)) {
             $this->getLicenses();
             $this->getList($smarty);
             return;
@@ -280,8 +281,8 @@ class Admin
                 Request::postVar('exsid'),
                 Request::postVar('key')
             );
-            $responseData = \json_decode($apiResponse);
-        } catch (ClientException | GuzzleException | AuthException $e) {
+            $responseData = \json_decode($apiResponse, false, 512, \JSON_THROW_ON_ERROR);
+        } catch (ClientException | GuzzleException | AuthException | JsonException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('extendErrorMessage', $e->getMessage());
         }

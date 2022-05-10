@@ -653,7 +653,7 @@ class CampaignController extends AbstractBackendController
                 );
                 if (\count($data) > 0) {
                     foreach ($data as $item) {
-                        $customDataParts         = \explode(';', $item->cCustomData);
+                        $customDataParts       = \explode(';', $item->cCustomData);
                         $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
                         $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
                     }

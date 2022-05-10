@@ -27,10 +27,6 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
-                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
-                <Option Value="dropdown">Icon mit Dropdown</Option>
-            </Setting>
             <Setting Description="Wunschzettel und Vergleichsliste - Animation anzeigen" Key="wish_compare_animation" Type="select" Value="mobile">
                 <Option Value="both">Auf Desktop und mobilen Geräten</Option>
                 <Option Value="mobile">Nur mobil</Option>
@@ -55,12 +51,68 @@
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
+        <Section Name="Header" Key="header">
+            <Setting Description="Gewählte Vorlage" Key="menu_template" Type="select" Value="standard">
+                <Option Value="headerStandard">Standard</Option>
+                <Option Value="headerLogo">Logo zentriert</Option>
+                <Option Value="headerSingle">Menü in eigener Zeile</Option>
+                <Option Value="headerBoxed">Header Boxed - Menü mehrspaltig</Option>
+                <Option Value="headerTopbar">Ohne Topbar - Header volle breite</Option>
+                <Option Value="headerCustom">Custom</Option>
+            </Setting>
+            <Setting Description="Menü in eigener Zeile anzeigen" Key="menu_single_row" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Anzeige bei vielen Menüeinträgen" Key="menu_multiple_rows" Type="select" Value="scroll">
+                <Option Value="multiple">Mehrzeilig</Option>
+                <Option Value="scroll">Einzeilig und scrollbar nach links/rechts</Option>
+            </Setting>
+            <Setting Description="Menüausrichtung" Key="menu_center" Type="select" Value="center">
+                <Option Value="center">Zentriert</Option>
+                <Option Value="left">Linksbündig</Option>
+                <Option Value="space-between">Blocksatz</Option>
+            </Setting>
+            <Setting Description="Anzeige beim Scrollen" Key="menu_scroll" Type="select" Value="menu">
+                <Option Value="menu">Menü</Option>
+                <Option Value="all">Menü, Logo, Suche</Option>
+                <Option Value="none">Nichts</Option>
+            </Setting>
+            <Setting Description="Logo Höhe (in px)" Key="menu_logoheight" Type="number" Value="49"/>
+            <Setting Description="Logo zentriert" Key="menu_logo_centered" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Topbar anzeigen" Key="menu_show_topbar" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Suchfeld Breite (in px)" Key="menu_search_width" Type="number" Value="0"/>
+            <Setting Description="Suchfeld Positionierung" Key="menu_search_position" Type="select" Value="center">
+                <Option Value="left">Linksbündig</Option>
+                <Option Value="right">Rechtsbündig</Option>
+                <Option Value="center">Zentriert</Option>
+            </Setting>
+            <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+                <Option Value="B">Boxed</Option>
+            </Setting>
+            <Setting Description="Anzeige der Suche auf mobilen Geräten" Key="mobile_search_type" Type="select" Value="fixed">
+                <Option Value="fixed">Suche beim Hochscrollen einblenden</Option>
+                <Option Value="dropdown">Icon mit Dropdown</Option>
+            </Setting>
+        </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
                 <Option Value="Y">Auf Desktop und mobilen Geräten</Option>
                 <Option Value="mobile">Nur mobil</Option>
                 <Option Value="desktop">Nur Desktop</Option>
                 <Option Value="N">Inaktiv</Option>
+            </Setting>
+            <Setting Description="Mobile Geräte: Menü in aktueller Kategorie öffnen" Key="mobile_start_category" Type="select" Value="N">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Kategoriebilder für erste Unterkategorie" Key="show_category_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
@@ -81,10 +133,6 @@
             <Setting Description="Herstellerbilder" Key="show_manufacturer_images" Type="select" Value="N">
                 <Option Value="Y">Aktiv</Option>
                 <Option Value="N">Inaktiv</Option>
-            </Setting>
-            <Setting Description="Header über gesamte Bildschirmbreite darstellen" Key="header_full_width" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
             </Setting>
         </Section>
         <Section Name="Listen- und Gallerieansicht" Key="productlist">
@@ -131,6 +179,21 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
+        </Section>
+        <Section Name="Colors" Key="colors">
+            <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
+            <Setting Description="colorSecondary" Key="secondary" Type="colorpicker" Value="" MarginBottom="true"/>
+            <Setting Description="colorHeaderBgColor" Key="header-bg-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderColor" Key="header-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderBgColorSecondary" Key="header-bg-color-secondary" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderColorSecondary" Key="header-color-secondary" Type="colorpicker" Value="" MarginBottom="true"/>
+            <Setting Description="colorFooterBgColor" Key="footer-bg-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorFooterColor" Key="footer-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorCopyrightBgColor" Key="copyright-bg-color" Type="colorpicker" Value=""/>
+        </Section>
+        <Section Name="Custom Sass" Key="customsass">
+            <Setting Description="customVariables" Key="customVariables" Type="textarea" Class="codemirror sass" Value=""/>
+            <Setting Description="customContent" Key="customContent" Type="textarea" Class="codemirror sass" Value=""/>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
             <Setting Description="Newsletter-Anmeldung im Footer" Key="newsletter_footer" Type="select" Value="N">

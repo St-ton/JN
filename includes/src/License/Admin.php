@@ -5,7 +5,6 @@ namespace JTL\License;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -370,8 +369,7 @@ class Admin
             $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
         } catch (Exception $e) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 \__('errorFetchLicenseAPI') . ' ' . $e->getMessage(),
                 'errorFetchLicenseAPI'
             );

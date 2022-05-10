@@ -10,17 +10,17 @@ ob_start();
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $io        = IO::getInstance();
-$ioMethods = new IOMethods($io);
+$ioMethods = new IOMethods($io, Shop::Container()->getDB());
 $ioMethods->registerMethods();
 Shop::Smarty()->setCaching(false)
-    ->assign('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN)
-    ->assign('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN)
-    ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
-    ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
-    ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
     ->assign('nSeitenTyp', PAGE_IO)
     ->assign('imageBaseURL', Shop::getImageBaseURL())
-    ->assign('ShopURL', Shop::getURL());
+    ->assign('ShopURL', Shop::getURL())
+    ->assignDeprecated('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN, '5.0.0')
+    ->assignDeprecated('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN, '5.0.0')
+    ->assignDeprecated('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN, '5.0.0')
+    ->assignDeprecated('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN, '5.0.0')
+    ->assignDeprecated('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN, '5.0.0');
 Shop::setPageType(PAGE_IO);
 
 if (!isset($_REQUEST['io'])) {

@@ -26,6 +26,7 @@
     <script src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
+    <script src="{$PFAD_CODEMIRROR}mode/sass/sass.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
@@ -131,7 +132,7 @@
                             <a class="dropdown-item link-shop" href="{$URL_SHOP}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
-                            <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
+                            <a class="dropdown-item link-logout" href="{$adminURL}/logout.php?token={$smarty.session.jtl_token}"
                                title="{__('logout')}">
                                 <i class="fa fa-sign-out"></i> {__('logout')}
                             </a>
@@ -214,7 +215,7 @@
                             return true;
                         });
                         $('#licenseGotoTemplates').on('click', function (e) {
-                            window.location.href = '{$shopURL}/{$smarty.const.PFAD_ADMIN}shoptemplate.php?licensenoticeaccepted=true';
+                            window.location.href = '{$adminURL}/shoptemplate.php?licensenoticeaccepted=true';
                             return true;
                         });
                     });

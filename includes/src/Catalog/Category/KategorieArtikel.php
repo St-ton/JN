@@ -45,7 +45,7 @@ class KategorieArtikel
     {
         $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $id);
         foreach (\get_object_vars($obj) as $k => $v) {
-            $this->$k = $v;
+            $this->$k = (int)$v;
         }
 
         return $this;
@@ -72,16 +72,5 @@ class KategorieArtikel
             $obj->kKategorieArtikel,
             $obj
         );
-    }
-
-    /**
-     * setzt Daten aus Sync POST request.
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
     }
 }

@@ -23,7 +23,7 @@ class PaymentMethod
             return false;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                         = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $conf                         = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
         $paymentMethod->einstellungen = $conf;
         switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':
@@ -45,17 +45,6 @@ class PaymentMethod
                     return false;
                 }
                 if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'] ?? 0)) {
-                    return false;
-                }
-                break;
-            case 'za_kreditkarte_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'] ?? 0)) {
                     return false;
                 }
                 break;

@@ -170,13 +170,12 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         );
         $cart->kLieferadresse = $_SESSION['Bestellung']->kLieferadresse;
     }
-    $conf = Shop::getSettings([CONF_GLOBAL]);
-    //füge Warenkorb ein
+    // füge Warenkorb ein
     executeHook(HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB, ['oWarenkorb' => &$cart, 'oBestellung' => &$order]);
     $cart->kWarenkorb = $cart->insertInDB();
-    //füge alle Warenkorbpositionen ein
+    // füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
-        $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
+        $productFilter = (int)Shop::getSettingValue(CONF_GLOBAL, 'artikel_artikelanzeigefilter');
         /** @var CartItem $item */
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -260,9 +259,9 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         }
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
-        if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
+        if (Frontend::getWishList()->getID() > 0) {
             Wishlist::pruefeArtikelnachBestellungLoeschen(
-                $_SESSION['Wunschliste']->kWunschliste,
+                Frontend::getWishList()->getID(),
                 $cartItems
             );
         }
@@ -704,7 +703,7 @@ function updateStock(int $productID, $amount, $packeinheit)
  * @param int|float $amount
  * @return int|float - neuer Lagerbestand
  */
-function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
+function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 {
     $amount        = (float)$amount;
     $bomID         = (int)$bomProduct->kStueckliste;
@@ -714,8 +713,9 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
     if ($amount <= 0) {
         return $newStockLevel;
     }
+    $db = Shop::Container()->getDB();
     // Gibt es lagerrelevante Komponenten in der Stückliste?
-    $components = Shop::Container()->getDB()->getObjects(
+    $components = $db->getObjects(
         "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
             FROM tstueckliste
             JOIN tartikel
@@ -725,13 +725,15 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
         ['slid' => $bomID]
     );
 
-    if (is_array($components) && count($components) > 0) {
+    if (count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
+        $customerGroupID                     = Frontend::getCustomerGroup()->getID();
+        $languageID                          = Shop::getLanguageID();
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
-            $tmpArtikel = new Artikel();
-            $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
+            $tmpArtikel = new Artikel($db);
+            $tmpArtikel->fuelleArtikel($component->kArtikel, $options, $customerGroupID, $languageID);
             $compStockLevel = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
@@ -763,7 +765,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
             $newStockLevel = $negStockLevel;
         }
 
-        Shop::Container()->getDB()->update(
+        $db->update(
             'tartikel',
             'kArtikel',
             (int)$bomProduct->kArtikel,
@@ -805,62 +807,6 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
                 'kArtikel',
                 (int)$bom->kArtikel,
                 (object)['fLagerbestand' => $max]
-            );
-        }
-    }
-}
-
-/**
- * @param int       $productID
- * @param int|float $amount
- * @param null|int  $bomID
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($productID > 0) {
-        $prod = new Artikel();
-        $prod->fuelleArtikel($productID, Artikel::getDefaultOptions());
-        aktualisiereKomponenteLagerbestand($productID, $prod->fLagerbestand, $prod->cLagerKleinerNull === 'Y');
-    }
-}
-
-/**
- * @param int       $bomID
- * @param float     $fPackeinheitSt
- * @param float     $stockLevel
- * @param int|float $amount
- * @deprecated since 4.06 - dont use anymore
- */
-function AktualisiereStueckliste(int $bomID, $fPackeinheitSt, float $stockLevel, $amount): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Shop::Container()->getDB()->update(
-        'tartikel',
-        'kStueckliste',
-        $bomID,
-        (object)['fLagerbestand' => $stockLevel]
-    );
-}
-
-/**
- * @param Artikel        $product
- * @param null|int|float $amount
- * @param bool           $isBom
- * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
- */
-function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false): void
-{
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if (isset($product->kArtikel) && $product->kArtikel > 0) {
-        if ($isBom) {
-            aktualisiereStuecklistenLagerbestand($product, $amount);
-        } else {
-            aktualisiereKomponenteLagerbestand(
-                $product->kArtikel,
-                $product->fLagerbestand,
-                $product->cLagerKleinerNull === 'Y'
             );
         }
     }
@@ -946,12 +892,10 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    $conf      = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $conf      = Shop::getSettingSection(CONF_KAUFABWICKLUNG);
     $number    = new Nummern(JTL_GENNUMBER_ORDERNUMBER);
     $orderNo   = 1;
-    $increment = isset($conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer'])
-        ? (int)$conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer']
-        : 1;
+    $increment = (int)($conf['bestellabschluss_bestellnummer_anfangsnummer'] ?? 1);
     if ($number) {
         $orderNo = $number->getNummer() + $increment;
         $number->setNummer($number->getNummer() + 1);
@@ -967,12 +911,12 @@ function baueBestellnummer(): string
     $prefix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_praefix']
+        $conf['bestellabschluss_bestellnummer_praefix']
     );
     $suffix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
-        $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
+        $conf['bestellabschluss_bestellnummer_suffix']
     );
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER, [
         'orderNo' => &$orderNo,
@@ -1027,7 +971,7 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
             Shop::Smarty()->assign('oPlugin', $plugin)
                 ->assign('plugin', $plugin);
         }
-    } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
+    } elseif ($moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
     }
 
@@ -1160,14 +1104,13 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit(): array
 {
-    $res  = ['cArtikelName_arr' => []];
-    $conf = Shop::getSettings([CONF_GLOBAL]);
+    $res = ['cArtikelName_arr' => []];
     foreach (Frontend::getCart()->PositionenArr as $item) {
         if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
             && isset($item->Artikel->cLagerBeachten)
             && $item->Artikel->cLagerBeachten === 'Y'
             && $item->Artikel->cLagerKleinerNull === 'Y'
-            && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
+            && Shop::getSettingValue(CONF_GLOBAL, 'global_lieferverzoegerung_anzeigen') === 'Y'
             && $item->nAnzahl > $item->Artikel->fLagerbestand
         ) {
             $res['cArtikelName_arr'][] = $item->Artikel->cName;

@@ -74,9 +74,9 @@ class OptinRefData implements \Serializable
     }
 
     /**
-     * @param string $serialized
+     * @param string $data
      */
-    public function unserialize($serialized): void
+    public function unserialize($data): void
     {
         [
             $this->optinClass,
@@ -88,7 +88,7 @@ class OptinRefData implements \Serializable
             $this->email,
             $this->realIP,
             $this->productID
-        ] = \unserialize($serialized, ['OptinRefData']);
+        ] = \unserialize($data, ['OptinRefData']);
     }
 
     /**

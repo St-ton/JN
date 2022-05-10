@@ -32,37 +32,37 @@ final class Installer
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $dir;
+    private ?string $dir = null;
 
     /**
      * @var Uninstaller
      */
-    private $uninstaller;
+    private Uninstaller $uninstaller;
 
     /**
      * @var ValidatorInterface
      */
-    private $legacyValidator;
+    private ValidatorInterface $legacyValidator;
 
     /**
      * @var ValidatorInterface
      */
-    private $pluginValidator;
+    private ValidatorInterface $pluginValidator;
 
     /**
      * @var PluginInterface|null
      */
-    private $plugin;
+    private ?PluginInterface $plugin = null;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Installer constructor.
@@ -226,7 +226,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);
@@ -425,7 +425,7 @@ final class Installer
         if (!\file_exists($file)) {
             return [];// SQL Datei existiert nicht
         }
-        $handle   = \fopen($file, 'r');
+        $handle   = \fopen($file, 'rb');
         $sqlLines = [];
         $line     = '';
         while (($data = \fgets($handle)) !== false) {

@@ -98,11 +98,6 @@ class Download
     public $cLimit;
 
     /**
-     * @var bool
-     */
-    private $licenseOK;
-
-    /**
      * @var array
      */
     public static $mapping = [
@@ -118,8 +113,7 @@ class Download
      */
     public function __construct(int $id = 0, int $languageID = 0, bool $info = true, int $orderID = 0)
     {
-        $this->licenseOK = self::checkLicense();
-        if ($id > 0 && $this->licenseOK === true) {
+        if ($id > 0 && self::checkLicense() === true) {
             $this->loadFromDB($id, $languageID, $info, $orderID);
         }
     }
@@ -142,89 +136,55 @@ class Download
     private function loadFromDB(int $id, int $languageID, bool $info, int $orderID): void
     {
         $item = Shop::Container()->getDB()->select('tdownload', 'kDownload', $id);
-        if ($item !== null && isset($item->kDownload) && (int)$item->kDownload > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
+        if ($item === null || (int)$item->kDownload <= 0) {
+            return;
+        }
+        foreach (\array_keys(\get_object_vars($item)) as $member) {
+            $this->$member = $item->$member;
+        }
+        $this->kDownload = (int)$this->kDownload;
+        $this->nAnzahl   = (int)$this->nAnzahl;
+        $this->nTage     = (int)$this->nTage;
+        $this->nSort     = (int)$this->nSort;
+        if ($info) {
+            if (!$languageID) {
+                $languageID = Shop::getLanguageID();
             }
-            $this->kDownload = (int)$this->kDownload;
-            $this->nAnzahl   = (int)$this->nAnzahl;
-            $this->nTage     = (int)$this->nTage;
-            $this->nSort     = (int)$this->nSort;
-            if ($info) {
-                if (!$languageID) {
-                    $languageID = Shop::getLanguageID();
-                }
-                $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
-            }
-            if ($orderID > 0) {
-                $this->kBestellung = $orderID;
-                $order             = Shop::Container()->getDB()->select(
-                    'tbestellung',
-                    'kBestellung',
-                    $orderID,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    'kBestellung, dBezahltDatum'
-                );
-                if ($order !== null
-                    && $order->kBestellung > 0
-                    && $order->dBezahltDatum !== null
-                    && $this->getTage() > 0
-                ) {
-                    $paymentDate = new DateTime($order->dBezahltDatum);
-                    $modifyBy    = $this->getTage() + 1;
-                    $paymentDate->modify('+' . $modifyBy . ' day');
-                    $this->dGueltigBis = $paymentDate->format('d.m.Y');
-                }
-            }
-            $this->oArtikelDownload_arr = Shop::Container()->getDB()->getObjects(
-                'SELECT tartikeldownload.*
-                    FROM tartikeldownload
-                    JOIN tdownload 
-                        ON tdownload.kDownload = tartikeldownload.kDownload
-                    WHERE tartikeldownload.kDownload = :dlid
-                    ORDER BY tdownload.nSort',
-                ['dlid' => $this->kDownload]
+            $this->oDownloadSprache = new Localization($item->kDownload, $languageID);
+        }
+        if ($orderID > 0) {
+            $this->kBestellung = $orderID;
+            $order             = Shop::Container()->getDB()->getSingleObject(
+                'SELECT * FROM tbestellung
+                    WHERE kBestellung = :oid',
+                ['oid' => $orderID]
             );
-            foreach ($this->oArtikelDownload_arr as $dla) {
-                $dla->kArtikel  = (int)$dla->kArtikel;
-                $dla->kDownload = (int)$dla->kDownload;
+            if ($order !== null
+                && $order->kBestellung > 0
+                && $order->dBezahltDatum !== null
+                && $this->getTage() > 0
+            ) {
+                $paymentDate = new DateTime($order->dBezahltDatum);
+                $modifyBy    = $this->getTage() + 1;
+                $paymentDate->modify('+' . $modifyBy . ' day');
+                $this->dGueltigBis = $paymentDate->format('d.m.Y');
             }
+        }
+        $this->oArtikelDownload_arr = Shop::Container()->getDB()->getObjects(
+            'SELECT tartikeldownload.*
+                FROM tartikeldownload
+                JOIN tdownload 
+                    ON tdownload.kDownload = tartikeldownload.kDownload
+                WHERE tartikeldownload.kDownload = :dlid
+                ORDER BY tdownload.nSort',
+            ['dlid' => $this->kDownload]
+        );
+        foreach ($this->oArtikelDownload_arr as $dla) {
+            $dla->kArtikel  = (int)$dla->kArtikel;
+            $dla->kDownload = (int)$dla->kDownload;
         }
     }
 
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
 
     /**
      * @param array $keys
@@ -254,7 +214,7 @@ class Download
                     'cid' => $customerID,
                     'pos' => \C_WARENKORBPOS_TYP_ARTIKEL
                 ];
-                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde,
                     tartikeldownload.kDownload';
                 $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
                 $join   = 'JOIN tbestellung ON tbestellung.kKunde = :cid
@@ -309,7 +269,7 @@ class Download
      * @param Cart $cart
      * @return bool
      */
-    public static function hasDownloads($cart): bool
+    public static function hasDownloads(Cart $cart): bool
     {
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
@@ -331,27 +291,26 @@ class Download
      */
     public static function getFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
-            $download = new self($downloadID, 0, false);
-            $res      = $download::checkFile($download->kDownload, $customerID, $orderID);
-            if ($res === self::ERROR_NONE) {
-                (new History())
-                    ->setDownload($downloadID)
-                    ->setKunde($customerID)
-                    ->setBestellung($orderID)
-                    ->setErstellt('NOW()')
-                    ->save();
+        if ($downloadID <= 0 || $customerID <= 0 || $orderID <= 0) {
+            return self::ERROR_MISSING_PARAMS;
+        }
+        $download = new self($downloadID, 0, false);
+        $res      = $download::checkFile($download->kDownload, $customerID, $orderID);
+        if ($res === self::ERROR_NONE) {
+            (new History())
+                ->setDownload($downloadID)
+                ->setKunde($customerID)
+                ->setBestellung($orderID)
+                ->setErstellt('NOW()')
+                ->save();
 
-                self::send_file_to_browser(
-                    \PFAD_DOWNLOADS . $download->getPfad(),
-                    'application/octet-stream'
-                );
-            }
-
-            return $res;
+            self::sendFileToBrowser(
+                \PFAD_DOWNLOADS . $download->getPfad(),
+                'application/octet-stream'
+            );
         }
 
-        return self::ERROR_MISSING_PARAMS;
+        return $res;
     }
 
     /**
@@ -372,43 +331,44 @@ class Download
      */
     public static function checkFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
-            $order = new Bestellung($orderID);
-            // Existiert die Bestellung und wurde Sie bezahlt?
-            if ($order->kBestellung <= 0 || (empty($order->dBezahltDatum) && $order->fGesamtsumme > 0)) {
-                return self::ERROR_ORDER_NOT_FOUND;
-            }
-            // Stimmt der Kunde?
-            if ((int)$order->kKunde !== $customerID) {
-                return self::ERROR_INVALID_CUSTOMER;
-            }
-            $order->fuelleBestellung();
-            $download = new self($downloadID, 0, false);
-            // Gibt es einen Artikel der zum Download passt?
-            if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
-                return self::ERROR_PRODUCT_NOT_FOUND;
-            }
-            foreach ($order->Positionen as $item) {
-                foreach ($download->oArtikelDownload_arr as $donwloadItem) {
-                    if ((int)$item->kArtikel !== $donwloadItem->kArtikel) {
-                        continue;
-                    }
-                    // Check Anzahl
-                    if ($download->getAnzahl() > 0) {
-                        $history = History::getOrderHistory($customerID, $orderID);
-                        if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
-                            return self::ERROR_DOWNLOAD_LIMIT_REACHED;
-                        }
-                    }
-                    // Check Datum
-                    $paymentDate = new DateTime($order->dBezahltDatum);
-                    $paymentDate->modify('+' . ($download->getTage() + 1) . ' day');
-                    if ($download->getTage() > 0 && $paymentDate < new DateTime()) {
-                        return self::ERROR_DOWNLOAD_EXPIRED;
-                    }
-
-                    return self::ERROR_NONE;
+        if ($downloadID <= 0 || $customerID <= 0 || $orderID <= 0) {
+            return self::ERROR_MISSING_PARAMS;
+        }
+        $order = new Bestellung($orderID);
+        // Existiert die Bestellung und wurde Sie bezahlt?
+        if ($order->kBestellung <= 0 || (empty($order->dBezahltDatum) && $order->fGesamtsumme > 0)) {
+            return self::ERROR_ORDER_NOT_FOUND;
+        }
+        // Stimmt der Kunde?
+        if ($order->kKunde !== $customerID) {
+            return self::ERROR_INVALID_CUSTOMER;
+        }
+        $order->fuelleBestellung();
+        $download = new self($downloadID, 0, false);
+        // Gibt es einen Artikel der zum Download passt?
+        if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
+            return self::ERROR_PRODUCT_NOT_FOUND;
+        }
+        foreach ($order->Positionen as $item) {
+            foreach ($download->oArtikelDownload_arr as $donwloadItem) {
+                if ($item->kArtikel !== $donwloadItem->kArtikel) {
+                    continue;
                 }
+                // Check Anzahl
+                if ($download->getAnzahl() > 0) {
+                    $history = History::getOrderHistory($customerID, $orderID);
+                    if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
+                        return self::ERROR_DOWNLOAD_LIMIT_REACHED;
+                    }
+                }
+                // Check Datum
+                $paymentDate = new DateTime($order->dBezahltDatum);
+                $paymentDate->modify('+' . ($download->getTage() + 1) . ' day');
+                if ($download->getTage() > 0 && $paymentDate < new DateTime()) {
+                    return self::ERROR_DOWNLOAD_EXPIRED;
+                }
+
+                return self::ERROR_NONE;
             }
         }
 
@@ -658,7 +618,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getAnzahl()
+    public function getAnzahl(): ?int
     {
         return $this->nAnzahl;
     }
@@ -666,7 +626,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getTage()
+    public function getTage(): ?int
     {
         return $this->nTage;
     }
@@ -674,7 +634,7 @@ class Download
     /**
      * @return int|null
      */
-    public function getSort()
+    public function getSort(): ?int
     {
         return $this->nSort;
     }
@@ -682,7 +642,7 @@ class Download
     /**
      * @return string|null
      */
-    public function getErstellt()
+    public function getErstellt(): ?string
     {
         return $this->dErstellt;
     }
@@ -691,7 +651,7 @@ class Download
      * @param string $filename
      * @param string $mimetype
      */
-    private static function send_file_to_browser(string $filename, string $mimetype): void
+    private static function sendFileToBrowser(string $filename, string $mimetype): void
     {
         $browser   = 'other';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';

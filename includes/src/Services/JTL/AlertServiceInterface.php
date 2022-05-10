@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -24,6 +24,54 @@ interface AlertServiceInterface
      * @return Alert|null
      */
     public function addAlert(string $type, string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addError(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addWarning(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addInfo(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addSuccess(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addDanger(string $message, string $key, array $options = null): ?Alert;
+
+    /**
+     * @param string $message
+     * @param string $key
+     * @param array|null $options
+     * @return Alert|null
+     */
+    public function addNotice(string $message, string $key, array $options = null): ?Alert;
 
     /**
      * @param string $key

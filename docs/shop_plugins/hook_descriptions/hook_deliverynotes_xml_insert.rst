@@ -1,4 +1,4 @@
-HOOK_DELIVERYNOTES_XML_INSERT (342)
+HOOK_DELIVERYNOTES_XML_INSERT (340)
 ===================================
 
 Triggerpunkt

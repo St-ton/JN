@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -39,11 +39,11 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getSeos($search = null, $limit = 0, $keyName = 'cSeo')
+    public function getSeos($search = null, $limit = 0, string $keyName = 'cSeo')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -51,18 +51,18 @@ class JSONAPI
         } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
-        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, \ltrim($search, '/'), $limit);
+        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, \ltrim($search, '/'), (int)$limit);
 
         return $this->itemsToJson($items);
     }
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getPages($search = null, $limit = 0, $keyName = 'kLink')
+    public function getPages($search = null, $limit = 0, string $keyName = 'kLink')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -71,16 +71,16 @@ class JSONAPI
             $searchIn = $keyName;
         }
 
-        return $this->itemsToJson($this->getItems('tlink', ['kLink', 'cName'], null, $searchIn, $search, $limit));
+        return $this->itemsToJson($this->getItems('tlink', ['kLink', 'cName'], null, $searchIn, $search, (int)$limit));
     }
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getCategories($search = null, $limit = 0, $keyName = 'kKategorie')
+    public function getCategories($search = null, $limit = 0, string $keyName = 'kKategorie')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -95,17 +95,17 @@ class JSONAPI
             \CACHING_GROUP_CATEGORY,
             $searchIn,
             $search,
-            $limit
+            (int)$limit
         ));
     }
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getProducts($search = null, $limit = 0, $keyName = 'kArtikel')
+    public function getProducts($search = null, $limit = 0, string $keyName = 'kArtikel')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -121,18 +121,18 @@ class JSONAPI
                 \CACHING_GROUP_ARTICLE,
                 $searchIn,
                 $search,
-                $limit
+                (int)$limit
             )
         );
     }
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getManufacturers($search = null, $limit = 0, $keyName = 'kHersteller')
+    public function getManufacturers($search = null, $limit = 0, string $keyName = 'kHersteller')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -147,17 +147,17 @@ class JSONAPI
             \CACHING_GROUP_MANUFACTURER,
             $searchIn,
             $search,
-            $limit
+            (int)$limit
         ));
     }
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getCustomers($search = null, $limit = 0, $keyName = 'kKunde')
+    public function getCustomers($search = null, $limit = 0, string $keyName = 'kKunde')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -172,7 +172,7 @@ class JSONAPI
             null,
             $searchIn,
             $search,
-            $limit
+            (int)$limit
         );
         $cryptoService = Shop::Container()->getCryptoService();
         foreach ($items as $item) {
@@ -185,11 +185,11 @@ class JSONAPI
 
     /**
      * @param string|array|null $search
-     * @param int               $limit
+     * @param int|string        $limit
      * @param string            $keyName
      * @return string|bool
      */
-    public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
+    public function getAttributes($search = null, $limit = 0, string $keyName = 'kMerkmalWert')
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -204,7 +204,7 @@ class JSONAPI
             \CACHING_GROUP_ARTICLE,
             $searchIn,
             $search,
-            $limit
+            (int)$limit
         ));
     }
 
@@ -221,7 +221,7 @@ class JSONAPI
                     AND `TABLE_NAME` = :tn',
             [
                 'sma' => \DB_NAME,
-                'tn' => $table
+                'tn'  => $table
             ]
         );
 
@@ -275,7 +275,7 @@ class JSONAPI
     public function getItems(
         string $table,
         array $columns,
-        $addCacheTag = null,
+        ?string $addCacheTag = null,
         $searchIn = null,
         $searchFor = null,
         int $limit = 0
@@ -298,11 +298,10 @@ class JSONAPI
 
         if (\is_array($searchIn) && \is_string($searchFor)) {
             // full text search
-            $searchFor   = $db->escape($searchFor);
             $conditions  = [];
             $colsToCheck = [];
 
-            foreach ($searchIn as $i => $column) {
+            foreach ($searchIn as $column) {
                 $colsToCheck[] = $column;
                 $conditions[]  = $column . ' LIKE :val';
             }
@@ -359,7 +358,7 @@ class JSONAPI
     }
 
     /**
-     * @param array $items
+     * @param array|mixed $items
      * @return string|bool
      */
     public function itemsToJson($items)

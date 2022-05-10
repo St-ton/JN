@@ -16,12 +16,12 @@ class PaymentMethods
     /**
      * @var array
      */
-    private $methods = [];
+    private array $methods = [];
 
     /**
      * @var array
      */
-    private $classes = [];
+    private array $classes = [];
 
     /**
      * @param array $data

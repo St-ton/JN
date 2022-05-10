@@ -211,13 +211,11 @@ class VariationValue
         $this->fAufpreisNetto = $data->fAufpreisNetto;
         $this->fGewichtDiff   = $data->fGewichtDiff;
         $this->cArtNr         = $data->cArtNr;
-        $this->nSort          = $data->teigenschaftwert_nSort;
+        $this->nSort          = (int)$data->teigenschaftwert_nSort;
         $this->fLagerbestand  = $data->fLagerbestand;
         $this->fPackeinheit   = $data->fPackeinheit;
         $this->inStock        = true;
-        $this->notExists      = isset($data->nMatched)
-            && (int)$data->nMatched < $cntVariationen - 1;
-
+        $this->notExists      = isset($data->nMatched) && (int)$data->nMatched < $cntVariationen - 1;
         if (isset($data->fVPEWert) && $data->fVPEWert > 0) {
             $this->fVPEWert = $data->fVPEWert;
         }

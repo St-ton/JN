@@ -1985,9 +1985,6 @@ msgstr "Bank transfer"
 msgid "za_nachnahme_jtl"
 msgstr "Cash on Delivery"
 
-msgid "za_kreditkarte_jtl"
-msgstr "Creditcard"
-
 msgid "za_rechnung_jtl"
 msgstr "Invoice Payment"
 
@@ -2164,3 +2161,18 @@ msgstr "Cannot open archive"
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Invalid archive"
+
+msgid "No input file provided."
+msgstr "No input file provided."
+
+msgid "Successfully compiled CSS."
+msgstr "CSS compiled successfully."
+
+msgid "%s.css was compiled successfully."
+msgstr "%s.css was compiled successfully."
+
+msgid "An error occured while compiling the CSS: %s"
+msgstr "An error occured while compiling the CSS: %s"
+
+msgid "Cannot write to file %s."
+msgstr "Cannot write to file %s."

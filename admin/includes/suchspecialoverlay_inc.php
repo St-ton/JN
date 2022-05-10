@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Media\Image;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
@@ -11,11 +10,11 @@ use JTL\Shop;
 function gibAlleSuchspecialOverlays(): array
 {
     $overlays = [];
-    foreach (Shop::Container()->getDB()->getObjects('SELECT kSuchspecialOverlay FROM tsuchspecialoverlay') as $type) {
-        $overlays[] = Overlay::getInstance(
-            (int)$type->kSuchspecialOverlay,
-            (int)$_SESSION['editLanguageID']
-        );
+    foreach (Shop::Container()->getDB()->getInts(
+        'SELECT kSuchspecialOverlay FROM tsuchspecialoverlay',
+        'kSuchspecialOverlay'
+    ) as $type) {
+        $overlays[] = Overlay::getInstance($type, (int)$_SESSION['editLanguageID']);
     }
 
     return $overlays;
@@ -53,7 +52,7 @@ function speicherEinstellung(
     );
 
     if ($overlay->getType() <= 0) {
-        Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('invalidOverlay'), 'invalidOverlay');
+        Shop::Container()->getAlertService()->addError(__('invalidOverlay'), 'invalidOverlay');
         return false;
     }
     $overlay->setActive((int)$post['nAktiv'])
@@ -63,12 +62,10 @@ function speicherEinstellung(
         ->setPriority((int)$post['nPrio']);
 
     if (mb_strlen($files['name']) > 0) {
-        $template    = $template
-            ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
+        $template    = $template ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
         $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
         if (!is_writable($overlayPath)) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]
@@ -87,8 +84,7 @@ function speicherEinstellung(
     if (!isset($imageCreated) || $imageCreated) {
         $overlay->save();
     } else {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_ERROR,
+        Shop::Container()->getAlertService()->addError(
             __('errorFileUploadGeneral'),
             'errorFileUploadGeneral',
             ['saveInSession' => true]
@@ -112,7 +108,7 @@ function speicherEinstellung(
  * @param int      $pct
  * @return bool
  */
-function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
+function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct): bool
 {
     if ($pct === null) {
         return false;
@@ -144,7 +140,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
                 ($colorxy >> 16) & 0xFF,
                 ($colorxy >> 8) & 0xFF,
                 $colorxy & 0xFF,
-                $alpha
+                (int)$alpha
             );
             // set pixel with the new color + opacity
             if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
@@ -162,7 +158,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param int    $height
  * @return resource|null
  */
-function imageload_alpha($img, $width, $height)
+function imageload_alpha($img, int $width, int $height)
 {
     $imgInfo = getimagesize($img);
     switch ($imgInfo[2]) {
@@ -200,7 +196,7 @@ function imageload_alpha($img, $width, $height)
  * @param int    $transparency
  * @return resource
  */
-function ladeOverlay($image, $width, $height, $transparency)
+function ladeOverlay($image, int $width, int $height, int $transparency)
 {
     $src = imageload_alpha($image, $width, $height);
     if ($transparency > 0) {
@@ -227,7 +223,7 @@ function ladeOverlay($image, $width, $height, $transparency)
  * @param int      $quality
  * @return bool
  */
-function speicherOverlay($im, $extension, $path, $quality = 80)
+function speicherOverlay($im, string $extension, string $path, int $quality = 80): bool
 {
     if (!$extension || !$im) {
         return false;
@@ -247,45 +243,6 @@ function speicherOverlay($im, $extension, $path, $quality = 80)
 }
 
 /**
- * @deprecated since 5.0.0
- * @param string $image
- * @param string $width
- * @param string $height
- * @param int    $size
- * @param int    $transparency
- * @param string $extension
- * @param string $path
- */
-function erstelleOverlay($image, $width, $height, $size, $transparency, $extension, $path)
-{
-    $conf   = Shop::getSettings([CONF_BILDER])['bilder'];
-    $width  = $conf[$width];
-    $height = $conf[$height];
-
-    [$overlayWidth, $overlayHight] = getimagesize($image);
-
-    $nOffX = $nOffY = 1;
-    if ($size > 0) {
-        $maxWidth  = $width * ($size / 100);
-        $maxHeight = $height * ($size / 100);
-
-        $nOffX = $overlayWidth / $maxWidth;
-        $nOffY = $overlayHight / $maxHeight;
-    }
-
-    if ($nOffY > $nOffX) {
-        $overlayWidth = round($overlayWidth * (1 / $nOffY));
-        $overlayHight = round($overlayHight * (1 / $nOffY));
-    } else {
-        $overlayWidth = round($overlayWidth * (1 / $nOffX));
-        $overlayHight = round($overlayHight * (1 / $nOffX));
-    }
-
-    $im = ladeOverlay($image, (int)$overlayWidth, (int)$overlayHight, $transparency);
-    speicherOverlay($im, $extension, $path);
-}
-
-/**
  * @param string $image
  * @param int    $size
  * @param int    $transparency
@@ -298,7 +255,7 @@ function erstelleFixedOverlay(string $image, int $size, int $transparency, strin
     [$width, $height] = getimagesize($image);
     $factor           = $size / $width;
 
-    return speicherOverlay(ladeOverlay($image, $size, $height * $factor, $transparency), $extension, $path);
+    return speicherOverlay(ladeOverlay($image, $size, (int)($height * $factor), $transparency), $extension, $path);
 }
 
 

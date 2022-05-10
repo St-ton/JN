@@ -1,6 +1,6 @@
 <?php
 
-use JTL\Alert\Alert;
+use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
@@ -246,18 +246,18 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressData = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadressevorlage
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {
             $deliveryAddress           = new Lieferadressevorlage((int)$addressData->kLieferadresse);
             $deliveryAddress           = Frontend::getDeliveryAddressFromVorlage($deliveryAddress);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
-
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
     } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
@@ -447,7 +447,7 @@ function pruefeLieferadresseStep($get): void
         $Lieferadresse = $_SESSION['Lieferadresse'];
         if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
             || (isset($_SESSION['preferredDeliveryCountryCode'])
-                && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
+            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
@@ -731,7 +731,6 @@ function gibStepLieferadresse()
 
 /**
  *
- * @noinspection PhpCSValidationInspection
  */
 function gibStepZahlung()
 {

@@ -157,7 +157,7 @@
                                 {alert variant="warning"}{lang key='newsLogin' section='news'}{/alert}
                             {/block}
                         {/if}
-                        {if $comments|@count > 0}
+                        {if $comments|count > 0}
                             {block name='blog-details-comments-content'}
                                 {if $newsItem->getURL() !== ''}
                                     {assign var=articleURL value=$newsItem->getURL()}

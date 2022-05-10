@@ -11,7 +11,7 @@ use JTL\Checkout\Versand;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
-use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use stdClass;
 
@@ -24,21 +24,18 @@ class TestHydrator extends DefaultsHydrator
     /**
      * @inheritdoc
      */
-    public function hydrate(?object $data, object $language): void
+    public function hydrate(?object $data, LanguageModel $language): void
     {
         parent::hydrate($data, $language);
-        $lang = Shop::Lang();
-        $all  = LanguageHelper::getAllLanguages(1, true, true);
-        $lang->setzeSprache($all[$language->kSprache]->cISO);
-
-        $langID        = (int)$language->kSprache;
+        Shop::Lang()->setzeSprache($language->getCode());
+        $langID        = $language->getId();
         $msg           = $this->getMessage();
         $customerBonus = $this->getBonus();
         $customerGroup = (new CustomerGroup())->loadDefaultGroup();
         $order         = $this->getOrder($langID);
         $customer      = $this->getCustomer($langID, $customerGroup->getID());
         $checkbox      = $this->getCheckbox();
-        $oAGBWRB       = $this->db->select(
+        $argwrb        = $this->db->select(
             'ttext',
             ['kKundengruppe', 'kSprache'],
             [$customer->kKundengruppe, $langID]
@@ -60,9 +57,9 @@ class TestHydrator extends DefaultsHydrator
             ->assign('Gutschein', $this->getGift())
             ->assign('interval', 720)
             ->assign('intervalLoc', 'Monatliche Status-Email')
-            ->assign('AGB', $oAGBWRB)
-            ->assign('WRB', $oAGBWRB)
-            ->assign('DSE', $oAGBWRB)
+            ->assign('AGB', $argwrb)
+            ->assign('WRB', $argwrb)
+            ->assign('DSE', $argwrb)
             ->assign('URL_SHOP', Shop::getURL() . '/')
             ->assign('Kupon', $this->getCoupon())
             ->assign('Optin', $this->getOptin())
@@ -119,9 +116,9 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getCheckbox(): CheckBox
     {
-        $id = $this->db->getSingleObject('SELECT kCheckbox FROM tcheckbox LIMIT 1');
+        $id = $this->db->getSingleInt('SELECT kCheckbox FROM tcheckbox LIMIT 1', 'kCheckbox');
 
-        return new CheckBox((int)($id->kCheckbox ?? 0));
+        return new CheckBox($id, $this->db);
     }
 
     /**
@@ -339,8 +336,8 @@ class TestHydrator extends DefaultsHydrator
         $order                   = new stdClass();
         $order->kWaehrung        = $languageID;
         $order->kSprache         = 1;
-        $order->fGuthaben        = 5;
-        $order->fGesamtsumme     = 433;
+        $order->fGuthaben        = '5.0000';
+        $order->fGesamtsumme     = '433.00';
         $order->cBestellNr       = 'Prefix-3432-Suffix';
         $order->cVersandInfo     = 'Optionale Information zum Versand';
         $order->cTracking        = 'Track232837';

@@ -132,7 +132,7 @@ class Mailer
         $method->sendmail_pfad = $this->config['emails']['email_sendmail_pfad'];
         $method->smtp_hostname = $this->config['emails']['email_smtp_hostname'];
         $method->smtp_port     = $this->config['emails']['email_smtp_port'];
-        $method->smtp_auth     = $this->config['emails']['email_smtp_auth'];
+        $method->smtp_auth     = (int)$this->config['emails']['email_smtp_auth'] === 1;
         $method->smtp_user     = $this->config['emails']['email_smtp_user'];
         $method->smtp_pass     = $this->config['emails']['email_smtp_pass'];
         $method->SMTPSecure    = $this->config['emails']['email_smtp_verschluesselung'];

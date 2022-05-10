@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS;
 
@@ -14,19 +14,19 @@ use stdClass;
 class NetSyncHandler
 {
     /**
-     * @var NetSyncHandler
+     * @var NetSyncHandler|null
      */
-    private static $instance;
+    private static ?NetSyncHandler $instance = null;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * NetSyncHandler constructor.
@@ -36,9 +36,6 @@ class NetSyncHandler
      */
     public function __construct(DbInterface $db, LoggerInterface $logger)
     {
-        if (self::$instance !== null) {
-            throw new Exception('Class ' . __CLASS__ . ' already created');
-        }
         self::$instance = $this;
         $this->db       = $db;
         $this->logger   = $logger;
@@ -117,7 +114,7 @@ class NetSyncHandler
      * @param string $mimetype
      * @param string $outname
      */
-    public function streamFile($filename, $mimetype, $outname = ''): void
+    public function streamFile(string $filename, string $mimetype, string $outname = ''): void
     {
         $browser = $this->getBrowser($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

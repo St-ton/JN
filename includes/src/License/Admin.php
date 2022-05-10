@@ -15,6 +15,7 @@ use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
+use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -82,7 +83,7 @@ class Admin
     /**
      * @var string[]
      */
-    private $validActions = [
+    private array $validActions = [
         self::ACTION_EXTEND,
         self::ACTION_UPGRADE,
         self::ACTION_SET_BINDING,
@@ -162,7 +163,7 @@ class Admin
         if ($action === self::ACTION_REDIRECT) {
             $this->auth->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL(true) . '/licenses.php?action=code'
+                Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_CODE . '/license'
             );
         }
         if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {

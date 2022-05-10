@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
@@ -26,7 +26,7 @@ class IOFile implements JsonSerializable
      * @param string $filename
      * @param string $mimetype
      */
-    public function __construct($filename, $mimetype)
+    public function __construct(string $filename, string $mimetype)
     {
         $this->filename = $filename;
         $this->mimetype = $mimetype;

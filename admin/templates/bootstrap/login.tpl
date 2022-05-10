@@ -13,7 +13,7 @@
             <div id="login_outer" class="card">
                 <div class="card-body">
                     <p class="text-center mb-4">
-                        <a href="index.php">
+                        <a href="{$adminURL}/index.php">
                             <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
                         </a>
                     </p>
@@ -30,7 +30,7 @@
                         <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {/if}
 
-                    <form method="post" action="index.php" class="form-horizontal" role="form">
+                    <form method="post" action="{$adminURL}/index.php" class="form-horizontal" role="form">
                         {$jtl_token}
                         <input id="benutzer" type="hidden" name="adminlogin" value="1" />
                         {if isset($uri) && $uri|strlen > 0}
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <p class="forgot-pw-wrap text-center">
-                <small><a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
+                <small><a href="{$adminURL}/pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
             </p>
         </div>
     </div>

@@ -140,7 +140,7 @@ class MerkmalWert
 
             return $this;
         }
-        $defaultLanguageID = LanguageHelper::getDefaultLanguage()->kSprache;
+        $defaultLanguageID = LanguageHelper::getDefaultLanguage()->getId();
         if ($languageID !== $defaultLanguageID) {
             $selectSQL = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,

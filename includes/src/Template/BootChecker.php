@@ -13,7 +13,7 @@ class BootChecker
     /**
      * @var BootstrapperInterface[]
      */
-    private static $bootstrapper = [];
+    private static array $bootstrapper = [];
 
     /**
      * @param string|null     $dir

@@ -21,39 +21,38 @@ class ReferencedPlugin extends ReferencedItem
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void
     {
         $installed = $db->select('tplugin', 'exsID', $license->exsid);
-        if ($installed !== null) {
-            $available        = $releases->getAvailable();
-            $latest           = $releases->getLatest();
-            $installedVersion = Version::parse($installed->nVersion);
-            $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
-            $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
-            $this->setHasUpdate(false);
-            $this->setCanBeUpdated(false);
-            $this->setID($installed->cPluginID);
-            $this->setMaxInstallableVersion($installedVersion);
-            if ($availableVersion->greaterThan($installedVersion)) {
-                $this->setMaxInstallableVersion($availableVersion);
-                $this->setHasUpdate(true);
-                $this->setCanBeUpdated(true);
-            } elseif ($latestVersion->greaterThan($availableVersion)
-                && $latestVersion->greaterThan($installedVersion)
-            ) {
-                $this->setMaxInstallableVersion($latestVersion);
-                $this->setHasUpdate(true);
-                $this->setCanBeUpdated(false);
-            }
-            $this->setInstalled(true);
-            $this->setInstalledVersion($installedVersion);
-            $this->setActive((int)$installed->nStatus === State::ACTIVATED);
-            $this->setInternalID((int)$installed->kPlugin);
-            try {
-                $carbon        = new Carbon($installed->dInstalliert);
-                $dateInstalled = $carbon->toIso8601ZuluString();
-            } catch (Exception $e) {
-                $dateInstalled = null;
-            }
-            $this->setDateInstalled($dateInstalled);
-            $this->setInitialized(true);
+        if ($installed === null) {
+            return;
         }
+        $available        = $releases->getAvailable();
+        $latest           = $releases->getLatest();
+        $installedVersion = Version::parse($installed->nVersion);
+        $availableVersion = $available === null ? Version::parse('0.0.0') : $available->getVersion();
+        $latestVersion    = $latest === null ? $availableVersion : $latest->getVersion();
+        $this->setHasUpdate(false);
+        $this->setCanBeUpdated(false);
+        $this->setID($installed->cPluginID);
+        $this->setMaxInstallableVersion($installedVersion);
+        if ($availableVersion->greaterThan($installedVersion)) {
+            $this->setMaxInstallableVersion($availableVersion);
+            $this->setHasUpdate(true);
+            $this->setCanBeUpdated(true);
+        } elseif ($latestVersion->greaterThan($availableVersion) && $latestVersion->greaterThan($installedVersion)) {
+            $this->setMaxInstallableVersion($latestVersion);
+            $this->setHasUpdate(true);
+            $this->setCanBeUpdated(false);
+        }
+        $this->setInstalled(true);
+        $this->setInstalledVersion($installedVersion);
+        $this->setActive((int)$installed->nStatus === State::ACTIVATED);
+        $this->setInternalID((int)$installed->kPlugin);
+        try {
+            $carbon        = new Carbon($installed->dInstalliert);
+            $dateInstalled = $carbon->toIso8601ZuluString();
+        } catch (Exception $e) {
+            $dateInstalled = null;
+        }
+        $this->setDateInstalled($dateInstalled);
+        $this->setInitialized(true);
     }
 }

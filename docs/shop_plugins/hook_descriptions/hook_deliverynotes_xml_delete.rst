@@ -1,4 +1,4 @@
-HOOK_DELIVERYNOTES_XML_DELETE (340)
+HOOK_DELIVERYNOTES_XML_DELETE (342)
 ===================================
 
 Triggerpunkt

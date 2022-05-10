@@ -3,6 +3,7 @@
 namespace JTL;
 
 use JTL\Country\Country;
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -112,10 +113,17 @@ class Firma
     public $country;
 
     /**
-     * @param bool $load
+     * @var DbInterface
      */
-    public function __construct(bool $load = true)
+    private $db;
+
+    /**
+     * @param bool             $load
+     * @param DbInterface|null $db
+     */
+    public function __construct(bool $load = true, DbInterface $db = null)
     {
+        $this->db = $db ?? Shop::Container()->getDB();
         if ($load) {
             $this->loadFromDB();
         }
@@ -133,7 +141,7 @@ class Firma
             }
         } else {
             $countryHelper = Shop::Container()->getCountryService();
-            $obj           = Shop::Container()->getDB()->getSingleObject('SELECT * FROM tfirma LIMIT 1');
+            $obj           = $this->db->getSingleObject('SELECT * FROM tfirma LIMIT 1');
             if ($obj !== null) {
                 foreach (\get_object_vars($obj) as $k => $v) {
                     $this->$k = $v;
@@ -176,17 +184,6 @@ class Firma
         $obj->cIBAN         = $this->cIBAN;
         $obj->cBIC          = $this->cBIC;
 
-        return Shop::Container()->getDB()->update('tfirma', 1, 1, $obj);
-    }
-
-    /**
-     * setzt Daten aus Sync POST request.
-     *
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
+        return $this->db->update('tfirma', 1, 1, $obj);
     }
 }

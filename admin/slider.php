@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -28,7 +27,7 @@ $kSlider     = (int)($_REQUEST['id'] ?? 0);
 switch ($action) {
     case 'slide_set':
         $filtered  = Text::filterXSS($_REQUEST);
-        $aSlideKey = array_keys((array)$_REQUEST['aSlide']);
+        $aSlideKey = array_keys((array)$filtered['aSlide']);
         $count     = count($aSlideKey);
         for ($i = 0; $i < $count; $i++) {
             $slide  = new Slide();
@@ -87,11 +86,7 @@ switch ($action) {
                 $cValue    = $filtered[$cKeyValue];
             }
             if (!empty($cKeyValue) && empty($cValue)) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    sprintf(__('errorKeyMissing'), $cKey),
-                    'errorKeyMissing'
-                );
+                $alertHelper->addError(sprintf(__('errorKeyMissing'), $cKey), 'errorKeyMissing');
             } else {
                 if (empty($slider->getEffects())) {
                     $slider->setEffects('random');
@@ -112,8 +107,7 @@ switch ($action) {
                     $extension->kInitial      = $slider->getID();
                     Shop::Container()->getDB()->insert('textensionpoint', $extension);
 
-                    $alertHelper->addAlert(
-                        Alert::TYPE_SUCCESS,
+                    $alertHelper->addSuccess(
                         __('successSliderSave'),
                         'successSliderSave',
                         ['saveInSession' => true]
@@ -122,7 +116,7 @@ switch ($action) {
                     header('Location: ' . $redirectUrl);
                     exit;
                 }
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderSave'), 'errorSliderSave');
+                $alertHelper->addError(__('errorSliderSave'), 'errorSliderSave');
             }
         }
         break;
@@ -133,7 +127,7 @@ switch ($action) {
         $slider->load($kSlider, false);
         $smarty->assign('oSlider', $slider);
         if (!is_object($slider)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $alertHelper->addError(__('errorSliderNotFound'), 'errorSliderNotFound');
             $action = 'view';
         }
         break;
@@ -145,7 +139,7 @@ switch ($action) {
         $slider = new Slider($db);
         $slider->load($kSlider, false);
         $smarty->assign('customerGroups', CustomerGroup::getGroups())
-               ->assign('oExtension', holeExtension($kSlider));
+            ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
             $effects = explode(';', $slider->getEffects());
@@ -156,12 +150,12 @@ switch ($action) {
             $smarty->assign('cEffects', $options);
         } else {
             $smarty->assign('checked', 'checked="checked"')
-                   ->assign('disabled', 'disabled="true"');
+                ->assign('disabled', 'disabled="true"');
         }
         $smarty->assign('oSlider', $slider);
 
         if (!is_object($slider)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderNotFound'), 'errorSliderNotFound');
+            $alertHelper->addError(__('errorSliderNotFound'), 'errorSliderNotFound');
             $action = 'view';
             break;
         }
@@ -169,8 +163,8 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('customerGroups', CustomerGroup::getGroups())
-               ->assign('oSlider', new Slider($db));
+            ->assign('customerGroups', CustomerGroup::getGroups())
+            ->assign('oSlider', new Slider($db));
         break;
 
     case 'delete':
@@ -181,7 +175,7 @@ switch ($action) {
             header('Location: ' . $redirectUrl);
             exit;
         }
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSliderRemove'), 'errorSliderRemove');
+        $alertHelper->addError(__('errorSliderRemove'), 'errorSliderRemove');
         break;
 
     default:
@@ -195,8 +189,8 @@ $pagination = (new Pagination('sliders'))
     ->assemble();
 
 $smarty->assign('action', $action)
-       ->assign('kSlider', $kSlider)
-       ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
-       ->assign('pagination', $pagination)
-       ->assign('oSlider_arr', $pagination->getPageItems())
-       ->display('slider.tpl');
+    ->assign('kSlider', $kSlider)
+    ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
+    ->assign('pagination', $pagination)
+    ->assign('oSlider_arr', $pagination->getPageItems())
+    ->display('slider.tpl');

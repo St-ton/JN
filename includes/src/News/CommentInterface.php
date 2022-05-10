@@ -152,17 +152,17 @@ interface CommentInterface
     public function getParentCommentID(): int;
 
     /**
-     * @param object $childComment
+     * @param Comment $childComment
      */
-    public function setChildComment(object $childComment): void;
+    public function setChildComment(Comment $childComment): void;
 
     /**
-     * @param array $childComments
+     * @param Comment[] $childComments
      */
     public function setChildComments(array $childComments): void;
 
     /**
-     * @return array
+     * @return Comment[]
      */
     public function getChildComments(): array;
 }

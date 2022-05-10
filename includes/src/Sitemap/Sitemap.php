@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Sitemap;
 
@@ -64,9 +64,9 @@ class Sitemap
     public function assignData(JTLSmarty $smarty): void
     {
         $smarty->assign('oKategorieliste', $this->getCategories())
-               ->assign('oHersteller_arr', $this->getManufacturers())
-               ->assign('oNewsMonatsUebersicht_arr', $this->getNews())
-               ->assign('oNewsKategorie_arr', $this->getNewsCategories());
+            ->assign('oHersteller_arr', $this->getManufacturers())
+            ->assign('oNewsMonatsUebersicht_arr', $this->getNews())
+            ->assign('oNewsKategorie_arr', $this->getNewsCategories());
     }
 
     /**
@@ -127,7 +127,7 @@ class Sitemap
                 $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
                 $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true, $prefix);
 
-                $entries = $this->db->getObjects(
+                $items = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
                     t.content AS cText, t.preview AS cVorschauText, t.metaTitle AS cMetaTitle, 
                     t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords, 
@@ -156,11 +156,11 @@ class Sitemap
                         'cid'  => (int)$newsCategory->kNewsKategorie
                     ]
                 );
-                foreach ($entries as $entry) {
-                    $entry->cURL     = URL::buildURL($entry, \URLART_NEWS);
-                    $entry->cURLFull = URL::buildURL($entry, \URLART_NEWS, true, $prefix);
+                foreach ($items as $item) {
+                    $item->cURL     = URL::buildURL($item, \URLART_NEWS);
+                    $item->cURLFull = URL::buildURL($item, \URLART_NEWS, true, $prefix);
                 }
-                $newsCategory->oNews_arr = $entries;
+                $newsCategory->oNews_arr = $items;
             }
             $this->cache->set($cacheID, $newsCategories, [\CACHING_GROUP_NEWS]);
         }
@@ -201,7 +201,7 @@ class Sitemap
                 ['lid' => $this->langID]
             );
             foreach ($overview as $news) {
-                $entries = $this->db->getObjects(
+                $items = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, 
                     t.title AS cBetreff, t.content AS cText, t.preview AS cVorschauText, 
                     t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription, t.metaKeywords AS cMetaKeywords,
@@ -234,11 +234,11 @@ class Sitemap
                         'yr'   => $news->nJahr
                     ]
                 );
-                foreach ($entries as $oNews) {
-                    $oNews->cURL     = URL::buildURL($oNews, \URLART_NEWS);
-                    $oNews->cURLFull = URL::buildURL($oNews, \URLART_NEWS, true, $prefix);
+                foreach ($items as $item) {
+                    $item->cURL     = URL::buildURL($item, \URLART_NEWS);
+                    $item->cURLFull = URL::buildURL($item, \URLART_NEWS, true, $prefix);
                 }
-                $news->oNews_arr = $entries;
+                $news->oNews_arr = $items;
                 $news->cURL      = URL::buildURL($news, \URLART_NEWSMONAT);
                 $news->cURLFull  = URL::buildURL($news, \URLART_NEWSMONAT, true, $prefix);
             }

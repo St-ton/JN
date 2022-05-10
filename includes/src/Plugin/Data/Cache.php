@@ -9,14 +9,14 @@ namespace JTL\Plugin\Data;
 class Cache
 {
     /**
-     * @var string
+     * @var string|null
      */
-    private $id;
+    private ?string $id = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $group;
+    private ?string $group = null;
 
     /**
      * @return string

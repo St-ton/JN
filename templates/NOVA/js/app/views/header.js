@@ -37,6 +37,8 @@ let $activeDropdown				= null
 let activeDropdowns				= []
 let isDropdownActive			= false
 let isMenuActive				= false
+let categoryID   				= $('#category-id').val() || 0;
+let mobileLevels                = [];
 
 /* functions */
 
@@ -117,6 +119,30 @@ const updateVH = () => {
     document.documentElement.style.setProperty('--vh', `${vh}px`)
 }
 
+const openCurrentCategory = () => {
+    let $initialCategory = $(mainNavigation + ' [data-category-id="' + categoryID + '"]');
+    setMobileLevels($initialCategory, 1);
+    //add last (current) level if it has children
+    if ($initialCategory.hasClass('dropdown-toggle')) {
+        mobileLevels.push($initialCategory.next());
+    }
+    $.each(mobileLevels, function(depth, mobileLevel) {
+        mobileCurrentLevel = depth + 1;
+        // all dropdowns have link as previous element
+        showDropdown(mobileLevel.prev()[0]);
+        showMobileLevel(mobileCurrentLevel);
+    });
+}
+
+function setMobileLevels (stuff, depth) {
+    let closestDropdown = stuff.parent().closest('.dropdown-menu');
+    if (closestDropdown.length) {
+        mobileLevels.unshift(closestDropdown);
+        return setMobileLevels(closestDropdown, ++depth);
+    }
+    return depth;
+}
+
 onInitOrResize()
 updateVH()
 
@@ -165,6 +191,9 @@ $document.on('show.bs.collapse', mainNavigation, () => {
 $document.on('shown.bs.collapse', mainNavigation, () => {
     $backdropMobileNav.addClass('show')
     $(`${mainNavigation} .nav-mobile-body`).scrollTop(0)
+    if (categoryID > 0 && mobileLevels.length === 0) {
+        openCurrentCategory();
+    }
 })
 
 $document.on('hide.bs.collapse', mainNavigation, () => {

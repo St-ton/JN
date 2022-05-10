@@ -4,7 +4,7 @@ use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
-if (SAFE_MODE === false && Shop::getSettings([CONF_GLOBAL])['global']['wartungsmodus_aktiviert'] === 'N') {
+if (SAFE_MODE === false && Shop::getSettingValue(CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);
     exit;
 }

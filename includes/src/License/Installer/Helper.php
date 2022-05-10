@@ -75,14 +75,14 @@ class Helper
 
     /**
      * @param string $itemID
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws InvalidArgumentException
      * @throws ApiResultCodeException
      * @throws FilePermissionException
      * @throws ChecksumValidationException
      */
-    public function getDownload(string $itemID)
+    public function getDownload(string $itemID): string
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -92,8 +92,7 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
         }
-        $downloader = new Downloader();
 
-        return $downloader->downloadRelease($available);
+        return (new Downloader())->downloadRelease($available);
     }
 }

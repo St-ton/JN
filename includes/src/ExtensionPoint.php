@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -47,9 +48,9 @@ class ExtensionPoint
     /**
      * @return $this
      */
-    public function load(): self
+    public function load(?DbInterface $db = null): self
     {
-        $db         = Shop::Container()->getDB();
+        $db         = $db ?? Shop::Container()->getDB();
         $key        = $this->getPageKey();
         $extensions = $db->getObjects(
             "SELECT cClass, kInitial FROM textensionpoint

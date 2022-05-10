@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Smarty;
 
@@ -112,7 +112,7 @@ class PluginCollection
             $res = $this->lang->get($key, $section);
             // Für vsprintf ein String der :: exploded wird
             if (isset($params['printf'])) {
-                $res = \vsprintf($res, \explode(':::', $params['printf']));
+                $res = \vsprintf($res, \explode(':::', (string)$params['printf']));
             }
         }
         if (\SMARTY_SHOW_LANGKEY) {

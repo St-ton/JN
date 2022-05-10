@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -34,7 +34,7 @@ final class Customer extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             // the first 5 cases come from Kunden_xml.php
@@ -331,7 +331,7 @@ final class Customer extends AbstractSync
         $customerAttributes = [];
         if (GeneralObject::hasCount('tkundenattribut', $source)) {
             $members = \array_keys($source['tkundenattribut']);
-            if ($members[0] == '0') {
+            if ($members[0] === 0) {
                 foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();
                     $customerAttribute->cName = $data['cName'];
@@ -528,11 +528,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param object                 $address
+     * @param stdClass               $address
      * @param CryptoServiceInterface $crypto
      * @return object
      */
-    private function getDeliveryAddress($address, CryptoServiceInterface $crypto)
+    private function getDeliveryAddress(stdClass $address, CryptoServiceInterface $crypto)
     {
         $this->extractStreet($address);
         $address->cNachname = $crypto->encryptXTEA(\trim($address->cNachname));
@@ -551,9 +551,9 @@ final class Customer extends AbstractSync
      * @param int   $languageID
      * @param array $attributes
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes): void
+    private function saveAttribute(int $customerID, int $languageID, array $attributes): void
     {
-        if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
+        if ($customerID <= 0 || $languageID <= 0) {
             return;
         }
         foreach ($attributes as $attribute) {

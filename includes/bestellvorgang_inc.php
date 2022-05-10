@@ -246,12 +246,11 @@ function pruefeLieferdaten($post, &$missingData = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->getSingleInt(
+        $addressData = Shop::Container()->getDB()->getSingleObject(
             'SELECT kLieferadresse
                 FROM tlieferadressevorlage
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
-            'kLieferadresse',
             ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {

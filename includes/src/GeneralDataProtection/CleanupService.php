@@ -122,7 +122,6 @@ class CleanupService extends Method implements MethodInterface
                 );
             }
         }
-
-        $this->isFinished = true;
+        $this->isFinished = ($this->workSum < $this->workLimit);
     }
 }

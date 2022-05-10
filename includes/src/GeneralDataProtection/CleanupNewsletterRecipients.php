@@ -24,8 +24,7 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     public function execute(): void
     {
         $this->cleanupNewsletters();
-
-        $this->isFinished = true;
+        $this->isFinished = ($this->workSum < $this->workLimit);
     }
 
     /**

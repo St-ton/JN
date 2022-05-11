@@ -6,6 +6,7 @@ use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Update\Updater;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,6 +28,7 @@ class WizardCheckMiddleware implements MiddlewareInterface
             && !Backend::get('redirectedToWizard')
             && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
             && !\str_contains($request->getUri()->getPath(), BackendRouter::ROUTE_WIZARD)
+            && (new Updater(Shop::Container()->getDB()))->hasPendingUpdates() === false
         ) {
             return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_WIZARD);
         }

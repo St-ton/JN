@@ -69,7 +69,7 @@ class ExsLicense
     /**
      * @var int
      */
-    private $state = self::STATE_UNBOUND;
+    private int $state = self::STATE_UNBOUND;
 
     /**
      * @var ReferencedItemInterface|null
@@ -84,22 +84,22 @@ class ExsLicense
     /**
      * @var bool
      */
-    private $isInApp = false;
+    private bool $isInApp = false;
 
     /**
      * @var bool
      */
-    private $hasSubscription = false;
+    private bool $hasSubscription = false;
 
     /**
      * @var bool
      */
-    private $hasLicense = false;
+    private bool $hasLicense = false;
 
     /**
      * @var bool
      */
-    private $canBeUsed = true;
+    private bool $canBeUsed = true;
 
     /**
      * ExsLicenseData constructor.

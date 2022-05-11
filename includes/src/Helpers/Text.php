@@ -5,7 +5,7 @@ namespace JTL\Helpers;
 use Exception;
 
 /**
- * Class Strings
+ * Class Text
  * @package JTL\Helpers
  */
 class Text
@@ -13,7 +13,7 @@ class Text
     /**
      * @var array
      */
-    private static $mappings = [
+    private static array $mappings = [
         'aar' => 'aa', // Afar
         'abk' => 'ab', // Abkhazian
         'afr' => 'af', // Afrikaans

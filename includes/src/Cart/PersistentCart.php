@@ -14,7 +14,7 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class WarenkorbPers
+ * Class PersistentCart
  * @package JTL\Cart
  */
 class PersistentCart

@@ -5,7 +5,7 @@ namespace JTL\Helpers;
 use JTL\Shop;
 
 /**
- * Class SeoHelper
+ * Class Seo
  * @package JTL\Helpers
  */
 class Seo

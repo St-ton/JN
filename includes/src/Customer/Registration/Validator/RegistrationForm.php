@@ -13,7 +13,7 @@ use JTL\SimpleMail;
 use JTL\VerificationVAT\VATCheck;
 
 /**
- * Class ShippingAddress
+ * Class RegistrationForm
  * @package JTL\Customer\Registration\Validator
  */
 class RegistrationForm extends AbstractValidator

@@ -27,7 +27,7 @@ use function Functional\select;
 use function Functional\some;
 
 /**
- * Class Warenkorb
+ * Class Cart
  * @package JTL\Cart
  */
 class Cart

@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use JsonException;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
 use JTL\License\AjaxResponse;
@@ -102,8 +103,12 @@ class ExtensionInstaller
             foreach ($recom->getLinks() as $link) {
                 if ($link->getRel() === 'createLicense') {
                     try {
-                        $res  = $this->manager->createLicense($link->getHref());
-                        $data = \json_decode($res);
+                        $res = $this->manager->createLicense($link->getHref());
+                        try {
+                            $data = \json_decode($res, false, 512, JSON_THROW_ON_ERROR);
+                        } catch (JsonException) {
+                            $data = null;
+                        }
                         if (isset($data->meta)) {
                             $createdLicenseKeys[] = $data->meta->exs_key;
                         }
@@ -127,7 +132,6 @@ class ExtensionInstaller
         }
         if (!empty($createdLicenseKeys)) {
             $this->manager->update(true);
-
             foreach ($createdLicenseKeys as $key) {
                 $ajaxResponse = new AjaxResponse();
                 $license      = $this->manager->getLicenseByLicenseKey($key);

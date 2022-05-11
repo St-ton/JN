@@ -53,7 +53,7 @@ class Release
     /**
      * @var bool
      */
-    private $includesSecurityFixes = false;
+    private bool $includesSecurityFixes = false;
 
     /**
      * Release constructor.

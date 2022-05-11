@@ -16,7 +16,7 @@ class Mapper
     /**
      * @var Manager
      */
-    private $manager;
+    private Manager $manager;
 
     /**
      * Mapper constructor.

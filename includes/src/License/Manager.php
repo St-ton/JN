@@ -34,27 +34,27 @@ class Manager
     /**
      * @var string
      */
-    private $domain;
+    private string $domain;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var string
      */
-    private $token;
+    private string $token;
 
     /**
      * Manager constructor.

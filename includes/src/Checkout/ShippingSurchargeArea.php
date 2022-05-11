@@ -3,7 +3,7 @@
 namespace JTL\Checkout;
 
 /**
- * Class SurchargeArea
+ * Class ShippingSurchargeArea
  * @package JTL\Checkout
  */
 class ShippingSurchargeArea

@@ -6,7 +6,7 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class Equals
+ * Class EqualsLax
  * @package JTL\Services\JTL\Validation\Rules
  */
 class EqualsLax implements RuleInterface

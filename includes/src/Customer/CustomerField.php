@@ -7,7 +7,7 @@ use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
- * Class CustomerFields
+ * Class CustomerField
  * @package JTL\Customer
  */
 class CustomerField

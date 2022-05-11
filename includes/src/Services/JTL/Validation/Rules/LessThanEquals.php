@@ -6,7 +6,7 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class LessThan
+ * Class LessThanEquals
  * @package JTL\Services\JTL\Validation\Rules
  */
 class LessThanEquals implements RuleInterface

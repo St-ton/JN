@@ -22,52 +22,52 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     /**
      * @var int
      */
-    protected $id;
+    protected int $id = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $text;
+    protected ?string $text = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $description;
+    protected ?string $description = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $subheading;
+    protected ?string $subheading = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $subheadingDescription;
+    protected ?string $subheadingDescription = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $summaryText;
+    protected ?string $summaryText = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $label;
+    protected ?string $label = null;
 
     /**
      * @var int
      */
-    protected $type;
+    protected int $type = 0;
 
     /**
      * @var mixed
      */
-    protected $value;
+    protected mixed $value;
 
     /**
      * @var int|null
      */
-    protected $dependency;
+    protected ?int $dependency = null;
 
     /**
      * @var callable
@@ -100,9 +100,9 @@ abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
     protected $validation;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $scope;
+    protected ?string $scope = null;
 
     /**
      * AbstractQuestion constructor.

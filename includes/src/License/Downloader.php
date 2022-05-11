@@ -50,7 +50,7 @@ class Downloader
     private function downloadItemArchive(string $url, string $targetName): string
     {
         $fileName = \PFAD_ROOT . \PFAD_DBES_TMP . \basename($targetName);
-        $resource = \fopen($fileName, 'w+');
+        $resource = \fopen($fileName, 'wb+');
         if ($resource === false) {
             throw new FilePermissionException('Cannot open file ' . $fileName);
         }

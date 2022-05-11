@@ -25,12 +25,12 @@ class PluginInstaller implements InstallerInterface
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * PluginInstaller constructor.

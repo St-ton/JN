@@ -28,7 +28,7 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class ServiceLocator
+ * Class Container
  *
  * This class provides default services, that are provided by JTL-Shop core. Those Services are provided though a
  * separate interface for improving IntelliSense support for external and internal developers

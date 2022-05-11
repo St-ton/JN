@@ -8,7 +8,7 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Surcharge
+ * Class ShippingSurcharge
  * @package JTL\Checkout
  */
 class ShippingSurcharge

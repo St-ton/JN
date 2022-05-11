@@ -5,7 +5,8 @@ namespace JTL\Plugin\Admin;
 use Parsedown;
 
 /**
- * Class Extension
+ * Class Markdown
+ * @package JTL\Plugin\Admin
  */
 class Markdown extends Parsedown
 {

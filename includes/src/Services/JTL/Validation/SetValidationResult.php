@@ -5,7 +5,7 @@ namespace JTL\Services\JTL\Validation;
 use function Functional\none;
 
 /**
- * Class ObjectValidationResult
+ * Class SetValidationResult
  * @package JTL\Services\JTL\Validation
  */
 class SetValidationResult implements SetValidationResultInterface

@@ -12,7 +12,7 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 
 /**
- * Class GlobalSettings
+ * Class EmailSettings
  * @package JTL\Backend\Wizard\Steps
  */
 final class EmailSettings extends AbstractStep

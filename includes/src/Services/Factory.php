@@ -71,7 +71,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class ContainerEntry
+ * Class Factory
  * @package JTL\Services
  */
 class Factory

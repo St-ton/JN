@@ -13,7 +13,7 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class SettingSection
+ * Class Manager
  * @package JTL\Backend\Settings
  */
 class Manager

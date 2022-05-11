@@ -3,7 +3,7 @@
 namespace JTL\Services\JTL\Validation;
 
 /**
- * Class ValidationResult
+ * Class RuleResult
  * @package JTL\Services\JTL\Validation
  */
 class RuleResult implements RuleResultInterface

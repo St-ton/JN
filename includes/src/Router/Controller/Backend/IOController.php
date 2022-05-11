@@ -57,7 +57,7 @@ class IOController extends AbstractBackendController
         $updateIO = new UpdateIO($this->db, $this->getText);
         $wizardIO = new WizardIO($this->db, $this->cache, $this->alertService, $this->getText);
         $settings = new SettingsManager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
-        $widgets  = new Controller($this->db, $this->cache, $this->getText, $smarty);
+        $widgets  = new Controller($this->db, $this->cache, $this->getText, $smarty, $this->account);
 
         $searchController = new SearchController(
             $this->db,

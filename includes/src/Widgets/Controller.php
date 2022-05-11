@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Widgets;
 
 use JsonException;
+use JTL\Backend\AdminAccount;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
@@ -16,13 +17,25 @@ use JTL\Smarty\JTLSmarty;
 use SmartyException;
 use stdClass;
 
+/**
+ * Class Controller
+ * @package JTL\Widgets
+ */
 class Controller
 {
+    /**
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @param GetText           $getText
+     * @param JTLSmarty         $smarty
+     * @param AdminAccount      $account
+     */
     public function __construct(
         public DbInterface $db,
         public JTLCacheInterface $cache,
         public GetText $getText,
-        public JTLSmarty $smarty
+        public JTLSmarty $smarty,
+        public AdminAccount $account
     ) {
     }
 
@@ -30,11 +43,10 @@ class Controller
      * @param bool $bActive
      * @param bool $getAll
      * @return array
-     * @todo!
      */
     public function getWidgets(bool $bActive = true, bool $getAll = false): array
     {
-        if (!$getAll) {
+        if (!$getAll || !$this->account->permission('DASHBOARD_VIEW')) {
             return [];
         }
         $loaderLegacy = Helper::getLoader(false, $this->db, $this->cache);
@@ -116,7 +128,7 @@ class Controller
                 $instance = new $className($this->smarty, $this->db, $widget->plugin);
                 if ($getAll
                     || \in_array($instance->getPermission(), ['DASHBOARD_ALL', ''], true)
-                    || $oAccount->permission($instance->getPermission())
+                    || $this->account->permission($instance->getPermission())
                 ) {
                     $widget->cContent = $instance->getContent();
                     $widget->hasBody  = $instance->hasBody;
@@ -238,7 +250,7 @@ class Controller
             $cacheID = \str_replace('/', '_', $dataName . '_' . $tpl . '_' . \md5($wrapperID . $url));
             if (($remoteData = $this->cache->get($cacheID)) === false) {
                 $remoteData = Request::http_get_contents($url, 15, $post);
-                $this->cache->set($cacheID, $remoteData, [CACHING_GROUP_OBJECT], 3600);
+                $this->cache->set($cacheID, $remoteData, [\CACHING_GROUP_OBJECT], 3600);
             }
         } else {
             $remoteData = Request::http_get_contents($url, 15, $post);

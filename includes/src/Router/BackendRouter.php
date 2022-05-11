@@ -3,6 +3,7 @@
 namespace JTL\Router;
 
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Menu;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\L10n\GetText;
@@ -101,6 +102,7 @@ use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
@@ -218,22 +220,43 @@ class BackendRouter
     private DbInterface $db;
 
     /**
+     * @var JTLSmarty
+     */
+    private JTLSmarty $smarty;
+
+    /**
+     * @var AdminAccount
+     */
+    private AdminAccount $account;
+
+    /**
+     * @var GetText
+     */
+    private GetText $getText;
+
+    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param AdminAccount          $account
      * @param AlertServiceInterface $alertService
      * @param GetText               $getText
+     * @param JTLSmarty             $smarty
      */
     public function __construct(
         DbInterface $db,
         JTLCacheInterface $cache,
         AdminAccount $account,
         AlertServiceInterface $alertService,
-        GetText $getText
+        GetText $getText,
+        JTLSmarty $smarty
     ) {
-        $this->router = new Router();
-        $strategy     = new SmartyStrategy(new ResponseFactory(), Shop::Smarty(), new State());
-        $container    = new Container();
+        $this->db      = $db;
+        $this->smarty  = $smarty;
+        $this->account = $account;
+        $this->router  = new Router();
+        $this->getText = $getText;
+        $strategy      = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
+        $container     = new Container();
 
         $controllers = [
             self::ROUTE_BANNER                => BannerController::class,
@@ -377,6 +400,9 @@ class BackendRouter
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $menu    = new Menu($this->db, $this->account, $this->getText);
+        $data    = $menu->build($request);
+        $this->smarty->assign('oLinkOberGruppe_arr', $data);
         try {
             $response = $this->router->dispatch($request);
         } catch (NotFoundException) {

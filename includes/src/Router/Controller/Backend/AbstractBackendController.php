@@ -210,7 +210,7 @@ abstract class AbstractBackendController implements ControllerInterface
                     $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
                     break;
                 case 'listbox':
-                    $this->bearbeiteListBox($val->cWert, $val->cName, $val->kEinstellungenSektion, $manager);
+                    $this->updateListBox($val->cWert, $val->cName, $val->kEinstellungenSektion, $manager);
                     break;
                 default:
                     break;
@@ -237,8 +237,9 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param int     $configSectionID
      * @param Manager $manager
      * @return void
+     * @former bearbeiteListBox()
      */
-    private function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID, Manager $manager): void
+    private function updateListBox($listBoxes, string $valueName, int $configSectionID, Manager $manager): void
     {
         if (\is_array($listBoxes) && \count($listBoxes) > 0) {
             $manager->addLogListbox($valueName, $listBoxes);

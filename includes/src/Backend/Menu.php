@@ -9,6 +9,7 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Router\BackendRouter;
 use JTL\Shop;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class Menu
@@ -45,13 +46,14 @@ class Menu
     }
 
     /**
+     * @param ServerRequestInterface $request
      * @return array
      */
-    public function build(): array
+    public function build(ServerRequestInterface $request): array
     {
         $adminURL                     = Shop::getAdminURL() . '/';
-        $curScriptFileNameWithRequest = $_SERVER['REQUEST_URI'] ?? 'index.php';
-        $requestedPath                = \parse_url($_SERVER['REQUEST_URI'])['path'] ?? '';
+        $curScriptFileNameWithRequest = $request->getUri()->getPath();
+        $requestedPath                = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
         $mainGroups                   = [];
         $configLink                   = $adminURL . BackendRouter::ROUTE_CONFIG;
         $adminMenu                    = [
@@ -574,14 +576,14 @@ class Menu
 
                         $link = (object)[
                             'cLinkname' => \__($pluginLink->cName),
-                            'cURL'      => $adminURL . '/plugin/' . $pluginID,
+                            'cURL'      => $adminURL . BackendRouter::ROUTE_PLUGIN . '/' . $pluginID,
                             'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                             'key'       => $rootKey . $secondKey . $pluginID,
                             'active'    => false
                         ];
 
                         $linkGruppe->oLink_arr[] = $link;
-                        if (Request::getInt('kPlugin') === $pluginID) {
+                        if (\str_ends_with($requestedPath, BackendRouter::ROUTE_PLUGIN . '/' . $pluginID)) {
                             $mainGroup->active  = true;
                             $linkGruppe->active = true;
                             $link->active       = true;

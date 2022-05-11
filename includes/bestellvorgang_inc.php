@@ -705,7 +705,8 @@ function gibStepLieferadresse()
         $data      = Shop::Container()->getDB()->getObjects(
             'SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadressevorlage
-                WHERE kKunde = :cid',
+                WHERE kKunde = :cid
+                ORDER BY nIstStandardLieferadresse DESC',
             ['cid' => Frontend::getCustomer()->getID()]
         );
         foreach ($data as $item) {

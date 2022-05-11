@@ -273,7 +273,8 @@ class AccountController
                 'tlieferadressevorlage',
                 'kKunde',
                 $customerID,
-                'kLieferadresse'
+                'kLieferadresse',
+                'nIstStandardLieferadresse DESC'
             );
             foreach ($addressData as $item) {
                 if ($item->kLieferadresse > 0) {
@@ -1125,7 +1126,7 @@ class AccountController
         if ($data === null) {
             header('Location: ' . Shop::Container()
                     ->getLinkService()
-                    ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+                    ->getStaticRoute('jtl.php').'?editLieferadresse=1');
             die;
         }
 
@@ -1174,7 +1175,7 @@ class AccountController
         if (isset($postData['backToCheckout'])) {
             header('Location: ' . Shop::Container()
                     ->getLinkService()
-                    ->getStaticRoute('bestellvorgang.php', true).'?editRechnungsadresse=1');
+                    ->getStaticRoute('bestellvorgang.php').'?editRechnungsadresse=1');
             die;
         }
     }
@@ -1227,7 +1228,7 @@ class AccountController
         }
         header('Location: ' . Shop::Container()
                 ->getLinkService()
-                ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
         die;
     }
 
@@ -1247,13 +1248,13 @@ class AccountController
         $this->db->update(
             'tlieferadressevorlage',
             ['kLieferadresse', 'kKunde'],
-            [$getData['setAddressAsDefault'], $customer->kKunde],
+            [(int)$getData['setAddressAsDefault'], $customer->kKunde],
             $resetAllDefault
         );
 
         header('Location: ' . Shop::Container()
                 ->getLinkService()
-                ->getStaticRoute('jtl.php', true).'?editLieferadresse=1');
+                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
         die;
     }
 

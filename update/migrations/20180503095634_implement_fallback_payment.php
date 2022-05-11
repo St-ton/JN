@@ -17,7 +17,7 @@ class Migration_20180503095634 extends Migration implements IMigration
     protected $author      = 'cr';
     protected $description = 'implement fallback-payment';
 
-    protected $szPaymentModuleId = 'za_null_jtl';
+    protected string $szPaymentModuleId = 'za_null_jtl';
 
     /**
      * @inheritDoc

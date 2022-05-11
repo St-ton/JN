@@ -16,11 +16,10 @@ class Migration_20220304093500 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("
-            ALTER TABLE tkampagne
-	            ADD nInternal INT DEFAULT 0 NOT NULL;");
-        $this->execute("
-            UPDATE tkampagne SET nInternal=1 WHERE kKampagne < 1000");
+        $this->execute(
+            'ALTER TABLE tkampagne
+                ADD nInternal INT DEFAULT 0 NOT NULL;');
+        $this->execute('UPDATE tkampagne SET nInternal=1 WHERE kKampagne < 1000');
     }
 
     /**
@@ -28,8 +27,8 @@ class Migration_20220304093500 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute("
-            ALTER TABLE tkampagne
-	            DROP COLUMN nInternal");
+        $this->execute(
+            'ALTER TABLE tkampagne
+                DROP COLUMN nInternal');
     }
 }

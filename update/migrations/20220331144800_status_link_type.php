@@ -36,7 +36,7 @@ class Migration_20220331144800 extends Migration implements IMigration
             'kPlugin'        => 0,
             'cName'          => 'Bestellstatus',
             'nLinkart'       => 3,
-            'nSpezialseite'  => \LINKTYP_BESTELLSTATUS,
+            'nSpezialseite'  => LINKTYP_BESTELLSTATUS,
             'cKundengruppen' => ['-1'],
             'bIsActive'      => 1,
             'bSSL'           => 0,
@@ -54,7 +54,7 @@ class Migration_20220331144800 extends Migration implements IMigration
             $link['cMetaDescription_' . $code] = '';
         }
 
-        if ($this->getDB()->select('tlink', 'nLinkart', \LINKTYP_BESTELLSTATUS) === null) {
+        if ($this->getDB()->select('tlink', 'nLinkart', LINKTYP_BESTELLSTATUS) === null) {
             $linkAdmin->createOrUpdateLink($link);
         }
         $this->execute(

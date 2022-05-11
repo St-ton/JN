@@ -36,7 +36,7 @@ class Migration_20220331151300 extends Migration implements IMigration
             'kPlugin'        => 0,
             'cName'          => 'Bewertung',
             'nLinkart'       => 3,
-            'nSpezialseite'  => \LINKTYP_BEWERTUNG,
+            'nSpezialseite'  => LINKTYP_BEWERTUNG,
             'cKundengruppen' => ['-1'],
             'bIsActive'      => 1,
             'bSSL'           => 0,
@@ -54,7 +54,7 @@ class Migration_20220331151300 extends Migration implements IMigration
             $link['cMetaDescription_' . $code] = '';
         }
 
-        if ($this->getDB()->select('tlink', 'nLinkart', \LINKTYP_BEWERTUNG) === null) {
+        if ($this->getDB()->select('tlink', 'nLinkart', LINKTYP_BEWERTUNG) === null) {
             $linkAdmin->createOrUpdateLink($link);
         }
         $this->execute(

@@ -68,7 +68,7 @@ class Migration_20210930095952 extends Migration implements IMigration
                 'kOptinCode'  => 'Migration_20210930095952_' . $subscription->kVerfuegbarkeitsbenachrichtigung,
                 'kOptinClass' => OptinAvailAgain::class,
                 'cMail'       => $subscription->cMail,
-                'cRefData'    => \serialize($refData),
+                'cRefData'    => serialize($refData),
                 'dCreated'   => 'now()',
                 'dActivated' => 'now()',
             ]);

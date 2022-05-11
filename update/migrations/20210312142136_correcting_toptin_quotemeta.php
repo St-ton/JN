@@ -26,7 +26,7 @@ class Migration_20210312142136 extends Migration implements IMigration
         $pattern      = ['\.', '\\\\', '\+', '\*', '\?', '\[', '\^', '\]', '\(', '\$', '\)'];
         $replacements = ['.', '\\', '+', '*', '?', '[', '^', ']', '(', '$', ')'];
 
-        return \str_replace($pattern, $replacements, $instr);
+        return str_replace($pattern, $replacements, $instr);
     }
 
     /**

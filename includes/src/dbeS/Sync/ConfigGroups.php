@@ -81,8 +81,8 @@ final class ConfigGroups extends AbstractSync
         if (!Group::checkLicense()) {
             return;
         }
-        foreach (\array_map('\intval', $xml->kKonfiggruppe) as $groupID) {
-            $this->deleteGroup($groupID);
+        foreach ($xml->kKonfiggruppe as $groupID) {
+            $this->deleteGroup((int)$groupID);
         }
     }
 

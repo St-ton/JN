@@ -213,7 +213,7 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
 function ermittleDatumWoche(string $dateString): array
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use TL\Helpers\Date::getWeekStartAndEnd() instead.',
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Date::getWeekStartAndEnd() instead.',
         E_USER_DEPRECATED
     );
 

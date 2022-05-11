@@ -1517,4 +1517,13 @@ class NiceDB implements DbInterface
     public function unserialize($data): void
     {
     }
+
+    public function __serialize(): array
+    {
+        return [];
+    }
+
+    public function __unserialize(array $data): void
+    {
+    }
 }

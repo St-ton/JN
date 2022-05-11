@@ -105,6 +105,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     /**
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $fields = $this->getFields();

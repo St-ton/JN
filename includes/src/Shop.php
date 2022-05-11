@@ -102,11 +102,8 @@ use function Functional\tail;
 /**
  * Class Shop
  * @package JTL
- * @method static JTLCacheInterface Cache()
  * @method static LanguageHelper Lang()
  * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
- * @method static Media Media()
- * @method static Events\Dispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -447,15 +444,11 @@ final class Shop
      * @var array
      */
     private static $mapping = [
-        'DB'     => '_DB',
-        'Cache'  => '_Cache',
-        'Lang'   => '_Language',
-        'Smarty' => '_Smarty',
-        'Media'  => '_Media',
-        'Event'  => '_Event',
-        'has'    => '_has',
-        'set'    => '_set',
-        'get'    => '_get'
+        'Lang'   => 'getLanguageHelper',
+        'Smarty' => 'getSmarty',
+        'has'    => 'registryHas',
+        'set'    => 'registrySet',
+        'get'    => 'registryGet'
     ];
 
     /**
@@ -507,7 +500,7 @@ final class Shop
      * @param string $key
      * @return null|mixed
      */
-    public function _get($key)
+    public function registryGet(string $key)
     {
         return $this->registry[$key] ?? null;
     }
@@ -517,7 +510,7 @@ final class Shop
      * @param mixed  $value
      * @return $this
      */
-    public function _set($key, $value): self
+    public function registrySet(string $key, $value): self
     {
         $this->registry[$key] = $value;
 
@@ -528,7 +521,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key): bool
+    public function registryHas(string $key): bool
     {
         return isset($this->registry[$key]);
     }
@@ -539,7 +532,7 @@ final class Shop
      * @param string $method
      * @return string|null
      */
-    private static function map($method): ?string
+    private static function map(string $method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -569,7 +562,7 @@ final class Shop
      *
      * @return LanguageHelper
      */
-    public function _Language(): LanguageHelper
+    public function getLanguageHelper(): LanguageHelper
     {
         return LanguageHelper::getInstance();
     }
@@ -579,7 +572,7 @@ final class Shop
      * @param string|null $context
      * @return JTLSmarty
      */
-    public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
+    public function getSmarty(bool $fast = false, string $context = null): JTLSmarty
     {
         if ($context === null) {
             $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
@@ -1909,16 +1902,6 @@ final class Shop
     }
 
     /**
-     * Get the default container of the jtl shop
-     *
-     * @return DefaultServicesInterface
-     */
-    public function _Container(): DefaultServicesInterface
-    {
-        return self::Container();
-    }
-
-    /**
      * Create the default container of the jtl shop
      */
     private static function createContainer(): void
@@ -2122,6 +2105,9 @@ final class Shop
         return $homeURL;
     }
 
+    /**
+     * @return string
+     */
     public static function getRequestURL(): string
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')

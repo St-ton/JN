@@ -491,7 +491,6 @@ class JTLSmarty extends BC
     public function activateBackendSecurityMode(): self
     {
         $sec                = new \Smarty_Security($this);
-        $sec->php_handling  = self::PHP_REMOVE;
         $jtlModifier        = [
             'replace_delim',
             'count_characters',

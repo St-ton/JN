@@ -104,20 +104,20 @@
                                     {/if}
                                     <div class="btn-group">
                                         {if $plugin->getOptionsCount() > 0}
-                                            <a class="btn btn-link px-1" href="{$adminURL}/plugin?kPlugin={$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_PLUGIN}/{$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-cogs"></span>
                                                     <span class="fas fa-cogs"></span>
                                                 </span>
                                             </a>
                                         {elseif $plugin->getLicenseMD() || $plugin->getReadmeMD()}
-                                            <a class="btn btn-link px-1" href="{$adminURL}/plugin?kPlugin={$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_PLUGIN}/{$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-copy"></span>
                                                     <span class="fas fa-copy"></span>
                                                 </span>
                                             </a>
-                                            {*<a class="btn btn-default btn-sm" href="{$adminURL}/plugin?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
+                                            {*<a class="btn btn-default btn-sm" href="{$adminURL}/plugin/{$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
                                         {/if}
                                         {if $plugin->isUpdateAvailable()}
                                             <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-link px-1" title="{__('pluginBtnUpdate')}" data-toggle="tooltip">

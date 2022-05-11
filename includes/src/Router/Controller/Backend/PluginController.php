@@ -44,15 +44,16 @@ class PluginController extends AbstractBackendController
         $this->checkPermissions('PLUGIN_ADMIN_VIEW');
         $this->getText->loadAdminLocale('pages/plugin');
 
-        $this->step = 'plugin_uebersicht';
-        $pluginID   = Request::verifyGPCDataInt('kPlugin');
-        $plugin     = null;
-        $loader     = null;
-        $activeTab  = -1;
+        $pluginID    = (int)$args['id'];
+        $plugin      = null;
+        $loader      = null;
+        $activeTab   = -1;
+        $this->step  = 'plugin_uebersicht';
+        $this->route = \str_replace('{id}', (string)$pluginID, $this->route);
         $this->smarty->assign('hasDifferentVersions', false)
             ->assign('currentDatabaseVersion', 0)
             ->assign('currentFileVersion', 0)
-            ->assign('pluginBackendURL', Shop::getAdminURL() . $this->route . '?kPlugin=' . $pluginID)
+            ->assign('pluginBackendURL', Shop::getAdminURL() . $this->route)
             ->assign('route', $this->route);
 
         if (\SAFE_MODE) {

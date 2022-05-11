@@ -181,7 +181,6 @@ class Request
         return $codes[$status] ?? '';
     }
 
-
     /**
      * Prueft ob SSL aktiviert ist und auch durch Einstellung genutzt werden soll
      * -1 = SSL nicht aktiv und nicht erlaubt

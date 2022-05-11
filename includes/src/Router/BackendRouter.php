@@ -318,7 +318,7 @@ class BackendRouter
             self::ROUTE_CONFIG                => ConfigController::class,
             self::ROUTE_MARKDOWN              => MarkdownController::class,
             self::ROUTE_EXPORT_QUEUE          => ExportQueueController::class,
-            self::ROUTE_PLUGIN                => PluginController::class,
+            self::ROUTE_PLUGIN . '/{id}'      => PluginController::class,
             self::ROUTE_PREMIUM_PLUGIN        => PremiumPluginController::class,
             self::ROUTE_SEARCHCONFIG          => SearchConfigController::class,
             self::ROUTE_IO                    => IOController::class,

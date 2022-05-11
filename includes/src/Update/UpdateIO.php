@@ -9,6 +9,7 @@ use JTL\IO\IOFile;
 use JTL\L10n\GetText;
 use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
+use JTL\Router\BackendRouter;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTLShop\SemVer\Version;
@@ -139,7 +140,7 @@ class UpdateIO
         $updatesAvailable       = $updater->hasPendingUpdates();
         $updateError            = $updater->error();
         if (ADMIN_MIGRATION === true) {
-            if ($pluginID !== null && \is_numeric($pluginID)) {
+            if (\is_numeric($pluginID)) {
                 $loader           = new PluginLoader($this->db, Shop::Container()->getCache());
                 $plugin           = $loader->init($pluginID);
                 $manager          = new PluginMigrationManager(
@@ -149,8 +150,10 @@ class UpdateIO
                     $plugin->getMeta()->getSemVer()
                 );
                 $updatesAvailable = \count($manager->getPendingMigrations()) > 0;
-                $smarty->assign('migrationURL', 'plugin.php')
-                    ->assign('pluginID', $pluginID);
+                $smarty->assign(
+                    'migrationURL',
+                    Shop::getAdminURL() . '/' . BackendRouter::ROUTE_PLUGIN . '/' . $pluginID
+                )->assign('pluginID', $pluginID);
             } else {
                 $manager = new MigrationManager($this->db);
             }

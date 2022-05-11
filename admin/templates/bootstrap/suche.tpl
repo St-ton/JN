@@ -86,7 +86,7 @@
     <ul>
         {foreach $plugins as $plugin}
             <li>
-                <a href="{$adminURL}/plugin?kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}" class="dropdown-item value">
+                <a href="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_PLUGIN}/{$plugin->getID()}?token={$smarty.session.jtl_token}" class="dropdown-item value">
                     <span class="title">
                         {$plugin->getName()}
                     </span>

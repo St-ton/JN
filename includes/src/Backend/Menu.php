@@ -574,7 +574,7 @@ class Menu
 
                         $link = (object)[
                             'cLinkname' => \__($pluginLink->cName),
-                            'cURL'      => $adminURL . '/plugin?kPlugin=' . $pluginID,
+                            'cURL'      => $adminURL . '/plugin/' . $pluginID,
                             'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                             'key'       => $rootKey . $secondKey . $pluginID,
                             'active'    => false

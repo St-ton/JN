@@ -31,20 +31,20 @@ class Controller
      * @param AdminAccount      $account
      */
     public function __construct(
-        public DbInterface $db,
-        public JTLCacheInterface $cache,
-        public GetText $getText,
-        public JTLSmarty $smarty,
-        public AdminAccount $account
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private GetText $getText,
+        private JTLSmarty $smarty,
+        private AdminAccount $account
     ) {
     }
 
     /**
-     * @param bool $bActive
+     * @param bool $active
      * @param bool $getAll
      * @return array
      */
-    public function getWidgets(bool $bActive = true, bool $getAll = false): array
+    public function getWidgets(bool $active = true, bool $getAll = false): array
     {
         if (!$getAll || !$this->account->permission('DASHBOARD_VIEW')) {
             return [];
@@ -61,7 +61,7 @@ class Controller
                 WHERE bActive = :active
                     AND (tplugin.nStatus IS NULL OR tplugin.nStatus = :activated)
                 ORDER BY eContainer ASC, nPos ASC',
-            ['active' => (int)$bActive, 'activated' => State::ACTIVATED]
+            ['active' => (int)$active, 'activated' => State::ACTIVATED]
         );
 
         foreach ($widgets as $widget) {
@@ -103,21 +103,18 @@ class Controller
                 $widget->cDescription = $msgstr;
             }
         }
-        if (!$bActive) {
+        if (!$active) {
             return $widgets;
         }
         foreach ($widgets as $key => $widget) {
             $widget->cContent = '';
             $className        = '\JTL\Widgets\\' . $widget->cClass;
             $classPath        = null;
-
             if ($widget->plugin !== null) {
                 $hit = $widget->plugin->getWidgets()->getWidgetByID($widget->kWidget);
-
                 if ($hit !== null) {
                     $className = $hit->className;
                     $classPath = $hit->classFile;
-
                     if (\file_exists($classPath)) {
                         require_once $classPath;
                     }
@@ -142,17 +139,17 @@ class Controller
     }
 
     /**
-     * @param int    $widgetId
+     * @param int    $id
      * @param string $container
      * @param int    $pos
      */
-    public function setWidgetPosition(int $widgetId, string $container, int $pos): void
+    public function setWidgetPosition(int $id, string $container, int $pos): void
     {
         $upd             = new stdClass();
         $upd->eContainer = $container;
         $upd->nPos       = $pos;
 
-        $current = $this->db->select('tadminwidgets', 'kWidget', $widgetId);
+        $current = $this->db->select('tadminwidgets', 'kWidget', $id);
         if ($current->eContainer === $container) {
             if ($current->nPos < $pos) {
                 $this->db->queryPrepared(
@@ -170,10 +167,10 @@ class Controller
             } else {
                 $this->db->queryPrepared(
                     'UPDATE tadminwidgets
-                    SET nPos = nPos + 1
-                    WHERE eContainer = :currentContainer
-                      AND nPos < :currentPos
-                      AND nPos >= :newPos',
+                        SET nPos = nPos + 1
+                        WHERE eContainer = :currentContainer
+                          AND nPos < :currentPos
+                          AND nPos >= :newPos',
                     [
                         'currentPos'       => $current->nPos,
                         'newPos'           => $pos,
@@ -184,9 +181,9 @@ class Controller
         } else {
             $this->db->queryPrepared(
                 'UPDATE tadminwidgets
-                SET nPos = nPos - 1
-                WHERE eContainer = :currentContainer
-                  AND nPos > :currentPos',
+                    SET nPos = nPos - 1
+                    WHERE eContainer = :currentContainer
+                      AND nPos > :currentPos',
                 [
                     'currentPos'       => $current->nPos,
                     'currentContainer' => $current->eContainer
@@ -194,9 +191,9 @@ class Controller
             );
             $this->db->queryPrepared(
                 'UPDATE tadminwidgets
-                SET nPos = nPos + 1
-                WHERE eContainer = :newContainer
-                  AND nPos >= :newPos',
+                    SET nPos = nPos + 1
+                    WHERE eContainer = :newContainer
+                      AND nPos >= :newPos',
                 [
                     'newPos'       => $pos,
                     'newContainer' => $container
@@ -204,7 +201,7 @@ class Controller
             );
         }
 
-        $this->db->update('tadminwidgets', 'kWidget', $widgetId, $upd);
+        $this->db->update('tadminwidgets', 'kWidget', $id, $upd);
     }
 
     /**
@@ -224,12 +221,12 @@ class Controller
     }
 
     /**
-     * @param int $kWidget
-     * @param int $bExpand
+     * @param int $id
+     * @param int $expand
      */
-    public function expandWidget(int $kWidget, int $bExpand): void
+    public function expandWidget(int $id, int $expand): void
     {
-        $this->db->update('tadminwidgets', 'kWidget', $kWidget, (object)['bExpanded' => $bExpand]);
+        $this->db->update('tadminwidgets', 'kWidget', $id, (object)['bExpanded' => $expand]);
     }
 
     /**
@@ -241,8 +238,13 @@ class Controller
      * @return IOResponse
      * @throws SmartyException
      */
-    public function getRemoteDataIO(string $url, string $dataName, string $tpl, string $wrapperID, $post = null): IOResponse
-    {
+    public function getRemoteDataIO(
+        string $url,
+        string $dataName,
+        string $tpl,
+        string $wrapperID,
+        $post = null
+    ): IOResponse {
         $this->getText->loadAdminLocale('widgets');
         $response    = new IOResponse();
         $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oHelp_arr'];
@@ -280,13 +282,11 @@ class Controller
     public function getShopInfoIO(string $tpl, string $wrapperID): IOResponse
     {
         $this->getText->loadAdminLocale('widgets');
-
         $response = new IOResponse();
         /** @var JTLApi $api */
         $api           = Shop::Container()->get(JTLApi::class);
         $latestVersion = $api->getLatestVersion();
-
-        $wrapper = $this->smarty->assign('oSubscription', $api->getSubscription())
+        $wrapper       = $this->smarty->assign('oSubscription', $api->getSubscription())
             ->assign('oVersion', $latestVersion)
             ->assign('strLatestVersion', $latestVersion->getOriginalVersion())
             ->assign('bUpdateAvailable', $api->hasNewerVersion())

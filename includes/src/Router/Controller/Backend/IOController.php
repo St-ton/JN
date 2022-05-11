@@ -27,6 +27,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\UpdateIO;
+use JTL\Widgets\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -56,6 +57,7 @@ class IOController extends AbstractBackendController
         $updateIO = new UpdateIO($this->db, $this->getText);
         $wizardIO = new WizardIO($this->db, $this->cache, $this->alertService, $this->getText);
         $settings = new SettingsManager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
+        $widgets  = new Controller($this->db, $this->cache, $this->getText, $smarty);
 
         $searchController = new SearchController(
             $this->db,
@@ -73,8 +75,7 @@ class IOController extends AbstractBackendController
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
 
-        $dashboardInc = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dashboard_inc.php';
-        $dbcheckInc   = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
+        $dbcheckInc = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
 
         try {
             $io->register('getPages', [$jsonApi, 'getPages'])
@@ -91,13 +92,13 @@ class IOController extends AbstractBackendController
                 ->register('getNotifyDropIO', 'getNotifyDropIO')
                 ->register('getNewTwoFA', [TwoFA::class, 'getNewTwoFA'])
                 ->register('genTwoFAEmergencyCodes', [TwoFA::class, 'genTwoFAEmergencyCodes'])
-                ->register('setWidgetPosition', 'setWidgetPosition', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('closeWidget', 'closeWidget', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('addWidget', 'addWidget', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('expandWidget', 'expandWidget', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('getAvailableWidgets', 'getAvailableWidgetsIO', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('getRemoteData', 'getRemoteDataIO', $dashboardInc, 'DASHBOARD_VIEW')
-                ->register('getShopInfo', 'getShopInfoIO', $dashboardInc, 'DASHBOARD_VIEW')
+                ->register('setWidgetPosition', [$widgets, 'setWidgetPosition'], null, 'DASHBOARD_VIEW')
+                ->register('closeWidget', [$widgets, 'closeWidget'], null, 'DASHBOARD_VIEW')
+                ->register('addWidget', [$widgets, 'addWidget'], null, 'DASHBOARD_VIEW')
+                ->register('expandWidget', [$widgets, 'expandWidget'], null, 'DASHBOARD_VIEW')
+                ->register('getAvailableWidgets', [$widgets, 'getAvailableWidgetsIO'], null, 'DASHBOARD_VIEW')
+                ->register('getRemoteData', [$widgets, 'getRemoteDataIO'], null, 'DASHBOARD_VIEW')
+                ->register('getShopInfo', [$widgets, 'getShopInfoIO'], null, 'DASHBOARD_VIEW')
                 ->register('truncateJtllog', [Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
                 ->register('addFav', [$this, 'addFav'])
                 ->register('reloadFavs', [$this, 'reloadFavs'])

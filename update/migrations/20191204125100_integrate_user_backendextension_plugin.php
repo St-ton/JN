@@ -10,6 +10,7 @@
 use JTL\Plugin\Admin\StateChanger;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use JTL\XMLParser;

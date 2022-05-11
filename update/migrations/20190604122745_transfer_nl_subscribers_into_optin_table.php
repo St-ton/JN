@@ -10,6 +10,7 @@ use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shop;
 
 /**
  * Class Migration_20190604122745

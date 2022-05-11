@@ -2,6 +2,7 @@
 
 use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

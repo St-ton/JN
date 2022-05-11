@@ -23,14 +23,14 @@ class Migration_20220412144811 extends Migration implements IMigration
     public function up()
     {
         $this->setConfig(
-            'news_kommentare_anzahl_child_kommentare_anzeigen',
+            'news_kommentare_anzahl_antwort_kommentare_anzeigen',
             'Y',
             CONF_NEWS,
-            'Zeige Anzahl der Kind-Kommentare',
+            'Zeige Anzahl der Antworten',
             'selectbox',
             110,
             (object)[
-                'cBeschreibung' => 'Zeige die Anzahl der Kind-Kommentare in Klammern neben der Kommentar anzahl an. Standard = Y',
+                'cBeschreibung' => 'Zeige die Anzahl der Antworten in Klammern neben der Kommentaranzahl an. Standard = Y',
                 'inputOptions'  => [
                     'Y' => 'Anzeigen',
                     'N' => 'Ausblenden',
@@ -45,6 +45,6 @@ class Migration_20220412144811 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->removeConfig('news_kommentare_anzahl_child_kommentare_anzeigen');
+        $this->removeConfig('news_kommentare_anzahl_antwort_kommentare_anzeigen');
     }
 }

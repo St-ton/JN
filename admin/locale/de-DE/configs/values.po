@@ -1931,10 +1931,10 @@ msgstr "Ja"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "Nein"
 
-msgid "news_kommentare_anzahl_child_kommentare_anzeigen_value(Y)"
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(Y)"
 msgstr "anzeigen"
 
-msgid "news_kommentare_anzahl_child_kommentare_anzeigen_value(N)"
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(N)"
 msgstr "ausblenden"
 
 msgid "sitemap_seiten_anzeigen_value(Y)"

@@ -4046,8 +4046,8 @@ class Artikel
                 && $this->cLagerKleinerNull !== 'Y')
                 || ($this->inWarenkorbLegbar !== null
                     && (
-                        $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGER
-                        || $this->inWarenkorbLegbar === INWKNICHTLEGBAR_LAGERVAR
+                        $this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
+                        || $this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                     )
                 );
         }

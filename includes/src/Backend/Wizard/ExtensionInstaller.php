@@ -105,7 +105,7 @@ class ExtensionInstaller
                     try {
                         $res = $this->manager->createLicense($link->getHref());
                         try {
-                            $data = \json_decode($res, false, 512, JSON_THROW_ON_ERROR);
+                            $data = \json_decode($res, false, 512, \JSON_THROW_ON_ERROR);
                         } catch (JsonException) {
                             $data = null;
                         }

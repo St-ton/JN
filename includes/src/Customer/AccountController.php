@@ -54,22 +54,22 @@ class AccountController
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * @var LinkServiceInterface
      */
-    private $linkService;
+    private LinkServiceInterface $linkService;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * AccountController constructor.

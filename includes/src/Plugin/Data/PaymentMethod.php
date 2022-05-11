@@ -18,127 +18,127 @@ class PaymentMethod
     /**
      * @var int
      */
-    private $methodID = 0;
+    private int $methodID = 0;
 
     /**
      * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @var string
      */
-    private $moduleID = '';
+    private string $moduleID = '';
 
     /**
      * @var array
      */
-    private $customerGroups = [];
+    private array $customerGroups = [];
 
     /**
      * @var string
      */
-    private $template = '';
+    private string $template = '';
 
     /**
      * @var string
      */
-    private $templateFilePath = '';
+    private string $templateFilePath = '';
 
     /**
      * @var string
      */
-    private $additionalTemplate = '';
+    private string $additionalTemplate = '';
 
     /**
      * @var string
      */
-    private $image = '';
+    private string $image = '';
 
     /**
      * @var int
      */
-    private $sort = 0;
+    private int $sort = 0;
 
     /**
      * @var bool
      */
-    private $sendMail = false;
+    private bool $sendMail = false;
 
     /**
      * @var bool
      */
-    private $active = false;
+    private bool $active = false;
 
     /**
      * @var string
      */
-    private $provider = '';
+    private string $provider = '';
 
     /**
      * @var string
      */
-    private $tsCode = '';
+    private string $tsCode = '';
 
     /**
      * @var bool
      */
-    private $duringOrder = false;
+    private bool $duringOrder = false;
 
     /**
      * @var bool
      */
-    private $useCurl = false;
+    private bool $useCurl = false;
 
     /**
      * @var bool
      */
-    private $useSoap = false;
+    private bool $useSoap = false;
 
     /**
      * @var bool
      */
-    private $useSockets = false;
+    private bool $useSockets = false;
 
     /**
      * @var bool
      */
-    private $usable = false;
+    private bool $usable = false;
 
     /**
      * @var int
      */
-    private $pluginID = 0;
+    private int $pluginID = 0;
 
     /**
      * @var string
      */
-    private $classFile = '';
+    private string $classFile = '';
 
     /**
      * @var string
      */
-    private $className = '';
+    private string $className = '';
 
     /**
      * @var string
      */
-    private $templatePath = '';
+    private string $templatePath = '';
 
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @var array
      */
-    private $localization = [];
+    private array $localization = [];
 
     /**
      * @var string
      */
-    private $classFilePath = '';
+    private string $classFilePath = '';
 
     /**
      * @var array

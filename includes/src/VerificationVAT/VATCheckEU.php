@@ -28,7 +28,7 @@ class VATCheckEU extends AbstractVATCheck
      *
      * @var array
      */
-    private $miasAnswerStrings = [
+    private array $miasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
         10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
         20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.',

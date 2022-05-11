@@ -35,52 +35,52 @@ class BoxService implements BoxServiceInterface
     /**
      * @var BoxInterface[]
      */
-    public $boxes = [];
+    public array $boxes = [];
 
     /**
      * @var array
      */
-    public $config = [];
+    public array $config = [];
 
     /**
      * unrendered box template file name + data
      *
      * @var array
      */
-    public $rawData = [];
+    public array $rawData = [];
 
     /**
-     * @var array
+     * @var array|null
      */
-    public $visibilities;
+    public ?array $visibilities = null;
 
     /**
      * @var FactoryInterface
      */
-    private $factory;
+    private FactoryInterface $factory;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var RendererInterface
      */
-    private $renderer;
+    private RendererInterface $renderer;
 
     /**
-     * @var BoxServiceInterface
+     * @var BoxServiceInterface|null
      */
     private static $instance;
 

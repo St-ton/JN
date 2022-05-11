@@ -42,22 +42,22 @@ final class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var TemplateFactory
      */
-    private $factory;
+    private TemplateFactory $factory;
 
     /**
      * @var Mailer
      */
-    private $mailer;
+    private Mailer $mailer;
 
     /**
      * @var array
      */
-    private $errorMessages = [];
+    private array $errorMessages = [];
 
     /**
      * @var Model|null

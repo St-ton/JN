@@ -111,24 +111,24 @@ class LanguageHelper
     public $kSprache;
 
     /**
-     * @var LanguageHelper
+     * @var LanguageHelper|null
      */
     private static $instance;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'gibWert'                     => 'getTranslation',
         'get'                         => 'getTranslation',
         'set'                         => 'setzeWert',

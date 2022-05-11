@@ -11,7 +11,7 @@ class VATCheckVatParserNonEU
     /**
      * @var array $countryPattern
      */
-    private $countryPattern = [
+    private array $countryPattern = [
         // CH-Schweiz                    CHE-999.999.999 oder
         //                               CHE-999999999         1 Block mit 9 Ziffern,
         //                               CHE-999.999.999-99    with or without "Handelregister"-appendix (e.g. "-43")

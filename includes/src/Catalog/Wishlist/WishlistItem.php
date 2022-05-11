@@ -17,7 +17,7 @@ class WishlistItem
     /**
      * @var string[]
      */
-    private static $mapping = [
+    private static array $mapping = [
         'kWunschliste'                   => 'ishlistID',
         'kWunschlistePos'                => 'ID',
         'kArtikel'                       => 'ProductID',

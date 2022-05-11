@@ -24,7 +24,7 @@ class UpdateIO
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * UpdateIO constructor.

@@ -17,7 +17,7 @@ class SimpleCSS
     /**
      * @var array
      */
-    public $cCSS_arr = [];
+    public array $cCSS_arr = [];
 
     /**
      * @param string $selector

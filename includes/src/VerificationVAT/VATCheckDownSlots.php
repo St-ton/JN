@@ -17,7 +17,7 @@ class VATCheckDownSlots
      * http://ec.europa.eu/taxation_customs/vies/help.html
      *
      */
-    private $downTimeSlots = [
+    private array $downTimeSlots = [
         //
         // array-item example:
         //

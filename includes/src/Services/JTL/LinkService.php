@@ -26,19 +26,19 @@ use function Functional\first_index_of;
 final class LinkService implements LinkServiceInterface
 {
     /**
-     * @var LinkService
+     * @var LinkService|null
      */
     private static $instance;
 
     /**
      * @var LinkGroupListInterface
      */
-    private $linkGroupList;
+    private LinkGroupListInterface $linkGroupList;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * LinkService constructor.

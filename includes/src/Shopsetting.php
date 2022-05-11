@@ -13,14 +13,14 @@ use function Functional\reindex;
 final class Shopsetting implements ArrayAccess
 {
     /**
-     * @var Shopsetting
+     * @var Shopsetting|null
      */
     private static $instance;
 
     /**
      * @var array
      */
-    private $container = [];
+    private array $container = [];
 
     /**
      * @var array
@@ -30,7 +30,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         \CONF_GLOBAL              => 'global',
         \CONF_STARTSEITE          => 'startseite',
         \CONF_EMAILS              => 'emails',

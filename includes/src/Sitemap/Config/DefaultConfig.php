@@ -21,22 +21,22 @@ final class DefaultConfig implements ConfigInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var string
      */
-    private $baseURL;
+    private string $baseURL;
 
     /**
      * @var string
      */
-    private $baseImageURL;
+    private string $baseImageURL;
 
     /**
      * DefaultConfig constructor.

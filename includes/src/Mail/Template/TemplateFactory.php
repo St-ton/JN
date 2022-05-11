@@ -13,7 +13,7 @@ final class TemplateFactory
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * TemplateFactory constructor.

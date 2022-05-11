@@ -20,7 +20,7 @@ final class BoxAdmin
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var array
@@ -30,7 +30,7 @@ final class BoxAdmin
     /**
      * @var array
      */
-    private static $validPageTypes = [
+    private static array $validPageTypes = [
         \PAGE_UNBEKANNT,
         \PAGE_ARTIKEL,
         \PAGE_ARTIKELLISTE,

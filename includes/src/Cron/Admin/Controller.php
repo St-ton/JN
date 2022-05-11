@@ -25,22 +25,22 @@ final class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var JobHydrator
      */
-    private $hydrator;
+    private JobHydrator $hydrator;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Controller constructor.

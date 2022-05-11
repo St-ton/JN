@@ -170,7 +170,7 @@ class VATCheckVatParser
     /**
      * @var array
      */
-    private $idParts = [];
+    private array $idParts = [];
 
     /**
      * @var int

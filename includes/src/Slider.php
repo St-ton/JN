@@ -107,7 +107,7 @@ class Slider implements IExtensionPoint
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'bAktiv'          => 'IsActive',
         'kSlider'         => 'ID',
         'cName'           => 'Name',

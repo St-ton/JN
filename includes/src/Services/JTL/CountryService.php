@@ -22,17 +22,17 @@ class CountryService implements CountryServiceInterface
     /**
      * @var Collection
      */
-    private $countryList;
+    private Collection $countryList;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     public const CACHE_ID = 'serviceCountryList';
 

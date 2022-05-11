@@ -24,7 +24,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'compatName'     => 'Name',
         'cName'          => 'Name',
         'anzeigen'       => 'ShowCompat',
@@ -49,7 +49,7 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    private static $validPageTypes = [
+    private static array $validPageTypes = [
         \PAGE_UNBEKANNT,
         \PAGE_ARTIKEL,
         \PAGE_ARTIKELLISTE,

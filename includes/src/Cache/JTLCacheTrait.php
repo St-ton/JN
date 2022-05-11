@@ -28,17 +28,17 @@ trait JTLCacheTrait
     /**
      * @var bool
      */
-    public $isInitialized = false;
+    public bool $isInitialized = false;
 
     /**
      * @var bool
      */
-    public $journalHasChanged = false;
+    public bool $journalHasChanged = false;
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
 
     /**
      * @param array $options

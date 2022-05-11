@@ -15,12 +15,12 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * SmartyResourceNiceDB constructor.

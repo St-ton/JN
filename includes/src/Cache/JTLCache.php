@@ -67,12 +67,12 @@ final class JTLCache implements JTLCacheInterface
      *
      * @var array
      */
-    private $options = [];
+    private array $options = [];
 
     /**
      * plugin instance
      *
-     * @var JTLCache
+     * @var JTLCache|null
      */
     private static $instance;
 
@@ -81,17 +81,17 @@ final class JTLCache implements JTLCacheInterface
      *
      * @var int
      */
-    private $resultCode = self::RES_UNDEF;
+    private int $resultCode = self::RES_UNDEF;
 
     /**
      * @var array
      */
-    private $cachingGroups = [];
+    private array $cachingGroups = [];
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
 
     /**
      * init cache and set default method

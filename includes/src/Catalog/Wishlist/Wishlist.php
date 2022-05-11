@@ -29,7 +29,7 @@ class Wishlist
     /**
      * @var string[]
      */
-    private static $mapping = [
+    private static array $mapping = [
         'kWunschliste'        => 'ID',
         'kKunde'              => 'CustomerID',
         'nStandard'           => 'isDefault',

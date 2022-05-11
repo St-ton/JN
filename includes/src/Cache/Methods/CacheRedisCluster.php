@@ -33,7 +33,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @var array
      */
-    private $masters = [];
+    private array $masters = [];
 
     /**
      * @param array $options

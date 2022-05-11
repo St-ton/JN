@@ -14,12 +14,12 @@ class NewsService implements NewsServiceInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var NewsServiceInterface

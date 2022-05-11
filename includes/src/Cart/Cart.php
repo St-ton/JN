@@ -85,12 +85,12 @@ class Cart
     /**
      * @var array
      */
-    public static $updatedPositions = [];
+    public static array $updatedPositions = [];
 
     /**
      * @var array
      */
-    public static $deletedPositions = [];
+    public static array $deletedPositions = [];
 
     /**
      * @var array

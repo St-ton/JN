@@ -22,7 +22,7 @@ class ComparisonList
     /**
      * @var array
      */
-    public $oArtikel_arr = [];
+    public array $oArtikel_arr = [];
 
     /**
      * ComparisonList constructor.

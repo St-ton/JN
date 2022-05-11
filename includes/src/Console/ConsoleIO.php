@@ -120,7 +120,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isQuiet()
+    public function isQuiet(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_QUIET;
     }
@@ -128,7 +128,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return bool
      */
-    public function isNormal()
+    public function isNormal(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_NORMAL;
     }
@@ -136,7 +136,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isVerbose()
+    public function isVerbose(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
     }
@@ -144,7 +144,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isVeryVerbose()
+    public function isVeryVerbose(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE;
     }
@@ -152,7 +152,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG;
     }
@@ -538,7 +538,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function ask(string $question, string $default = null, callable $validator = null)
+    public function ask(string $question, string $default = null, callable $validator = null): mixed
     {
         $instance = new Question($question, $default);
         $instance->setValidator($validator);
@@ -549,7 +549,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function askHidden(string $question, callable $validator = null)
+    public function askHidden(string $question, callable $validator = null): mixed
     {
         $instance = new Question($question);
 
@@ -562,7 +562,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function confirm(string $question, bool $default = true)
+    public function confirm(string $question, bool $default = true): bool
     {
         return $this->askQuestion(new ConfirmationQuestion($question, $default));
     }
@@ -570,7 +570,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function choice(string $question, array $choices, $default = null)
+    public function choice(string $question, array $choices, $default = null): mixed
     {
         if ($default !== null) {
             $values  = \array_flip($choices);
@@ -617,7 +617,7 @@ class ConsoleIO extends OutputStyle
      * @param int $max
      * @return ProgressBar
      */
-    public function createProgressBar(int $max = 0)
+    public function createProgressBar(int $max = 0): ProgressBar
     {
         $progressBar = parent::createProgressBar($max);
 

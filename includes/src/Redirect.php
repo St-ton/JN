@@ -3,7 +3,6 @@
 namespace JTL;
 
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Filter\FilterInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;

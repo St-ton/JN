@@ -5,7 +5,6 @@ use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
 

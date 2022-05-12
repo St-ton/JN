@@ -37,7 +37,7 @@ use function Functional\tail;
  * Class Shop
  * @package JTL
  * @method static LanguageHelper Lang()
- * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
+ * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = null)
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)

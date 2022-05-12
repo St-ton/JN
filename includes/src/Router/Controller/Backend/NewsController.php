@@ -328,7 +328,7 @@ class NewsController extends AbstractBackendController
         return $smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
             ->assign('step', $controller->getStep())
-            ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
+            ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
             ->getResponse('news.tpl');
     }
 }

@@ -117,7 +117,7 @@ class Import
         if ($file === false) {
             throw new InvalidArgumentException('Cannot open file ' . $filename);
         }
-        $delimiter = \getCsvDelimiter($filename);
+        $delimiter = \JTL\CSV\Import::getCsvDelimiter($filename);
         $row       = 0;
         $fmt       = [];
         while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {

@@ -103,7 +103,7 @@ class Import
             return false;
         }
 
-        $delim             = $delim ?? $this->getCsvDelimiter($csvFilename);
+        $delim             = $delim ?? self::getCsvDelimiter($csvFilename);
         $fs                = \fopen($_FILES['csvfile']['tmp_name'], 'rb');
         $this->errorCount  = 0;
         $this->importCount = 0;
@@ -260,26 +260,6 @@ class Import
     }
 
     /**
-     * @param string $filename
-     * @return string
-     */
-    protected function getCsvDelimiter(string $filename): string
-    {
-        $file      = \fopen($filename, 'rb');
-        $firstLine = \fgets($file);
-        foreach ([';', ',', '|', '\t'] as $delim) {
-            if (mb_strpos($firstLine, $delim) !== false) {
-                \fclose($file);
-
-                return $delim;
-            }
-        }
-        \fclose($file);
-
-        return ';';
-    }
-
-    /**
      * @param stdClass $data
      * @param string   $iso
      */
@@ -317,6 +297,29 @@ class Import
         if (!isset($data->productName)) {
             $data->productName = $item->cName;
         }
+    }
+
+
+    /**
+     * @param string $filename
+     * @return string delimiter guess
+     * @former getCsvDelimiter()
+     * @since 5.2.0
+     */
+    public static function getCsvDelimiter(string $filename): string
+    {
+        $file      = \fopen($filename, 'rb');
+        $firstLine = \fgets($file);
+        foreach ([';', ',', '|', '\t'] as $delim) {
+            if (\str_contains($firstLine, $delim)) {
+                \fclose($file);
+
+                return $delim;
+            }
+        }
+        \fclose($file);
+
+        return ';';
     }
 
     /**

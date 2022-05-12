@@ -255,7 +255,7 @@ class BannerController extends AbstractBackendController
         $this->smarty->assign('oExtension', $this->getExtension($id))
             ->assign('bannerFiles', $this->getBannerFiles())
             ->assign('customerGroups', CustomerGroup::getGroups())
-            ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
+            ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
             ->assign('banner', $imageMap);
 
         if (!\is_object($imageMap)) {
@@ -272,7 +272,7 @@ class BannerController extends AbstractBackendController
     {
         $this->smarty->assign('banner', $imageMap ?? null)
             ->assign('customerGroups', CustomerGroup::getGroups())
-            ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
+            ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
             ->assign('bannerFiles', $this->getBannerFiles());
     }
 

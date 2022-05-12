@@ -55,7 +55,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
 
         return $smarty->assign('cRnd', \time())
             ->assign('oSuchspecialOverlay', $overlay)
-            ->assign('nMaxFileSize', \getMaxFileSize(\ini_get('upload_max_filesize')))
+            ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
             ->assign('oSuchspecialOverlay_arr', $overlays)
             ->assign('nSuchspecialOverlayAnzahl', \count($overlays) + 1)
             ->assign('step', $step)

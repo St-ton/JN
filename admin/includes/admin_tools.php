@@ -4,7 +4,7 @@ use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\Subsection;
-use JTL\Campaign;
+use JTL\CSV\Import;
 use JTL\DB\SqlObject;
 use JTL\Filter\SearchResults;
 use JTL\Helpers\Date;
@@ -15,7 +15,6 @@ use JTL\Router\Controller\Backend\AbstractBackendController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use function Functional\pluck;
 
@@ -388,10 +387,11 @@ function getJTLVersionDB(bool $date = false)
 /**
  * @param string $size
  * @return mixed
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getMaxFileSize($size)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return match (mb_substr($size, -1)) {
         'M', 'm' => (int)$size * 1048576,
         'K', 'k' => (int)$size * 1024,
@@ -417,31 +417,24 @@ function getNotifyDropIO(): array
  * @param string $filename
  * @return string delimiter guess
  * @former guessCsvDelimiter()
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getCsvDelimiter(string $filename): string
 {
-    $file      = fopen($filename, 'r');
-    $firstLine = fgets($file);
-
-    foreach ([';', ',', '|', '\t'] as $delim) {
-        if (str_contains($firstLine, $delim)) {
-            fclose($file);
-
-            return $delim;
-        }
-    }
-    fclose($file);
-
-    return ';';
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\CSV\Import::getCsvDelimiter() instead.',
+        E_USER_DEPRECATED
+    );
+    return Import::getCsvDelimiter($filename);
 }
 
 /**
  * @return JTLSmarty
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getFrontendSmarty(): JTLSmarty
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     static $frontendSmarty = null;
 
     if ($frontendSmarty === null) {

@@ -410,6 +410,22 @@ abstract class AbstractBackendController implements ControllerInterface
     }
 
     /**
+     * @param string $size
+     * @return float|int|string
+     * @former getMaxFileSize()
+     * @since 5.2.0
+     */
+    public static function getMaxFileSize($size): float|int|string
+    {
+        return match (mb_substr($size, -1)) {
+            'M', 'm' => (int)$size * 1048576,
+            'K', 'k' => (int)$size * 1024,
+            'G', 'g' => (int)$size * 1073741824,
+            default => $size,
+        };
+    }
+
+    /**
      * @return string
      */
     public function getRoute(): string

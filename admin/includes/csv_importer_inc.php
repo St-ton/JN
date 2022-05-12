@@ -1,5 +1,6 @@
 <?php
 
+use JTL\CSV\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
@@ -72,7 +73,7 @@ function handleCsvImportAction(
     $rowIndex          = 2;
 
     if ($delim === null) {
-        $delim = getCsvDelimiter($csvFilename);
+        $delim = Import::getCsvDelimiter($csvFilename);
     }
 
     if (count($fields) === 0) {

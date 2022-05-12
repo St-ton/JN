@@ -9,11 +9,14 @@
             assign='hasOnlyListableVariations'}
     {/if}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-column {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
+         class="productbox productbox-column productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
+        {form id="{$idPrefix|default:''}buy_form_{$Artikel->kArtikel}"
+        action=$ShopURL class="form form-basket jtl-validate"
+        data=["toggle" => "basket-add"]}
         <div class="productbox-inner">
             {row}
                 {col cols=12}
-                    <div class="productbox-image">
+                    <div class="productbox-image" data-target="#variations-collapse-{$Artikel->kArtikel}">
                         {if isset($Artikel->Bilder[0]->cAltAttribut)}
                             {assign var=alt value=$Artikel->Bilder[0]->cAltAttribut}
                         {else}
@@ -33,16 +36,17 @@
                                             {$image = $Artikel->Bilder[0]}
                                             <div class="productbox-image square square-image first-wrapper">
                                                 <div class="inner">
-                                            {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
-                                                src="{$image->cURLKlein}"
-                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                         {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                         {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                sizes="auto"
-                                                data=["id"  => $imgcounter]
-                                                class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
-                                                fluid=true
-                                            }</div>
+                                                    {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
+                                                        src="{$image->cURLKlein}"
+                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
+                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
+                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                        sizes="auto"
+                                                        data=["id"  => $imgcounter]
+                                                        class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
+                                                        fluid=true
+                                                    }
+                                                </div>
                                             </div>
                                             {if !$isMobile && !empty($Artikel->Bilder[1])}
                                                 <div class="productbox-image square square-image second-wrapper">
@@ -62,8 +66,8 @@
                                                         data=["id"  => $imgcounter|cat:"_2nd"]
                                                         class='second'
                                                     }
+                                                    </div>
                                                 </div>
-                                            </div>
                                             {/if}
                                         {/strip}
                                     {/block}
@@ -81,6 +85,22 @@
                         {/block}
                     </div>
                 {/col}
+            {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
+            $Einstellungen.template.productlist.variation_productlist_gallery === 'Y' && $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
+            ($Artikel->Variationen[0]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX') &&
+            (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX'))}
+                    {col cols=12 class='productbox-variations'}
+                    {block name='productlist-item-box-form-variations'}
+                        <div class="productbox-onhover collapse" id="variations-collapse-{$Artikel->kArtikel}">
+                            {block name='productlist-item-box-form-include-variation'}
+                                {include file='productlist/variation_gallery.tpl'
+                                simple=$Artikel->isSimpleVariation showMatrix=false
+                                smallView=true ohneFreifeld=($hasOnlyListableVariations == 2)}
+                            {/block}
+                        </div>
+                    {/block}
+                    {/col}
+                {/if}
                 {col cols=12}
                     {block name='productlist-item-box-caption'}
                         {block name='productlist-item-box-caption-short-desc'}
@@ -112,5 +132,6 @@
                 {/col}
             {/row}
         </div>
+        {/form}
     </div>
 {/block}

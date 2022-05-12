@@ -14,6 +14,7 @@ use JTL\Country\Manager;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -63,15 +64,14 @@ class ShippingMethodsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions('ORDER_SHIPMENT_VIEW');
         $this->getText->loadAdminLocale('pages/versandarten');
-
+        Tax::setTaxRates();
         $this->step            = 'uebersicht';
         $this->defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
         $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
         $this->countryService  = Shop::Container()->getCountryService();
 
         $postData = Text::filterXSS($_POST);
-
-        $manager = new Manager(
+        $manager  = new Manager(
             $this->db,
             $smarty,
             $this->countryService,
@@ -79,7 +79,6 @@ class ShippingMethodsController extends AbstractBackendController
             $this->alertService,
             $this->getText
         );
-
         $missingShippingClassCombis = $this->getMissingShippingClassCombi();
         $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis);
         if (Form::validateToken()) {
@@ -290,7 +289,7 @@ class ShippingMethodsController extends AbstractBackendController
      * @return array
      * @former gibGesetzteVersandklassenUebersicht()
      */
-    private function getActiveShippingClassesOverview($shippingClasses): array
+    private function getActiveShippingClassesOverview(string $shippingClasses): array
     {
         if (\trim($shippingClasses) === '-1') {
             return ['Alle'];

@@ -16920,7 +16920,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   filter: grayscale(1);
 }
 .swatches-text {
-  padding: 0.625rem 0.9375rem;
+  padding: 0.3125rem 0.5rem;
   border: 1px solid #212121;
   transition: all 0.2s ease-in-out;
 }
@@ -17710,6 +17710,9 @@ label {
   .productbox.productbox-hover.productbox-column:not(:hover) .productbox-onhover {
     display: none;
   }
+  .productbox.productbox-hover.productbox-column .variations .form-group {
+    margin-bottom: 0.25rem;
+  }
 }
 .productbox:not(.productbox-show-variations) .productbox-variations {
   display: none;
@@ -18136,11 +18139,15 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
   overflow: initial;
 }
 .productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item {
-  width: calc(100% / 4);
-  min-width: calc(100% / 4);
+  width: calc(100% / 5);
+  min-width: calc(100% / 5);
+  padding: 0 2px;
 }
 .productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item img {
-  padding: 0.3rem;
+  padding: 0;
+}
+.productbox-variations .js-slider-wrapper .js-btn-slider-btns .btn {
+  padding: 0 0.5rem;
 }
 .stepper {
   align-items: center;
@@ -20155,6 +20162,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .list .image-wrapper .yousave {
   margin-top: -1.6rem;
+}
+.layout-gallery .variations .variation-wrapper .form-group {
+  margin-bottom: 0;
 }
 /* productdetails */
 .product-detail .product-actions {

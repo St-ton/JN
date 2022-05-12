@@ -12144,7 +12144,7 @@ select.selectpicker {
   z-index: 2 !important;
 }
 .has-error .bootstrap-select .dropdown-toggle, .has-error .bootstrap-select #sidebar .navigation [data-toggle=collapse], #sidebar .navigation .has-error .bootstrap-select [data-toggle=collapse], .error .bootstrap-select .dropdown-toggle, .error .bootstrap-select #sidebar .navigation [data-toggle=collapse], #sidebar .navigation .error .bootstrap-select [data-toggle=collapse], .bootstrap-select.is-invalid .dropdown-toggle, .bootstrap-select.is-invalid #sidebar .navigation [data-toggle=collapse], #sidebar .navigation .bootstrap-select.is-invalid [data-toggle=collapse], .was-validated .bootstrap-select .selectpicker:invalid + .dropdown-toggle, .was-validated .bootstrap-select #sidebar .navigation .selectpicker:invalid + [data-toggle=collapse], #sidebar .navigation .was-validated .bootstrap-select .selectpicker:invalid + [data-toggle=collapse] {
-  border-color: #b94a48;
+  border-color: rgb(185, 74, 72);
 }
 .bootstrap-select.is-valid .dropdown-toggle, .bootstrap-select.is-valid #sidebar .navigation [data-toggle=collapse], #sidebar .navigation .bootstrap-select.is-valid [data-toggle=collapse], .was-validated .bootstrap-select .selectpicker:valid + .dropdown-toggle, .was-validated .bootstrap-select #sidebar .navigation .selectpicker:valid + [data-toggle=collapse], #sidebar .navigation .was-validated .bootstrap-select .selectpicker:valid + [data-toggle=collapse] {
   border-color: #28a745;
@@ -12330,8 +12330,8 @@ select.selectpicker {
   margin: 0 2%;
   min-height: 26px;
   padding: 3px 5px;
-  background: whitesmoke;
-  border: 1px solid #e3e3e3;
+  background: rgb(245, 245, 245);
+  border: 1px solid rgb(227, 227, 227);
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   pointer-events: none;

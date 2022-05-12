@@ -72,7 +72,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     }
 
     if ($dbStructure === false) {
-        $dbData = $db->getObjects(
+        $dbStructure = [];
+        $dbData      = $db->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,

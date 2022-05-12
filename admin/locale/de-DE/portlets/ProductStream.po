@@ -28,3 +28,12 @@ msgstr "Artikelfilter"
 
 msgid "maxProducts"
 msgstr "Artikel-Anzahl begrenzen"
+
+msgid "productSource"
+msgstr "Artikel-Auswahl"
+
+msgid "productSourceFiltering"
+msgstr "Filterung"
+
+msgid "productSourceExplicit"
+msgstr "Explizite Auswahl"

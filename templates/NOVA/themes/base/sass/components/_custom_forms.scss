@@ -36,7 +36,6 @@
 		word-break: break-word;
 		text-overflow: ellipsis;
 		transition: all 0.5s ease-in-out;
-		width: 90px;
 
 		img {
 			padding: map_get($spacers, 2);
@@ -44,6 +43,11 @@
 			width: rem(88px);
 			&:hover {
 				transform: scale(1.2);
+			}
+		}
+		@include media-breakpoint-down(md) {
+			img {
+				padding: map_get($spacers, 1);
 			}
 		}
 		&.active {
@@ -59,7 +63,7 @@
 			}
 		}
 	&-text {
-	 	padding: rem(10px) rem(15px);
+	 	padding: rem(5px) rem(8px);
 		border: $border-width solid $gray-darker;
 		transition: all $transition-base-duration $transition-base-timing;
 		&.active {

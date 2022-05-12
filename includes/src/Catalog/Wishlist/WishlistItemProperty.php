@@ -146,7 +146,7 @@ class WishlistItemProperty
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getPropertyValueID(): ?int
     {

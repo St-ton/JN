@@ -69,7 +69,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     {
         /** @var Model $model */
         $model = $this->getModel();
-        $model->setIp($this->ip);
+        $model->setIP($this->ip);
         $model->setReference($this->key);
         $model->setProtectedType($this->type);
         $model->setTime('now()');

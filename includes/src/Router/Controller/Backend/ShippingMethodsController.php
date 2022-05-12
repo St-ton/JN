@@ -70,8 +70,8 @@ class ShippingMethodsController extends AbstractBackendController
         $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
         $this->countryService  = Shop::Container()->getCountryService();
 
-        $postData = Text::filterXSS($_POST);
-        $manager  = new Manager(
+        $postData                   = Text::filterXSS($_POST);
+        $manager                    = new Manager(
             $this->db,
             $smarty,
             $this->countryService,

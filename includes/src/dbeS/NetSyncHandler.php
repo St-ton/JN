@@ -16,17 +16,17 @@ class NetSyncHandler
     /**
      * @var NetSyncHandler|null
      */
-    private static ?NetSyncHandler $instance = null;
+    protected static ?NetSyncHandler $instance = null;
 
     /**
      * @var DbInterface
      */
-    private DbInterface $db;
+    protected DbInterface $db;
 
     /**
      * @var LoggerInterface
      */
-    private LoggerInterface $logger;
+    protected LoggerInterface $logger;
 
     /**
      * NetSyncHandler constructor.

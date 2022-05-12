@@ -18,7 +18,7 @@ class Shopinfo extends AbstractWidget
         $strTplVersion   = Shop::Container()->getTemplateService()->getActiveTemplate()->getVersion();
         $strFileVersion  = Shop::getApplicationVersion();
         $strDBVersion    = Shop::getShopDatabaseVersion();
-        $strUpdated      = \date_format(\date_create(\getJTLVersionDB(true)), 'd.m.Y, H:i:m');
+        $strUpdated      = \date_format(\date_create($this->getLastMigrationDate()), 'd.m.Y, H:i:m');
         $strMinorVersion = \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';
 
         $this->oSmarty->assign('strFileVersion', $strFileVersion)
@@ -37,5 +37,15 @@ class Shopinfo extends AbstractWidget
     public function getContent()
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/shopinfo.tpl');
+    }
+
+    /**
+     * @return string
+     */
+    private function getLastMigrationDate(): string
+    {
+        $latestUpdate = $this->getDB()->getSingleObject('SELECT MAX(dExecuted) AS date FROM tmigration');
+
+        return $latestUpdate->date ?? '';
     }
 }

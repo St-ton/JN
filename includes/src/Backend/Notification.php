@@ -15,6 +15,8 @@ use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
 use JTL\Router\BackendRouter;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 use function Functional\pluck;
 
 /**
@@ -482,7 +484,7 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
-        $response->assignDom('notify-drop', 'innerHTML', \getNotifyDropIO()['tpl']);
+        $response->assignDom('notify-drop', 'innerHTML', self::getNotifyDropIO()['tpl']);
     }
 
     /**
@@ -509,8 +511,26 @@ class Notification implements IteratorAggregate, Countable
             case 'reset':
                 $notifications->resetIgnoredNotifications($response);
                 break;
+            default:
+                break;
         }
 
         return $response;
+    }
+
+
+    /**
+     * @return array
+     * @former getNotifyDropIO()
+     * @since 5.2.0
+     */
+    public static function getNotifyDropIO(): array
+    {
+        return [
+            'tpl'  => JTLSmarty::getInstance(false, ContextType::BACKEND)
+                ->assign('notifications', self::getInstance())
+                ->fetch('tpl_inc/notify_drop.tpl'),
+            'type' => 'notify'
+        ];
     }
 }

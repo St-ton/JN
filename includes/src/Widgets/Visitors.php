@@ -2,6 +2,7 @@
 
 namespace JTL\Widgets;
 
+use JTL\Backend\Stats;
 use JTL\Helpers\Date;
 use JTL\Linechart;
 use JTL\Statistik;
@@ -64,7 +65,7 @@ class Visitors extends AbstractWidget
             'Dieser Monat'  => $currentMonth
         ];
 
-        return \prepareLineChartStatsMulti($series, \getAxisNames(\STATS_ADMIN_TYPE_BESUCHER), 2);
+        return Stats::prepareLineChartStatsMulti($series, Stats::getAxisNames(\STATS_ADMIN_TYPE_BESUCHER), 2);
     }
 
     /**

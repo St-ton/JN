@@ -5,7 +5,7 @@ use JTL\Shop;
 
 /**
  * @return bool
- * @todo!!!
+ * @deprecated since 5.2.0
  */
 function generiereRSSXML(): bool
 {
@@ -16,6 +16,7 @@ function generiereRSSXML(): bool
 /**
  * @param string $dateString
  * @return bool|string
+ * @deprecated since 5.2.0
  */
 function bauerfc2822datum($dateString)
 {
@@ -26,6 +27,7 @@ function bauerfc2822datum($dateString)
 /**
  * @param string $text
  * @return string
+ * @deprecated since 5.2.0
  */
 function wandelXMLEntitiesUm($text): string
 {

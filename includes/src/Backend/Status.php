@@ -22,6 +22,7 @@ use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
+use JTL\Update\DBMigrationHelper;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -135,8 +136,8 @@ class Status
 
         if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
             $dbStruct             = [];
-            $dbStruct['current']  = \getDBStruct(true);
-            $dbStruct['original'] = \getDBFileStruct();
+            $dbStruct['current']  = DBMigrationHelper::getDBStruct(true);
+            $dbStruct['original'] = DBMigrationHelper::getDBFileStruct();
 
             $this->cache->set(
                 self::CACHE_ID_DATABASE_STRUCT,
@@ -147,7 +148,7 @@ class Status
 
         return \is_array($dbStruct['current'])
             && \is_array($dbStruct['original'])
-            && \count(\compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
+            && \count(DBMigrationHelper::compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
     }
 
     /**

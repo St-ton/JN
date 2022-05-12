@@ -21,6 +21,17 @@ class Patch extends AbstractWidget
      */
     public function getContent()
     {
-        return $this->oSmarty->assign('version', \getJTLVersionDB())->fetch('tpl_inc/widgets/patch.tpl');
+        return $this->oSmarty->assign('version', $this->getDBVersion())->fetch('tpl_inc/widgets/patch.tpl');
+    }
+
+
+    /**
+     * @return string
+     */
+    private function getDBVersion(): string
+    {
+        $versionData = $this->getDB()->getSingleObject('SELECT nVersion FROM tversion');
+
+        return $versionData->nVersion ?? '0.0.0';
     }
 }

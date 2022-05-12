@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Linechart;
 use JTL\Piechart;
-use JTL\Statistik;
+use JTL\Backend\Stats;
 
 /**
  * @param int $type
@@ -77,29 +77,15 @@ function preparePieChartStats($stats, $name, $axis, $maxEntries = 6): Piechart
 /**
  * @param int $type
  * @return stdClass
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getAxisNames($type): stdClass
 {
-    $axis    = new stdClass();
-    $axis->y = 'nCount';
-    switch ($type) {
-        case STATS_ADMIN_TYPE_UMSATZ:
-        case STATS_ADMIN_TYPE_BESUCHER:
-            $axis->x = 'dZeit';
-            break;
-        case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-            $axis->x = 'cReferer';
-            break;
-        case STATS_ADMIN_TYPE_SUCHMASCHINE:
-            $axis->x = 'cUserAgent';
-            break;
-        case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-            $axis->x = 'cEinstiegsseite';
-            break;
-    }
-
-    return $axis;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Backend\Stats::getAxisNames() instead.',
+        E_USER_DEPRECATED
+    );
+    return Stats::getAxisNames((int)$type);
 }
 
 /**
@@ -107,57 +93,29 @@ function getAxisNames($type): stdClass
  * @param object $axis
  * @param int    $mod
  * @return Linechart
- * @todo!
+ * @deprecated since 5.2.0
  */
 function prepareLineChartStatsMulti($series, $axis, $mod = 1): Linechart
 {
-    $chart = new Linechart(['active' => false]);
-    if (is_array($series) && count($series) > 0) {
-        $i = 0;
-        foreach ($series as $Name => $Serie) {
-            if (is_array($Serie) && count($Serie) > 0) {
-                $chart->setActive(true);
-                $data = [];
-                $y    = $axis->y;
-                $x    = $axis->x;
-                foreach ($Serie as $j => $stat) {
-                    $obj    = new stdClass();
-                    $obj->y = round((float)$stat->$y, 2, 1);
-
-                    if ($j % $mod === 0) {
-                        $chart->addAxis($stat->$x);
-                    } else {
-                        $chart->addAxis('|');
-                    }
-
-                    $data[] = $obj;
-                }
-
-                $colors = GetLineChartColors($i);
-                $chart->addSerie($Name, $data, $colors[0], $colors[1], $colors[2]);
-                $chart->memberToJSON();
-            }
-
-            $i++;
-        }
-    }
-
-    return $chart;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Backend\Stats::prepareLineChartStatsMulti() instead.',
+        E_USER_DEPRECATED
+    );
+    return Stats::prepareLineChartStatsMulti($series, $axis, $mod);
 }
 
 /**
  * @param int $number
  * @return mixed
- * @todo!
+ * @deprecated since 5.2.0
  */
 function GetLineChartColors($number)
 {
-    $colors = [
-        ['#435a6b', '#a168f2', '#435a6b'],
-        ['#5cbcf6', '#5cbcf6', '#5cbcf6']
-    ];
-
-    return $colors[$number] ?? $colors[0];
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Backend\Stats::getLineChartColors() instead.',
+        E_USER_DEPRECATED
+    );
+    return Stats::getLineChartColors($number);
 }
 
 /**
@@ -166,32 +124,13 @@ function GetLineChartColors($number)
  * @param int $to
  * @param int $intervall
  * @return array
- * @todo!
+ * @deprecated since 5.2.0
  */
 function gibBackendStatistik(int $type, int $from, int $to, &$intervall): array
 {
-    $data = [];
-    if ($type > 0 && $from > 0 && $to > 0) {
-        $stats     = new Statistik($from, $to);
-        $intervall = $stats->getAnzeigeIntervall();
-        switch ($type) {
-            case STATS_ADMIN_TYPE_BESUCHER:
-                $data = $stats->holeBesucherStats();
-                break;
-            case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-                $data = $stats->holeKundenherkunftStats();
-                break;
-            case STATS_ADMIN_TYPE_SUCHMASCHINE:
-                $data = $stats->holeBotStats();
-                break;
-            case STATS_ADMIN_TYPE_UMSATZ:
-                $data = $stats->holeUmsatzStats();
-                break;
-            case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-                $data = $stats->holeEinstiegsseiten();
-                break;
-        }
-    }
-
-    return $data;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Backend\Stats::getBackendStats() instead.',
+        E_USER_DEPRECATED
+    );
+    return Stats::getBackendStats($type, $from, $to, $intervall);
 }

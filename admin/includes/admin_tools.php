@@ -375,26 +375,14 @@ function bearbeiteListBox($listBoxes, string $valueName, int $configSectionID): 
 }
 
 /**
- * Return version of files
- *
  * @param bool $date
  * @return int|string
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getJTLVersionDB(bool $date = false)
 {
-    $ret = 0;
-    if ($date) {
-        $latestUpdate = Shop::Container()->getDB()->getSingleObject('SELECT MAX(dExecuted) AS date FROM tmigration');
-        $ret          = $latestUpdate->date ?? 0;
-    } else {
-        $versionData = Shop::Container()->getDB()->getSingleObject('SELECT nVersion FROM tversion');
-        if ($versionData !== null) {
-            $ret = $versionData->nVersion;
-        }
-    }
-
-    return $ret;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return 0;
 }
 
 /**
@@ -404,33 +392,25 @@ function getJTLVersionDB(bool $date = false)
  */
 function getMaxFileSize($size)
 {
-    switch (mb_substr($size, -1)) {
-        case 'M':
-        case 'm':
-            return (int)$size * 1048576;
-        case 'K':
-        case 'k':
-            return (int)$size * 1024;
-        case 'G':
-        case 'g':
-            return (int)$size * 1073741824;
-        default:
-            return $size;
-    }
+    return match (mb_substr($size, -1)) {
+        'M', 'm' => (int)$size * 1048576,
+        'K', 'k' => (int)$size * 1024,
+        'G', 'g' => (int)$size * 1073741824,
+        default => $size,
+    };
 }
 
 /**
  * @return array
- * @todo!
+ * @deprecated since 5.2.0
  */
 function getNotifyDropIO(): array
 {
-    return [
-        'tpl'  => JTLSmarty::getInstance(false, ContextType::BACKEND)
-            ->assign('notifications', Notification::getInstance())
-            ->fetch('tpl_inc/notify_drop.tpl'),
-        'type' => 'notify'
-    ];
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Backend\Notification::getNotifyDropIO() instead.',
+        E_USER_DEPRECATED
+    );
+    return Notification::getNotifyDropIO();
 }
 
 /**
@@ -445,7 +425,7 @@ function getCsvDelimiter(string $filename): string
     $firstLine = fgets($file);
 
     foreach ([';', ',', '|', '\t'] as $delim) {
-        if (mb_strpos($firstLine, $delim) !== false) {
+        if (str_contains($firstLine, $delim)) {
             fclose($file);
 
             return $delim;

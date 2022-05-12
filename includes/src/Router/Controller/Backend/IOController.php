@@ -26,6 +26,7 @@ use JTL\Redirect;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use JTL\Update\DBMigrationHelper;
 use JTL\Update\UpdateIO;
 use JTL\Widgets\Controller;
 use Psr\Http\Message\ResponseInterface;
@@ -74,9 +75,6 @@ class IOController extends AbstractBackendController
         } catch (Exception $e) {
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
-
-        $dbcheckInc = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
-
         try {
             $io->register('getPages', [$jsonApi, 'getPages'])
                 ->register('getCategories', [$jsonApi, 'getCategories'])
@@ -89,7 +87,7 @@ class IOController extends AbstractBackendController
                 ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
                 ->register('getCurrencyConversion', [$this, 'getCurrencyConversionIO'])
                 ->register('setCurrencyConversionTooltip', [$this, 'setCurrencyConversionTooltipIO'])
-                ->register('getNotifyDropIO', 'getNotifyDropIO')
+                ->register('getNotifyDropIO', [Notification::class, 'getNotifyDropIO'])
                 ->register('getNewTwoFA', [TwoFA::class, 'getNewTwoFA'])
                 ->register('genTwoFAEmergencyCodes', [TwoFA::class, 'genTwoFAEmergencyCodes'])
                 ->register('setWidgetPosition', [$widgets, 'setWidgetPosition'], null, 'DASHBOARD_VIEW')
@@ -113,7 +111,12 @@ class IOController extends AbstractBackendController
                 ->register('dbupdaterMigration', [$updateIO, 'executeMigration'], null, 'SHOP_UPDATE_VIEW')
                 ->register('finishWizard', [$wizardIO, 'answerQuestions'], null, 'WIZARD_VIEW')
                 ->register('validateStepWizard', [$wizardIO, 'validateStep'], null, 'WIZARD_VIEW')
-                ->register('migrateToInnoDB_utf8', 'doMigrateToInnoDB_utf8', $dbcheckInc, 'DBCHECK_VIEW')
+                ->register(
+                    'migrateToInnoDB_utf8',
+                    [DBMigrationHelper::class, 'doMigrateToInnoDB_utf8'],
+                    null,
+                    'DBCHECK_VIEW'
+                )
                 ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
                 ->register('updateRedirectState', [$this, 'updateRedirectState'], null, 'REDIRECT_VIEW')
                 ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')

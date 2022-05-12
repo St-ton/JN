@@ -3,6 +3,7 @@
 namespace JTL\Widgets;
 
 use DateTime;
+use JTL\Backend\Stats;
 use JTL\Catalog\Product\Preise;
 use JTL\Helpers\Date;
 use JTL\Linechart;
@@ -36,7 +37,7 @@ class SalesVolume extends AbstractWidget
     public function calcVolumeOfMonth(int $month, int $year): array
     {
         $interval = 0;
-        $stats    = \gibBackendStatistik(
+        $stats    = Stats::getBackendStats(
             \STATS_ADMIN_TYPE_UMSATZ,
             Date::getFirstDayOfMonth($month, $year),
             Date::getLastDayOfMonth($month, $year),
@@ -70,7 +71,7 @@ class SalesVolume extends AbstractWidget
             'Dieser Monat'  => $currentMonth
         ];
 
-        return \prepareLineChartStatsMulti($series, \getAxisNames(\STATS_ADMIN_TYPE_UMSATZ), 2);
+        return Stats::prepareLineChartStatsMulti($series, Stats::getAxisNames(\STATS_ADMIN_TYPE_UMSATZ), 2);
     }
 
     /**

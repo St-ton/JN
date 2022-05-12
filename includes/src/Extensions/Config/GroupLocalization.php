@@ -47,9 +47,9 @@ class GroupLocalization implements JsonSerializable
     /**
      * Specify data which should be serialized to JSON
      *
-     * @return array|object|string
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return Text::utf8_convert_recursive([
             'cName'         => $this->cName,

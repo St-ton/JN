@@ -89,7 +89,7 @@ class Group implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         if ($this->oSprache === null) {
             $this->oSprache = new GroupLocalization($this->kKonfiggruppe);

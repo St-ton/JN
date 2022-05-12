@@ -1019,6 +1019,7 @@ class IOMethods
         $idx             = isset($values['eigenschaftwert']) ? (array)$values['eigenschaftwert'] : [];
         $freetextValues  = [];
         $set             = \array_filter($idx);
+        $layout          = isset($values['layout']) ? Text::filterXSS($values['layout']) : '';
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
         if ($parentProductID <= 0) {
@@ -1085,15 +1086,25 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                $ioResponse->callEvoProductFunction(
-                    'setArticleContent',
-                    $parentProductID,
-                    $tmpProduct->kArtikel,
-                    URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
-                    $gesetzteEigeschaftWerte,
-                    $wrapper
-                );
-
+                if ($layout === 'gallery') {
+                    $ioResponse->callEvoProductFunction(
+                        'redirectToArticle',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                } else {
+                    $ioResponse->callEvoProductFunction(
+                        'setArticleContent',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                }
                 \executeHook(\HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
                     'objResponse' => &$ioResponse,
                     'oArtikel'    => &$product,
@@ -1116,6 +1127,7 @@ class IOMethods
             if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
                 $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
             } else {
+                $ioResponse->callEvoProductFunction('showGalleryVariation', $variation->kEigenschaft, $wrapper);
                 foreach ($variation->Werte as $value) {
                     $id               = $value->kEigenschaft;
                     $stockInfo->stock = true;

@@ -15,7 +15,7 @@ class BC extends Smarty
      * @param string $tpl_var the template variable name
      * @param mixed  &$value  the referenced value to assign
      */
-    public function assign_by_ref($tpl_var, &$value)
+    public function assign_by_ref($tpl_var, &$value): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use assignByRef() instead.', \E_USER_DEPRECATED);
         $this->assignByRef($tpl_var, $value);
@@ -26,7 +26,7 @@ class BC extends Smarty
      * @param mixed  &$value  the referenced value to append
      * @param bool   $merge   flag if array elements shall be merged
      */
-    public function append_by_ref($tpl_var, &$value, $merge = false)
+    public function append_by_ref($tpl_var, &$value, $merge = false): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use appendByRef() instead.', \E_USER_DEPRECATED);
         $this->appendByRef($tpl_var, $value, $merge);
@@ -35,7 +35,7 @@ class BC extends Smarty
     /**
      * @param string $tpl_var the template variable to clear
      */
-    public function clear_assign($tpl_var)
+    public function clear_assign($tpl_var): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use clearAssign() instead.', \E_USER_DEPRECATED);
         $this->clearAssign($tpl_var);
@@ -48,7 +48,7 @@ class BC extends Smarty
      * @param mixed  $cache_attrs
      * @throws SmartyException
      */
-    public function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null)
+    public function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerPlugin() instead.', \E_USER_DEPRECATED);
         $this->registerPlugin('function', $function, $function_impl, $cacheable, $cache_attrs);
@@ -57,7 +57,7 @@ class BC extends Smarty
     /**
      * @param string $function name of template function
      */
-    public function unregister_function($function)
+    public function unregister_function($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use assignByRef() instead.', \E_USER_DEPRECATED);
         $this->unregisterPlugin('function', $function);
@@ -78,7 +78,7 @@ class BC extends Smarty
         $allowed = [],
         $smarty_args = true,
         $block_methods = []
-    ) {
+    ): void {
         \trigger_error(__METHOD__ . ' is deprecated. Use assignByRef() instead.', \E_USER_DEPRECATED);
         $this->registerObject($object, $object_impl, (array)$allowed, (bool)$smarty_args, $block_methods);
     }
@@ -86,7 +86,7 @@ class BC extends Smarty
     /**
      * @param string $object name of template object
      */
-    public function unregister_object($object)
+    public function unregister_object($object): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterObject() instead.', \E_USER_DEPRECATED);
         $this->unregisterObject($object);
@@ -99,7 +99,7 @@ class BC extends Smarty
      * @param mixed  $cache_attrs
      * @throws SmartyException
      */
-    public function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null)
+    public function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerPlugin() instead.', \E_USER_DEPRECATED);
         $this->registerPlugin('block', $block, $block_impl, $cacheable, $cache_attrs);
@@ -108,7 +108,7 @@ class BC extends Smarty
     /**
      * @param string $block name of template function
      */
-    public function unregister_block($block)
+    public function unregister_block($block): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterPlugin() instead.', \E_USER_DEPRECATED);
         $this->unregisterPlugin('block', $block);
@@ -120,7 +120,7 @@ class BC extends Smarty
      * @param bool   $cacheable
      * @throws SmartyException
      */
-    public function register_compiler_function($function, $function_impl, $cacheable = true)
+    public function register_compiler_function($function, $function_impl, $cacheable = true): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerPlugin() instead.', \E_USER_DEPRECATED);
         $this->registerPlugin('compiler', $function, $function_impl, $cacheable);
@@ -129,7 +129,7 @@ class BC extends Smarty
     /**
      * @param string $function name of template function
      */
-    public function unregister_compiler_function($function)
+    public function unregister_compiler_function($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterPlugin() instead.', \E_USER_DEPRECATED);
         $this->unregisterPlugin('compiler', $function);
@@ -141,7 +141,7 @@ class BC extends Smarty
      *
      * @throws SmartyException
      */
-    public function register_modifier($modifier, $modifier_impl)
+    public function register_modifier($modifier, $modifier_impl): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerPlugin() instead.', \E_USER_DEPRECATED);
         $this->registerPlugin('modifier', $modifier, $modifier_impl);
@@ -150,7 +150,7 @@ class BC extends Smarty
     /**
      * @param string $modifier name of template modifier
      */
-    public function unregister_modifier($modifier)
+    public function unregister_modifier($modifier): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterPlugin() instead.', \E_USER_DEPRECATED);
         $this->unregisterPlugin('modifier', $modifier);
@@ -160,7 +160,7 @@ class BC extends Smarty
      * @param string $type      name of resource
      * @param array  $functions array of functions to handle resource
      */
-    public function register_resource($type, $functions)
+    public function register_resource($type, $functions): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerResource() instead.', \E_USER_DEPRECATED);
         $this->registerResource($type, $functions);
@@ -169,7 +169,7 @@ class BC extends Smarty
     /**
      * @param string $type name of resource
      */
-    public function unregister_resource($type)
+    public function unregister_resource($type): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterResource() instead.', \E_USER_DEPRECATED);
         $this->unregisterResource($type);
@@ -179,7 +179,7 @@ class BC extends Smarty
      * @param callable $function
      * @throws SmartyException
      */
-    public function register_prefilter($function)
+    public function register_prefilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerFilter() instead.', \E_USER_DEPRECATED);
         $this->registerFilter('pre', $function);
@@ -188,7 +188,7 @@ class BC extends Smarty
     /**
      * @param callable $function
      */
-    public function unregister_prefilter($function)
+    public function unregister_prefilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterFilter() instead.', \E_USER_DEPRECATED);
         $this->unregisterFilter('pre', $function);
@@ -198,7 +198,7 @@ class BC extends Smarty
      * @param callable $function
      * @throws SmartyException
      */
-    public function register_postfilter($function)
+    public function register_postfilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerFilter() instead.', \E_USER_DEPRECATED);
         $this->registerFilter('post', $function);
@@ -207,7 +207,7 @@ class BC extends Smarty
     /**
      * @param callable $function
      */
-    public function unregister_postfilter($function)
+    public function unregister_postfilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterFilter() instead.', \E_USER_DEPRECATED);
         $this->unregisterFilter('post', $function);
@@ -217,7 +217,7 @@ class BC extends Smarty
      * @param callable $function
      * @throws SmartyException
      */
-    public function register_outputfilter($function)
+    public function register_outputfilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use registerFilter() instead.', \E_USER_DEPRECATED);
         $this->registerFilter('output', $function);
@@ -226,7 +226,7 @@ class BC extends Smarty
     /**
      * @param callable $function
      */
-    public function unregister_outputfilter($function)
+    public function unregister_outputfilter($function): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use unregisterFilter() instead.', \E_USER_DEPRECATED);
         $this->unregisterFilter('output', $function);
@@ -237,7 +237,7 @@ class BC extends Smarty
      * @param string $name filter name
      * @throws SmartyException
      */
-    public function load_filter($type, $name)
+    public function load_filter($type, $name): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use loadFilter() instead.', \E_USER_DEPRECATED);
         $this->loadFilter($type, $name);
@@ -248,7 +248,7 @@ class BC extends Smarty
      * @param string $cache_id   name of cache_id
      * @param string $compile_id name of compile_id
      * @param string $exp_time   expiration time
-     * @return bool
+     * @return int
      */
     public function clear_cache($tpl_file = null, $cache_id = null, $compile_id = null, $exp_time = null)
     {
@@ -258,7 +258,7 @@ class BC extends Smarty
 
     /**
      * @param string $exp_time expire time
-     * @return bool
+     * @return int
      */
     public function clear_all_cache($exp_time = null)
     {
@@ -275,7 +275,7 @@ class BC extends Smarty
      * @throws \Exception
      * @throws SmartyException
      */
-    public function is_cached($tpl_file, $cache_id = null, $compile_id = null)
+    public function is_cached($tpl_file, $cache_id = null, $compile_id = null): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use isCached() instead.', \E_USER_DEPRECATED);
         return $this->isCached($tpl_file, $cache_id, $compile_id);
@@ -284,7 +284,7 @@ class BC extends Smarty
     /**
      *
      */
-    public function clear_all_assign()
+    public function clear_all_assign(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use clearAllAssign() instead.', \E_USER_DEPRECATED);
         $this->clearAllAssign();
@@ -294,7 +294,7 @@ class BC extends Smarty
      * @param string $tpl_file
      * @param string $compile_id
      * @param string $exp_time
-     * @return bool results of {@link smarty_core_rm_auto()}
+     * @return int
      */
     public function clear_compiled_tpl($tpl_file = null, $compile_id = null, $exp_time = null)
     {
@@ -307,7 +307,7 @@ class BC extends Smarty
      * @return bool
      * @throws SmartyException
      */
-    public function template_exists($tpl_file)
+    public function template_exists($tpl_file): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use templateExists() instead.', \E_USER_DEPRECATED);
         return $this->templateExists($tpl_file);
@@ -317,7 +317,7 @@ class BC extends Smarty
      * @param string $name
      * @return array
      */
-    public function get_template_vars($name = null)
+    public function get_template_vars($name = null): array
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use getTemplateVars() instead.', \E_USER_DEPRECATED);
         return $this->getTemplateVars($name);
@@ -327,7 +327,7 @@ class BC extends Smarty
      * @param string $name
      * @return array
      */
-    public function get_config_vars($name = null)
+    public function get_config_vars($name = null): array
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use getConfigVars() instead.', \E_USER_DEPRECATED);
         return $this->getConfigVars($name);
@@ -338,10 +338,10 @@ class BC extends Smarty
      * @param string $section
      * @param string $scope
      */
-    public function config_load($file, $section = null, $scope = 'global')
+    public function config_load($file, $section = null, $scope = 'global'): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use ConfigLoad() instead.', \E_USER_DEPRECATED);
-        $this->ConfigLoad($file, $section, $scope);
+        $this->configLoad($file, $section, $scope);
     }
 
     /**
@@ -357,7 +357,7 @@ class BC extends Smarty
     /**
      * @param string $var
      */
-    public function clear_config($var = null)
+    public function clear_config($var = null): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use clearConfig() instead.', \E_USER_DEPRECATED);
         $this->clearConfig($var);
@@ -367,7 +367,7 @@ class BC extends Smarty
      * @param string  $error_msg
      * @param integer $error_type
      */
-    public function trigger_error($error_msg, $error_type = \E_USER_WARNING)
+    public function trigger_error($error_msg, $error_type = \E_USER_WARNING): void
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use \trigger_error() instead.', \E_USER_DEPRECATED);
         \trigger_error("Smarty error: $error_msg", $error_type);

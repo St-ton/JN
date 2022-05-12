@@ -85,8 +85,9 @@ class Method implements MethodInterface
     private DbInterface $db;
 
     /**
-     * @param string $moduleID
-     * @param int    $nAgainCheckout
+     * @param string           $moduleID
+     * @param int              $nAgainCheckout
+     * @param DbInterface|null $db
      */
     public function __construct(string $moduleID, int $nAgainCheckout = 0, DbInterface $db = null)
     {

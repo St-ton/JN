@@ -70,6 +70,7 @@
 
                 if (this.isBackToListDisabled()) {
                     this.disableBackToList();
+                    this.resetVisitCount();
                 } else {
                     this.incrementProductVisitCount();
                 }
@@ -102,6 +103,16 @@
         isBackToListDisabled: function() {
             if (document.referrer === '') {
                 return true;
+            }
+
+            if (this.isSingleArticle()) {
+                let last_product       = window.sessionStorage.getItem('last_visited_product');
+                let form               = $.evo.io().getFormValues('buy_form');
+                let current_product_id = form.a;
+
+                if(last_product !== null && last_product !== current_product_id) {
+                    return true;
+                }
             }
         },
 
@@ -144,6 +155,7 @@
             let last_visited_product = window.sessionStorage.getItem('last_visited_product');
             let storage_id           = 'product_page_visits_' + last_visited_product;
             window.sessionStorage.removeItem(storage_id);
+            window.sessionStorage.removeItem('last_visited_product');
         },
 
         register: function(wrapper) {

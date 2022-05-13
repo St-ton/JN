@@ -25,7 +25,8 @@ $cMetaDescription = '';
 $cMetaKeywords    = '';
 $conf             = Shopsetting::getInstance()->getAll();
 $customerGroupID  = Frontend::getCustomerGroup()->getID();
-$link             = Shop::Container()->getLinkService()->getSpecialPage(LINKTYP_NEWS);
+$linkHelper       = Shop::Container()->getLinkService();
+$link             = $linkHelper->getSpecialPage(LINKTYP_NEWS);
 $smarty           = Shop::Smarty();
 $controller       = new Controller($db, $conf, $smarty);
 $alertHelper      = Shop::Container()->getAlertService();
@@ -74,7 +75,7 @@ switch ($controller->getPageType($params)) {
         $newsCategory   = new Category($db);
         $newsCategory->load($newsCategoryID);
         $overview      = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
-        $cCanonicalURL = $linkService->getStaticRoute('news.php');
+        $cCanonicalURL = $linkHelper->getStaticRoute('news.php');
         $breadCrumbURL = $cCanonicalURL;
         break;
     case ViewType::NEWS_MONTH_OVERVIEW:

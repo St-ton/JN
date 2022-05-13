@@ -38,7 +38,7 @@
                 </div>
                 <div class="card-body">
                     {if $section->key === 'header'}
-                        <style>.preset-button.selected { border: 3px solid; }</style>
+                        <style>.preset-button.selected { border: 5px solid; }</style>
                         <script>
                             {literal}
                             $(document).ready(function(){
@@ -139,9 +139,7 @@
                                     let isSelected = value.name === menuTemplateCurrent ? 'selected' : '';
                                     $('#preset-items').append(
                                         '<div class="col col-auto">' +
-                                        '<button type="button" id="' + value.name + '" ' +
-                                            'class="btn btn-outline-primary preset-button ' + isSelected + '">'
-                                            + value.name + '</button>' +
+                                        '<img src="{/literal}{$templateBaseURL}{literal}gfx/header/' + value.name + '.png" id="' + value.name + '" class="preset-button ' + isSelected + '"/>'  +
                                         '</div>')
                                 });
                                 let $presetButtons = $('.preset-button');

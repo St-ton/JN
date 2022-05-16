@@ -116,9 +116,7 @@ class HookManager
                         } elseif (\is_file($plugin->getPaths()->getFrontendPath() . $file)) {
                             include $plugin->getPaths()->getFrontendPath() . $file;
                         }
-                        if ($smarty !== null) {
-                            $smarty->clearAssign('oPlugin_' . $plugin->getPluginID());
-                        }
+                        $smarty?->clearAssign('oPlugin_' . $plugin->getPluginID());
                         $oPlugin = $prevPlugin;
                     },
                     $pluginData->nPriority
@@ -164,9 +162,7 @@ class HookManager
             }
             Shop::set('oplugin_' . $id, $plugin);
         }
-        if ($smarty !== null) {
-            $smarty->assign('oPlugin_' . $plugin->getPluginID(), $plugin);
-        }
+        $smarty?->assign('oPlugin_' . $plugin->getPluginID(), $plugin);
 
         return $plugin;
     }

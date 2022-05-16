@@ -253,7 +253,7 @@ class Extractor
                     \preg_match(self::TAG_REGEX, $dirName, $hits);
                     if (\count($hits) >= 5) {
                         $dirName = \str_replace($hits[0], $hits[1] . '/', $dirName);
-                    } elseif (\mb_strpos($dirName, '.') === 0) {
+                    } elseif (\str_starts_with($dirName, '.')) {
                         $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
 
                         return $dirName;

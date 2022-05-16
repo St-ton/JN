@@ -430,10 +430,10 @@ final class Installer
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
-                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && !\str_starts_with($data, '--')) {
+                if (\str_contains($data, 'CREATE TABLE')) {
                     $line .= \trim($data);
-                } elseif (\mb_strpos($data, 'INSERT') !== false) {
+                } elseif (\str_contains($data, 'INSERT')) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);

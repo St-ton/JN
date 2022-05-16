@@ -316,9 +316,9 @@ class TemplateController extends AbstractBackendController
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $service       = Shop::Container()->getTemplateService();
-        $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
-        $parentFolder  = null;
+        $service      = Shop::Container()->getTemplateService();
+        $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
+        $parentFolder = null;
         Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;

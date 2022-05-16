@@ -76,10 +76,10 @@
 
     {if $corruptedPics}
         <div class="content-header">
-            <h1 class="content-header-headline  top40">
+            <h1 class="content-header-headline top40">
                 {__('currentCorruptedPics')}
             </h1>
-            <div class="description ">
+            <div class="description">
                 {__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}
             </div>
         </div>

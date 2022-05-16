@@ -112,7 +112,7 @@
 
     $.evo.io = function () {
         return new IOClass({
-            'ioUrl': $('#jtl-io-path').data('path') + '/io.php'
+            'ioUrl': $('#jtl-io-path').data('path') + '/io'
         });
     };
 })(jQuery);

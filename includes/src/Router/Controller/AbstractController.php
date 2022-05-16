@@ -24,6 +24,7 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
 use JTL\Minify\MinifyService;
@@ -50,9 +51,9 @@ abstract class AbstractController implements ControllerInterface
     protected JTLSmarty $smarty;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected int $languageID;
+    protected ?int $languageID = null;
 
     /**
      * @var Artikel|null
@@ -452,5 +453,23 @@ abstract class AbstractController implements ControllerInterface
             ->assign('cCanonicalURL', $this->canonicalURL)
             ->assign('robotsContent', $this->smarty->getTemplateVars('robotsContent'))
             ->assign('cShopName', $this->config['global']['global_shopname']);
+    }
+
+    /**
+     * @param array $args
+     * @param int   $default
+     * @return int
+     */
+    protected function parseLanguageFromArgs(array $args, int $default): int
+    {
+        if (isset($args['lang'])) {
+            foreach (LanguageHelper::getAllLanguages() as $languageModel) {
+                if ($args['lang'] === $languageModel->getIso639()) {
+                    return $languageModel->getId();
+                }
+            }
+        }
+
+        return $default;
     }
 }

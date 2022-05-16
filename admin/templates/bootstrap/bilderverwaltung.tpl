@@ -34,10 +34,10 @@
                             </td>
                             <td class="text-center">
                                 <span class="item-generated">
-                                  {(($item->stats->getGeneratedBySize(Image::SIZE_XS)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_SM)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_MD)
-                                  + $item->stats->getGeneratedBySize(Image::SIZE_LG)) / 4)|round:0}
+                                  {(($item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_XS)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_SM)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_MD)
+                                  + $item->stats->getGeneratedBySize(JTL\Media\Image::SIZE_LG)) / 4)|round:0}
                                 </span>
                             </td>
                             <td class="text-center">

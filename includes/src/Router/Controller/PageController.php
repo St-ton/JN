@@ -142,7 +142,10 @@ class PageController extends AbstractController
             $this->smarty->assign('LivesucheTop', $liveSearchTop)
                 ->assign('LivesucheLast', $liveSearchLast);
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_HERSTELLER) {
-            $this->smarty->assign('oHersteller_arr', Hersteller::getAll());
+            $this->smarty->assign(
+                'oHersteller_arr',
+                Hersteller::getAll(true, $this->languageID, $this->customerGroupID)
+            );
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_NEWSLETTERARCHIV) {
             $this->smarty->assign('oNewsletterHistory_arr', CMS::getNewsletterHistory());
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_SITEMAP) {

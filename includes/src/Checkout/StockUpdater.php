@@ -10,6 +10,7 @@ use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Product;
 use JTL\Helpers\Tax;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -280,12 +281,14 @@ class StockUpdater
 
         if (count($boms) > 0) {
             // wenn ja, dann wird für diese auch der Bestand aktualisiert
+            $currency                            = Frontend::getCurrency();
+            $customerGroup                       = Frontend::getCustomerGroup();
             $customerGroupID                     = $this->customer->getGroupID();
             $languageID                          = $this->languageID;
             $options                             = Artikel::getDefaultOptions();
             $options->nKeineSichtbarkeitBeachten = 1;
             foreach ($boms as $component) {
-                $tmpArtikel = new Artikel($this->db);
+                $tmpArtikel = new Artikel($this->db, $customerGroup, $currency);
                 $tmpArtikel->fuelleArtikel($component->kArtikel, $options, $customerGroupID, $languageID);
                 $compStockLevel = \floor(
                     $this->updateStock(

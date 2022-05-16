@@ -585,6 +585,7 @@ class CampaignController extends AbstractBackendController
     private function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
     {
         $cryptoService = Shop::Container()->getCryptoService();
+        $currency      = Frontend::getCurrency();
         $data          = [];
         $defID         = (int)$definition->kKampagneDef;
         if ($campaignID <= 0 || $defID <= 0 || \mb_strlen($cStamp) === 0) {
@@ -651,22 +652,23 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-                if (\count($data) > 0) {
-                    foreach ($data as $item) {
-                        $customDataParts       = \explode(';', $item->cCustomData);
-                        $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
-                        $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
-                    }
-                    $members = [
-                        'cIP'                 => \__('detailHeadIP'),
-                        'cReferer'            => \__('detailHeadReferer'),
-                        'cEinstiegsseite'     => \__('entryPage'),
-                        'cBrowser'            => \__('detailHeadBrowser'),
-                        'cUserAgent'          => \__('userAgent'),
-                        'dErstellt_DE'        => \__('detailHeadDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                foreach ($data as $item) {
+                    $customDataParts       = \explode(';', $item->cCustomData);
+                    $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
+                    $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
+                }
+                $members = [
+                    'cIP'                 => \__('detailHeadIP'),
+                    'cReferer'            => \__('detailHeadReferer'),
+                    'cEinstiegsseite'     => \__('entryPage'),
+                    'cBrowser'            => \__('detailHeadBrowser'),
+                    'cUserAgent'          => \__('userAgent'),
+                    'dErstellt_DE'        => \__('detailHeadDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_VERKAUF:    // VERKAUF
                 $data = $this->db->getObjects(
@@ -699,42 +701,41 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-
-                $dCount = \count($data);
-                if ($dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = \trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = \trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
-                                ? \__('yes')
-                                : \__('no');
-                        }
-                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
-                        }
-                        if ($data[$i]->cStatus !== 'n.v.') {
-                            $data[$i]->cStatus = \lang_bestellstatus($data[$i]->cStatus);
-                        }
-                    }
-
-                    $members = [
-                        'cZahlungsartName'    => \__('paymentType'),
-                        'cVersandartName'     => \__('shippingType'),
-                        'nRegistriert'        => \__('registered'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cStatus'             => \__('status'),
-                        'cBestellNr'          => \__('orderNumber'),
-                        'fGesamtsumme'        => \__('orderValue'),
-                        'dErstellt_DE'        => \__('orderDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                foreach ($data as $item) {
+                    if ($item->cNachname !== 'n.v.') {
+                        $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+                    }
+                    if ($item->cFirma !== 'n.v.') {
+                        $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
+                    }
+                    if ($item->nRegistriert !== 'n.v.') {
+                        $item->nRegistriert = (int)$item->nRegistriert === 1
+                            ? \__('yes')
+                            : \__('no');
+                    }
+                    if ($item->fGesamtsumme !== 'n.v.') {
+                        $item->fGesamtsumme = Preise::getLocalizedPriceString($item->fGesamtsumme, $currency);
+                    }
+                    if ($item->cStatus !== 'n.v.') {
+                        $item->cStatus = \lang_bestellstatus($item->cStatus);
+                    }
+                }
+
+                $members = [
+                    'cZahlungsartName'    => \__('paymentType'),
+                    'cVersandartName'     => \__('shippingType'),
+                    'nRegistriert'        => \__('registered'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cStatus'             => \__('status'),
+                    'cBestellNr'          => \__('orderNumber'),
+                    'fGesamtsumme'        => \__('orderValue'),
+                    'dErstellt_DE'        => \__('orderDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
                 $data = $this->db->getObjects(
@@ -755,36 +756,35 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-
-                $count = \count($data);
-                if ($count > 0) {
-                    for ($i = 0; $i < $count; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = \trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = \trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? \__('yes')
-                                : \__('no');
-                        }
-                    }
-
-                    $members = [
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cFirma'              => \__('company'),
-                        'cMail'               => \__('email'),
-                        'nRegistriert'        => \__('registered'),
-                        'dErstellt_DE'        => \__('detailHeadRegisterDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                foreach ($data as $item) {
+                    if ($item->cNachname !== 'n.v.') {
+                        $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+                    }
+                    if ($item->cFirma !== 'n.v.') {
+                        $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
+                    }
+                    if ($item->nRegistriert !== 'n.v.') {
+                        $item->nRegistriert = ((int)$item->nRegistriert === 1)
+                            ? \__('yes')
+                            : \__('no');
+                    }
+                }
+
+                $members = [
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cFirma'              => \__('company'),
+                    'cMail'               => \__('email'),
+                    'nRegistriert'        => \__('registered'),
+                    'dErstellt_DE'        => \__('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-                $data   = $this->db->getObjects(
+                $data = $this->db->getObjects(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -811,41 +811,41 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-                $dCount = \count($data);
-                if ($dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = \trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = \trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? \__('yes')
-                                : \__('no');
-                        }
-                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
-                        }
-                        if ($data[$i]->cStatus !== 'n.v.') {
-                            $data[$i]->cStatus = \lang_bestellstatus($data[$i]->cStatus);
-                        }
-                    }
-
-                    $members = [
-                        'cZahlungsartName'    => \__('paymentType'),
-                        'cVersandartName'     => \__('shippingType'),
-                        'nRegistriert'        => \__('registered'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cStatus'             => \__('status'),
-                        'cBestellNr'          => \__('orderNumber'),
-                        'fGesamtsumme'        => \__('orderValue'),
-                        'dErstellt_DE'        => \__('orderDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                foreach ($data as $item) {
+                    if ($item->cNachname !== 'n.v.') {
+                        $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+                    }
+                    if ($item->cFirma !== 'n.v.') {
+                        $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
+                    }
+                    if ($item->nRegistriert !== 'n.v.') {
+                        $item->nRegistriert = ((int)$item->nRegistriert === 1)
+                            ? \__('yes')
+                            : \__('no');
+                    }
+                    if ($item->fGesamtsumme !== 'n.v.') {
+                        $item->fGesamtsumme = Preise::getLocalizedPriceString($item->fGesamtsumme, $currency);
+                    }
+                    if ($item->cStatus !== 'n.v.') {
+                        $item->cStatus = \lang_bestellstatus($item->cStatus);
+                    }
+                }
+
+                $members = [
+                    'cZahlungsartName'    => \__('paymentType'),
+                    'cVersandartName'     => \__('shippingType'),
+                    'nRegistriert'        => \__('registered'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cStatus'             => \__('status'),
+                    'cBestellNr'          => \__('orderNumber'),
+                    'fGesamtsumme'        => \__('orderValue'),
+                    'dErstellt_DE'        => \__('orderDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
                 $data = $this->db->getObjects(
@@ -880,22 +880,21 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-
-                if (\count($data) > 0) {
-                    $members = [
-                        'cArtikelname'        => \__('product'),
-                        'cArtNr'              => \__('productId'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cFirma'              => \__('company'),
-                        'cTel'                => \__('phone'),
-                        'cMail'               => \__('email'),
-                        'cNachricht'          => \__('message'),
-                        'dErstellt_DE'        => \__('detailHeadCreatedAt'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
-
+                $members = [
+                    'cArtikelname'        => \__('product'),
+                    'cArtNr'              => \__('productId'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cFirma'              => \__('company'),
+                    'cTel'                => \__('phone'),
+                    'cMail'               => \__('email'),
+                    'cNachricht'          => \__('message'),
+                    'dErstellt_DE'        => \__('detailHeadCreatedAt'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
                 $data = $this->db->getObjects(
@@ -933,23 +932,22 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-
-                if (\count($data) > 0) {
-                    $members = [
-                        'cArtikelname'        => \__('product'),
-                        'cArtNr'              => \__('productId'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cMail'               => \__('email'),
-                        'cAbgeholt'           => \__('detailHeadSentWawi'),
-                        'dErstellt_DE'        => \__('detailHeadCreatedAt'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
-
+                $members = [
+                    'cArtikelname'        => \__('product'),
+                    'cArtNr'              => \__('productId'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cMail'               => \__('email'),
+                    'cAbgeholt'           => \__('detailHeadSentWawi'),
+                    'dErstellt_DE'        => \__('detailHeadCreatedAt'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_LOGIN:    // LOGIN
-                $data   = $this->db->getObjects(
+                $data = $this->db->getObjects(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -968,36 +966,36 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-                $dCount = \count($data);
-                if ($dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = \trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = \trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? \__('yes')
-                                : \__('no');
-                        }
+                if (\count($data) === 0) {
+                    break;
+                }
+                foreach ($data as $item) {
+                    if ($item->cNachname !== 'n.v.') {
+                        $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+                    }
+                    if ($item->cFirma !== 'n.v.') {
+                        $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
                     }
 
-                    $members = [
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cFirma'              => \__('company'),
-                        'cMail'               => \__('email'),
-                        'nRegistriert'        => \__('registered'),
-                        'dErstellt_DE'        => \__('detailHeadRegisterDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                    if ($item->nRegistriert !== 'n.v.') {
+                        $item->nRegistriert = ((int)$item->nRegistriert === 1)
+                            ? \__('yes')
+                            : \__('no');
+                    }
                 }
+
+                $members = [
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cFirma'              => \__('company'),
+                    'cMail'               => \__('email'),
+                    'nRegistriert'        => \__('registered'),
+                    'dErstellt_DE'        => \__('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
-                $data   = $this->db->getObjects(
+                $data = $this->db->getObjects(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
                     $select . ",
                     DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
@@ -1020,35 +1018,35 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-                $dCount = \count($data);
-                if ($dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = \trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = \trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? \__('yes')
-                                : \__('no');
-                        }
+                if (\count($data) === 0) {
+                    break;
+                }
+                foreach ($data as $item) {
+                    if ($item->cNachname !== 'n.v.') {
+                        $item->cNachname = \trim($cryptoService->decryptXTEA($item->cNachname));
+                    }
+                    if ($item->cFirma !== 'n.v.') {
+                        $item->cFirma = \trim($cryptoService->decryptXTEA($item->cFirma));
                     }
 
-                    $members = [
-                        'cArtikelname'        => \__('product'),
-                        'cArtNr'              => \__('productId'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cFirma'              => \__('company'),
-                        'cMail'               => \__('email'),
-                        'nRegistriert'        => \__('registered'),
-                        'dErstellt_DE'        => \__('detailHeadRegisterDate'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                    if ($item->nRegistriert !== 'n.v.') {
+                        $item->nRegistriert = ((int)$item->nRegistriert === 1)
+                            ? \__('yes')
+                            : \__('no');
+                    }
                 }
+
+                $members = [
+                    'cArtikelname'        => \__('product'),
+                    'cArtNr'              => \__('productId'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cFirma'              => \__('company'),
+                    'cMail'               => \__('email'),
+                    'nRegistriert'        => \__('registered'),
+                    'dErstellt_DE'        => \__('detailHeadRegisterDate'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_WARENKORB:    // WARENKORB
                 $customerGroupID = CustomerGroup::getDefaultGroupID();
@@ -1076,29 +1074,28 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID, 'cgid' => $customerGroupID]
                 );
-
-                $count = \count($data);
-                if ($count > 0) {
-                    Frontend::getCustomerGroup()->setMayViewPrices(1);
-                    for ($i = 0; $i < $count; $i++) {
-                        if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
-                            $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
-                        }
-                        if (isset($data[$i]->fMwSt) && $data[$i]->fMwSt > 0) {
-                            $data[$i]->fMwSt = \number_format($data[$i]->fMwSt, 2) . '%';
-                        }
-                    }
-
-                    $members = [
-                        'cName'                    => \__('product'),
-                        'cArtNr'                   => \__('productId'),
-                        'fVKNetto'                 => \__('net'),
-                        'fMwSt'                    => \__('vat'),
-                        'fLagerbestand'            => \__('stock'),
-                        'dLetzteAktualisierung_DE' => \__('detailHeadProductLastUpdated'),
-                        'dErstelltVorgang_DE'      => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                Frontend::getCustomerGroup()->setMayViewPrices(1);
+                foreach ($data as $item) {
+                    if (isset($item->fVKNetto) && $item->fVKNetto > 0) {
+                        $item->fVKNetto = Preise::getLocalizedPriceString($item->fVKNetto, $currency);
+                    }
+                    if (isset($item->fMwSt) && $item->fMwSt > 0) {
+                        $item->fMwSt = \number_format($item->fMwSt, 2) . '%';
+                    }
+                }
+
+                $members = [
+                    'cName'                    => \__('product'),
+                    'cArtNr'                   => \__('productId'),
+                    'fVKNetto'                 => \__('net'),
+                    'fMwSt'                    => \__('vat'),
+                    'fLagerbestand'            => \__('stock'),
+                    'dLetzteAktualisierung_DE' => \__('detailHeadProductLastUpdated'),
+                    'dErstelltVorgang_DE'      => \__('detailHeadDateHit')
+                ];
                 break;
             case \KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
                 $data = $this->db->getObjects(
@@ -1125,18 +1122,18 @@ class CampaignController extends AbstractBackendController
                     ORDER BY tkampagnevorgang.dErstellt DESC',
                     ['cid' => $campaignID, 'cdid' => $defID]
                 );
-
-                if (\count($data) > 0) {
-                    $members = [
-                        'cName'               => \__('newsletter'),
-                        'cBetreff'            => \__('subject'),
-                        'cVorname'            => \__('firstName'),
-                        'cNachname'           => \__('lastName'),
-                        'cEmail'              => \__('email'),
-                        'dErstelltTrack_DE'   => \__('detailHeadNewsletterDateOpened'),
-                        'dErstelltVorgang_DE' => \__('detailHeadDateHit')
-                    ];
+                if (\count($data) === 0) {
+                    break;
                 }
+                $members = [
+                    'cName'               => \__('newsletter'),
+                    'cBetreff'            => \__('subject'),
+                    'cVorname'            => \__('firstName'),
+                    'cNachname'           => \__('lastName'),
+                    'cEmail'              => \__('email'),
+                    'dErstelltTrack_DE'   => \__('detailHeadNewsletterDateOpened'),
+                    'dErstelltVorgang_DE' => \__('detailHeadDateHit')
+                ];
                 break;
         }
 

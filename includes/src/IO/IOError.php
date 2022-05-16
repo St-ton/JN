@@ -36,7 +36,7 @@ class IOError implements JsonSerializable
     {
         $this->message = $message;
         $this->code    = $code;
-        $this->errors  = $errors;
+        $this->errors  = $errors ?? [];
     }
 
     /**

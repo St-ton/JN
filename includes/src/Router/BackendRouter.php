@@ -367,9 +367,11 @@ class BackendRouter
             ->setName('post' . self::ROUTE_CODE);
 
         $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
-            ->setName(self::ROUTE_DASHBOARD);
+            ->setName(self::ROUTE_DASHBOARD)
+            ->middleware(new UpdateCheckMiddleware($db));
         $this->router->post('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
-            ->setName('post' . self::ROUTE_DASHBOARD);
+            ->setName('post' . self::ROUTE_DASHBOARD)
+            ->middleware(new UpdateCheckMiddleware($db));
     }
 
     public function dispatch(): void

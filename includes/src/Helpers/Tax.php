@@ -204,15 +204,14 @@ class Tax
             }
             $i = \array_search($item->fMwSt, $taxRates, true);
             if (!isset($taxPos[$i]->fBetrag) || !$taxPos[$i]->fBetrag) {
-                $taxPos[$i]                  = new stdClass();
-                $taxPos[$i]->cName           = \lang_steuerposition($item->fMwSt, $net);
-                $taxPos[$i]->fUst            = $item->fMwSt;
-                $taxPos[$i]->fBetrag         = ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
+                $taxPos[$i]          = new stdClass();
+                $taxPos[$i]->cName   = \lang_steuerposition($item->fMwSt, $net);
+                $taxPos[$i]->fUst    = $item->fMwSt;
+                $taxPos[$i]->fBetrag = ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
             } else {
-                $taxPos[$i]->fBetrag        += ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
-                $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
+                $taxPos[$i]->fBetrag += ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
             }
+            $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
         }
 
         return $taxPos;

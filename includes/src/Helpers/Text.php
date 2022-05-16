@@ -207,7 +207,7 @@ class Text
      */
     public static function startsWith(string $haystack, string $needle): bool
     {
-        return \mb_strpos($haystack, $needle) === 0;
+        return \str_starts_with($haystack, $needle);
     }
 
     /**
@@ -780,7 +780,7 @@ class Text
      */
     public static function removeNumerousWhitespaces(string $string): string
     {
-        while (\mb_strpos($string, '  ') !== false) {
+        while (\str_contains($string, '  ')) {
             $string = \str_replace('  ', ' ', $string);
         }
 

@@ -474,7 +474,7 @@ class ShippingMethod
                 $additionalProduct->fGewicht        += $product['fAnzahl'] * $tmpProduct->fGewicht;
 
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, (string)$tmpProduct->kVersandklasse) === false
+                    && !\str_contains($shippingClasses, (string)$tmpProduct->kVersandklasse)
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
@@ -484,7 +484,7 @@ class ShippingMethod
                 && $tmpProduct->kVaterArtikel === 0
                 && \count($tmpProduct->Variationen) > 0
             ) { // Normale Variation
-                if (\mb_strpos($product['cInputData'], '_') === 0) {
+                if (\str_starts_with($product['cInputData'], '_')) {
                     // 1D
                     [$property0, $propertyValue0] = \explode(':', \mb_substr($product['cInputData'], 1));
 
@@ -523,7 +523,7 @@ class ShippingMethod
                         ($tmpProduct->fGewicht + $variation0->fGewichtDiff + $variation1->fGewichtDiff);
                 }
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, (string)$tmpProduct->kVersandklasse) === false
+                    && !\str_contains($shippingClasses, (string)$tmpProduct->kVersandklasse)
                 ) {
                     $shippingClasses = '-' . $tmpProduct->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {
@@ -531,7 +531,7 @@ class ShippingMethod
                 }
             } elseif ($tmpProduct->nIstVater > 0) { // Variationskombination (Vater)
                 $child = new Artikel($db);
-                if (\mb_strpos($product['cInputData'], '_') === 0) {
+                if (\str_starts_with($product['cInputData'], '_')) {
                     // 1D
                     $cVariation0                  = \mb_substr($product['cInputData'], 1);
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);
@@ -596,7 +596,7 @@ class ShippingMethod
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 }
                 if (\mb_strlen($shippingClasses) > 0
-                    && \mb_strpos($shippingClasses, (string)$child->kVersandklasse) === false
+                    && !\str_contains($shippingClasses, (string)$child->kVersandklasse)
                 ) {
                     $shippingClasses = '-' . $child->kVersandklasse;
                 } elseif (\mb_strlen($shippingClasses) === 0) {

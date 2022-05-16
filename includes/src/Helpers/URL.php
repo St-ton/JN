@@ -310,7 +310,7 @@ class URL
             },
             $unreserved
         ), static function ($matches) {
-            $match = \mb_strpos($matches[0], '%') === 0 ? \mb_substr($matches[0], 1) : $matches[0];
+            $match = \str_starts_with($matches[0], '%') ? \mb_substr($matches[0], 1) : $matches[0];
             // php7.4+ expects strings like "7E" instead of "%7E"
             return \chr(\hexdec($match));
         }, $string);

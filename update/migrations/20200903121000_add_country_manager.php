@@ -2,6 +2,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Shop;
 
 /**
  * Class Migration_20200903121000

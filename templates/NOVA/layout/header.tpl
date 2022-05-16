@@ -437,7 +437,12 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container
+                fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' &&
+                    $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp ||
+                    (isset($Link) && $Link->getIsFluid()))
+                class="breadcrumb-container"
+            }
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

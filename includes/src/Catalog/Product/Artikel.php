@@ -333,7 +333,7 @@ class Artikel
     public $Preise;
 
     /**
-     * @var array
+     * @var stdClass[]
      */
     public $Bilder = [];
 
@@ -6045,18 +6045,13 @@ class Artikel
         if ($from === null) {
             return null;
         }
-        switch ($size) {
-            case Image::SIZE_XS:
-                return $from->cURLMini;
-            case Image::SIZE_SM:
-                return $from->cURLKlein;
-            case Image::SIZE_MD:
-                return $from->cURLNormal;
-            case Image::SIZE_LG:
-                return $from->cURLGross;
-            default:
-                return null;
-        }
+        return match ($size) {
+            Image::SIZE_XS => $from->cURLMini,
+            Image::SIZE_SM => $from->cURLKlein,
+            Image::SIZE_MD => $from->cURLNormal,
+            Image::SIZE_LG => $from->cURLGross,
+            default => null,
+        };
     }
 
     /**

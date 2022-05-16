@@ -31,8 +31,8 @@
             {/block}
 
             {block name='layout-index-link-content'}
+                {opcMountPoint id='opc_before_content' inContainer=false}
                 {if !empty($Link->getContent())}
-                    {opcMountPoint id='opc_before_content' inContainer=false}
                     {container fluid=$Link->getIsFluid() class="link-content {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
                         {$Link->getContent()}
                     {/container}

@@ -189,7 +189,11 @@ abstract class AbstractController implements ControllerInterface
         Shop::$SuchFilter                = $this->state->searchFilterIDs;
         Shop::$categoryFilterIDs         = $this->state->categoryFilterIDs;
         if ($this->state->type !== '') {
-            Shop::${$this->state->type} = $this->state->itemID;
+            $mapped = $this->state->type;
+            if ($mapped === 'suchspecial') {
+                $mapped = 'kSuchspecial';
+            }
+            Shop::${$mapped} = $this->state->itemID;
         }
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }

@@ -32,9 +32,10 @@ class FavsController extends AbstractBackendController
             $titles = Text::filterXSS($_POST['title']);
             $urls   = Text::filterXSS($_POST['url']);
             if (\is_array($titles) && \is_array($urls) && \count($titles) === \count($urls)) {
-                AdminFavorite::remove($adminID);
+                $adminFav = new AdminFavorite($this->db);
+                $adminFav->remove($adminID);
                 foreach ($titles as $i => $title) {
-                    AdminFavorite::add($adminID, $title, $urls[$i], $i);
+                    $adminFav->add($adminID, $title, $urls[$i], $i);
                 }
             }
         }

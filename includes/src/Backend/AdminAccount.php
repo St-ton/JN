@@ -540,7 +540,7 @@ class AdminAccount
     public function favorites(): array
     {
         return $this->logged()
-            ? AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin)
+            ? (new AdminFavorite($this->db))->fetchAll($_SESSION['AdminAccount']->kAdminlogin)
             : [];
     }
 

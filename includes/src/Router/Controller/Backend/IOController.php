@@ -43,6 +43,7 @@ class IOController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->smarty = $smarty;
         \ob_start();
         $io = AdminIO::getInstance();
         if (!$this->account->getIsAuthenticated()) {
@@ -232,7 +233,7 @@ class IOController extends AbstractBackendController
         $success     = false;
         $kAdminlogin = $this->account->getID();
         if (!empty($title) && !empty($url)) {
-            $success = AdminFavorite::add($kAdminlogin, $title, $url);
+            $success = (new AdminFavorite($this->db))->add($kAdminlogin, $title, $url);
         }
 
         if ($success) {

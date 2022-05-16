@@ -34,16 +34,6 @@ abstract class AbstractStep implements StepInterface
     protected int $id = 0;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected AlertServiceInterface $alertService;
-
-    /**
      * @var Collection
      */
     protected Collection $errors;
@@ -53,12 +43,10 @@ abstract class AbstractStep implements StepInterface
      * @param DbInterface           $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(protected DbInterface $db, protected AlertServiceInterface $alertService)
     {
-        $this->db           = $db;
-        $this->alertService = $alertService;
-        $this->questions    = new Collection();
-        $this->errors       = new Collection();
+        $this->questions = new Collection();
+        $this->errors    = new Collection();
     }
 
     /**

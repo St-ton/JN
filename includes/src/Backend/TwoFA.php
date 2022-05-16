@@ -37,17 +37,11 @@ class TwoFA
     private string $shopName;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * TwoFA constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db                        = $db;
         $this->userTuple                 = new stdClass();
         $this->userTuple->kAdminlogin    = 0;
         $this->userTuple->cLogin         = '';

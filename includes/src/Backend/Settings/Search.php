@@ -36,30 +36,12 @@ class Search
     public string $title = '';
 
     /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
-
-    /**
      * @param DbInterface $db
-     * @param GetText     $gettext
+     * @param GetText     $getText
      * @param Manager     $manager
      */
-    public function __construct(DbInterface $db, GetText $gettext, Manager $manager)
+    public function __construct(protected DbInterface $db, protected GetText $getText, protected Manager $manager)
     {
-        $this->db      = $db;
-        $this->getText = $gettext;
-        $this->manager = $manager;
     }
 
     /**
@@ -116,8 +98,8 @@ class Search
                 foreach ($configTranslations->getIterator() as $translation) {
                     $orig  = $translation->getOriginal();
                     $trans = $translation->getTranslation();
-                    if ((mb_stripos($trans, $query) !== false || mb_stripos($trans, $queryEnt) !== false)
-                        && mb_substr($orig, -5) === '_name'
+                    if ((\mb_stripos($trans, $query) !== false || \mb_stripos($trans, $queryEnt) !== false)
+                        && \mb_substr($orig, -5) === '_name'
                     ) {
                         $valueName    = \preg_replace('/(_name|_desc)$/', '', $orig);
                         $valueNames[] = "'" . $valueName . "'";

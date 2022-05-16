@@ -164,7 +164,7 @@ class AuthToken
         $payload = \base64_decode($parts[1]);
         try {
             $expiration = Carbon::createFromTimestamp(\json_decode($payload, false, 512, \JSON_THROW_ON_ERROR)->exp);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return true;
         }
 
@@ -265,7 +265,7 @@ class AuthToken
         $token    = (string)Request::postVar('token', '');
         try {
             $logger = Shop::Container()->getLogService();
-        } catch (ServiceNotFoundException | CircularReferenceException $e) {
+        } catch (ServiceNotFoundException | CircularReferenceException) {
             $logger = null;
         }
 

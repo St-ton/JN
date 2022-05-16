@@ -3,7 +3,6 @@
 namespace JTL\Backend;
 
 use JTL\DB\DbInterface;
-use JTL\Helpers\Request;
 use JTL\L10n\GetText;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
@@ -18,30 +17,12 @@ use Psr\Http\Message\ServerRequestInterface;
 class Menu
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AdminAccount
-     */
-    private AdminAccount $account;
-
-    /**
-     * @var GetText
-     */
-    private GetText $getText;
-
-    /**
      * @param DbInterface  $db
      * @param AdminAccount $account
      * @param GetText      $getText
      */
-    public function __construct(DbInterface $db, AdminAccount $account, GetText $getText)
+    public function __construct(private DbInterface $db, private AdminAccount $account, private GetText $getText)
     {
-        $this->db      = $db;
-        $this->account = $account;
-        $this->getText = $getText;
         $getText->loadAdminLocale('menu');
     }
 

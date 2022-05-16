@@ -37,16 +37,6 @@ use function Functional\some;
 class Status
 {
     /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * @var self|null
      */
     private static ?Status $instance = null;
@@ -63,11 +53,8 @@ class Status
      * @param DbInterface $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
-
         self::$instance = $this;
     }
 

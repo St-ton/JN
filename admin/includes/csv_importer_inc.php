@@ -5,6 +5,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Redirect;
 use JTL\Shop;
 
 /**

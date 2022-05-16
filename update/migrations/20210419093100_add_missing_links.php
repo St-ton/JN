@@ -5,6 +5,7 @@ use JTL\Link\Admin\LinkAdmin;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 use JTL\Shop;
+
 /**
  * Class Migration_20210419093100
  */

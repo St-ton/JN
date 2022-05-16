@@ -61,4 +61,12 @@ class UnitsOfMeasurement extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Menü "Artikel" -> "Verkaufs-/Maßeinheiten"';
+    }
 }

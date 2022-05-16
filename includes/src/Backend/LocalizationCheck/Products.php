@@ -60,4 +60,12 @@ class Products extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Artikelverwaltung -> Tab "Beschreibung"';
+    }
 }

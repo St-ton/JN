@@ -66,4 +66,12 @@ class Packagings extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Shopbackend: Administration -> "Versand" -> "Zusatzverpackungen"';
+    }
 }

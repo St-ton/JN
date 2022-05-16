@@ -549,6 +549,7 @@ class Status
             $result  = new Result();
             $excess  = $check->getExcessLocalizations();
             $missing = $check->getItemsWithoutLocalization();
+            $result->setLocation($check->getLocation());
             $result->setClassName(\get_class($check));
             $result->setExcessLocalizations($excess);
             $result->setMissingLocalizations($missing);

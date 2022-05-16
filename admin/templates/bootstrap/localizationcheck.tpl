@@ -53,6 +53,8 @@
                         {/if}
                         {if $missing->count() > 0}
                             <h2>{__('Missing translations')}</h2>
+                            <span class="path">{($result->getLocation()|htmlspecialchars)}</span>
+                            <hr>
                             <div class="table-responsive">
                                 <table class="table table-sm table-borderless table-striped">
                                     <thead>

@@ -24,4 +24,9 @@ interface LocalizationCheckInterface
      * @return Collection
      */
     public function getItemsWithoutLocalization(): Collection;
+
+    /**
+     * @return string
+     */
+    public function getLocation(): string;
 }

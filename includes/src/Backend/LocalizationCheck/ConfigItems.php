@@ -16,9 +16,12 @@ class ConfigItems extends AbstractLocalizationCheck
     public function getExcessLocalizations(): Collection
     {
         return $this->db->getCollection(
-            'SELECT kKonfigitem AS id, kSprache AS langID, cName AS name
-                FROM tkonfigitemsprache
-                WHERE kSprache NOT IN (' . $this->getActiveLanguageIDs()->implode(',') . ')'
+            'SELECT A.kKonfigitem AS id, A.kSprache AS langID, A.cName AS name
+                FROM tkonfigitemsprache A
+                JOIN tkonfigitem
+	                ON tkonfigitem.kKonfigitem = A.kKonfigitem
+                WHERE tkonfigitem.kArtikel > 0
+                    AND kSprache NOT IN (' . $this->getActiveLanguageIDs()->implode(',') . ')'
         )->mapInto(Item::class);
     }
 
@@ -54,11 +57,19 @@ class ConfigItems extends AbstractLocalizationCheck
                     LEFT JOIN tsprache C
                         ON B.kSprache = C.kSprache
                         AND C.kSprache = :lid
-                    WHERE B.kSprache IS NULL',
+                    WHERE A.kArtikel > 0 AND B.kSprache IS NULL',
                 ['lid' => $language->getId()]
             )->mapInto(Item::class));
         }
 
         return $res;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Menü "Artikel" -> "Konfigurationsgruppen" -> "Komponenten anzeigen" -> Wert bearbeiten';
     }
 }

@@ -61,4 +61,12 @@ class Categories extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Artikelverwaltung -> Kategorie -> Tab "Beschreibung"';
+    }
 }

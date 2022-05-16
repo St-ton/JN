@@ -62,4 +62,12 @@ class CharacteristicValues extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Menü "Artikel" -> "Merkmale" -> Merkmal ausklappen -> Wert';
+    }
 }

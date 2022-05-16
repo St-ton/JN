@@ -61,4 +61,12 @@ class Warehouses extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLocation(): string
+    {
+        return 'Shopbackend: Darstellung -> "Standardelemente" -> "Warenlager"';
+    }
 }

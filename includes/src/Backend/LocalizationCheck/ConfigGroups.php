@@ -61,4 +61,12 @@ class ConfigGroups extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Menü "Artikel" -> "Konfigurationsgruppen" -> "Bearbeiten"';
+    }
 }

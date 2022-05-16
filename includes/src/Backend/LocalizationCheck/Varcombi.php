@@ -61,4 +61,12 @@ class Varcombi extends AbstractLocalizationCheck
 
         return $res;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLocation(): string
+    {
+        return 'Wawi: Artikelverwaltung -> Artikel -> Tab "Variation"';
+    }
 }

@@ -48,13 +48,10 @@ class ReviewController extends BaseController
     public function handleRequest()
     {
         if (!Form::validateToken()) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_WARNING,
+            $this->alertService->addWarning(
                 Shop::Lang()->get('invalidToken'),
                 'invalidToken',
-                [
-                    'saveInSession' => true,
-                ]
+                ['saveInSession' => true]
             );
 
             return false;
@@ -214,8 +211,7 @@ class ReviewController extends BaseController
             $product->holehilfreichsteBewertung();
         }
         if ($this->checkProductWasPurchased($product->kArtikel, Frontend::getCustomer()) === false) {
-            $this->alertService->addAlert(
-                Alert::TYPE_DANGER,
+            $this->alertService->addWarning(
                 Shop::Lang()->get('productNotBuyed', 'product rating'),
                 'productNotBuyed',
                 ['showInAlertListTemplate' => false]

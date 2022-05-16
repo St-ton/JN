@@ -271,7 +271,12 @@ class IOMethods
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
-        $response->cWarenkorbLabel = \lang_warenkorb_warenkorbLabel($cart);
+        $response->cWarenkorbLabel = Shop::Lang()->get('cartSumLabel', 'checkout', Preise::getLocalizedPriceString(
+            $cart->gibGesamtsummeWarenExt(
+                [\C_WARENKORBPOS_TYP_ARTIKEL],
+                !Frontend::getCustomerGroup()->isMerchant()
+            )
+        ));
         $response->cPopup          = $smarty->fetch('productdetails/pushed.tpl');
         $response->cWarenkorbMini  = $smarty->fetch('basket/cart_dropdown.tpl');
         $response->oArtikel        = $product;
@@ -1014,6 +1019,7 @@ class IOMethods
         $idx             = isset($values['eigenschaftwert']) ? (array)$values['eigenschaftwert'] : [];
         $freetextValues  = [];
         $set             = \array_filter($idx);
+        $layout          = isset($values['layout']) ? Text::filterXSS($values['layout']) : '';
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
         if ($parentProductID <= 0) {
@@ -1080,15 +1086,25 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                $ioResponse->callEvoProductFunction(
-                    'setArticleContent',
-                    $parentProductID,
-                    $tmpProduct->kArtikel,
-                    URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
-                    $gesetzteEigeschaftWerte,
-                    $wrapper
-                );
-
+                if ($layout === 'gallery') {
+                    $ioResponse->callEvoProductFunction(
+                        'redirectToArticle',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                } else {
+                    $ioResponse->callEvoProductFunction(
+                        'setArticleContent',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                }
                 \executeHook(\HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
                     'objResponse' => &$ioResponse,
                     'oArtikel'    => &$product,
@@ -1111,6 +1127,7 @@ class IOMethods
             if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
                 $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
             } else {
+                $ioResponse->callEvoProductFunction('showGalleryVariation', $variation->kEigenschaft, $wrapper);
                 foreach ($variation->Werte as $value) {
                     $id               = $value->kEigenschaft;
                     $stockInfo->stock = true;

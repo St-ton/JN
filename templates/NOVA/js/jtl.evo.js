@@ -577,6 +577,10 @@
             }
         },
 
+        resetForParallax: function() {
+            $(window).trigger('resize').trigger('scroll');
+        },
+
         addCartBtnAnimation: function() {
             var animating = false;
 
@@ -1051,6 +1055,55 @@
             }
         },
 
+        initSliders: function() {
+            let wrapper  = '.js-slider-wrapper',
+                buttonF  = '.js-btn-slider-sf',
+                buttonB  = '.js-btn-slider-sb',
+                items    = '.js-slider-items';
+
+            $(wrapper).each(function (e) {
+                let $buttonF   = $(this).find(buttonF),
+                    $buttonB   = $(this).find(buttonB),
+                    $items     = $(this).find(items);
+
+                $buttonF.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() + $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items);
+                        });
+                });
+                $buttonB.on('click', function () {
+                    $items.animate(
+                        { scrollLeft: $items.scrollLeft() - $items.width() },
+                        300,
+                        'swing',
+                        function () {
+                            checkButtonDisable($buttonB, $buttonF, $items);
+                        });
+                });
+                $items.on('touchend', function (e) {
+                    checkButtonDisable($buttonB, $buttonF, $items);
+                });
+            });
+
+            function checkButtonDisable($buttonB, $buttonF, $items) {
+                let currentScroll = $items.scrollLeft();
+                if (currentScroll <= 1) {
+                    $buttonB.prop('disabled', true);
+                } else {
+                    $buttonB.prop('disabled', false);
+                }
+                if (currentScroll >= $items[0].scrollWidth - $items.width()) {
+                    $buttonF.prop('disabled', true);
+                } else {
+                    $buttonF.prop('disabled', false);
+                }
+            }
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1082,6 +1135,7 @@
             this.initPaginationEvents();
             this.initFilterEvents();
             this.initItemSearch('filter');
+            this.initSliders();
         }
     };
 

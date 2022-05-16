@@ -50,3 +50,19 @@
 	}
 }
 
+.breadcrumb-backtolist {
+	display: flex;
+
+	&::before {
+		@include fas('f053');
+		margin-right: 6px;
+	}
+
+	@include media-breakpoint-up(md) {
+		&::after {
+			content: "|";
+			margin-left: 6px;
+			margin-right: 6px;
+		}
+	}
+}

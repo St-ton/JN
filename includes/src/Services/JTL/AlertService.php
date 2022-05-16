@@ -87,6 +87,22 @@ class AlertService implements AlertServiceInterface
     /**
      * @inheritdoc
      */
+    public function addDanger(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_DANGER, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addNotice(string $message, string $key, array $options = null): ?Alert
+    {
+        return $this->addAlert(Alert::TYPE_NOTE, $message, $key, $options);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getAlert(string $key): ?Alert
     {
         return $this->getAlertList()->first(static function (Alert $alert) use ($key) {

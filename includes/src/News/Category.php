@@ -184,7 +184,7 @@ class Category implements CategoryInterface
     /**
      * @param array $categoryLanguages
      * @param bool  $activeOnly
-     * @return $this|CategoryInterface
+     * @return CategoryInterface
      */
     public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {
@@ -204,6 +204,7 @@ class Category implements CategoryInterface
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
             $this->seo[$langID]              = $groupLanguage->cSeo;
+            $this->urls[$langID]             = Shop::getURL() . '/' . $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
@@ -520,7 +521,7 @@ class Category implements CategoryInterface
         $idx = $idx ?? Shop::getLanguageID();
 
         // @todo: category or month overview?
-//        return $this->urls[$idx] ?? '/?nm=' . $this->getID();
+        // return $this->urls[$idx] ?? '/?nm=' . $this->getID();
         return $this->urls[$idx] ?? '/?nk=' . $this->getID();
     }
 

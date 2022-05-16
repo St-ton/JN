@@ -3,7 +3,6 @@
 namespace JTL\Cart;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
@@ -638,7 +637,6 @@ class Cart
         $cartItem                  = new CartItem();
         $cartItem->nAnzahl         = $qty;
         $cartItem->nAnzahlEinzel   = $qty;
-        $cartItem->kArtikel        = 0;
         $cartItem->kSteuerklasse   = $taxClassID;
         $cartItem->fPreis          = $price;
         $cartItem->cUnique         = $unique;
@@ -972,8 +970,7 @@ class Cart
         $updated->cGesamtpreisLocalizedOld = $oldItem->cGesamtpreisLocalized;
         $updated->istKonfigVater           = $item->istKonfigVater();
         self::addUpdatedPosition($updated);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_WARNING,
+        Shop::Container()->getAlertService()->addWarning(
             \sprintf(
                 Shop::Lang()->get('priceHasChanged', 'checkout'),
                 \is_array($item->cName) ? $item->cName[Shop::getLanguageCode()] : $item->cName
@@ -1996,6 +1993,34 @@ class Cart
             ?? Frontend::get('Lieferadresse')->cLand
             ?? Frontend::getCustomer()->cLand
             ?? Frontend::get('cLieferlandISO');
+    }
+
+    /**
+     * @return int
+     */
+    public function removeParentItems(): int
+    {
+        $deletedItemCount = 0;
+        foreach ($this->PositionenArr as $i => $item) {
+            $delete = false;
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && $item->Artikel->nIstVater === 1
+            ) {
+                $delete = true;
+                \executeHook(\HOOK_CART_DELETE_PARENT_CART_ITEM, [
+                    'positionItem' => $item,
+                    'delete'    => &$delete
+                ]);
+            }
+            if ($delete) {
+                $deletedItemCount++;
+                self::addDeletedPosition($item);
+                unset($this->PositionenArr[$i]);
+            }
+        }
+        $this->PositionenArr = \array_values($this->PositionenArr);
+
+        return $deletedItemCount;
     }
 
     /**

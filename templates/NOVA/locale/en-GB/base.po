@@ -26,7 +26,7 @@ msgid "Animation für Schaltflächen beim Hovern"
 msgstr "Animated buttons when hovering"
 
 msgid "Anzeige der Suche auf mobilen Geräten"
-msgstr "Mobile devices: Display of search"
+msgstr "Display of search <i class=\"fas fa-mobile-alt\"></i> "
 
 msgid "Schaltfläche „Nach oben scrollen“ anzeigen"
 msgstr "Show button \"Scroll to top\""
@@ -44,7 +44,7 @@ msgid "Megamenu"
 msgstr "Mega menu"
 
 msgid "Kategoriebilder für erste Unterkategorie"
-msgstr "Category images for first subcategory"
+msgstr "Category images for first subcategory <i class=\"fas fa-desktop\"></i> "
 
 msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Categories (instead of category box / box administration)"
@@ -59,7 +59,7 @@ msgid "Hersteller-Dropdown"
 msgstr "Manufacturer drop-down"
 
 msgid "Herstellerbilder"
-msgstr "Manufacturer images"
+msgstr "Manufacturer images <i class=\"fas fa-desktop\"></i> "
 
 msgid "Listen- und Gallerieansicht"
 msgstr "List and gallery view"
@@ -176,7 +176,7 @@ msgid "Keine"
 msgstr "No"
 
 msgid "Header über gesamte Bildschirmbreite darstellen"
-msgstr "Display header over full width"
+msgstr "Display header over full width <i class=\"fas fa-desktop\"></i> "
 
 msgid "Linke Seitenleiste anzeigen"
 msgstr "Show left sidebar"
@@ -191,4 +191,148 @@ msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
 msgstr "Show search in filters if filter has more than x items"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
-msgstr "Mobile devices: Open menu in current category"
+msgstr "Open menu in current category <i class=\"fas fa-mobile-alt\"></i> "
+
+msgid "Menü in eigener Zeile anzeigen"
+msgstr "Display menu in separate line <i class=\"fas fa-desktop\"></i> "
+
+msgid "Anzeige bei vielen Menüeinträgen"
+msgstr "Display of many menu entries <i class=\"fas fa-desktop\"></i> "
+
+msgid "Mehrzeilig"
+msgstr "Multiple lines"
+
+msgid "Einzeilig und scrollbar nach links/rechts"
+msgstr "Single line and scrollable to the left/right"
+
+msgid "Menüausrichtung"
+msgstr "Menu justification <i class=\"fas fa-desktop\"></i> "
+
+msgid "Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
+msgstr "Requires \"Display menu in separate line\" to be set to \"Yes\"."
+
+msgid "Zentriert"
+msgstr "Centred"
+
+msgid "Linksbündig"
+msgstr "Left-justified"
+
+msgid "Rechtsbündig"
+msgstr "Right-justified"
+
+msgid "Anzeige beim Scrollen"
+msgstr "Display when scrolling <i class=\"fas fa-desktop\"></i> "
+
+msgid "Menü"
+msgstr "Menu"
+
+msgid "Menü, Logo, Suche"
+msgstr "Menu, logo, and search field"
+
+msgid "Nichts"
+msgstr "None"
+
+msgid "Suchfeld Breite (in px)"
+msgstr "Search input width (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Logo Höhe (in px)"
+msgstr "Logo height (in px) <i class=\"fas fa-desktop\"></i> "
+
+msgid "Logo zentriert"
+msgstr "Logo centered <i class=\"fas fa-desktop\"></i> "
+
+msgid "Suchfeld"
+msgstr "Search input"
+
+msgid "Suchfeld Positionierung"
+msgstr "Search input positioning <i class=\"fas fa-desktop\"></i> "
+
+msgid "Topbar anzeigen"
+msgstr "Show topbar <i class=\"fas fa-desktop\"></i> "
+
+msgid "tooltipWithoutMenuSingleRow"
+msgstr "Can only be used with setting „Display menu in separate line - Yes“."
+
+msgid "tooltipDesktop"
+msgstr "Setting only affects desktop view."
+
+msgid "tooltipMobile"
+msgstr "Setting only affects mobile view."
+
+msgid "buttonCustomLayout"
+msgstr "Custom layout"
+
+msgid "chooseLayout"
+msgstr "Please choose a preset layout:"
+
+msgid "Colors"
+msgstr "Colors"
+
+msgid "Custom Sass"
+msgstr "Custom styles"
+
+msgid "Custom Sass Description"
+msgstr "Here you can make your own CSS adjustments to your template. For information about valid variables, please see <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">Adjusting templates</a>. You can also define your own custom CSS, Sass or Scss. Learn how to do this <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">here</a>. <br><br>Please note: <ul><li>Use either the settings on this page or the plug-in JTL-Theme Editor for CSS adjustments. If you use both at the same time, there might be unwanted overlaps.</li><li><span class=\"text-warning\"> Empty the browser cache to see the changes made in the back end in the online shop.</li></ul>"
+
+msgid "colorPrimary"
+msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorSecondary"
+msgstr "Secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColor"
+msgstr "Header background primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColor"
+msgstr "Header primary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderBgColorSecondary"
+msgstr "Header background secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorHeaderColorSecondary"
+msgstr "Header secondary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorFooterBgColor"
+msgstr "Footer background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorFooterColor"
+msgstr "Footer font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "colorCopyrightBgColor"
+msgstr "Footer Copyright background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "customVariables"
+msgstr "Custom variables"
+
+msgid "customContent"
+msgstr "Custom CSS, Sass or Scss"
+
+msgid "The color settings might not work as expected in this theme."
+msgstr "The color settings might not work as expected in this theme."
+
+msgid "Gewählte Vorlage"
+msgstr "Chosen layout"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Menü in eigener Zeile"
+msgstr "Menu in single row"
+
+msgid "Header Boxed - Menü mehrspaltig"
+msgstr "Header Boxed - Menu multiple lines"
+
+msgid "Ohne Topbar - Header volle breite"
+msgstr "Without Topbar - Header full width"
+
+msgid "Custom"
+msgstr "Custom"
+
+msgid "Blocksatz"
+msgstr "Space between"
+
+msgid "Artikeldetailseite"
+msgstr "Item overview"
+
+msgid "Slider für Swatches anzeigen, ab x Elementen"
+msgstr "Show slider for swatches for more than x items"

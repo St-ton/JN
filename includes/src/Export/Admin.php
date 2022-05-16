@@ -5,7 +5,6 @@ namespace JTL\Export;
 use Exception;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Sections\Export;
@@ -150,8 +149,7 @@ class Admin
                 $checkResult->setAsync($oldModel->getAsync());
                 $checkResult->setIsSpecial($oldModel->getIsSpecial());
                 $checkResult->save();
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(\__('successFormatEdit'), $checkResult->getName()),
                     'successFormatEdit'
                 );
@@ -159,8 +157,7 @@ class Admin
                 $checkResult->setAsync(1);
                 $checkResult->save();
                 $exportID = $checkResult->getId();
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(\__('successFormatCreate'), $checkResult->getName()),
                     'successFormatCreate'
                 );
@@ -183,7 +180,7 @@ class Admin
                 })->all());
             $this->view();
             $this->step = 'edit';
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCheckInput'), 'errorCheckInput');
+            $this->alertService->addError(\__('errorCheckInput'), 'errorCheckInput');
         }
         $this->smarty->assign('checkTemplate', $doCheck ?? 0);
     }
@@ -201,7 +198,7 @@ class Admin
                     FROM twaehrung 
                     ORDER BY cStandard DESC'
             ))
-            ->assign('oKampagne_arr', \holeAlleKampagnen());
+            ->assign('oKampagne_arr', \holeAlleKampagnen(true));
 
         if (Request::postInt('kExportformat') > 0) {
             try {
@@ -236,11 +233,7 @@ class Admin
     {
         $exportformat = $this->db->select('texportformat', 'kExportformat', $exportID);
         if ($exportformat === null) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                \sprintf(\__('errorFormatCreate'), '?'),
-                'errorFormatCreate'
-            );
+            $this->alertService->addError(\sprintf(\__('errorFormatCreate'), '?'), 'errorFormatCreate');
         }
         $realBase   = \realpath(\PFAD_ROOT . \PFAD_EXPORT);
         $real       = \realpath(\PFAD_ROOT . \PFAD_EXPORT . $exportformat->cDateiname);
@@ -249,21 +242,18 @@ class Admin
         $ok2        = \is_string($realZipped) && \str_starts_with($realZipped, $realBase);
         if ($ok1 === true || $ok2 === true || (int)($exportformat->nSplitgroesse ?? 0) > 0) {
             if (empty($_GET['hasError'])) {
-                $this->alertService->addAlert(
-                    Alert::TYPE_SUCCESS,
+                $this->alertService->addSuccess(
                     \sprintf(\__('successFormatCreate'), $exportformat->cName),
                     'successFormatCreate'
                 );
             } else {
-                $this->alertService->addAlert(
-                    Alert::TYPE_ERROR,
+                $this->alertService->addError(
                     \sprintf(\__('errorFormatCreate'), $exportformat->cName),
                     'errorFormatCreate'
                 );
             }
         } else {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
+            $this->alertService->addError(
                 \sprintf(\__('errorFormatCreate'), $exportformat->cName),
                 'errorFormatCreate'
             );
@@ -295,9 +285,9 @@ class Admin
         );
 
         if ($deleted > 0) {
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successFormatDelete'), 'successFormatDelete');
+            $this->alertService->addSuccess(\__('successFormatDelete'), 'successFormatDelete');
         } else {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorFormatDelete'), 'errorFormatDelete');
+            $this->alertService->addError(\__('errorFormatDelete'), 'errorFormatDelete');
         }
 
         return $deleted > 0;
@@ -326,11 +316,7 @@ class Admin
             echo \file_get_contents($real);
             exit;
         }
-        $this->alertService->addAlert(
-            Alert::TYPE_ERROR,
-            \sprintf(\__('File %s not found.'), $file),
-            'errorCannotDownloadExport'
-        );
+        $this->alertService->addError(\sprintf(\__('File %s not found.'), $file), 'errorCannotDownloadExport');
     }
 
     /**

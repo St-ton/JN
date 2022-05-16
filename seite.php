@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Catalog\Hersteller;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\CMS;
@@ -58,21 +57,20 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     if (isset($_POST['land'], $_POST['plz'])
         && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $error)
     ) {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
+        $alertHelper->addError(
             Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages'),
             'missingParamShippingDetermination'
         );
     }
     if ($error !== '') {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'shippingCostError');
+        $alertHelper->addError($error, 'shippingCostError');
     }
     $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($cgroupID));
 } elseif ($link->getLinkType() === LINKTYP_LIVESUCHE) {
     $liveSearchTop  = CMS::getLiveSearchTop($conf);
     $liveSearchLast = CMS::getLiveSearchLast($conf);
     if (count($liveSearchTop) === 0 && count($liveSearchLast) === 0) {
-        $alertHelper->addAlert(Alert::TYPE_WARNING, Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
+        $alertHelper->addWarning(Shop::Lang()->get('noDataAvailable'), 'noDataAvailable');
     }
     $smarty->assign('LivesucheTop', $liveSearchTop)
         ->assign('LivesucheLast', $liveSearchLast);
@@ -88,18 +86,14 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $sitemap = new Sitemap($db, $cache, $conf);
     $sitemap->assignData($smarty);
     Shop::setPageType(PAGE_404);
-    $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+    $alertHelper->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $freeGifts = CMS::getFreeGifts($conf);
         if (count($freeGifts) > 0) {
             $smarty->assign('oArtikelGeschenk_arr', $freeGifts);
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('freegiftsNogifts', 'errorMessages'),
-                'freegiftsNogifts'
-            );
+            $alertHelper->addError(Shop::Lang()->get('freegiftsNogifts', 'errorMessages'), 'freegiftsNogifts');
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {

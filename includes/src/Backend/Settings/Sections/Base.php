@@ -2,7 +2,6 @@
 
 namespace JTL\Backend\Settings\Sections;
 
-use JTL\Alert\Alert;
 use JTL\Backend\Settings\Item;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\DbInterface;
@@ -11,6 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
+use Shop;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -275,8 +275,7 @@ class Base implements SectionInterface
         if ($min <= $confValue && $confValue <= $max) {
             return true;
         }
-        $this->manager->getAlertService()->addAlert(
-            Alert::TYPE_DANGER,
+        $this->manager->getAlertService()->addDanger(
             \sprintf(\__('errrorNumberRange'), \__($item->getName()), $min, $max),
             'errrorNumberRange'
         );
@@ -350,6 +349,7 @@ class Base implements SectionInterface
             }
             $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
+        Shop::Container()->getCache()->flushTags($tags);
 
         return $updated;
     }

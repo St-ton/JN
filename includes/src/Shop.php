@@ -3,7 +3,6 @@
 namespace JTL;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
 use JTL\Boxes\Factory as BoxFactory;
@@ -103,11 +102,8 @@ use function Functional\tail;
 /**
  * Class Shop
  * @package JTL
- * @method static JTLCacheInterface Cache()
  * @method static LanguageHelper Lang()
  * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
- * @method static Media Media()
- * @method static Events\Dispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -448,15 +444,11 @@ final class Shop
      * @var array
      */
     private static $mapping = [
-        'DB'     => '_DB',
-        'Cache'  => '_Cache',
-        'Lang'   => '_Language',
-        'Smarty' => '_Smarty',
-        'Media'  => '_Media',
-        'Event'  => '_Event',
-        'has'    => '_has',
-        'set'    => '_set',
-        'get'    => '_get'
+        'Lang'   => 'getLanguageHelper',
+        'Smarty' => 'getSmarty',
+        'has'    => 'registryHas',
+        'set'    => 'registrySet',
+        'get'    => 'registryGet'
     ];
 
     /**
@@ -508,7 +500,7 @@ final class Shop
      * @param string $key
      * @return null|mixed
      */
-    public function _get($key)
+    public function registryGet(string $key)
     {
         return $this->registry[$key] ?? null;
     }
@@ -518,7 +510,7 @@ final class Shop
      * @param mixed  $value
      * @return $this
      */
-    public function _set($key, $value): self
+    public function registrySet(string $key, $value): self
     {
         $this->registry[$key] = $value;
 
@@ -529,7 +521,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key): bool
+    public function registryHas(string $key): bool
     {
         return isset($this->registry[$key]);
     }
@@ -540,7 +532,7 @@ final class Shop
      * @param string $method
      * @return string|null
      */
-    private static function map($method): ?string
+    private static function map(string $method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -570,7 +562,7 @@ final class Shop
      *
      * @return LanguageHelper
      */
-    public function _Language(): LanguageHelper
+    public function getLanguageHelper(): LanguageHelper
     {
         return LanguageHelper::getInstance();
     }
@@ -580,7 +572,7 @@ final class Shop
      * @param string|null $context
      * @return JTLSmarty
      */
-    public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
+    public function getSmarty(bool $fast = false, string $context = null): JTLSmarty
     {
         if ($context === null) {
             $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
@@ -737,19 +729,18 @@ final class Shop
         }
         $db      = self::Container()->getDB();
         $cache   = self::Container()->getCache();
-        $cacheID = 'plgnbtsrp';
+        $cacheID = 'plgnbtstrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->getObjects(
-                'SELECT kPlugin, bBootstrap, bExtension
+                'SELECT kPlugin AS id, bExtension AS modern
                     FROM tplugin
                     WHERE nStatus = :state
                       AND bBootstrap = 1
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED]
             ) ?: [], static function ($e) {
-                $e->kPlugin    = (int)$e->kPlugin;
-                $e->bBootstrap = (int)$e->bBootstrap;
-                $e->bExtension = (int)$e->bExtension;
+                $e->id     = (int)$e->id;
+                $e->modern = (int)$e->modern;
 
                 return $e;
             });
@@ -759,8 +750,8 @@ final class Shop
         $extensionLoader = new PluginLoader($db, $cache);
         $pluginLoader    = new LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
-            if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
+            $loader = $plugin->modern === 1 ? $extensionLoader : $pluginLoader;
+            if (($p = PluginHelper::bootstrap($plugin->id, $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->loaded();
             }
@@ -1538,6 +1529,10 @@ final class Shop
                         break;
                 }
             }
+            if ($link === null) {
+                self::$is404 = true;
+                self::$kLink = 0;
+            }
         } elseif (self::$fileName === null) {
             self::$fileName = 'seite.php';
             self::setPageType(\PAGE_EIGENE);
@@ -1549,21 +1544,18 @@ final class Shop
                 $successMsg = (new Optin())
                     ->setCode(self::$optinCode)
                     ->handleOptin();
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_INFO,
+                self::Container()->getAlertService()->addInfo(
                     self::Lang()->get($successMsg, 'messages'),
                     'optinSucceeded'
                 );
             } catch (Exceptions\EmptyResultSetException $e) {
                 self::Container()->getLogService()->notice($e->getMessage());
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
                     'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinActionUnknown', 'errorMessages'),
                     'optinUnknownAction'
                 );
@@ -1910,16 +1902,6 @@ final class Shop
     }
 
     /**
-     * Get the default container of the jtl shop
-     *
-     * @return DefaultServicesInterface
-     */
-    public function _Container(): DefaultServicesInterface
-    {
-        return self::Container();
-    }
-
-    /**
      * Create the default container of the jtl shop
      */
     private static function createContainer(): void
@@ -2123,6 +2105,9 @@ final class Shop
         return $homeURL;
     }
 
+    /**
+     * @return string
+     */
     public static function getRequestURL(): string
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')

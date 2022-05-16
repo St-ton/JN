@@ -3,7 +3,6 @@
 namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
@@ -272,9 +271,9 @@ class Product
         $langID          = Shop::getLanguageID();
         $attr            = new SqlObject();
         $attrVal         = new SqlObject();
-        foreach ($propertyValues as $i => $_u) {
+        foreach ($propertyValues as $i => $value) {
             $attributes[]      = $i;
-            $attributeValues[] = $propertyValues[$i];
+            $attributeValues[] = $value;
         }
         if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $attr->setSelect('teigenschaftsprache.cName AS cName_teigenschaftsprache, ');
@@ -1264,8 +1263,7 @@ class Product
         $history->dErstellt  = 'NOW()';
 
         $inquiryID = Shop::Container()->getDB()->insert('tproduktanfragehistory', $history);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_SUCCESS,
+        Shop::Container()->getAlertService()->addSuccess(
             Shop::Lang()->get('thankYouForQuestion', 'messages'),
             'thankYouForQuestion'
         );
@@ -2239,6 +2237,6 @@ class Product
                     AND kKundengruppe = :cgid',
             'kArtikel',
             ['pid' => $productID, 'cgid' => $customerGroupID]
-        ) > 0;
+        ) < 1;
     }
 }

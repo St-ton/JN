@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Preise;
@@ -64,11 +63,7 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
         return true;
     }
     if ($bMsg) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('fillShipping', 'checkout'),
-            'fillShipping'
-        );
+        Shop::Container()->getAlertService()->addNotice(Shop::Lang()->get('fillShipping', 'checkout'), 'fillShipping');
     }
     $step = 'Versand';
 
@@ -522,8 +517,7 @@ function pruefeZahlungsartStep($get): void
     }
 
     if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             mappeBestellvorgangZahlungshinweis((int)$get['nHinweis']),
             'paymentNote'
         );
@@ -553,8 +547,7 @@ function pruefeZahlungsartwahlStep($post)
 
     switch ($zahlungsangaben) {
         case 0:
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
+            Shop::Container()->getAlertService()->addNotice(
                 Shop::Lang()->get('fillPayment', 'checkout'),
                 'fillPayment'
             );
@@ -614,13 +607,11 @@ function gibStepAccountwahl(): void
         && Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv') === 'A'
         && empty(Shop::Smarty()->getTemplateVars('fehlendeAngaben'))
     ) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),
             'accountCreatedLoginNotActivated'
         );
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('continueAfterActivation', 'messages'),
             'continueAfterActivation'
         );

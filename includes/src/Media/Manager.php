@@ -5,7 +5,6 @@ namespace JTL\Media;
 use DirectoryIterator;
 use Exception;
 use FilesystemIterator;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\URL;
 use JTL\IO\IOError;
@@ -34,7 +33,7 @@ class Manager
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Manager constructor.
@@ -319,8 +318,7 @@ class Manager
                     }
                 }
                 if (\count($corruptedImages) >= $limit) {
-                    Shop::Container()->getAlertService()->addAlert(
-                        Alert::TYPE_ERROR,
+                    Shop::Container()->getAlertService()->addError(
                         \__('Too many corrupted images'),
                         'too-many-corrupted-images'
                     );

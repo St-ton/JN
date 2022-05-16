@@ -4,7 +4,6 @@ namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
@@ -196,11 +195,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
+            $this->alertService->addSuccess(\__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addError(\__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -249,7 +248,10 @@ class AdminAccount
         if ($admin === null || !\is_object($admin)) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $cLogin);
         }
+        $admin->kAdminlogin       = (int)$admin->kAdminlogin;
         $admin->kAdminlogingruppe = (int)$admin->kAdminlogingruppe;
+        $admin->nLoginVersuch     = (int)$admin->nLoginVersuch;
+        $admin->bAktiv            = (int)$admin->bAktiv;
         if (!$admin->bAktiv && $admin->kAdminlogingruppe !== \ADMINGROUP) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_DISABLED, $cLogin);
         }
@@ -280,7 +282,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $admin = $this->db->select(
+                $admin                    = $this->db->select(
                     'tadminlogin',
                     'cLogin',
                     $cLogin,
@@ -291,6 +293,10 @@ class AdminAccount
                     false,
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
+                $admin->kAdminlogin       = (int)$admin->kAdminlogin;
+                $admin->kAdminlogingruppe = (int)$admin->kAdminlogingruppe;
+                $admin->nLoginVersuch     = (int)$admin->nLoginVersuch;
+                $admin->bAktiv            = (int)$admin->bAktiv;
             }
         } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
@@ -311,8 +317,8 @@ class AdminAccount
             if (!isset($admin->kSprache)) {
                 $admin->kSprache = Shop::getLanguageID();
             }
-            $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
-            $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
+            $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
+            $admin->attributes = $this->getAttributes($admin->kAdminlogin);
             \session_regenerate_id();
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);

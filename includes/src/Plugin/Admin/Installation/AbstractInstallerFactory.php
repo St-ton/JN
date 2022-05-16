@@ -36,20 +36,20 @@ abstract class AbstractInstallerFactory
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    protected $plugin;
+    protected ?stdClass $plugin;
 
     /**
-     * @var PluginInterface
+     * @var PluginInterface|null
      */
-    protected $oldPlugin;
+    protected ?PluginInterface $oldPlugin;
 
     /**
-     * @var array
+     * @var array|null
      */
     protected $baseNode;
 

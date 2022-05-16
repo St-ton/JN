@@ -19,14 +19,14 @@ final class Dispatcher
      *
      * @var array
      */
-    private $listeners = [];
+    private array $listeners = [];
 
     /**
      * The wildcard listeners.
      *
      * @var array
      */
-    private $wildcards = [];
+    private array $wildcards = [];
 
     /**
      * Determine if a given event has listeners.
@@ -78,7 +78,7 @@ final class Dispatcher
      */
     public function forget(string $eventName): void
     {
-        if (\mb_strpos($eventName, '*') !== false) {
+        if (\str_contains($eventName, '*')) {
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
@@ -125,10 +125,10 @@ final class Dispatcher
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {
             if (\fnmatch($key, $eventName)) {
-                $wildcards = \array_merge($wildcards, $listeners);
+                $wildcards[] = $listeners;
             }
         }
 
-        return $wildcards;
+        return \array_merge(...$wildcards);
     }
 }

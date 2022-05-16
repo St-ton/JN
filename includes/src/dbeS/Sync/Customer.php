@@ -66,17 +66,18 @@ final class Customer extends AbstractSync
             if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
                 continue;
             }
-            $customerData->kKunde = (int)$customerData->kKunde;
+            $customerData->kKunde        = (int)$customerData->kKunde;
+            $customerData->kKundenGruppe = (int)$customerData->kKundenGruppe;
 
             $customer = new CustomerClass($customerData->kKunde);
             if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
                     'kKunde',
-                    (int)$customerData->kKunde,
-                    (object)['kKundengruppe' => (int)$customerData->kKundenGruppe]
+                    $customerData->kKunde,
+                    (object)['kKundengruppe' => $customerData->kKundenGruppe]
                 );
-                $customer->kKundengruppe = (int)$customerData->kKundenGruppe;
+                $customer->kKundengruppe = $customerData->kKundenGruppe;
                 $obj                     = new stdClass();
                 $obj->tkunde             = $customer;
                 if ($customer->cMail) {
@@ -85,7 +86,7 @@ final class Customer extends AbstractSync
                     $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
                 }
             }
-            $this->db->update('tkunde', 'kKunde', (int)$customerData->kKunde, (object)['cAktiv' => 'Y']);
+            $this->db->update('tkunde', 'kKunde', $customerData->kKunde, (object)['cAktiv' => 'Y']);
         }
     }
 
@@ -363,6 +364,7 @@ final class Customer extends AbstractSync
         $customer->cAbgeholt         = 'Y';
         $customer->cAktiv            = 'Y';
         $customer->cSperre           = 'N';
+        $this->extractStreet($customer);
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;

@@ -373,10 +373,10 @@ function saveShippingSurcharge(array $data): stdClass
     $surcharge = (float)str_replace(',', '.', $post['fZuschlag']);
 
     if (!$post['cName']) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListNameMissing'), 'errorListNameMissing');
+        $alertHelper->addError(__('errorListNameMissing'), 'errorListNameMissing');
     }
     if (empty($surcharge)) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorListPriceMissing'), 'errorListPriceMissing');
+        $alertHelper->addError(__('errorListPriceMissing'), 'errorListPriceMissing');
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
         if (empty($post['kVersandzuschlag'])) {
@@ -519,17 +519,16 @@ function createShippingSurchargeZIP(array $data): stdClass
             );
         });
     if ($area !== null && !$area->lettersMatch()) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPsDoNotMatch'), 'errorZIPsDoNotMatch');
+        $alertHelper->addError(__('errorZIPsDoNotMatch'), 'errorZIPsDoNotMatch');
     } elseif (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
         $error = $zipValidator->getError();
         if ($error !== '') {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorZIPValidator');
+            $alertHelper->addError($error, 'errorZIPValidator');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorZIPMissing'), 'errorZIPMissing');
+            $alertHelper->addError(__('errorZIPMissing'), 'errorZIPMissing');
         }
     } elseif ($zipMatchSurcharge !== null) {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
+        $alertHelper->addError(
             sprintf(
                 isset($surchargeZip->cPLZ) ? __('errorZIPOverlap') : __('errorZIPAreaOverlap'),
                 $surchargeZip->cPLZ ?? $surchargeZip->cPLZAb . ' - ' . $surchargeZip->cPLZBis,
@@ -538,7 +537,7 @@ function createShippingSurchargeZIP(array $data): stdClass
             'errorZIPOverlap'
         );
     } elseif ($db->insert('tversandzuschlagplz', $surchargeZip)) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
+        $alertHelper->addSuccess(__('successZIPAdd'), 'successZIPAdd');
     }
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 

@@ -220,11 +220,7 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
     $alertService = Shop::Container()->getAlertService();
     if (!Form::validateToken()) {
         $msg = __('errorCSRF');
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            $msg,
-            'saveSettingsErrCsrf'
-        );
+        $alertService->addError($msg, 'saveSettingsErrCsrf');
 
         return $msg;
     }
@@ -245,20 +241,12 @@ function saveAdminSectionSettings(int $configSectionID, array $post, array $tags
 
     if ($invalid > 0) {
         $msg = __('errorConfigSave');
-        $alertService->addAlert(
-            Alert::TYPE_ERROR,
-            $msg,
-            'saveSettingsErr'
-        );
+        $alertService->addError($msg, 'saveSettingsErr');
 
         return $msg;
     }
     $msg = __('successConfigSave');
-    $alertService->addAlert(
-        Alert::TYPE_SUCCESS,
-        $msg,
-        'saveSettings'
-    );
+    $alertService->addSuccess($msg, 'saveSettings');
 
     return $msg;
 }
@@ -289,21 +277,21 @@ function validateNumberRange(int $min, int $max, stdClass $setting): bool
 
 /**
  * Holt alle vorhandenen Kampagnen
- * Wenn $bInterneKampagne false ist, werden keine Interne Shop Kampagnen geholt
- * Wenn $bAktivAbfragen true ist, werden nur Aktive Kampagnen geholt
+ * Wenn $getInternal false ist, werden keine Interne Shop Kampagnen geholt
+ * Wenn $activeOnly true ist, werden nur Aktive Kampagnen geholt
  *
- * @param bool $internalOnly
+ * @param bool $getInternal
  * @param bool $activeOnly
  * @return array
  */
-function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true): array
+function holeAlleKampagnen(bool $getInternal = false, bool $activeOnly = true): array
 {
     $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
     $interalSQL = '';
-    if (!$internalOnly && $activeOnly) {
-        $interalSQL = ' AND kKampagne >= 1000';
-    } elseif (!$internalOnly) {
-        $interalSQL = ' WHERE kKampagne >= 1000';
+    if (!$getInternal && $activeOnly) {
+        $interalSQL = ' AND nInternal = 0';
+    } elseif (!$getInternal) {
+        $interalSQL = ' WHERE nInternal = 0';
     }
     $campaigns = [];
     $items     = Shop::Container()->getDB()->getInts(

@@ -80,13 +80,14 @@ class Method implements MethodInterface
     public $kZahlungsart;
 
     /**
-     * @var DbInterface|null
+     * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
-     * @param string $moduleID
-     * @param int    $nAgainCheckout
+     * @param string           $moduleID
+     * @param int              $nAgainCheckout
+     * @param DbInterface|null $db
      */
     public function __construct(string $moduleID, int $nAgainCheckout = 0, DbInterface $db = null)
     {

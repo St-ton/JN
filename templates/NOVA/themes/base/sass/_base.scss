@@ -511,3 +511,11 @@ input.typeahead {
     min-height: 168px;
   }
 }
+.no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  scrollbar-height: none;
+  -ms-overflow-style: none;
+}

@@ -135,7 +135,7 @@ class Extractor
         for ($i = 0; $i < $zip->numFiles; $i++) {
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
-                if (\mb_strpos($dirName, '.') !== false) {
+                if (\str_contains($dirName, '.')) {
                     $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
 
                     return false;

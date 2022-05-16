@@ -104,7 +104,7 @@ class TemplateService implements TemplateServiceInterface
                 return false;
             }
             while (($obj = \readdir($dh)) !== false) {
-                if (\mb_strpos($obj, '.') === 0) {
+                if (\str_starts_with($obj, '.')) {
                     continue;
                 }
                 if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {

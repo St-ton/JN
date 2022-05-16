@@ -202,8 +202,8 @@ class PriceRange
         );
 
         if ($priceRange) {
-            $roundedMin              = \round($priceRange->specialPriceMin ?? 0, 2);
-            $roundedMax              = \round($priceRange->specialPriceMax ?? 0, 2);
+            $roundedMin              = \round((float)($priceRange->specialPriceMin ?? 0), 2);
+            $roundedMax              = \round((float)($priceRange->specialPriceMax ?? 0), 2);
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
             $this->isMinSpecialPrice = $roundedMin === \round($this->minNettoPrice, 2);

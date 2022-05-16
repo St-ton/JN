@@ -273,7 +273,7 @@ class Updater
         $lines = \file($sqlFile);
         foreach ($lines as $i => $line) {
             $line = \trim($line);
-            if (\mb_strpos($line, '--') === 0 || \mb_strpos($line, '#') === 0) {
+            if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
                 unset($lines[$i]);
             }
         }

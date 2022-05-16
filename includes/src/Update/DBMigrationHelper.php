@@ -247,7 +247,7 @@ class DBMigrationHelper
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
             $tableInfo = self::getTable($table);
 
-            return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
+            return $tableInfo !== null && \str_contains($tableInfo->TABLE_COMMENT, ':Migrating');
         }
 
         $tableStatus = $db->getSingleObject(

@@ -348,11 +348,10 @@ class MigrationManager
                 \sprintf('%d%02d', $version->getMajor(), $version->getMinor()),
                 $executed->format('Y-m-d H:i:s')
             );
-            $this->db->query($sql);
         } else {
             $sql = \sprintf("DELETE FROM tmigration WHERE kMigration = '%s'", $migration->getId());
-            $this->db->query($sql);
         }
+        $this->db->query($sql);
 
         return $this;
     }

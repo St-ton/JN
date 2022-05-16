@@ -1247,6 +1247,8 @@ class Exportformat
         if ((int)$this->queue->tasksExecuted === 0) {
             $this->writeHeader($tmpFile);
         }
+        $customerGroup    = CustomerGroup::getByID($this->getKundengruppe());
+        $currency         = new Currency($this->kWaehrung);
         $content          = $this->getContent();
         $categoryFallback = \str_contains($content, '->oKategorie_arr');
         $options          = Artikel::getExportOptions();
@@ -1279,7 +1281,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
-            $product = new Artikel($this->db);
+            $product = new Artikel($this->db, $customerGroup, $currency);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,

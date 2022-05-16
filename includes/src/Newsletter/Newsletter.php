@@ -8,6 +8,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
@@ -392,13 +393,15 @@ class Newsletter
         $imageBaseURL   = Shop::getImageBaseURL();
         $db             = Shop::Container()->getDB();
         $defaultOptions = Artikel::getDefaultOptions();
+        $currency       = Frontend::getCurrency();
+        $customerGroup  = CustomerGroup::reset($customerGroupID);
+        $customerGroup->setMayViewPrices(1);
         foreach ($productIDs as $id) {
             $id = (int)$id;
             if ($id <= 0) {
                 continue;
             }
-            Frontend::getCustomerGroup()->setMayViewPrices(1);
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(

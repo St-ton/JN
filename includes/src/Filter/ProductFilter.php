@@ -29,6 +29,8 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mapper\SortingType;
+use JTL\Session\Frontend;
+use JTL\Shop;
 use stdClass;
 use function Functional\first;
 use function Functional\flatten;
@@ -1694,8 +1696,12 @@ class ProductFilter
             if ($productsPerPage < 0) {
                 $productsPerPage = null;
             }
+            $currency      = Frontend::getCurrency();
+            $customerGroup = Frontend::getCustomerGroup();
+            $languageID    = Shop::getLanguageID();
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db, $customerGroup, $currency))
+                    ->fuelleArtikel($id, $opt, $customerGroup->getID(), $languageID));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());

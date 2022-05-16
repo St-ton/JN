@@ -169,10 +169,12 @@ class KategorieListe
             self::$wasModified = true;
         }
         // ist nicht im cache, muss holen
-        $db                    = Shop::Container()->getDB();
-        $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
-        $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
-        $categories            = $db->getObjects(
+        $db                                                            = Shop::Container()->getDB();
+        $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
+        $orderByName                                                   = $defaultLanguageActive
+            ? ''
+            : 'tkategoriesprache.cName, ';
+        $categories                                                    = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
@@ -186,7 +188,6 @@ class KategorieListe
                 ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
             ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
-
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
             $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);

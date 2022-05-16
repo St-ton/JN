@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Product;
 
@@ -19,97 +19,97 @@ class MerkmalWert
     /**
      * @var int
      */
-    public $kSprache;
+    public int $kSprache = 0;
 
     /**
      * @var int
      */
-    public $kMerkmalWert;
+    public int $kMerkmalWert = 0;
 
     /**
      * @var int
      */
-    public $kMerkmal;
+    public int $kMerkmal = 0;
 
     /**
      * @var int
      */
-    public $nSort;
+    public int $nSort = 0;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cWert;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMetaKeywords = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMetaDescription = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMetaTitle = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cBeschreibung = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cSeo = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cURL = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cURLFull = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cBildpfad = null;
 
     /**
      * @var string
      */
-    public $cWert;
-
-    /**
-     * @var string
-     */
-    public $cMetaKeywords;
-
-    /**
-     * @var string
-     */
-    public $cMetaDescription;
-
-    /**
-     * @var string
-     */
-    public $cMetaTitle;
-
-    /**
-     * @var string
-     */
-    public $cBeschreibung;
-
-    /**
-     * @var string
-     */
-    public $cSeo;
-
-    /**
-     * @var string
-     */
-    public $cURL;
-
-    /**
-     * @var string
-     */
-    public $cURLFull;
-
-    /**
-     * @var string
-     */
-    public $cBildpfad;
-
-    /**
-     * @var string
-     */
-    public $cBildpfadKlein;
+    public string $cBildpfadKlein = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var int
      */
-    public $nBildKleinVorhanden;
+    public int $nBildKleinVorhanden = 0;
 
     /**
      * @var string
      */
-    public $cBildpfadNormal;
+    public string $cBildpfadNormal = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var int
      */
-    public $nBildNormalVorhanden;
+    public int $nBildNormalVorhanden = 0;
 
     /**
      * @var string
      */
-    public $cBildURLKlein;
+    public string $cBildURLKlein;
 
     /**
      * @var string
      */
-    public $cBildURLNormal;
+    public string $cBildURLNormal;
 
     /**
      * MerkmalWert constructor.
@@ -164,39 +164,39 @@ class MerkmalWert
         }
         $data = Shop::Container()->getDB()->getSingleObject(
             'SELECT tmerkmalwert.*, ' . $selectSQL . '
-                FROM tmerkmalwert ' .  $joinSQL . '
+                FROM tmerkmalwert ' . $joinSQL . '
                 WHERE tmerkmalwert.kMerkmalWert = :mid',
             ['mid' => $id, 'lid' => $languageID]
         );
         if ($data !== null && $data->kMerkmalWert > 0) {
-            foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member = $data->$member;
-            }
-            $this->cURL     = URL::buildURL($this, \URLART_MERKMAL);
-            $this->cURLFull = URL::buildURL($this, \URLART_MERKMAL, true);
+            $this->kMerkmalWert     = (int)$data->kMerkmalWert;
+            $this->kMerkmal         = (int)$data->kMerkmal;
+            $this->nSort            = (int)$data->nSort;
+            $this->kSprache         = (int)$data->kSprache;
+            $this->cBildpfad        = $data->cBildpfad;
+            $this->cWert            = $data->cWert;
+            $this->cMetaTitle       = $data->cMetaTitle;
+            $this->cMetaDescription = $data->cMetaDescription;
+            $this->cMetaKeywords    = $data->cMetaKeywords;
+            $this->cBeschreibung    = $data->cBeschreibung;
+            $this->cSeo             = $data->cSeo;
+            $this->cURL             = URL::buildURL($this, \URLART_MERKMAL);
+            $this->cURLFull         = URL::buildURL($this, \URLART_MERKMAL, true);
             \executeHook(\HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
+            if ($this->cBildpfad !== null && $this->cBildpfad !== '') {
+                if (\file_exists(\PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
+                    $this->cBildpfadKlein      = \PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;
+                    $this->nBildKleinVorhanden = 1;
+                }
+                if (\file_exists(\PFAD_MERKMALWERTBILDER_NORMAL . $this->cBildpfad)) {
+                    $this->cBildpfadNormal      = \PFAD_MERKMALWERTBILDER_NORMAL . $this->cBildpfad;
+                    $this->nBildNormalVorhanden = 1;
+                }
+                $this->generateAllImageSizes(true, 1, $this->cBildpfad);
+            }
         }
         $imageBaseURL = Shop::getImageBaseURL();
 
-        $this->cBildpfadKlein       = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-        $this->nBildKleinVorhanden  = 0;
-        $this->cBildpfadNormal      = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-        $this->nBildNormalVorhanden = 0;
-        $this->nSort                = (int)$this->nSort;
-        $this->kSprache             = (int)$this->kSprache;
-        $this->kMerkmal             = (int)$this->kMerkmal;
-        $this->kMerkmalWert         = (int)$this->kMerkmalWert;
-        if ($this->cBildpfad !== null && \mb_strlen($this->cBildpfad) > 0) {
-            if (\file_exists(\PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad)) {
-                $this->cBildpfadKlein      = \PFAD_MERKMALWERTBILDER_KLEIN . $this->cBildpfad;
-                $this->nBildKleinVorhanden = 1;
-            }
-            if (\file_exists(\PFAD_MERKMALWERTBILDER_NORMAL . $this->cBildpfad)) {
-                $this->cBildpfadNormal      = \PFAD_MERKMALWERTBILDER_NORMAL . $this->cBildpfad;
-                $this->nBildNormalVorhanden = 1;
-            }
-            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
-        }
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
         Shop::set($cacheID, $this);
@@ -213,10 +213,290 @@ class MerkmalWert
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getValue()
+    public function getValue(): ?string
     {
         return $this->cWert;
+    }
+
+    /**
+     * @param string|null $value
+     */
+    public function setValue(?string $value): void
+    {
+        $this->cWert = $value;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->kSprache;
+    }
+
+    /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->kSprache = $languageID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCharacteristicID(): int
+    {
+        return $this->kMerkmal;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setCharacteristicID(int $id): void
+    {
+        $this->kMerkmal = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSort(): int
+    {
+        return $this->nSort;
+    }
+
+    /**
+     * @param int $sort
+     */
+    public function setSort(int $sort): void
+    {
+        $this->nSort = $sort;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMetaKeywords(): ?string
+    {
+        return $this->cMetaKeywords;
+    }
+
+    /**
+     * @param string|null $metaKeywords
+     */
+    public function setMetaKeywords(?string $metaKeywords): void
+    {
+        $this->cMetaKeywords = $metaKeywords;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMetaDescription(): ?string
+    {
+        return $this->cMetaDescription;
+    }
+
+    /**
+     * @param string|null $metaDescription
+     */
+    public function setMetaDescription(?string $metaDescription): void
+    {
+        $this->cMetaDescription = $metaDescription;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMetaTitle(): ?string
+    {
+        return $this->cMetaTitle;
+    }
+
+    /**
+     * @param string|null $metaTitle
+     */
+    public function setMetaTitle(?string $metaTitle): void
+    {
+        $this->cMetaTitle = $metaTitle;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string
+    {
+        return $this->cBeschreibung;
+    }
+
+    /**
+     * @param string|null $description
+     */
+    public function setDescription(?string $description): void
+    {
+        $this->cBeschreibung = $description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSeo(): ?string
+    {
+        return $this->cSeo;
+    }
+
+    /**
+     * @param string|null $seo
+     */
+    public function setSeo(?string $seo): void
+    {
+        $this->cSeo = $seo;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURL(): ?string
+    {
+        return $this->cURL;
+    }
+
+    /**
+     * @param string|null $url
+     */
+    public function setURL(?string $url): void
+    {
+        $this->cURL = $url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getURLFull(): ?string
+    {
+        return $this->cURLFull;
+    }
+
+    /**
+     * @param string|null $url
+     */
+    public function seCURLFull(?string $url): void
+    {
+        $this->cURLFull = $url;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getImagePath(): ?string
+    {
+        return $this->cBildpfad;
+    }
+
+    /**
+     * @param string|null $path
+     */
+    public function setImagePath(?string $path): void
+    {
+        $this->cBildpfad = $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImagePathSmall(): string
+    {
+        return $this->cBildpfadKlein;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setImagePathSmall(string $path): void
+    {
+        $this->cBildpfadKlein = $path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSmallImage(): bool
+    {
+        return $this->nBildKleinVorhanden === 1;
+    }
+
+    /**
+     * @param bool $has
+     */
+    public function setHasSmallImage(bool $has): void
+    {
+        $this->nBildKleinVorhanden = (int)$has;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImagePathNormal(): string
+    {
+        return $this->cBildpfadNormal;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setImagePathNormal(string $path): void
+    {
+        $this->cBildpfadNormal = $path;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasNormalImage(): bool
+    {
+        return $this->nBildNormalVorhanden === 1;
+    }
+
+    /**
+     * @param bool $has
+     */
+    public function setHasNormalImage(bool $has): void
+    {
+        $this->nBildNormalVorhanden = (int)$has;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageURLSmall(): string
+    {
+        return $this->cBildURLKlein;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setImageURLSmall(string $url): void
+    {
+        $this->cBildURLKlein = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImageURLNormal(): string
+    {
+        return $this->cBildURLNormal;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setImageURLNormal(string $url): void
+    {
+        $this->cBildURLNormal = $url;
     }
 }

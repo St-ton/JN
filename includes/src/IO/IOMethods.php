@@ -172,7 +172,7 @@ class IOMethods
         if ($amount <= 0 || $productID <= 0) {
             return $ioResponse;
         }
-        $product               = new Artikel();
+        $product               = new Artikel($this->db);
         $options               = Artikel::getDefaultOptions();
         $options->nStueckliste = 1;
         $product->fuelleArtikel($productID, $options);
@@ -643,7 +643,7 @@ class IOMethods
         $_POST['jtl_token'] = $aValues['jtl_token'];
         $smarty             = Shop::Smarty();
         $response           = new IOResponse();
-        $product            = new Artikel();
+        $product            = new Artikel($this->db);
         $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
         $items              = $aValues['item'] ?? [];
         $quantities         = $aValues['quantity'] ?? [];
@@ -804,7 +804,7 @@ class IOMethods
         }
 
         if ($productID > 0) {
-            $product                            = new Artikel();
+            $product                            = new Artikel($this->db);
             $options                            = Artikel::getDefaultOptions();
             $options->nKeinLagerbestandBeachten = 1;
 
@@ -854,7 +854,7 @@ class IOMethods
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel();
+        $product                            = new Artikel($this->db);
         $product->fuelleArtikel($parentID, $checkBulk ? null : $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
@@ -1021,7 +1021,7 @@ class IOMethods
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel();
+        $product                            = new Artikel($this->db);
         $product->fuelleArtikel($parentProductID, $options);
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);

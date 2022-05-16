@@ -287,7 +287,8 @@ class CMS
      */
     public static function getFreeGifts(array $conf): array
     {
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroup   = Frontend::getCustomerGroup();
+        $customerGroupID = $customerGroup->getID();
         $gifts           = [];
         $sort            = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
@@ -316,7 +317,7 @@ class CMS
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
         foreach ($tmpGifts as $item) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

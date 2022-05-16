@@ -171,16 +171,17 @@ class PriceRange extends AbstractFilter
         if (empty($value)) {
             $value = '0_0';
         }
+        $currency          = Frontend::getCurrency();
         [$start, $end]     = \explode('_', $value);
         $this->offsetStart = (float)$start;
         $this->offsetEnd   = (float)$end;
         $this->setValue($value === '0_0' ? 0 : ($this->offsetStart . '_' . $this->offsetEnd));
-        $this->offsetStartLocalized = Preise::getLocalizedPriceWithoutFactor($this->offsetStart);
-        $this->offsetEndLocalized   = Preise::getLocalizedPriceWithoutFactor($this->offsetEnd);
+        $this->offsetStartLocalized = Preise::getLocalizedPriceWithoutFactor($this->offsetStart, $currency);
+        $this->offsetEndLocalized   = Preise::getLocalizedPriceWithoutFactor($this->offsetEnd, $currency);
         $this->setName(\html_entity_decode($this->offsetStartLocalized . ' - ' . $this->offsetEndLocalized));
         $this->isInitialized = true;
         $this->condition     = '';
-        $conversionFactor    = Frontend::getCurrency()->getConversionFactor();
+        $conversionFactor    = $currency->getConversionFactor();
         $groupDiscount       = Frontend::getCustomerGroup()->getDiscount();
         $discount            = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
             ? (float)$_SESSION['Kunde']->fRabatt

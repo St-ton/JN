@@ -8,6 +8,7 @@
 
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 

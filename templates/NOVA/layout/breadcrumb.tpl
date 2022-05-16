@@ -7,12 +7,23 @@
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="https://schema.org/BreadcrumbList"}
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
+                        {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
+                            {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
+                                class="breadcrumb-backtolist" href="#"}
+                                {lang key='goBackToList'}
+                            {/breadcrumbitem}
+                        {/if}
                         {if $parent !== null}
                             {breadcrumbitem class="breadcrumb-arrow"
                                 href=$parent->getURLFull()
                                 title={sanitizeTitle title=$parent->getName()}
                             }
                                 <span itemprop="name">{$parent->getName()}</span>
+                                {inline_script}<script>
+                                    if (!$.evo.article().isBackToListDisabled()) {
+                                        $('.breadcrumb-arrow').remove();
+                                    }
+                                </script>{/inline_script}
                             {/breadcrumbitem}
                         {/if}
                     {/block}

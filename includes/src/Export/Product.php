@@ -183,7 +183,7 @@ class Product extends Artikel
         }
         // Kampagne URL
         if ($model !== null && !empty($model->getCampaignParameter())) {
-            $sep         = (\mb_strpos($this->cURL, '.php') !== false) ? '&' : '?';
+            $sep         = (\str_contains($this->cURL, '.php')) ? '&' : '?';
             $this->cURL .= $sep . $model->getCampaignParameter() . '=' . $model->getCampaignValue();
         }
         $this->Lieferbar    = $this->fLagerbestand <= 0 ? 'N' : 'Y';

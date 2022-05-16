@@ -113,7 +113,7 @@ class FormatExporter extends AbstractExporter
         $fileWriterClass = $this->getFileWriterClass();
         $this->writer    = $this->writer ?? new $fileWriterClass($this->model, $this->config, $this->smarty);
         if ($this->model->getPluginID() > 0
-            && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+            && \str_contains($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE)
         ) {
             $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
             if ($queueEntry->jobQueueID > 0 && empty($queueEntry->cronID)) {
@@ -158,7 +158,7 @@ class FormatExporter extends AbstractExporter
         if ((int)$this->queue->tasksExecuted === 0) {
             $this->writer->writeHeader();
         }
-        $fallback     = (\mb_strpos($this->model->getContent(), '->oKategorie_arr') !== false);
+        $fallback     = \str_contains($this->model->getContent(), '->oKategorie_arr');
         $options      = Product::getExportOptions();
         $helper       = Category::getInstance($this->model->getLanguageID(), $this->model->getCustomerGroupID());
         $shopURL      = Shop::getURL();

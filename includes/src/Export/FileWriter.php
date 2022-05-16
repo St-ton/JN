@@ -140,7 +140,7 @@ class FileWriter implements ExportWriterInterface
     {
         if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
             while (($fdir = \readdir($dir)) !== false) {
-                if ($fdir !== $fileName && \mb_strpos($fdir, $fileNameSplit) !== false) {
+                if ($fdir !== $fileName && \str_contains($fdir, $fileNameSplit)) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $fdir);
                 }
             }

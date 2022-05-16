@@ -72,9 +72,9 @@ class SyntaxChecker
         $realpath           = \realpath($pathinfo['dirname']);
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (!\str_contains($post['cDateiname'], '.')) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif ($realpath === false || \mb_strpos($realpath, \realpath(\PFAD_ROOT)) === false) {
+        } elseif ($realpath === false || !\str_contains($realpath, \realpath(\PFAD_ROOT))) {
             $validation['cDateiname'] = 3;
         } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
@@ -88,11 +88,11 @@ class SyntaxChecker
             $validation['cContent'] = 1;
         } elseif (!\EXPORTFORMAT_ALLOW_PHP
             && (
-                \mb_strpos($post['cContent'], '{php}') !== false
-                || \mb_strpos($post['cContent'], '<?php') !== false
-                || \mb_strpos($post['cContent'], '<%') !== false
-                || \mb_strpos($post['cContent'], '<%=') !== false
-                || \mb_strpos($post['cContent'], '<script language="php">') !== false
+                \str_contains($post['cContent'], '{php}')
+                || \str_contains($post['cContent'], '<?php')
+                || \str_contains($post['cContent'], '<%')
+                || \str_contains($post['cContent'], '<%=')
+                || \str_contains($post['cContent'], '<script language="php">')
             )
         ) {
             $validation['cContent'] = 2;
@@ -324,9 +324,9 @@ class SyntaxChecker
         );
         $nl        = $writer->getNewLine();
         $separator = ',';
-        if (\mb_strpos($writer->getHeader(), "\t") !== false) {
+        if (\str_contains($writer->getHeader(), "\t")) {
             $separator = "\t";
-        } elseif (\mb_strpos($writer->getHeader(), ';') !== false) {
+        } elseif (\str_contains($writer->getHeader(), ';')) {
             $separator = ';';
         }
         $header  = \array_filter(\mb_split($nl, $writer->getHeader()));

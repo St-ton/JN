@@ -1468,7 +1468,7 @@ class Artikel
     /**
      * @param stdClass $image
      * @param bool     $json
-     * @return mixed|object|string
+     * @return false|object|string
      */
     private function prepareImageDetails(stdClass $image, bool $json = true)
     {
@@ -1559,7 +1559,7 @@ class Artikel
             $attributes = $this->getDB()->selectAll(
                 'tartikelattribut',
                 'kArtikel',
-                (int)$this->kArtikel,
+                $this->kArtikel,
                 'cName, cWert',
                 'kArtikelAttribut'
             );
@@ -1581,7 +1581,7 @@ class Artikel
         $attributes           = $this->getDB()->selectAll(
             'tattribut',
             'kArtikel',
-            (int)$this->kArtikel,
+            $this->kArtikel,
             '*',
             'nSort'
         );
@@ -2211,7 +2211,7 @@ class Artikel
                     [
                         'kek'  => $this->kEigenschaftKombi,
                         'cid'  => $this->kKundengruppe ?? $this->customerGroup->getID(),
-                        'ppid' => (int)$this->kVaterArtikel
+                        'ppid' => $this->kVaterArtikel
                     ]
                 );
                 $combinations    = \array_reduce($allCombinations, static function ($cArry, $item) {
@@ -2361,7 +2361,7 @@ class Artikel
         $imageBaseURL  = Shop::getImageBaseURL();
         $mayViewPrices = $this->customerGroup->mayViewPrices();
         $variations    = $this->execVariationSQL($customerGroupID, $exportWorkaround);
-        if (!\is_array($variations) || \count($variations) === 0) {
+        if (\count($variations) === 0) {
             return $this;
         }
         $lastID      = 0;
@@ -2385,7 +2385,7 @@ class Artikel
                     WHERE kArtikel = :pid
                         AND teigenschaft.cTyp NOT IN (\'FREIFELD\', \'PFLICHT-FREIFELD\')
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
-                ['cgid' => $customerGroupID, 'pid' => (int)$this->kVaterArtikel]
+                ['cgid' => $customerGroupID, 'pid' => $this->kVaterArtikel]
             )->cnt;
         foreach ($variations as $i => $tmpVariation) {
             if ($lastID !== $tmpVariation->kEigenschaft) {
@@ -2702,7 +2702,7 @@ class Artikel
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName,
                             teigenschaftwert.nSort, teigenschaftwert.cName',
-                    ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
+                    ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
                 );
             } elseif (\count($this->VariationenOhneFreifeld) === 2) {
                 // Baue Warenkorbmatrix Bildvorschau
@@ -2724,7 +2724,7 @@ class Artikel
                             AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                         ORDER BY teigenschaft.nSort, teigenschaft.cName, 
                                  teigenschaftwert.nSort, teigenschaftwert.cName',
-                    ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
+                    ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
                 );
             }
             $error = false;
@@ -2963,7 +2963,7 @@ class Artikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 ' . Preise::getPriceJoinSql($customerGroupID) . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL',
-            ['pid' => (int)$this->kArtikel, 'cgid' => $customerGroupID]
+            ['pid' => $this->kArtikel, 'cgid' => $customerGroupID]
         );
         if ($this->nIstVater === 1) {
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
@@ -3232,7 +3232,7 @@ class Artikel
         $options = $options ?? self::getDefaultOptions();
         if ($customerGroupID) {
             $this->customerGroup = CustomerGroup::reset($customerGroupID);
-        } elseif ($this->customerGroup === null) {
+        } else {
             $this->customerGroup = Frontend::getCustomerGroup();
             $customerGroupID     = $this->customerGroup->getID();
         }
@@ -4030,7 +4030,7 @@ class Artikel
             $variChildren = $this->getDB()->selectAll(
                 'tartikel',
                 'kVaterArtikel',
-                (int)$this->kVaterArtikel,
+                $this->kVaterArtikel,
                 'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
             );
             $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item) {
@@ -4632,7 +4632,7 @@ class Artikel
         if ($this->kArtikel === null || $this->kArtikel <= 0 || LanguageHelper::isDefaultLanguageActive()) {
             return false;
         }
-        $att = $this->getDB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
+        $att = $this->getDB()->select('tattribut', 'kArtikel', $this->kArtikel, 'cName', $name);
         if ($this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
             $att   = $this->getDB()->select(
                 'tattributsprache',
@@ -4779,7 +4779,7 @@ class Artikel
      * @param null|int|float $stockLevel
      * @param null|string    $languageISO
      * @param int|null       $shippingID gets DeliveryTime for a special shipping
-     * @return mixed|string
+     * @return string
      * @throws \Exception
      */
     public function getDeliveryTime(
@@ -4826,7 +4826,7 @@ class Artikel
                 JOIN tstueckliste
                     ON tstueckliste.kArtikel = tartikel.kArtikel
                     AND tstueckliste.kStueckliste = :plid',
-            ['plid' => (int)$this->kStueckliste]
+            ['plid' => $this->kStueckliste]
         );
         // check if this is a set product - if so, calculate the delivery time from the set of products
         // we don't have loaded the list of pieces yet, do so!
@@ -4848,7 +4848,7 @@ class Artikel
                       ON tartikel.kArtikel = tstueckliste.kArtikel
                     WHERE tstueckliste.kStueckliste = :plid
                         AND tartikel.kArtikel IS NULL',
-                ['plid' => (int)$this->kStueckliste]
+                ['plid' => $this->kStueckliste]
             );
 
             if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {

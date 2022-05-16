@@ -48,16 +48,24 @@ class NewsController extends AbstractController
      */
     public function getStateFromSlug(array $args): State
     {
-        $newsID = (int)($args['id'] ?? 0);
-        if ($newsID < 1) {
+        $newsID  = (int)($args['id'] ?? 0);
+        $newItem = $args['name'] ?? null;
+        if ($newsID < 1 && $newItem === null) {
             return $this->state;
         }
-        $seo = $this->db->getSingleObject(
-            'SELECT *
-                FROM tseo
-                WHERE cKey = :key AND kKey = :kid',
-            ['key' => 'kNews', 'kid' => $newsID]
-        );
+        $seo = $newsID > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND kKey = :kid',
+                ['key' => 'kNews', 'kid' => $newsID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => 'kNews', 'seo' => $newItem]
+            );
         if ($seo === null) {
             $this->state->is404 = true;
 
@@ -75,7 +83,7 @@ class NewsController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        if (isset($args['id'])) {
+        if (isset($args['id']) || isset($args['name'])) {
             $this->getStateFromSlug($args);
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);

@@ -114,20 +114,20 @@ class SyncCronjob extends NetSyncHandler
                 $export->Sprache->setId(0);
                 $export->nFehlerhaft = 1;
             }
-            $export->Waehrung     = $db->select(
+            $export->Waehrung     = $this->db->select(
                 'twaehrung',
                 'kWaehrung',
                 $export->kWaehrung
             );
-            $export->Kundengruppe = $db->select(
+            $export->Kundengruppe = $this->db->select(
                 'tkundengruppe',
                 'kKundengruppe',
                 $export->kKundengruppe
             );
-            $export->oJobQueue    = $db->getSingleObject(
+            $export->oJobQueue    = $this->db->getSingleObject(
                 "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
-                FROM tjobqueue 
-                WHERE cronID = :id",
+                    FROM tjobqueue 
+                    WHERE cronID = :id",
                 ['id' => $export->cronID]
             );
             $export->productCount = $exporter->getExportProductCount();

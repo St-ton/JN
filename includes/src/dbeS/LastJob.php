@@ -26,24 +26,12 @@ use stdClass;
 final class LastJob
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * LastJob constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
     }
 
     public function execute(): void

@@ -19,26 +19,14 @@ class NetSyncHandler
     protected static ?NetSyncHandler $instance = null;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
      * NetSyncHandler constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @throws Exception
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(protected DbInterface $db, protected LoggerInterface $logger)
     {
         self::$instance = $this;
-        $this->db       = $db;
-        $this->logger   = $logger;
         if (!$this->isAuthenticated()) {
             static::throwResponse(NetSyncResponse::ERRORLOGIN);
         }

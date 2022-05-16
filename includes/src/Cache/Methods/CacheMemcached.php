@@ -53,9 +53,7 @@ class CacheMemcached implements ICachingMethod
      */
     private function setMemcached(string $host, int $port): ICachingMethod
     {
-        if ($this->memcached !== null) {
-            $this->memcached->quit();
-        }
+        $this->memcached?->quit();
         $this->memcached = new Memcached();
         $this->memcached->addServer($host, $port);
 

@@ -60,7 +60,7 @@ class CacheAdvancedfile implements ICachingMethod
         }
         $info = \pathinfo($fileName);
         $real = \realpath($info['dirname']);
-        if (!\is_string($real) || \mb_strpos($real, \realpath($dir)) !== 0) {
+        if (!\is_string($real) || !\str_starts_with($real, \realpath($dir))) {
             return false;
         }
 

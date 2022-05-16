@@ -30,18 +30,10 @@ function deleteShopLogo(string $logo): bool
 function mappeFileTyp(string $type): string
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    switch ($type) {
-        case 'image/gif':
-            return '.gif';
-        case 'image/png':
-        case 'image/x-png':
-            return '.png';
-        case 'image/bmp':
-            return '.bmp';
-        case 'image/pjpeg':
-        case 'image/jpg':
-        case 'image/jpeg':
-        default:
-            return '.jpg';
-    }
+    return match ($type) {
+        'image/gif' => '.gif',
+        'image/png', 'image/x-png' => '.png',
+        'image/bmp' => '.bmp',
+        default => '.jpg',
+    };
 }

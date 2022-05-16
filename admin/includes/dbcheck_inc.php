@@ -1,13 +1,6 @@
 <?php declare(strict_types=1);
 
-use JTL\Backend\DirManager;
-use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Helpers\Text;
-use JTL\Session\Backend;
-use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
-use JTLShop\SemVer\Parser;
 
 /**
  * @param bool $extended

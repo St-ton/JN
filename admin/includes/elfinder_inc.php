@@ -11,13 +11,15 @@
  * @param  bool|null $isDir   path is directory (true: directory, false: file, null: unknown)
  * @param  string    $relpath file path relative to volume root directory started with directory separator
  * @return bool|null
+ * @todo!
+ *
  **/
 function access($attr, $path, $data, $volume, $isDir, $relpath)
 {
     $basename = basename($path);
 
     // if file/folder begins with '.' (dot) but with out volume root
-    return strpos($basename, '.') === 0 && mb_strlen($relpath) !== 1
+    return str_starts_with($basename, '.') && mb_strlen($relpath) !== 1
         ? !($attr === 'read' || $attr === 'write') // set read+write to false, other (locked+hidden) set to true
         : null;                                    // else elFinder decide it itself
 }

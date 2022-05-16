@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
+use JTL\Backend\Stats;
 use JTL\Linechart;
 use JTL\Piechart;
-use JTL\Backend\Stats;
 
 /**
  * @param int $type

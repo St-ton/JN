@@ -176,7 +176,7 @@ function getCombinations(array $shipClasses, int $length): array
 }
 
 /**
- * @return array|int -1 if too many shipping classes exist
+ * @return int
  * @deprecated since 5.2.0
  */
 function getMissingShippingClassCombi()
@@ -188,7 +188,6 @@ function getMissingShippingClassCombi()
 /**
  * @param array $data
  * @return stdClass
- * @throws SmartyException
  * @deprecated since 5.2.0
  */
 function saveShippingSurcharge(array $data): stdClass
@@ -230,7 +229,7 @@ function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): stdClass
 /**
  * @param array $data
  * @return stdClass
- * @throws SmartyException
+ * @deprecated since 5.2.0
  */
 function createShippingSurchargeZIP(array $data): stdClass
 {
@@ -240,7 +239,7 @@ function createShippingSurchargeZIP(array $data): stdClass
 
 /**
  * @param int|null $shippingTypeID
- * @return array|mixed
+ * @return array
  * @deprecated since 5.2.0
  */
 function getShippingTypes(int $shippingTypeID = null)

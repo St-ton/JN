@@ -8,7 +8,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
-use JTL\Router\BackendRouter;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -76,7 +75,6 @@ $oAccount   = Shop::Container()->getAdminAccount();
 $loggedIn   = $oAccount->logged();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
-$conf       = Shop::getSettings([CONF_GLOBAL]);
 
 if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     if ($GLOBALS['plgSafeMode']) {

@@ -10,6 +10,7 @@ use JTL\Shop;
  */
 function getNames(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $res = [];
     if (!$paymentMethodID) {
         return $res;
@@ -29,6 +30,7 @@ function getNames(int $paymentMethodID): array
  */
 function getshippingTimeNames(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $res = [];
     if (!$paymentMethodID) {
         return $res;
@@ -48,6 +50,7 @@ function getshippingTimeNames(int $paymentMethodID): array
  */
 function getHinweisTexte(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $messages = [];
     if (!$paymentMethodID) {
         return $messages;
@@ -71,6 +74,7 @@ function getHinweisTexte(int $paymentMethodID): array
  */
 function getHinweisTexteShop(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $messages = [];
     if (!$paymentMethodID) {
         return $messages;
@@ -94,6 +98,7 @@ function getHinweisTexteShop(int $paymentMethodID): array
  */
 function getGesetzteKundengruppen($paymentMethod): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $ret = [];
     if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
         $ret[0] = true;
@@ -114,5 +119,6 @@ function getGesetzteKundengruppen($paymentMethod): array
  */
 function getPaymentMethodsByName(string $query): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];
 }

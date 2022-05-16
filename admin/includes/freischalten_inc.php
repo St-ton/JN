@@ -12,7 +12,6 @@ use JTL\DB\SqlObject;
 function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-
     return [];
 }
 

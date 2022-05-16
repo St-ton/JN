@@ -24,30 +24,15 @@ use Throwable;
 class SmartyStrategy extends ApplicationStrategy
 {
     /**
-     * @var ResponseFactoryInterface
-     */
-    protected ResponseFactoryInterface $responseFactory;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected JTLSmarty $smarty;
-
-    /**
-     * @var State
-     */
-    protected State $state;
-
-    /**
      * @param ResponseFactoryInterface $responseFactory
      * @param JTLSmarty                $smarty
      * @param State                    $state
      */
-    public function __construct(ResponseFactoryInterface $responseFactory, JTLSmarty $smarty, State $state)
-    {
-        $this->responseFactory = $responseFactory;
-        $this->smarty          = $smarty;
-        $this->state           = $state;
+    public function __construct(
+        protected ResponseFactoryInterface $responseFactory,
+        protected JTLSmarty $smarty,
+        protected State $state
+    ) {
     }
 
     /**
@@ -73,6 +58,7 @@ class SmartyStrategy extends ApplicationStrategy
 
     /**
      * @return MiddlewareInterface
+     * @todo
      */
     public function getThrowableHandler2(): MiddlewareInterface
     {
@@ -82,30 +68,15 @@ class SmartyStrategy extends ApplicationStrategy
             $this->state
         ) implements MiddlewareInterface {
             /**
-             * @var ResponseInterface
-             */
-            protected ResponseInterface $response;
-
-            /**
-             * @var JTLSmarty
-             */
-            protected JTLSmarty $smarty;
-
-            /**
-             * @var State
-             */
-            protected State $state;
-
-            /**
              * @param ResponseInterface $response
              * @param JTLSmarty         $smarty
              * @param State             $state
              */
-            public function __construct(ResponseInterface $response, JTLSmarty $smarty, State $state)
-            {
-                $this->response = $response;
-                $this->smarty   = $smarty;
-                $this->state    = $state;
+            public function __construct(
+                protected ResponseInterface $response,
+                protected JTLSmarty $smarty,
+                protected State $state
+            ) {
             }
 
             /**
@@ -129,6 +100,7 @@ class SmartyStrategy extends ApplicationStrategy
                             ?: 0;
                         $pc                      = new PageController(
                             Shop::Container()->getDB(),
+                            Shop::Container()->getCache(),
                             $this->state,
                             1,
                             Shopsetting::getInstance()->getAll(),

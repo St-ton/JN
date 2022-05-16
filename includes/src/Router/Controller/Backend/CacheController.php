@@ -278,8 +278,8 @@ class CacheController extends AbstractBackendController
                         $availableMethods[] = $name;
                     }
                 }
+                $value->cWert = 'null';
                 if (\count($availableMethods) > 0) {
-                    $value->cWert = 'null';
                     if (\in_array('redis', $availableMethods, true)) {
                         $value->cWert = 'redis';
                     } elseif (\in_array('memcache', $availableMethods, true)) {
@@ -293,8 +293,6 @@ class CacheController extends AbstractBackendController
                     } elseif (\in_array('file', $availableMethods, true)) {
                         $value->cWert = 'file';
                     }
-                } else {
-                    $value->cWert = 'null';
                 }
                 $this->db->update(
                     'teinstellungen',

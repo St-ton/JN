@@ -30,35 +30,9 @@ use function Functional\pluck;
 abstract class AbstractBackendController implements ControllerInterface
 {
     /**
-     * @var DbInterface
+     * @var JTLSmarty|null
      */
-    protected DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected JTLSmarty $smarty;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected AlertServiceInterface $alertService;
-
-    /**
-     * @var AdminAccount
-     */
-    protected AdminAccount $account;
-
-    /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
+    protected ?JTLSmarty $smarty = null;
     /**
      * @var string
      */
@@ -77,17 +51,12 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param GetText               $getText
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        AlertServiceInterface $alertService,
-        AdminAccount $account,
-        GetText $getText
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected AlertServiceInterface $alertService,
+        protected AdminAccount $account,
+        protected GetText $getText
     ) {
-        $this->db           = $db;
-        $this->cache        = $cache;
-        $this->alertService = $alertService;
-        $this->account      = $account;
-        $this->getText      = $getText;
     }
 
     /**

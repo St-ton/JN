@@ -227,11 +227,10 @@ class IOController extends AbstractBackendController
      * @param string $url
      * @return array|IOError
      */
-    public function addFav(string $title, string $url)
+    public function addFav(string $title, string $url): array|IOError
     {
         $success     = false;
         $kAdminlogin = $this->account->getID();
-
         if (!empty($title) && !empty($url)) {
             $success = AdminFavorite::add($kAdminlogin, $title, $url);
         }
@@ -279,7 +278,7 @@ class IOController extends AbstractBackendController
     public function createSearchIndex($idx, $create)
     {
         $this->getText->loadAdminLocale('pages/sucheinstellungen');
-        $idx      = mb_convert_case(Text::xssClean($idx), MB_CASE_LOWER);
+        $idx      = \mb_convert_case(Text::xssClean($idx), \MB_CASE_LOWER);
         $notice   = '';
         $errorMsg = '';
         if (!\in_array($idx, ['tartikel', 'tartikelsprache'], true)) {
@@ -342,8 +341,12 @@ class IOController extends AbstractBackendController
 
                 if ($settings['suche_fulltext'] !== 'N') {
                     $settings['suche_fulltext'] = 'N';
-                    \saveAdminSectionSettings(\CONF_ARTIKELUEBERSICHT, $settings);
-
+                    $this->db->update(
+                        'teinstellungen',
+                        ['kEinstellungenSektion', 'cName'],
+                        [\CONF_ARTIKELUEBERSICHT, 'suche_fulltext'],
+                        (object)['cWert' => 'N']
+                    );
                     $this->cache->flushTags([
                         \CACHING_GROUP_OPTION,
                         \CACHING_GROUP_CORE,

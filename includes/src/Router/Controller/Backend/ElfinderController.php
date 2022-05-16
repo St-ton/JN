@@ -53,7 +53,7 @@ class ElfinderController extends AbstractBackendController
                         $fileTypes = ['jpeg', 'jpg', 'webp', 'png'];
 
                         foreach ($result['added'] as &$item) {
-                            $item['name'] = mb_strtolower($item['name']);
+                            $item['name'] = \mb_strtolower($item['name']);
                         }
                         unset($item);
                         foreach ($result['removed'] as $filename) {
@@ -85,7 +85,7 @@ class ElfinderController extends AbstractBackendController
                         }
                     },
                     'upload.presave' => static function (&$path, &$name, $tmpname, $_this, $volume) {
-                        $name = mb_strtolower($name);
+                        $name = \mb_strtolower($name);
                     },
                 ],
                 'roots' => [

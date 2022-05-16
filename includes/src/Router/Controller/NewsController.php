@@ -12,6 +12,7 @@ use JTL\News\Controller;
 use JTL\News\Item;
 use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
+use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use League\Route\Http\Exception\NotFoundException;
@@ -42,12 +43,44 @@ class NewsController extends AbstractController
         parent::init();
         return true;
     }
+    /**
+     * @inheritdoc
+     */
+    public function getStateFromSlug(array $args): State
+    {
+        $newsID = (int)($args['id'] ?? 0);
+        if ($newsID < 1) {
+            return $this->state;
+        }
+        $seo = $this->db->getSingleObject(
+            'SELECT *
+                FROM tseo
+                WHERE cKey = :key AND kKey = :kid',
+            ['key' => 'kNews', 'kid' => $newsID]
+        );
+        if ($seo === null) {
+            $this->state->is404 = true;
+
+            return $this->state;
+        }
+        $slug          = $seo->cSeo;
+        $seo->kSprache = (int)$seo->kSprache;
+        $seo->kKey     = (int)$seo->kKey;
+
+        return $this->updateState($seo, $slug);
+    }
 
     /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (isset($args['id'])) {
+            $this->getStateFromSlug($args);
+            if (!$this->init()) {
+                return $this->notFoundResponse($request, $args, $smarty);
+            }
+        }
         $this->smarty          = $smarty;
         $pagination            = new Pagination();
         $this->breadCrumbName  = null;

@@ -9,6 +9,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Router\State;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
@@ -21,6 +22,41 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class PageController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
+    public function getStateFromSlug(array $args): State
+    {
+        $linkID   = (int)($args['id'] ?? 0);
+        $linkName = $args['name'] ?? null;
+        if ($linkID < 1 && $linkName === null) {
+            return $this->state;
+        }
+        $seo = $linkID > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND kKey = :kid',
+                ['key' => 'kLink', 'kid' => $linkID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => 'kLink', 'seo' => $linkName]
+            );
+        if ($seo === null) {
+            $this->state->is404 = true;
+
+            return $this->state;
+        }
+        $slug          = $seo->cSeo;
+        $seo->kSprache = (int)$seo->kSprache;
+        $seo->kKey     = (int)$seo->kKey;
+
+        return $this->updateState($seo, $slug);
+    }
+
     /**
      * @inheritdoc
      */
@@ -41,15 +77,17 @@ class PageController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (isset($args['id']) || isset($args['name'])) {
+            $this->getStateFromSlug($args);
+            if (!$this->init()) {
+                return $this->notFoundResponse($request, $args, $smarty);
+            }
+        }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
         $linkHelper = Shop::Container()->getLinkService();
-        $cache      = Shop::Container()->getCache();
         if (!$this->currentLink->isVisible()) {
             $this->currentLink = $linkHelper->getSpecialPage(\LINKTYP_STARTSEITE);
-            if ($this->currentLink === null) {
-                die('Fatal.'); // @todo
-            }
             $this->currentLink->setRedirectCode(301);
         }
         $requestURL = URL::buildURL($this->currentLink, \URLART_SEITE);
@@ -109,10 +147,10 @@ class PageController extends AbstractController
             $this->smarty->assign('oNewsletterHistory_arr', CMS::getNewsletterHistory());
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_SITEMAP) {
             Shop::setPageType(\PAGE_SITEMAP);
-            $sitemap = new Sitemap($this->db, $cache, $this->config);
+            $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
         } elseif ($this->currentLink->getLinkType() === \LINKTYP_404) {
-            $sitemap = new Sitemap($this->db, $cache, $this->config);
+            $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
             Shop::setPageType(\PAGE_404);
             $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
@@ -138,7 +176,7 @@ class PageController extends AbstractController
         }
         if (($pluginID = $this->currentLink->getPluginID()) > 0 && $this->currentLink->getPluginEnabled() === true) {
             Shop::setPageType(\PAGE_PLUGIN);
-            $loader = PluginHelper::getLoaderByPluginID($pluginID, $this->db, $cache);
+            $loader = PluginHelper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
             $boot   = PluginHelper::bootstrap($pluginID, $loader);
             if ($boot === null || !$boot->prepareFrontend($this->currentLink, $this->smarty)) {
                 $this->getPluginPage();

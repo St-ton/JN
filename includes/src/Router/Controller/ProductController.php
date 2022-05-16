@@ -15,6 +15,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -58,8 +59,49 @@ class ProductController extends AbstractController
     /**
      * @inheritdoc
      */
+    public function getStateFromSlug(array $args): State
+    {
+        $productID   = (int)($args['id'] ?? 0);
+        $productName = $args['name'] ?? null;
+        if ($productID < 1 && $productName === null) {
+            return $this->state;
+        }
+        $seo = $productID > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND kKey = :kid',
+                ['key' => 'kArtikel', 'kid' => $productID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => 'kArtikel', 'seo' => $productName]
+            );
+        if ($seo === null) {
+            $this->state->is404 = true;
+
+            return $this->state;
+        }
+        $slug          = $seo->cSeo;
+        $seo->kSprache = (int)$seo->kSprache;
+        $seo->kKey     = (int)$seo->kKey;
+
+        return $this->updateState($seo, $slug);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (isset($args['id']) || isset($args['name'])) {
+            $this->getStateFromSlug($args);
+            if (!$this->init()) {
+                return $this->notFoundResponse($request, $args, $smarty);
+            }
+        }
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_ARTIKEL);
         global $AktuellerArtikel;
@@ -191,7 +233,6 @@ class ProductController extends AbstractController
                 $this->currentProduct->kVaterArtikel
             );
         }
-
 
         $this->currentProduct->Bewertungen->Sortierung = $sorting;
 

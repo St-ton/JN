@@ -1,38 +1,43 @@
 <?php declare(strict_types=1);
 
-namespace JTL\Router\Handler;
+namespace JTL\Router\Controller;
 
-use JTL\Router\AbstractHandler;
-use JTL\Router\Controller\ProductListController;
 use JTL\Router\State;
 use JTL\Session\Frontend;
-use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class CategoryHandler
- * @package JTL\Router\Handler
+ * Class CategoryController
+ * @package JTL\Router\Controller
  */
-class CategoryHandler extends AbstractHandler
+class CategoryController extends AbstractController
 {
     /**
      * @inheritdoc
      */
     public function getStateFromSlug(array $args): State
     {
-        $categoryID = (int)($args['id'] ?? 0);
-        if ($categoryID < 1) {
+        $categoryID   = (int)($args['id'] ?? 0);
+        $categoryName = $args['name'] ?? null;
+        if ($categoryID < 1 && $categoryName === null) {
             return $this->state;
         }
-        $seo = $this->db->getSingleObject(
-            'SELECT *
-                FROM tseo
-                WHERE cKey = :key AND kKey = :kid',
-            ['key' => 'kKategorie', 'kid' => $categoryID]
-        );
+        $seo = $categoryID > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND kKey = :kid',
+                ['key' => 'kKategorie', 'kid' => $categoryID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => 'kKategorie', 'seo' => $categoryName]
+            );
         if ($seo === null) {
             $this->state->is404 = true;
 
@@ -49,15 +54,16 @@ class CategoryHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getStateFromSlug($args);
         $controller = new ProductListController(
             $this->db,
+            $this->cache,
             $this->state,
             Frontend::getCustomer()->getGroupID(),
             Shopsetting::getInstance()->getAll(),
-            Shop::Container()->getAlertService()
+            $this->alertService
         );
         if (!$controller->init()) {
             return $controller->notFoundResponse($request, $args, $smarty);

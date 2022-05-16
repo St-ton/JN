@@ -17,16 +17,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 class AuthMiddleware implements MiddlewareInterface
 {
     /**
-     * @var AdminAccount
-     */
-    private AdminAccount $account;
-
-    /**
      * @param AdminAccount $account
      */
-    public function __construct(AdminAccount $account)
+    public function __construct(private AdminAccount $account)
     {
-        $this->account = $account;
     }
 
     /**

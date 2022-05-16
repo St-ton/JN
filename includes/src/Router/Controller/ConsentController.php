@@ -18,7 +18,7 @@ class ConsentController
      * @param array                  $args
      * @return array
      */
-    public function handle(ServerRequestInterface $request, array $args): array
+    public function getResponse(ServerRequestInterface $request, array $args): array
     {
         if (!Form::validateToken()) {
             return ['status' => 'FAILED', 'data' => 'Invalid token'];

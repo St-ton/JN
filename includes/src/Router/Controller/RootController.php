@@ -1,22 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace JTL\Router\Handler;
+namespace JTL\Router\Controller;
 
-use JTL\Router\AbstractHandler;
-use JTL\Router\Controller\PageController;
+use JTL\Router\ControllerFactory;
 use JTL\Router\State;
-use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class RootHandler
- * @package JTL\Router\Handler
+ * Class RootController
+ * @package JTL\Router\Controller
  */
-class RootHandler extends AbstractHandler
+class RootController extends AbstractController
 {
     /**
      * @inheritdoc
@@ -47,16 +44,11 @@ class RootHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getStateFromSlug($args);
-        $controller = new PageController(
-            $this->db,
-            $this->state,
-            Frontend::getCustomer()->getGroupID(),
-            Shopsetting::getInstance()->getAll(),
-            Shop::Container()->getAlertService()
-        );
+        $factory    = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
+        $controller = $factory->getEntryPoint();
         if (!$controller->init()) {
             return $controller->notFoundResponse($request, $args, $smarty);
         }

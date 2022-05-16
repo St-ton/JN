@@ -106,7 +106,7 @@ abstract class GenericModelController extends AbstractBackendController
             ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
             ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
-            ->assign('settings', \getAdminSectionSettings(\CONF_CONSENTMANAGER))
+            ->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
             ->getResponse($template);
     }

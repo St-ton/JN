@@ -2,28 +2,14 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use DateTime;
-use Exception;
 use JTL\Backend\AuthToken;
-use JTL\Boxes\Admin\BoxAdmin;
-use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
-use JTL\ImageMap;
-use JTL\IO\IOResponse;
-use JTL\License\Admin;
-use JTL\License\Checker;
-use JTL\License\Manager;
-use JTL\Media\Image;
-use JTL\Pagination\Pagination;
 use JTL\Router\BackendRouter;
-use JTL\Smarty\JTLSmarty;
 use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class CodeController

@@ -12,28 +12,16 @@ use JTL\Shop;
 class DefaultParser
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var array
      */
     private array $params = [];
 
     /**
-     * @var State
-     */
-    private State $state;
-
-    /**
      * @param DbInterface $db
      * @param State       $state
      */
-    public function __construct(DbInterface $db, State $state)
+    public function __construct(protected DbInterface $db, protected State $state)
     {
-        $this->db    = $db;
-        $this->state = $state;
     }
 
     /**

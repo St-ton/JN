@@ -107,13 +107,13 @@ class OrderCompleteController extends CheckoutController
                     \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
                     exit;
                 }
-                $order = $handler->finalisiereBestellung();
+                $order = $handler->finalizeOrder();
                 if ($order->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
                     $order->Lieferadresse = $handler->getShippingAddress();
                 }
                 $this->smarty->assign('Bestellung', $order);
             } else {
-                $order = $handler->fakeBestellung();
+                $order = $handler->fakeOrder();
             }
             $handler->saveUploads($order);
             $this->setzeSmartyWeiterleitung($order);

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
@@ -35,6 +36,7 @@ use JTL\Visitor;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use stdClass;
 
 /**
  * Class AbstractController
@@ -43,39 +45,14 @@ use Psr\Http\Message\ServerRequestInterface;
 abstract class AbstractController implements ControllerInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * @var JTLSmarty
      */
     protected JTLSmarty $smarty;
 
     /**
-     * @var AlertServiceInterface
-     */
-    protected AlertServiceInterface $alertService;
-
-    /**
-     * @var State
-     */
-    protected State $state;
-
-    /**
      * @var int
      */
     protected int $languageID;
-
-    /**
-     * @var int
-     */
-    protected int $customerGroupID;
-
-    /**
-     * @var array
-     */
-    protected array $config;
 
     /**
      * @var Artikel|null
@@ -129,23 +106,20 @@ abstract class AbstractController implements ControllerInterface
 
     /**
      * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
      * @param State                 $state
      * @param int                   $customerGroupID
      * @param array                 $config
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        DbInterface $db,
-        State $state,
-        int $customerGroupID,
-        array $config,
-        AlertServiceInterface $alertService
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected State $state,
+        protected int $customerGroupID,
+        protected array $config,
+        protected AlertServiceInterface $alertService
     ) {
-        $this->db                 = $db;
-        $this->state              = $state;
-        $this->customerGroupID    = $customerGroupID;
-        $this->config             = $config;
-        $this->alertService       = $alertService;
         $this->searchResults      = new SearchResults();
         $this->expandedCategories = new KategorieListe();
         $this->productFilter      = Shop::getProductFilter();
@@ -159,6 +133,74 @@ abstract class AbstractController implements ControllerInterface
         $this->languageID = $this->state->languageID;
 
         return true;
+    }
+
+    /**
+     * @param stdClass $seo
+     * @param string   $slug
+     * @return State
+     */
+    public function updateState(stdClass $seo, string $slug): State
+    {
+        $this->state->slug = $seo->cSeo ?? $slug;
+        if (isset($seo->kSprache, $seo->kKey)) {
+            $this->state->languageID = (int)$seo->kSprache;
+            $this->state->itemID     = (int)$seo->kKey;
+            $this->state->type       = $seo->cKey;
+            $mapping                 = $this->state->getMapping();
+            if (isset($mapping[$seo->cKey])) {
+                $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
+            }
+        }
+        $this->updateShopParams($slug);
+        Shop::getProductFilter()->initStates($this->state->getAsParams());
+        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
+
+        return $this->state;
+    }
+
+    /**
+     * @param string $slug
+     * @return void
+     */
+    protected function updateShopParams(string $slug): void
+    {
+        if (\strcasecmp($this->state->slug, $slug) !== 0) {
+            return;
+        }
+        if ($slug !== $this->state->slug) {
+            \http_response_code(301);
+            \header('Location: ' . Shop::getURL() . '/' . $this->state->slug);
+            exit;
+        }
+        Shop::updateLanguage($this->state->languageID);
+        Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
+        Shop::$is404                     = $this->state->is404;
+        Shop::$kSprache                  = $this->state->languageID;
+        Shop::$kSeite                    = $this->state->pageID;
+        Shop::$kKategorieFilter          = $this->state->categoryFilterID;
+        Shop::$customFilters             = $this->state->customFilters;
+        Shop::$manufacturerFilterIDs     = $this->state->manufacturerFilterIDs;
+        Shop::$kHerstellerFilter         = $this->state->manufacturerFilterID;
+        Shop::$bHerstellerFilterNotFound = $this->state->manufacturerFilterNotFound;
+        Shop::$bKatFilterNotFound        = $this->state->categoryFilterNotFound;
+        Shop::$bSEOMerkmalNotFound       = $this->state->characteristicNotFound;
+        Shop::$MerkmalFilter             = $this->state->characteristicFilterIDs;
+        Shop::$SuchFilter                = $this->state->searchFilterIDs;
+        Shop::$categoryFilterIDs         = $this->state->categoryFilterIDs;
+        if ($this->state->type !== '') {
+            Shop::${$this->state->type} = $this->state->itemID;
+        }
+        \executeHook(\HOOK_SEOCHECK_ENDE);
+    }
+
+    /**
+     * @param array $args
+     * @return State
+     */
+    public function getStateFromSlug(array $args): State
+    {
+        return $this->state;
     }
 
     /**
@@ -176,6 +218,7 @@ abstract class AbstractController implements ControllerInterface
         $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
         $pc                  = new PageController(
             $this->db,
+            $this->cache,
             $this->state,
             $this->customerGroupID,
             $this->config,

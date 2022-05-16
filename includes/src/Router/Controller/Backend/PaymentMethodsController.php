@@ -279,21 +279,18 @@ class PaymentMethodsController extends AbstractBackendController
             $paymentMethod->cName = Text::filterXSS($paymentMethod->cName);
             PaymentMethod::activatePaymentMethod($paymentMethod);
             // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
+            $sql = new SqlObject();
             if (\str_contains($paymentMethod->cModulId, 'kPlugin_')) {
-                $sql = new SqlObject();
                 $sql->setWhere(" cWertName LIKE :mid AND cConf = 'Y'");
                 $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
                 $section = new PluginPaymentMethod($this->settingManager, \CONF_ZAHLUNGSARTEN);
-                $section->load($sql);
-                $conf = $section->getItems();
             } else {
                 $section = $this->sectionFactory->getSection(\CONF_ZAHLUNGSARTEN, $this->settingManager);
-                $sql     = new SqlObject();
                 $sql->setWhere(' ec.cModulId = :mid');
                 $sql->addParam('mid', $paymentMethod->cModulId);
-                $section->load($sql);
-                $conf = $section->getItems();
             }
+            $section->load($sql);
+            $conf = $section->getItems();
 
             $customerGroups = $this->db->getObjects(
                 'SELECT *
@@ -356,26 +353,24 @@ class PaymentMethodsController extends AbstractBackendController
         $upd->nWaehrendBestellung = $duringCheckout;
         $this->db->update('tzahlungsart', 'kZahlungsart', $paymentMethod->kZahlungsart, $upd);
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
+        $sql = new SqlObject();
         if (\str_contains($paymentMethod->cModulId, 'kPlugin_')) {
             $kPlugin = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-            $sql     = new SqlObject();
             $sql->setWhere(" cWertName LIKE :mid 
                 AND cConf = 'Y'");
             $sql->addParam('mid', $paymentMethod->cModulId . '\_%');
             $section         = new PluginPaymentMethod($this->settingManager, \CONF_ZAHLUNGSARTEN);
             $post            = $_POST;
             $post['kPlugin'] = $kPlugin;
-            $section->update($post);
         } else {
             $section = $this->sectionFactory->getSection(\CONF_ZAHLUNGSARTEN, $this->settingManager);
-            $sql     = new SqlObject();
             $sql->setWhere(' ec.cModulId = :mid');
             $sql->addParam('mid', $paymentMethod->cModulId);
             $section->load($sql);
             $post             = $_POST;
             $post['cModulId'] = $paymentMethod->cModulId;
-            $section->update($post);
         }
+        $section->update($post);
         $localized               = new stdClass();
         $localized->kZahlungsart = Request::postInt('kZahlungsart');
         foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {

@@ -10,7 +10,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Review\ReviewAdminController;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -379,7 +378,13 @@ class ActivationController extends AbstractBackendController
         if (\count($reviewIDs) === 0) {
             return false;
         }
-        $controller = new ReviewAdminController($this->db, $this->cache);
+        $controller = new ReviewController(
+            $this->db,
+            $this->cache,
+            $this->alertService,
+            $this->account,
+            $this->getText
+        );
         $controller->activate($reviewIDs);
 
         return true;

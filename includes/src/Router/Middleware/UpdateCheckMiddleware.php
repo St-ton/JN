@@ -19,16 +19,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 class UpdateCheckMiddleware implements MiddlewareInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

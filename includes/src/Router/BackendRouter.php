@@ -101,7 +101,6 @@ use JTL\Router\Middleware\UpdateCheckMiddleware;
 use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -215,26 +214,6 @@ class BackendRouter
     private Router $router;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    private JTLSmarty $smarty;
-
-    /**
-     * @var AdminAccount
-     */
-    private AdminAccount $account;
-
-    /**
-     * @var GetText
-     */
-    private GetText $getText;
-
-    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param AdminAccount          $account
@@ -243,20 +222,16 @@ class BackendRouter
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        AdminAccount $account,
-        AlertServiceInterface $alertService,
-        GetText $getText,
-        JTLSmarty $smarty
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected AdminAccount $account,
+        protected AlertServiceInterface $alertService,
+        protected GetText $getText,
+        protected JTLSmarty $smarty
     ) {
-        $this->db      = $db;
-        $this->smarty  = $smarty;
-        $this->account = $account;
-        $this->router  = new Router();
-        $this->getText = $getText;
-        $strategy      = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
-        $container     = new Container();
+        $this->router = new Router();
+        $strategy     = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
+        $container    = new Container();
 
         $controllers = [
             self::ROUTE_BANNER                => BannerController::class,

@@ -1,20 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace JTL\Router\Handler;
+namespace JTL\Router\Controller;
 
-use JTL\Router\AbstractHandler;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\ServerRequest;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class DefaultHandler
- * @package JTL\Router\Handler
+ * Class DefaultController
+ * @package JTL\Router\Controller
  */
-class DefaultHandler extends AbstractHandler
+class DefaultController extends AbstractController
 {
     /**
      * @inheritdoc
@@ -61,10 +60,10 @@ class DefaultHandler extends AbstractHandler
     /**
      * @inheritdoc
      */
-    public function handle(ServerRequest $request, array $args, JTLSmarty $smarty): ResponseInterface
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->getStateFromSlug($args);
-        $cf         = new ControllerFactory($this->state, $this->db, $smarty);
+        $cf         = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
         $controller = $cf->getEntryPoint();
         $check      = $controller->init();
         if ($check === false) {

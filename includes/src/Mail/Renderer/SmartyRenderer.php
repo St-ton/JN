@@ -191,11 +191,8 @@ class SmartyRenderer implements RendererInterface
      */
     public function renderMail(MailInterface $mail): void
     {
-        $model    = null;
         $template = $mail->getTemplate();
-        if ($template !== null) {
-            $model = $template->getModel();
-        }
+        $model    = $template?->getModel();
         if ($model === null) {
             $mail->setBodyText($this->smarty->fetch('string:' . $mail->getBodyText()));
             $mail->setBodyHTML($this->smarty->fetch('string:' . $mail->getBodyHTML()));

@@ -9,11 +9,17 @@ use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
+/**
+ * @return OrderHandler
+ */
 function getOrderHandler(): OrderHandler
 {
     return new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
 }
 
+/**
+ * @return StockUpdater
+ */
 function getStockUpdater(): StockUpdater
 {
     return new StockUpdater(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
@@ -47,6 +53,7 @@ function bestellungKomplett(): int
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibFehlendeEingabe(): int
 {
@@ -79,11 +86,15 @@ function gibFehlendeEingabe(): int
 /**
  * @param int    $cleared
  * @param string $orderNo
+ * @deprecated since 5.2.0
  */
 function bestellungInDB($cleared = 0, $orderNo = '')
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return getOrderHandler()->bestellungInDB((bool)$cleared, $orderNo === '' ? null : $orderNo);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::persistOrder() instead.',
+        E_USER_DEPRECATED
+    );
+    getOrderHandler()->persistOrder((bool)$cleared, $orderNo === '' ? null : $orderNo);
 }
 
 /**
@@ -95,10 +106,11 @@ function bestellungInDB($cleared = 0, $orderNo = '')
  */
 function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    $handler = new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
-
-    return $handler->savePaymentInfo($customerID, $orderID, $payAgain);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::savePaymentInfo() instead.',
+        E_USER_DEPRECATED
+    );
+    return getOrderHandler()->savePaymentInfo($customerID, $orderID, $payAgain);
 }
 
 /**
@@ -107,16 +119,22 @@ function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false)
  */
 function speicherKundenKontodaten($paymentInfo): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::saveCustomerAccountData() instead.',
+        E_USER_DEPRECATED
+    );
     getOrderHandler()->saveCustomerAccountData($paymentInfo);
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function unhtmlSession(): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::unhtmlSession() instead.',
+        E_USER_DEPRECATED
+    );
     getOrderHandler()->unhtmlSession();
 }
 
@@ -127,7 +145,10 @@ function unhtmlSession(): void
  */
 function aktualisiereBestseller(int $productID, $amount): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateBestsellers() instead.',
+        E_USER_DEPRECATED
+    );
     getStockUpdater()->updateBestsellers($productID, $amount);
 }
 
@@ -138,7 +159,10 @@ function aktualisiereBestseller(int $productID, $amount): void
  */
 function aktualisiereXselling(int $productID, int $targetID): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateXSelling() instead.',
+        E_USER_DEPRECATED
+    );
     getStockUpdater()->updateXSelling($productID, $targetID);
 }
 
@@ -152,7 +176,10 @@ function aktualisiereXselling(int $productID, int $targetID): void
  */
 function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, int $productFilter = 1)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateStock() instead.',
+        E_USER_DEPRECATED
+    );
     return getStockUpdater()->updateStock($product, $amount, $attributeValues, $productFilter);
 }
 
@@ -160,10 +187,14 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
  * @param int $productID
  * @param float|int $amount
  * @param float|int $packeinheit
+ * @deprecated since 5.2.0
  */
 function updateStock(int $productID, $amount, $packeinheit)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateProductStockLevel() instead.',
+        E_USER_DEPRECATED
+    );
     getStockUpdater()->updateProductStockLevel($productID, $amount, $packeinheit);
 }
 
@@ -171,10 +202,14 @@ function updateStock(int $productID, $amount, $packeinheit)
  * @param Artikel   $bomProduct
  * @param int|float $amount
  * @return int|float - neuer Lagerbestand
+ * @deprecated since 5.2.0
  */
 function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateBOMStockLevel() instead.',
+        E_USER_DEPRECATED
+    );
     return getStockUpdater()->updateBOMStockLevel($bomProduct, $amount);
 }
 
@@ -186,7 +221,10 @@ function aktualisiereStuecklistenLagerbestand(Artikel $bomProduct, $amount)
  */
 function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateBOMStock() instead.',
+        E_USER_DEPRECATED
+    );
     getStockUpdater()->updateBOMStock($productID, $stockLevel, $allowNegativeStock);
 }
 
@@ -196,7 +234,10 @@ function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, b
  */
 function KuponVerwendungen($order): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::updateCouponUsages() instead.',
+        E_USER_DEPRECATED
+    );
     getStockUpdater()->updateCouponUsages($order);
 }
 
@@ -206,7 +247,10 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::createOrderNo() instead.',
+        E_USER_DEPRECATED
+    );
     return getOrderHandler()->createOrderNo();
 }
 
@@ -216,7 +260,10 @@ function baueBestellnummer(): string
  */
 function speicherUploads($order): void
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::saveUploads() instead.',
+        E_USER_DEPRECATED
+    );
     getOrderHandler()->saveUploads($order);
 }
 
@@ -235,8 +282,11 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
  */
 function fakeBestellung()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return getOrderHandler()->fakeBestellung();
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::fakeOrder() instead.',
+        E_USER_DEPRECATED
+    );
+    return getOrderHandler()->fakeOrder();
 }
 
 /**
@@ -245,7 +295,10 @@ function fakeBestellung()
  */
 function gibLieferadresseAusSession()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::getShippingAddress() instead.',
+        E_USER_DEPRECATED
+    );
     return getOrderHandler()->getShippingAddress();
 }
 
@@ -257,8 +310,11 @@ function gibLieferadresseAusSession()
  */
 function pruefeVerfuegbarkeit(): array
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return getOrderHandler()->pruefeVerfuegbarkeit();
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::checkAvailability() instead.',
+        E_USER_DEPRECATED
+    );
+    return getOrderHandler()->checkAvailability();
 }
 
 /**
@@ -269,6 +325,9 @@ function pruefeVerfuegbarkeit(): array
  */
 function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
 {
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return getOrderHandler()->finalisiereBestellung($orderNo === '' ? null : $orderNo, $sendMail);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\OrderHandler::finalizeOrder() instead.',
+        E_USER_DEPRECATED
+    );
+    return getOrderHandler()->finalizeOrder($orderNo === '' ? null : $orderNo, $sendMail);
 }

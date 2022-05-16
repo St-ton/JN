@@ -185,7 +185,7 @@ final class LinkService implements LinkServiceInterface
             $res = $this->getLinkByID($id);
         }
 
-        return $res !== null ? $res->getID() : null;
+        return $res?->getID();
     }
 
     /**
@@ -305,7 +305,7 @@ final class LinkService implements LinkServiceInterface
             }
         }
 
-        return $full && \mb_strpos($id, 'http') !== 0
+        return $full && !\str_starts_with($id, 'http')
             ? Shop::getURL($secure) . '/' . $id
             : $id;
     }

@@ -909,7 +909,7 @@ class BaseSearchQuery extends AbstractFilter
         $stripped    = \stripslashes($query);
         if ($stripped[0] !== '"' || $stripped[\mb_strlen($stripped) - 1] !== '"') {
             foreach ($parts as $searchString) {
-                if (\mb_strpos($searchString, '+') !== false) {
+                if (\str_contains($searchString, '+')) {
                     $searchPart = \explode('+', $searchString);
                     foreach ($searchPart as $part) {
                         $part = \trim($part);
@@ -1017,24 +1017,24 @@ class BaseSearchQuery extends AbstractFilter
         $result = [];
         foreach ($searchCols as $columns) {
             // Klasse 1: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cName') !== false
-                || \mb_strpos($columns, 'cSeo') !== false
-                || \mb_strpos($columns, 'cSuchbegriffe') !== false
+            if (\str_contains($columns, 'cName')
+                || \str_contains($columns, 'cSeo')
+                || \str_contains($columns, 'cSuchbegriffe')
             ) {
                 $result[1][] = $columns;
             }
             // Klasse 2: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cKurzBeschreibung') !== false
-                || \mb_strpos($columns, 'cBeschreibung') !== false
-                || \mb_strpos($columns, 'cAnmerkung') !== false
+            if (\str_contains($columns, 'cKurzBeschreibung')
+                || \str_contains($columns, 'cBeschreibung')
+                || \str_contains($columns, 'cAnmerkung')
             ) {
                 $result[2][] = $columns;
             }
             // Klasse 3: Artikelname und Artikel SEO
-            if (\mb_strpos($columns, 'cArtNr') !== false
-                || \mb_strpos($columns, 'cBarcode') !== false
-                || \mb_strpos($columns, 'cISBN') !== false
-                || \mb_strpos($columns, 'cHAN') !== false
+            if (\str_contains($columns, 'cArtNr')
+                || \str_contains($columns, 'cBarcode')
+                || \str_contains($columns, 'cISBN')
+                || \str_contains($columns, 'cHAN')
             ) {
                 $result[3][] = $columns;
             }

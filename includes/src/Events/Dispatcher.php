@@ -50,7 +50,7 @@ final class Dispatcher
     {
         foreach ((array)$eventNames as $event) {
             $item = (object)['listener' => $listener, 'priority' => $priority];
-            if (\mb_strpos($event, '*') !== false) {
+            if (\str_contains($event, '*')) {
                 $this->wildcards[$event][] = $item;
             } else {
                 $this->listeners[$event][] = $item;

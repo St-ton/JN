@@ -225,7 +225,7 @@ class VueInstaller
             $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
         }
         $rootPath = \PFAD_ROOT;
-        if (\strpos(\PFAD_ROOT, '\\') !== false) {
+        if (\str_contains(\PFAD_ROOT, '\\')) {
             $rootPath = \str_replace('\\', '\\\\', $rootPath);
         }
         $config = "<?php
@@ -270,9 +270,9 @@ ini_set('display_errors', 0);" . "\n";
         foreach ($content as $i => $line) {
             $tsl = \trim($line);
             if ($line !== ''
-                && \strpos($tsl, '/*') !== 0
-                && \strpos($tsl, '--') !== 0
-                && \strpos($tsl, '#') !== 0
+                && !\str_starts_with($tsl, '/*')
+                && !\str_starts_with($tsl, '--')
+                && !\str_starts_with($tsl, '#')
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {

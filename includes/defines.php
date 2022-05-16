@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 // Charset
 use JTL\Plugin\HookManager;
@@ -293,7 +293,7 @@ function ifndef(string $constant, $value)
  * @param int   $hookID
  * @param array $args_arr
  */
-function executeHook(int $hookID, array $args_arr = [])
+function executeHook(int $hookID, array $args_arr = []): void
 {
     HookManager::getInstance()->executeHook($hookID, $args_arr);
 }

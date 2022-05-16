@@ -372,7 +372,7 @@ final class Controller
                 'temailvorlagesprache',
                 $upd
             );
-            $affected          += $updCount > 0 ? $updCount : 0;
+            $affected          += \max($updCount, 0);
         }
 
         return $affected;

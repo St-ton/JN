@@ -438,7 +438,11 @@ final class Shop extends ShopBC
      */
     public static function run(): ProductFilter
     {
-        self::$router = new Router(self::Container()->getDB(), new RoutingState());
+        self::$router = new Router(
+            self::Container()->getDB(),
+            self::Container()->getCache(),
+            new RoutingState()
+        );
         self::$state  = self::$router->init();
         self::setParams(self::$state->getAsParams());
         if (self::$state->productsPerPage !== 0) {
@@ -555,7 +559,7 @@ final class Shop extends ShopBC
 //        self::getLanguageFromServerName();
 //        $uri = self::$uri;
 //        \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-//        if (\mb_strpos($uri, '/') === 0) {
+//        if (\str_starts_with($uri, '/')) {
 //            $uri = \mb_substr($uri, 1);
 //        }
 //        self::seoCheckFinish();
@@ -717,7 +721,7 @@ final class Shop extends ShopBC
                 return '';
             }
             while (($file = \readdir($dir)) !== false) {
-                if ($file !== '.' && $file !== '..' && \mb_strpos($file, \SHOPLOGO_NAME) !== false) {
+                if ($file !== '.' && $file !== '..' && \str_contains($file, \SHOPLOGO_NAME)) {
                     $ret = \PFAD_SHOPLOGO . $file;
                     break;
                 }
@@ -773,7 +777,7 @@ final class Shop extends ShopBC
     private static function buildBaseURL(bool $forceSSL): string
     {
         $url = \URL_SHOP;
-        if (\mb_strpos($url, 'http://') === 0) {
+        if (\str_starts_with($url, 'http://')) {
             $sslStatus = Request::checkSSL();
             if ($sslStatus === 2) {
                 $url = \str_replace('http://', 'https://', $url);

@@ -419,7 +419,7 @@ class AccountController
     {
         $url = Text::filterXSS(Request::verifyGPDataString('cURL'));
         if (\mb_strlen($url) > 0) {
-            if (\mb_strpos($url, 'http') !== 0) {
+            if (!\str_starts_with($url, 'http')) {
                 $url = Shop::getURL() . '/' . \ltrim($url, '/');
             }
             \header('Location: ' . $url, true, 301);
@@ -1118,7 +1118,7 @@ class AccountController
             $missingData,
             $checkBox->validateCheckBox(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true)
         );
-        $customerData       = $form->getCustomerData($postData, 0, 0);
+        $customerData       = $form->getCustomerData($postData, false, false);
         $customerAttributes = $form->getCustomerAttributes($postData);
         $returnCode         = Form::hasNoMissingData($missingData);
 

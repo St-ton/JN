@@ -127,10 +127,7 @@ final class ModelHelper
     public static function fromStrToDate($value, $default = null): ?DateTime
     {
         $dateTime = self::fromStrToDateTime($value, $default);
-
-        if (isset($dateTime)) {
-            $dateTime->setTime(0, 0);
-        }
+        $dateTime?->setTime(0, 0);
 
         return $dateTime;
     }

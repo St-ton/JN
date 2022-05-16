@@ -72,7 +72,7 @@ class OrderHandler
      * @former bestellungInDB()
      * @since 5.2.0
      */
-    public function bestellungInDB(bool $cleared = false, ?string $orderNo = null): void
+    public function persistOrder(bool $cleared = false, ?string $orderNo = null): void
     {
         $this->unhtmlSession();
         $order             = new Bestellung();
@@ -376,13 +376,15 @@ class OrderHandler
      * @param string|null $orderNo
      * @param bool        $sendMail
      * @return Bestellung
+     * @former finalisiereBestellung()
+     * @since 5.2.0
      */
-    public function finalisiereBestellung(?string $orderNo = null, bool $sendMail = true): Bestellung
+    public function finalizeOrder(?string $orderNo = null, bool $sendMail = true): Bestellung
     {
         $obj                      = new stdClass();
-        $obj->cVerfuegbarkeit_arr = $this->pruefeVerfuegbarkeit();
+        $obj->cVerfuegbarkeit_arr = $this->checkAvailability();
 
-        $this->bestellungInDB(false, $orderNo);
+        $this->persistOrder(false, $orderNo);
 
         $order = new Bestellung($_SESSION['kBestellung']);
         $order->fuelleBestellung(false);
@@ -430,7 +432,7 @@ class OrderHandler
      * @former pruefeVerfuegbarkeit()
      * @since 5.2.0
      */
-    public function pruefeVerfuegbarkeit(): array
+    public function checkAvailability(): array
     {
         $res = ['cArtikelName_arr' => []];
         foreach ($this->cart->PositionenArr as $item) {
@@ -457,7 +459,7 @@ class OrderHandler
      * @former fakeBestellung()
      * @since 5.2.0
      */
-    public function fakeBestellung(): Bestellung
+    public function fakeOrder(): Bestellung
     {
         if (isset($_POST['kommentar'])) {
             $_SESSION['kommentar'] = mb_substr(

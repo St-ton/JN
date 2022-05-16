@@ -402,7 +402,7 @@ class Redirect
 
         if (!isset($parsedUrl['path'])) {
             $fullUrlParts['path'] = $parsedShopUrl['path'];
-        } elseif (\mb_strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
+        } elseif (!\str_starts_with($parsedUrl['path'], $parsedShopUrl['path'])) {
             if (isset($parsedUrl['host'])) {
                 return false;
             }
@@ -462,7 +462,7 @@ class Redirect
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
             if (!\array_key_exists('scheme', \parse_url($redirectUrl))) {
-                $redirectUrl = \mb_strpos($redirectUrl, '/') === 0
+                $redirectUrl = \str_starts_with($redirectUrl, '/')
                     ? Shop::getURL() . $redirectUrl
                     : Shop::getURL() . '/' . $redirectUrl;
             }

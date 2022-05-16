@@ -409,7 +409,7 @@ class Newsletter
             }
             $product->cURL = $shopURL . $product->cURL;
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
-                $product->cURL .= (\mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
+                $product->cURL .= (\str_contains($product->cURL, '.php') ? '&' : '?') .
                     $campaign->cParameter . '=' . $campaign->cWert;
             }
             foreach ($product->Bilder as $image) {
@@ -451,11 +451,11 @@ class Newsletter
             if ($manufacturer->kHersteller <= 0) {
                 continue;
             }
-            if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
+            if (!\str_contains($manufacturer->cURL, $shopURL)) {
                 $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
-                $sep                 = \mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';
+                $sep                 = \str_contains($manufacturer->cURL, '.php') ? '&' : '?';
                 $manufacturer->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
             }
             $manufacturer->cBildpfadKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;

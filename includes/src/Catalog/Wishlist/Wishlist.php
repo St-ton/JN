@@ -1008,12 +1008,12 @@ class Wishlist
         if (\count($recipients) > $maxRecipients) {
             $max  = \count($recipients) - $maxRecipients;
             $msg .= '<br />';
-            if (\mb_strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
+            if (!\str_contains($msg, Shop::Lang()->get('novalidEmail', 'messages'))) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');
             }
 
             for ($i = 0; $i < $max; $i++) {
-                if (\mb_strpos($msg, $recipients[(\count($recipients) - 1) - $i]) === false) {
+                if (!\str_contains($msg, $recipients[(\count($recipients) - 1) - $i])) {
                     if ($i > 0) {
                         $msg .= ', ' . $recipients[(\count($recipients) - 1) - $i];
                     } else {
@@ -1303,13 +1303,12 @@ class Wishlist
             $this->nOeffentlich = 1;
             $this->cURLID       = $urlID;
             $upd                = (object)['nOeffentlich' => 1, 'cURLID' => $urlID];
-            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         } else {
             $this->nOeffentlich = 0;
             $this->cURLID       = '';
             $upd                = (object)['nOeffentlich' => 0, 'cURLID' => ''];
-            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         }
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         self::updateInSesssion($this->kWunschliste);
     }
 

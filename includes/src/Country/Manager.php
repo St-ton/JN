@@ -79,7 +79,6 @@ class Manager
 
     /**
      * @param string $step
-     * @throws \SmartyException
      */
     public function finalize(string $step): void
     {

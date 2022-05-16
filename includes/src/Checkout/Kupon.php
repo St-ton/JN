@@ -1284,7 +1284,7 @@ class Kupon
         } elseif ($this->cKuponTyp !== self::TYPE_NEWCUSTOMER
             && (int)$this->cKunden !== -1
             && (!empty($_SESSION['Kunde']->kKunde
-                    && \mb_strpos($this->cKunden, $_SESSION['Kunde']->kKunde . ';') === false)
+                    && !\str_contains($this->cKunden, $_SESSION['Kunde']->kKunde . ';'))
                 || !isset($_SESSION['Kunde']->kKunde)
             )
         ) {
@@ -1292,7 +1292,7 @@ class Kupon
             $ret['ungueltig'] = 9;
         } elseif ($this->cKuponTyp === self::TYPE_SHIPPING
             && isset($_SESSION['Lieferadresse'])
-            && \mb_strpos($this->cLieferlaender, $_SESSION['Lieferadresse']->cLand) === false
+            && !\str_contains($this->cLieferlaender, $_SESSION['Lieferadresse']->cLand)
         ) {
             //invalid for shipping country
             $ret['ungueltig'] = 10;

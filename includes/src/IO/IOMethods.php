@@ -29,8 +29,9 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Review\ReviewController;
 use JTL\Router\BackendRouter;
+use JTL\Router\Controller\ReviewController;
+use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -48,23 +49,12 @@ use function Functional\pluck;
 class IOMethods
 {
     /**
-     * @var IO
-     */
-    private $io;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * IOMethods constructor.
      * @param IO               $io
      * @param DbInterface|null $db
      */
-    public function __construct(IO $io, ?DbInterface $db = null)
+    public function __construct(private IO $io, private ?DbInterface $db = null)
     {
-        $this->io = $io;
         $this->db = $db ?? Shop::Container()->getDB();
     }
 
@@ -1269,7 +1259,6 @@ class IOMethods
         if ($auto) {
             $categoryID = Shop::$kKategorie;
         }
-
         $response   = new IOResponse();
         $list       = new KategorieListe();
         $category   = new Kategorie($categoryID);
@@ -1448,23 +1437,32 @@ class IOMethods
      * @param array $formData
      * @return IOResponse
      * @throws Exception
+     * @todo this is currently more of a hack
      */
     public function updateReviewHelpful(array $formData): IOResponse
     {
-        $_POST = $formData;
-        Shop::run();
+        $_POST      = $formData;
         $controller = new ReviewController(
             $this->db,
             Shop::Container()->getCache(),
-            Shop::Container()->getAlertService(),
-            Shop::Smarty()
+            new State(),
+            Frontend::getCustomer()->getGroupID(),
+            Shopsetting::getInstance()->getAll(),
+            Shop::Container()->getAlertService()
         );
-        $controller->handleRequest();
+        if (Form::validateToken()) {
+            $controller->updateWasHelpful(
+                (int)($formData['a'] ?? 0),
+                Frontend::getCustomer()->getID(),
+                (int)($formData['btgseite'] ?? 0),
+                (int)($formData['btgsterne'] ?? 0)
+            );
+        }
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
             (new Artikel($this->db))
-                ->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+                ->fuelleArtikel((int)($formData['a'] ?? 0), Artikel::getDetailOptions())?->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }

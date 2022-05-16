@@ -220,22 +220,22 @@ class Visitor
         ) {
             $mobile = '/Mobile';
         }
-        if (\mb_strpos($agent, 'msie') !== false) {
+        if (\str_contains($agent, 'msie')) {
             return 'Internet Explorer ' . (int)\mb_substr($agent, \mb_strpos($agent, 'msie') + 4) . $mobile;
         }
-        if (\mb_strpos($agent, 'opera') !== false || \mb_stripos($agent, 'opr') !== false) {
+        if (\str_contains($agent, 'opera') || \mb_stripos($agent, 'opr') !== false) {
             return 'Opera' . $mobile;
         }
-        if (\mb_stripos($agent, 'vivaldi') !== false) {
+        if (\str_contains($agent, 'vivaldi')) {
             return 'Vivaldi' . $mobile;
         }
-        if (\mb_strpos($agent, 'safari') !== false && \mb_strpos($agent, 'chrome') === false) {
+        if (\str_contains($agent, 'safari') && !\str_contains($agent, 'chrome')) {
             return 'Safari' . $mobile;
         }
-        if (\mb_strpos($agent, 'firefox') !== false) {
+        if (\str_contains($agent, 'firefox')) {
             return 'Firefox' . $mobile;
         }
-        if (\mb_strpos($agent, 'chrome') !== false) {
+        if (\str_contains($agent, 'chrome')) {
             return 'Chrome' . $mobile;
         }
 
@@ -264,34 +264,34 @@ class Visitor
     public static function getBot(): string
     {
         $agent = \mb_convert_case($_SERVER['HTTP_USER_AGENT'] ?? '', \MB_CASE_LOWER);
-        if (\mb_strpos($agent, 'googlebot') !== false) {
+        if (\str_contains($agent, 'googlebot')) {
             return 'Google';
         }
-        if (\mb_strpos($agent, 'bingbot') !== false) {
+        if (\str_contains($agent, 'bingbot')) {
             return 'Bing';
         }
-        if (\mb_strpos($agent, 'inktomi.com') !== false) {
+        if (\str_contains($agent, 'inktomi.com')) {
             return 'Inktomi';
         }
-        if (\mb_strpos($agent, 'yahoo! slurp') !== false) {
+        if (\str_contains($agent, 'yahoo! slurp')) {
             return 'Yahoo!';
         }
-        if (\mb_strpos($agent, 'msnbot') !== false) {
+        if (\str_contains($agent, 'msnbot')) {
             return 'MSN';
         }
-        if (\mb_strpos($agent, 'teoma') !== false) {
+        if (\str_contains($agent, 'teoma')) {
             return 'Teoma';
         }
-        if (\mb_strpos($agent, 'crawler') !== false) {
+        if (\str_contains($agent, 'crawler')) {
             return 'Crawler';
         }
-        if (\mb_strpos($agent, 'scooter') !== false) {
+        if (\str_contains($agent, 'scooter')) {
             return 'Scooter';
         }
-        if (\mb_strpos($agent, 'fireball') !== false) {
+        if (\str_contains($agent, 'fireball')) {
             return 'Fireball';
         }
-        if (\mb_strpos($agent, 'ask jeeves') !== false) {
+        if (\str_contains($agent, 'ask jeeves')) {
             return 'Ask';
         }
 
@@ -311,24 +311,24 @@ class Visitor
         $term->kBesucher = $visitorID;
         $term->cRohdaten = \mb_substr(Text::filterXSS($_SERVER['HTTP_REFERER']), 0, 255);
         $param           = '';
-        if (\mb_strpos($referer, '.google.') !== false
-            || \mb_strpos($referer, 'suche.t-online.') !== false
-            || \mb_strpos($referer, 'search.live.') !== false
-            || \mb_strpos($referer, '.aol.') !== false
-            || \mb_strpos($referer, '.aolsvc.') !== false
-            || \mb_strpos($referer, '.ask.') !== false
-            || \mb_strpos($referer, 'search.icq.') !== false
-            || \mb_strpos($referer, 'search.msn.') !== false
-            || \mb_strpos($referer, '.exalead.') !== false
+        if (\str_contains($referer, '.google.')
+            || \str_contains($referer, 'suche.t-online.')
+            || \str_contains($referer, 'search.live.')
+            || \str_contains($referer, '.aol.')
+            || \str_contains($referer, '.aolsvc.')
+            || \str_contains($referer, '.ask.')
+            || \str_contains($referer, 'search.icq.')
+            || \str_contains($referer, 'search.msn.')
+            || \str_contains($referer, '.exalead.')
         ) {
             $param = 'q';
-        } elseif (\mb_strpos($referer, 'suche.web') !== false) {
+        } elseif (\str_contains($referer, 'suche.web')) {
             $param = 'su';
-        } elseif (\mb_strpos($referer, 'suche.aolsvc') !== false) {
+        } elseif (\str_contains($referer, 'suche.aolsvc')) {
             $param = 'query';
-        } elseif (\mb_strpos($referer, 'search.yahoo') !== false) {
+        } elseif (\str_contains($referer, 'search.yahoo')) {
             $param = 'p';
-        } elseif (\mb_strpos($referer, 'search.ebay') !== false) {
+        } elseif (\str_contains($referer, 'search.ebay')) {
             $param = 'satitle';
         }
         if ($param !== '') {
@@ -351,17 +351,17 @@ class Visitor
         if (!$referer) {
             return 0;
         }
-        if (\mb_strpos($referer, '.google.') !== false
-            || \mb_strpos($referer, '.bing.') !== false
-            || \mb_strpos($referer, 'suche.') !== false
-            || \mb_strpos($referer, 'search.') !== false
-            || \mb_strpos($referer, '.yahoo.') !== false
-            || \mb_strpos($referer, '.fireball.') !== false
-            || \mb_strpos($referer, '.seekport.') !== false
-            || \mb_strpos($referer, '.keywordspy.') !== false
-            || \mb_strpos($referer, '.hotfrog.') !== false
-            || \mb_strpos($referer, '.altavista.') !== false
-            || \mb_strpos($referer, '.ask.') !== false
+        if (\str_contains($referer, '.google.')
+            || \str_contains($referer, '.bing.')
+            || \str_contains($referer, 'suche.')
+            || \str_contains($referer, 'search.')
+            || \str_contains($referer, '.yahoo.')
+            || \str_contains($referer, '.fireball.')
+            || \str_contains($referer, '.seekport.')
+            || \str_contains($referer, '.keywordspy.')
+            || \str_contains($referer, '.hotfrog.')
+            || \str_contains($referer, '.altavista.')
+            || \str_contains($referer, '.ask.')
         ) {
             return 1;
         }

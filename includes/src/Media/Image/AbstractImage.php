@@ -455,7 +455,7 @@ abstract class AbstractImage implements IMedia
         if (!\is_string($request) || \mb_strlen($request) === 0) {
             return null;
         }
-        if (\mb_strpos($request, '/') === 0) {
+        if (\str_starts_with($request, '/')) {
             $request = \mb_substr($request, 1);
         }
 

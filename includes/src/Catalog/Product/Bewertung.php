@@ -235,16 +235,15 @@ class Bewertung
             ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
-            $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;
-            $total->nAnzahl         = (int)$total->nAnzahl;
-            $this->oBewertungGesamt = $total;
+            $total->fDurchschnitt = \round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl       = (int)$total->nAnzahl;
         } else {
-            $total                  = new stdClass();
-            $total->fDurchschnitt   = 0;
-            $total->nAnzahl         = 0;
-            $this->oBewertungGesamt = $total;
+            $total                = new stdClass();
+            $total->fDurchschnitt = 0;
+            $total->nAnzahl       = 0;
         }
-        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
+        $this->oBewertungGesamt = $total;
+        $this->nAnzahlSprache   = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

@@ -300,7 +300,7 @@ class Reset
     private function resetUploadFiles(): void
     {
         foreach (\glob(\PFAD_UPLOADS . '*') as $file) {
-            if (\is_file($file) && \mb_strpos($file, '.') !== 0) {
+            if (\is_file($file) && !\str_starts_with($file, '.')) {
                 \unlink($file);
             }
         }

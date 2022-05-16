@@ -242,7 +242,7 @@ final class Export
     private function isURLBlocked(string $url): bool
     {
         return some($this->blockedURLs, static function ($e) use ($url) {
-            return \mb_strpos($url, $e) !== false;
+            return \str_contains($url, $e);
         });
     }
 
@@ -278,7 +278,7 @@ final class Export
             return false;
         }
         while (($file = \readdir($dh)) !== false) {
-            if ($file === $this->indexFileName || \mb_strpos($file, $this->fileName) !== false) {
+            if ($file === $this->indexFileName || \str_contains($file, $this->fileName)) {
                 \unlink(self::EXPORT_DIR . $file);
             }
         }

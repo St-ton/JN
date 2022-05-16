@@ -218,7 +218,7 @@ class NiceDB implements DbInterface
         float $time = 0
     ): DbInterface {
         if ($this->debug !== true
-            || \mb_strpos($stmt, 'tprofiler') !== false
+            || \str_contains($stmt, 'tprofiler')
             || \mb_stripos($stmt, 'create table') !== false
         ) {
             return $this;
@@ -290,7 +290,7 @@ class NiceDB implements DbInterface
             $bt['function'] = $bt['function'] ?? '';
             if (isset($bt['file'])
                 && !($bt['class'] === __CLASS__ && $bt['function'] === '__call')
-                && \mb_strpos($bt['file'], 'NiceDB.php') === false
+                && !\str_contains($bt['file'], 'NiceDB.php')
             ) {
                 $stripped[] = [
                     'file'     => $bt['file'],
@@ -423,7 +423,7 @@ class NiceDB implements DbInterface
             return 0;
         }
         $id = $this->pdo->lastInsertId();
-        if (\mb_strpos($tableName, 'tprofiler') !== 0) {
+        if (!\str_starts_with($tableName, 'tprofiler')) {
             $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
         }
 
@@ -992,27 +992,21 @@ class NiceDB implements DbInterface
 
     /**
      * @param int $returnType
-     * @return array|bool|Collection|int|PDOStatement|stdClass
+     * @return array|bool|Collection|int|PDOStatement|null
      */
     private function failExecute(int $returnType)
     {
-        switch ($returnType) {
-            case ReturnType::COLLECTION:
-                return new Collection();
-            case ReturnType::ARRAY_OF_OBJECTS:
-            case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
-            case ReturnType::ARRAY_OF_BOTH_ARRAYS:
-            case ReturnType::SINGLE_ASSOC_ARRAY:
-                return [];
-            case ReturnType::SINGLE_OBJECT:
-                return null;
-            case ReturnType::QUERYSINGLE:
-                return new PDOStatement();
-            case ReturnType::DEFAULT:
-                return true;
-            default:
-                return 0;
-        }
+        return match ($returnType) {
+            ReturnType::COLLECTION => new Collection(),
+            ReturnType::ARRAY_OF_OBJECTS,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            ReturnType::ARRAY_OF_BOTH_ARRAYS,
+            ReturnType::SINGLE_ASSOC_ARRAY => [],
+            ReturnType::SINGLE_OBJECT => null,
+            ReturnType::QUERYSINGLE => new PDOStatement(),
+            ReturnType::DEFAULT => true,
+            default => 0,
+        };
     }
 
     /**

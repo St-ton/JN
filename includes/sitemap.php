@@ -62,7 +62,6 @@ function getRequestFile(string $file): ?string
     if ($file !== $pathInfo['basename']) {
         return null;
     }
-    $file = $pathInfo['basename'];
 
     return file_exists(PFAD_ROOT . PFAD_EXPORT . $file)
         ? $file
@@ -78,17 +77,11 @@ function sendRequestFile(string $file): void
     $absoluteFile = PFAD_ROOT . PFAD_EXPORT . basename($file);
     $extension    = pathinfo($absoluteFile, PATHINFO_EXTENSION);
 
-    switch (mb_convert_case($extension, MB_CASE_LOWER)) {
-        case 'xml':
-            $contentType = 'application/xml';
-            break;
-        case 'txt':
-            $contentType = 'text/plain';
-            break;
-        default:
-            $contentType = 'application/octet-stream';
-            break;
-    }
+    $contentType = match (mb_convert_case($extension, MB_CASE_LOWER)) {
+        'xml' => 'application/xml',
+        'txt' => 'text/plain',
+        default => 'application/octet-stream',
+    };
 
     if (file_exists($absoluteFile)) {
         header('Content-Type: ' . $contentType);

@@ -1471,18 +1471,17 @@ class CartHelper
                 return false;
             }
             if ($redirect === 0) {
-                $con = (\mb_strpos($product->cURLFull, '?') === false) ? '?' : '&';
+                $con = (!\str_contains($product->cURLFull, '?')) ? '?' : '&';
                 if ($product->kEigenschaftKombi > 0) {
                     $url = empty($product->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $product->kVaterArtikel . '&a2=' . $product->kArtikel . '&')
                         : ($product->cURLFull . $con);
-                    \header('Location: ' . $url . 'n=' . $qty . '&r=' . \implode(',', $redirectParam), true, 302);
                 } else {
                     $url = empty($product->cURLFull)
                         ? (Shop::getURL() . '/?a=' . $product->kArtikel . '&')
                         : ($product->cURLFull . $con);
-                    \header('Location: ' . $url . 'n=' . $qty . '&r=' . \implode(',', $redirectParam), true, 302);
                 }
+                \header('Location: ' . $url . 'n=' . $qty . '&r=' . \implode(',', $redirectParam), true, 302);
                 exit;
             }
 

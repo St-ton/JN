@@ -600,7 +600,7 @@ final class Controller
             $extension = 'jpg';
         }
         foreach ($oldImages as $image) {
-            if (\mb_strpos($image->cDatei, '_preview.') !== false) {
+            if (\str_contains($image->cDatei, '_preview.')) {
                 $this->deleteNewsImage($image->cName, $newsItemID, self::UPLOAD_DIR);
             }
         }
@@ -772,7 +772,7 @@ final class Controller
         $iterator     = new DirectoryIterator($uploadDirName . $itemID);
         foreach ($iterator as $fileinfo) {
             $fileName = $fileinfo->getFilename();
-            if (($excludePreview && \mb_strpos($fileName, '_preview.') !== false)
+            if (($excludePreview && \str_contains($fileName, '_preview.'))
                 || !$fileinfo->isFile()
                 || $fileinfo->isDot()
             ) {
@@ -841,10 +841,10 @@ final class Controller
                 continue;
             }
             \unlink($fileinfo->getPathname());
-            if ($imageName === 'preview' || \mb_strpos($imageName, '_preview') !== false) {
+            if ($imageName === 'preview' || \str_contains($imageName, '_preview')) {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = '';
-                if (\mb_strpos($uploadDir, \PFAD_NEWSKATEGORIEBILDER) !== false) {
+                if (\str_contains($uploadDir, \PFAD_NEWSKATEGORIEBILDER)) {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
                 } else {
                     $this->db->update('tnews', 'kNews', $id, $upd);
@@ -872,7 +872,7 @@ final class Controller
         $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
         $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
 
-        return \mb_strpos($real, $imgPath1) === 0 || \mb_strpos($real, $imgPath2) === 0;
+        return \str_starts_with($real, $imgPath1) || \str_starts_with($real, $imgPath2);
     }
 
 
@@ -968,9 +968,9 @@ final class Controller
         });
         $baseURL = Shop::getImageBaseURL();
         foreach ($images as $image) {
-            if (\mb_strpos($image, '_preview.') !== false) {
+            if (\str_contains($image, '_preview.')) {
                 $placeholder = '$#preview#$';
-            } elseif (\mb_strpos($image, 'Bild') === 0) {
+            } elseif (\str_starts_with($image, 'Bild')) {
                 $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
             } else {
                 $info        = \pathinfo($image);

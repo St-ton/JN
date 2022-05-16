@@ -234,9 +234,7 @@ class Exportformat
      */
     private function log(string $msg, array $context = []): void
     {
-        if ($this->logger !== null) {
-            $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
-        }
+        $this->logger?->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
     }
 
     /**
@@ -1055,7 +1053,7 @@ class Exportformat
     {
         if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
             while (($fdir = \readdir($dir)) !== false) {
-                if ($fdir !== $fileName && \mb_strpos($fdir, $fileNameSplit) !== false) {
+                if ($fdir !== $fileName && \str_contains($fdir, $fileNameSplit)) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $fdir);
                 }
             }
@@ -1132,7 +1130,7 @@ class Exportformat
         }
         // Kampagne URL
         if (!empty($this->campaignParameter)) {
-            $cSep           = (\mb_strpos($product->cURL, '.php') !== false) ? '&' : '?';
+            $cSep           = (\str_contains($product->cURL, '.php')) ? '&' : '?';
             $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
         }
         $product->Lieferbar    = $product->fLagerbestand <= 0 ? 'N' : 'Y';
@@ -1163,7 +1161,7 @@ class Exportformat
             return !$started;
         }
         $this->setQueue($queueObject)->initSession()->initSmarty();
-        if ($this->getPlugin() > 0 && \mb_strpos($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($this->getPlugin() > 0 && \str_contains($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE)) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
@@ -1173,9 +1171,7 @@ class Exportformat
             try {
                 $oPlugin = $loader->init($this->getPlugin());
             } catch (InvalidArgumentException $e) {
-                if ($this->logger !== null) {
-                    $this->logger->error($e->getMessage());
-                }
+                $this->logger?->error($e->getMessage());
                 $this->quit(true);
 
                 return false;
@@ -1252,7 +1248,7 @@ class Exportformat
             $this->writeHeader($tmpFile);
         }
         $content          = $this->getContent();
-        $categoryFallback = (\mb_strpos($content, '->oKategorie_arr') !== false);
+        $categoryFallback = \str_contains($content, '->oKategorie_arr');
         $options          = Artikel::getExportOptions();
         $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
@@ -1483,9 +1479,9 @@ class Exportformat
         $extensionWhitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (!\str_contains($post['cDateiname'], '.')) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif (\mb_strpos(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT)) === false) {
+        } elseif (!\str_contains(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT))) {
             $validation['cDateiname'] = 3;
         } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
@@ -1499,11 +1495,11 @@ class Exportformat
             $validation['cContent'] = 1;
         } elseif (!\EXPORTFORMAT_ALLOW_PHP
             && (
-                \mb_strpos($post['cContent'], '{php}') !== false
-                || \mb_strpos($post['cContent'], '<?php') !== false
-                || \mb_strpos($post['cContent'], '<%') !== false
-                || \mb_strpos($post['cContent'], '<%=') !== false
-                || \mb_strpos($post['cContent'], '<script language="php">') !== false
+                \str_contains($post['cContent'], '{php}')
+                || \str_contains($post['cContent'], '<?php')
+                || \str_contains($post['cContent'], '<%')
+                || \str_contains($post['cContent'], '<%=')
+                || \str_contains($post['cContent'], '<script language="php">')
             )
         ) {
             $validation['cContent'] = 2;

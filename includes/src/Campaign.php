@@ -249,7 +249,7 @@ class Campaign
                 }
             }
 
-            if (!$hit && \mb_strpos($_SERVER['HTTP_REFERER'] ?? '', '.google.') !== false) {
+            if (!$hit && \str_contains($_SERVER['HTTP_REFERER'] ?? '', '.google.')) {
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen
                 $event = $db->select(
                     'tkampagnevorgang',

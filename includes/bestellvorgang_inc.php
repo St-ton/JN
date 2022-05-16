@@ -410,7 +410,7 @@ function pruefeLieferadresseStep(array $get, ?string $currentStep = null): strin
 function pruefeVersandkostenfreiKuponVorgemerkt(): array
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use CartHelper::applyShippingFreeCoupon() instead.',
+        __FUNCTION__ . ' is deprecated. Use JTL\Cart\CartHelper::applyShippingFreeCoupon() instead.',
         E_USER_DEPRECATED
     );
     return CartHelper::applyShippingFreeCoupon();

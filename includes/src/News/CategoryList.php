@@ -108,10 +108,7 @@ final class CategoryList implements ItemListInterface
             }
             $parentID = $item->getParentID();
             $found    = $this->findParentCategory($tree, $parentID);
-
-            if ($found !== null) {
-                $found->addChild($item);
-            }
+            $found?->addChild($item);
         }
 
         return $tree;

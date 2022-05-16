@@ -485,8 +485,8 @@ class Navigation
                 break;
 
             case \PAGE_BEWERTUNG:
+                $ele = new NavigationEntry();
                 if ($this->product !== null) {
-                    $ele = new NavigationEntry();
                     $ele->setName($this->product->cKurzbezeichnung);
                     $ele->setURL($this->product->cURL);
                     $ele->setURLFull($this->product->cURLFull);
@@ -509,14 +509,12 @@ class Navigation
                         $this->linkService->getStaticRoute('bewertung.php')
                         . '?a=' . $this->product->kArtikel . '&bfa=1'
                     );
-                    $breadCrumb[] = $ele;
                 } else {
-                    $ele = new NavigationEntry();
                     $ele->setName($this->language->get('bewertung', 'breadcrumb'));
                     $ele->setURL('');
                     $ele->setURLFull('');
-                    $breadCrumb[] = $ele;
                 }
+                $breadCrumb[] = $ele;
                 break;
 
             default:

@@ -244,7 +244,7 @@ class SimpleCSS
      */
     public function html2rgb($color)
     {
-        if (\mb_strpos($color, '#') === 0) {
+        if (\str_starts_with($color, '#')) {
             $color = \mb_substr($color, 1);
         }
         if (\mb_strlen($color) === 6) {

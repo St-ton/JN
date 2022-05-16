@@ -100,7 +100,7 @@ class XMLParser
         $keys  = \array_keys($xml);
         $count = \count($xml);
         for ($i = 0; $i < $count; $i++) {
-            if (\mb_strpos((string)$keys[$i], ' attr') !== false) {
+            if (\str_contains((string)$keys[$i], ' attr')) {
                 // attribut array -> nicht beachten -> weiter
                 continue;
             }

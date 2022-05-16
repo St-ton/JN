@@ -1094,7 +1094,7 @@ class LanguageHelper
                     $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
-                    if (\mb_strpos($url, '/?s=') !== false) {
+                    if (\str_contains($url, '/?s=')) {
                         $lang->setUrl(\rtrim($shopURL, '/') . $url);
                     } else {
                         $lang->setUrl($url);
@@ -1137,7 +1137,7 @@ class LanguageHelper
                     $config->setLanguageID($originalLanguage);
                     $config->setBaseURL($originalBase);
                     if ($productFilter->getPage() > 1) {
-                        if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
+                        if (\str_contains($url, '?') || \str_contains($url, 'navi.php')) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= \SEP_SEITE . $productFilter->getPage();
@@ -1176,10 +1176,10 @@ class LanguageHelper
                     $url = $productFilter->getFilterURL()->getURL();
                 }
                 if ($currency->getID() !== $currentCurrencyCode) {
-                    $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $currency->getCode();
                 }
                 $currency->setURL($url);
-                $currency->setURLFull(\mb_strpos($url, Shop::getURL()) === false
+                $currency->setURLFull(!\str_contains($url, Shop::getURL())
                     ? ($shopURL . $url)
                     : $url);
             }

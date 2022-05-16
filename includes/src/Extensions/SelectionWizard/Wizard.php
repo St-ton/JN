@@ -434,9 +434,7 @@ class Wizard
                     $wizard->setNextSelection($kMerkmalWert);
                 }
                 $wizard->filter();
-                if ($smarty !== null) {
-                    $smarty->assign('AWA', $wizard);
-                }
+                $smarty?->assign('AWA', $wizard);
 
                 return $wizard;
             }

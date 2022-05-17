@@ -12,12 +12,13 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('DIAGNOSTIC_VIEW', true, true);
-$action = Request::postVar('action');
-$type   = Request::postVar('type');
+$action    = Request::postVar('action');
+$type      = Request::postVar('type');
+$languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
+
 if ($action === 'deleteExcess' && $type !== null && Form::validateToken()) {
-    $languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
-    $factory   = new LocalizationCheckFactory(Shop::Container()->getDB(), $languages);
-    $check     = $factory->getCheckByClassName($type);
+    $factory = new LocalizationCheckFactory(Shop::Container()->getDB(), $languages);
+    $check   = $factory->getCheckByClassName($type);
     if ($check === null) {
         Shop::Container()->getAlertService()->addAlert(Alert::TYPE_WARNING, 'nope', 'clearerr');
     }
@@ -32,4 +33,5 @@ $status       = Status::getInstance(Shop::Container()->getDB(), Shop::Container(
 $checkResults = $status->getLocalizationProblems(false);
 $smarty->assign('passed', false)
     ->assign('checkResults', $checkResults)
+    ->assign('languagesById', $languages->keyBy('id')->toArray())
     ->display('localizationcheck.tpl');

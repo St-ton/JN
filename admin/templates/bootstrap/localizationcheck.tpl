@@ -60,14 +60,14 @@
                                     <thead>
                                     <tr>
                                         <th scope="col">{__('ID')}</th>
-                                        <th scope="col" >{__('Language ID')}</th>
+                                        <th scope="col" >{__('Language ID')} - ISO</th>
                                         <th scope="col">{__('Name')}</th>
                                     </tr>
                                     </thead>
                                     {foreach $missing as $item}
                                         <tr>
                                             <td>{$item->getID()}</td>
-                                            <td>{$item->getLanguageID()}</td>
+                                            <td>{$item->getLanguageID()} - {$languagesById[$item->getLanguageID()]->iso}</td>
                                             <td>{$item->getName()}</td>
                                         </tr>
                                     {/foreach}

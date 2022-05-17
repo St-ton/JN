@@ -74,8 +74,6 @@ class Frontend extends AbstractSession
         self::$instance = $this;
         $this->setStandardSessionVars();
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-
-        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
     }
 
     /**
@@ -85,6 +83,7 @@ class Frontend extends AbstractSession
      */
     public function deferredUpdate(): void
     {
+        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
         if ($this->mustUpdate !== true) {
             return;
         }

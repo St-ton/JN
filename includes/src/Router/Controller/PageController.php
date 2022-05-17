@@ -32,12 +32,16 @@ class PageController extends AbstractController
         if ($linkID < 1 && $linkName === null) {
             return $this->state;
         }
+        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
+
         $seo = $linkID > 0
             ? $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cKey = :key AND kKey = :kid',
-                ['key' => 'kLink', 'kid' => $linkID]
+                    WHERE cKey = :key
+                      AND kKey = :kid
+                      AND kSprache = :lid',
+                ['key' => 'kLink', 'kid' => $linkID, 'lid' => $languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *

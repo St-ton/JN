@@ -26,12 +26,16 @@ class ManufacturerController extends AbstractController
         if ($manufacturerID < 1 && $manufacturerName === null) {
             return $this->state;
         }
+        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
+
         $seo = $manufacturerID > 0
             ? $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cKey = :key AND kKey = :kid',
-                ['key' => 'kHersteller', 'kid' => $manufacturerID]
+                    WHERE cKey = :key
+                      AND kKey = :kid
+                      AND kSprache = :lid',
+                ['key' => 'kHersteller', 'kid' => $manufacturerID, 'lid' => $languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *

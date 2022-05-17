@@ -963,7 +963,10 @@ final class Products extends AbstractSync
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
                 $res[] = $parent;
             }
-            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
+            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, [
+                'kArtikel'      => $productID,
+                'kVaterArtikel' => $parent,
+            ]);
         }
 
         return $res;

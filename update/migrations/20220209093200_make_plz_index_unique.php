@@ -2,6 +2,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Update\MigrationHelper;
 
 /**
  * Class Migration_20220209093200

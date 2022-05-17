@@ -468,8 +468,8 @@ class Statistik
                     break;
             }
 
-            foreach ($stats as $i => $oStat) {
-                $time = (int)$oStat->dZeit;
+            foreach ($stats as $i => $item) {
+                $time = (int)$item->dZeit;
                 if ($time < $start || $time > $end) {
                     unset($stats[$i]);
                 }
@@ -479,40 +479,40 @@ class Statistik
         if (\count($tmpData) === 0) {
             return [];
         }
-        foreach ($stats as $i => $oStat) {
+        foreach ($stats as $item) {
             $found = false;
-            foreach ($tmpData as $oStatTMP) {
+            foreach ($tmpData as $tmpItem) {
                 $break = false;
                 switch ($this->nAnzeigeIntervall) {
                     case 1: // Stunden
-                        if (\date('H', $oStat->dZeit) === $oStatTMP->nHour) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nHour;
-                            $break             = true;
+                        if (\date('H', $item->dZeit) === $tmpItem->nHour) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nHour;
+                            $break        = true;
                         }
                         break;
 
                     case 2: // Tage
-                        if (\date('d.m.', $oStat->dZeit) === $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.') {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
-                            $break             = true;
+                        if (\date('d.m.', $item->dZeit) === $tmpItem->nDay . '.' . $tmpItem->nMonth . '.') {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nDay . '.' . $tmpItem->nMonth . '.';
+                            $break        = true;
                         }
                         break;
 
                     case 3: // Monate
-                        if (\date('m.Y', $oStat->dZeit) === $oStatTMP->nMonth . '.' . $oStatTMP->nYear) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
-                            $break             = true;
+                        if (\date('m.Y', $item->dZeit) === $tmpItem->nMonth . '.' . $tmpItem->nYear) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nMonth . '.' . $tmpItem->nYear;
+                            $break        = true;
                         }
                         break;
 
                     case 4: // Jahre
-                        if (\date('Y', $oStat->dZeit) === $oStatTMP->nYear) {
-                            $stats[$i]->nCount = $oStatTMP->nCount;
-                            $stats[$i]->dZeit  = $oStatTMP->nYear;
-                            $break             = true;
+                        if (\date('Y', $item->dZeit) === $tmpItem->nYear) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nYear;
+                            $break        = true;
                         }
                         break;
                 }
@@ -526,16 +526,16 @@ class Statistik
             if (!$found) {
                 switch ($this->nAnzeigeIntervall) {
                     case 1: // Stunden
-                        $stats[$i]->dZeit = \date('H', $stats[$i]->dZeit);
+                        $item->dZeit = \date('H', $item->dZeit);
                         break;
                     case 2: // Tage
-                        $stats[$i]->dZeit = \date('d.m.', $stats[$i]->dZeit);
+                        $item->dZeit = \date('d.m.', $item->dZeit);
                         break;
                     case 3: // Monate
-                        $stats[$i]->dZeit = \date('m.Y', $stats[$i]->dZeit);
+                        $item->dZeit = \date('m.Y', $item->dZeit);
                         break;
                     case 4: // Jahre
-                        $stats[$i]->dZeit = \date('Y', $stats[$i]->dZeit);
+                        $item->dZeit = \date('Y', $item->dZeit);
                         break;
                 }
             }

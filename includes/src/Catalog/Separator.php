@@ -73,11 +73,7 @@ class Separator
         }
         if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
             foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member         = $data->$member;
-                $this->nEinheit        = (int)$this->nEinheit;
-                $this->nDezimalstellen = (int)$this->nDezimalstellen;
-                $this->kSprache        = (int)$this->nEinheit;
-                $this->kTrennzeichen   = (int)$this->kTrennzeichen;
+                $this->$member = $data->$member;
             }
             $this->nEinheit        = (int)$this->nEinheit;
             $this->nDezimalstellen = (int)$this->nDezimalstellen;

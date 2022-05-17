@@ -175,6 +175,10 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
+            <Setting Description="Variationsauswahl in Galerie anzeigen" Key="variation_productlist_gallery" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

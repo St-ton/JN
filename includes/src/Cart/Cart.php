@@ -637,7 +637,6 @@ class Cart
         $cartItem                  = new CartItem();
         $cartItem->nAnzahl         = $qty;
         $cartItem->nAnzahlEinzel   = $qty;
-        $cartItem->kArtikel        = 0;
         $cartItem->kSteuerklasse   = $taxClassID;
         $cartItem->fPreis          = $price;
         $cartItem->cUnique         = $unique;

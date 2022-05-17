@@ -86,6 +86,12 @@ msgstr "Mindestanzahl Verkäufe für Bestseller"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Hier legen Sie fest, wie oft ein Artikel mindestens verkauft werden muss, um als Bestseller markiert zu werden."
 
+msgid "global_bestseller_tage_name"
+msgstr "Maximal Anzahl Tage für Bestseller"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Hier legen Sie fest, welcher zurückliegende Zeitraum (in Tagen) für die Ermittlung der Bestseller berücksichtigt werden soll."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Kategorieanzeige"
 

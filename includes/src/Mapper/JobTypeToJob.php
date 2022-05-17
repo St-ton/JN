@@ -10,6 +10,7 @@ use JTL\Cron\Job\LicenseCheck;
 use JTL\Cron\Job\Newsletter;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Job\Store;
+use JTL\Cron\Job\TopSeller;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
@@ -41,6 +42,8 @@ class JobTypeToJob
                 return Store::class;
             case Type::LICENSE_CHECK:
                 return LicenseCheck::class;
+            case Type::TOPSELLER:
+                return TopSeller::class;
             default:
                 $mapping = null;
                 Dispatcher::getInstance()->fire(Event::MAP_CRONJOB_TYPE, ['type' => $type, 'mapping' => &$mapping]);

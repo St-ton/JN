@@ -86,6 +86,12 @@ msgstr "Minimum number of sales for bestsellers"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
+msgid "global_bestseller_tage_name"
+msgstr "Maximum number of days for bestsellers"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Specify which previous period (in days) should be taken into account in order to be marked as a bestseller."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Category display"
 

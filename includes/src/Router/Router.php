@@ -93,7 +93,7 @@ class Router
         $groups        = [''];
         $languageCodes = [];
         foreach (LanguageHelper::getAllLanguages() as $language) {
-            if (!\defined('URL_SHOP_' . mb_convert_case($language->getIso(), \MB_CASE_UPPER))) {
+            if (!\defined('URL_SHOP_' . \mb_convert_case($language->getIso(), \MB_CASE_UPPER))) {
                 $languageCodes[] = $language->getIso639();
             }
         }

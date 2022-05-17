@@ -106,11 +106,11 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
     $globalMetaData = Metadata::getGlobalMetaData();
-    Shop::bootstrap();
-    executeHook(HOOK_GLOBALINCLUDE_INC);
-    $session = (defined('JTLCRON') && JTLCRON === true)
+    $session        = (defined('JTLCRON') && JTLCRON === true)
         ? Frontend::getInstance(true, true, 'JTLCRON')
         : Frontend::getInstance();
+    Shop::bootstrap();
+    executeHook(HOOK_GLOBALINCLUDE_INC);
     $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));

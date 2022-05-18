@@ -79,10 +79,10 @@
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getManufacturer() !== null
-            && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getManufacturer()->getDescription()|strlen > 0}
             {block name='productlist-header-description-manufacturers'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getManufacturer()->getDescription()}</p>
                 </div>
             {/block}
         {/if}

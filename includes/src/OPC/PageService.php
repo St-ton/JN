@@ -301,6 +301,9 @@ class PageService
         if ($params['kHersteller'] > 0) {
             return $this->createGenericPageId('manufacturer', $params['kHersteller'], $langID, $params);
         }
+        if ($params['kVariKindArtikel'] > 0) {
+            return $this->createGenericPageId('product', $params['kVariKindArtikel'], $langID, $params);
+        }
         if ($params['kArtikel'] > 0) {
             return $this->createGenericPageId('product', $params['kArtikel'], $langID, $params);
         }

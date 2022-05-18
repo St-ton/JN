@@ -607,7 +607,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'     => $srcset,
             'srcsizes'   => $srcsizes,
-            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_XL)),
             'alt'        => $alt,
             'title'      => $title,
             'realWidth'  => $realWidth,

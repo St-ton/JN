@@ -770,8 +770,8 @@ Template-Selectoren (JTL PayPal Checkout)
 -----------------------------------------
 
 Nachfolgende Selectoren werden im "*JTL PayPal Checkout*"-Plugin verwendet. |br|
-Bitte stellen Sie sicher, dass keiner der Selektoren durch andere Plugins überschrieben wird.
-Dies kann dazu führen, dass das "JTL PayPal Checkout"-Plugin nicht mehr so funktioniert wie es zu erwarten wäre.
+Bitte stellen Sie sicher, dass diese Selektoren im Template enthalten sind und die adäquaten Bereiche
+wie im NOVA-Template referenzieren, um eine korrekte Funktion des "JTL PayPal Checkout"-Plugins zu gewährleisten.
 
 Selectoren in der: **CheckoutPage.php** (phpQuery)
 

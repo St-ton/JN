@@ -162,6 +162,23 @@ final class Shop extends ShopBC
     }
 
     /**
+     * @return Router
+     */
+    public static function getRouter(): Router
+    {
+        return self::$router;
+    }
+
+    /**
+     * @param Router $router
+     * @return void
+     */
+    public static function setRouter(Router $router): void
+    {
+        self::$router = $router;
+    }
+
+    /**
      * static wrapper - this allows to call Shop::Container()->getDB()->query() etc.
      *
      * @param string $method

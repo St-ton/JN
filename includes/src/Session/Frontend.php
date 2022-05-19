@@ -413,7 +413,7 @@ class Frontend extends AbstractSession
      */
     public static function getDeliveryAddressTemplate($lieferadresse): Lieferadressevorlage
     {
-        $lieferadressevorlage              = new Lieferadressevorlage();
+        $lieferadressevorlage                = new Lieferadressevorlage();
         $lieferadressevorlage->cVorname      = $lieferadresse->cVorname;
         $lieferadressevorlage->cNachname     = $lieferadresse->cNachname;
         $lieferadressevorlage->cFirma        = $lieferadresse->cFirma ?? null;

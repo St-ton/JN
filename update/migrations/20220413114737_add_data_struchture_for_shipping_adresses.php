@@ -28,11 +28,11 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'useAsDefaultShippingAdress', 'Als Standard Lieferadresse verwenden');
         $this->setLocalization('eng', 'account data', 'useAsDefaultShippingAdress', 'Use as default shipping address');
 
-        $this->setLocalization('ger', 'account data', 'editAddres', 'Adresse bearbeiten');
-        $this->setLocalization('eng', 'account data', 'editAddres', 'Edit address');
+        $this->setLocalization('ger', 'account data', 'editAddress', 'Adresse bearbeiten');
+        $this->setLocalization('eng', 'account data', 'editAddress', 'Edit address');
 
-        $this->setLocalization('ger', 'account data', 'deleteAddres', 'Adresse löschen');
-        $this->setLocalization('eng', 'account data', 'deleteAddres', 'Delete address');
+        $this->setLocalization('ger', 'account data', 'deleteAddress', 'Adresse löschen');
+        $this->setLocalization('eng', 'account data', 'deleteAddress', 'Delete address');
 
         $this->setLocalization('ger', 'account data', 'saveAddress', 'Lieferadresse speichern');
         $this->setLocalization('eng', 'account data', 'saveAddress', 'Save shipping address');
@@ -96,6 +96,7 @@ class Migration_20220413114737 extends Migration implements IMigration
                             ENGINE=InnoDB
                             ROW_FORMAT=DYNAMIC;
                             ");
+
     }
 
     /**

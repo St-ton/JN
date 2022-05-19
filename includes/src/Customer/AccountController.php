@@ -219,29 +219,30 @@ class AccountController
         if (Request::verifyGPCDataInt('editRechnungsadresse') > 0) {
             $step = 'rechnungsdaten';
         }
-        if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('adresse')) {
-            $step = 'lieferadressen';
-        }
         if (Request::getInt('pass') === 1) {
             $step = 'passwort aendern';
         }
-        if ($valid && Request::postInt('edit') === 1) {
-            $this->changeCustomerData();
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
+            $step = 'lieferadressen';
         }
-        if (Request::verifyGPDataString('editAddress') === 'neu' && Request::postInt('edit') === 1) {
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 &&
+            Request::verifyGPDataString('editAddress') === 'neu') {
             $this->saveShippingAddress();
         }
-        if (Request::getInt('editAddress') > 0 && !Request::postInt('edit')) {
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('editAddress') > 0) {
             $this->loadShippingAddress();
         }
-        if (Request::getInt('editAddress') > 0 && Request::postInt('edit') === 1) {
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::postInt('updateAddress') > 0) {
             $this->updateShippingAddress();
         }
-        if (Request::getInt('deleteAddress') > 0) {
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('deleteAddress') > 0) {
             $this->deleteShippingAddress();
         }
-        if (Request::getInt('setAddressAsDefault') > 0) {
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('setAddressAsDefault') > 0) {
             $this->setShippingAddressAsDefault();
+        }
+        if ($valid && Request::postInt('edit') === 1) {
+            $this->changeCustomerData();
         }
         if ($valid && Request::postInt('pass_aendern') > 0) {
             $step = $this->changePassword($customerID);
@@ -1078,6 +1079,7 @@ class AccountController
             $addresses = [];
 
             $prep['kKunde'] = $customer->kKunde;
+            /*
             $count_address  = $this->db->getSingleObject('select count(*) as anz from tlieferadressevorlage where kKunde = :kKunde order by nIstStandardLieferadresse DESC', $prep);
 
             $addressPagination = (new Pagination('lieferadressen'))
@@ -1093,6 +1095,15 @@ class AccountController
                 'nIstStandardLieferadresse DESC',
                 $addressPagination->getLimitSQL()
             );
+            */
+
+            $data = $this->db->selectAll(
+                'tlieferadressevorlage',
+                'kKunde',
+                $customer->kKunde,
+                '*',
+                'nIstStandardLieferadresse DESC'
+            );
 
             foreach ($data as $item) {
                 if ($item->kLieferadresse > 0) {
@@ -1102,7 +1113,7 @@ class AccountController
 
             $this->smarty
                 ->assign('Lieferadressen', $addresses)
-                ->assign('addressPagination', $addressPagination)
+                //->assign('addressPagination', $addressPagination)
                 ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
         }
     }
@@ -1150,19 +1161,25 @@ class AccountController
         $postData                            = Text::filterXSS($_POST);
         $shipping_address                    = $postData['register']['shipping_address'];
         $updateLieferAdresse                 = new Lieferadressevorlage();
-        $updateLieferAdresse->kLieferadresse = (int)$postData['editAddress'];
+        $updateLieferAdresse->kLieferadresse = (int)$postData['updateAddress'];
         $updateLieferAdresse->kKunde         = $customer->kKunde;
+        $updateLieferAdresse->cAnrede        = $shipping_address['anrede'];
         $updateLieferAdresse->cTitel         = $shipping_address['titel'];
         $updateLieferAdresse->cVorname       = $shipping_address['vorname'];
         $updateLieferAdresse->cNachname      = $shipping_address['nachname'];
+        $updateLieferAdresse->cFirma         = $shipping_address['firma'];
+        $updateLieferAdresse->cZusatz        = $shipping_address['firmazusatz'];
         $updateLieferAdresse->cStrasse       = $shipping_address['strasse'];
         $updateLieferAdresse->cHausnummer    = $shipping_address['hausnummer'];
+        $updateLieferAdresse->cAdressZusatz  = $shipping_address['adresszusatz'];
         $updateLieferAdresse->cLand          = $shipping_address['land'];
+        $updateLieferAdresse->cBundesland    = $shipping_address['bundesland'];
         $updateLieferAdresse->cPLZ           = $shipping_address['plz'];
         $updateLieferAdresse->cOrt           = $shipping_address['ort'];
-        if ($postData['isDefault'] == 1) {
+        if (isset($postData['isDefault']) && $postData['isDefault'] == 1) {
             $updateLieferAdresse->nIstStandardLieferadresse = 1;
         }
+
         $updateStatus = $updateLieferAdresse->updateInDB();
         if ($updateStatus) {
             $this->alertService->addAlert(
@@ -1176,8 +1193,11 @@ class AccountController
             header('Location: ' . Shop::Container()
                     ->getLinkService()
                     ->getStaticRoute('bestellvorgang.php').'?editRechnungsadresse=1');
-            die;
         }
+        header('Location: ' . Shop::Container()
+                ->getLinkService()
+                ->getStaticRoute('jtl.php').'?editLieferadresse=1&editAddress='.(int)$postData['updateAddress']);
+        die;
     }
 
     /**
@@ -1185,20 +1205,24 @@ class AccountController
      */
     private function saveShippingAddress(): void
     {
-        $customer                       = $_SESSION['Kunde'];
-        $postData                       = Text::filterXSS($_POST);
-        $shipping_address               = $postData['register']['shipping_address'];
-        $saveLieferAdresse              = new Lieferadressevorlage();
-        $saveLieferAdresse->kKunde      = $customer->kKunde;
-        $saveLieferAdresse->cTitel      = $shipping_address['titel'];
-        $saveLieferAdresse->cVorname    = $shipping_address['vorname'];
-        $saveLieferAdresse->cNachname   = $shipping_address['nachname'];
-        $saveLieferAdresse->cStrasse    = $shipping_address['strasse'];
-        $saveLieferAdresse->cHausnummer = $shipping_address['hausnummer'];
-        $saveLieferAdresse->cLand       = $shipping_address['land'];
-        $saveLieferAdresse->cPLZ        = $shipping_address['plz'];
-        $saveLieferAdresse->cOrt        = $shipping_address['ort'];
-        $saveStatus                     = $saveLieferAdresse->insertInDB();
+        $customer                         = $_SESSION['Kunde'];
+        $postData                         = Text::filterXSS($_POST);
+        $shipping_address                 = $postData['register']['shipping_address'];
+        $saveLieferAdresse                = new Lieferadressevorlage();
+        $saveLieferAdresse->kKunde        = $customer->kKunde;
+        $saveLieferAdresse->cTitel        = $shipping_address['titel'];
+        $saveLieferAdresse->cVorname      = $shipping_address['vorname'];
+        $saveLieferAdresse->cNachname     = $shipping_address['nachname'];
+        $saveLieferAdresse->cFirma        = $shipping_address['firma'];
+        $saveLieferAdresse->cZusatz       = $shipping_address['firmazusatz'];
+        $saveLieferAdresse->cStrasse      = $shipping_address['strasse'];
+        $saveLieferAdresse->cHausnummer   = $shipping_address['hausnummer'];
+        $saveLieferAdresse->cAdressZusatz = $shipping_address['adresszusatz'];
+        $saveLieferAdresse->cLand         = $shipping_address['land'];
+        $saveLieferAdresse->cBundesland   = $shipping_address['bundesland'];
+        $saveLieferAdresse->cPLZ          = $shipping_address['plz'];
+        $saveLieferAdresse->cOrt          = $shipping_address['ort'];
+        $saveStatus                       = $saveLieferAdresse->insertInDB();
         if ($saveStatus) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -1206,6 +1230,10 @@ class AccountController
                 'saveAddressSuccessful'
             );
         }
+        header('Location: ' . Shop::Container()
+                ->getLinkService()
+                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
+        die;
     }
 
     /**

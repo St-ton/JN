@@ -294,7 +294,7 @@
             {/col}
         {/block}
 
-        {if $step == 'Lieferadresse'}
+        {if $step == 'Lieferadresse' || $step == 'edit_customer_address'}
             {* save as shipping address preset *}
             {block name='checkout-customer-shipping-address-save-preset-wrap'}
                 {col cols=12 md=12}

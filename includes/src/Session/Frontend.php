@@ -411,25 +411,27 @@ class Frontend extends AbstractSession
     /**
      * @return Lieferadressevorlage
      */
-    public static function getDeliveryAddressVorlage($lieferadresse): Lieferadressevorlage
+    public static function getDeliveryAddressTemplate($lieferadresse): Lieferadressevorlage
     {
         $lieferadressevorlage              = new Lieferadressevorlage();
-        $lieferadressevorlage->cVorname    = $lieferadresse->cVorname;
-        $lieferadressevorlage->cNachname   = $lieferadresse->cNachname;
-        $lieferadressevorlage->cFirma      = $lieferadresse->cFirma ?? null;
-        $lieferadressevorlage->kKunde      = $lieferadresse->kKunde;
-        $lieferadressevorlage->cAnrede     = $lieferadresse->cAnrede;
-        $lieferadressevorlage->cTitel      = $lieferadresse->cTitel;
-        $lieferadressevorlage->cStrasse    = $lieferadresse->cStrasse;
-        $lieferadressevorlage->cHausnummer = $lieferadresse->cHausnummer;
-        $lieferadressevorlage->cPLZ        = $lieferadresse->cPLZ;
-        $lieferadressevorlage->cOrt        = $lieferadresse->cOrt;
-        $lieferadressevorlage->cLand       = $lieferadresse->cLand;
-        $lieferadressevorlage->cTel        = $lieferadresse->cTel;
-        $lieferadressevorlage->cMobil      = $lieferadresse->cMobil ?? null;
-        $lieferadressevorlage->cFax        = $lieferadresse->cFax ?? null;
-        $lieferadressevorlage->cMail       = $lieferadresse->cMail;
-        $lieferadressevorlage->cAnrede     = $lieferadresse->cAnrede;
+        $lieferadressevorlage->cVorname      = $lieferadresse->cVorname;
+        $lieferadressevorlage->cNachname     = $lieferadresse->cNachname;
+        $lieferadressevorlage->cFirma        = $lieferadresse->cFirma ?? null;
+        $lieferadressevorlage->cZusatz       = $lieferadresse->cZusatz ?? null;
+        $lieferadressevorlage->kKunde        = $lieferadresse->kKunde;
+        $lieferadressevorlage->cAnrede       = $lieferadresse->cAnrede ?? null;
+        $lieferadressevorlage->cTitel        = $lieferadresse->cTitel;
+        $lieferadressevorlage->cStrasse      = $lieferadresse->cStrasse;
+        $lieferadressevorlage->cHausnummer   = $lieferadresse->cHausnummer;
+        $lieferadressevorlage->cAdressZusatz = $lieferadresse->cAdressZusatz ?? null;
+        $lieferadressevorlage->cPLZ          = $lieferadresse->cPLZ;
+        $lieferadressevorlage->cOrt          = $lieferadresse->cOrt;
+        $lieferadressevorlage->cLand         = $lieferadresse->cLand;
+        $lieferadressevorlage->cBundesland   = $lieferadresse->cBundesland ?? null;
+        $lieferadressevorlage->cTel          = $lieferadresse->cTel ?? null;
+        $lieferadressevorlage->cMobil        = $lieferadresse->cMobil ?? null;
+        $lieferadressevorlage->cFax          = $lieferadresse->cFax ?? null;
+        $lieferadressevorlage->cMail         = $lieferadresse->cMail;
 
         return $lieferadressevorlage;
     }
@@ -437,35 +439,29 @@ class Frontend extends AbstractSession
     /**
      * @return Lieferadressevorlage
      */
-    public static function getDeliveryAddressFromVorlage($lieferadressevorlage): Lieferadresse
+    public static function getDeliveryAddressFromTemplate($lieferadressevorlage): Lieferadresse
     {
-        $lieferadresse              = new Lieferadresse();
-        $lieferadresse->cVorname    = $lieferadressevorlage->cVorname;
-        $lieferadresse->cNachname   = $lieferadressevorlage->cNachname;
-        $lieferadresse->cFirma      = $lieferadressevorlage->cFirma ?? null;
-        $lieferadresse->kKunde      = $lieferadressevorlage->kKunde;
-        $lieferadresse->cAnrede     = $lieferadressevorlage->cAnrede;
-        $lieferadresse->cTitel      = $lieferadressevorlage->cTitel;
-        $lieferadresse->cStrasse    = $lieferadressevorlage->cStrasse;
-        $lieferadresse->cHausnummer = $lieferadressevorlage->cHausnummer;
-        $lieferadresse->cPLZ        = $lieferadressevorlage->cPLZ;
-        $lieferadresse->cOrt        = $lieferadressevorlage->cOrt;
-        $lieferadresse->cLand       = $lieferadressevorlage->cLand;
-        $lieferadresse->cTel        = $lieferadressevorlage->cTel;
-        $lieferadresse->cMobil      = $lieferadressevorlage->cMobil ?? null;
-        $lieferadresse->cFax        = $lieferadressevorlage->cFax ?? null;
-        $lieferadresse->cMail       = $lieferadressevorlage->cMail;
-        $lieferadresse->cAnrede     = $lieferadressevorlage->cAnrede;
+        $lieferadresse                = new Lieferadresse();
+        $lieferadresse->cVorname      = $lieferadressevorlage->cVorname;
+        $lieferadresse->cNachname     = $lieferadressevorlage->cNachname;
+        $lieferadresse->cFirma        = $lieferadressevorlage->cFirma ?? null;
+        $lieferadresse->cZusatz       = $lieferadressevorlage->cZusatz ?? null;
+        $lieferadresse->kKunde        = $lieferadressevorlage->kKunde;
+        $lieferadresse->cAnrede       = $lieferadressevorlage->cAnrede ?? null;
+        $lieferadresse->cTitel        = $lieferadressevorlage->cTitel;
+        $lieferadresse->cStrasse      = $lieferadressevorlage->cStrasse;
+        $lieferadresse->cHausnummer   = $lieferadressevorlage->cHausnummer;
+        $lieferadresse->cAdressZusatz = $lieferadressevorlage->cAdressZusatz ?? null;
+        $lieferadresse->cPLZ          = $lieferadressevorlage->cPLZ;
+        $lieferadresse->cOrt          = $lieferadressevorlage->cOrt;
+        $lieferadresse->cLand         = $lieferadressevorlage->cLand;
+        $lieferadresse->cBundesland   = $lieferadressevorlage->cBundesland ?? null;
+        $lieferadresse->cTel          = $lieferadressevorlage->cTel ?? null;
+        $lieferadresse->cMobil        = $lieferadressevorlage->cMobil ?? null;
+        $lieferadresse->cFax          = $lieferadressevorlage->cFax ?? null;
+        $lieferadresse->cMail         = $lieferadressevorlage->cMail;
 
         return $lieferadresse;
-    }
-
-    /**
-     * @param Lieferadresse $address
-     */
-    public static function setDeliveryAddress(Lieferadresse $address): void
-    {
-        $_SESSION['Lieferadresse'] = $address;
     }
 
     /**

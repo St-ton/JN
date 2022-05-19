@@ -157,11 +157,11 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         );
         $cart->kLieferadresse = $deliveryAddress->insertInDB();
 
-        if (isset($_SESSION['newShippingAddsressPreset'])) {
-            $deliveryAddressVorlage         = Frontend::getDeliveryAddressVorlage($deliveryAddress);
+        if (isset($_SESSION['newShippingAddressPreset'])) {
+            $deliveryAddressVorlage         = Frontend::getDeliveryAddressTemplate($deliveryAddress);
             $deliveryAddressVorlage->kKunde = $cart->kKunde;
             $deliveryAddressVorlage->insertInDB();
-            unset($_SESSION['newShippingAddsressPreset']);
+            unset($_SESSION['newShippingAddressPreset']);
         }
     } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
         executeHook(

@@ -207,13 +207,13 @@ function pruefeLieferdaten($post, &$missingData = null): void
 {
     global $Lieferadresse;
     unset($_SESSION['Lieferadresse']);
-    unset($_SESSION['newShippingAddsressPreset']);
+    unset($_SESSION['newShippingAddressPreset']);
     if (!isset($_SESSION['Bestellung'])) {
         $_SESSION['Bestellung'] = new stdClass();
     }
 
     if (isset($post['saveAsNewShippingAddressPreset'])) {
-        $_SESSION['newShippingAddsressPreset'] = 1;
+        $_SESSION['newShippingAddressPreset'] = 1;
     }
 
     $_SESSION['Bestellung']->kLieferadresse = isset($post['kLieferadresse'])
@@ -255,7 +255,7 @@ function pruefeLieferdaten($post, &$missingData = null): void
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {
             $deliveryAddress           = new Lieferadressevorlage((int)$addressData->kLieferadresse);
-            $deliveryAddress           = Frontend::getDeliveryAddressFromVorlage($deliveryAddress);
+            $deliveryAddress           = Frontend::getDeliveryAddressFromTemplate($deliveryAddress);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
@@ -2790,7 +2790,7 @@ function pruefeAjaxEinKlick(): int
         );
         if ($addressData !== null && $addressData->kLieferadresse > 0) {
             $addressData               = new Lieferadressevorlage((int)$addressData->kLieferadresse);
-            $addressData               = Frontend::getDeliveryAddressFromVorlage($addressData);
+            $addressData               = Frontend::getDeliveryAddressFromTemplate($addressData);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();

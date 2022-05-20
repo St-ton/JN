@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Mapper\PluginValidation;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LegacyPluginLoader;
@@ -106,6 +107,7 @@ final class Listing
         $pluginLoader = new PluginLoader($this->db, $this->cache);
         $langCode     = Shop::getLanguageCode();
         foreach ($data as $dataItem) {
+            $added          = false;
             $item           = new ListingItem();
             $plugin         = (int)$dataItem->bExtension === 1
                 ? $pluginLoader->loadFromObject($dataItem, $langCode)
@@ -115,6 +117,7 @@ final class Listing
             /** @var ListingItem $available */
             foreach ($this->items as $available) {
                 if ($available->getPath() === $item->getPath()) {
+                    $added = true;
                     $available->mergeWith($item);
                     $available->setAvailable(true);
                     $available->setInstalled(true);
@@ -123,6 +126,15 @@ final class Listing
                         $available->setVersion($item->getVersion());
                     }
                 }
+            }
+            if ($added === false) {
+                $item->setAvailable(false);
+                $item->setInstalled(false);
+                $item->setHasError(true);
+                $item->setState(State::ERRONEOUS);
+                $item->setErrorCode(InstallCode::DIR_DOES_NOT_EXIST);
+                $item->setErrorMessage((new PluginValidation())->map(InstallCode::DIR_DOES_NOT_EXIST));
+                $this->items->add($item);
             }
         }
     }

@@ -763,20 +763,17 @@ class Category
      */
     public function getPath(Kategorie $category, bool $asString = true)
     {
-        if (empty($category->cKategoriePfad_arr)
-            || empty($category->kSprache)
-            || (int)$category->kSprache !== self::$languageID
-        ) {
-            if (empty($category->kKategorie)) {
+        if (empty($category->getCategoryPath()) || $category->getLanguageID() !== self::$languageID) {
+            if (empty($category->getID())) {
                 return $asString ? '' : [];
             }
-            $tree  = $this->getFlatTree($category->kKategorie);
+            $tree  = $this->getFlatTree($category->getID());
             $names = [];
             foreach ($tree as $item) {
                 $names[] = $item->getName();
             }
         } else {
-            $names = $category->cKategoriePfad_arr;
+            $names = $category->getCategoryPath();
         }
 
         return $asString ? \implode(' > ', $names) : $names;

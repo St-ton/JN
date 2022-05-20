@@ -3,9 +3,11 @@
 namespace JTL\Helpers;
 
 use JTL\Catalog\Category\MenuItem;
+use JTL\Catalog\Hersteller;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
 use JTL\News\Item;
+use JTL\Router\Router;
 use JTL\Shop;
 
 /**
@@ -411,24 +413,51 @@ class URL
         if ($obj instanceof LinkInterface) {
             return $obj->getURL();
         }
-        $prefix = $prefix ?? ($full === false ? '' : (Shop::getURL() . '/'));
+        $prefix     = $prefix ?? ($full === false ? '' : (Shop::getURL() . '/'));
+        $router     = Shop::getRouter();
+        $localeCode = Text::convertISO2ISO639(Shop::getLanguageCode());
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
         switch ($type) {
             case \URLART_ARTIKEL:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
+                $route = null;
+                if (!empty($obj->cSeo)) {
+                    $route = $router->getPathByType(
+                        Router::TYPE_PRODUCT,
+                        ['lang' => $localeCode, 'name' => $obj->cSeo]
+                    );
+                }
+                return $route !== null
+                    ? \rtrim($prefix, '/') . $route
                     : $prefix . '?a=' . $obj->kArtikel . self::getLocalizedFallback();
 
             case \URLART_KATEGORIE:
                 if ($obj instanceof MenuItem) {
-                    return !empty($obj->getURL())
-                        ? $prefix . $obj->getURL()
+                    $base  = $obj->getURL();
+                    $route = null;
+                    if (!empty($base)) {
+                        $route = $router->getPathByType(
+                            Router::TYPE_CATEGORY,
+                            ['lang' => $localeCode, 'name' => $obj->getURL()]
+                        );
+                    }
+                    return $route !== null
+                        ? \rtrim($prefix, '/') . $route
                         : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
                 }
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
-                    : $prefix . '?k=' . $obj->kKategorie . self::getLocalizedFallback();
+                    : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
             case \URLART_SEITE:
+                $route = null;
+                if (!empty($obj->cSeo)) {
+                    $route = $router->getPathByType(
+                        Router::TYPE_PAGE,
+                        ['lang' => $localeCode, 'name' => $obj->cSeo]
+                    );
+                }
+                if ($route !== null) {
+                    return \rtrim($prefix, '/') . $route;
+                }
                 if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                     && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                 ) {
@@ -446,6 +475,9 @@ class URL
                     : $prefix . '?s=' . $obj->kLink . self::getLocalizedFallback();
 
             case \URLART_HERSTELLER:
+                if ($obj instanceof Hersteller) {
+                    return $obj->getURL();
+                }
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
                     : $prefix . '?h=' . $obj->kHersteller . self::getLocalizedFallback();

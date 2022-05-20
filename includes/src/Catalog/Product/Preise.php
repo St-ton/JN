@@ -193,7 +193,7 @@ class Preise
     /**
      * @var DbInterface|null
      */
-    private ?DbInterface $db;
+    private ?DbInterface $db = null;
 
     /**
      * Preise constructor.
@@ -336,6 +336,18 @@ class Preise
     }
 
     /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        if ($this->db === null || $this->db->isConnected() === false) {
+            $this->db = Shop::Container()->getDB();
+        }
+
+        return $this->db;
+    }
+
+    /**
      * Return recalculated new net price based on the rounded default gross price.
      * This is necessary for having consistent gross prices in case of
      * threshold delivery (Tax rate != default tax rate).
@@ -377,7 +389,7 @@ class Preise
             return false;
         }
 
-        return $this->db->getSingleObject(
+        return $this->getDB()->getSingleObject(
             'SELECT COUNT(kPreis) AS cnt 
                 FROM tpreis
                 WHERE kKunde = :cid 
@@ -397,7 +409,7 @@ class Preise
         }
         $cacheID = 'custprice_' . $customerID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = $this->db->getSingleObject(
+            $data = $this->getDB()->getSingleObject(
                 'SELECT COUNT(kPreis) AS nAnzahl 
                     FROM tpreis
                     WHERE kKunde = :cid',

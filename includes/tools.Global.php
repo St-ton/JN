@@ -1166,7 +1166,7 @@ function baueVersandkostenfreiString($shippingMethod, $cartTotal)
         __FUNCTION__ . ' is deprecated. Use ' . ShippingMethod::class . '::getShippingFreeString() instead.',
         E_USER_DEPRECATED
     );
-    return ShippingMethod::getShippingFreeString($shippingMethod, $cartTotal);
+    return ShippingMethod::getShippingFreeString($shippingMethod, $cartTotal, $cartTotal);  // ATTENTION: third param!
 }
 
 /**

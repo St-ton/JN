@@ -253,7 +253,8 @@ class IOMethods
             'WarenkorbVersandkostenfreiHinweis',
             ShippingMethod::getShippingFreeString(
                 ShippingMethod::getFreeShippingMinimum($customerGroupID),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true)
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true),
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true)
             )
         )
                ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())

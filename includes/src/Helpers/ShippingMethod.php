@@ -1281,7 +1281,7 @@ class ShippingMethod
                 ? $localized->cName
                 : $method->cName;
         }
-        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSumGros, $cartSumNet); // TO-DO: woher sumNetto (letzten Param) bekommen
+        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSumGros, $cartSumNet);
         if ($shippingFreeDifference <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),

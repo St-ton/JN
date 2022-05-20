@@ -108,6 +108,7 @@ $service->buildURIs($smarty, $template, $themeDir);
 
 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
 $cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+$cartNetto       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
 
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('NaviFilter', $NaviFilter)
@@ -168,7 +169,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('FavourableShipping', $cart->getFavourableShipping(
         $shippingFreeMin !== 0
-        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue, $cartNetto) <= 0
             ? (int)$shippingFreeMin->kVersandart
             : null
     ))

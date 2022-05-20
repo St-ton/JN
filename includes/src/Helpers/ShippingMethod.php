@@ -1299,26 +1299,17 @@ class ShippingMethod
 
     /**
      * @param Versandart $method
-     * @param float|int  $cartSum
+     * @param float|int  $cartSumBrutto
      * @return float
      */
-    public static function getShippingFreeDifference($method, $cartSum): float
+    public static function getShippingFreeDifference($method, $cartSumBrutto, $cartSumNetto): float
     {
         $db                     = Shop::Container()->getDB();
-        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
+        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumBrutto;
         // check if vkfreiabx is calculated net or gross
         if ($method->eSteuer === 'netto') {
             // calculate net with default tax class
-            $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-            if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-                $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
-                $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
-                if ($defaultTax !== null) {
-                    $defaultTaxValue        = $defaultTax->fSteuersatz;
-                    $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
-                        Tax::getNet((float)$cartSum, $defaultTaxValue);
-                }
-            }
+            $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumNetto;
         }
 
         return $shippingFreeDifference;

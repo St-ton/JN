@@ -269,14 +269,11 @@ class Navigation
                 }
                 $elemCount = \count($this->categoryList->elemente) - 1;
                 for ($i = $elemCount; $i >= 0; $i--) {
-                    if (isset(
-                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
-                        $this->categoryList->elemente[$i]->cURL
-                    )) {
+                    if (isset($this->categoryList->elemente[$i])) {
                         $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
-                        $ele->setURL($this->categoryList->elemente[$i]->cURL);
-                        $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
+                        $ele->setName($this->categoryList->elemente[$i]->getShortName());
+                        $ele->setURL($this->categoryList->elemente[$i]->getURL());
+                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL());
                         $breadCrumb[] = $ele;
                     }
                 }
@@ -298,14 +295,11 @@ class Navigation
             case \PAGE_ARTIKELLISTE:
                 $elemCount = \count($this->categoryList->elemente ?? []);
                 for ($i = $elemCount - 1; $i >= 0; $i--) {
-                    if (isset(
-                        $this->categoryList->elemente[$i]->cKurzbezeichnung,
-                        $this->categoryList->elemente[$i]->cURL
-                    )) {
+                    if (isset($this->categoryList->elemente[$i])) {
                         $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->cKurzbezeichnung);
-                        $ele->setURL($this->categoryList->elemente[$i]->cURL);
-                        $ele->setURLFull($this->categoryList->elemente[$i]->cURLFull);
+                        $ele->setName($this->categoryList->elemente[$i]->getShortName());
+                        $ele->setURL($this->categoryList->elemente[$i]->getURL());
+                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL());
                         $breadCrumb[] = $ele;
                     }
                 }

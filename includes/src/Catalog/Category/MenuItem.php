@@ -38,87 +38,87 @@ class MenuItem
     /**
      * @var int
      */
-    private $id = 0;
+    private int $id = 0;
 
     /**
      * @var int
      */
-    private $parentID = 0;
+    private int $parentID = 0;
 
     /**
      * @var string
      */
-    private $name = '';
+    private string $name = '';
 
     /**
      * @var string
      */
-    private $shortName = '';
+    private string $shortName = '';
 
     /**
      * @var string
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var string
      */
-    private $url = '';
+    private string $url = '';
 
     /**
      * @var string
      */
-    private $imageURL = '';
+    private string $imageURL = '';
 
     /**
      * @var array
      */
-    private $attributes = [];
+    private array $attributes = [];
 
     /**
      * @var array
      */
-    private $functionalAttributes = [];
+    private array $functionalAttributes = [];
 
     /**
      * @var array
      */
-    private $children = [];
+    private array $children = [];
 
     /**
      * @var bool
      */
-    private $hasChildren = false;
+    private bool $hasChildren = false;
 
     /**
      * @var int
      */
-    private $productCount = -1;
+    private int $productCount = -1;
 
     /**
      * @var string|null
      */
-    public $customImgName;
+    public ?string $customImgName = null;
 
     /**
      * @var bool
      */
-    public $orphaned = false;
+    public bool $orphaned = false;
 
     /**
      * @var int
      */
-    private $lft = 0;
+    private int $lft = 0;
 
     /**
      * @var int
      */
-    private $rght = 0;
+    private int $rght = 0;
 
     /**
      * @var int
      */
-    private $lvl = 0;
+    private int $lvl = 0;
 
     /**
      * @return int

@@ -2,12 +2,16 @@
 
 namespace JTL\Catalog;
 
+use Illuminate\Support\Collection;
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -16,65 +20,61 @@ use stdClass;
  * Class Hersteller
  * @package JTL\Catalog
  */
-class Hersteller
+class Hersteller implements RoutableInterface
 {
     use MultiSizeImage;
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var int
      */
-    public int $kHersteller = 0;
+    private int $kHersteller = 0;
+
+    /**
+     * @var string[]
+     */
+    private array $names = [];
 
     /**
      * @var string
      */
-    public string $cName = '';
+    private string $originalSeo = '';
+
+    /**
+     * @var string[]
+     */
+    private array $metaTitles = [];
+
+    /**
+     * @var string[]
+     */
+    private array $metaKeywords = [];
+
+    /**
+     * @var string[]
+     */
+    private array $metaDescriptions = [];
+
+    /**
+     * @var string[]
+     */
+    private array $descriptions = [];
 
     /**
      * @var string
      */
-    public string $cSeo = '';
-
-    /**
-     * @var string
-     */
-    public string $originalSeo = '';
-
-    /**
-     * @var string
-     */
-    public string $cMetaTitle = '';
-
-    /**
-     * @var string
-     */
-    public string $cMetaKeywords = '';
-
-    /**
-     * @var string
-     */
-    public string $cMetaDescription = '';
-
-    /**
-     * @var string
-     */
-    public string $cBeschreibung = '';
-
-    /**
-     * @var string
-     */
-    public string $cBildpfad = '';
+    private string $imagePath = '';
 
     /**
      * @var int
      */
-    public int $nSortNr = 0;
+    private int $nSortNr = 0;
 
     /**
      * @var string
      */
-    public string $cURL = '';
+    private string $cURL = '';
 
     /**
      * @var string[]
@@ -97,32 +97,28 @@ class Hersteller
 
     /**
      * @var string
-     * @deprecated since 5.0.0
      */
-    public string $cBildpfadKlein = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-
-    /**
-     * @var string
-     * @deprecated since 5.0.0
-     */
-    public string $cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-
-    /**
-     * @var string
-     * @deprecated since 5.0.0
-     */
-    public string $cBildURLKlein = '';
-
-    /**
-     * @var string
-     * @deprecated since 5.0.0
-     */
-    public string $cBildURLNormal = '';
+    private string $imagePathSmall = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
 
     /**
      * @var string
      */
-    public string $cHomepage = '';
+    private string $imagePathNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+
+    /**
+     * @var string
+     */
+    private string $imageURLSmall = '';
+
+    /**
+     * @var string
+     */
+    private string $imageURLNormal = '';
+
+    /**
+     * @var string
+     */
+    private string $homepage = '';
 
     /**
      * Hersteller constructor.
@@ -133,32 +129,30 @@ class Hersteller
      */
     public function __construct(int $id = 0, int $languageID = 0, bool $noCache = false)
     {
+        $this->initLanguageID($languageID);
         $this->setImageType(Image::TYPE_MANUFACTURER);
+        $this->setRouteType(Router::TYPE_MANUFACTURERS);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $noCache);
         }
     }
 
     /**
+     *
+     */
+    public function __wakeup(): void
+    {
+        $this->initLanguageID();
+    }
+
+    /**
      * @param stdClass $obj
      * @return $this
+     * @deprecated since 5.2.0
      */
     public function loadFromObject(stdClass $obj): self
     {
-        $this->kHersteller      = (int)$obj->kHersteller;
-        $this->nSortNr          = (int)$obj->nSortNr;
-        $this->cName            = $obj->cName ?? '';
-        $this->cBildpfad        = $obj->cBildpfad ?? '';
-        $this->cMetaTitle       = $obj->cBildpfad ?? '';
-        $this->cMetaKeywords    = $obj->cMetaKeywords ?? '';
-        $this->cMetaDescription = $obj->cMetaDescription ?? '';
-        $this->cBeschreibung    = $obj->cBeschreibung ?? '';
-        $this->cSeo             = $obj->cSeo ?? '';
-        $this->originalSeo      = $obj->originalSeo ?? '';
-        $homepage               = Text::filterURL($obj->cHomepage ?? '', true, true);
-        $this->cHomepage        = $homepage === false ? '' : $homepage;
-        $this->loadImages();
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return $this;
     }
 
@@ -171,54 +165,80 @@ class Hersteller
     public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false): self
     {
         // noCache param to avoid problem with de-serialization of class properties with jtl search
-        $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
-        if ($languageID === 0) {
-            $languageID = LanguageHelper::getDefaultLanguage()->getId();
+        $this->currentLanguageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
+        if ($this->currentLanguageID === 0) {
+            $this->currentLanguageID = LanguageHelper::getDefaultLanguage()->getId();
         }
-        $cacheID   = 'manuf_' . $id . '_' . $languageID . Shop::Container()->getCache()->getBaseID();
+        $cacheID   = 'manuf_' . $id . Shop::Container()->getCache()->getBaseID();
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];
         $cached    = true;
-        if ($noCache === true || ($manufacturer = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $manufacturer = Shop::Container()->getDB()->getSingleObject(
+        if ($noCache === true || ($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $data   = Shop::Container()->getDB()->getObjects(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
-                    tseo.cSeo, thersteller.cSeo AS originalSeo
+                    tseo.cSeo, thersteller.cSeo AS originalSeo, therstellersprache.kSprache 
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
-                        AND therstellersprache.kSprache = :langID
                     LEFT JOIN tseo 
                         ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = :langID
+                        AND tseo.kSprache = therstellersprache.kSprache
                     WHERE thersteller.kHersteller = :manfID
-                        AND thersteller.nAktiv = 1",
-                [
-                    'langID' => $languageID,
-                    'manfID' => $id
-                ]
+                        AND thersteller.nAktiv = 1
+                    GROUP BY kSprache, thersteller.kHersteller",
+                ['manfID' => $id]
             );
-            $cached       = false;
-            \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                'oHersteller' => &$manufacturer,
-                'cached'      => false,
-                'cacheTags'   => &$cacheTags
-            ]);
-            Shop::Container()->getCache()->set($cacheID, $manufacturer, $cacheTags);
+            $cached = false;
+            foreach ($data as $manufacturer) {
+                \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
+                    'oHersteller' => &$manufacturer,
+                    'cached'      => false,
+                    'cacheTags'   => &$cacheTags
+                ]);
+            }
+            Shop::Container()->getCache()->set($cacheID, $data, $cacheTags);
         }
         if ($cached === true) {
-            \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                'oHersteller' => &$manufacturer,
-                'cached'      => true,
-                'cacheTags'   => &$cacheTags
-            ]);
+            foreach ($data as $manufacturer) {
+                \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
+                    'oHersteller' => &$manufacturer,
+                    'cached'      => true,
+                    'cacheTags'   => &$cacheTags
+                ]);
+            }
         }
-        if ($manufacturer !== null) {
-            $this->loadFromObject($manufacturer);
+        if ($data !== null) {
+            $this->map($data);
         }
 
         return $this;
+    }
+
+    /**
+     * @param stdClass[] $data
+     * @return void
+     */
+    public function map(array $data): void
+    {
+        foreach ($data as $item) {
+            $this->setImagePath($item->cBildpfad);
+            $langID = (int)$item->kSprache;
+            $this->setID((int)$item->kHersteller);
+            $this->setSortNo((int)$item->nSortNr);
+            $this->setName($item->cName ?? '', $langID);
+            $this->setMetaTitle($item->cBildpfad ?? '', $langID);
+            $this->setMetaKeywords($item->cMetaKeywords ?? '', $langID);
+            $this->setMetaDescription($item->cMetaDescription ?? '', $langID);
+            $this->setDescription($item->cBeschreibung ?? '', $langID);
+            $this->setSlug($item->cSeo ?? '', $langID);
+            $this->setOriginalSeo($item->originalSeo ?? '');
+            $homepage = Text::filterURL($item->cHomepage ?? '', true, true);
+            $this->setHomepage($homepage === false ? '' : $homepage);
+        }
+        $this->loadImages();
+        $this->createBySlug($this->getID());
     }
 
     /**
@@ -227,20 +247,15 @@ class Hersteller
     private function loadImages(): self
     {
         $imageBaseURL          = Shop::getImageBaseURL();
-        $this->cBildpfadKlein  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-        $this->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-        if ($this->kHersteller > 0) {
-            $this->cURL = $this->cSeo !== ''
-                ? Shop::getURL() . '/' . $this->cSeo
-                : Shop::getURL() . '/?h=' . $this->kHersteller;
+        $this->imagePathSmall  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+        $this->imagePathNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
+        if ($this->imagePath !== '') {
+            $this->imagePathSmall  = \PFAD_HERSTELLERBILDER_KLEIN . $this->imagePath;
+            $this->imagePathNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->imagePath;
+            $this->generateAllImageSizes(true, 1, $this->imagePath);
         }
-        if ($this->cBildpfad !== '') {
-            $this->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $this->cBildpfad;
-            $this->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->cBildpfad;
-            $this->generateAllImageSizes(true, 1, $this->cBildpfad);
-        }
-        $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
-        $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;
+        $this->imageURLSmall  = $imageBaseURL . $this->imagePathSmall;
+        $this->imageURLNormal = $imageBaseURL . $this->imagePathNormal;
 
         return $this;
     }
@@ -254,10 +269,8 @@ class Hersteller
     public static function getAll(bool $productLookup = true, int $languageID = 0, int $customerGroupID = 0): array
     {
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
-        $languageID      = $languageID ?: Shop::getLanguageID();
         $sql             = new SqlObject();
         $sql->setWhere('thersteller.nAktiv = 1');
-        $sql->addParam(':lid', $languageID);
         if ($productLookup) {
             $sql->setWhere('EXISTS (
                             SELECT 1
@@ -275,21 +288,21 @@ class Hersteller
             "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
-                tseo.cSeo, thersteller.cSeo AS originalSeo
+                tseo.cSeo, thersteller.cSeo AS originalSeo, therstellersprache.kSprache
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = :lid
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = :lid 
+                    AND tseo.kSprache = therstellersprache.kSprache
                 WHERE " . $sql->getWhere() . '
+                GROUP BY thersteller.kHersteller, therstellersprache.kSprache
                 ORDER BY thersteller.nSortNr, thersteller.cName',
             $sql->getParams()
-        )->map(static function (stdClass $item) {
+        )->groupBy(['kHersteller'])->map(static function (Collection $data) {
             $manufacturer = new self();
-            $manufacturer->loadFromObject($item);
+            $manufacturer->map($data->toArray());
 
             return $manufacturer;
         })->toArray();
@@ -312,35 +325,22 @@ class Hersteller
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getName(): string
+    public function getName(int $idx = null): string
     {
-        return $this->cName;
+        return $this->names[$idx ?? $this->currentLanguageID];
     }
 
     /**
-     * @param string $name
+     * @param string   $name
+     * @param int|null $idx
+     * @return void
      */
-    public function setName(string $name): void
+    public function setName(string $name, int $idx = null): void
     {
-        $this->cName = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSeo(): string
-    {
-        return $this->cSeo;
-    }
-
-    /**
-     * @param string $seo
-     */
-    public function setSeo(string $seo): void
-    {
-        $this->cSeo = $seo;
+        $this->names[$idx ?? $this->currentLanguageID] = $name;
     }
 
     /**
@@ -353,6 +353,7 @@ class Hersteller
 
     /**
      * @param string $originalSeo
+     * @return void
      */
     public function setOriginalSeo(string $originalSeo): void
     {
@@ -360,67 +361,79 @@ class Hersteller
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getMetaTitle(): string
+    public function getMetaTitle(int $idx = null): string
     {
-        return $this->cMetaTitle;
+        return $this->metaTitles[$idx ?? $this->currentLanguageID];
     }
 
     /**
-     * @param string $metaTitle
+     * @param string   $metaTitle
+     * @param int|null $idx
+     * @return void
      */
-    public function setMetaTitle(string $metaTitle): void
+    public function setMetaTitle(string $metaTitle, int $idx = null): void
     {
-        $this->cMetaTitle = $metaTitle;
+        $this->metaTitles[$idx ?? $this->currentLanguageID] = $metaTitle;
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getMetaKeywords(): string
+    public function getMetaKeywords(int $idx = null): string
     {
-        return $this->cMetaKeywords;
+        return $this->metaKeywords[$idx ?? $this->currentLanguageID];
     }
 
     /**
-     * @param string $metaKeywords
+     * @param string   $metaKeywords
+     * @param int|null $idx
+     * @return void
      */
-    public function setCMetaKeywords(string $metaKeywords): void
+    public function setMetaKeywords(string $metaKeywords, int $idx = null): void
     {
-        $this->cMetaKeywords = $metaKeywords;
+        $this->metaKeywords[$idx ?? $this->currentLanguageID] = $metaKeywords;
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getMetaDescription(): string
+    public function getMetaDescription(int $idx = null): string
     {
-        return $this->cMetaDescription;
+        return $this->metaDescriptions[$idx ?? $this->currentLanguageID];
     }
 
     /**
-     * @param string $metaDescription
+     * @param string   $metaDescription
+     * @param int|null $idx
+     * @return void
      */
-    public function setMetaDescription(string $metaDescription): void
+    public function setMetaDescription(string $metaDescription, int $idx = null): void
     {
-        $this->cMetaDescription = $metaDescription;
+        $this->metaDescriptions[$idx ?? $this->currentLanguageID] = $metaDescription;
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getDesciption(): string
+    public function getDescription(int $idx = null): string
     {
-        return $this->cBeschreibung;
+        return $this->descriptions[$idx ?? $this->currentLanguageID];
     }
 
     /**
-     * @param string $description
+     * @param string   $description
+     * @param int|null $idx
+     * @return void
      */
-    public function setDecription(string $description): void
+    public function setDescription(string $description, int $idx = null): void
     {
-        $this->cBeschreibung = $description;
+        $this->descriptions[$idx ?? $this->currentLanguageID] = $description;
     }
 
     /**
@@ -428,7 +441,7 @@ class Hersteller
      */
     public function getImagePath(): string
     {
-        return $this->cBildpfad;
+        return $this->imagePath;
     }
 
     /**
@@ -436,7 +449,7 @@ class Hersteller
      */
     public function setImagePath(string $imagePath): void
     {
-        $this->cBildpfad = $imagePath;
+        $this->imagePath = $imagePath;
     }
 
     /**
@@ -458,25 +471,9 @@ class Hersteller
     /**
      * @return string
      */
-    public function getURL(): string
-    {
-        return $this->cURL;
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURL(string $url): void
-    {
-        $this->cURL = $url;
-    }
-
-    /**
-     * @return string
-     */
     public function getImagePathSmall(): string
     {
-        return $this->cBildpfadKlein;
+        return $this->imagePathSmall;
     }
 
     /**
@@ -484,7 +481,7 @@ class Hersteller
      */
     public function setImagePathSmall(string $path): void
     {
-        $this->cBildpfadKlein = $path;
+        $this->imagePathSmall = $path;
     }
 
     /**
@@ -492,7 +489,7 @@ class Hersteller
      */
     public function getImagePathNormal(): string
     {
-        return $this->cBildpfadNormal;
+        return $this->imagePathNormal;
     }
 
     /**
@@ -500,7 +497,7 @@ class Hersteller
      */
     public function setImagePathNormal(string $path): void
     {
-        $this->cBildpfadNormal = $path;
+        $this->imagePathNormal = $path;
     }
 
     /**
@@ -508,7 +505,7 @@ class Hersteller
      */
     public function getImageURLSmall(): string
     {
-        return $this->cBildURLKlein;
+        return $this->imageURLSmall;
     }
 
     /**
@@ -516,7 +513,7 @@ class Hersteller
      */
     public function setImageURLSmall(string $url): void
     {
-        $this->cBildURLKlein = $url;
+        $this->imageURLSmall = $url;
     }
 
     /**
@@ -524,7 +521,7 @@ class Hersteller
      */
     public function getImageURLNormal(): string
     {
-        return $this->cBildURLNormal;
+        return $this->imageURLNormal;
     }
 
     /**
@@ -532,7 +529,7 @@ class Hersteller
      */
     public function setImageURLNormal(string $url): void
     {
-        $this->cBildURLNormal = $url;
+        $this->imageURLNormal = $url;
     }
 
     /**
@@ -540,7 +537,7 @@ class Hersteller
      */
     public function getHomepage(): string
     {
-        return $this->cHomepage;
+        return $this->homepage;
     }
 
     /**
@@ -548,6 +545,11 @@ class Hersteller
      */
     public function setHomepage(string $url): void
     {
-        $this->cHomepage = $url;
+        $this->homepage = $url;
+    }
+
+    public function getSeo(): string
+    {
+        return $this->getSlug();
     }
 }

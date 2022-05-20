@@ -598,7 +598,8 @@ class IOMethods
                 }
 
                 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);
-                $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $country);
 
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                        ->assign('Warensumme', $cart->gibGesamtsummeWaren())
@@ -611,13 +612,14 @@ class IOMethods
                        ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping(
                            $shippingFreeMin !== 0
-                           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValueGros, $cartValueNet) <= 0
                                ? (int)$shippingFreeMin->kVersandart
                                : null
                        ))
                        ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                            $shippingFreeMin,
-                           $cartValue
+                           $cartValueGros,
+                           $cartValueNet
                        ))
                        ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
                        ->assign('favourableShippingString', $cart->favourableShippingString);
@@ -1201,7 +1203,7 @@ class IOMethods
             ? 'EXISTS (
                      SELECT 1
                      FROM teigenschaftkombiwert innerKombiwert
-                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN 
+                     WHERE (innerKombiwert.kEigenschaft, innerKombiwert.kEigenschaftWert) IN
                      (' . \implode(', ', $combinations) . ')
                         AND innerKombiwert.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                      GROUP BY innerKombiwert.kEigenschaftKombi
@@ -1215,13 +1217,13 @@ class IOMethods
                 tseo.kKey AS kSeoKey, COALESCE(tseo.cSeo, \'\') AS cSeo,
                 tartikel.fLagerbestand, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull
                 FROM teigenschaftkombiwert
-                INNER JOIN tartikel 
+                INNER JOIN tartikel
                     ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.cKey = \'kArtikel\'
                     AND tseo.kKey = tartikel.kArtikel
                     AND tseo.kSprache = :languageID
-                LEFT JOIN tartikelsichtbarkeit 
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :customergroupID
                 WHERE ' . $combinationSQL . 'tartikel.kVaterArtikel = :parentProductID

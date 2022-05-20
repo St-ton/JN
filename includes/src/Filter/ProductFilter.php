@@ -1496,10 +1496,10 @@ class ProductFilter
             $_SESSION['Usersortierung']         = \SEARCH_SORT_STANDARD;
         }
         // custom category attribute
-        if ($category !== null && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+        if ($category !== null && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_ARTIKELSORTIERUNG))) {
             $mapper                     = new SortingType();
             $_SESSION['Usersortierung'] = $mapper->mapUserSorting(
-                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_ARTIKELSORTIERUNG]
+                $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_ARTIKELSORTIERUNG)
             );
         }
         if (isset($_SESSION['UsersortierungVorSuche']) && (int)$_SESSION['UsersortierungVorSuche'] > 0) {

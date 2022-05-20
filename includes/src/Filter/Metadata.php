@@ -317,9 +317,9 @@ class Metadata implements MetadataInterface
             if ($this->manufacturer->getID() > 0) {
                 $this->setName($this->manufacturer->getName() ?? '')
                     ->setImageURL($this->manufacturer->getImage())
-                    ->setMetaTitle($this->manufacturer->cMetaTitle)
-                    ->setMetaDescription($this->manufacturer->cMetaDescription)
-                    ->setMetaKeywords($this->manufacturer->cMetaKeywords);
+                    ->setMetaTitle($this->manufacturer->getMetaTitle())
+                    ->setMetaDescription($this->manufacturer->getMetaDescription())
+                    ->setMetaKeywords($this->manufacturer->getMetaKeywords());
             }
         } elseif ($this->productFilter->hasCharacteristicValue()) {
             $this->characteristicValue = new MerkmalWert($this->productFilter->getCharacteristicValue()->getValue());
@@ -360,29 +360,29 @@ class Metadata implements MetadataInterface
         $languageID     = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue(), $languageID);
-            if (!empty($category->cMetaDescription)) {
+            if (!empty($category->getMetaDescription())) {
                 // meta description via new method
                 return self::prepareMeta(
-                    \strip_tags($category->cMetaDescription),
+                    \strip_tags($category->getMetaDescription()),
                     null,
                     $maxLength
                 );
             }
-            if (!empty($category->categoryAttributes['meta_description']->cWert)) {
+            if (!empty($category->getCategoryAttributeValue('meta_description'))) {
                 // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
                 return self::prepareMeta(
-                    \strip_tags($category->categoryAttributes['meta_description']->cWert),
+                    \strip_tags($category->getCategoryAttributeValue('meta_description')),
                     null,
                     $maxLength
                 );
             }
             // Hat die aktuelle Kategorie eine Beschreibung?
-            if (!empty($category->cBeschreibung)) {
-                $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
+            if (!empty($category->getDescription())) {
+                $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->getDescription()));
             } elseif ($category->bUnterKategorien) {
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
-                $sub    = $helper->getCategoryById($category->kKategorie, $category->lft, $category->rght);
+                $sub    = $helper->getCategoryById($category->kKategorie, $category->getLeft(), $category->getRight());
                 if ($sub !== null && $sub->hasChildren()) {
                     $catNames       = map($sub->getChildren(), static function (MenuItem $e) {
                         return \strip_tags($e->getName());
@@ -460,13 +460,13 @@ class Metadata implements MetadataInterface
                 $this->productFilter->getCategory()->getValue(),
                 $this->productFilter->getFilterConfig()->getLanguageID()
             );
-            if (!empty($category->cMetaKeywords)) {
+            if (!empty($category->getMetaKeywords())) {
                 // meta keywords via new method
-                return \strip_tags($category->cMetaKeywords);
+                return \strip_tags($category->getMetaKeywords());
             }
-            if (!empty($category->categoryAttributes['meta_keywords']->cWert)) {
+            if (!empty($category->getCategoryAttributeValue('meta_keywords'))) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
-                return \strip_tags($category->categoryAttributes['meta_keywords']->cWert);
+                return \strip_tags($category->getCategoryAttributeValue('meta_keywords'));
             }
         }
 
@@ -498,14 +498,14 @@ class Metadata implements MetadataInterface
         $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
         if ($this->productFilter->hasCategory()) {
             $category = $category ?? new Kategorie($this->productFilter->getCategory()->getValue(), $languageID);
-            if (!empty($category->cTitleTag)) {
+            if (!empty($category->getMetaTitle())) {
                 // meta title via new method
-                $metaTitle = \strip_tags($category->cTitleTag);
+                $metaTitle = \strip_tags($category->getMetaTitle());
                 $metaTitle = \str_replace('"', "'", $metaTitle);
                 $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
-            } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
+            } elseif (!empty($category->getCategoryAttributeValue('meta_title'))) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
-                $metaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
+                $metaTitle = \strip_tags($category->getCategoryAttributeValue('meta_title'));
                 $metaTitle = \str_replace('"', "'", $metaTitle);
                 $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             }
@@ -676,8 +676,8 @@ class Metadata implements MetadataInterface
                     $this->productFilter->getCategory()->getValue(),
                     $this->productFilter->getFilterConfig()->getLanguageID()
                 );
-                if (!empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG])) {
-                    $defaultViewType = (int)$category->categoryFunctionAttributes[\KAT_ATTRIBUT_DARSTELLUNG];
+                if (!empty($category->getCategoryAttribute(\KAT_ATTRIBUT_DARSTELLUNG))) {
+                    $defaultViewType = (int)$category->getCategoryAttribute(\KAT_ATTRIBUT_DARSTELLUNG);
                 }
             }
             if ($viewType === 0 && (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {

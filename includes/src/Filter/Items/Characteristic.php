@@ -409,12 +409,12 @@ class Characteristic extends BaseCharacteristic
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
         if ($category !== null
-            && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER])
+            && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER))
             && $this->productFilter->hasCategory()
         ) {
             $catAttributeFilters = \explode(
                 ';',
-                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER]
+                $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER)
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(

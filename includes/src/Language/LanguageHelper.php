@@ -1071,27 +1071,28 @@ class LanguageHelper
         $linkID        = Shop::$kLink;
         $pageID        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
-        $helper        = Shop::Container()->getLinkService();
+        $linkService   = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
         if ($pageID !== null && $pageID > 0) {
             $linkID = $pageID;
         }
-        $ls     = Shop::Container()->getLinkService();
         $mapper = new PageTypeToLinkType();
         $mapped = $mapper->map(Shop::getPageType());
         try {
-            $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
-        } catch (SpecialPageNotFoundException $e) {
+            $specialPage = $mapped > 0 ? $linkService->getSpecialPage($mapped) : null;
+        } catch (SpecialPageNotFoundException) {
             $specialPage = null;
         }
-        $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
-        if (\count(Frontend::getLanguages()) > 1) {
-            foreach (Frontend::getLanguages() as $lang) {
+        $page       = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
+        $languages  = Frontend::getLanguages();
+        $currencies = Frontend::getCurrencies();
+        if (\count($languages) > 1) {
+            foreach ($languages as $lang) {
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                    $lang->setUrl($AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
                     if (\str_contains($url, '/?s=')) {
@@ -1112,13 +1113,13 @@ class LanguageHelper
                             $newsCategory->load(Shop::$kNewsKategorie);
                             $url = $newsCategory->getURL($langID);
                         } else {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
+                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
                             // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName() . '?lang=' . $langISO;
                             } else { //there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
+                                $url = $linkService->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
                             }
                         }
                     } else {
@@ -1147,10 +1148,10 @@ class LanguageHelper
                 }
             }
         }
-        if (\count(Frontend::getCurrencies()) > 1) {
+        if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
             $currentLangCode     = Shop::getLanguageCode();
-            foreach (Frontend::getCurrencies() as $currency) {
+            foreach ($currencies as $currency) {
                 if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
                     $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
                 } elseif ($specialPage !== null) {
@@ -1159,14 +1160,14 @@ class LanguageHelper
                         if (Shop::getPageType() === \PAGE_STARTSEITE) {
                             $url = '';
                         } elseif ($specialPage->getFileName() !== null) {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false);
+                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false);
                             // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName();
                             } else {
                                 // there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName());
+                                $url = $linkService->getStaticRoute($specialPage->getFileName());
                             }
                         }
                     }

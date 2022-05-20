@@ -390,6 +390,11 @@ final class Shop extends ShopBC
      */
     public static function bootstrap(bool $isFrontend = true): void
     {
+        self::$router = new Router(
+            self::Container()->getDB(),
+            self::Container()->getCache(),
+            new RoutingState()
+        );
         self::$isFrontend = $isFrontend;
         if (\SAFE_MODE === true) {
             return;
@@ -455,11 +460,6 @@ final class Shop extends ShopBC
      */
     public static function run(): ProductFilter
     {
-        self::$router = new Router(
-            self::Container()->getDB(),
-            self::Container()->getCache(),
-            new RoutingState()
-        );
         self::$state  = self::$router->init();
         self::setParams(self::$state->getAsParams());
         if (self::$state->productsPerPage !== 0) {

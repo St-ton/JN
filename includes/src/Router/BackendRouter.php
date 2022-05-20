@@ -101,6 +101,7 @@ use JTL\Router\Middleware\UpdateCheckMiddleware;
 use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -376,6 +377,7 @@ class BackendRouter
 
     public function dispatch(): void
     {
+        Shop::setRouter(new \JTL\Router\Router($this->db, $this->cache, new State()));
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $menu    = new Menu($this->db, $this->account, $this->getText);
         $data    = $menu->build($request);

@@ -10,6 +10,7 @@ use JTL\Catalog\Separator;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\Catalog\Warehouse;
 use JTL\Checkout\Versandart;
+use JTL\Contracts\RoutableInterface;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
@@ -32,6 +33,8 @@ use JTL\Media\Image;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
 use JTL\Media\MultiSizeImage;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -43,8 +46,9 @@ use function Functional\select;
  * Class Artikel
  * @package JTL\Catalog\Product
  */
-class Artikel
+class Artikel implements RoutableInterface
 {
+    use RoutableTrait;
     use MultiSizeImage;
 
     /**
@@ -1083,6 +1087,7 @@ class Artikel
      */
     public function __construct(DbInterface $db = null, CustomerGroup $customerGroup = null, Currency $currency = null)
     {
+        $this->setRouteType(Router::TYPE_PRODUCT);
         $this->setImageType(Image::TYPE_PRODUCT);
         $this->db            = $db ?? Shop::Container()->getDB();
         $this->customerGroup = $customerGroup ?? Frontend::getCustomerGroup();
@@ -1096,7 +1101,7 @@ class Artikel
      */
     public function getDB(): DbInterface
     {
-        if ($this->db === null) {
+        if ($this->db === null || $this->db->isConnected() === false) {
             $this->setDB(Shop::Container()->getDB());
         }
 
@@ -3058,27 +3063,30 @@ class Artikel
 
     /**
      * @return $this
+     * @former baueArtikelSprachURL()
      */
-    private function baueArtikelSprachURL(): self
+    private function buildURLs(): self
     {
-        $seoData = $this->getDB()->getObjects(
+        $slugs = $this->db->getObjects(
             'SELECT cSeo, kSprache
                 FROM tseo
-                WHERE cKey = \'kArtikel\'
-                    AND kKey = :kArtikel 
-                ORDER BY kSprache',
-            ['kArtikel' => $this->kArtikel]
+                WHERE cKey = :key
+                    AND kKey = :id',
+            ['key' => 'kArtikel', 'id' => $this->kArtikel]
         );
+        foreach ($slugs as $slug) {
+            $this->setSlug($slug->cSeo, (int)$slug->kSprache);
+        }
+        $this->createBySlug($this->kArtikel);
+        $this->cURL     = $this->getURLPath($this->kSprache);
+        $this->cURLFull = $this->getURL($this->kSprache);
+
         foreach (Frontend::getLanguages() as $language) {
             $code = $language->getCode();
-
-            $this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
-            foreach ($seoData as $item) {
-                $item->kSprache = (int)$item->kSprache;
-                if ($language->getId() === $item->kSprache) {
-                    if ($item->cSeo !== '') {
-                        $this->cSprachURL_arr[$code] = $item->cSeo;
-                    }
+            //$this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;
+            foreach ($this->getURLs() as $langID => $url) {
+                if ($language->getId() === $langID) {
+                    $this->cSprachURL_arr[$code] = $url;
                     break;
                 }
             }
@@ -3308,8 +3316,10 @@ class Artikel
             $tmpProduct->fNettoPreis       = null;
         }
         $this->holPreise($customerGroupID, $tmpProduct);
-        $this->cURL     = URL::buildURL($this, \URLART_ARTIKEL);
-        $this->cURLFull = URL::buildURL($this, \URLART_ARTIKEL, true);
+        $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO);
+        //$this->cURL     = URL::buildURL($this, \URLART_ARTIKEL);
+        //$this->cURLFull = URL::buildURL($this, \URLART_ARTIKEL, true);
+
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -3393,7 +3403,7 @@ class Artikel
                     $this->conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
                 );
         }
-        $this->baueArtikelSprachURL();
+        $this->buildURLs();
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME])
             ? $this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
@@ -3892,21 +3902,21 @@ class Artikel
         }
         $manufacturer = new Hersteller($this->kHersteller, $this->kSprache);
 
-        $this->cHersteller                = $manufacturer->getName();
-        $this->cHerstellerSeo             = $manufacturer->getSeo();
-        $this->cHerstellerURL             = URL::buildURL($manufacturer, \URLART_HERSTELLER);
+        $this->cHersteller                = $manufacturer->getName($this->kSprache);
+        $this->cHerstellerSeo             = $manufacturer->getSlug($this->kSprache);
+        $this->cHerstellerURL             = $manufacturer->getURL($this->kSprache);
         $this->cHerstellerHomepage        = $manufacturer->getHomepage();
-        $this->cHerstellerMetaTitle       = $manufacturer->getMetaTitle();
-        $this->cHerstellerMetaKeywords    = $manufacturer->getMetaKeywords();
-        $this->cHerstellerMetaDescription = $manufacturer->getMetaDescription();
-        $this->cHerstellerBeschreibung    = $manufacturer->getDesciption();
+        $this->cHerstellerMetaTitle       = $manufacturer->getMetaTitle($this->kSprache);
+        $this->cHerstellerMetaKeywords    = $manufacturer->getMetaKeywords($this->kSprache);
+        $this->cHerstellerMetaDescription = $manufacturer->getMetaDescription($this->kSprache);
+        $this->cHerstellerBeschreibung    = $manufacturer->getDescription($this->kSprache);
         $this->cHerstellerSortNr          = $manufacturer->getSortNo();
         if ($manufacturer->getImagePath() !== '') {
             $this->cHerstellerBildKlein     = $manufacturer->getImagePathSmall();
             $this->cHerstellerBildNormal    = $manufacturer->getImagePathNormal();
             $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
             $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
-            $this->cHerstellerBildURLNormal = $manufacturer->getImage(Image::SIZE_MD);
+            $this->cHerstellerBildURLNormal = $manufacturer->getImage();
         }
 
         return $this;
@@ -5668,8 +5678,8 @@ class Artikel
         if (\count($categoryList->elemente) > 0) {
             $categoryNames = [];
             foreach ($categoryList->elemente as $category) {
-                if (!empty($category->kKategorie)) {
-                    $categoryNames[] = $category->cName;
+                if ($category->getID() > 0) {
+                    $categoryNames[] = $category->getName($this->kSprache);
                 }
             }
             $description .= \implode(', ', $categoryNames);

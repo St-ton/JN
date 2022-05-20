@@ -70,7 +70,7 @@ class Manufacturer
         if ($this->manufacturers !== null) {
             return $this->manufacturers;
         }
-        if (true||($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
+        if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
             $stockFilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $manufacturers = Shop::Container()->getDB()->getCollection(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 

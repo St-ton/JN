@@ -197,13 +197,10 @@ class Plugins
             $categories = new KategorieListe();
             $list       = $categories->getAllCategoriesOnLevel($id);
         }
-
         if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
             $list2 = [];
             foreach ($list as $key => $item) {
-                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && $item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
-                ) {
+                if ($item->getCategoryAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) == $params['categoryBoxNumber']) {
                     $list2[$key] = $item;
                 }
             }

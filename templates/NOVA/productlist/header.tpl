@@ -70,10 +70,10 @@
 
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getCategory() !== null
-            && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getCategory()->getDescription()|strlen > 0}
             {block name='productlist-header-description-category'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getCategory()->getDescription()}</p>
                 </div>
             {/block}
         {/if}

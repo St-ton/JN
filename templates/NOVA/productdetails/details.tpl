@@ -113,7 +113,7 @@
                                                     <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="https://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
-                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                                                            <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerURL}{/if}"
                                                                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B'}
                                                                     data-toggle="tooltip"
                                                                     data-placement="left"

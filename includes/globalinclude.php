@@ -86,11 +86,10 @@ if (PHP_SAPI !== 'cli'
     && (!isset($_SERVER['HTTPS'])
         || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
 ) {
-    $https = ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de')
-        || (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI']))
-        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-        || (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))
-    );
+    $https = ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? '' === 'ssl.webpack.de')
+        || str_starts_with($_SERVER['SCRIPT_URI'] ?? '', 'ssl-id')
+        || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '' === 'https')
+        || str_starts_with($_SERVER['HTTP_X_FORWARDED_HOST'] ?? '', 'ssl');
     if (!$https && isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI'])) {
         $lang = '';
         if (!LanguageHelper::isDefaultLanguageActive(true)) {

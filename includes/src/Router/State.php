@@ -271,6 +271,7 @@ class State
         'kSuchanfrage'           => 'searchQueryID',
         'kMerkmalWert'           => 'characteristicID',
         'kSuchspecial'           => 'searchSpecialID',
+        'suchspecial'            => 'searchSpecialID',
         'kNews'                  => 'newsItemID',
         'kNewsMonatsUebersicht'  => 'newsOverviewID',
         'kNewsKategorie'         => 'newsCategoryID',

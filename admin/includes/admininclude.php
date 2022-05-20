@@ -8,6 +8,8 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
@@ -101,6 +103,7 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $session = new Backend();
     $session::set('frontendUpToDate', true);
 }
+Shop::setRouter(new Router($db, $cache, new State()));
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {

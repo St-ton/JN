@@ -20,58 +20,53 @@ use stdClass;
 class NiceDB implements DbInterface
 {
     /**
-     * @var pdo
+     * @var pdo|null
      */
-    protected $db;
+    protected ?pdo $db = null;
 
     /**
      * @var bool
      */
-    protected $isConnected = false;
+    protected bool $isConnected = false;
 
     /**
      * @var bool
      */
-    public $logErrors = false;
+    public bool $logErrors = false;
 
     /**
      * debug mode
      *
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * debug level, 0 no debug, 1 normal, 2 verbose, 3 very verbose with backtrace
      *
      * @var int
      */
-    private $debugLevel = 0;
-
-    /**
-     * @var NiceDB
-     */
-    private static $instance;
+    private int $debugLevel = 0;
 
     /**
      * @var PDO|null
      */
-    private $pdo;
+    private ?PDO $pdo;
 
     /**
      * @var string
      */
-    public $state = 'instanciated';
+    public string $state = 'instanciated';
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var int
      */
-    private $transactionCount = 0;
+    private int $transactionCount = 0;
 
     /**
      * create DB Connection with default parameters
@@ -111,7 +106,6 @@ class NiceDB implements DbInterface
         }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
-        self::$instance    = $this;
     }
 
     /**
@@ -511,7 +505,7 @@ class NiceDB implements DbInterface
         $arr     = \get_object_vars($object);
         $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; // list of values to insert as param for ->prepare()
-        if (!\is_array($arr) || !$keyname || !$keyvalue) {
+        if (!$keyname || !$keyvalue) {
             return -1;
         }
         foreach ($arr as $_key => $_val) {
@@ -1313,11 +1307,8 @@ class NiceDB implements DbInterface
     public function getErrorMessage(): string
     {
         $error = $this->getError();
-        if (\is_array($error) && isset($error[2])) {
-            return \is_string($error[2]) ? $error[2] : '';
-        }
 
-        return '';
+        return (isset($error[2]) && \is_string($error[2])) ? $error[2] : '';
     }
 
     /**
@@ -1424,7 +1415,7 @@ class NiceDB implements DbInterface
      */
     protected function isValidEntityName(string $name): bool
     {
-        return \preg_match('/^[a-z_0-9]+$/i', \trim($name)) === 1;
+        return \preg_match('/^[a-z_\d]+$/i', \trim($name)) === 1;
     }
 
     /**
@@ -1490,26 +1481,18 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @param array $data
+     * @return void
      */
-    public function serialize(): ?string
+    public function __unserialize(array $data): void
     {
-        return null;
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
-    public function unserialize($data): void
-    {
-    }
-
     public function __serialize(): array
     {
         return [];
-    }
-
-    public function __unserialize(array $data): void
-    {
     }
 }

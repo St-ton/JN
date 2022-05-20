@@ -390,7 +390,7 @@ final class Shop extends ShopBC
      */
     public static function bootstrap(bool $isFrontend = true): void
     {
-        self::$router = new Router(
+        self::$router     = new Router(
             self::Container()->getDB(),
             self::Container()->getCache(),
             new RoutingState()
@@ -460,7 +460,7 @@ final class Shop extends ShopBC
      */
     public static function run(): ProductFilter
     {
-        self::$state  = self::$router->init();
+        self::$state = self::$router->init();
         self::setParams(self::$state->getAsParams());
         if (self::$state->productsPerPage !== 0) {
             $_SESSION['ArtikelProSeite'] = self::$state->productsPerPage;

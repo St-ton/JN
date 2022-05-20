@@ -271,7 +271,7 @@ class ProductController extends AbstractController
         $child  = $this->currentProduct->kVariKindArtikel ?? 0;
         $parent = $this->currentProduct->kArtikel;
         $nav    = $this->config['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
-            ? ProductHelper::getProductNavigation($parent, $this->currentCategory->kKategorie ?? 0)
+            ? ProductHelper::getProductNavigation($parent, $this->currentCategory->getID() ?? 0)
             : null;
         if ($child === 0 && $this->currentProduct->nIstVater === 0 && Upload::checkLicense()) {
             $maxSize = Upload::uploadMax();

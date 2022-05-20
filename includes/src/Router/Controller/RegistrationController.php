@@ -270,7 +270,6 @@ class RegistrationController extends PageController
                 FROM tkundenherkunft 
                 ORDER BY nSort'
         );
-
         $this->smarty->assign('herkunfte', $origins)
             ->assign('Kunde', $customer)
             ->assign('customerAttributes', \is_a($customer, Customer::class)
@@ -285,7 +284,7 @@ class RegistrationController extends PageController
                 Shop::Lang()->get(
                     'minCharLen',
                     'messages',
-                    $this->config['global']['kundenregistrierung_passwortlaenge']
+                    $this->config['kunden']['kundenregistrierung_passwortlaenge']
                 )
             )
             ->assign('oKundenfeld_arr', new CustomerFields($this->languageID));

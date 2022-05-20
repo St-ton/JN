@@ -42,7 +42,7 @@ class ProductListController extends AbstractController
         }
         $categoryID                  = $this->productFilter->getCategory()->getValue();
         $_SESSION['LetzteKategorie'] = $categoryID;
-        if ($this->currentCategory->kKategorie === null) {
+        if ($this->currentCategory->getID() === null) {
             // temp. workaround: do not return 404 when non-localized existing category is loaded
             if (Category::categoryExists($categoryID)) {
                 $this->currentCategory->loadFromDB($categoryID);

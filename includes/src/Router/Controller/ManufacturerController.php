@@ -40,8 +40,10 @@ class ManufacturerController extends AbstractController
             : $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kHersteller', 'seo' => $manufacturerName]
+                    WHERE cKey = :key
+                      AND cSeo = :seo
+                      AND kSprache = :lid',
+                ['key' => 'kHersteller', 'seo' => $manufacturerName, 'lid' => $languageID]
             );
         if ($seo === null) {
             $this->state->is404 = true;

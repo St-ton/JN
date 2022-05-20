@@ -131,7 +131,7 @@ abstract class AbstractController implements ControllerInterface
      */
     public function init(): bool
     {
-        $this->languageID = $this->state->languageID;
+        $this->languageID = $this->state->languageID ?: Shop::getLanguageID();
 
         return true;
     }
@@ -270,9 +270,9 @@ abstract class AbstractController implements ControllerInterface
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
             ->assign('oUnterKategorien_arr', Category::getSubcategoryList(
-                $this->currentCategory->kKategorie ?? -1,
-                $this->currentCategory->lft ?? -1,
-                $this->currentCategory->rght ?? -1,
+                $this->currentCategory->getID() ?? -1,
+                $this->currentCategory->getLeft() ?? -1,
+                $this->currentCategory->getRight() ?? -1,
             ))
             ->assign('session_name', \session_name())
             ->assign('session_id', \session_id())

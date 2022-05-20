@@ -5,6 +5,7 @@ namespace JTL\Router\Controller;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -62,6 +63,9 @@ class DefaultController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (\count($args) === 0) {
+            $args['slug'] = \ltrim($request->getUri()->getPath(), '/');
+        }
         $this->getStateFromSlug($args);
         $cf         = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
         $controller = $cf->getEntryPoint();

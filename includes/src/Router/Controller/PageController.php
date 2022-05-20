@@ -13,6 +13,7 @@ use JTL\Router\State;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -67,13 +68,9 @@ class PageController extends AbstractController
     public function init(): bool
     {
         parent::init();
-        $link = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
-        if ($link === null) {
-            return false;
-        }
-        $this->currentLink = $link;
+        $this->currentLink = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
 
-        return true;
+        return $this->currentLink !== null;
     }
 
     /**
@@ -89,20 +86,39 @@ class PageController extends AbstractController
         }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
-        $linkHelper = Shop::Container()->getLinkService();
         if (!$this->currentLink->isVisible()) {
-            $this->currentLink = $linkHelper->getSpecialPage(\LINKTYP_STARTSEITE);
+            $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
             $this->currentLink->setRedirectCode(301);
         }
         $requestURL = URL::buildURL($this->currentLink, \URLART_SEITE);
         if (!str_contains($requestURL, '.php')) {
             $this->canonicalURL = $this->currentLink->getURL();
         }
+        if ($this->currentLink->getLinkType() === \LINKTYP_NEWS) {
+            return $this->delegateResponse(NewsController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_WARENKORB) {
+            return $this->delegateResponse(CartController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_REGISTRIEREN) {
+            return $this->delegateResponse(RegistrationController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_LOGIN) {
+            return $this->delegateResponse(AccountController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_NEWSLETTER) {
+            return $this->delegateResponse(NewsletterController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_KONTAKT) {
+            return $this->delegateResponse(ContactController::class, $request, $args, $smarty);
+        }
+        if ($this->currentLink->getLinkType() === \LINKTYP_PASSWORD_VERGESSEN) {
+            return $this->delegateResponse(ForgotPasswordController::class, $request, $args, $smarty);
+        }
         if ($this->currentLink->getLinkType() === \LINKTYP_STARTSEITE) {
             $this->canonicalURL = Shop::getHomeURL();
             if ($this->currentLink->getRedirectCode() > 0) {
-                \header('Location: ' . $this->canonicalURL, true, $this->currentLink->getRedirectCode());
-                exit();
+                return new RedirectResponse($this->canonicalURL, $this->currentLink->getRedirectCode());
             }
             $this->smarty->assign('StartseiteBoxen', CMS::getHomeBoxes())
                 ->assign('oNews_arr', $this->config['news']['news_benutzen'] === 'Y'
@@ -233,5 +249,31 @@ class PageController extends AbstractController
                 ->assign('nFullscreenTemplate', 1);
         }
         include $plugin->getPaths()->getFrontendPath() . $linkFile->cDatei;
+    }
+
+    /**
+     * @param string                 $class
+     * @param ServerRequestInterface $request
+     * @param array                  $args
+     * @param JTLSmarty              $smarty
+     * @return ResponseInterface
+     */
+    protected function delegateResponse(
+        string $class,
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty
+    ): ResponseInterface {
+        $controller = new $class(
+            $this->db,
+            $this->cache,
+            $this->state,
+            $this->customerGroupID,
+            $this->config,
+            $this->alertService
+        );
+        $controller->init();
+
+        return $controller->getResponse($request, $args, $smarty);
     }
 }

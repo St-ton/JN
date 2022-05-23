@@ -1306,7 +1306,6 @@ class ShippingMethod
      */
     public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet): float
     {
-        $db                     = Shop::Container()->getDB();
         $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumGros;
         // check if vkfreiabx is calculated net or gross
         if ($method->eSteuer === 'netto') {

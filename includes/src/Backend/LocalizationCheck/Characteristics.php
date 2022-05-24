@@ -67,6 +67,6 @@ class Characteristics extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Artikel" -> "Merkmale"';
+        return __('locationCharacteristics');
     }
 }

@@ -67,6 +67,6 @@ class Categories extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Artikelverwaltung -> Kategorie -> Tab "Beschreibung"';
+        return __('locationCategories');
     }
 }

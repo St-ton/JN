@@ -70,6 +70,6 @@ class ConfigItems extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Artikel" -> "Konfigurationsgruppen" -> "Komponenten anzeigen" -> Wert bearbeiten';
+        return __('locationConfigItems');
     }
 }

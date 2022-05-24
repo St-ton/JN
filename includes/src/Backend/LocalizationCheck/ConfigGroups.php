@@ -67,6 +67,6 @@ class ConfigGroups extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Artikel" -> "Konfigurationsgruppen" -> "Bearbeiten"';
+        return __('locationConfigGroups');
     }
 }

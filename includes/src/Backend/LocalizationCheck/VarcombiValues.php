@@ -67,6 +67,6 @@ class VarcombiValues extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Artikelverwaltung -> Artikel -> Tab "Variation"';
+        return __('locationVarcombiValues');
     }
 }

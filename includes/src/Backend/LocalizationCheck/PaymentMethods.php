@@ -72,6 +72,6 @@ class PaymentMethods extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Shopbackend: Administration -> "Zahlungsarten"';
+        return __('locationPaymentMethods');
     }
 }

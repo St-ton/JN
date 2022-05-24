@@ -67,6 +67,6 @@ class UnitsOfMeasurement extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Artikel" -> "Verkaufs-/Maßeinheiten"';
+        return __('locationUnitsOfMeasurement');
     }
 }

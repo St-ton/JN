@@ -67,6 +67,6 @@ class Uploads extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Artikelverwaltung -> Artikel -> Tab "Dateien"';
+        return __('locationUploads');
     }
 }

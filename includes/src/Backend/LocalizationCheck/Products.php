@@ -66,6 +66,6 @@ class Products extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Artikelverwaltung -> Tab "Beschreibung"';
+        return __('locationProducts');
     }
 }

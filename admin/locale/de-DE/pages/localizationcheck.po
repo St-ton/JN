@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Localization check"
 msgstr "Übersetzungsprüfung"
@@ -94,3 +94,60 @@ msgstr "Variationskombinationswerte"
 
 msgid "JTL\\Backend\\LocalizationCheck\\Warehouses"
 msgstr "Warenlager"
+
+msgid "locationAttributes"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Attribute\""
+
+msgid "locationCategories"
+msgstr "JTL-Wawi: Artikelverwaltung -> Kategorie -> Tab \"Beschreibung\""
+
+msgid "locationCharacteristics"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Merkmale\""
+
+msgid "locationCharacteristicValues"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Merkmale\" -> Merkmal ausklappen -> Wert"
+
+msgid "locationConfigGroups"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Konfigurationsgruppen\" -> \"Bearbeiten\""
+
+msgid "locationConfigItems"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Konfigurationsgruppen\" -> \"Komponenten anzeigen\" -> Wert bearbeiten"
+
+msgid "locationCustomerGroups"
+msgstr "JTL-Wawi: Menü \"Kunden\" -> \"Kundengruppen\""
+
+msgid "locationManufacturers"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Hersteller\""
+
+msgid "locationPackagings"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Zusatzverpackungen\""
+
+msgid "locationPaymentMethods"
+msgstr "Shopbackend: Administration -> \"Zahlungsarten\""
+
+msgid "locationProducts"
+msgstr "JTL-Wawi: Artikelverwaltung -> Tab \"Beschreibung\""
+
+msgid "locationShippingFees"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Versandarten\""
+
+msgid "locationShippingMethods"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Versandarten\""
+
+msgid "locationUnitsOfMeasurement"
+msgstr "JTL-Wawi: Menü \"Artikel\" -> \"Verkaufs-/Maßeinheiten\""
+
+msgid "locationUploads"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Dateien\""
+
+msgid "locationVarcombi"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Variation\""
+
+msgid "locationVarcombiValues"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Variation\""
+
+msgid "locationWarehouses"
+msgstr "Shopbackend: Darstellung -> \"Standardelemente\" -> \"Warenlager\""
+
+msgid "Can be found: "
+msgstr "Zu finden unter: "

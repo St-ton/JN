@@ -67,6 +67,6 @@ class CustomerGroups extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Kunden" -> "Kundengruppen"';
+        return __('locationCustomerGroups');
     }
 }

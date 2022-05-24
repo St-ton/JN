@@ -67,6 +67,6 @@ class Attributes extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Wawi: Menü "Artikel" -> "Attribute"';
+        return __('locationAttributes');
     }
 }

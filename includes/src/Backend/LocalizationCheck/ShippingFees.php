@@ -72,6 +72,6 @@ class ShippingFees extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return 'Shopbackend: Administration -> "Versand" -> "Versandarten"';
+        return __('locationShippingFees');
     }
 }

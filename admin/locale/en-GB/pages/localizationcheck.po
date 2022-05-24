@@ -94,3 +94,57 @@ msgstr "Variation-combination values"
 
 msgid "JTL\\Backend\\LocalizationCheck\\Warehouses"
 msgstr "Warehouses"
+
+msgid "locationAttributes"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Attribute\""
+
+msgid "locationCategories"
+msgstr "JTL-Wawi: Artikelverwaltung -> Category -> Tab \"Description\""
+
+msgid "locationCharacteristics"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Characteristics\""
+
+msgid "locationCharacteristicValues"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Characteristics\" -> Collapse Characteristics -> Value"
+
+msgid "locationConfigGroups"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Config groups\" -> \"Bearbeiten\""
+
+msgid "locationConfigItems"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Config groups\" -> \"Show components\" -> Edit Value"
+
+msgid "locationCustomerGroups"
+msgstr "JTL-Wawi: Menu \"Customers\" -> \"Customer groups\""
+
+msgid "locationManufacturers"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Hersteller\""
+
+msgid "locationPackagings"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Zusatzverpackungen\""
+
+msgid "locationPaymentMethods"
+msgstr "Shopbackend: Administration -> \"Zahlungsarten\""
+
+msgid "locationProducts"
+msgstr "JTL-Wawi: Artikelverwaltung -> Tab \"Description\""
+
+msgid "locationShippingFees"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Versandarten\""
+
+msgid "locationShippingMethods"
+msgstr "Shopbackend: Administration -> \"Versand\" -> \"Versandarten\""
+
+msgid "locationUnitsOfMeasurement"
+msgstr "JTL-Wawi: Menu \"Artikel\" -> \"Verkaufs-/Maßeinheiten\""
+
+msgid "locationUploads"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Dateien\""
+
+msgid "locationVarcombi"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Variation\""
+
+msgid "locationVarcombiValues"
+msgstr "JTL-Wawi: Artikelverwaltung -> Artikel -> Tab \"Variation\""
+
+msgid "locationWarehouses"
+msgstr "Shopbackend: Darstellung -> \"Standardelemente\" -> \"Warenlager\""

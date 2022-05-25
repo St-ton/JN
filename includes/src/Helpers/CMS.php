@@ -74,7 +74,7 @@ class CMS
     public static function getHomeNews(array $conf): Collection
     {
         $items = new Collection();
-        if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
+        if ((int)($conf['news']['news_anzahl_content'] ?? 0) === 0) {
             return $items;
         }
         $limit   = '';

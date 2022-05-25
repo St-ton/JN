@@ -300,7 +300,7 @@ final class LinkService implements LinkServiceInterface
                 }
 
                 if ($idx !== false) {
-                    return $filterd->getURL($idx);
+                    return $full ? $filterd->getURL($idx) : $filterd->getSlug($idx);
                 }
             }
         }

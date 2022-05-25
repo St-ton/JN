@@ -9,6 +9,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Router\ControllerFactory;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
@@ -94,26 +95,9 @@ class PageController extends AbstractController
         if (!str_contains($requestURL, '.php')) {
             $this->canonicalURL = $this->currentLink->getURL();
         }
-        if ($this->currentLink->getLinkType() === \LINKTYP_NEWS) {
-            return $this->delegateResponse(NewsController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_WARENKORB) {
-            return $this->delegateResponse(CartController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_REGISTRIEREN) {
-            return $this->delegateResponse(RegistrationController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_LOGIN) {
-            return $this->delegateResponse(AccountController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_NEWSLETTER) {
-            return $this->delegateResponse(NewsletterController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_KONTAKT) {
-            return $this->delegateResponse(ContactController::class, $request, $args, $smarty);
-        }
-        if ($this->currentLink->getLinkType() === \LINKTYP_PASSWORD_VERGESSEN) {
-            return $this->delegateResponse(ForgotPasswordController::class, $request, $args, $smarty);
+        $mapped = ControllerFactory::getControllerClassByLinkType($this->currentLink->getLinkType());
+        if ($mapped !== null && $mapped !== __CLASS__) {
+            return $this->delegateResponse($mapped, $request, $args, $smarty);
         }
         if ($this->currentLink->getLinkType() === \LINKTYP_STARTSEITE) {
             $this->canonicalURL = Shop::getHomeURL();

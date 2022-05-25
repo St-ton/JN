@@ -390,11 +390,6 @@ final class Shop extends ShopBC
      */
     public static function bootstrap(bool $isFrontend = true): void
     {
-        self::$router     = new Router(
-            self::Container()->getDB(),
-            self::Container()->getCache(),
-            new RoutingState()
-        );
         self::$isFrontend = $isFrontend;
         if (\SAFE_MODE === true) {
             return;
@@ -468,7 +463,7 @@ final class Shop extends ShopBC
         self::$isInitialized = true;
         $conf                = new Config();
         $conf->setLanguageID(self::getLanguageID());
-        $conf->setLanguages(LanguageHelper::getInstance()->getLangArray());
+        $conf->setLanguages(LanguageHelper::getAllLanguages());
         $conf->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
         $conf->setConfig(Shopsetting::getInstance()->getAll());
         $conf->setBaseURL(self::getURL() . '/');

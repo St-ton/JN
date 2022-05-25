@@ -5,6 +5,8 @@ use JTL\Filter\Metadata;
 use JTL\Helpers\PHPSettings;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
@@ -104,6 +106,7 @@ if (PHP_SAPI !== 'cli'
 if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+    Shop::setRouter(new Router($db, $cache ?? Shop::Container()->getCache(), new State()));
     $globalMetaData = Metadata::getGlobalMetaData();
     $session        = (defined('JTLCRON') && JTLCRON === true)
         ? Frontend::getInstance(true, true, 'JTLCRON')

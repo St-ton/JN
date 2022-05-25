@@ -112,7 +112,7 @@ class Visitor
      * @param int      $visitorID
      * @param string   $userAgent
      * @param int      $botID
-     * @return object
+     * @return stdClass
      * @since 5.0.0
      */
     public static function updateVisitorObject(stdClass $vis, int $visitorID, string $userAgent, int $botID)
@@ -122,7 +122,7 @@ class Visitor
         $vis->cSessID           = \session_id();
         $vis->cID               = \md5($userAgent . Request::getRealIP());
         $vis->kKunde            = Frontend::getCustomer()->getID();
-        $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId((int)$vis->kKunde) : 0;
+        $vis->kBestellung       = $vis->kKunde > 0 ? self::refreshCustomerOrderId($vis->kKunde) : 0;
         $vis->cReferer          = self::getReferer();
         $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT'] ?? '');
         $vis->cBrowser          = self::getBrowser();

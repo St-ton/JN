@@ -178,7 +178,7 @@ trait RoutableTrait
      */
     public function getURLPath(int $idx = null): ?string
     {
-        return $this->paths[$idx ?? $this->currentLanguageID];
+        return $this->paths[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
@@ -215,7 +215,7 @@ trait RoutableTrait
      */
     public function getSlug(int $idx = null): string
     {
-        return $this->slugs[$idx ?? $this->currentLanguageID];
+        return $this->slugs[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**

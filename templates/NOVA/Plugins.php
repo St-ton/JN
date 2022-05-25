@@ -382,6 +382,22 @@ class Plugins
     }
 
     /**
+     * @param int $location
+     * @param int $languageID
+     * @return CheckBox[]
+     */
+    private function getCheckboxes(int $location, int $languageID): array
+    {
+        $cid        = 'cb_' . $location . '_' . $languageID;
+        $checkBoxes = Shop::has($cid)
+            ? Shop::get($cid)
+            : (new CheckBox())->getCheckBoxFrontend($location, 0, true, true);
+        Shop::set($cid, $checkBoxes);
+
+        return $checkBoxes;
+    }
+
+    /**
      * @param array                $params
      * @param Smarty_Internal_Data $smarty
      */
@@ -389,7 +405,7 @@ class Plugins
     {
         $smarty->assign(
             $params['bReturn'],
-            \count((new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true)) > 0
+            \count($this->getCheckboxes((int)$params['nAnzeigeOrt'], Shop::getLanguageID())) > 0
         );
     }
 
@@ -400,31 +416,25 @@ class Plugins
     public function getCheckBoxForLocation($params, $smarty): void
     {
         $langID     = Shop::getLanguageID();
-        $cid        = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
-        $checkBoxes = Shop::has($cid)
-            ? Shop::get($cid)
-            : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-        if (\count($checkBoxes) > 0) {
-            foreach ($checkBoxes as $checkBox) {
-                $url                     = $checkBox->kLink > 0
-                    ? $checkBox->getLink()->getURL()
-                    : '';
-                $error                   = isset($params['cPlausi_arr'][$checkBox->cID]);
-                $checkBox->isActive      = isset($params['cPost_arr'][$checkBox->cID]);
-                $checkBox->cName         = $checkBox->oCheckBoxSprache_arr[$langID]->cText ?? '';
-                $checkBox->cLinkURL      = $url;
-                $checkBox->cLinkURLFull  = $url;
-                $checkBox->cBeschreibung = !empty($checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
-                    ? $checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
-                    : '';
-                $checkBox->cErrormsg     = $error
-                    ? Shop::Lang()->get('pleasyAccept', 'account data')
-                    : '';
-            }
-            Shop::set($cid, $checkBoxes);
-            if (isset($params['assign'])) {
-                $smarty->assign($params['assign'], $checkBoxes);
-            }
+        $checkboxes = $this->getCheckboxes((int)$params['nAnzeigeOrt'], $langID);
+        foreach ($checkboxes as $checkbox) {
+            $url                     = $checkbox->kLink > 0
+                ? $checkbox->getLink()->getURL()
+                : '';
+            $error                   = isset($params['cPlausi_arr'][$checkbox->cID]);
+            $checkbox->isActive      = isset($params['cPost_arr'][$checkbox->cID]);
+            $checkbox->cName         = $checkbox->oCheckBoxSprache_arr[$langID]->cText ?? '';
+            $checkbox->cLinkURL      = $url;
+            $checkbox->cLinkURLFull  = $url;
+            $checkbox->cBeschreibung = !empty($checkbox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
+                ? $checkbox->oCheckBoxSprache_arr[$langID]->cBeschreibung
+                : '';
+            $checkbox->cErrormsg     = $error
+                ? Shop::Lang()->get('pleasyAccept', 'account data')
+                : '';
+        }
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $checkboxes);
         }
     }
 

@@ -22,52 +22,52 @@ class Navigation
     /**
      * @var LanguageHelper
      */
-    private $language;
+    private LanguageHelper $language;
 
     /**
      * @var int
      */
-    private $pageType = \PAGE_UNBEKANNT;
+    private int $pageType = \PAGE_UNBEKANNT;
 
     /**
      * @var LinkServiceInterface
      */
-    private $linkService;
+    private LinkServiceInterface $linkService;
 
     /**
      * @var KategorieListe|null
      */
-    private $categoryList;
+    private ?KategorieListe $categoryList = null;
 
     /**
      * @var string
      */
-    private $baseURL;
+    private string $baseURL;
 
     /**
      * @var Artikel|null
      */
-    private $product;
+    private ?Artikel $product = null;
 
     /**
      * @var LinkInterface|null
      */
-    private $link;
+    private ?LinkInterface $link = null;
 
     /**
      * @var string|null
      */
-    private $linkURL;
+    private ?string $linkURL = null;
 
     /**
      * @var ProductFilter|null
      */
-    private $productFilter;
+    private ?ProductFilter $productFilter = null;
 
     /**
      * @var NavigationEntry|null
      */
-    private $customNavigationEntry;
+    private ?NavigationEntry $customNavigationEntry = null;
 
     /**
      * Navigation constructor.

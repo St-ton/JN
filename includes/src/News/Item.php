@@ -6,10 +6,13 @@ use DateTime;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 use stdClass;
 
@@ -17,9 +20,10 @@ use stdClass;
  * Class Item
  * @package JTL\News
  */
-class Item extends AbstractItem
+class Item extends AbstractItem implements RoutableInterface
 {
     use MultiSizeImage;
+    use RoutableTrait;
 
     /**
      * @var int
@@ -82,11 +86,6 @@ class Item extends AbstractItem
     protected array $seo = [];
 
     /**
-     * @var string[]
-     */
-    protected array $urls = [];
-
-    /**
      * @var bool
      */
     protected bool $isActive = true;
@@ -144,6 +143,7 @@ class Item extends AbstractItem
     public function __construct(DbInterface $db, ?JTLCacheInterface $cache = null)
     {
         $this->db            = $db;
+        $this->routeType     = Router::TYPE_NEWS;
         $this->date          = \date_create();
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
@@ -167,7 +167,7 @@ class Item extends AbstractItem
             return $mapped;
         }
         $this->id = $id;
-        $item     = $this->db->getObjects(
+        $items    = $this->db->getObjects(
             "SELECT tnewssprache.languageID,
                 tnewssprache.languageCode,
                 tnews.cKundengruppe, 
@@ -193,10 +193,10 @@ class Item extends AbstractItem
                 GROUP BY tnewssprache.languageID",
             ['nid' => $this->id]
         );
-        if (\count($item) === 0) {
+        if (\count($items) === 0) {
             throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.');
         }
-        $mapped = $this->map($item);
+        $mapped = $this->map($items);
         $this->cache->set($cacheID, $mapped, [\CACHING_GROUP_NEWS]);
 
         return $mapped;
@@ -247,6 +247,7 @@ class Item extends AbstractItem
             $this->setTitle($item->localizedTitle ?? $item->cName, $languageID);
             $this->setLanguageID($languageID, $languageID);
             $this->setSEO($item->localizedURL ?? '', $languageID);
+            $this->setSlug($item->localizedURL ?? '', $languageID);
             $this->setURL($baseURL . $item->localizedURL, $languageID);
             $this->setPreview($item->preview, $languageID);
             $this->setPreviewImage($item->previewImage, $languageID);
@@ -255,6 +256,7 @@ class Item extends AbstractItem
             $this->setDate(\date_create($item->dateCreated));
             $this->setDateValidFrom(\date_create($item->dateValidFrom));
         }
+        $this->createBySlug();
         $this->comments->createItemsByNewsItem($this->id);
         $this->commentCount = $this->comments->getItems()->count();
         if (($preview = $this->getPreviewImage()) !== '') {

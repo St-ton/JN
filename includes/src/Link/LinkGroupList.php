@@ -17,22 +17,22 @@ final class LinkGroupList implements LinkGroupListInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var LinkGroupCollection
      */
-    private $linkGroups;
+    private LinkGroupCollection $linkGroups;
 
     /**
      * @var LinkGroupCollection
      */
-    private $visibleLinkGroups;
+    private LinkGroupCollection $visibleLinkGroups;
 
     /**
      * LinkGroupList constructor.
@@ -85,7 +85,7 @@ final class LinkGroupList implements LinkGroupListInterface
             return $this;
         }
         $cached = true;
-        if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
+        if (($data = $this->cache->get('linkgroups')) === false) {
             $cached           = false;
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
@@ -97,6 +97,8 @@ final class LinkGroupList implements LinkGroupListInterface
 
             \executeHook(\HOOK_LINKGROUPS_LOADED_PRE_CACHE, ['list' => $this]);
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
+        } else {
+            $this->linkGroups = $data;
         }
         $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
         \executeHook(\HOOK_LINKGROUPS_LOADED, ['list' => $this, 'cached' => $cached]);

@@ -265,12 +265,7 @@ class RegistrationController extends PageController
     public function getFormData(int $checkout = 0): void
     {
         $customer = Frontend::getCustomer();
-        $origins  = $this->db->getObjects(
-            'SELECT * 
-                FROM tkundenherkunft 
-                ORDER BY nSort'
-        );
-        $this->smarty->assign('herkunfte', $origins)
+        $this->smarty->assign('herkunfte', [])
             ->assign('Kunde', $customer)
             ->assign('customerAttributes', \is_a($customer, Customer::class)
                 ? $customer->getCustomerAttributes()

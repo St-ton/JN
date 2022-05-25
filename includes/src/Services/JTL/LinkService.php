@@ -28,7 +28,7 @@ final class LinkService implements LinkServiceInterface
     /**
      * @var LinkService|null
      */
-    private static $instance;
+    private static ?LinkService $instance = null;
 
     /**
      * @var LinkGroupListInterface
@@ -41,6 +41,11 @@ final class LinkService implements LinkServiceInterface
     private DbInterface $db;
 
     /**
+     * @var JTLCacheInterface
+     */
+    private JTLCacheInterface $cache;
+
+    /**
      * LinkService constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
@@ -48,8 +53,9 @@ final class LinkService implements LinkServiceInterface
     public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
         $this->db            = $db;
+        $this->cache         = $cache;
         self::$instance      = $this;
-        $this->linkGroupList = new LinkGroupList($this->db, $cache);
+        $this->linkGroupList = new LinkGroupList($db, $cache);
         $this->initLinkGroups();
     }
 
@@ -63,7 +69,7 @@ final class LinkService implements LinkServiceInterface
 
     public function reset(): void
     {
-        $this->linkGroupList = new LinkGroupList($this->db, Shop::Container()->getCache());
+        $this->linkGroupList = new LinkGroupList($this->db, $this->cache);
         $this->initLinkGroups();
     }
 
@@ -518,6 +524,10 @@ final class LinkService implements LinkServiceInterface
      */
     public function getAGBWRB(int $langID, int $customerGroupID)
     {
+        $cacheID = 'agbwrb_' . $langID . '_' . $customerGroupID;
+        if (($data = $this->cache->get($cacheID)) !== false) {
+            return $data;
+        }
         $linkAGB     = null;
         $linkWRB     = null;
         $linkWRBForm = null;
@@ -589,6 +599,7 @@ final class LinkService implements LinkServiceInterface
             $data->cURLAGB,
             $data->kLinkAGB > 0 ? 'class="popup"' : 'data-toggle="modal" data-target="#agb-modal" class="modal-popup"'
         );
+        $this->cache->set($cacheID, $data, [\CACHING_GROUP_CORE]);
 
         return $data;
     }

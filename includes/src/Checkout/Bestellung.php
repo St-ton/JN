@@ -427,6 +427,7 @@ class Bestellung
         if (!($this->kWarenkorb > 0 || $external > 0)) {
             return $this;
         }
+        $customer         = null;
         $db               = Shop::Container()->getDB();
         $this->Positionen = $db->selectAll(
             'twarenkorbpos',
@@ -546,6 +547,7 @@ class Bestellung
         $this->fVersandNetto      = 0;
         $defaultOptions           = Artikel::getDefaultOptions();
         $languageID               = Shop::getLanguageID();
+        $customerGroupID          = $customer?->getGroupID() ?? 0;
         if (!$languageID) {
             $language             = LanguageHelper::getDefaultLanguage();
             $languageID           = (int)$language->kSprache;
@@ -580,7 +582,7 @@ class Bestellung
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
                     $item->Artikel = (new Artikel($db))
-                        ->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $languageID);
+                        ->fuelleArtikel($item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 }
                 if ($this->kBestellung > 0) {
                     $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);

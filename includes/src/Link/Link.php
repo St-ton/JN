@@ -376,7 +376,8 @@ final class Link extends AbstractLink implements RoutableInterface
                         $this->getLinkType(),
                         ['lang' => $localeCode, 'name' => $link->localizedUrl]
                     );
-                    $this->setURL($route, $link->languageID);
+                    $this->setSlug($route, $link->languageID);
+                    $this->setURL(Shop::getURL() . $route, $link->languageID);
 //                    $this->setURL(
 //                        Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl,
 //                        $link->languageID

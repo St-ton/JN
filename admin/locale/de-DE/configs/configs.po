@@ -87,10 +87,10 @@ msgid "global_bestseller_minanzahl_desc"
 msgstr "Hier legen Sie fest, wie oft ein Artikel mindestens verkauft werden muss, um als Bestseller markiert zu werden."
 
 msgid "global_bestseller_tage_name"
-msgstr "Maximal Anzahl Tage für Bestseller"
+msgstr "Bestseller anhand letzter X Tage ermitteln"
 
 msgid "global_bestseller_tage_desc"
-msgstr "Hier legen Sie fest, welcher zurückliegende Zeitraum (in Tagen) für die Ermittlung der Bestseller berücksichtigt werden soll."
+msgstr "Hier legen Sie fest, wie viele vergangene Tage für die Berechnung von Bestsellern berücksichtigt werden. So können Sie beispielsweise eingrenzen, ob nur Bestellungen der letzten 3 Monate oder des gesamten Jahres in die Bestsellerermittlung einfließen sollen."
 
 msgid "kategorien_anzeigefilter_name"
 msgstr "Kategorieanzeige"

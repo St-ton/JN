@@ -6,7 +6,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
-use JTL\Template\Config;
 
 /**
  * Class Controller
@@ -15,16 +14,6 @@ use JTL\Template\Config;
  */
 class Controller
 {
-    /**
-     * @var string|null
-     */
-    private ?string $currentTemplateDir = null;
-
-    /**
-     * @var Config
-     */
-    private Config $config;
-
     /**
      * Controller constructor.
      * @param DbInterface           $db

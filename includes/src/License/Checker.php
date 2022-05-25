@@ -76,7 +76,13 @@ class Checker
      */
     public function getLicenseViolations(Mapper $mapper): Collection
     {
-        return $this->getPluginsWithoutLicense($mapper->getCollection()->getLicenseViolations());
+        $collection = $this->getPluginsWithoutLicense($mapper->getCollection()->getLicenseViolations());
+        $tplLicense = $this->getTemplatesWithoutLicense();
+        if ($tplLicense !== null && \is_a($tplLicense, ExpiredExsLicense::class)) {
+            $collection->add($tplLicense);
+        }
+
+        return $collection;
     }
 
     /**
@@ -96,6 +102,14 @@ class Checker
         }
 
         return $items;
+    }
+
+    /**
+     * @return ExsLicense|null
+     */
+    private function getTemplatesWithoutLicense(): ?ExsLicense
+    {
+        return Shop::Container()->getTemplateService()->getActiveTemplate()->getExsLicense();
     }
 
     /**

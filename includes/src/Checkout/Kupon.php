@@ -1152,14 +1152,16 @@ class Kupon
             'sum'  => $cart->gibGesamtsummeWaren(true, false),
             'cgid' => Frontend::getCustomerGroup()->getID()
         ];
-        foreach ($cart->PositionenArr as $item) {
+        foreach ($cart->PositionenArr as $key => $item) {
             if (isset($item->Artikel->cArtNr) && \mb_strlen($item->Artikel->cArtNr) > 0) {
-                $prep['cArtNr'] = \str_replace('%', '\%', $item->Artikel->cArtNr);
-                $productQry    .= " OR FIND_IN_SET(:cArtNr, REPLACE(cArtikel, ';', ',')) > 0";
+                $itemNmbrKey        = 'cArtNr' . $key;
+                $prep[$itemNmbrKey] = \str_replace('%', '\%', $item->Artikel->cArtNr);
+                $productQry        .= ' OR FIND_IN_SET(:'  . $itemNmbrKey . ", REPLACE(cArtikel, ';', ',')) > 0";
             }
             if (isset($item->Artikel->cHersteller) && \mb_strlen($item->Artikel->cHersteller) > 0) {
-                $prep['mnf'] = $item->Artikel->kHersteller;
-                $manufQry   .= " OR FIND_IN_SET(:mnf, REPLACE(cHersteller, ';', ',')) > 0";
+                $mnfKey        = 'mnf' . $key;
+                $prep[$mnfKey] = $item->Artikel->kHersteller;
+                $manufQry     .= ' OR FIND_IN_SET(:'  . $mnfKey . ", REPLACE(cHersteller, ';', ',')) > 0";
             }
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && isset($item->Artikel->kArtikel)

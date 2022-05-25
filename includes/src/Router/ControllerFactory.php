@@ -225,8 +225,7 @@ class ControllerFactory
                 \header('Location: ' . $link->getURL(), true, 303);
                 exit;
             }
-            $mapper                = new LinkTypeToPageType();
-            $this->state->pageType = $mapper->map($linkType);
+            $this->state->pageType = (new LinkTypeToPageType())->map($linkType);
         }
 
         return $this->getPageControllerByLinkType($linkType);
@@ -234,12 +233,11 @@ class ControllerFactory
 
     /**
      * @param int $linkType
-     * @return ControllerInterface
-     * @throws InvalidArgumentException
+     * @return string|null
      */
-    private function getPageControllerByLinkType(int $linkType): ControllerInterface
+    public static function getControllerClassByLinkType(int $linkType): ?string
     {
-        $class = match ($linkType) {
+        return match ($linkType) {
             \LINKTYP_VERGLEICHSLISTE => ComparelistController::class,
             \LINKTYP_WUNSCHLISTE => WishlistController::class,
             \LINKTYP_NEWS => NewsController::class,
@@ -257,6 +255,16 @@ class ControllerFactory
             0 => null,
             default => PageController::class
         };
+    }
+
+    /**
+     * @param int $linkType
+     * @return ControllerInterface
+     * @throws InvalidArgumentException
+     */
+    private function getPageControllerByLinkType(int $linkType): ControllerInterface
+    {
+        $class = self::getControllerClassByLinkType($linkType);
         if ($class !== null) {
             return $this->createController($class);
         }

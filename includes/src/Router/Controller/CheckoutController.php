@@ -1328,12 +1328,7 @@ class CheckoutController extends RegistrationController
      */
     public function getStepGuestCheckout(): void
     {
-        $origins = $this->db->getObjects(
-            'SELECT *
-            FROM tkundenherkunft
-            ORDER BY nSort'
-        );
-        if ($this->customer !== null) {
+        if ($this->customer->getID() > 0) {
             $customerAttributes = $this->customer->getCustomerAttributes();
             if ($this->customer->getID() === 0) {
                 $customerAttributes->assign(Frontend::get('customerAttributes') ?? new CustomerAttributes());
@@ -1343,7 +1338,7 @@ class CheckoutController extends RegistrationController
             $customerAttributes = $form->getCustomerAttributes($_POST);
         }
         $this->smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
-            ->assign('herkunfte', $origins)
+            ->assign('herkunfte', [])
             ->assign('Kunde', $this->customer ?? null)
             ->assign('laender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID, false, true))
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))

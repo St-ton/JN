@@ -29,8 +29,8 @@ class CustomerFieldsController extends AbstractBackendController
         $languageID = (int)$_SESSION['editLanguageID'];
         $cf         = CustomerFields::getInstance($languageID, $this->db);
         $step       = 'uebersicht';
+        $invalidate = false;
         $smarty->assign('cTab', $step);
-
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_KUNDENFELD, $_POST);
         } elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
@@ -49,6 +49,7 @@ class CustomerFieldsController extends AbstractBackendController
                     } else {
                         $this->alertService->addError(\__('errorCustomerFieldDelete'), 'errorCustomerFieldDelete');
                     }
+                    $invalidate = true;
                 } else {
                     $this->alertService->addError(\__('errorAtLeastOneCustomerField'), 'errorAtLeastOneCustomerField');
                 }
@@ -62,6 +63,7 @@ class CustomerFieldsController extends AbstractBackendController
                 } else {
                     $this->alertService->addError(\__('errorCustomerFieldUpdate'), 'errorCustomerFieldUpdate');
                 }
+                $invalidate = true;
             } else { // Speichern
                 $customerField = (object)[
                     'kKundenfeld' => (int)($_POST['kKundenfeld'] ?? 0),
@@ -76,9 +78,9 @@ class CustomerFieldsController extends AbstractBackendController
                     'nPflicht'    => Request::postInt('nPflicht'),
                     'nEditierbar' => Request::postInt('nEdit'),
                 ];
-
-                $cfValues = $_POST['cfValues'] ?? null;
-                $check    = new PlausiKundenfeld();
+                $invalidate    = true;
+                $cfValues      = $_POST['cfValues'] ?? null;
+                $check         = new PlausiKundenfeld();
                 $check->setPostVar($_POST);
                 $check->doPlausi($customerField->cTyp, $customerField->kKundenfeld > 0);
 
@@ -107,7 +109,6 @@ class CustomerFieldsController extends AbstractBackendController
             $fieldID = Request::verifyGPCDataInt('kKundenfeld');
             if ($fieldID > 0) {
                 $customerField = $cf->getCustomerField($fieldID);
-
                 if ($customerField !== null) {
                     $customerField->oKundenfeldWert_arr = $cf->getCustomerFieldValues($customerField);
                     $smarty->assign('oKundenfeld', $customerField);
@@ -119,6 +120,9 @@ class CustomerFieldsController extends AbstractBackendController
             if ($field->cTyp === 'auswahl') {
                 $field->oKundenfeldWert_arr = $cf->getCustomerFieldValues($field);
             }
+        }
+        if ($invalidate === true) {
+            $this->cache->flushTags([\CACHING_GROUP_OBJECT]);
         }
         // calculate the highest sort-order number (based on the 'ORDER BY' above)
         // to recommend the user the next sort-order-value, instead of a placeholder

@@ -19,9 +19,9 @@ use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
 use JTL\News\CommentList;
-use JTL\News\Controller as FrontendController;
 use JTL\News\Item;
 use JTL\News\ItemList;
+use JTL\Router\Controller\NewsController;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
@@ -212,7 +212,7 @@ final class Controller
                     )->cPraefix ?? 'Newsuebersicht';
                     $monthOverview           = new stdClass();
                     $monthOverview->kSprache = $langID;
-                    $monthOverview->cName    = FrontendController::mapDateName((string)$month, $year, $iso);
+                    $monthOverview->cName    = NewsController::mapDateName((string)$month, $year, $iso);
                     $monthOverview->nMonat   = $month;
                     $monthOverview->nJahr    = $year;
 

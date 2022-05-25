@@ -120,6 +120,31 @@ class CheckBox
     private $db;
 
     /**
+     * @var bool|null
+     */
+    public $isActive;
+
+    /**
+     * @var string|null
+     */
+    public $cLinkURL;
+
+    /**
+     * @var string|null
+     */
+    public $cLinkURLFull;
+
+    /**
+     * @var string|null
+     */
+    public $cBeschreibung;
+
+    /**
+     * @var string|null
+     */
+    public $cErrormsg;
+
+    /**
      * @param int              $id
      * @param DbInterface|null $db
      */

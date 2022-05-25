@@ -57,7 +57,7 @@
                 class='productlist-header-description-image'
                 item=$navData
                 square=false
-                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
+                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->getDescription()|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}
             <div class="title">

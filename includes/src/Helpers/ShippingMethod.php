@@ -166,15 +166,15 @@ class ShippingMethod
         }
         return Shop::Container()->getDB()->getObjects(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
-                     FROM tversandartzahlungsart, tzahlungsart
-                     WHERE tversandartzahlungsart.kVersandart = :methodID
-                         ' . $filterSQL . "
-                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
-                            OR FIND_IN_SET(:cGroupID, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                         AND tzahlungsart.nActive = 1
-                         AND tzahlungsart.nNutzbar = 1
-                     ORDER BY tzahlungsart.nSort",
+                 FROM tversandartzahlungsart, tzahlungsart
+                 WHERE tversandartzahlungsart.kVersandart = :methodID
+                     ' . $filterSQL . "
+                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
+                     AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
+                        OR FIND_IN_SET(:cGroupID, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
+                     AND tzahlungsart.nActive = 1
+                     AND tzahlungsart.nNutzbar = 1
+                 ORDER BY tzahlungsart.nSort",
             $params
         );
     }

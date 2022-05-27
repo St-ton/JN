@@ -365,6 +365,11 @@ class Bestellung
     public $nZahlungsTyp = 0;
 
     /**
+     * @var string|null
+     */
+    public $cEstimatedDeliveryEx = null;
+
+    /**
      * Bestellung constructor.
      * @param int  $id
      * @param bool $init

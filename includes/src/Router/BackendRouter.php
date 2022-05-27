@@ -344,6 +344,7 @@ class BackendRouter
         }
         $strategy->setContainer($container);
         $this->router->setStrategy($strategy);
+        $updateCheckMiddleWare = new UpdateCheckMiddleware($db);
 
         $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
             foreach ($controllers as $slug => $controller) {
@@ -354,7 +355,7 @@ class BackendRouter
                 $route->post('/' . $slug, $controller . '::getResponse')->setName('post' . $slug);
             }
         })->middleware(new AuthMiddleware($account))
-            ->middleware(new UpdateCheckMiddleware($db))
+            ->middleware($updateCheckMiddleWare)
             ->middleware(new WizardCheckMiddleware());
 
         $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
@@ -369,10 +370,10 @@ class BackendRouter
 
         $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
             ->setName(self::ROUTE_DASHBOARD)
-            ->middleware(new UpdateCheckMiddleware($db));
+            ->middleware($updateCheckMiddleWare);
         $this->router->post('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
             ->setName('post' . self::ROUTE_DASHBOARD)
-            ->middleware(new UpdateCheckMiddleware($db));
+            ->middleware($updateCheckMiddleWare);
     }
 
     public function dispatch(): void

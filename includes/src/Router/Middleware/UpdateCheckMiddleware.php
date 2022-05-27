@@ -39,6 +39,7 @@ class UpdateCheckMiddleware implements MiddlewareInterface
                     && !\str_contains($path, BackendRouter::ROUTE_DBUPDATER)
                     && !\str_ends_with($path, BackendRouter::ROUTE_IO)
                     && ($request->getQueryParams()['action'] ?? null) !== 'quick_change_language'
+                    && Shop::Container()->getAdminAccount()->logged()
                 ) {
                     return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_DBUPDATER);
                 }

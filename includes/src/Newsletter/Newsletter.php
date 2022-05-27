@@ -124,9 +124,9 @@ class Newsletter
         if (\count($groupIDs) > 0) {
             $noGroup = \in_array(0, $groupIDs, true);
             if ($noGroup === false || \count($groupIDs) > 1) {
-                $cSQL = 'AND ((tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
+                $cSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
                 if ($noGroup === true) {
-                    $cSQL .= ' OR tkunde.kKundengruppe IS NULL)';
+                    $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
                 }
                 $cSQL .= ')';
             } elseif ($noGroup === true) {

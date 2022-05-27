@@ -521,14 +521,18 @@ class CheckoutController extends RegistrationController
             return 0;
         }
         $paymentMethod = $this->db->getSingleObject(
-            'SELECT tversandartzahlungsart.*, tzahlungsart.*
+            'SELECT tversandartzahlungsart.*, tzahlungsart.*, tzahlungsartsprache.cHinweisTextShop
                 FROM tversandartzahlungsart, tzahlungsart
+                LEFT JOIN tzahlungsartsprache
+                    ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                    AND tzahlungsartsprache.cISOSprache = :iso
                 WHERE tversandartzahlungsart.kVersandart = :session_kversandart
                     AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                     AND tversandartzahlungsart.kZahlungsart = :kzahlungsart',
             [
                 'session_kversandart' => (int)$_SESSION['Versandart']->kVersandart,
-                'kzahlungsart'        => $paymentMethodID
+                'kzahlungsart'        => $paymentMethodID,
+                'iso'                 => Shop::getLanguageCode()
             ]
         );
         if ($paymentMethod === null) {
@@ -551,18 +555,7 @@ class CheckoutController extends RegistrationController
         if (!$this->paymentMethodIsValid($paymentMethod)) {
             return 0;
         }
-        $note                        = $this->db->select(
-            'tzahlungsartsprache',
-            'kZahlungsart',
-            (int)$paymentMethod->kZahlungsart,
-            'cISOSprache',
-            $_SESSION['cISOSprache'],
-            null,
-            null,
-            false,
-            'cHinweisTextShop'
-        );
-        $paymentMethod->cHinweisText = $note->cHinweisTextShop ?? '';
+        $paymentMethod->cHinweisText = $paymentMethod->cHinweisTextShop ?? '';
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren)
             && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y'
             && $paymentMethod->fAufpreis > 0
@@ -573,22 +566,15 @@ class CheckoutController extends RegistrationController
         $this->getPaymentSurchageDiscount($paymentMethod);
         $specialItem        = new stdClass();
         $specialItem->cName = [];
-        foreach ($_SESSION['Sprachen'] as $lang) {
-            if ($paymentMethod->kZahlungsart > 0) {
-                $localized = $this->db->select(
-                    'tzahlungsartsprache',
-                    'kZahlungsart',
-                    (int)$paymentMethod->kZahlungsart,
-                    'cISOSprache',
-                    $lang->cISO,
-                    null,
-                    null,
-                    false,
-                    'cName'
-                );
-                if (isset($localized->cName)) {
-                    $specialItem->cName[$lang->cISO] = $localized->cName;
-                }
+        if ($paymentMethod->kZahlungsart > 0) {
+            $localized = $this->db->getObjects(
+                'SELECT cISOSprache, cName 
+                    FROM tzahlungsartsprache
+                    WHERE kZahlungsart = :id',
+                ['id' => (int)$paymentMethod->kZahlungsart]
+            );
+            foreach ($localized as $item) {
+                $specialItem->cName[$item->cISOSprache] = $item->cName;
             }
         }
         $paymentMethod->angezeigterName = $specialItem->cName;
@@ -700,14 +686,14 @@ class CheckoutController extends RegistrationController
         if ($shippingMethodID > 0) {
             $methods = $this->db->getObjects(
                 "SELECT tversandartzahlungsart.*, tzahlungsart.*
-                FROM tversandartzahlungsart, tzahlungsart
-                WHERE tversandartzahlungsart.kVersandart = :sid
-                    AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
-                    OR FIND_IN_SET(:cgid, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
-                    AND tzahlungsart.nActive = 1
-                    AND tzahlungsart.nNutzbar = 1
-                ORDER BY tzahlungsart.nSort",
+                    FROM tversandartzahlungsart, tzahlungsart
+                    WHERE tversandartzahlungsart.kVersandart = :sid
+                        AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
+                        AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen = ''
+                        OR FIND_IN_SET(:cgid, REPLACE(tzahlungsart.cKundengruppen, ';', ',')) > 0)
+                        AND tzahlungsart.nActive = 1
+                        AND tzahlungsart.nNutzbar = 1
+                    ORDER BY tzahlungsart.nSort",
                 ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
             );
         }
@@ -724,23 +710,16 @@ class CheckoutController extends RegistrationController
             //posname lokalisiert ablegen
             $method->angezeigterName = [];
             $method->cGebuehrname    = [];
-            foreach ($_SESSION['Sprachen'] as $lang) {
-                $loc = $this->db->select(
-                    'tzahlungsartsprache',
-                    'kZahlungsart',
-                    $method->kZahlungsart,
-                    'cISOSprache',
-                    $lang->cISO,
-                    null,
-                    null,
-                    false,
-                    'cName, cGebuehrname, cHinweisTextShop'
-                );
-                if (isset($loc->cName)) {
-                    $method->angezeigterName[$lang->cISO] = $loc->cName;
-                    $method->cGebuehrname[$lang->cISO]    = $loc->cGebuehrname;
-                    $method->cHinweisText[$lang->cISO]    = $loc->cHinweisTextShop;
-                }
+            $loc                     = $this->db->getObjects(
+                'SELECT cISOSprache, cName, cGebuehrname, cHinweisTextShop
+                    FROM tzahlungsartsprache
+                    WHERE kZahlungsart = :id',
+                ['id' => $method->kZahlungsart]
+            );
+            foreach ($loc as $item) {
+                $method->angezeigterName[$item->cISOSprache] = $item->cName;
+                $method->cGebuehrname[$item->cISOSprache]    = $item->cGebuehrname;
+                $method->cHinweisText[$item->cISOSprache]    = $item->cHinweisTextShop;
             }
             $confData = $this->db->selectAll(
                 'teinstellungen',
@@ -815,26 +794,27 @@ class CheckoutController extends RegistrationController
 
     /**
      * @param int $paymentMethodID
-     * @return mixed
+     * @return stdClass|null
      * @former gibZahlungsart()
      * @since 5.2.0
      */
-    public function getPaymentMethod(int $paymentMethodID)
+    public function getPaymentMethod(int $paymentMethodID): ?stdClass
     {
-        $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        $method    = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
+        $localized = $this->db->getObjects(
+            'SELECT cISOSprache, cName
+                FROM tzahlungsartsprache
+                WHERE kZahlungsart = :id',
+            ['id' => $paymentMethodID]
+        );
+        foreach ($localized as $item) {
+            $method->angezeigterName[$item->cISOSprache] = $item->cName;
+        }
         foreach (Frontend::getLanguages() as $language) {
-            $localized                                     = $this->db->select(
-                'tzahlungsartsprache',
-                'kZahlungsart',
-                $paymentMethodID,
-                'cISOSprache',
-                $language->getCode(),
-                null,
-                null,
-                false,
-                'cName'
-            );
-            $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
+            $code = $language->getCode();
+            if (!isset($method->angezeigterName[$code])) {
+                $method->angezeigterName[$code] = '';
+            }
         }
         $confData = $this->db->getObjects(
             'SELECT *
@@ -849,7 +829,7 @@ class CheckoutController extends RegistrationController
         $plugin = $this->getPluginPaymentMethod($method->cModulId);
         if ($plugin) {
             $paymentMethod                  = $plugin->getPaymentMethods()->getMethodByID($method->cModulId);
-            $method->cZusatzschrittTemplate = $paymentMethod !== null ? $paymentMethod->getAdditionalTemplate() : '';
+            $method->cZusatzschrittTemplate = $paymentMethod?->getAdditionalTemplate() ?? '';
         }
 
         return $method;

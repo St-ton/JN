@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Alert\Alert;
 use JTL\Backend\AdminFavorite;
 use JTL\Backend\AdminIO;
 use JTL\Backend\JSONAPI;
@@ -11,6 +12,10 @@ use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
 use JTL\Catalog\Currency;
+use JTL\Checkout\ShippingSurcharge;
+use JTL\Checkout\ShippingSurchargeArea;
+use JTL\Checkout\Versandart;
+use JTL\Checkout\ZipValidator;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Helpers\Form;
@@ -18,6 +23,7 @@ use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
 use JTL\Jtllog;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Validator\SyntaxChecker;
 use JTL\Media\Manager;
@@ -25,12 +31,15 @@ use JTL\Plugin\Helper;
 use JTL\Redirect;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\UpdateIO;
 use JTL\Widgets\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use SmartyException;
+use stdClass;
 
 /**
  * Class IOController
@@ -132,31 +141,31 @@ class IOController extends AbstractBackendController
                 ->register('adminSearch', [$searchController, 'adminSearch'], null, 'SETTINGS_SEARCH_VIEW')
                 ->register(
                     'saveShippingSurcharge',
-                    [ShippingMethodsController::class, 'saveShippingSurcharge'],
+                    [$this, 'saveShippingSurcharge'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
                 ->register(
                     'deleteShippingSurcharge',
-                    [ShippingMethodsController::class, 'deleteShippingSurcharge'],
+                    [$this, 'deleteShippingSurcharge'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
                 ->register(
                     'deleteShippingSurchargeZIP',
-                    [ShippingMethodsController::class, 'deleteShippingSurchargeZIP'],
+                    [$this, 'deleteShippingSurchargeZIP'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
                 ->register(
                     'createShippingSurchargeZIP',
-                    [ShippingMethodsController::class, 'createShippingSurchargeZIP'],
+                    [$this, 'createShippingSurchargeZIP'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
                 ->register(
                     'getShippingSurcharge',
-                    [ShippingMethodsController::class, 'getShippingSurcharge'],
+                    [$this, 'getShippingSurcharge'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
@@ -387,9 +396,229 @@ class IOController extends AbstractBackendController
     {
         $url       = $this->db->select('tredirect', 'kRedirect', $redirectID)->cToUrl;
         $available = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
-
         $this->db->update('tredirect', 'kRedirect', $redirectID, (object)['cAvailable' => $available]);
 
         return $available === 'y';
+    }
+
+    /**
+     * @param int $id
+     * @return stdClass
+     * @throws SmartyException
+     */
+    public function getShippingSurcharge(int $id): stdClass
+    {
+        $this->getText->loadAdminLocale('pages/versandarten');
+        $result       = new stdClass();
+        $result->body = $this->smarty->assign('sprachen', LanguageHelper::getAllLanguages(0, true))
+            ->assign('surchargeNew', new ShippingSurcharge($id))
+            ->assign('surchargeID', $id)
+            ->fetch('snippets/zuschlagliste_form.tpl');
+
+        return $result;
+    }
+
+    /**
+     * @param array $data
+     * @return stdClass
+     * @throws SmartyException
+     */
+    public function saveShippingSurcharge(array $data): stdClass
+    {
+        $this->getText->loadAdminLocale('pages/versandarten');
+        $post = [];
+        foreach ($data as $item) {
+            $post[$item['name']] = $item['value'];
+        }
+        $surcharge = (float)\str_replace(',', '.', $post['fZuschlag']);
+
+        if (!$post['cName']) {
+            $this->alertService->addError(\__('errorListNameMissing'), 'errorListNameMissing');
+        }
+        if (empty($surcharge)) {
+            $this->alertService->addError(\__('errorListPriceMissing'), 'errorListPriceMissing');
+        }
+        if (!$this->alertService->alertTypeExists(Alert::TYPE_ERROR)) {
+            if (empty($post['kVersandzuschlag'])) {
+                $surchargeTMP = (new ShippingSurcharge())
+                    ->setISO($post['cISO'])
+                    ->setSurcharge($surcharge)
+                    ->setShippingMethod((int)$post['kVersandart'])
+                    ->setTitle($post['cName']);
+            } else {
+                $surchargeTMP = (new ShippingSurcharge((int)$post['kVersandzuschlag']))
+                    ->setTitle($post['cName'])
+                    ->setSurcharge($surcharge);
+            }
+            foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
+                $idx = 'cName_' . $lang->getCode();
+                if (isset($post[$idx])) {
+                    $surchargeTMP->setName($post[$idx] ?: $post['cName'], $lang->getId());
+                }
+            }
+            $surchargeTMP->save();
+            $surchargeTMP = new ShippingSurcharge($surchargeTMP->getID());
+        }
+        $message = $this->smarty->assign('alertList', $this->alertService)
+            ->fetch('snippets/alert_list.tpl');
+
+        $this->cache->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
+
+        return (object)[
+            'title'          => isset($surchargeTMP) ? $surchargeTMP->getTitle() : '',
+            'priceLocalized' => isset($surchargeTMP) ? $surchargeTMP->getPriceLocalized() : '',
+            'id'             => isset($surchargeTMP) ? $surchargeTMP->getID() : '',
+            'reload'         => empty($post['kVersandzuschlag']),
+            'message'        => $message,
+            'error'          => $this->alertService->alertTypeExists(Alert::TYPE_ERROR)
+        ];
+    }
+
+    /**
+     * @param int $surchargeID
+     * @return stdClass
+     */
+    public function deleteShippingSurcharge(int $surchargeID): stdClass
+    {
+        $this->db->queryPrepared(
+            'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
+                FROM tversandzuschlag
+                LEFT JOIN tversandzuschlagsprache USING(kVersandzuschlag)
+                LEFT JOIN tversandzuschlagplz USING(kVersandzuschlag)
+                WHERE tversandzuschlag.kVersandzuschlag = :surchargeID',
+            ['surchargeID' => $surchargeID]
+        );
+        $this->cache->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
+
+        return (object)['surchargeID' => $surchargeID];
+    }
+
+    /**
+     * @param int    $surchargeID
+     * @param string $ZIP
+     * @return stdClass
+     */
+    public function deleteShippingSurchargeZIP(int $surchargeID, string $ZIP): stdClass
+    {
+        $partsZIP = \explode('-', $ZIP);
+        if (\count($partsZIP) === 1) {
+            $this->db->queryPrepared(
+                'DELETE 
+                    FROM tversandzuschlagplz
+                    WHERE kVersandzuschlag = :surchargeID
+                      AND cPLZ = :ZIP',
+                [
+                    'surchargeID' => $surchargeID,
+                    'ZIP'         => $partsZIP[0]
+                ]
+            );
+        } elseif (\count($partsZIP) === 2) {
+            $this->db->queryPrepared(
+                'DELETE 
+                    FROM tversandzuschlagplz
+                    WHERE kVersandzuschlag = :surchargeID
+                      AND cPLZab = :ZIPFrom
+                      AND cPLZbis = :ZIPTo',
+                [
+                    'surchargeID' => $surchargeID,
+                    'ZIPFrom'     => $partsZIP[0],
+                    'ZIPTo'       => $partsZIP[1]
+                ]
+            );
+        }
+        $this->cache->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
+
+        return (object)['surchargeID' => $surchargeID, 'ZIP' => $ZIP];
+    }
+
+    /**
+     * @param array $data
+     * @return stdClass
+     * @throws SmartyException
+     */
+    public function createShippingSurchargeZIP(array $data): stdClass
+    {
+        $this > $this->getText->loadAdminLocale('pages/versandarten');
+
+        $post = [];
+        foreach ($data as $item) {
+            $post[$item['name']] = $item['value'];
+        }
+        $surcharge      = new ShippingSurcharge((int)$post['kVersandzuschlag']);
+        $shippingMethod = new Versandart($surcharge->getShippingMethod());
+        $zipValidator   = new ZipValidator($surcharge->getISO());
+        $surchargeZip   = new stdClass();
+
+        $surchargeZip->kVersandzuschlag = $surcharge->getID();
+        $surchargeZip->cPLZ             = '';
+        $surchargeZip->cPLZAb           = '';
+        $surchargeZip->cPLZBis          = '';
+        $area                           = null;
+
+        if (!empty($post['cPLZ'])) {
+            $surchargeZip->cPLZ = $zipValidator->validateZip($post['cPLZ']);
+        } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
+            $area = new ShippingSurchargeArea($post['cPLZAb'], $post['cPLZBis']);
+            if ($area->getZIPFrom() === $area->getZIPTo()) {
+                $surchargeZip->cPLZ = $zipValidator->validateZip($area->getZIPFrom());
+            } else {
+                $surchargeZip->cPLZAb  = $zipValidator->validateZip($area->getZIPFrom());
+                $surchargeZip->cPLZBis = $zipValidator->validateZip($area->getZIPTo());
+            }
+        }
+
+        $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
+            ->first(static function (ShippingSurcharge $surchargeTMP) use ($surchargeZip) {
+                return ($surchargeTMP->hasZIPCode($surchargeZip->cPLZ)
+                    || $surchargeTMP->hasZIPCode($surchargeZip->cPLZAb)
+                    || $surchargeTMP->hasZIPCode($surchargeZip->cPLZBis)
+                    || $surchargeTMP->areaOverlapsWithZIPCode($surchargeZip->cPLZAb, $surchargeZip->cPLZBis)
+                );
+            });
+        if ($area !== null && !$area->lettersMatch()) {
+            $this->alertService->addError(\__('errorZIPsDoNotMatch'), 'errorZIPsDoNotMatch');
+        } elseif (empty($surchargeZip->cPLZ) && empty($surchargeZip->cPLZAb)) {
+            $error = $zipValidator->getError();
+            if ($error !== '') {
+                $this->alertService->addError($error, 'errorZIPValidator');
+            } else {
+                $this->alertService->addError(\__('errorZIPMissing'), 'errorZIPMissing');
+            }
+        } elseif ($zipMatchSurcharge !== null) {
+            $this->alertService->addError(
+                \sprintf(
+                    isset($surchargeZip->cPLZ) ? \__('errorZIPOverlap') : \__('errorZIPAreaOverlap'),
+                    $surchargeZip->cPLZ ?? $surchargeZip->cPLZAb . ' - ' . $surchargeZip->cPLZBis,
+                    $zipMatchSurcharge->getTitle()
+                ),
+                'errorZIPOverlap'
+            );
+        } elseif ($this->db->insert('tversandzuschlagplz', $surchargeZip)) {
+            $this->alertService->addSuccess(\__('successZIPAdd'), 'successZIPAdd');
+        }
+        $this->cache->flushTags([
+            \CACHING_GROUP_OBJECT,
+            \CACHING_GROUP_OPTION,
+            \CACHING_GROUP_ARTICLE
+        ]);
+
+        $message = $this->smarty->assign('alertList', $this->alertService)
+            ->fetch('snippets/alert_list.tpl');
+        $badges  = $this->smarty->assign('surcharge', new ShippingSurcharge($surcharge->getID()))
+            ->fetch('snippets/zuschlagliste_plz_badges.tpl');
+
+        return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
     }
 }

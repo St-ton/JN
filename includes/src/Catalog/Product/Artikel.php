@@ -577,6 +577,11 @@ class Artikel implements RoutableInterface
     public $oFavourableShipping;
 
     /**
+     * @var int|null
+     */
+    public ?int $favourableShippingID = null;
+
+    /**
      * @var string
      */
     public $cCachedCountryCode;
@@ -1069,6 +1074,9 @@ class Artikel implements RoutableInterface
         }
         $this->conf    = $this->getConfig();
         $this->taxData = $this->getShippingAndTaxData();
+        if ($this->favourableShippingID > 0) {
+            $this->oFavourableShipping = new Versandart($this->favourableShippingID);
+        }
     }
 
     /**
@@ -1077,7 +1085,7 @@ class Artikel implements RoutableInterface
     public function __sleep()
     {
         return select(\array_keys(\get_object_vars($this)), static function ($e) {
-            return $e !== 'conf' && $e !== 'db';
+            return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
         });
     }
 
@@ -4723,7 +4731,8 @@ class Artikel implements RoutableInterface
         }
         // if shippingID is given - use this shipping
         if ($shippingID !== null) {
-            $this->oFavourableShipping = new Versandart($shippingID);
+            $this->favourableShippingID = $shippingID;
+            $this->oFavourableShipping  = new Versandart($this->favourableShippingID);
 
             return $this->oFavourableShipping;
         }
@@ -4774,13 +4783,13 @@ class Artikel implements RoutableInterface
                 'net'    => $this->Preise->fVKNetto
             ]
         );
-        if ($shipping !== null) {
-            $this->oFavourableShipping = new Versandart((int)$shipping->kVersandart);
-
-            return $this->oFavourableShipping;
+        if ($shipping === null) {
+            return null;
         }
+        $this->favourableShippingID = (int)$shipping->kVersandart;
+        $this->oFavourableShipping  = new Versandart($this->favourableShippingID);
 
-        return null;
+        return $this->oFavourableShipping;
     }
 
     /**

@@ -31,7 +31,6 @@ use JTL\Plugin\Helper;
 use JTL\Redirect;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTL\Update\UpdateIO;
@@ -130,27 +129,12 @@ class IOController extends AbstractBackendController
                 ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
                 ->register('updateRedirectState', [$this, 'updateRedirectState'], null, 'REDIRECT_VIEW')
                 ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')
-                ->register(
-                    'saveBannerAreas',
-                    [BannerController::class, 'saveBannerAreasIO'],
-                    null,
-                    'DISPLAY_BANNER_VIEW'
-                )
+                ->register('saveBannerAreas', [BannerController::class, 'saveAreasIO'], null, 'DISPLAY_BANNER_VIEW')
                 ->register('createSearchIndex', [$this, 'createSearchIndex'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('clearSearchCache', [$this, 'clearSearchCache'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
                 ->register('adminSearch', [$searchController, 'adminSearch'], null, 'SETTINGS_SEARCH_VIEW')
-                ->register(
-                    'saveShippingSurcharge',
-                    [$this, 'saveShippingSurcharge'],
-                    null,
-                    'ORDER_SHIPMENT_VIEW'
-                )
-                ->register(
-                    'deleteShippingSurcharge',
-                    [$this, 'deleteShippingSurcharge'],
-                    null,
-                    'ORDER_SHIPMENT_VIEW'
-                )
+                ->register('saveShippingSurcharge', [$this, 'saveShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
+                ->register('deleteShippingSurcharge', [$this, 'deleteShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
                 ->register(
                     'deleteShippingSurchargeZIP',
                     [$this, 'deleteShippingSurchargeZIP'],
@@ -163,24 +147,14 @@ class IOController extends AbstractBackendController
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
-                ->register(
-                    'getShippingSurcharge',
-                    [$this, 'getShippingSurcharge'],
-                    null,
-                    'ORDER_SHIPMENT_VIEW'
-                )
+                ->register('getShippingSurcharge', [$this, 'getShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
                 ->register(
                     'exportformatSyntaxCheck',
                     [ExportSyntaxChecker::class, 'ioCheckSyntax'],
                     null,
                     'EXPORT_FORMATS_VIEW'
                 )
-                ->register(
-                    'testExport',
-                    [ExportSyntaxChecker::class, 'testExport'],
-                    null,
-                    'EXPORT_FORMATS_VIEW'
-                )
+                ->register('testExport', [ExportSyntaxChecker::class, 'testExport'], null, 'EXPORT_FORMATS_VIEW')
                 ->register(
                     'mailvorlageSyntaxCheck',
                     [SyntaxChecker::class, 'ioCheckSyntax'],

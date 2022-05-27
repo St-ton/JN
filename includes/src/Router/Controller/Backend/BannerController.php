@@ -343,7 +343,7 @@ class BannerController extends AbstractBackendController
      * @return IOResponse
      * @former saveBannerAreasIO()
      */
-    public static function saveBannerAreasIO(mixed $data): IOResponse
+    public static function saveAreasIO(mixed $data): IOResponse
     {
         $banner   = new ImageMap(Shop::Container()->getDB());
         $response = new IOResponse();

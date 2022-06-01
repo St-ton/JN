@@ -437,7 +437,7 @@ class URL
                     if (!empty($base)) {
                         $route = $router->getPathByType(
                             Router::TYPE_CATEGORY,
-                            ['lang' => $localeCode, 'name' => $obj->getURL()]
+                            ['lang' => $localeCode, 'name' => $base]
                         );
                     }
                     return $route !== null

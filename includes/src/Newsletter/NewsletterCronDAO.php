@@ -16,52 +16,52 @@ class NewsletterCronDAO
     /**
      * @var int
      */
-    private $foreignKeyID;
+    private int $foreignKeyID = 0;
 
     /**
      * @var string
      */
-    private $foreignKey;
+    private string $foreignKey = 'kNewsletter';
 
     /**
      * @var string
      */
-    private $tableName;
+    private string $tableName = 'tnewsletter';
 
     /**
      * @var string
      */
-    private $name;
+    private string $name = 'Newsletter';
 
     /**
      * @var string
      */
-    private $jobType;
+    private string $jobType = 'newsletter';
 
     /**
      * @var int
      */
-    private $frequency;
+    private int $frequency;
 
     /**
      * @var string
      */
-    private $startDate;
+    private string $startDate;
 
     /**
      * @var string
      */
-    private $startTime;
+    private string $startTime;
 
     /**
      * @var string
      */
-    private $lastStart;
+    private string $lastStart = '_DBNULL_';
 
     /**
      * @var string
      */
-    private $lastFinish;
+    private string $lastFinish = '_DBNULL_';
 
     /**
      * NewsletterCronDAO constructor.
@@ -70,22 +70,15 @@ class NewsletterCronDAO
      */
     public function __construct()
     {
-        $this->foreignKeyID = 0;
-        $this->foreignKey   = 'kNewsletter';
-        $this->tableName    = 'tnewsletter';
-        $this->name         = 'Newsletter';
-        $this->jobType      = 'newsletter';
-        $this->startDate    = (new DateTime())->format('Y-m-d H:i:s');
-        $this->startTime    = (new DateTime())->format('H:i:s');
-        $this->lastStart    = '_DBNULL_';
-        $this->lastFinish   = '_DBNULL_';
-        $this->frequency    = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
+        $this->startDate = (new DateTime())->format('Y-m-d H:i:s');
+        $this->startTime = (new DateTime())->format('H:i:s');
+        $this->frequency = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
     }
 
     /**
      * @return int
      */
-    public function getForeignKeyID()
+    public function getForeignKeyID(): int
     {
         return $this->foreignKeyID;
     }
@@ -94,7 +87,7 @@ class NewsletterCronDAO
      * @param int $foreignKeyID
      * @return NewsletterCronDAO
      */
-    public function setForeignKeyID($foreignKeyID): self
+    public function setForeignKeyID(int $foreignKeyID): self
     {
         $this->foreignKeyID = $foreignKeyID;
 
@@ -159,18 +152,18 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getStartDate()
+    public function getStartDate(): string
     {
         return $this->startDate;
     }
 
     /**
-     * @param string|null $startDate
+     * @param string $startDate
      * @return NewsletterCronDAO
      */
-    public function setStartDate($startDate): self
+    public function setStartDate(string $startDate): self
     {
         $this->startDate = $startDate;
 
@@ -178,18 +171,18 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getStartTime()
+    public function getStartTime(): string
     {
         return $this->startTime;
     }
 
     /**
-     * @param string|null $startTime
+     * @param string $startTime
      * @return NewsletterCronDAO
      */
-    public function setStartTime($startTime): self
+    public function setStartTime(string $startTime): self
     {
         $this->startTime = $startTime;
 
@@ -197,18 +190,18 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getLastStart()
+    public function getLastStart(): string
     {
         return $this->lastStart;
     }
 
     /**
-     * @param string|null $lastStart
+     * @param string $lastStart
      * @return NewsletterCronDAO
      */
-    public function setLastStart($lastStart): self
+    public function setLastStart(string $lastStart): self
     {
         $this->lastStart = $lastStart;
 
@@ -216,18 +209,18 @@ class NewsletterCronDAO
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getLastFinish()
+    public function getLastFinish(): string
     {
         return $this->lastFinish;
     }
 
     /**
-     * @param string|null $lastFinish
+     * @param string $lastFinish
      * @return NewsletterCronDAO
      */
-    public function setLastFinish($lastFinish): self
+    public function setLastFinish(string $lastFinish): self
     {
         $this->lastFinish = $lastFinish;
 

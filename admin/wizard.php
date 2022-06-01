@@ -28,7 +28,6 @@ $factory      = new DefaultFactory(
     Shop::Container()->getAdminAccount()
 );
 $controller   = new Controller($factory, $db, $cache, $getText);
-$conf         = Shop::getSettings([CONF_GLOBAL]);
 $token        = AuthToken::getInstance($db);
 $valid        = $token->isValid();
 $authRedirect = $valid && Backend::get('wizard-authenticated')

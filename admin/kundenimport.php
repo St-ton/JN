@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Customer\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -25,7 +24,7 @@ if (isset($_FILES['csv']['tmp_name'])
     foreach ($result as $item) {
         $notice .= $item . '<br>';
     }
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
+    Shop::Container()->getAlertService()->addNotice($notice, 'importNotice');
 }
 $smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
     'SELECT * FROM tkundengruppe ORDER BY cName'

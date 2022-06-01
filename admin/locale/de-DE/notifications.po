@@ -155,3 +155,9 @@ msgstr "Die Standarsprache \"%s\" ist nicht installiert! Bitte installieren Sie 
 
 msgid "%d pages are not translated in all available languages."
 msgstr "%d Seiten sind nicht in alle verfügbaren Sprachen übersetzt."
+
+msgid "mysqlTimeErrorTitle"
+msgstr "Zeitdifferenz"
+
+msgid "mysqlTimeErrorMessage"
+msgstr "Die Zeit Ihres MySQL-Servers (%s) stimmt nicht mit der Zeit des Webservers (%s) überein. Prüfen Sie die Zeitzonen."

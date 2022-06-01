@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\FileCheck;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
@@ -40,7 +39,6 @@ if ($modifiedFilesCheck !== FileCheck::OK) {
             $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $modifiedFilesError = '';
             break;
     }
 }
@@ -53,7 +51,6 @@ if ($orphanedFilesCheck !== FileCheck::OK) {
             $orphanedFilesError = __('errorFileListEmpty');
             break;
         default:
-            $orphanedFilesError = '';
             break;
     }
 } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
@@ -73,32 +70,24 @@ if ($orphanedFilesCheck !== FileCheck::OK) {
 $hasModifiedFiles = !empty($modifiedFilesError) || count($modifiedFiles) > 0;
 $hasOrphanedFiles = !empty($orphanedFilesError) || count($orphanedFiles) > 0;
 if (!$hasModifiedFiles && !$hasOrphanedFiles) {
-    $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
-        __('fileCheckNoneModifiedOrphanedFiles'),
-        'fileCheckNoneModifiedOrphanedFiles'
-    );
+    $alertHelper->addNotice(__('fileCheckNoneModifiedOrphanedFiles'), 'fileCheckNoneModifiedOrphanedFiles');
 }
-$alertHelper->addAlert(
-    Alert::TYPE_INFO,
+$alertHelper->addInfo(
     $backupMessage,
     'backupMessage',
     ['showInAlertListTemplate' => false]
 );
-$alertHelper->addAlert(
-    Alert::TYPE_ERROR,
+$alertHelper->addError(
     $zipArchiveError,
     'zipArchiveError',
     ['showInAlertListTemplate' => false]
 );
-$alertHelper->addAlert(
-    Alert::TYPE_ERROR,
+$alertHelper->addError(
     $modifiedFilesError,
     'modifiedFilesError',
     ['showInAlertListTemplate' => false]
 );
-$alertHelper->addAlert(
-    Alert::TYPE_ERROR,
+$alertHelper->addError(
     $orphanedFilesError,
     'orphanedFilesError',
     ['showInAlertListTemplate' => false]

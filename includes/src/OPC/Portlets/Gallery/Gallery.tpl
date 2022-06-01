@@ -102,7 +102,13 @@
 
             {$image.lg = $image.md}
 
-            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '',['xs'=>$image.xs,'sm'=>$image.sm,'md'=>$image.md,'lg'=>$image.lg,'xl'=>$image.xl])}
+            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '',[
+                'xs' => $image.xs,
+                'sm' => $image.sm,
+                'md' => $image.md,
+                'lg' => $image.lg,
+                'xl' => $image.xl
+            ])}
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="opc-Gallery-item"}
                 <a {if $isPreview === false}
                         {if $image.action === 'link'}

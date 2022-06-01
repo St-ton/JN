@@ -936,7 +936,7 @@ msgid "textHtml"
 msgstr "text/html"
 
 msgid "labelSearchProduct"
-msgstr "Suche nach Artikelnamen"
+msgstr "Suche nach Artikelnamen oder -nummern"
 
 msgid "labelSearchManufacturer"
 msgstr "Suche nach Herstellernamen"
@@ -1982,9 +1982,6 @@ msgstr "Überweisung"
 msgid "za_nachnahme_jtl"
 msgstr "Nachnahme"
 
-msgid "za_kreditkarte_jtl"
-msgstr "Kreditkarte"
-
 msgid "za_rechnung_jtl"
 msgstr "Rechnung"
 
@@ -2171,3 +2168,18 @@ msgstr "Kann Archiv nicht öffnen."
 
 msgid "pluginInstallInvalidArchive"
 msgstr "Ungültiges Archiv."
+
+msgid "No input file provided."
+msgstr "Keine Eingabedatei angegeben."
+
+msgid "Successfully compiled CSS."
+msgstr "Das CSS wurde erfolgreich kompiliert."
+
+msgid "%s.css was compiled successfully."
+msgstr "%s.css wurde erfolgreich kompiliert."
+
+msgid "An error occured while compiling the CSS: %s"
+msgstr "Problem beim Kompilieren des CSS: %s"
+
+msgid "Cannot write to file %s."
+msgstr "Kann Datei %s nicht schreiben."

@@ -123,9 +123,9 @@ class Newsletter
         if (\count($groupIDs) > 0) {
             $noGroup = \in_array(0, $groupIDs, true);
             if ($noGroup === false || \count($groupIDs) > 1) {
-                $cSQL = 'AND ((tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
+                $cSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $groupIDs) . ')';
                 if ($noGroup === true) {
-                    $cSQL .= ' OR tkunde.kKundengruppe IS NULL)';
+                    $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
                 }
                 $cSQL .= ')';
             } elseif ($noGroup === true) {
@@ -358,15 +358,13 @@ class Newsletter
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
-                $artNoData = $this->db->getObjects(
+                $res = $this->db->getInts(
                     'SELECT kArtikel
                         FROM tartikel
                         WHERE cArtNr IN (' . \implode(',', $res) . ')
-                            AND kEigenschaftKombi = 0'
+                            AND kEigenschaftKombi = 0',
+                    'kArtikel'
                 );
-                $res       = \array_map(static function ($e) {
-                    return $e->kArtikel;
-                }, $artNoData);
             }
         } else {
             $res = \array_map('\intval', $res);
@@ -392,6 +390,7 @@ class Newsletter
         $products       = [];
         $shopURL        = Shop::getURL() . '/';
         $imageBaseURL   = Shop::getImageBaseURL();
+        $db             = Shop::Container()->getDB();
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($productIDs as $id) {
             $id = (int)$id;
@@ -399,7 +398,7 @@ class Newsletter
                 continue;
             }
             Frontend::getCustomerGroup()->setMayViewPrices(1);
-            $product = new Artikel();
+            $product = new Artikel($db);
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(
@@ -453,7 +452,7 @@ class Newsletter
                 continue;
             }
             if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
-                $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
+                $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
                 $sep                 = \mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';

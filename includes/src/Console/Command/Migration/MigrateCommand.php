@@ -31,7 +31,7 @@ class MigrateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io                 = $this->getIO();
         $db                 = Shop::Container()->getDB();
@@ -45,12 +45,12 @@ class MigrateCommand extends Command
             Shop::Container()->getGetText()->setLanguage('en-GB')->loadAdminLocale('pages/dbupdater');
             $io->writeln('<error>' . $updater->getMinUpdateVersionError() . '</error>');
 
-            return 1;
+            return Command::FAILURE;
         }
         if (empty($executedMigrations) && empty($migrations)) {
             $io->writeln('<info>Nothing to migrate.</info>');
 
-            return 1;
+            return Command::FAILURE;
         }
 
         try {
@@ -79,6 +79,6 @@ class MigrateCommand extends Command
             $io->error($e->getMessage());
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

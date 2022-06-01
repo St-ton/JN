@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -497,10 +497,13 @@ class Category
     private function filterEmpty(array $catList): array
     {
         foreach ($catList as $i => $cat) {
+            if ($cat->hasChildren()) {
+                $children = $this->filterEmpty($cat->getChildren());
+                $cat->setChildren($children);
+                $cat->setHasChildren(\count($children) > 0);
+            }
             if ($cat->hasChildren() === false && $cat->getProductCount() === 0) {
                 unset($catList[$i]);
-            } elseif ($cat->hasChildren()) {
-                $cat->setChildren($this->filterEmpty($cat->getChildren()));
             }
         }
 

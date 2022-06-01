@@ -86,6 +86,12 @@ msgstr "Minimum number of sales for bestsellers"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
+msgid "global_bestseller_tage_name"
+msgstr "Determine bestsellers on the basis of last X days"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Specify how many past days are to be considered for determining bestsellers. This allows you to limit the calculation of bestsellers to a certain period, e.g. to just the last 3 months or a whole year."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Category display"
 
@@ -1010,6 +1016,12 @@ msgstr "Show dimensions"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Specify whether to display the dimensions (length x width x height) defined in JTL-Wawi on the item detail page."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Show content"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Specify whether to display the content defined in JTL-Wawi on the item detail page."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Add item attributes to description"
 
@@ -1339,6 +1351,12 @@ msgstr "Show item attributes"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
+
+msgid "bestellvorgang_partlist_name"
+msgstr "Show line items"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Show line items in cart and chekout?"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Show unique brief item description"
@@ -1818,24 +1836,6 @@ msgid "zahlungsart_nachnahme_max_name"
 msgstr "Maximum order value"
 
 msgid "zahlungsart_nachnahme_max_desc"
-msgstr "Specify the basket value up to which a payment method is available for selection."
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Number of required orders"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Minimum order value"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Specify the minimum basket value required for a payment method to be available for selection."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximum order value"
-
-msgid "zahlungsart_kreditkarte_max_desc"
 msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"
@@ -3034,3 +3034,9 @@ msgstr "Show cookie banner"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Specify when visitors of your online shop will see the banner for giving or denying global consent."
+
+msgid "forgot_password_captcha_name"
+msgstr "Enable spam protection"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."

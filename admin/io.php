@@ -107,6 +107,7 @@ try {
        ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
        ->register('exportformatSyntaxCheck', [ExportSyntaxChecker::class, 'ioCheckSyntax'], null, 'EXPORT_FORMATS_VIEW')
+       ->register('testExport', [ExportSyntaxChecker::class, 'testExport'], null, 'EXPORT_FORMATS_VIEW')
        ->register('mailvorlageSyntaxCheck', [SyntaxChecker::class, 'ioCheckSyntax'], null, 'CONTENT_EMAIL_TEMPLATE_VIEW')
        ->register('notificationAction', [Notification::class, 'ioNotification'])
        ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);

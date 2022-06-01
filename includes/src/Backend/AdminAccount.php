@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
 use DateTime;
 use Exception;
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\L10n\GetText;
@@ -29,47 +28,47 @@ class AdminAccount
     /**
      * @var bool
      */
-    private $loggedIn = false;
+    private bool $loggedIn = false;
 
     /**
      * @var bool
      */
-    private $twoFaAuthenticated = false;
+    private bool $twoFaAuthenticated = false;
 
     /**
      * @var Loggerinterface
      */
-    private $authLogger;
+    private LoggerInterface $authLogger;
 
     /**
      * @var AdminLoginStatusToLogLevel
      */
-    private $levelMapper;
+    private AdminLoginStatusToLogLevel $levelMapper;
 
     /**
      * @var AdminLoginStatusMessageMapper
      */
-    private $messageMapper;
+    private AdminLoginStatusMessageMapper $messageMapper;
 
     /**
      * @var int
      */
-    private $lockedMinutes = 0;
+    private int $lockedMinutes = 0;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var GetText
      */
-    private $getText;
+    private GetText $getText;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertService;
+    private AlertServiceInterface $alertService;
 
     /**
      * AdminAccount constructor.
@@ -196,11 +195,11 @@ class AdminAccount
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ADMINLOGIN_PASSWORT_VERGESSEN, $obj));
 
-            $this->alertService->addAlert(Alert::TYPE_SUCCESS, \__('successEmailSend'), 'successEmailSend');
+            $this->alertService->addSuccess(\__('successEmailSend'), 'successEmailSend');
 
             return true;
         }
-        $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorEmailNotFound'), 'errorEmailNotFound');
+        $this->alertService->addError(\__('errorEmailNotFound'), 'errorEmailNotFound');
 
         return false;
     }
@@ -249,7 +248,10 @@ class AdminAccount
         if ($admin === null || !\is_object($admin)) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $cLogin);
         }
+        $admin->kAdminlogin       = (int)$admin->kAdminlogin;
         $admin->kAdminlogingruppe = (int)$admin->kAdminlogingruppe;
+        $admin->nLoginVersuch     = (int)$admin->nLoginVersuch;
+        $admin->bAktiv            = (int)$admin->bAktiv;
         if (!$admin->bAktiv && $admin->kAdminlogingruppe !== \ADMINGROUP) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_DISABLED, $cLogin);
         }
@@ -280,7 +282,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $admin = $this->db->select(
+                $admin                    = $this->db->select(
                     'tadminlogin',
                     'cLogin',
                     $cLogin,
@@ -291,19 +293,22 @@ class AdminAccount
                     false,
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
+                $admin->kAdminlogin       = (int)$admin->kAdminlogin;
+                $admin->kAdminlogingruppe = (int)$admin->kAdminlogingruppe;
+                $admin->nLoginVersuch     = (int)$admin->nLoginVersuch;
+                $admin->bAktiv            = (int)$admin->bAktiv;
             }
         } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
-            $crypted = \cryptPasswort($cPass, $admin->cPass);
+            $crypted = Shop::Container()->getPasswordService()->cryptOldPasswort($cPass, $admin->cPass);
         } else {
             // new default login from 4.0 on
             $verified = \password_verify($cPass, $admin->cPass);
         }
         if ($verified === true || ($crypted !== null && $admin->cPass === $crypted)) {
-            $settings = Shop::getSettings(\CONF_GLOBAL);
             if (\is_array($_SESSION)
-                && $settings['global']['wartungsmodus_aktiviert'] === 'N'
                 && \count($_SESSION) > 0
+                && Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'N'
             ) {
                 foreach (\array_keys($_SESSION) as $i) {
                     unset($_SESSION[$i]);
@@ -312,8 +317,9 @@ class AdminAccount
             if (!isset($admin->kSprache)) {
                 $admin->kSprache = Shop::getLanguageID();
             }
-            $admin->cISO       = Shop::Lang()->getIsoFromLangID((int)$admin->kSprache)->cISO;
-            $admin->attributes = $this->getAttributes((int)$admin->kAdminlogin);
+            $admin->cISO       = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
+            $admin->attributes = $this->getAttributes($admin->kAdminlogin);
+            \session_regenerate_id();
             $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
@@ -374,6 +380,8 @@ class AdminAccount
     {
         $this->loggedIn = false;
         \session_destroy();
+        new Backend();
+        \session_regenerate_id(true);
 
         return $this;
     }
@@ -443,7 +451,7 @@ class AdminAccount
      * @param bool   $showNoAccessPage
      * @return bool
      */
-    public function permission($permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
+    public function permission(string $permission, bool $redirectToLogin = false, bool $showNoAccessPage = false): bool
     {
         if ($redirectToLogin) {
             $this->redirectOnFailure();
@@ -497,10 +505,11 @@ class AdminAccount
                 'cPass',
                 $_SESSION['AdminAccount']->cPass
             );
-            $this->twoFaAuthenticated = (isset($account->b2FAauth) && (int)$account->b2FAauth === 1)
-                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && $_SESSION['AdminAccount']->TwoFA_valid === true)
-                : true;
+            $this->twoFaAuthenticated = true;
             $this->loggedIn           = isset($account->cLogin);
+            if ((int)($account->b2FAauth ?? 0) === 1) {
+                $this->twoFaAuthenticated = ($_SESSION['AdminAccount']->TwoFA_valid ?? false) === true;
+            }
         }
 
         return $this;
@@ -637,17 +646,6 @@ class AdminAccount
         }
 
         return false;
-    }
-
-    /**
-     * @param string $password
-     * @return string
-     * @deprecated since 5.0
-     * @throws Exception
-     */
-    public static function generatePasswordHash(string $password): string
-    {
-        return Shop::Container()->getPasswordService()->hash($password);
     }
 
     /**

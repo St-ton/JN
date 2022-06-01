@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Type;
@@ -18,21 +17,17 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('BOXES_VIEW', true, true);
 
-$boxService  = Shop::Container()->getBoxService();
-$alertHelper = Shop::Container()->getAlertService();
-$db          = Shop::Container()->getDB();
-$boxAdmin    = new BoxAdmin($db);
-$pageID      = Request::verifyGPCDataInt('page');
-$linkID      = Request::verifyGPCDataInt('linkID');
-$boxID       = Request::verifyGPCDataInt('item');
-$ok          = false;
+$boxService   = Shop::Container()->getBoxService();
+$alertService = Shop::Container()->getAlertService();
+$db           = Shop::Container()->getDB();
+$boxAdmin     = new BoxAdmin($db);
+$pageID       = Request::verifyGPCDataInt('page');
+$linkID       = Request::verifyGPCDataInt('linkID');
+$boxID        = Request::verifyGPCDataInt('item');
+$ok           = false;
 
 if (Request::postInt('einstellungen') > 0) {
-    $alertHelper->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_BOXEN, $_POST),
-        'saveSettings'
-    );
+    saveAdminSectionSettings(CONF_BOXEN, $_POST);
 } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
     switch ($_REQUEST['action']) {
         case 'delete-invisible':
@@ -43,7 +38,7 @@ if (Request::postInt('einstellungen') > 0) {
                         ++$cnt;
                     }
                 }
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, $cnt . __('successBoxDelete'), 'successBoxDelete');
+                $alertService->addSuccess($cnt . __('successBoxDelete'), 'successBoxDelete');
             }
             break;
 
@@ -54,16 +49,16 @@ if (Request::postInt('einstellungen') > 0) {
                 // Neuer Container
                 $ok = $boxAdmin->create(0, $pageID, $position);
                 if ($ok) {
-                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContainerCreate'), 'successContainerCreate');
+                    $alertService->addSuccess(__('successContainerCreate'), 'successContainerCreate');
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorContainerCreate'), 'errorContainerCreate');
+                    $alertService->addError(__('errorContainerCreate'), 'errorContainerCreate');
                 }
             } else {
                 $ok = $boxAdmin->create($boxID, $pageID, $position, $containerID);
                 if ($ok) {
-                    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxCreate'), 'successBoxCreate');
+                    $alertService->addSuccess(__('successBoxCreate'), 'successBoxCreate');
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxCreate'), 'errorBoxCreate');
+                    $alertService->addError(__('errorBoxCreate'), 'errorBoxCreate');
                 }
             }
             break;
@@ -71,9 +66,9 @@ if (Request::postInt('einstellungen') > 0) {
         case 'del':
             $ok = $boxAdmin->delete($boxID);
             if ($ok) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxDelete'), 'successBoxDelete');
+                $alertService->addSuccess(__('successBoxDelete'), 'successBoxDelete');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxDelete'), 'errorBoxDelete');
+                $alertService->addError(__('errorBoxDelete'), 'errorBoxDelete');
             }
             break;
 
@@ -126,9 +121,9 @@ if (Request::postInt('einstellungen') > 0) {
             }
 
             if ($ok) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
+                $alertService->addSuccess(__('successBoxEdit'), 'successBoxEdit');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
+                $alertService->addError(__('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -157,9 +152,9 @@ if (Request::postInt('einstellungen') > 0) {
                 $boxAdmin->setVisibility($pageID, $position, isset($_REQUEST['box_show']));
             }
             if ($ok) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
+                $alertService->addSuccess(__('successBoxRefresh'), 'successBoxRefresh');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
+                $alertService->addError(__('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
             }
             break;
 
@@ -167,9 +162,9 @@ if (Request::postInt('einstellungen') > 0) {
             $bActive = (bool)$_REQUEST['value'];
             $ok      = $boxAdmin->activate($boxID, 0, $bActive);
             if ($ok) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
+                $alertService->addSuccess(__('successBoxEdit'), 'successBoxEdit');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
+                $alertService->addError(__('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -178,9 +173,9 @@ if (Request::postInt('einstellungen') > 0) {
             $show     = (bool)$_GET['value'];
             $ok       = $boxAdmin->setVisibility(0, $position, $show);
             if ($ok) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
+                $alertService->addSuccess(__('successBoxEdit'), 'successBoxEdit');
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
+                $alertService->addError(__('errorBoxEdit'), 'errorBoxEdit');
             }
             break;
 
@@ -212,13 +207,8 @@ $filterMapping = map($filterMapping, static function ($e) {
     return $e->name;
 });
 
-$alertHelper->addAlert(
-    Alert::TYPE_WARNING,
-    __('warningNovaSidebar'),
-    'warningNovaSidebar',
-    ['dismissable' => false]
-);
-
+$alertService->addWarning(__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
+getAdminSectionSettings(CONF_BOXEN);
 $smarty->assign('filterMapping', $filterMapping)
     ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
     ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
@@ -232,5 +222,4 @@ $smarty->assign('filterMapping', $filterMapping)
     ->assign('oBoxenContainer', $boxContainer)
     ->assign('nPage', $pageID)
     ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
-    ->assign('oConfig_arr', getAdminSectionSettings(CONF_BOXEN))
     ->display('boxen.tpl');

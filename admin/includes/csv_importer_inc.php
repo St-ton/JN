@@ -4,6 +4,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
+use JTL\Redirect;
 use JTL\Shop;
 
 /**
@@ -25,6 +26,7 @@ use JTL\Shop;
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  * @throws TypeError
  * @throws InvalidArgumentException
+ * @deprecated since 5.2.0
  */
 function handleCsvImportAction(
     string $importerId,
@@ -34,6 +36,7 @@ function handleCsvImportAction(
     int $importType = 2,
     &$errors = []
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated - use CSV importer class instead', E_USER_DEPRECATED);
     if (Form::validateToken() === false || Request::verifyGPDataString('importcsv') !== $importerId) {
         return -1;
     }
@@ -186,9 +189,11 @@ function handleCsvImportAction(
  * @param string $artNo
  * @param string $iso
  * @return string|null
+ * @deprecated since 5.2.0
  */
 function getArtNrUrl(string $artNo, string $iso): ?string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated - use CSV importer class instead', E_USER_DEPRECATED);
     if ($artNo === '') {
         return null;
     }

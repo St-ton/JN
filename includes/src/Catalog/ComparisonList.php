@@ -45,10 +45,11 @@ class ComparisonList
     {
         $compareList = Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
+            $db             = Shop::Container()->getDB();
             $defaultOptions = Artikel::getDefaultOptions();
             $baseURL        = Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $key => $item) {
-                $product = new Artikel();
+                $product = new Artikel($db);
                 $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 if ($product->getID() === null) {
                     unset($compareList->oArtikel_arr[$key]);
@@ -68,14 +69,15 @@ class ComparisonList
      */
     public function umgebungsWechsel(): self
     {
-        $defaultOptions = Artikel::getDefaultOptions();
-        $compareList    = Frontend::get('Vergleichsliste');
+        $compareList = Frontend::get('Vergleichsliste');
         if ($compareList === null) {
             return $this;
         }
+        $defaultOptions = Artikel::getDefaultOptions();
+        $db             = Shop::Container()->getDB();
         foreach ($compareList->oArtikel_arr as $i => $item) {
             $product    = new stdClass();
-            $tmpProduct = new Artikel();
+            $tmpProduct = new Artikel($db);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception $e) {
@@ -254,7 +256,7 @@ class ComparisonList
      */
     public function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
-        $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
+        $conf = Shop::getSettingSection(\CONF_VERGLEICHSLISTE);
         $rows = [
             'vergleichsliste_artikelnummer',
             'vergleichsliste_hersteller',

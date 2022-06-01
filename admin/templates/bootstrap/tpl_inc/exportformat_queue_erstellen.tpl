@@ -17,14 +17,14 @@
     </script>
 {/literal}
 <div id="content" class="container-fluid2">
-    <form name="exportformat_queue" method="post" action="exportformat_queue.php">
+    <form name="exportformat_queue" method="post" action="{$adminURL}/exportformat_queue.php">
         {$jtl_token}
         {$cronID = $oCron->cronID|default:0}
         <input type="hidden" name="erstellen_eintragen" value="1" />
         {if $cronID > 0}
             <input type="hidden" name="kCron" value="{$cronID}" />
         {/if}
-        {if $oExportformat_arr|@count > 0}
+        {if $oExportformat_arr|count > 0}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</div>
@@ -85,7 +85,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="exportformat_queue.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformat_queue.php">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

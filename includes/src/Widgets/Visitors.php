@@ -24,9 +24,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        $oStatistik = new Statistik(\firstDayOfMonth(), \time());
-
-        return $oStatistik->holeBesucherStats(2);
+        return (new Statistik(\firstDayOfMonth(), \time()))->holeBesucherStats(2);
     }
 
     /**

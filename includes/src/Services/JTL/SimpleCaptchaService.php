@@ -73,7 +73,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
                 $code .= ':' . \time();
             } catch (Exception $e) {
                 $token = 'token';
-                $code  = \rand() . ':' . \time();
+                $code  = \mt_rand() . ':' . \time();
             }
             Frontend::set('simplecaptcha.token', $token);
             Frontend::set('simplecaptcha.code', $code);

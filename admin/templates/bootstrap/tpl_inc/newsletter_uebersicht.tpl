@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action='newsletter.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/newsletter.php'}
         </div>
     </div>
     <div class="tabs">
@@ -52,9 +52,9 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiveabonnenten" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiveabonnenten'} active show{/if}">
-                {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|@count > 0}
+                {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|count > 0}
                     <div class="search-toolbar mb-3">
-                        <form name="suche" method="post" action="newsletter.php">
+                        <form name="suche" method="post" action="{$adminURL}/newsletter.php">
                             {$jtl_token}
                             <input type="hidden" name="inaktiveabonnenten" value="1" />
                             <input type="hidden" name="tab" value="inaktiveabonnenten" />
@@ -76,7 +76,7 @@
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten'}
                     <div id="newsletter-inactive-content">
-                        <form name="inaktiveabonnentenForm" method="post" action="newsletter.php">
+                        <form name="inaktiveabonnentenForm" method="post" action="{$adminURL}/newsletter.php">
                             {$jtl_token}
                             <input type="hidden" name="inaktiveabonnenten" value="1" />
                             <input type="hidden" name="tab" value="inaktiveabonnenten" />
@@ -146,9 +146,9 @@
                 {/if}
             </div>
             <div id="alleabonnenten" class="tab-pane fade{if $cTab === 'alleabonnenten'} active show{/if}">
-                {if isset($oAbonnenten_arr) && $oAbonnenten_arr|@count > 0}
+                {if isset($oAbonnenten_arr) && $oAbonnenten_arr|count > 0}
                     <div class="search-toolbar mb-3">
-                        <form name="suche" method="post" action="newsletter.php">
+                        <form name="suche" method="post" action="{$adminURL}/newsletter.php">
                             {$jtl_token}
                             <input type="hidden" name="Suche" value="1" />
                             <input type="hidden" name="tab" value="alleabonnenten" />
@@ -172,7 +172,7 @@
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten'}
                     <!-- Uebersicht Newsletterhistory -->
-                    <form method="post" action="newsletter.php">
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newsletterabonnent_loeschen" type="hidden" value="1">
                         <input type="hidden" name="tab" value="alleabonnenten">
@@ -237,7 +237,7 @@
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
-                        <form method="post" action="newsletter.php">
+                        <form method="post" action="{$adminURL}/newsletter.php">
                             {$jtl_token}
                             <input name="tab" type="hidden" value="alleabonnenten" />
                             <div class="row">
@@ -250,7 +250,7 @@
                 {/if}
             </div>
             <div id="neuerabonnenten" class="tab-pane fade{if $cTab === 'neuerabonnenten'} active show{/if}">
-                <form method="post" action="newsletter.php">
+                <form method="post" action="{$adminURL}/newsletter.php">
                     {$jtl_token}
                     <input type="hidden" name="newsletterabonnent_neu" value="1">
                     <input name="tab" type="hidden" value="neuerabonnenten">
@@ -303,9 +303,9 @@
                 </form>
             </div>
             <div id="newsletterqueue" class="tab-pane fade{if $cTab === 'newsletterqueue'} active show{/if}">
-                {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|@count > 0}
+                {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
-                    <form method="post" action="newsletter.php">
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newsletterqueue" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newsletterqueue">
@@ -327,28 +327,26 @@
                                         </thead>
                                         <tbody>
                                         {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
-                                            {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
-                                                <tr>
-                                                    <td>
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
-                                                            <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
-                                                        </div>
-                                                    </td>
-                                                    <td>{$oNewsletterQueue->cBetreff}</td>
-                                                    <td>{$oNewsletterQueue->Datum}</td>
-                                                    <td>{$oNewsletterQueue->nLimitN}</td>
-                                                    <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
-                                                    <td>
-                                                        {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
-                                                            {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
-                                                            {foreach $customerGroups as $customerGroup}
-                                                                {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
-                                                            {/foreach}
+                                            <tr>
+                                                <td>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                        <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>{$oNewsletterQueue->cBetreff}</td>
+                                                <td>{$oNewsletterQueue->Datum}</td>
+                                                <td>{$oNewsletterQueue->nLimitN}</td>
+                                                <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
+                                                <td>
+                                                    {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
+                                                        {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
+                                                        {foreach $customerGroups as $customerGroup}
+                                                            {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
                                                         {/foreach}
-                                                    </td>
-                                                </tr>
-                                            {/if}
+                                                    {/foreach}
+                                                </td>
+                                            </tr>
                                         {/foreach}
                                         </tbody>
                                     </table>
@@ -377,9 +375,9 @@
                 {/if}
             </div>
             <div id="newslettervorlagen" class="tab-pane fade{if $cTab === 'newslettervorlagen'} active show{/if}">
-                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
-                    <form method="post" action="newsletter.php">
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newslettervorlagen" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newslettervorlagen">
@@ -419,7 +417,7 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2"
-                                                           href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                           href="{$adminURL}/newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
                                                            title="{__('preview')}"
                                                            data-toggle="tooltip">
                                                             <span class="icon-hover">
@@ -429,7 +427,7 @@
                                                         </a>
                                                         {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                             <a class="btn btn-link px-2"
-                                                               href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                               href="{$adminURL}/newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
                                                                title="{__('modify')}"
                                                                data-toggle="tooltip">
                                                                 <span class="icon-hover">
@@ -439,7 +437,7 @@
                                                             </a>
                                                         {else}
                                                             <a class="btn btn-link px-2"
-                                                               href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
+                                                               href="{$adminURL}/newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
                                                                title="{__('modify')}"
                                                                data-toggle="tooltip">
                                                                 <span class="icon-hover">
@@ -472,14 +470,14 @@
                                                 <label class="custom-control-label" for="ALLMSGS5">{__('globalSelectAll')}</label>
                                             </div>
                                         </div>
-                                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
                                             <div class="ml-auto col-sm-6 col-xl-auto">
                                                 <button class="btn btn-danger btn-block" name="loeschen" type="submit" value="{__('delete')}">
                                                     <i class="fas fa-trash-alt"></i> {__('delete')}
                                                 </button>
                                             </div>
                                         {/if}
-                                        <div class="{if !(isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                        <div class="{if !(isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0)}ml-auto{/if} col-sm-6 col-xl-auto">
                                             <button name="vorlage_erstellen" class="btn btn-primary btn-block" type="submit">
                                                 {__('newsletterdraftcreate')}
                                             </button>
@@ -491,14 +489,14 @@
                     </form>
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen' isBottom=true}
                 {else}
-                    <form method="post" action="newsletter.php">
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newslettervorlagen" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newslettervorlagen">
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                            <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
+                            <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}btn-group{/if}">
                                 <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
-                                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
                                     <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 {/if}
                             </div>
@@ -506,8 +504,8 @@
                 {/if}
             </div>
             <div id="newslettervorlagenstd" class="tab-pane fade{if $cTab === 'newslettervorlagenstd'} active show{/if}">
-                {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|@count > 0}
-                    <form method="post" action="newsletter.php">
+                {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|count > 0}
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newslettervorlagenstd" type="hidden" value="1" />
                         <input name="vorlage_std_erstellen" type="hidden" value="1" />
@@ -555,9 +553,9 @@
                 {/if}
             </div>
             <div id="newsletterhistory" class="tab-pane fade{if $cTab === 'newsletterhistory'} active show{/if}">
-                {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|@count > 0}
+                {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory'}
-                    <form method="post" action="newsletter.php">
+                    <form method="post" action="{$adminURL}/newsletter.php">
                         {$jtl_token}
                         <input name="newsletterhistory" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newsletterhistory">
@@ -586,7 +584,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-left">
-                                                    <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
+                                                    <a href="{$adminURL}/newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
                                                 </td>
                                                 <td class="text-left">{$oNewsletterHistory->nAnzahl}</td>
                                                 <td class="text-left">{$oNewsletterHistory->cKundengruppe}</td>
@@ -620,7 +618,7 @@
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' name='einstellen' action='newsletter.php' buttonCaption=__('saveWithIcon') skipHeading=true title=__('settings') tab='einstellungen'}
             </div>
         </div>
     </div><!-- .tab-content-->

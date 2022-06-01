@@ -1,9 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Media\Image;
+use JTL\Media\IMedia;
 use JTL\Media\Media;
 use JTL\Shop;
 
@@ -14,8 +14,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
 $step        = 'branding_uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
-if (isset($_POST['action']) && $_POST['action'] === 'delete' && Form::validateToken()) {
-    $id = (int)$_POST['id'];
+if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
+    $id = Request::postInt('id');
     loescheBrandingBild($id);
     $response         = new stdClass();
     $response->id     = $id;
@@ -26,9 +26,9 @@ if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
     if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+            $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
+            $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
         }
     }
     if (Request::verifyGPCDataInt('kBranding') > 0) {
@@ -113,6 +113,7 @@ function speicherEinstellung(int $brandingID, array $post, array $files): bool
         $db->insert('tbrandingeinstellung', $conf);
         $data = $db->select('tbranding', 'kBranding', $conf->kBranding);
         $type = Media::getClass($data->cBildKategorie ?? '');
+        /** @var IMedia $type */
         $type::clearCache();
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 

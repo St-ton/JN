@@ -10,8 +10,6 @@ use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
-use function Functional\flatten;
-use function Functional\map;
 
 /**
  * Class Category
@@ -25,7 +23,7 @@ class Category implements CategoryInterface
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'dLetzteAktualisierung_de' => 'DateLastModified',
         'nSort'                    => 'Sort',
         'nAktiv'                   => 'IsActive',
@@ -38,97 +36,97 @@ class Category implements CategoryInterface
     /**
      * @var int
      */
-    protected $id = -1;
+    protected int $id = -1;
 
     /**
      * @var int
      */
-    protected $parentID = 0;
+    protected int $parentID = 0;
 
     /**
      * @var int
      */
-    protected $lft = 0;
+    protected int $lft = 0;
 
     /**
      * @var int
      */
-    protected $rght = 0;
+    protected int $rght = 0;
 
     /**
      * @var int
      */
-    protected $level = 1;
+    protected int $level = 1;
 
     /**
      * @var int[]
      */
-    protected $languageIDs = [];
+    protected array $languageIDs = [];
 
     /**
      * @var string[]
      */
-    protected $languageCodes = [];
+    protected array $languageCodes = [];
 
     /**
      * @var string[]
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * @var array
      */
-    protected $seo = [];
+    protected array $seo = [];
 
     /**
      * @var string[]
      */
-    protected $descriptions = [];
+    protected array $descriptions = [];
 
     /**
      * @var string[]
      */
-    protected $metaTitles = [];
+    protected array $metaTitles = [];
 
     /**
      * @var string[]
      */
-    protected $metaKeywords = [];
+    protected array $metaKeywords = [];
 
     /**
      * @var string[]
      */
-    protected $metaDescriptions = [];
+    protected array $metaDescriptions = [];
 
     /**
      * @var string[]
      */
-    protected $previewImages = [];
+    protected array $previewImages = [];
 
     /**
      * @var string[]
      */
-    protected $urls = [];
+    protected array $urls = [];
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
      * @var DateTime
      */
-    protected $dateLastModified;
+    protected DateTime $dateLastModified;
 
     /**
      * @var Collection
      */
-    protected $children;
+    protected Collection $children;
 
     /**
      * @var Collection|ItemListInterface
@@ -138,7 +136,7 @@ class Category implements CategoryInterface
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Category constructor.
@@ -186,7 +184,7 @@ class Category implements CategoryInterface
     /**
      * @param array $categoryLanguages
      * @param bool  $activeOnly
-     * @return $this|CategoryInterface
+     * @return CategoryInterface
      */
     public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {
@@ -211,17 +209,15 @@ class Category implements CategoryInterface
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
-
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
                 JOIN tnews
                     ON tnews.kNews = tnewskategorienews.kNews 
                 WHERE kNewsKategorie = :cid' . ($activeOnly ? ' AND tnews.dGueltigVon <= NOW()' : ''),
+            'kNews',
             ['cid' => $this->id]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
 
         return $this;
     }
@@ -254,7 +250,7 @@ class Category implements CategoryInterface
             Shop::getLanguageID()
         );
 
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewskategorienews 
@@ -264,13 +260,12 @@ class Category implements CategoryInterface
                     AND tnewskategorie.nAktiv = 1
                 WHERE MONTH(tnews.dGueltigVon) = :mnth 
                     AND YEAR(tnews.dGueltigVon) = :yr',
+            'kNews',
             [
                 'mnth' => (int)$overview->nMonat,
                 'yr'   => (int)$overview->nJahr
             ]
-        )), static function ($e) {
-            return (int)$e;
-        }));
+        ));
 
         return $this;
     }
@@ -282,7 +277,7 @@ class Category implements CategoryInterface
     public function getOverview(stdClass $filterSQL): Category
     {
         $this->setID(0);
-        $this->items = (new ItemList($this->db))->createItems(map(flatten($this->db->getArrays(
+        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewssprache 
@@ -292,10 +287,9 @@ class Category implements CategoryInterface
                 JOIN tnewskategorie 
                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
             WHERE tnewskategorie.nAktiv = 1 AND tnews.dGueltigVon <= NOW() '
-            . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL
-        )), static function ($e) {
-            return (int)$e;
-        }));
+                . $filterSQL->cNewsKatSQL . $filterSQL->cDatumSQL,
+            'kNews'
+        ));
 
         return $this;
     }

@@ -1,6 +1,5 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -40,7 +39,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Backend\AdminAccount $oAccount */
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
 Shop::Container()->getGetText()->loadAdminLocale('pages/plugin');
@@ -482,10 +480,10 @@ if ($reload === true) {
 
 $alert = Shop::Container()->getAlertService();
 if (SAFE_MODE) {
-    $alert->addAlert(Alert::TYPE_WARNING, __('Safe mode restrictions.'), 'warnSafeMode', ['dismissable' => false]);
+    $alert->addWarning(__('Safe mode restrictions.'), 'warnSafeMode', ['dismissable' => false]);
 }
-$alert->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorPlugin');
-$alert->addAlert(Alert::TYPE_NOTE, $notice, 'noticePlugin');
+$alert->addError($errorMsg, 'errorPlugin');
+$alert->addNotice($notice, 'noticePlugin');
 
 $smarty->assign('hinweis64', base64_encode($notice))
     ->assign('step', $step)

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Wishlist;
 
@@ -11,6 +11,19 @@ use JTL\Shop;
  */
 class WishlistItemProperty
 {
+    /**
+     * @var string[]
+     */
+    private static $mapping = [
+        'kWunschlistePosEigenschaft' => 'ID',
+        'kWunschlistePos'            => 'ItemID',
+        'kEigenschaft'               => 'PropertyID',
+        'kEigenschaftWert'           => 'PropertyValueID',
+        'cFreifeldWert'              => 'FreeTextValue',
+        'cEigenschaftName'           => 'PropertyName',
+        'cEigenschaftWertName'       => 'PropertyValueName'
+    ];
+
     /**
      * @var int
      */
@@ -32,35 +45,35 @@ class WishlistItemProperty
     public $kEigenschaftWert;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cFreifeldWert;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cEigenschaftName;
 
     /**
-     * @var string
+     * @var string|null
      */
     public $cEigenschaftWertName;
 
     /**
      * WishlistItemProperty constructor.
-     * @param int    $propertyID
+     * @param int         $propertyID
      * @param null|int    $propertyValueID
-     * @param string $freeText
-     * @param string $propertyName
-     * @param string $propertyValueName
-     * @param int    $wishlistItemID
+     * @param string|null $freeText
+     * @param string|null $propertyName
+     * @param string|null $propertyValueName
+     * @param int         $wishlistItemID
      */
     public function __construct(
         int $propertyID,
         ?int $propertyValueID,
-        $freeText,
-        $propertyName,
-        $propertyValueName,
+        ?string $freeText,
+        ?string $propertyName,
+        ?string $propertyValueName,
         int $wishlistItemID
     ) {
         $this->kEigenschaft         = $propertyID;
@@ -82,5 +95,117 @@ class WishlistItemProperty
         );
 
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getID(): int
+    {
+        return $this->kWunschlistePosEigenschaft;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setID(int $id): void
+    {
+        $this->kWunschlistePosEigenschaft = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemID(): int
+    {
+        return $this->kWunschlistePos;
+    }
+
+    /**
+     * @param int $itemID
+     */
+    public function setItemID(int $itemID): void
+    {
+        $this->kWunschlistePos = $itemID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPropertyID(): int
+    {
+        return $this->kEigenschaft;
+    }
+
+    /**
+     * @param int $propertyID
+     */
+    public function setPropertyID(int $propertyID): void
+    {
+        $this->kEigenschaft = $propertyID;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPropertyValueID(): ?int
+    {
+        return $this->kEigenschaftWert;
+    }
+
+    /**
+     * @param int|null $propertyValueID
+     */
+    public function setPropertyValueID(?int $propertyValueID): void
+    {
+        $this->kEigenschaftWert = $propertyValueID;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFreeTextValue(): ?string
+    {
+        return $this->cFreifeldWert;
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setFreeTextValue(string $value): void
+    {
+        $this->cFreifeldWert = $value;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPropertyName(): ?string
+    {
+        return $this->cEigenschaftName;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setPropertyName(string $name): void
+    {
+        $this->cEigenschaftName = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPropertyValueName(): ?string
+    {
+        return $this->cEigenschaftWertName;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setPropertyValueName(string $name): void
+    {
+        $this->cEigenschaftWertName = $name;
     }
 }

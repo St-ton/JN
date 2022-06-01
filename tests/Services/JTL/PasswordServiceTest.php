@@ -4,6 +4,7 @@ namespace Tests\Services\JTL;
 
 use JTL\Services\JTL\CryptoService;
 use JTL\Services\JTL\PasswordService;
+use JTL\Shop;
 use Tests\BaseTestCase;
 
 /**
@@ -16,7 +17,7 @@ class PasswordServiceTest extends BaseTestCase
     {
         $passwordService = new PasswordService(new CryptoService());
         $password        = $passwordService->generate(10);
-        $this->assertEquals(10, strlen($password));
+        $this->assertEquals(10, \strlen($password));
     }
 
     public function test_hash()
@@ -38,12 +39,11 @@ class PasswordServiceTest extends BaseTestCase
         $password        = $passwordService->generate(100);
 
         // md5 (very old mechanism)
-        $hash = md5($password);
+        $hash = \md5($password);
         $this->assertTrue($passwordService->verify($password, $hash));
 
         // sha based (old mechanism)
-        require_once __DIR__ . '/../../../includes/tools.Global.php';
-        $hash = cryptPasswort($password);
+        $hash = Shop::Container()->getPasswordService()->cryptOldPasswort($password);
         $this->assertTrue($passwordService->verify($password, $hash));
 
         // latest mechanism
@@ -57,16 +57,15 @@ class PasswordServiceTest extends BaseTestCase
         $password        = $passwordService->generate(100);
 
         // md5 (very old mechanism)
-        $hash = md5($password);
+        $hash = \md5($password);
         $this->assertTrue($passwordService->needsRehash($hash));
 
         // sha based (old mechanism)
-        require_once __DIR__ . '/../../../includes/tools.Global.php';
-        $hash = cryptPasswort($password);
+        $hash = Shop::Container()->getPasswordService()->cryptOldPasswort($password);
         $this->assertTrue($passwordService->needsRehash($hash));
 
         // latest mechanism
-        $hashed      = password_hash($password, PASSWORD_ARGON2I);
+        $hashed      = \password_hash($password, \PASSWORD_ARGON2I);
         $needsRehash = $passwordService->needsRehash($hashed);
         $this->assertTrue($needsRehash);
     }

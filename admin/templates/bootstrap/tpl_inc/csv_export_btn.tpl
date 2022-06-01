@@ -4,7 +4,7 @@
 <script>
     function onClickCsvExport_{$exporterId} ()
     {
-        window.location = window.location.pathname + '?exportcsv={$exporterId}&token={$smarty.session.jtl_token}';
+        window.location = window.location.pathname + '?action=csvExport&exportcsv={$exporterId}&token={$smarty.session.jtl_token}';
     }
 </script>
 <button type="button" class="btn btn-outline-primary btn-block" onclick="onClickCsvExport_{$exporterId}()">

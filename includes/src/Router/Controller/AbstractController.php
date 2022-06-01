@@ -177,7 +177,7 @@ abstract class AbstractController implements ControllerInterface
         Shop::updateLanguage($this->state->languageID);
         Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
         Shop::$is404                     = $this->state->is404;
-        Shop::$kSprache                  = $this->state->languageID;
+        Shop::$kSprache                  = $this->state->languageID ?: Shop::$kSprache;
         Shop::$kSeite                    = $this->state->pageID;
         Shop::$kKategorieFilter          = $this->state->categoryFilterID;
         Shop::$customFilters             = $this->state->customFilters;

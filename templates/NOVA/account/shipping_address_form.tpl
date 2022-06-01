@@ -35,61 +35,9 @@
                     {/block}
                 {/form}
             {/col}
-
-            {*
             {col md=6}
                 {block name='checkout-inc-shipping-address-fieldset-address'}
-                    {foreach $Lieferadressen as $adresse}
-                        {if $adresse->kLieferadresse > 0}
-                            {block name='checkout-inc-shipping-address-address'}
-                            <div class="card mb-3">
-                                {if $adresse->nIstStandardLieferadresse === '1'}
-                                    <div class="card-header bg-primary">
-                                        <strong>{lang key='defaultShippingAdresses' section='account data'}</strong>
-                                    </div>
-                                {/if}
-                                <div class="card-body">
-                                    <span class="control-label label-default">
-                                        {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                        {if $adresse->cTitel}{$adresse->cTitel}<br />{/if}
-                                        <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
-                                        {$adresse->cStrasse} {$adresse->cHausnummer}<br />
-                                        {$adresse->cPLZ} {$adresse->cOrt}<br />
-                                        {$adresse->angezeigtesLand}
-                                    </span>
-                                </div>
-                                <div class="card-footer text-muted">
-                                    {if $adresse->nIstStandardLieferadresse !== '1'}
-                                        <div class="control-label label-default">
-                                            {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}" class="btn btn-primary btn-sm" rel="nofollow" }
-                                                {lang key='useAsDefaultShippingAdress' section='account data'}
-                                            {/link}
-                                        </div>
-                                    {/if}
-                                    <div class="control-label label-default mt-2">
-                                        {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}" class="btn btn-secondary btn-sm" alt="Adresse bearbeiten"}
-                                            <span class="fas fa-pencil-alt"></span>
-                                            {lang key='editShippingAddress' section='account data'}
-                                        {/link}
-                                        {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'deleteAddress' => {$adresse->kLieferadresse}]}" class="btn btn-danger btn-sm" alt="Adresse löschen"}
-                                            <span class="fas fa-times"></span>
-                                            {lang key='deleteAddress' section='account data'}
-                                        {/link}
-                                    </div>
-                                </div>
-                            </div>
-                            {/block}
-                        {/if}
-                    {/foreach}
-                    {block name='account-orders-include-pagination'}
-                        {include file='snippets/pagination.tpl' oPagination=$addressPagination cThisUrl='jtl.php' cParam_arr=['editLieferadresse' => 1] parts=['pagi', 'label']}
-                    {/block}
-                {/block}
-            {/col}
-            *}
-            {col md=6}
-                {block name='checkout-inc-shipping-address-fieldset-address'}
-                    <table id="example" class="display compact" style="width:100%">
+                    <table id="lieferadressen-liste" class="display compact" style="width:100%">
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -122,16 +70,18 @@
                                 </td>
                                 <td style="max-width: 40px" class="text-right">
                                     {if $adresse->nIstStandardLieferadresse !== '1'}
-                                        {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}" class="btn btn-primary btn-sm" rel="nofollow" data-toggle="tooltip" data-placement="left" title="Tooltip on left"}
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}'">
                                             <span class="fas fa-star"></span>
-                                        {/link}
+                                        </button>
                                     {/if}
-                                    {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}" class="btn btn-secondary btn-sm" alt="Adresse bearbeiten"}
+
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}'">
                                         <span class="fas fa-pencil-alt"></span>
-                                    {/link}
-                                    {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'deleteAddress' => {$adresse->kLieferadresse}]}" class="btn btn-danger btn-sm" alt="Adresse löschen"}
+                                    </button>
+
+                                    <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$adresse->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
                                         <span class="fas fa-times"></span>
-                                    {/link}
+                                    </button>
                                 </td>
                                 <td>
                                     <span class="invisible">
@@ -175,9 +125,21 @@
             );
         }
 
-        var table = $('#example').DataTable( {
+        var table = $('#lieferadressen-liste').DataTable( {
             language: {
-                url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
+                //url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
+                "lengthMenu":     "{lang key='lengthMenu' section='datatables'}",
+                "info":           "{lang key='info' section='datatables'}",
+                "infoEmpty":      "{lang key='infoEmpty' section='datatables'}",
+                "infoFiltered":   "{lang key='infoFiltered' section='datatables'}",
+                "search":         "{lang key='search' section='datatables'}",
+                "zeroRecords":    "{lang key='zeroRecords' section='datatables'}",
+                "paginate": {
+                    "first":      "{lang key='paginatefirst' section='datatables'}",
+                    "last":       "{lang key='paginatelast' section='datatables'}",
+                    "next":       "{lang key='paginatenext' section='datatables'}",
+                    "previous":   "{lang key='paginateprevious' section='datatables'}"
+                }
             },
             columns: [
                 {
@@ -213,20 +175,36 @@
             order: [6, 'desc']
         } );
 
-        $('#example tbody').on('click', 'td.dt-control', function () {
+        $('#lieferadressen-liste tbody').on('click', 'td.dt-control', function () {
             var tr = $(this).closest('tr');
             var row = table.row(tr);
 
             if (row.child.isShown()) {
-                // This row is already open - close it
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                // Open this row
                 row.child(format(row.data())).show();
                 tr.addClass('shown');
-                console.log(row.child);
             }
         });
+
+        $('.delete-popup-modal').on('click',function(){
+            let lieferadresse = $(this).data('lieferadresse');
+
+            eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
+            var options = {
+                message: '{lang key='modalShippingAddressDeletionConfirmation' section='account data'}',
+                label: '{lang key='yes' section='global'}',
+                title: '{lang key='deleteAddress' section='account data'}'
+            };
+            eModal.confirm(options).then(
+                function() {
+                    window.location = "{get_static_route id='jtl.php'}?editLieferadresse=1&deleteAddress="+lieferadresse
+                }
+            );
+
+        });
+
     });
+
 </script>

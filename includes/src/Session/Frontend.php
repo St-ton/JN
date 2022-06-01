@@ -431,7 +431,7 @@ class Frontend extends AbstractSession
         $lieferadressevorlage->cTel          = $lieferadresse->cTel ?? null;
         $lieferadressevorlage->cMobil        = $lieferadresse->cMobil ?? null;
         $lieferadressevorlage->cFax          = $lieferadresse->cFax ?? null;
-        $lieferadressevorlage->cMail         = $lieferadresse->cMail;
+        $lieferadressevorlage->cMail         = $lieferadresse->cMail ?? null;
 
         return $lieferadressevorlage;
     }
@@ -459,7 +459,7 @@ class Frontend extends AbstractSession
         $lieferadresse->cTel          = $lieferadressevorlage->cTel ?? null;
         $lieferadresse->cMobil        = $lieferadressevorlage->cMobil ?? null;
         $lieferadresse->cFax          = $lieferadressevorlage->cFax ?? null;
-        $lieferadresse->cMail         = $lieferadressevorlage->cMail;
+        $lieferadresse->cMail         = $lieferadressevorlage->cMail ?? null;
 
         return $lieferadresse;
     }

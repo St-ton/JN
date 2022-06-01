@@ -354,7 +354,7 @@ class Navigation
                         'bestellungen'         => ['name' => $this->language->get('myOrders')],
                         'editRechnungsadresse' => ['name' => $this->language->get('myPersonalData')],
                         'editLieferadresse'    => [
-                            'name' => $this->language->get('myShippingAdresses', 'account data')
+                            'name' => $this->language->get('myShippingAddresses', 'account data')
                         ],
                         'wllist'               => ['name' => $this->language->get('myWishlists')],
                         'del'                  => ['name' => $this->language->get('deleteAccount', 'login')],

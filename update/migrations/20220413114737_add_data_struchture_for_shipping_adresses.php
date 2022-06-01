@@ -22,11 +22,13 @@ class Migration_20220413114737 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'account data', 'shippingAdress', 'Lieferadressen verwalten');
-        $this->setLocalization('eng', 'account data', 'shippingAdress', 'Manage shipping addresses');
+        $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("datatables");');
 
-        $this->setLocalization('ger', 'account data', 'useAsDefaultShippingAdress', 'Als Standard Lieferadresse verwenden');
-        $this->setLocalization('eng', 'account data', 'useAsDefaultShippingAdress', 'Use as default shipping address');
+        $this->setLocalization('ger', 'account data', 'shippingAddress', 'Lieferadressen verwalten');
+        $this->setLocalization('eng', 'account data', 'shippingAddress', 'Manage shipping addresses');
+
+        $this->setLocalization('ger', 'account data', 'useAsDefaultShippingAddress', 'Als Standard Lieferadresse verwenden');
+        $this->setLocalization('eng', 'account data', 'useAsDefaultShippingAddress', 'Use as default shipping address');
 
         $this->setLocalization('ger', 'account data', 'editAddress', 'Adresse bearbeiten');
         $this->setLocalization('eng', 'account data', 'editAddress', 'Edit address');
@@ -46,11 +48,8 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'editShippingAddress', 'Lieferadressen ändern');
         $this->setLocalization('eng', 'account data', 'editShippingAddress', 'Edit shipping address');
 
-        $this->setLocalization('ger', 'account data', 'myShippingAdresses', 'Meine Lieferadressen');
-        $this->setLocalization('eng', 'account data', 'myShippingAdresses', 'My shipping address');
-
-        $this->setLocalization('ger', 'global', 'myShippingAdresses', 'Meine Lieferadressen');
-        $this->setLocalization('eng', 'global', 'myShippingAdresses', 'My shipping address');
+        $this->setLocalization('ger', 'account data', 'myShippingAddresses', 'Meine Lieferadressen');
+        $this->setLocalization('eng', 'account data', 'myShippingAddresses', 'My shipping address');
 
         $this->setLocalization('ger', 'account data', 'deleteAddressSuccessful', 'Lieferadresse wurde gelöscht');
         $this->setLocalization('eng', 'account data', 'deleteAddressSuccessful', 'Shipping address deleted');
@@ -64,10 +63,49 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Diese Lieferadresse zu meine Vorlagen hinzufügen');
         $this->setLocalization('eng', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Add this shipping address to my templates');
 
-        $this->setLocalization('ger', 'account data', 'defaultShippingAdresses', 'Standard Lieferadresse');
-        $this->setLocalization('eng', 'account data', 'defaultShippingAdresses', 'Default shipping address');
+        $this->setLocalization('ger', 'account data', 'defaultShippingAddresses', 'Standard Lieferadresse');
+        $this->setLocalization('eng', 'account data', 'defaultShippingAddresses', 'Default shipping address');
 
-        $this->execute("CREATE TABLE `tlieferadressevorlage` (
+        $this->setLocalization('ger', 'account data', 'modalShippingAddressDeletionConfirmation', 'Möchten Sie diese Lieferadresse wirklich löschen?');
+        $this->setLocalization('eng', 'account data', 'modalShippingAddressDeletionConfirmation', 'Do you really want to delete this shipping address?');
+
+
+        $this->setLocalization('ger', 'global', 'myShippingAddresses', 'Meine Lieferadressen');
+        $this->setLocalization('eng', 'global', 'myShippingAddresses', 'My shipping address');
+
+
+        $this->setLocalization('ger', 'datatables', 'lengthMenu', '_MENU_ Zeilen anzeigen');
+        $this->setLocalization('eng', 'datatables', 'lengthMenu', 'Show _MENU_ entries');
+
+        $this->setLocalization('ger', 'datatables', 'info', '_START_ bis _END_ von _TOTAL_ Einträgen');
+        $this->setLocalization('eng', 'datatables', 'info', 'Showing _START_ to _END_ of _TOTAL_ entries');
+
+        $this->setLocalization('ger', 'datatables', 'infoEmpty', 'Keine Daten vorhanden');
+        $this->setLocalization('eng', 'datatables', 'infoEmpty', 'Showing 0 to 0 of 0 entries');
+
+        $this->setLocalization('ger', 'datatables', 'infoFiltered', '(gefiltert von _MAX_ Einträgen)');
+        $this->setLocalization('eng', 'datatables', 'infoFiltered', '(filtered from _MAX_ total entries)');
+
+        $this->setLocalization('ger', 'datatables', 'search', 'Suche:');
+        $this->setLocalization('eng', 'datatables', 'search', 'Search:');
+
+        $this->setLocalization('ger', 'datatables', 'zeroRecords', 'Keine passenden Einträge gefunden');
+        $this->setLocalization('eng', 'datatables', 'zeroRecords', 'No matching records found');
+
+        $this->setLocalization('ger', 'datatables', 'paginatefirst', 'Erste');
+        $this->setLocalization('eng', 'datatables', 'paginatefirst', 'First');
+
+        $this->setLocalization('ger', 'datatables', 'paginatelast', 'Letzte');
+        $this->setLocalization('eng', 'datatables', 'paginatelast', 'Last');
+
+        $this->setLocalization('ger', 'datatables', 'paginatenext', 'Nächste');
+        $this->setLocalization('eng', 'datatables', 'paginatenext', 'Next');
+
+        $this->setLocalization('ger', 'datatables', 'paginateprevious', 'Zurück');
+        $this->setLocalization('eng', 'datatables', 'paginateprevious', 'Previous');
+
+
+        $this->execute("CREATE TABLE IF NOT EXISTS `tlieferadressevorlage` (
                                 `kLieferadresse` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                                 `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT '0',
                                 `cAnrede` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
@@ -96,7 +134,6 @@ class Migration_20220413114737 extends Migration implements IMigration
                             ENGINE=InnoDB
                             ROW_FORMAT=DYNAMIC;
                             ");
-
     }
 
     /**
@@ -107,5 +144,33 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->execute(
             "DROP TABLE tlieferadressevorlage;"
         );
+
+        $this->removeLocalization('shippingAddress', 'account data');
+        $this->removeLocalization('useAsDefaultShippingAddress', 'account data');
+        $this->removeLocalization('editAddress', 'account data');
+        $this->removeLocalization('deleteAddress', 'account data');
+        $this->removeLocalization('saveAddress', 'account data');
+        $this->removeLocalization('updateAddress', 'account data');
+        $this->removeLocalization('updateAddressBackToCheckout', 'account data');
+        $this->removeLocalization('editShippingAddress', 'account data');
+        $this->removeLocalization('myShippingAddresses', 'account data');
+        $this->removeLocalization('deleteAddressSuccessful', 'account data');
+        $this->removeLocalization('updateAddressSuccessful', 'account data');
+        $this->removeLocalization('saveAddressSuccessful', 'account data');
+        $this->removeLocalization('checkoutSaveAsNewShippingAddressPreset', 'account data');
+        $this->removeLocalization('defaultShippingAddresses', 'account data');
+
+        $this->removeLocalization('myShippingAddresses', 'global');
+
+        $this->removeLocalization('lengthMenu', 'datatables');
+        $this->removeLocalization('info', 'datatables');
+        $this->removeLocalization('infoEmpty', 'datatables');
+        $this->removeLocalization('infoFiltered', 'datatables');
+        $this->removeLocalization('search', 'datatables');
+        $this->removeLocalization('zeroRecords', 'datatables');
+        $this->removeLocalization('paginatefirst', 'datatables');
+        $this->removeLocalization('paginatelast', 'datatables');
+        $this->removeLocalization('paginatenext', 'datatables');
+        $this->removeLocalization('paginateprevious', 'datatables');
     }
 }

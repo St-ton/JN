@@ -53,7 +53,7 @@ class KategorieListe
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && (int)$category->kKategorie === (int)Shop::$kKategorie);
+            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->kKategorie === Shop::$kKategorie);
             $category->Unterkategorien = [];
             if ($showLevel2 === 'Y') {
                 $category->Unterkategorien = $this->getChildCategories(

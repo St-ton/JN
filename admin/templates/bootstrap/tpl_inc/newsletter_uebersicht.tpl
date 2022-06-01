@@ -327,28 +327,26 @@
                                         </thead>
                                         <tbody>
                                         {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
-                                            {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
-                                                <tr>
-                                                    <td>
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
-                                                            <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
-                                                        </div>
-                                                    </td>
-                                                    <td>{$oNewsletterQueue->cBetreff}</td>
-                                                    <td>{$oNewsletterQueue->Datum}</td>
-                                                    <td>{$oNewsletterQueue->nLimitN}</td>
-                                                    <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
-                                                    <td>
-                                                        {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
-                                                            {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
-                                                            {foreach $customerGroups as $customerGroup}
-                                                                {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
-                                                            {/foreach}
+                                            <tr>
+                                                <td>
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                        <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
+                                                    </div>
+                                                </td>
+                                                <td>{$oNewsletterQueue->cBetreff}</td>
+                                                <td>{$oNewsletterQueue->Datum}</td>
+                                                <td>{$oNewsletterQueue->nLimitN}</td>
+                                                <td>{$oNewsletterQueue->nAnzahlEmpfaenger}</td>
+                                                <td>
+                                                    {foreach $oNewsletterQueue->cKundengruppe_arr as $cKundengruppe}
+                                                        {if $cKundengruppe == '0'}{__('newsletterNoAccount')}{if !$cKundengruppe@last}, {/if}{/if}
+                                                        {foreach $customerGroups as $customerGroup}
+                                                            {if $cKundengruppe == $customerGroup->getID()}{$customerGroup->getName()}{if !$customerGroup@last}, {/if}{/if}
                                                         {/foreach}
-                                                    </td>
-                                                </tr>
-                                            {/if}
+                                                    {/foreach}
+                                                </td>
+                                            </tr>
                                         {/foreach}
                                         </tbody>
                                     </table>

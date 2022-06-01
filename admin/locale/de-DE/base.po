@@ -936,7 +936,7 @@ msgid "textHtml"
 msgstr "text/html"
 
 msgid "labelSearchProduct"
-msgstr "Suche nach Artikelnamen"
+msgstr "Suche nach Artikelnamen oder -nummern"
 
 msgid "labelSearchManufacturer"
 msgstr "Suche nach Herstellernamen"

@@ -18,6 +18,7 @@
 					.productbox-inner.pos-abs { position: absolute; left: 0; top: 0; right: 0; }
 				}
 				&:not(:hover) .productbox-onhover { display: none; }
+				.variations .form-group {margin-bottom: map-get($spacers, 1)}
 			}
 		}
 	}

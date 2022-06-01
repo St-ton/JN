@@ -438,7 +438,12 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || (isset($Link) && $Link->getIsFluid())) class="breadcrumb-container"}
+            {container
+                fluid=(($Einstellungen.template.theme.left_sidebar === 'Y' &&
+                    $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp ||
+                    (isset($Link) && $Link->getIsFluid()))
+                class="breadcrumb-container"
+            }
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}
@@ -447,7 +452,7 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
+        {if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
                     <div class="col-lg-8 col-xl-9 ml-auto-util order-lg-1">

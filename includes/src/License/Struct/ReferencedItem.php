@@ -61,6 +61,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private $dateInstalled;
 
     /**
+     * @var bool
+     */
+    private $filesMissing = false;
+
+    /**
      * @inheritDoc
      */
     public function getID(): string
@@ -218,5 +223,21 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setInitialized(bool $initialized): void
     {
         $this->initialized = $initialized;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFilesMissing(): bool
+    {
+        return $this->filesMissing;
+    }
+
+    /**
+     * @param bool $filesMissing
+     */
+    public function setFilesMissing(bool $filesMissing): void
+    {
+        $this->filesMissing = $filesMissing;
     }
 }

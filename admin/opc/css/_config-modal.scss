@@ -484,3 +484,33 @@
     padding: 2px 2px 7px 2px;
   }
 }
+
+#opc .list-group-item {
+  color: $text-color;
+
+  &:hover {
+    text-decoration: none;
+    color: $primary-darker;
+  }
+
+  &.active {
+    background: $primary-color;
+    color: $bg-color;
+    text-shadow: none;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background: $primary-darker;
+    }
+  }
+
+  &:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+}

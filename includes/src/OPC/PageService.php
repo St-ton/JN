@@ -233,15 +233,12 @@ class PageService
                 }
             }
         }
-        $shopURLdata = \parse_url(Shop::getURL());
+        $shopPath    = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '/';
         $baseURLdata = \parse_url($uri);
-        if (empty($shopURLdata['path'])) {
-            $shopURLdata['path'] = '/';
-        }
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
-        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
+        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopPath['path']));
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }

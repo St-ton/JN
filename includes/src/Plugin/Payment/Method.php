@@ -422,8 +422,7 @@ class Method implements MethodInterface
         if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
             return false;
         }
-
-        if ($this->getSetting('min_bestellungen') > 0) {
+        if (($minOrders = $this->getSetting('min_bestellungen')) > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $count = (int)$this->db->getSingleObject(
                     'SELECT COUNT(*) AS cnt
@@ -436,11 +435,11 @@ class Method implements MethodInterface
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
                     ]
                 )->cnt;
-                if ($count < $this->getSetting('min_bestellungen')) {
+                if ($count < $minOrders) {
                     ZahlungsLog::add(
                         $this->moduleID,
                         'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
-                        $this->getSetting('min_bestellungen'),
+                        $minOrders,
                         null,
                         \LOGLEVEL_NOTICE
                     );

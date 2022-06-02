@@ -30,7 +30,7 @@ class Migration_20220412144811 extends Migration implements IMigration
             'selectbox',
             110,
             (object)[
-                'cBeschreibung' => 'Zeige die Anzahl der Antworten in Klammern neben der Kommentaranzahl an. Standard = Y',
+                'cBeschreibung' => 'Zeige die Anzahl der Antworten, in Klammern, neben der Kommentar-Anzahl an. Standard = Y',
                 'inputOptions'  => [
                     'Y' => 'Anzeigen',
                     'N' => 'Ausblenden',

@@ -892,7 +892,7 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return CommentList
      */
     public function getComments(): CommentList
     {
@@ -900,7 +900,8 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @param CommentList $comments
+     * @return void
      */
     public function setComments(CommentList $comments): void
     {
@@ -909,7 +910,7 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getCommentCount(): int
     {
@@ -917,7 +918,7 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getChildCommentsCount(): int
     {
@@ -925,7 +926,8 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @param int $commentCount
+     * @return void
      */
     public function setCommentCount(int $commentCount): void
     {

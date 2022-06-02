@@ -543,13 +543,8 @@ class CheckoutController extends RegistrationController
             }
         }
         if (isset($paymentMethod->cModulId) && \mb_strlen($paymentMethod->cModulId) > 0) {
-            $config = $this->db->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cModulId'],
-                [\CONF_ZAHLUNGSARTEN, $paymentMethod->cModulId]
-            );
-            foreach ($config as $conf) {
-                $paymentMethod->einstellungen[$conf->cName] = $conf->cWert;
+            foreach ($this->config['zahlungsarten'] as $name => $value) {
+                $paymentMethod->einstellungen[$name] = $value;
             }
         }
         if (!$this->paymentMethodIsValid($paymentMethod)) {
@@ -721,13 +716,8 @@ class CheckoutController extends RegistrationController
                 $method->cGebuehrname[$item->cISOSprache]    = $item->cGebuehrname;
                 $method->cHinweisText[$item->cISOSprache]    = $item->cHinweisTextShop;
             }
-            $confData = $this->db->selectAll(
-                'teinstellungen',
-                ['kEinstellungenSektion', 'cModulId'],
-                [\CONF_ZAHLUNGSARTEN, $method->cModulId]
-            );
-            foreach ($confData as $config) {
-                $method->einstellungen[$config->cName] = $config->cWert;
+            foreach ($this->config['zahlungsarten'] as $name => $value) {
+                $method->einstellungen[$name] = $value;
             }
             if (!$this->paymentMethodIsValid($method)) {
                 continue;
@@ -816,15 +806,8 @@ class CheckoutController extends RegistrationController
                 $method->angezeigterName[$code] = '';
             }
         }
-        $confData = $this->db->getObjects(
-            'SELECT *
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = :sec
-                    AND cModulId = :mod',
-            ['mod' => $method->cModulId, 'sec' => \CONF_ZAHLUNGSARTEN]
-        );
-        foreach ($confData as $conf) {
-            $method->einstellungen[$conf->cName] = $conf->cWert;
+        foreach ($this->config['zahlungsarten'] as $name => $value) {
+            $method->einstellungen[$name] = $value;
         }
         $plugin = $this->getPluginPaymentMethod($method->cModulId);
         if ($plugin) {
@@ -1744,20 +1727,18 @@ class CheckoutController extends RegistrationController
         }
 
         $method = LegacyMethod::create($moduleID);
-        if ($method !== null) {
-            if (!$method->isValid($this->customer, $this->cart)) {
-                Shop::Container()->getLogService()->withName('cModulId')->debug(
-                    'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
-                    [$moduleID]
-                );
-
-                return false;
-            }
-
+        if ($method === null) {
+            return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
+        }
+        if ($method->isValid($this->customer, $this->cart)) {
             return true;
         }
+        Shop::Container()->getLogService()->withName('cModulId')->debug(
+            'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
+            [$moduleID]
+        );
 
-        return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
+        return false;
     }
 
     /**

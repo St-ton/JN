@@ -238,7 +238,7 @@ class PageService
         if (!isset($baseURLdata['path'])) {
             return '/';
         }
-        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopPath['path']));
+        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopPath));
         if (isset($baseURLdata['query'])) {
             $result .= '?' . $baseURLdata['query'];
         }

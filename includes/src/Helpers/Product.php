@@ -1793,7 +1793,6 @@ class Product
         $product->HilfreichsteBewertung       = $parent->HilfreichsteBewertung ?? null;
         $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
         $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
-        $product->oVariationKombiVorschauText = $parent->oVariationKombiVorschauText ?? null;
         $product->cVaterURL                   = $parent->cURL;
         $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 

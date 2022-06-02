@@ -71,7 +71,37 @@ class PageController extends AbstractController
         parent::init();
         $this->currentLink = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
 
-        return $this->currentLink !== null;
+        return $this->currentLink !== null && $this->currentLink->getLinkType() !== \LINKTYP_404;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function notFoundResponse(
+        ServerRequestInterface $request,
+        array $args,
+        JTLSmarty $smarty
+    ): ResponseInterface {
+        $this->smarty = $smarty;
+        if ($this->state->languageID === 0) {
+            $this->state->languageID = Shop::getLanguageID();
+        }
+        $this->state->is404  = true;
+        $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+        $sitemap             = new Sitemap($this->db, $this->cache, $this->config);
+        $sitemap->assignData($this->smarty);
+        Shop::setPageType(\PAGE_404);
+        $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+
+        $this->preRender();
+        $this->smarty->assign('Link', $this->currentLink)
+            ->assign('bSeiteNichtGefunden', Shop::getPageType() === \PAGE_404)
+            ->assign('cFehler', null)
+            ->assign('meta_language', Text::convertISO2ISO639(Shop::getLanguageCode()));
+
+        \executeHook(\HOOK_SEITE_PAGE);
+
+        return $this->smarty->getResponse('layout/index.tpl')->withStatus(404);
     }
 
     /**

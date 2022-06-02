@@ -606,8 +606,8 @@ class Menu
                             if (!$this->account->permission($link->cRecht)) {
                                 continue;
                             }
-                            $urlParts = \parse_url($link->cURL);
-                            if ($requestedPath === ($urlParts['path'] ?? '')) {
+                            $urlPath = \parse_url($link->cURL, \PHP_URL_PATH) ?? '';
+                            if ($requestedPath === $urlPath) {
                                 $hash = \mb_strpos($link->cURL, '#');
                                 $url  = $link->cURL;
                                 if ($hash !== false) {

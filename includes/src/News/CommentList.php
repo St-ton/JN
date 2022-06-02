@@ -126,7 +126,8 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritDoc
+     * @param $whatcount
+     * @return int
      */
     public function getCommentsCount($whatcount = 'parent'): int
     {

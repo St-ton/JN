@@ -21,27 +21,27 @@ class Sitemap
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var int
      */
-    private $langID;
+    private int $langID;
 
     /**
      * @var int
      */
-    private $customerGroupID;
+    private int $customerGroupID;
 
     /**
      * Sitemap constructor.

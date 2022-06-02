@@ -106,8 +106,8 @@ class Redirect
      */
     public function isDeadlock(string $source, string $destination): bool
     {
-        $parsed      = \parse_url(Shop::getURL());
-        $destination = isset($parsed['path']) ? $parsed['path'] . '/' . $destination : $destination;
+        $path        = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+        $destination = $path !== null ? ($path . '/' . $destination) : $destination;
         $redirect    = $this->db->select('tredirect', 'cFromUrl', $destination, 'cToUrl', $source);
 
         return $redirect !== null && (int)$redirect->kRedirect > 0;
@@ -198,7 +198,7 @@ class Redirect
     {
         $redirectUrl = false;
         $url         = $this->normalize($url);
-        if (\is_string($url) && \mb_strlen($url) > 0 && $this->isValid($url)) {
+        if (\mb_strlen($url) > 0 && $this->isValid($url)) {
             $parsedUrl   = \parse_url($url);
             $queryString = null;
             if (isset($parsedUrl['query'], $parsedUrl['path'])) {

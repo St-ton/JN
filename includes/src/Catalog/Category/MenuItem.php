@@ -17,6 +17,9 @@ class MenuItem
     use MagicCompatibilityTrait,
         MultiSizeImage;
 
+    /**
+     * @var string[]
+     */
     public static array $mapping = [
         'kKategorie'                 => 'ID',
         'kOberKategorie'             => 'ParentID',
@@ -423,9 +426,9 @@ class MenuItem
 
     /**
      * MenuItem constructor.
-     * @param stdClass|Kategorie $data
+     * @param stdClass $data
      */
-    public function __construct($data)
+    public function __construct(stdClass $data)
     {
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);

@@ -33,7 +33,7 @@
         {foreach $templateConfig as $section}
             <div class="card">
                 <div class="card-header">
-                    <div id="{__($section->key)}" class="subheading1">{__($section->name)}</div>
+                    <div class="subheading1">{__($section->name)}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
@@ -325,19 +325,16 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
-                    <button type="submit" name="action" value="save-config-continue" class="btn btn-outline-primary btn-block" id="save-and-continue">
-                        <i class="fal fa-save"></i> {__('saveAndContinue')}
-                    </button>
-                </div>
-                <div class="col-sm-6 col-xl-auto">
                     {if isset($smarty.get.activate)}
                         <input type="hidden" name="activate" value="1" />
+                        <input type="hidden" name="action" value="activate" />
+                    {else}
+                        <input type="hidden" name="action" value="save-config" />
                     {/if}
                     <input type="hidden" name="type" value="settings" />
                     <input type="hidden" name="dir" value="{$template->getDir()}" />
                     <input type="hidden" name="admin" value="0" />
-                    <input type="hidden" name="section" value="" />
-                    <button type="submit" class="btn btn-primary btn-block" name="action" value="{if isset($smarty.get.activate)}activate{else}save-config{/if}">
+                    <button type="submit" class="btn btn-primary btn-block">
                         {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
                     </button>
                 </div>

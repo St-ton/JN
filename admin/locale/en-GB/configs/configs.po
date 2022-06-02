@@ -87,10 +87,10 @@ msgid "global_bestseller_minanzahl_desc"
 msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
 msgid "global_bestseller_tage_name"
-msgstr "Maximum number of days for bestsellers"
+msgstr "Determine bestsellers on the basis of last X days"
 
 msgid "global_bestseller_tage_desc"
-msgstr "Specify which previous period (in days) should be taken into account in order to be marked as a bestseller."
+msgstr "Specify how many past days are to be considered for determining bestsellers. This allows you to limit the calculation of bestsellers to a certain period, e.g. to just the last 3 months or a whole year."
 
 msgid "kategorien_anzeigefilter_name"
 msgstr "Category display"

@@ -69,12 +69,15 @@ class ExtensionPoint
         foreach ($extensions as $extension) {
             $instance = null;
             $class    = \ucfirst($extension->cClass);
+            if (!\class_exists($class)) {
+                $class = '\\JTL\\' . $class;
+            }
             if (\class_exists($class)) {
                 /** @var IExtensionPoint $instance */
                 $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
             } else {
-                Shop::Container()->getLogService()->error('Extension "' . $class . '" not found');
+                Shop::Container()->getLogService()->error(\sprintf('Extension "%s" not found', $class));
             }
         }
 

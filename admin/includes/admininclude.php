@@ -61,7 +61,7 @@ if (!function_exists('Shop')) {
  */
 function routeRedirect(string $route): void
 {
-    header('Location: ' . Shop::getAdminURL() . '/' . $route, true, 301);
+    header('Location: ' . Shop::getAdminURL() . '/' . $route, true, 308);
     exit();
 }
 

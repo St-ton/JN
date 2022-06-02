@@ -72,8 +72,7 @@ class Downloader
         if ($available->getDownloadURL() === null) {
             return false;
         }
-        $parsed = \parse_url($available->getDownloadURL());
-        if (!\is_array($parsed) || $parsed['scheme'] !== 'https') {
+        if (\parse_url($available->getDownloadURL(), \PHP_URL_SCHEME) !== 'https') {
             return false;
         }
         // @todo: signature validation

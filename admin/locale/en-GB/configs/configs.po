@@ -2636,6 +2636,12 @@ msgstr "Show blog categories under blog"
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Specify whether to display the respective blog categories under a selected blog post."
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_name"
+msgstr "Show number of responses"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_desc"
+msgstr "Show the number of responses next to the comment count. Default = Y"
+
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Show all custom pages"
 

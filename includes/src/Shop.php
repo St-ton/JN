@@ -555,7 +555,7 @@ final class Shop extends ShopBC
         foreach (Frontend::getLanguages() as $language) {
             $code    = \mb_convert_case($language->getCode(), \MB_CASE_UPPER);
             $shopURL = \defined('URL_SHOP_' . $code) ? \constant('URL_SHOP_' . $code) : \URL_SHOP;
-            if ($_SERVER['HTTP_HOST'] === \parse_url($shopURL)['host']) {
+            if ($_SERVER['HTTP_HOST'] === \parse_url($shopURL, \PHP_URL_HOST)) {
                 self::setLanguage($language->getId(), $language->getCode());
                 break;
             }
@@ -830,14 +830,12 @@ final class Shop extends ShopBC
      */
     public static function getRequestUri(bool $decoded = false): string
     {
-        $shopURLdata = \parse_url(self::getURL());
-        $baseURLdata = \parse_url(self::getRequestURL());
-
-        $uri = isset($baseURLdata['path'])
-            ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1)
+        $shopPath = \parse_url(self::getURL(), \PHP_URL_PATH) ?? '';
+        $basePath = \parse_url(self::getRequestURL(), \PHP_URL_PATH);
+        $uri      = $basePath !== null
+            ? \mb_substr($basePath, \mb_strlen($shopPath) + 1)
             : '';
-        $uri = '/' . $uri;
-
+        $uri      = '/' . $uri;
         if ($decoded) {
             $uri = \rawurldecode($uri);
         }

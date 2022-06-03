@@ -462,11 +462,12 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function parseLanguageFromArgs(array $args, int $default): int
     {
-        if (isset($args['lang'])) {
-            foreach (LanguageHelper::getAllLanguages() as $languageModel) {
-                if ($args['lang'] === $languageModel->getIso639()) {
-                    return $languageModel->getId();
-                }
+        if (!isset($args['lang'])) {
+            return $default;
+        }
+        foreach (LanguageHelper::getAllLanguages() as $languageModel) {
+            if ($args['lang'] === $languageModel->getIso639()) {
+                return $languageModel->getId();
             }
         }
 

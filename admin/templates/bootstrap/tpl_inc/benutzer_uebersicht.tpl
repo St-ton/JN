@@ -25,9 +25,9 @@
                         <tr>
                             <th class="text-left">#</th>
                             <th class="text-center">{__('username')}</th>
-                            <th class="text-center">{__('benutzer2FA')}</th>
                             <th class="text-center">{__('email')}</th>
                             <th class="text-center">{__('group')}</th>
+                            <th class="text-center">{__('benutzer2FA')}</th>
                             <th class="text-center">{__('benutzerLoginVersuche')}</th>
                             <th class="text-center">{__('benutzerLetzterLogin')}</th>
                             <th class="text-center">{__('benutzerGueltigBis')}</th>
@@ -39,7 +39,6 @@
                             <tr>
                                 <td class="text-left">{$oAdmin->kAdminlogin}</td>
                                 <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cLogin)}</td>
-                                <td class="text-center">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
                                 <td class="text-center">{JTL\Helpers\Text::filterXSS($oAdmin->cMail)}</td>
                                 <td class="text-center">
                                     {if $oAdmin->kAdminlogingruppe > 1}
@@ -52,6 +51,7 @@
                                         {$oAdmin->cGruppe}
                                     {/if}
                                 </td>
+                                <td class="text-center">{if $oAdmin->b2FAauth}<i class="far fa-check-circle"></i>{else}<i class="far fa-circle"></i>{/if}</td>
                                 <td class="text-center">{$oAdmin->nLoginVersuch}</td>
                                 <td class="text-center">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
                                 <td class="text-center">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>

@@ -206,7 +206,7 @@ final class SyntaxChecker
             $model->setSyntaxCheck($model::SYNTAX_NOT_CHECKED);
             $model->save();
 
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
                 $template->load($lang->getId(), 1);
                 $res->result[$lang->getCode()] = $sc->doCheck($lang, $model);
             }

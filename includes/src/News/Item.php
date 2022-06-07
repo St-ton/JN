@@ -121,6 +121,11 @@ class Item extends AbstractItem implements RoutableInterface
     protected int $commentCount = 0;
 
     /**
+     * @var int
+     */
+    protected $commentChildCount = 0;
+
+    /**
      * @var stdClass|null
      */
     protected ?stdClass $author = null;
@@ -258,7 +263,9 @@ class Item extends AbstractItem implements RoutableInterface
         }
         $this->createBySlug();
         $this->comments->createItemsByNewsItem($this->id);
-        $this->commentCount = $this->comments->getItems()->count();
+        $this->commentCount      = $this->comments->getCommentsCount();
+        $this->commentChildCount = $this->comments->getCommentsCount('child');
+
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
         }
@@ -887,7 +894,7 @@ class Item extends AbstractItem implements RoutableInterface
     }
 
     /**
-     * @inheritdoc
+     * @return CommentList
      */
     public function getComments(): CommentList
     {
@@ -895,7 +902,8 @@ class Item extends AbstractItem implements RoutableInterface
     }
 
     /**
-     * @inheritdoc
+     * @param CommentList $comments
+     * @return void
      */
     public function setComments(CommentList $comments): void
     {
@@ -904,7 +912,7 @@ class Item extends AbstractItem implements RoutableInterface
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getCommentCount(): int
     {
@@ -912,7 +920,16 @@ class Item extends AbstractItem implements RoutableInterface
     }
 
     /**
-     * @inheritdoc
+     * @return int
+     */
+    public function getChildCommentsCount(): int
+    {
+        return $this->commentChildCount;
+    }
+
+    /**
+     * @param int $commentCount
+     * @return void
      */
     public function setCommentCount(int $commentCount): void
     {

@@ -903,7 +903,7 @@ final class Products extends AbstractSync
         $this->upsertXML($product, 'tartikelattribut', 'mArtikelAttribut', 'kArtikelAttribut');
         $this->upsertXML($product, 'tartikelsichtbarkeit', 'mArtikelSichtbarkeit', 'kKundengruppe', 'kArtikel');
         $this->upsertXML($product, 'txsell', 'mXSell', 'kXSell');
-        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMerkmalWert');
+        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMerkmalWert', 'kArtikel');
         $this->addStockData($products[0]);
         $this->handleSQL($xml);
         $this->addWarehouseData($xml, $productID);

@@ -3505,6 +3505,14 @@ class Artikel implements RoutableInterface
             }
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
+        if ((int)$this->conf['global']['global_sichtbarkeit'] === 2
+            && $this->Preise !== null
+            && $this->Preise->fVKNetto === 0
+            && Frontend::getCustomerGroup()->mayViewPrices()
+        ) {
+            // zero-ed prices were saved to cache
+            $this->Preise = null;
+        }
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }

@@ -155,7 +155,7 @@ class EmailTemplateController extends AbstractBackendController
                 $configAssoc[$item->cKey] = $item->cValue;
             }
             $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-            $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true))
+            $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
                 ->assign('mailConfig', $configAssoc)
                 ->assign('cUploadVerzeichnis', $uploadDir);
         }

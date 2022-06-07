@@ -92,7 +92,7 @@ class PortletInstance implements \JsonSerializable
         $dom    = new \DOMDocument('1.0', 'utf-8');
         // suppress mark-up warnings like embeded svg tags the DOMDocument parser can not handle
         \libxml_use_internal_errors(true);
-        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result, \LIBXML_SCHEMA_CREATE);
         \libxml_clear_errors();
         /** @var \DOMElement $root */
         $body = $dom->getElementsByTagName('body')[0];

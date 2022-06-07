@@ -92,8 +92,20 @@
 
                             {block name='productdetails-price-min-value-info'}
                                 {$mwb = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
-                                {if $mwb > $Artikel->Preise->fVKBrutto}
-                                    <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$mwb|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                {if $mwb > 0}
+                                    {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+                                        {if $NettoPreise == 1}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minNettoPrice}
+                                        {else}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minBruttoPrice}
+                                        {/if}
+                                    {else}
+                                        {$minPrice = $Artikel->Preise->fVK[$NettoPreise]}
+                                    {/if}
+
+                                    {if $mwb > $minPrice}
+                                        <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$mwb|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                    {/if}
                                 {/if}
                             {/block}
 

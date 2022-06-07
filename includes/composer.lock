@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "17ffdc496260a31586ee4c2b6b9b8838",
+    "content-hash": "b91cbbbc12a09c30b04823f94d52b76e",
     "packages": [
         {
             "name": "chamilo/pclzip",
@@ -1337,7 +1337,7 @@
         },
         {
             "name": "jtlshop/qrcodegenerator",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator.git",
@@ -1352,7 +1352,6 @@
             "require": {
                 "php": ">=5.4.45"
             },
-            "default-branch": true,
             "type": "package",
             "autoload": {
                 "psr-4": {
@@ -1379,7 +1378,7 @@
             ],
             "description": "QRCode-Generator adopted from chillerlan/php-qrcode",
             "support": {
-                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator/-/tree/master"
+                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/qrcodegenerator/-/tree/0.1.0"
             },
             "time": "2016-09-06T11:03:19+00:00"
         },
@@ -1614,16 +1613,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "2.4.3",
+            "version": "2.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "4c56e451e10e3d9478f42f44c3d744bc17cdcede"
+                "reference": "9392c5f1df57d865c406ee65e5012d566686be12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/4c56e451e10e3d9478f42f44c3d744bc17cdcede",
-                "reference": "4c56e451e10e3d9478f42f44c3d744bc17cdcede",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/9392c5f1df57d865c406ee65e5012d566686be12",
+                "reference": "9392c5f1df57d865c406ee65e5012d566686be12",
                 "shasum": ""
             },
             "require": {
@@ -1680,7 +1679,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/2.4.3"
+                "source": "https://github.com/thephpleague/flysystem/tree/2.4.5"
             },
             "funding": [
                 {
@@ -1696,7 +1695,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-02-16T18:44:00+00:00"
+            "time": "2022-04-25T18:39:39+00:00"
         },
         {
             "name": "league/flysystem-ftp",
@@ -1764,16 +1763,16 @@
         },
         {
             "name": "league/flysystem-sftp",
-            "version": "2.4.1",
+            "version": "2.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem-sftp.git",
-                "reference": "b200731877767bcac3895524339448c0e7348b71"
+                "reference": "bfb2b7404562773accc7ac31a36d8191d80d11ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem-sftp/zipball/b200731877767bcac3895524339448c0e7348b71",
-                "reference": "b200731877767bcac3895524339448c0e7348b71",
+                "url": "https://api.github.com/repos/thephpleague/flysystem-sftp/zipball/bfb2b7404562773accc7ac31a36d8191d80d11ba",
+                "reference": "bfb2b7404562773accc7ac31a36d8191d80d11ba",
                 "shasum": ""
             },
             "require": {
@@ -1808,7 +1807,7 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem-sftp/issues",
-                "source": "https://github.com/thephpleague/flysystem-sftp/tree/2.4.1"
+                "source": "https://github.com/thephpleague/flysystem-sftp/tree/2.4.4"
             },
             "funding": [
                 {
@@ -1824,7 +1823,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-15T19:02:29+00:00"
+            "time": "2022-04-14T10:10:55+00:00"
         },
         {
             "name": "league/flysystem-ziparchive",
@@ -2492,16 +2491,16 @@
         },
         {
             "name": "mrclay/minify",
-            "version": "3.0.11",
+            "version": "3.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mrclay/minify.git",
-                "reference": "f1572a580a8ab29c5c7df4319c4787c74f7dcb3e"
+                "reference": "1962d3614c7ee1795a9fb74e49e603646b34207d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mrclay/minify/zipball/f1572a580a8ab29c5c7df4319c4787c74f7dcb3e",
-                "reference": "f1572a580a8ab29c5c7df4319c4787c74f7dcb3e",
+                "url": "https://api.github.com/repos/mrclay/minify/zipball/1962d3614c7ee1795a9fb74e49e603646b34207d",
+                "reference": "1962d3614c7ee1795a9fb74e49e603646b34207d",
                 "shasum": ""
             },
             "require": {
@@ -2552,10 +2551,10 @@
             "support": {
                 "email": "minify@googlegroups.com",
                 "issues": "https://github.com/mrclay/minify/issues",
-                "source": "https://github.com/mrclay/minify/tree/3.0.11",
+                "source": "https://github.com/mrclay/minify/tree/3.0.12",
                 "wiki": "https://github.com/mrclay/minify/blob/master/docs"
             },
-            "time": "2021-03-11T11:58:14+00:00"
+            "time": "2022-05-14T11:11:27+00:00"
         },
         {
             "name": "mrclay/props-dic",
@@ -3019,16 +3018,16 @@
         },
         {
             "name": "phpseclib/phpseclib",
-            "version": "2.0.36",
+            "version": "2.0.37",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
-                "reference": "a97547126396548c224703a267a30af1592be146"
+                "reference": "c812fbb4d6b4d7f30235ab7298a12f09ba13b37c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/a97547126396548c224703a267a30af1592be146",
-                "reference": "a97547126396548c224703a267a30af1592be146",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/c812fbb4d6b4d7f30235ab7298a12f09ba13b37c",
+                "reference": "c812fbb4d6b4d7f30235ab7298a12f09ba13b37c",
                 "shasum": ""
             },
             "require": {
@@ -3108,7 +3107,7 @@
             ],
             "support": {
                 "issues": "https://github.com/phpseclib/phpseclib/issues",
-                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.36"
+                "source": "https://github.com/phpseclib/phpseclib/tree/2.0.37"
             },
             "funding": [
                 {
@@ -3124,7 +3123,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-01-30T08:48:36+00:00"
+            "time": "2022-04-04T04:57:45+00:00"
         },
         {
             "name": "pimple/pimple",
@@ -3613,16 +3612,16 @@
         },
         {
             "name": "smarty/smarty",
-            "version": "v3.1.44",
+            "version": "v3.1.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e"
+                "reference": "a2713ab89e6d773bc4819f11857af7f6b2e353a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e",
-                "reference": "99085d8dc65eeb5e55ae3cba74d3dc6b3bb0205e",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/a2713ab89e6d773bc4819f11857af7f6b2e353a9",
+                "reference": "a2713ab89e6d773bc4819f11857af7f6b2e353a9",
                 "shasum": ""
             },
             "require": {
@@ -3670,9 +3669,9 @@
                 "forum": "http://www.smarty.net/forums/",
                 "irc": "irc://irc.freenode.org/smarty",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v3.1.44"
+                "source": "https://github.com/smarty-php/smarty/tree/v3.1.45"
             },
-            "time": "2022-01-17T23:12:04+00:00"
+            "time": "2022-05-17T12:57:52+00:00"
         },
         {
             "name": "studio-42/elfinder",
@@ -7917,7 +7916,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "phpgangsta/googleauthenticator": 20,
-        "jtlshop/qrcodegenerator": 20,
         "erusev/parsedown": 10,
         "fzaninotto/faker": 20,
         "phpmd/phpmd": 0

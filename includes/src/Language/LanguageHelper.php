@@ -56,64 +56,59 @@ class LanguageHelper
      *
      * @var int
      */
-    public $kSprachISO = 0;
+    public int $kSprachISO = 0;
 
     /**
      * compatibility only
      *
      * @var string
      */
-    public $cISOSprache = '';
-
-    /**
-     * @var array
-     */
-    protected static $mappings;
+    public string $cISOSprache = '';
 
     /**
      * @var string
      */
-    private $currentISOCode = '';
+    private string $currentISOCode = '';
 
     /**
      * @var int
      */
-    public $currentLanguageID = 0;
+    public int $currentLanguageID = 0;
 
     /**
      * @var array
      */
-    public $langVars = [];
+    public array $langVars = [];
 
     /**
      * @var string
      */
-    public $cacheID = 'cr_lng_dta';
+    public string $cacheID = 'cr_lng_dta';
 
     /**
      * @var stdClass[]
      */
-    public $availableLanguages;
+    public array $availableLanguages;
 
     /**
      * @var array
      */
-    public $byISO = [];
+    public array $byISO = [];
 
     /**
      * @var array
      */
-    public $byLangID = [];
+    public array $byLangID = [];
 
     /**
      * @var int
      */
-    public $kSprache;
+    public int $kSprache = 0;
 
     /**
      * @var LanguageHelper|null
      */
-    private static $instance;
+    private static ?LanguageHelper $instance;
 
     /**
      * @var DbInterface
@@ -438,7 +433,7 @@ class LanguageHelper
         if ($this->currentLanguageID === 0) {
             return '';
         }
-        if ($this->langVars === null) {
+        if ($this->langVars) {
             $this->langVars = $this->loadLangVars();
         }
         $save = false;

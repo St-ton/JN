@@ -439,11 +439,11 @@ class Iframe
         var diffBottom = offsTop + 128 + elm.height() - viewBottom;
 
         if(diffTop < 0) {
-            this.ctx.scrollBy(0, diffTop);
+            this.ctx.scrollBy({top: diffTop, behavior: 'instant'});
         }
 
         if(diffBottom > 0) {
-            this.ctx.scrollBy(0, diffBottom);
+            this.ctx.scrollBy({top: diffBottom, behavior: 'instant'});
         }
     }
 

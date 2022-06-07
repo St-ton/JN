@@ -15,7 +15,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var Shopsetting|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @var array
@@ -23,9 +23,9 @@ final class Shopsetting implements ArrayAccess
     private array $container = [];
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $allSettings;
+    private ?array $allSettings = null;
 
     /**
      * @var array
@@ -59,7 +59,6 @@ final class Shopsetting implements ArrayAccess
         \CONF_SITEMAP             => 'sitemap',
         \CONF_SUCHSPECIAL         => 'suchspecials',
         \CONF_TEMPLATE            => 'template',
-        \CONF_CHECKBOX            => 'checkbox',
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
         \CONF_FS                  => 'fs',
@@ -240,10 +239,10 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param array|int $sections
+     * @param int|array $sections
      * @return array
      */
-    public function getSettings($sections): array
+    public function getSettings(int|array $sections): array
     {
         $ret = [];
         foreach ((array)$sections as $section) {
@@ -259,9 +258,9 @@ final class Shopsetting implements ArrayAccess
     /**
      * @param int    $sectionID
      * @param string $option
-     * @return string|array|int|null
+     * @return mixed
      */
-    public function getValue(int $sectionID, string $option)
+    public function getValue(int $sectionID, string $option): mixed
     {
         $section = $this->getSection($sectionID);
 
@@ -284,7 +283,7 @@ final class Shopsetting implements ArrayAccess
      * @param null|string $name
      * @return mixed|null
      */
-    public static function mapSettingName(?int $section = null, ?string $name = null)
+    public static function mapSettingName(?int $section = null, ?string $name = null): mixed
     {
         if ($section === null && $name === null) {
             return false;

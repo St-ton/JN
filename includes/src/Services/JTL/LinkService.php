@@ -226,9 +226,10 @@ final class LinkService implements LinkServiceInterface
     /**
      * @former gibLinkKeySpecialSeite()
      * @param int $linkType
-     * @return LinkInterface|null
+     * @return LinkInterface
+     * @throws SpecialPageNotFoundException
      */
-    public function getSpecialPage(int $linkType): ?LinkInterface
+    public function getSpecialPage(int $linkType): LinkInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 

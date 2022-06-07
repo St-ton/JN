@@ -642,8 +642,8 @@ class Category
     {
         $current = $this->getCategoryById($id);
 
-        return $current !== null && isset($current->Unterkategorien)
-            ? \array_values($current->Unterkategorien)
+        return $current !== null
+            ? \array_values($current->getChildren())
             : [];
     }
 

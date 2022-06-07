@@ -1008,6 +1008,7 @@ final class Admin
         if ($tpl === null) {
             return $step;
         }
+        $tpl->oZeit   = $this->getDateData($tpl->dStartZeit);
         $productData  = $this->getProductData($tpl->cArtikel);
         $cgroup       = $this->getCustomerGroupData($tpl->cKundengruppe);
         $revisionData = [];
@@ -1064,6 +1065,8 @@ final class Admin
         // create a crontab entry
         $dao = new NewsletterCronDAO();
         $dao->setForeignKeyID($newsletter->kNewsletter);
+        $dao->setStartDate($newsletter->dStartZeit);
+        $dao->setStartTime(\explode(' ', $newsletter->dStartZeit)[1]);
         $this->db->insert('tcron', $dao->getData());
         // Baue Arrays mit kKeys
         $productIDs      = $instance->getKeys($checks->cArtikel, true);

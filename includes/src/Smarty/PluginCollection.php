@@ -13,12 +13,12 @@ class PluginCollection
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var LanguageHelper
      */
-    private $lang;
+    private LanguageHelper $lang;
 
     /**
      * PluginCollection constructor.

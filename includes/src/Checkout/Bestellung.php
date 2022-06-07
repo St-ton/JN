@@ -360,6 +360,11 @@ class Bestellung
     public $OrderAttributes;
 
     /**
+     * @var int
+     */
+    public $nZahlungsTyp = 0;
+
+    /**
      * Bestellung constructor.
      * @param int  $id
      * @param bool $init
@@ -393,6 +398,7 @@ class Bestellung
             $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
             $this->kZahlungsart      = (int)$this->kZahlungsart;
             $this->kVersandart       = (int)$this->kVersandart;
+            $this->nZahlungsTyp      = (int)$this->nZahlungsTyp;
         }
 
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
@@ -572,7 +578,8 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+                    $item->Artikel = new Artikel($db);
+                    $item->Artikel->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $languageID);
                 }
                 if ($this->kBestellung > 0) {
                     $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
@@ -768,7 +775,7 @@ class Bestellung
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as $deliveryNote) {
                 foreach ($deliveryNote->oPosition_arr as $deliveryItem) {
-                    if ($deliveryItem->kKonfigitem == 0 && !empty($deliveryItem->cUnique)) {
+                    if ($deliveryItem->kKonfigitem === 0 && !empty($deliveryItem->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $child) {
                             if ($child->cUnique === $deliveryItem->cUnique
@@ -938,24 +945,28 @@ class Bestellung
         int $posType = \C_WARENKORBPOS_TYP_ARTIKEL
     ): array {
         $items = [];
-        if ($orderID > 0) {
-            $data = Shop::Container()->getDB()->getObjects(
-                'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
-                      FROM tbestellung
-                      JOIN twarenkorbpos
-                        ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                          AND nPosTyp = :ty
-                      WHERE tbestellung.kBestellung = :oid',
-                ['ty' => $posType, 'oid' => $orderID]
-            );
-            foreach ($data as $item) {
-                if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {
-                    if ($assoc) {
-                        $items[$item->kArtikel] = new CartItem($item->kWarenkorbPos);
-                    } else {
-                        $items[] = new CartItem($item->kWarenkorbPos);
-                    }
-                }
+        if ($orderID <= 0) {
+            return $items;
+        }
+        $data = Shop::Container()->getDB()->getObjects(
+            'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
+                  FROM tbestellung
+                  JOIN twarenkorbpos
+                    ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                      AND nPosTyp = :ty
+                  WHERE tbestellung.kBestellung = :oid',
+            ['ty' => $posType, 'oid' => $orderID]
+        );
+        foreach ($data as $item) {
+            if ($item->kWarenkorbPos <= 0) {
+                continue;
+            }
+            $item->kArtikel      = (int)$item->kArtikel;
+            $item->kWarenkorbPos = (int)$item->kWarenkorbPos;
+            if ($assoc) {
+                $items[$item->kArtikel] = new CartItem($item->kWarenkorbPos);
+            } else {
+                $items[] = new CartItem($item->kWarenkorbPos);
             }
         }
 
@@ -1072,9 +1083,6 @@ class Bestellung
         return $this;
     }
 
-    /**
-     * set Kampagne
-     */
     public function setKampagne(): void
     {
         $this->oKampagne = Shop::Container()->getDB()->getSingleObject(
@@ -1090,6 +1098,10 @@ class Bestellung
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
             ]
         );
+        if ($this->oKampagne !== null) {
+            $this->oKampagne->kKampagne   = (int)$this->oKampagne->kKampagne;
+            $this->oKampagne->kBestellung = (int)$this->oKampagne->kBestellung;
+        }
     }
 
     /**

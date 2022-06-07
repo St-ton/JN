@@ -11,17 +11,17 @@ class SystemFolder
     /**
      * @var string
      */
-    public $cBaseName;
+    public string $cBaseName;
 
     /**
      * @var string
      */
-    public $cBasePath;
+    public string $cBasePath;
 
     /**
      * @var array
      */
-    public $oSubFolders;
+    public array $oSubFolders;
 
     /**
      * @param string $baseName

@@ -1,7 +1,7 @@
 /* cart-dropdown */
 .cart-dropdown {
   .cart-dropdown-total-item {
-    color: $text-muted-header;
+    color: $header-color-secondary;
     margin-bottom: map-get($spacers, 2);
     font-size: $font-size-sm;
   }
@@ -151,3 +151,9 @@
   }
 }
 
+.item-overflow-notice {
+  padding: 0 $table-cell-padding;
+  a {
+    text-decoration: underline;
+  }
+}

@@ -11,6 +11,7 @@
                      data-toggle="tooltip"
                      title="{lang key='completeConfigGroupHint' section='productDetails'}"
                     {/if}>
+                    {block name='productdetails-config-options-heading'}
                     <div class="hr-sect">
                         <span class="d-none js-group-checked"><i class="far fa-check-square"></i></span>
                         <span><i class="far fa-square"></i></span>
@@ -23,12 +24,14 @@
                             {$configLocalization->getName()}
                         {/button}
                     </div>
-
+                    {/block}
+                    {block name='productdetails-config-options-collapse'}
                     {collapse visible=$configGroup@first
                         id="cfg-grp-cllps-{$configGroup@iteration}"
                         aria=["labelledby"=>"crd-hdr-{$configGroup@iteration}"]
                         data=["parent"=>"#cfg-accordion"]
                         class="js-cfg-group-collapse"}
+                        {block name='productdetails-config-options-collapse-top'}
                         <div class="cfg-group-info sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
@@ -50,6 +53,7 @@
                                 {badge variant="info" class="js-group-badge-checked"}{lang key='optional'}{/badge}
                             {/if}
                         </div>
+                        {/block}
                     {block name='productdetails-config-container-group-description'}
                         {alert variant="danger" class="js-cfg-group-error" data=["id"=>"{$kKonfiggruppe}"]}{/alert}
                     {/block}
@@ -104,8 +108,9 @@
                                         {if !empty($cKurzBeschreibung)}
                                             {$cBeschreibung = $cKurzBeschreibung}
                                         {/if}
-
+                                        {block name='productdetails-config-container-group-item-type-swatch-option'}
                                         {if $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_RADIO}
+                                            {block name='productdetails-config-container-group-item-type-swatch-option-radio'}
                                             {radio name="item[{$kKonfiggruppe}][]"
                                                 value=$oItem->getKonfigitem()
                                                 disabled=empty($bSelectable)
@@ -123,7 +128,7 @@
                                                     {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                             {badge variant="light"}
                                                             {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                 <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -176,7 +181,9 @@
                                                     {/if}
                                                 </div>
                                             {/radio}
+                                            {/block}
                                         {else}
+                                            {block name='productdetails-config-container-group-item-type-swatch-option-checkbox'}
                                             {checkbox name="item[{$kKonfiggruppe}][]"
                                                 value=$oItem->getKonfigitem()
                                                 disabled=empty($bSelectable)
@@ -193,7 +200,7 @@
                                                     {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                     <p class="cfg-item-description">
                                                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                        {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                             {badge variant="light"}
                                                                 {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -249,13 +256,16 @@
                                                     {/if}
                                                 </div>
                                             {/checkbox}
+                                            {/block}
                                         {/if}
+                                        {/block}
                                     {/col}
                                 {/foreach}
                             {/block}
                         {elseif $viewType === $smarty.const.KONFIG_ANZEIGE_TYP_DROPDOWN}
                             {block name='productdetails-config-container-group-item-type-dropdown'}
                                 {col cols=12 data=["id"=>$kKonfiggruppe] class="config-option-dropdown"}
+                                    {block name='productdetails-config-container-group-item-type-dropdown-select'}
                                     {formgroup}
                                         {select name="item[{$kKonfiggruppe}][]"
                                             data=["ref"=>$kKonfiggruppe]
@@ -275,7 +285,7 @@
                                                     {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                     {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                 {$oItem->getName()}{if empty($bSelectable)} - {lang section='productDetails' key='productOutOfStock'}{/if}
-                                                {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                     &nbsp;&nbsp;&nbsp;&nbsp;
                                                     {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key='discount'})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key='additionalCharge'})&nbsp;{/if}
                                                     {$oItem->getPreisLocalized()}
@@ -284,6 +294,7 @@
                                         {/foreach}
                                         {/select}
                                     {/formgroup}
+                                    {/block}
                                 {/col}
                                 {col}
                                 {foreach $configGroup->oItem_arr as $oItem}
@@ -296,13 +307,14 @@
                                     {if !empty($cKurzBeschreibung)}
                                         {$cBeschreibung = $cKurzBeschreibung}
                                     {/if}
+                                    {block name='productdetails-config-container-group-item-type-dropdown-collapse'}
                                     {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
                                         {row}
                                             {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
                                                 {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
                                                 <p class="cfg-item-description">
                                                     {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                    {if $smarty.session.Kundengruppe->mayViewPrices()}
+                                                    {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                         {badge variant="light"}
                                                             {if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                 <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
@@ -358,12 +370,14 @@
                                             {/col}
                                         {/row}
                                     {/collapse}
+                                    {/block}
                                 {/foreach}
                                 {/col}
                             {/block}
                         {/if}
                         {/row}
                     {/block}
+                        {block name='productdetails-config-bottom'}
                         <div class="sticky-bottom">
                             {if $configGroup@last}
                                 {nav}
@@ -388,7 +402,9 @@
                                 {/button}
                             {/if}
                         </div>
+                        {/block}
                     {/collapse}
+                    {/block}
                 </div>
             {/if}
         {/foreach}

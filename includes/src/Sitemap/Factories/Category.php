@@ -7,7 +7,6 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\Category as Item;
 use PDO;
-use Shop;
 use function Functional\first;
 use function Functional\map;
 

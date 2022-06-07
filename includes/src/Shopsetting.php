@@ -107,43 +107,38 @@ final class Shopsetting implements ArrayAccess
     /**
      * @param string $offset
      * @param mixed  $value
-     * @return $this
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             $this->container[] = $value;
         } else {
             $this->container[$offset] = $value;
         }
-
-        return $this;
     }
 
     /**
      * @param string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->container[$offset]);
     }
 
     /**
      * @param string $offset
-     * @return $this
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->container[$offset]);
-
-        return $this;
     }
 
     /**
      * @param mixed $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (isset($this->container[$offset])) {
@@ -251,10 +246,7 @@ final class Shopsetting implements ArrayAccess
     public function getSettings($sections): array
     {
         $ret = [];
-        if (!\is_array($sections)) {
-            $sections = (array)$sections;
-        }
-        foreach ($sections as $section) {
+        foreach ((array)$sections as $section) {
             $mapping = self::mapSettingName($section);
             if ($mapping !== null) {
                 $ret[$mapping] = $this[$mapping];
@@ -265,16 +257,26 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param int    $section
+     * @param int    $sectionID
      * @param string $option
      * @return string|array|int|null
      */
-    public function getValue(int $section, string $option)
+    public function getValue(int $sectionID, string $option)
     {
-        $settings    = $this->getSettings([$section]);
-        $sectionName = self::mapSettingName($section);
+        $section = $this->getSection($sectionID);
 
-        return $settings[$sectionName][$option] ?? null;
+        return $section[$option] ?? null;
+    }
+
+    /**
+     * @param int $sectionID
+     * @return array|null
+     */
+    public function getSection(int $sectionID): ?array
+    {
+        $settings = $this->getSettings([$sectionID]);
+
+        return $settings[self::mapSettingName($sectionID)] ?? null;
     }
 
     /**

@@ -6,156 +6,28 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
-use JTL\DB\DbInterface;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
 use PDO;
-use Psr\Log\LoggerInterface;
 use stdClass;
 
 /**
  * Class FormatExporter
  * @package JTL\Export
  */
-class FormatExporter
+class FormatExporter extends AbstractExporter
 {
-    /**
-     * @var array
-     */
-    private $config = [];
-
-    /**
-     * @var ExportSmarty
-     */
-    private $smarty;
-
-    /**
-     * @var QueueEntry
-     */
-    private $queue;
-
-    /**
-     * @var Model
-     */
-    private $model;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var FileWriter
-     */
-    private $fileWriter;
-
-    /**
-     * @var float
-     */
-    private $startedAt;
-
-    /**
-     * FormatExporter constructor.
-     * @param DbInterface     $db
-     * @param LoggerInterface $logger
-     */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
-    {
-        $this->db     = $db;
-        $this->logger = $logger;
-    }
-
-    /**
-     * @param int $exportID
-     */
-    public function init(int $exportID): void
-    {
-        $this->startedAt = \microtime(true);
-        try {
-            $this->model = Model::load(['id' => $exportID], $this->db, Model::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
-            throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
-        }
-        $this->setConfig($exportID);
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * @return array
-     */
-    public function getConfig(): array
-    {
-        return $this->config;
-    }
-
-    /**
-     * @param int $exportID
-     * @return $this
-     */
-    private function setConfig(int $exportID): self
-    {
-        $confObj = $this->db->selectAll(
-            'texportformateinstellungen',
-            'kExportformat',
-            $exportID
-        );
-        foreach ($confObj as $conf) {
-            $this->config[$conf->cName] = $conf->cWert;
-        }
-        $this->config['exportformate_lager_ueber_null'] = $this->config['exportformate_lager_ueber_null'] ?? 'N';
-        $this->config['exportformate_preis_ueber_null'] = $this->config['exportformate_preis_ueber_null'] ?? 'N';
-        $this->config['exportformate_beschreibung']     = $this->config['exportformate_beschreibung'] ?? 'N';
-        $this->config['exportformate_quot']             = $this->config['exportformate_quot'] ?? 'N';
-        $this->config['exportformate_equot']            = $this->config['exportformate_equot'] ?? 'N';
-        $this->config['exportformate_semikolon']        = $this->config['exportformate_semikolon'] ?? 'N';
-        $this->config['exportformate_line_ending']      = $this->config['exportformate_line_ending'] ?? 'LF';
-
-        return $this;
-    }
-
     /**
      * @return string
      */
     private function getNewLine(): string
     {
         return ($this->config['exportformate_line_ending'] ?? 'LF') === 'LF' ? "\n" : "\r\n";
-    }
-
-    /**
-     * @param QueueEntry $queue
-     * @return $this
-     */
-    private function setQueue(QueueEntry $queue): self
-    {
-        $this->queue = $queue;
-
-        return $this;
-    }
-
-    /**
-     * @return QueueEntry|null
-     */
-    public function getQueue(): ?QueueEntry
-    {
-        return $this->queue;
     }
 
     /**
@@ -172,99 +44,23 @@ class FormatExporter
     }
 
     /**
-     * @param bool $countOnly
-     * @return string
-     */
-    private function getExportSQL(bool $countOnly = false): string
-    {
-        $where = '';
-        $join  = '';
-        $limit = '';
-        switch ($this->model->getVarcombOption()) {
-            case 2:
-                $where = ' AND kVaterArtikel = 0';
-                break;
-            case 3:
-                $where = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
-                break;
-            default:
-                break;
-        }
-        if ($this->config['exportformate_lager_ueber_null'] === 'Y') {
-            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
-        } elseif ($this->config['exportformate_lager_ueber_null'] === 'O') {
-            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
-                            OR tartikel.cLagerKleinerNull = 'Y')";
-        }
-
-        if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
-            $join .= ' JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                                AND tpreis.kKundengruppe = ' . $this->model->getCustomerGroupID() . '
-                          JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                                AND tpreisdetail.nAnzahlAb = 0
-                                AND tpreisdetail.fVKNetto > 0';
-        }
-
-        if ($this->config['exportformate_beschreibung'] === 'Y') {
-            $where .= " AND tartikel.cBeschreibung != ''";
-        }
-
-        $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
-        $conf      = Shop::getSettings([\CONF_GLOBAL]);
-        if (($conf['global']['global_erscheinende_kaeuflich'] ?? 'N') === 'Y') {
-            $condition = "AND (
-                tartikel.dErscheinungsdatum IS NULL 
-                OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
-                OR  (
-                        DATE(tartikel.dErscheinungsdatum) > CURDATE()
-                        AND (tartikel.cLagerBeachten = 'N' 
-                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = 'Y')
-                    )
-            )";
-        }
-
-        if ($countOnly === true) {
-            $select = 'COUNT(*) AS nAnzahl';
-        } else {
-            $queue  = $this->getQueue();
-            $select = 'tartikel.kArtikel';
-            $limit  = ' ORDER BY tartikel.kArtikel';
-            if ($queue !== null) {
-                $limit     .= ' LIMIT ' . $queue->taskLimit;
-                $condition .= ' AND tartikel.kArtikel > ' . $this->getQueue()->lastProductID;
-            }
-        }
-
-        return 'SELECT ' . $select . "
-            FROM tartikel
-            LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
-                AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
-            " . $join . '
-            LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = ' . $this->model->getCustomerGroupID() . '
-            WHERE tartikelattribut.kArtikelAttribut IS NULL' . $where . '
-                AND tartikelsichtbarkeit.kArtikel IS NULL ' . $condition . $limit;
-    }
-
-    /**
-     * @return int
+     * @inheritdoc
      */
     public function getExportProductCount(): int
     {
         $sql = $this->getExportSQL(true);
         $cid = 'xp_' . \md5($sql);
-        if (($count = Shop::Container()->getCache()->get($cid)) !== false) {
+        if (($count = $this->getCache()->get($cid)) !== false) {
             return $count ?? 0;
         }
         $count = (int)$this->db->getSingleObject($sql)->nAnzahl;
-        Shop::Container()->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
+        $this->getCache()->set($cid, $count, [\CACHING_GROUP_CORE], 120);
 
         return $count;
     }
 
     /**
-     * @param DateTime|string $lastCreated
-     * @return $this
+     * @inheritdoc
      */
     public function setZuletztErstellt($lastCreated): self
     {
@@ -274,8 +70,7 @@ class FormatExporter
     }
 
     /**
-     * @return int
-     * @throws Exception
+     * @inheritdoc
      */
     public function update(): int
     {
@@ -291,14 +86,7 @@ class FormatExporter
     }
 
     /**
-     * @param int        $exportID
-     * @param QueueEntry $queueEntry
-     * @param bool       $isAsync
-     * @param bool       $back
-     * @param bool       $isCron
-     * @param int|null   $max
-     * @return bool
-     * @throws InvalidArgumentException
+     * @inheritdoc
      */
     public function startExport(
         int $exportID,
@@ -315,7 +103,18 @@ class FormatExporter
         $pseudoSession = new Session();
         $pseudoSession->initSession($this->model, $this->db);
         $this->initSmarty();
-        if ($this->model->getPluginID() > 0 && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        \executeHook(\HOOK_EXPORT_START, [
+            'exporter' => $this,
+            'exportID' => $exportID,
+            'isAsync'  => $isAsync,
+            'isCron'   => $isCron,
+            'max'      => &$max
+        ]);
+        $fileWriterClass = $this->getFileWriterClass();
+        $this->writer    = $this->writer ?? new $fileWriterClass($this->model, $this->config, $this->smarty);
+        if ($this->model->getPluginID() > 0
+            && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+        ) {
             $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
             if ($queueEntry->jobQueueID > 0 && empty($queueEntry->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueEntry->jobQueueID);
@@ -323,20 +122,18 @@ class FormatExporter
             $this->quit();
             $this->logger->notice('Finished export');
 
-            return !$started;
+            return true;
         }
         $cacheHits    = 0;
         $cacheMisses  = 0;
         $output       = '';
         $errorMessage = '';
 
-        $this->fileWriter = new FileWriter($this->smarty, $this->model, $this->config);
-
         if ((int)$this->queue->tasksExecuted === 0) {
-            $this->fileWriter->deleteOldTempFile();
+            $this->writer->deleteOldTempFile();
         }
         try {
-            $this->fileWriter->start();
+            $this->writer->start();
         } catch (Exception $e) {
             $this->logger->warning($e->getMessage());
             if ($isAsync) {
@@ -351,15 +148,15 @@ class FormatExporter
             return false;
         }
 
-        $this->logger->notice('Starting exportformat "' . Text::convertUTF8($this->model->getName())
+        $this->logger->notice('Starting exportformat "' . $this->model->getName()
             . '" for language ' . $this->model->getLanguageID()
             . ' and customer group ' . $this->model->getCustomerGroupID()
-            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->model->getUseCache())
+            . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled')
             . ' - ' . $queueEntry->tasksExecuted . '/' . $max . ' products exported');
         if ((int)$this->queue->tasksExecuted === 0) {
-            $this->fileWriter->writeHeader();
+            $this->writer->writeHeader();
         }
         $fallback     = (\mb_strpos($this->model->getContent(), '->oKategorie_arr') !== false);
         $options      = Product::getExportOptions();
@@ -368,7 +165,7 @@ class FormatExporter
         $imageBaseURL = Shop::getImageBaseURL();
         $res          = $this->db->getPDOStatement($this->getExportSQL());
         while (($productData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $product = new Product();
+            $product = new Product($this->db);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
@@ -393,13 +190,18 @@ class FormatExporter
             } else {
                 ++$cacheMisses;
             }
-            $product = $product->augmentProduct($this->config);
+            $product = $product->augmentProduct($this->config, $this->model);
             $product->addCategoryData($fallback);
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
                 ? $imageBaseURL . $product->Bilder[0]->cPfadGross
                 : '';
+            \executeHook(\HOOK_EXPORT_PRE_RENDER, [
+                'product'  => $product,
+                'exporter' => $this,
+                'exportID' => $exportID
+            ]);
 
             $_out = $this->smarty->assign('Artikel', $product)->fetch('db:' . $this->model->getId());
             if (!empty($_out)) {
@@ -413,7 +215,7 @@ class FormatExporter
             }
         }
         if (\mb_strlen($output) > 0) {
-            $this->fileWriter->writeContent($output);
+            $this->writer->writeContent($output);
         }
 
         if ($isCron !== false) {
@@ -462,11 +264,11 @@ class FormatExporter
         );
         $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
 
-        $this->fileWriter->writeFooter();
-        if ($this->fileWriter->finish()) {
+        $this->writer->writeFooter();
+        if ($this->writer->finish()) {
             // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
             try {
-                $this->fileWriter->splitFile();
+                $this->writer->split();
             } catch (Exception $e) {
                 $cb->setError($e->getMessage());
             }
@@ -487,13 +289,7 @@ class FormatExporter
                     ->setIsFirst(false)
                     ->output();
             } else {
-                \header(
-                    'Location: ' . Shop::getAdminURL() . '/exportformate.php?action=exported&token='
-                    . $_SESSION['jtl_token']
-                    . '&kExportformat=' . $this->model->getId()
-                    . '&max=' . $cb->getProductCount()
-                    . '&hasError=' . (int)($cb->getError() !== '')
-                );
+                $this->syncReturn($cb);
             }
         }
     }
@@ -504,7 +300,7 @@ class FormatExporter
      */
     private function finishRun(AsyncCallback $cb, bool $isAsync): void
     {
-        $this->fileWriter->close();
+        $this->writer->close();
         $this->db->queryPrepared(
             'UPDATE texportqueue SET
                 nLimit_n       = nLimit_n + :nLimitM,
@@ -519,12 +315,7 @@ class FormatExporter
         if ($isAsync) {
             $cb->output();
         } else {
-            \header(
-                'Location: ' . Shop::getAdminURL() . '/do_export.php'
-                . '?e=' . (int)$this->queue->jobQueueID
-                . '&back=admin&token=' . $_SESSION['jtl_token']
-                . '&max=' . $cb->getProductCount()
-            );
+            $this->syncContinue($cb);
         }
     }
 
@@ -545,10 +336,10 @@ class FormatExporter
                 $exportID,
                 (object)['dZuletztErstellt' => 'NOW()']
             );
-            $this->fileWriter->deleteOldExports();
-            $this->fileWriter->writeFooter();
-            $this->fileWriter->finish();
-            $this->fileWriter->splitFile();
+            $this->writer->deleteOldExports();
+            $this->writer->writeFooter();
+            $this->writer->finish();
+            $this->writer->split();
         }
         $this->logger->notice('Finished after ' . \round(\microtime(true) - $this->startedAt, 4)
             . 's. Product cache hits: ' . $cacheHits
@@ -567,7 +358,7 @@ class FormatExporter
         $this->logger->notice('Starting plugin exportformat "' . $this->model->getName()
             . '" for language ' . $this->model->getLanguageID()
             . ' and customer group ' . $this->model->getCustomerGroupID()
-            . ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->model->getUseCache())
+            . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled'));
         $loader = PluginHelper::getLoaderByPluginID($this->model->getPluginID(), $this->db);
@@ -575,12 +366,12 @@ class FormatExporter
             $oPlugin = $loader->init($this->model->getPluginID());
         } catch (InvalidArgumentException $e) {
             $this->logger->error($e->getMessage());
-            $this->quit(true);
+            $this->quit($e->getMessage());
 
             return false;
         }
         if ($oPlugin->getState() !== State::ACTIVATED) {
-            $this->quit(true);
+            $this->quit('Plugin disabled');
             $this->logger->notice('Plugin disabled');
 
             return false;
@@ -628,20 +419,17 @@ class FormatExporter
     }
 
     /**
-     * @param bool $hasError
+     * @param string|null $error
      */
-    private function quit(bool $hasError = false): void
+    private function quit(string $error = null): void
     {
         if (Request::getVar('back') !== 'admin') {
             return;
         }
-        $location = 'Location: ' . Shop::getAdminURL()
-            . '/exportformate.php?action=exported&token=' . $_SESSION['jtl_token']
-            . '&kExportformat=' . (int)$this->queue->foreignKeyID;
-        if ($hasError) {
-            $location .= '&hasError=1';
-        }
-        \header($location);
+        $cb = new AsyncCallback();
+        $cb->setProductCount(0);
+        $cb->setError($error);
+        $this->syncReturn($cb);
         exit;
     }
 }

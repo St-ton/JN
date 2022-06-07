@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Backend\DirManager;
 use JTL\Backend\Settings\Manager;
+use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -17,7 +17,7 @@ $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice         = '';
 $error          = '';
 $step           = 'uebersicht';
-$tab            = 'uebersicht';
+$tab            = Request::postVar('tab', 'uebersicht');
 $cache          = null;
 $opcacheStats   = null;
 $options        = null;
@@ -29,6 +29,8 @@ $alertHelper    = Shop::Container()->getAlertService();
 $adminAccount   = Shop::Container()->getAdminAccount();
 $settingManager = new Manager($db, $smarty, $adminAccount, $getText, $alertHelper);
 $postData       = Text::filterXSS($_POST);
+$sectionFactory = new SectionFactory();
+$cacheSection   = $sectionFactory->getSection(CONF_CACHING, $settingManager);
 $getText->loadConfigLocales();
 if (0 < mb_strlen(Request::verifyGPDataString('tab'))) {
     $smarty->assign('tab', Request::verifyGPDataString('tab'));
@@ -38,7 +40,7 @@ try {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 } catch (Exception $exc) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('exception') . ': ' . $exc->getMessage(), 'errorException');
+    $alertHelper->addError(__('exception') . ': ' . $exc->getMessage(), 'errorException');
 }
 // get disabled cache types
 $deactivated       = $db->select(
@@ -64,8 +66,7 @@ switch ($action) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
                         $flush    = $cache->flushTags([$cacheType], $hookInfo);
                         if ($flush === false) {
-                            $alertHelper->addAlert(
-                                Alert::TYPE_ERROR,
+                            $alertHelper->addError(
                                 sprintf(__('errorCacheTypeDelete'), $cacheType),
                                 'errorCacheTypeDelete'
                             );
@@ -74,14 +75,10 @@ switch ($action) {
                         }
                     }
                     if ($okCount > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            $okCount . __('successCacheEmptied'),
-                            'successCacheEmptied'
-                        );
+                        $alertHelper->addSuccess($okCount . __('successCacheEmptied'), 'successCacheEmptied');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'activate':
@@ -101,14 +98,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            __('successCacheTypeActivate'),
-                            'successCacheTypeActivate'
-                        );
+                        $alertHelper->addSuccess(__('successCacheTypeActivate'), 'successCacheTypeActivate');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             case 'deactivate':
@@ -127,14 +120,10 @@ switch ($action) {
                         $upd
                     );
                     if ($res > 0) {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            __('successCacheTypeDeactivate'),
-                            'successCacheTypeDeactivate'
-                        );
+                        $alertHelper->addSuccess(__('successCacheTypeDeactivate'), 'successCacheTypeDeactivate');
                     }
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoCacheType'), 'errorNoCacheType');
+                    $alertHelper->addError(__('errorNoCacheType'), 'errorNoCacheType');
                 }
                 break;
             default:
@@ -144,9 +133,9 @@ switch ($action) {
     case 'flush_object_cache':
         $tab = 'massaction';
         if ($cache !== null && $cache->flushAll() !== false) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCacheDelete'), 'successCacheDelete');
+            $alertHelper->addSuccess(__('successCacheDelete'), 'successCacheDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCacheDelete'), 'errorCacheDelete');
+            $alertHelper->addError(__('errorCacheDelete'), 'errorCacheDelete');
         }
         break;
     case 'settings':
@@ -154,132 +143,82 @@ switch ($action) {
             $settingManager->resetSetting(Request::postVar('resetSetting'));
             break;
         }
-        $settings      = $db->getObjects(
-            "SELECT ec.*, e.cWert AS currentValue
-                FROM teinstellungenconf AS ec
-                LEFT JOIN teinstellungen AS e 
-                    ON e.cName = ec.cWertName
-                WHERE ec.kEinstellungenSektion = :sid
-                    AND ec.cConf = 'Y'
-                ORDER BY ec.nSort",
-            ['sid' => CONF_CACHING]
-        );
-        $i             = 0;
-        $settingsCount = count($settings);
-
-        while ($i < $settingsCount) {
-            if (isset($postData[$settings[$i]->cWertName])) {
-                $value                        = new stdClass();
-                $value->cWert                 = $postData[$settings[$i]->cWertName];
-                $value->cName                 = $settings[$i]->cWertName;
-                $value->kEinstellungenSektion = CONF_CACHING;
-                switch ($settings[$i]->cInputTyp) {
-                    case 'pass':
-                        $value->cWert = $_POST[$settings[$i]->cWertName];
-                        break;
-                    case 'kommazahl':
-                        $value->cWert = (float)$value->cWert;
-                        break;
-                    case 'zahl':
-                    case 'number':
-                        $value->cWert = (int)$value->cWert;
-                        break;
-                    case 'text':
-                        $value->cWert = mb_strlen($value->cWert) > 0 ? mb_substr($value->cWert, 0, 255) : $value->cWert;
-                        break;
-                    case 'listbox':
-                        bearbeiteListBox($value->cWert, $settings[$i]->cWertName, CONF_CACHING);
-                        break;
-                    default:
-                        break;
-                }
-                if ($value->cName === 'caching_method' && $value->cWert === 'auto') {
-                    $availableMethods = [];
-                    $allMethods       = $cache->checkAvailability();
-                    foreach ($allMethods as $name => $state) {
-                        if (isset($state['available'], $state['functional'])
-                            && $state['available'] === true
-                            && $state['functional'] === true
-                        ) {
-                            $availableMethods[] = $name;
-                        }
-                    }
-                    if (count($availableMethods) > 0) {
-                        $value->cWert = 'null';
-                        if (in_array('redis', $availableMethods, true)) {
-                            $value->cWert = 'redis';
-                        } elseif (in_array('memcache', $availableMethods, true)) {
-                            $value->cWert = 'memcache';
-                        } elseif (in_array('memcached', $availableMethods, true)) {
-                            $value->cWert = 'memcached';
-                        } elseif (in_array('apc', $availableMethods, true)) {
-                            $value->cWert = 'apc';
-                        } elseif (in_array('advancedfile', $availableMethods, true)) {
-                            $value->cWert = 'advancedfile';
-                        } elseif (in_array('file', $availableMethods, true)) {
-                            $value->cWert = 'file';
-                        }
-                    } else {
-                        $value->cWert = 'null';
-                    }
-                    if ($value->cWert !== 'null') {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_SUCCESS,
-                            '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave'),
-                            'successCacheDelete'
-                        );
-                    } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_ERROR,
-                            __('errorCacheMethodSelect'),
-                            'errorCacheMethodSelect'
-                        );
+        foreach ($cacheSection->update($_POST) as $item) {
+            if ($item['id'] !== 'caching_method') {
+                continue;
+            }
+            if ($item['value'] === 'auto') {
+                $value            = new stdClass();
+                $availableMethods = [];
+                $allMethods       = $cache->checkAvailability();
+                foreach ($allMethods as $name => $state) {
+                    if (isset($state['available'], $state['functional'])
+                        && $state['available'] === true
+                        && $state['functional'] === true
+                    ) {
+                        $availableMethods[] = $name;
                     }
                 }
-                $db->delete(
+                if (count($availableMethods) > 0) {
+                    $value->cWert = 'null';
+                    if (in_array('redis', $availableMethods, true)) {
+                        $value->cWert = 'redis';
+                    } elseif (in_array('memcache', $availableMethods, true)) {
+                        $value->cWert = 'memcache';
+                    } elseif (in_array('memcached', $availableMethods, true)) {
+                        $value->cWert = 'memcached';
+                    } elseif (in_array('apc', $availableMethods, true)) {
+                        $value->cWert = 'apc';
+                    } elseif (in_array('advancedfile', $availableMethods, true)) {
+                        $value->cWert = 'advancedfile';
+                    } elseif (in_array('file', $availableMethods, true)) {
+                        $value->cWert = 'file';
+                    }
+                } else {
+                    $value->cWert = 'null';
+                }
+                $db->update(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],
-                    [CONF_CACHING, $settings[$i]->cWertName]
+                    [CONF_CACHING, 'caching_method'],
+                    $value
                 );
-                $db->insert('teinstellungen', $value);
-
-                $settingManager->addLog(
-                    $settings[$i]->cWertName,
-                    $settings[$i]->currentValue,
-                    $postData[$settings[$i]->cWertName]
-                );
+                if ($value->cWert !== 'null') {
+                    $alertHelper->addSuccess(
+                        '<strong>' . $value->cWert . '</strong>' . __('successCacheMethodSave'),
+                        'successCacheDelete'
+                    );
+                } else {
+                    $alertHelper->addError(__('errorCacheMethodSelect'), 'errorCacheMethodSelect');
+                }
             }
-            ++$i;
         }
         $cache->flushAll();
         $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
         $cache->flushTags([CACHING_GROUP_OPTION]);
         $tab = 'settings';
         break;
     case 'benchmark':
-        //do benchmarks
+        // do benchmarks
         $tab      = 'benchmark';
-        $testData = 'simple short string';
         $methods  = 'all';
         $repeat   = Request::postInt('repeat', 1);
         $runCount = Request::postInt($postData['runcount'], 1000);
-        if (isset($postData['testdata'])) {
-            switch ($postData['testdata']) {
-                case 'array':
-                    $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
-                    break;
-                case 'object':
-                    $testData        = new stdClass();
-                    $testData->test1 = 'string number one';
-                    $testData->test2 = 'string number two';
-                    $testData->test3 = 333;
-                    break;
-                case 'string':
-                default:
-                    $testData = 'simple short string';
-                    break;
-            }
+        switch ($postData['testdata'] ?? 'string') {
+            case 'array':
+                $testData = ['test1' => 'string number one', 'test2' => 'string number two', 'test3' => 333];
+                break;
+            case 'object':
+                $testData        = new stdClass();
+                $testData->test1 = 'string number one';
+                $testData->test2 = 'string number two';
+                $testData->test3 = 333;
+                break;
+            case 'string':
+            default:
+                $testData = 'simple short string';
+                break;
         }
         if (is_array(Request::postVar('methods'))) {
             $methods = $postData['methods'];
@@ -323,10 +262,9 @@ switch ($action) {
         $dirMan->getData(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR, $callback, $cbParameters);
         $ms = new MinifyService();
         $ms->flushCache();
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $error, 'errorCache');
-        $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'noticeCache');
-        $alertHelper->addAlert(
-            Alert::TYPE_SUCCESS,
+        $alertHelper->addError($error, 'errorCache');
+        $alertHelper->addNotice($notice, 'noticeCache');
+        $alertHelper->addSuccess(
             sprintf(
                 __('successTemplateCacheDelete'),
                 number_format($cbParameters['count'])
@@ -343,69 +281,19 @@ if ($cache !== null) {
         ->assign('all_methods', $cache->getAllMethods())
         ->assign('stats', $cache->getStats());
 }
-$settings = $db->getObjects(
-    'SELECT te.*, ted.cWert AS defaultValue
-        FROM teinstellungenconf AS te
-        LEFT JOIN teinstellungen_default AS ted
-          ON ted.cName= te.cWertName
-        WHERE te.nStandardAnzeigen = 1
-            AND te.kEinstellungenSektion = :sid
-        ORDER BY te.nSort',
-    ['sid' => CONF_CACHING]
-);
 
-$getText->localizeConfigs($settings);
-foreach ($settings as $i => $setting) {
-    if ($setting->cName === 'caching_types_disabled') {
-        unset($settings[$i]);
-        continue;
+$cacheSection = $sectionFactory->getSection(CONF_CACHING, $settingManager);
+$cacheSection->load();
+$advancedSettings = [];
+$settings         = [];
+foreach ($cacheSection->getSubsections() as $subsection) {
+    foreach ($subsection->getItems() as $item) {
+        if ($item->getShowDefault() === 0 || $item->getShowDefault() === 2) {
+            $advancedSettings[] = $item;
+        } elseif ($item->getShowDefault() === 1) {
+            $settings[] = $item;
+        }
     }
-    if ($setting->cInputTyp === 'selectbox') {
-        $setting->ConfWerte = $db->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$setting->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-        $getText->localizeConfigValues($setting, $setting->ConfWerte);
-    }
-    $setValue               = $db->select(
-        'teinstellungen',
-        ['kEinstellungenSektion', 'cName'],
-        [CONF_CACHING, $setting->cWertName]
-    );
-    $setting->gesetzterWert = $setValue->cWert ?? null;
-}
-$advancedSettings = $db->getObjects(
-    'SELECT te.*, ted.cWert AS defaultValue
-        FROM teinstellungenconf AS te
-        LEFT JOIN teinstellungen_default AS ted
-          ON ted.cName = te.cWertName
-        WHERE (te.nStandardAnzeigen = 0 OR te.nStandardAnzeigen = 2)
-            AND te.kEinstellungenSektion = :sid
-        ORDER BY te.nSort',
-    ['sid' => CONF_CACHING]
-);
-$getText->localizeConfigs($advancedSettings);
-$settingsCount = count($advancedSettings);
-for ($i = 0; $i < $settingsCount; ++$i) {
-    if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = $db->selectAll(
-            'teinstellungenconfwerte',
-            'kEinstellungenConf',
-            (int)$advancedSettings[$i]->kEinstellungenConf,
-            '*',
-            'nSort'
-        );
-        $getText->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
-    }
-    $setValue                            = $db->select(
-        'teinstellungen',
-        ['kEinstellungenSektion', 'cName'],
-        [CONF_CACHING, $advancedSettings[$i]->cWertName]
-    );
-    $advancedSettings[$i]->gesetzterWert = $setValue->cWert ?? null;
 }
 if (function_exists('opcache_get_status')) {
     $data                       = opcache_get_status();
@@ -471,12 +359,11 @@ foreach ($cachingGroups as &$cachingGroup) {
 }
 unset($cachingGroup);
 if (!empty($cache->getError())) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cache->getError(), 'errorCache');
+    $alertHelper->addError($cache->getError(), 'errorCache');
 }
 $smarty->assign('settings', $settings)
     ->assign('caching_groups', $cachingGroups)
     ->assign('cache_enabled', isset($options['activated']) && $options['activated'] === true)
-    ->assign('show_page_cache', $settings)
     ->assign('options', $options)
     ->assign('opcache_stats', $opcacheStats)
     ->assign('tplcacheStats', $tplcacheStats)

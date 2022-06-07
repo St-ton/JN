@@ -4,7 +4,6 @@ namespace JTL\IO;
 
 use Exception;
 use JsonSerializable;
-use JTL\Helpers\Text;
 
 /**
  * Class IOResponse

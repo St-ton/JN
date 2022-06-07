@@ -80,7 +80,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 if (!defined('CLI_BATCHRUN')) {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-    $config = Shop::getSettings([CONF_GLOBAL])['global'];
+    $config = Shop::getSettingSection(CONF_GLOBAL);
     $lang   = LanguageHelper::getInstance($db, $cache);
 }
 if (PHP_SAPI !== 'cli'
@@ -107,8 +107,8 @@ if (PHP_SAPI !== 'cli'
 if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
     $debugbar = Shop::Container()->getDebugBar();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-    $pluginHooks    = Helper::getHookList();
     $globalMetaData = Metadata::getGlobalMetaData();
+    Shop::bootstrap();
     executeHook(HOOK_GLOBALINCLUDE_INC);
     $session             = (defined('JTLCRON') && JTLCRON === true)
         ? Frontend::getInstance(true, true, 'JTLCRON')
@@ -125,7 +125,7 @@ if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
         }
         $bAdminWartungsmodus = true;
     }
-    Shop::bootstrap();
+    $session->deferredUpdate();
     require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
     $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

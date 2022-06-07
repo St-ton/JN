@@ -35,6 +35,6 @@ export default VueInstance => {
         const base = process.env.NODE_ENV === 'production'
             ? ''
             : 'http://felix.vm0.halle/install/';
-        return `${base}install.php?task=${task}`;
+        return `${base}install.php?task=${task}&t=${new Date().getTime()}`;
     };
 };

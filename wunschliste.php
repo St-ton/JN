@@ -1,13 +1,12 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
+use JTL\Campaign;
 use JTL\Cart\CartHelper;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -68,11 +67,7 @@ if ($action !== null && Form::validateToken()) {
                             $attributeValues
                         );
                     }
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('basketAdded', 'messages'),
-                        'basketAdded'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('basketAdded', 'messages'), 'basketAdded');
                 }
                 break;
 
@@ -82,11 +77,7 @@ if ($action !== null && Form::validateToken()) {
                     if (Request::postInt('send') === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
                             $mails = explode(' ', Text::filterXSS($_POST['email']));
-                            $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
-                                Wishlist::send($mails, $kWunschliste),
-                                'sendWL'
-                            );
+                            $alertHelper->addNotice(Wishlist::send($mails, $kWunschliste), 'sendWL');
                             $wishlist = Wishlist::buildPrice(Wishlist::instanceByID($kWunschliste));
                         }
                     } else {
@@ -114,22 +105,14 @@ if ($action !== null && Form::validateToken()) {
                             );
                         }
                     }
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('basketAllAdded', 'messages'),
-                        'basketAllAdded'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('basketAllAdded', 'messages'), 'basketAllAdded');
                 }
                 break;
 
             case 'remove':
                 if ($kWunschlistePos > 0 && $wl->isSelfControlled()) {
                     $wl->entfernePos($kWunschlistePos);
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('wishlistUpdate', 'messages'),
-                        'wishlistUpdate'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('wishlistUpdate', 'messages'), 'wishlistUpdate');
                 }
                 break;
 
@@ -139,21 +122,13 @@ if ($action !== null && Form::validateToken()) {
                     if (Frontend::getWishList()->getID() === $wl->getID()) {
                         Frontend::getWishList()->setItems([]);
                     }
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('wishlistDelAll', 'messages'),
-                        'wishlistDelAll'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('wishlistDelAll', 'messages'), 'wishlistDelAll');
                 }
                 break;
 
             case 'update':
                 if ($wl->isSelfControlled()) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Wishlist::update($kWunschliste),
-                        'updateWL'
-                    );
+                    $alertHelper->addNotice(Wishlist::update($kWunschliste), 'updateWL');
                     $wishlist                = Wishlist::buildPrice(Wishlist::instanceByID($kWunschliste));
                     $_SESSION['Wunschliste'] = $wishlist;
                 }
@@ -163,11 +138,7 @@ if ($action !== null && Form::validateToken()) {
                 $list = Wishlist::instanceByID($wishlistTargetID);
                 if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
                     $list->setVisibility(true);
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('wishlistSetPublic', 'messages'),
-                        'wishlistSetPublic'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('wishlistSetPublic', 'messages'), 'wishlistSetPublic');
                 }
                 break;
 
@@ -175,40 +146,24 @@ if ($action !== null && Form::validateToken()) {
                 $list = Wishlist::instanceByID($wishlistTargetID);
                 if ($wishlistTargetID !== 0 && $list->isSelfControlled()) {
                     $list->setVisibility(false);
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('wishlistSetPrivate', 'messages'),
-                        'wishlistSetPrivate'
-                    );
+                    $alertHelper->addNotice(Shop::Lang()->get('wishlistSetPrivate', 'messages'), 'wishlistSetPrivate');
                 }
                 break;
 
             case 'createNew':
                 $CWunschlisteName = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
-                $alertHelper->addAlert(
-                    Alert::TYPE_NOTE,
-                    Wishlist::save($CWunschlisteName),
-                    'saveWL'
-                );
+                $alertHelper->addNotice(Wishlist::save($CWunschlisteName), 'saveWL');
                 break;
 
             case 'delete':
                 if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Wishlist::delete($wishlistTargetID),
-                        'deleteWL'
-                    );
+                    $alertHelper->addNotice(Wishlist::delete($wishlistTargetID), 'deleteWL');
                     if ($wishlistTargetID === $kWunschliste) {
                         // the currently active one was deleted, search for a new one
                         $newWishlist = Wishlist::getWishlists()->first();
                         if ($newWishlist !== null) {
                             $kWunschliste = $newWishlist->getID();
-                            $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
-                                Wishlist::setDefault($kWunschliste),
-                                'setDefaultWL'
-                            );
+                            $alertHelper->addNotice(Wishlist::setDefault($kWunschliste), 'setDefaultWL');
                             $wishlist = $newWishlist->ladeWunschliste($kWunschliste);
                         } elseif (Frontend::getWishList()->getID() > 0) {
                             // the only existing wishlist was deleted, create a new one
@@ -224,11 +179,7 @@ if ($action !== null && Form::validateToken()) {
 
             case 'setAsDefault':
                 if ($wishlistTargetID !== 0 && Wishlist::instanceByID($wishlistTargetID)->isSelfControlled()) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Wishlist::setDefault($wishlistTargetID),
-                        'setDefaultWL'
-                    );
+                    $alertHelper->addNotice(Wishlist::setDefault($wishlistTargetID), 'setDefaultWL');
                     $kWunschliste = $wishlistTargetID;
                 }
                 break;
@@ -244,26 +195,20 @@ if ($action !== null && Form::validateToken()) {
 }
 
 if (Request::verifyGPCDataInt('wlidmsg') > 0) {
-    $alertHelper->addAlert(
-        Alert::TYPE_NOTE,
-        Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
-        'wlidmsg'
-    );
+    $alertHelper->addNotice(Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')), 'wlidmsg');
 }
 if (Request::verifyGPCDataInt('error') === 1) {
     if (mb_strlen($cURLID) > 0) {
         $wl = Wishlist::instanceByURLID($cURLID);
         if ($wl->isPublic()) {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
+            $alertHelper->addError(
                 sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
                 'nowlidWishlist',
                 ['saveInSession' => true]
             );
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
+        $alertHelper->addError(
             sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
             'nowlidWishlist',
             ['saveInSession' => true]
@@ -286,8 +231,7 @@ if ($wishlist === null) {
 if ($customerID > 0) {
     $wishlists = Wishlist::getWishlists();
     if (($invisibleItemCount = Wishlist::getInvisibleItemCount($wishlists, $wishlist, $kWunschliste)) > 0) {
-        $alertHelper->addAlert(
-            Alert::TYPE_WARNING,
+        $alertHelper->addWarning(
             sprintf(Shop::Lang()->get('warningInvisibleItems', 'wishlist'), $invisibleItemCount),
             'warningInvisibleItems'
         );
@@ -332,7 +276,7 @@ if ($wishlist->getID() > 0) {
         $event->dErstellt    = 'NOW()';
 
         Shop::Container()->getDB()->insert('tkampagnevorgang', $event);
-        $_SESSION['Kampagnenbesucher'] = $campaign;
+        $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
     }
 }
 

@@ -235,7 +235,7 @@ class IOMethods
         Kupon::reCheck();
         // Persistenter Warenkorb
         if (!isset($_POST['login'])) {
-            PersistentCart::addToCheck($productID, $amount, $properties);
+            PersistentCart::getInstance(Frontend::getCustomer()->getID())->check($productID, $amount, $properties);
         }
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();
@@ -271,7 +271,12 @@ class IOMethods
 
         $response->nType           = 2;
         $response->cWarenkorbText  = \lang_warenkorb_warenkorbEnthaeltXArtikel($cart);
-        $response->cWarenkorbLabel = \lang_warenkorb_warenkorbLabel($cart);
+        $response->cWarenkorbLabel = Shop::Lang()->get('cartSumLabel', 'checkout', Preise::getLocalizedPriceString(
+            $cart->gibGesamtsummeWarenExt(
+                [\C_WARENKORBPOS_TYP_ARTIKEL],
+                !Frontend::getCustomerGroup()->isMerchant()
+            )
+        ));
         $response->cPopup          = $smarty->fetch('productdetails/pushed.tpl');
         $response->cWarenkorbMini  = $smarty->fetch('basket/cart_dropdown.tpl');
         $response->oArtikel        = $product;
@@ -656,6 +661,8 @@ class IOMethods
         $amount             = $aValues['anzahl'] ?? 1;
         $invalidGroups      = [];
         $configItems        = [];
+        $customerGroupID    = Frontend::getCustomerGroup()->getID();
+        $languageID         = Shop::getLanguageID();
         $config             = Product::buildConfig(
             $productID,
             $amount,
@@ -665,12 +672,14 @@ class IOMethods
             $itemQuantities,
             true
         );
-        $net                = Frontend::getCustomerGroup()->getIsMerchant();
-
+        if ($config === null) {
+            return $response;
+        }
+        $net                   = Frontend::getCustomerGroup()->getIsMerchant();
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
-        $product->fuelleArtikel($productID, $options);
-        $fVKNetto                      = $product->gibPreis($amount, [], Frontend::getCustomerGroup()->getID());
+        $product->fuelleArtikel($productID, $options, $customerGroupID, $languageID);
+        $fVKNetto                      = $product->gibPreis($amount, [], $customerGroupID);
         $fVK                           = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
             $fVKNetto
@@ -690,7 +699,7 @@ class IOMethods
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Item($configItemID);
+                $configItem          = new Item($configItemID, $languageID, $customerGroupID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
@@ -900,6 +909,7 @@ class IOMethods
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
+        $currency     = Frontend::getCurrency();
         $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
         $fVK          = [
@@ -907,8 +917,8 @@ class IOMethods
             $fVKNetto
         ];
         $cVKLocalized = [
-            0 => Preise::getLocalizedPriceString($fVK[0]),
-            1 => Preise::getLocalizedPriceString($fVK[1])
+            0 => Preise::getLocalizedPriceString($fVK[0], $currency),
+            1 => Preise::getLocalizedPriceString($fVK[1], $currency)
         ];
         $cPriceLabel  = '';
         if (isset($product->nVariationAnzahl) && $product->nVariationAnzahl > 0) {
@@ -949,8 +959,8 @@ class IOMethods
                     $_SESSION['Steuersatz'][$product->kSteuerklasse]
                 );
                 $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
-                $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl]);
-                $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl]);
+                $cStaffelVK[0][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[0][$nAnzahl], $currency);
+                $cStaffelVK[1][$nAnzahl] = Preise::getLocalizedPriceString($fStaffelVK[1][$nAnzahl], $currency);
             }
 
             $ioResponse->callEvoProductFunction(
@@ -1009,6 +1019,7 @@ class IOMethods
         $idx             = isset($values['eigenschaftwert']) ? (array)$values['eigenschaftwert'] : [];
         $freetextValues  = [];
         $set             = \array_filter($idx);
+        $layout          = isset($values['layout']) ? Text::filterXSS($values['layout']) : '';
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
         if ($parentProductID <= 0) {
@@ -1075,15 +1086,25 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                $ioResponse->callEvoProductFunction(
-                    'setArticleContent',
-                    $parentProductID,
-                    $tmpProduct->kArtikel,
-                    URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
-                    $gesetzteEigeschaftWerte,
-                    $wrapper
-                );
-
+                if ($layout === 'gallery') {
+                    $ioResponse->callEvoProductFunction(
+                        'redirectToArticle',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                } else {
+                    $ioResponse->callEvoProductFunction(
+                        'setArticleContent',
+                        $parentProductID,
+                        $tmpProduct->kArtikel,
+                        URL::buildURL($tmpProduct, \URLART_ARTIKEL, true),
+                        $gesetzteEigeschaftWerte,
+                        $wrapper
+                    );
+                }
                 \executeHook(\HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
                     'objResponse' => &$ioResponse,
                     'oArtikel'    => &$product,
@@ -1106,6 +1127,7 @@ class IOMethods
             if (\in_array($variation->cTyp, ['FREITEXT', 'PFLICHTFREITEXT'])) {
                 $ioResponse->callEvoProductFunction('variationEnable', $variation->kEigenschaft, 0, $wrapper);
             } else {
+                $ioResponse->callEvoProductFunction('showGalleryVariation', $variation->kEigenschaft, $wrapper);
                 foreach ($variation->Werte as $value) {
                     $id               = $value->kEigenschaft;
                     $stockInfo->stock = true;
@@ -1440,7 +1462,8 @@ class IOMethods
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
-            (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
+            (new Artikel($this->db))
+                ->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
             static function ($e) use ($formData) {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }

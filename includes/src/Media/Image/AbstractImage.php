@@ -33,7 +33,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,';
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,';
 
     /**
      * @var array
@@ -371,17 +371,26 @@ abstract class AbstractImage implements IMedia
         );
         try {
             $res    = true;
+            $logger = Shop::Container()->getLogService();
             $finder = new Finder();
             $finder->ignoreUnreadableDirs()->in($directories);
             foreach ($finder->files() as $file) {
                 /** @var SplFileInfo $file */
-                $loop = \unlink($file->getRealPath());
+                $real = $file->getRealPath();
+                $loop = $real !== false && \unlink($real);
                 $res  = $res && $loop;
+                if ($real === false) {
+                    $logger->warning('Cannot delete file ' . $file->getPathname() . ' - invalid realpath?');
+                }
             }
             foreach (\array_reverse(\iterator_to_array($finder->directories(), true)) as $directory) {
                 /** @var SplFileInfo $directory */
-                $loop = \rmdir($directory->getRealPath());
+                $real = $directory->getRealPath();
+                $loop = $real !== false && \rmdir($real);
                 $res  = $res && $loop;
+                if ($real === false) {
+                    $logger->warning('Cannot delete directory ' . $directory->getPathname() . ' - invalid realpath?');
+                }
             }
             foreach ($directories as $directory) {
                 /** @var string $directory */

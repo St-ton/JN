@@ -89,7 +89,7 @@ class Group implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         if ($this->oSprache === null) {
             $this->oSprache = new GroupLocalization($this->kKonfiggruppe);
@@ -161,7 +161,7 @@ class Group implements JsonSerializable
      */
     public function setBildPfad($cBildPfad): self
     {
-        $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
+        $this->cBildPfad = $cBildPfad;
 
         return $this;
     }

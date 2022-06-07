@@ -9,6 +9,7 @@
  * @param options.onApply callback function that gets called on apply selection click with the current array of selected
  *      keys (function (selectedKeys, items))
  * @param options.selectedKeysInit array of the items keys that are initially selected
+ * @param options.maxItems maxItems of products, that can be selected
  * @constructor
  */
 function SearchPicker(options)
@@ -30,9 +31,11 @@ function SearchPicker(options)
     var getRenderedItem    = renderItemCb;
     var closeAction        = '';
     var pendingRequest     = null;
+    var maxItems            = options.maxItems || -1;
     var $searchModal       = $('#' + searchPickerName + '-modal');
     var $searchResultList  = $('#' + searchPickerName + '-result-list');
     var $listTitle         = $('#' + searchPickerName + '-list-title');
+    var $listFooter         = $('#' + searchPickerName + '-list-footer');
     var $searchInput       = $('#' + searchPickerName + '-search-input');
     var $applyButton       = $('#' + searchPickerName + '-apply-btn');
     var $cancelButton      = $('#' + searchPickerName + '-cancel-btn');
@@ -176,10 +179,19 @@ function SearchPicker(options)
         }
     };
 
+    self.updateListFooter = function ()
+    {
+        if(maxItems > -1)
+            $listFooter.html('Ausgewählt ' + selectedKeys.length + ' von maximal ' + maxItems + ' erlaubten.'); //TODO
+    };
+
     self.select = function (key, selected)
     {
         var index    = selectedKeys.indexOf(key);
         var cleanKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+
+        if(selectedKeys.length >= maxItems && maxItems > -1 && selected)
+            return;
 
         if (selected) {
             $('#' + searchPickerName + '-' + cleanKey).addClass('active');
@@ -195,7 +207,13 @@ function SearchPicker(options)
             }
         }
 
+        if(selectedKeys.length >= maxItems && maxItems > -1)
+            $('.list-group-item').not('.active').addClass('disabled');
+        else
+            $('.list-group-item').removeClass('disabled');
+
         self.updateListTitle();
+        self.updateListFooter();
     };
 
     self.isSelected = function (key)

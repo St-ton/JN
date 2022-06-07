@@ -47,7 +47,7 @@
                                     <li class="snippets-filter-mobile-item">
                                         {block name='snippets-filter-mobile-filters-button'}
                                             {link class="collapsed"
-                                                data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|@seofy}"]
+                                                data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$subFilter->getFrontendName()|seofy}"]
                                                 rel="nofollow"}
                                                 <span class="characteristic-collapse-btn-inner text-truncate">
                                                     {$img = $subFilter->getImage(\JTL\Media\Image::SIZE_XS)}
@@ -69,7 +69,7 @@
                                             {/link}
                                         {/block}
                                         {block name='snippets-filter-mobile-filters-collapse'}
-                                            {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}"
+                                            {collapse id="filter-collapse-{$subFilter->getFrontendName()|seofy}"
                                                 class="snippets-filter-mobile-item-collapse"
                                                 visible=$subFilter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                                 {if ($subFilter->getData('cTyp') === 'SELECTBOX') && $subFilter->getOptions()|@count > 0}
@@ -89,11 +89,11 @@
                                 {if $filter->getClassName() === "JTL\Filter\Items\PriceRange"}
                                     {block name='snippets-filter-mobile-filters-price-range'}
                                         {link class="collapsed"
-                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|seofy}"]
                                             rel="nofollow"}
                                             {$filter->getFrontendName()}
                                         {/link}
-                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|seofy}"
                                             class="snippets-filter-mobile-item-collapse"
                                             visible=true}
                                             {block name='snippets-filter-mobile-include-price-slider'}
@@ -105,11 +105,11 @@
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Search"}
                                     {block name='snippets-filter-mobile-filters-search'}
                                         {link class="collapsed"
-                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|seofy}"]
                                             rel="nofollow"}
                                             {$filter->getFrontendName()}
                                         {/link}
-                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|seofy}"
                                             class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-search'}
@@ -120,11 +120,11 @@
                                 {elseif $filter->getClassName() === "JTL\Filter\Items\Manufacturer"}
                                     {block name='snippets-filter-mobile-filters-manufacturer'}
                                         {link class="collapsed"
-                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
+                                            data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|seofy}"]
                                             rel="nofollow"}
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
-                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|seofy}"
                                             class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-manufacturer'}
@@ -134,10 +134,10 @@
                                     {/block}
                                 {elseif $filter->getOptions()|count > 0}
                                     {block name='snippets-filter-mobile-filters-generic'}
-                                        {link data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"] rel="nofollow"}
+                                        {link data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|seofy}"] rel="nofollow"}
                                             <span class="text-truncate">{$filter->getFrontendName()}</span>
                                         {/link}
-                                        {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}"
+                                        {collapse id="filter-collapse-{$filter->getFrontendName()|seofy}"
                                             class="snippets-filter-mobile-item-collapse"
                                             visible=$filter->isActive() || $Einstellungen.template.productlist.filter_items_always_visible === 'Y'}
                                             {block name='snippets-filter-mobile-include-generic-filter-item'}
@@ -177,7 +177,7 @@
                         block=true
                         variant="primary"
                         class="min-w-sm text-nowrap-util"
-                        href="{$NaviFilter->getURL()->getCategories()}"}
+                        href="{$NaviFilter->getFilterURL()->getURL()}"}
                         {lang key='filterShowItem' printf=$itemCount}
                     {/button}
                 {/col}

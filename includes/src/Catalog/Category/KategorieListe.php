@@ -2,7 +2,7 @@
 
 namespace JTL\Catalog\Category;
 
-use JTL\DB\DbInterface;
+use JTL\Helpers\Category;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -48,13 +48,13 @@ class KategorieListe
         }
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID      = $languageID ?: Shop::getLanguageID();
-        $conf            = Shop::getSettings([\CONF_NAVIGATIONSFILTER])['navigationsfilter'];
-        $showLevel2      = $conf['unterkategorien_lvl2_anzeigen'] ?? 'N';
+        $showLevel2      = Shop::getSettingValue(\CONF_NAVIGATIONSFILTER, 'unterkategorien_lvl2_anzeigen');
         if ($categoryID > 0 && \count(self::$allCats) === 0) {
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv = (Shop::$kKategorie > 0 && (int)$category->kKategorie === (int)Shop::$kKategorie);
+            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->kKategorie === Shop::$kKategorie);
+            $category->Unterkategorien = [];
             if ($showLevel2 === 'Y') {
                 $category->Unterkategorien = $this->getChildCategories(
                     $category->kKategorie,
@@ -169,10 +169,10 @@ class KategorieListe
             self::$wasModified = true;
         }
         // ist nicht im cache, muss holen
-        $db                    = Shop::Container()->getDB();
-        $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
-        $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
-        $categories            = $db->getObjects(
+        $db                                                            = Shop::Container()->getDB();
+        $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
+        $orderByName                                                   = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
+        $categories                                                    = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
@@ -183,11 +183,9 @@ class KategorieListe
                 AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorie.kOberKategorie = :cid
-                GROUP BY tkategorie.kKategorie
                 ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
             ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
-
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
             $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);
@@ -215,12 +213,12 @@ class KategorieListe
      */
     public function nichtLeer(int $categoryID, int $customerGroupID): bool
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL])['global'];
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
+        $conf = (int)(Shop::getSettingValue(\CONF_GLOBAL, 'kategorien_anzeigefilter') ?? 0);
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
         $languageID = LanguageHelper::getDefaultLanguage()->getId();
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($customerGroupID, $languageID);
             if (isset($categoryList['ks'][$categoryID])) {
                 if ($categoryList['ks'][$categoryID] === 1) {
@@ -235,7 +233,7 @@ class KategorieListe
             $categoryIDs[] = $categoryID;
             while (\count($categoryIDs) > 0) {
                 $category = \array_pop($categoryIDs);
-                if ($this->hasProducts($category, $customerGroupID, $db)) {
+                if ($this->hasProducts($languageID, $category, $customerGroupID)) {
                     $categoryList['ks'][$categoryID] = 1;
                     self::setCategoryList($categoryList, $customerGroupID, $languageID);
 
@@ -245,7 +243,7 @@ class KategorieListe
                     'SELECT tkategorie.kKategorie
                         FROM tkategorie
                         LEFT JOIN tkategoriesichtbarkeit 
-                            ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                            ON tkategorie.kKategorie = tkategoriesichtbarkeit.kKategorie
                             AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                         WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                             AND tkategorie.kOberKategorie = :pcid
@@ -268,26 +266,13 @@ class KategorieListe
     }
 
     /**
-     * @param int         $categoryID
-     * @param int         $customerGroupID
-     * @param DbInterface $db
+     * @param int $languageID
+     * @param int $categoryID
+     * @param int $customerGroupID
      * @return bool
      */
-    private function hasProducts(int $categoryID, int $customerGroupID, DbInterface $db): bool
+    private function hasProducts(int $languageID, int $categoryID, int $customerGroupID): bool
     {
-        $availability = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-
-        return (int)($db->getSingleObject(
-            'SELECT tartikel.kArtikel
-                FROM tkategorieartikel, tartikel
-                LEFT JOIN tartikelsichtbarkeit 
-                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = tkategorieartikel.kArtikel
-                    AND tkategorieartikel.kKategorie = :cid' . $availability . '
-                LIMIT 1',
-            ['cgid' => $customerGroupID, 'cid' => $categoryID]
-        )->kArtikel ?? 0) > 0;
+        return Category::getInstance($languageID, $customerGroupID)->categoryHasProducts($categoryID);
     }
 }

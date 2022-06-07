@@ -24,7 +24,7 @@
                 {$tooltip = []}
             {/if}
             {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
-                title="{$filterOption->getName()}: {$filterOption->getCount()}"
+                title="{$filterOption->getName()|escape:'html'}: {$filterOption->getCount()}"
                 data=$tooltip
                 class="filter-item {if $filterOption->isActive()}active{/if}"
                 rel="nofollow"

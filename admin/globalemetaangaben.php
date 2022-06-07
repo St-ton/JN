@@ -44,7 +44,7 @@ if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     $globalMetaData->cWertName             = $metaDescr;
     $db->insert('tglobalemetaangaben', $globalMetaData);
     Shop::Container()->getCache()->flushAll();
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+    Shop::Container()->getAlertService()->addSuccess(__('successConfigSave'), 'successConfigSave');
 }
 
 $meta     = $db->selectAll(
@@ -56,7 +56,6 @@ $metaData = [];
 foreach ($meta as $item) {
     $metaData[$item->cName] = $item->cWertName;
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
-    ->assign('oMetaangaben_arr', $metaData)
+getAdminSectionSettings(CONF_METAANGABEN);
+$smarty->assign('oMetaangaben_arr', $metaData)
     ->display('globalemetaangaben.tpl');

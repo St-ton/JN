@@ -14,7 +14,8 @@ $manager = new Manager(
     $smarty,
     Shop::Container()->getCountryService(),
     Shop::Container()->getCache(),
-    Shop::Container()->getAlertService()
+    Shop::Container()->getAlertService(),
+    Shop::Container()->getGetText()
 );
 
 $manager->finalize($manager->getAction());

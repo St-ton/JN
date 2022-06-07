@@ -339,7 +339,7 @@ interface FilterInterface
 
     /**
      * @param string|null $idx
-     * @return string
+     * @return string|null
      */
     public function getUnsetFilterURL($idx = null): ?string;
 

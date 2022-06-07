@@ -275,9 +275,9 @@ class Mail implements MailInterface
      */
     public function initDefaults(): void
     {
-        $config         = Shop::getSettings([\CONF_EMAILS]);
-        $this->fromName = $config['emails']['email_master_absender_name'] ?? '';
-        $this->fromMail = $config['emails']['email_master_absender'] ?? '';
+        $config         = Shop::getSettingSection(\CONF_EMAILS);
+        $this->fromName = $config['email_master_absender_name'] ?? '';
+        $this->fromMail = $config['email_master_absender'] ?? '';
     }
 
     /**

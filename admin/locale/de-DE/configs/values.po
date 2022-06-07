@@ -830,6 +830,12 @@ msgstr "Nein"
 msgid "artikeldetails_abmessungen_anzeigen_value(Y)"
 msgstr "Ja"
 
+msgid "artikeldetails_inhalt_anzeigen_value(N)"
+msgstr "Nein"
+
+msgid "artikeldetails_inhalt_anzeigen_value(Y)"
+msgstr "Ja"
+
 msgid "artikeldetails_attribute_anhaengen_value(Y)"
 msgstr "Ja"
 
@@ -1200,6 +1206,12 @@ msgid "bestellvorgang_artikelattribute_value(Y)"
 msgstr "Ja"
 
 msgid "bestellvorgang_artikelattribute_value(N)"
+msgstr "Nein"
+
+msgid "bestellvorgang_partlist_value(Y)"
+msgstr "Ja"
+
+msgid "bestellvorgang_partlist_value(N)"
 msgstr "Nein"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_value(Y)"
@@ -1931,6 +1943,12 @@ msgstr "Ja"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "Nein"
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(Y)"
+msgstr "anzeigen"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(N)"
+msgstr "ausblenden"
+
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -2345,6 +2363,9 @@ msgstr "Dateien (erweitert)"
 msgid "caching_method_value(redisCluster)"
 msgstr "RedisCluster"
 
+msgid "caching_method_value(sqlite)"
+msgstr "SQLite3"
+
 msgid "caching_redis_persistent_value(N)"
 msgstr "Nein"
 
@@ -2461,3 +2482,9 @@ msgstr "Beim zweiten Seitenaufruf (2)"
 
 msgid "consent_manager_show_banner_value(3)"
 msgstr "Beim dritten Seitenaufruf (3)"
+
+msgid "forgot_password_captcha_value(N)"
+msgstr "Nein"
+
+msgid "forgot_password_captcha_value(Y)"
+msgstr "Ja"

@@ -535,6 +535,7 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
+        $link->target             = $post['linkTarget'] ?? '_self';
         if (GeneralObject::isCountable('cKundengruppen', $post)) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
             if (\in_array('-1', $post['cKundengruppen'], true)) {
@@ -588,6 +589,7 @@ final class LinkAdmin
             $localized->cName       = $link->cName;
             $localized->cTitle      = '';
             $localized->cContent    = '';
+            $keepUnderscore         = false;
             if (!empty($post['cName_' . $code])) {
                 $localized->cName = $this->specialChars($post['cName_' . $code]);
             }
@@ -600,6 +602,7 @@ final class LinkAdmin
             $localized->cSeo = $localized->cName;
             if (!empty($post['cSeo_' . $code])) {
                 $localized->cSeo = $post['cSeo_' . $code];
+                $keepUnderscore  = true;
             }
             $localized->cMetaTitle = $localized->cTitle;
             $idx                   = 'cMetaTitle_' . $code;
@@ -611,7 +614,7 @@ final class LinkAdmin
             $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
             $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
                 ? $localized->cSeo
-                : Seo::getSeo($localized->cSeo);
+                : Seo::getSeo($localized->cSeo, $keepUnderscore);
             $this->db->insert('tlinksprache', $localized);
             $prev = $this->db->select(
                 'tseo',

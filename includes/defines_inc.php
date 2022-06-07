@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
 // Version
-const APPLICATION_VERSION         = '5.1.2-alpha';
+const APPLICATION_VERSION         = '5.2.0-alpha';
 const APPLICATION_BUILD_SHA       = '#DEV#';
 const JTL_MIN_WAWI_VERSION        = 100000;
 const JTL_MIN_SHOP_UPDATE_VERSION = '4.2.0';
+
+const SMARTY_MBSTRING = true;
 // Einstellungssektionen
 const CONF_GLOBAL            = 1;
 const CONF_STARTSEITE        = 2;

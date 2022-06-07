@@ -15,19 +15,19 @@ use function Functional\map;
 final class CommentList implements ItemListInterface
 {
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db;
 
     /**
      * @var int
      */
-    private $newsID;
+    private int $newsID;
 
     /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
      * LinkList constructor.
@@ -44,11 +44,11 @@ final class CommentList implements ItemListInterface
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $itemIDs = \array_map('\intval', $itemIDs);
         if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $data  = $this->db->getObjects(
+        $itemIDs = \array_map('\intval', $itemIDs);
+        $data    = $this->db->getObjects(
             'SELECT tnewskommentar.*, t.title
                 FROM tnewskommentar
                 JOIN tnewssprache t 
@@ -56,10 +56,9 @@ final class CommentList implements ItemListInterface
                 WHERE kNewsKommentar IN (' . \implode(',', $itemIDs) . ')'
                 . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
-                ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $this->newsID]
+                ORDER BY tnewskommentar.dErstellt DESC'
         );
-        $items = map(group($data, static function ($e) {
+        $items   = map(group($data, static function ($e) {
             return (int)$e->kNewsKommentar;
         }), function ($e, $commentID) {
             $l = new Comment($this->db);
@@ -127,11 +126,35 @@ final class CommentList implements ItemListInterface
     }
 
     /**
+     * @param $whatcount
+     * @return int
+     */
+    public function getCommentsCount($whatcount = 'parent'): int
+    {
+        $parent = $child = 0;
+        foreach ($this->items as $comment) {
+            if ($comment->getParentCommentID() === 0) {
+                $parent++;
+            } else {
+                $child++;
+            }
+        }
+
+        if ($whatcount === 'parent') {
+            return $parent;
+        } else {
+            return $child;
+        }
+    }
+
+    /**
      * @return Collection
      */
     public function getThreadedItems(): Collection
     {
+        /** @var Comment $comment */
         foreach ($this->items as $comment) {
+            /** @var Comment $child */
             foreach ($this->items as $child) {
                 if ($comment->getID() === $child->getParentCommentID()) {
                     $comment->setChildComment($child);
@@ -161,6 +184,38 @@ final class CommentList implements ItemListInterface
     public function addItem($item): void
     {
         $this->items->push($item);
+    }
+
+    /**
+     * @return DbInterface|null
+     */
+    public function getDB(): ?DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNewsID(): int
+    {
+        return $this->newsID;
+    }
+
+    /**
+     * @param int $newsID
+     */
+    public function setNewsID(int $newsID): void
+    {
+        $this->newsID = $newsID;
     }
 
     /**

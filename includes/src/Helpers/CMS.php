@@ -10,7 +10,6 @@ use JTL\News\ItemList;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class CMS
@@ -29,7 +28,7 @@ class CMS
         if (!$customerGroupID || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
-        $boxes         = self::getHomeBoxList(Shop::getSettings([\CONF_STARTSEITE])['startseite']);
+        $boxes         = self::getHomeBoxList(Shop::getSettingSection(\CONF_STARTSEITE));
         $searchSpecial = new SearchSpecial(Shop::Container()->getDB(), Shop::Container()->getCache());
         foreach ($boxes as $box) {
             $type       = 0;
@@ -86,7 +85,7 @@ class CMS
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
-            $newsIDs = Shop::Container()->getDB()->getObjects(
+            $newsIDs = Shop::Container()->getDB()->getInts(
                 "SELECT tnews.kNews
                     FROM tnews
                     JOIN tnewskategorienews 
@@ -107,12 +106,11 @@ class CMS
                             OR FIND_IN_SET(:cgid, REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
                     ORDER BY tnews.dGueltigVon DESC" . $limit,
+                'kNews',
                 ['lid' => $langID, 'cgid' => $cgID]
             );
             $items   = new ItemList(Shop::Container()->getDB());
-            $items->createItems(map($newsIDs, static function ($e) {
-                return (int)$e->kNews;
-            }));
+            $items->createItems($newsIDs);
             $items     = $items->getItems();
             $cacheTags = [\CACHING_GROUP_NEWS];
             \executeHook(\HOOK_GET_NEWS, [
@@ -289,17 +287,19 @@ class CMS
      */
     public static function getFreeGifts(array $conf): array
     {
-        $gifts = [];
-        $sort  = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $gifts           = [];
+        $sort            = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
             $sort = ' ORDER BY tartikel.cName';
         } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
             $sort = ' ORDER BY tartikel.fLagerbestand DESC';
         }
-        $limit    = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
+        $limit          = ((int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0)
             ? ' LIMIT ' . (int)$conf['sonstiges']['sonstiges_gratisgeschenk_anzahl']
             : '';
-        $tmpGifts = Shop::Container()->getDB()->getObjects(
+        $db             = Shop::Container()->getDB();
+        $tmpGifts       = $db->getObjects(
             'SELECT tartikel.kArtikel, tartikelattribut.cWert
                 FROM tartikel
                 JOIN tartikelattribut 
@@ -310,15 +310,15 @@ class CMS
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelattribut.cName = :an'
             . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . $sort . $limit,
-            ['cgid' => Frontend::getCustomerGroup()->getID(), 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
+            ['cgid' => $customerGroupID, 'an' => \FKT_ATTRIBUT_GRATISGESCHENK]
         );
-
+        $currency       = Frontend::getCurrency();
         $defaultOptions = Artikel::getDefaultOptions();
+        $languageID     = Shop::getLanguageID();
         foreach ($tmpGifts as $item) {
-            $product = new Artikel();
-            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions);
-            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert);
-
+            $product = new Artikel($db);
+            $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
+            $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {
                 $gifts[] = $product;
             }

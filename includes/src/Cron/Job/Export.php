@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Export\FormatExporter;
+use JTL\Export\ExporterFactory;
 use stdClass;
 
 /**
@@ -62,7 +62,8 @@ final class Export extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $ef       = new FormatExporter($this->db, $this->logger);
+        $factory  = new ExporterFactory($this->db, $this->logger, $this->cache);
+        $ef       = $factory->getExporter($this->getForeignKeyID());
         $finished = false;
         try {
             $finished = $ef->startExport(

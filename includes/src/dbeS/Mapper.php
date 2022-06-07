@@ -15,7 +15,7 @@ final class Mapper
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'mKunde' => [
             'cKundenNr',
             'cAnrede',
@@ -689,7 +689,7 @@ final class Mapper
     public function map(SimpleXMLElement $xmlTree, string $toMap): stdClass
     {
         $mapped = new stdClass();
-        foreach ($xmlTree->Attributes() as $key => $val) {
+        foreach ($xmlTree->attributes() as $key => $val) {
             $mapped->$key = (string)$val;
         }
         foreach (self::getTableMapping($toMap) as $mapping) {
@@ -778,14 +778,11 @@ final class Mapper
         if (!\is_array($xml)) {
             return;
         }
-        $keys = \array_keys($xml);
-        if (\is_array($keys)) {
-            if ($obj === null) {
-                $obj = new stdClass();
-            }
-            foreach ($keys as $key) {
-                $obj->$key = $xml[$key];
-            }
+        if ($obj === null) {
+            $obj = new stdClass();
+        }
+        foreach (\array_keys($xml) as $key) {
+            $obj->$key = $xml[$key];
         }
     }
 }

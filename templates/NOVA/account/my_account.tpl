@@ -1,6 +1,6 @@
 {block name='account-my-account'}
     {block name='heading'}
-        <div class="h2">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
+        <div class="h2">{lang key='welcome' section='login'} {$Kunde->cVorname} {$Kunde->cNachname}</div>
     {/block}
     {opcMountPoint id='opc_before_account_page'}
     {block name='account-my-account-head-data'}

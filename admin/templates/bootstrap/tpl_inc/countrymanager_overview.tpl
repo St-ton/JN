@@ -11,7 +11,7 @@
                         <th>{__('isEU')}</th>
                         <th>{__('Continent')}</th>
                         <th class="text-center">{__('isShippingAvailable')}{getHelpDesc cDesc=__('isShippingAvailableDesc')}</th>
-                        <th class="text-center">{__('isPermitRegistration')}</th>
+                        <th class="text-center">{__('isPermitRegistration')}{getHelpDesc cDesc=__('isPermitRegistrationDesc')}</th>
                         <th class="text-center">{__('isRequireStateDefinition')}</th>
                         <th></th>
                     </tr>

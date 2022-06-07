@@ -91,7 +91,7 @@ class LanguageHelper
     public $cacheID = 'cr_lng_dta';
 
     /**
-     * @var array
+     * @var stdClass[]
      */
     public $availableLanguages;
 
@@ -221,7 +221,7 @@ class LanguageHelper
      * @param string $method
      * @return string|null
      */
-    private static function map($method): ?string
+    private static function map(string $method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -461,14 +461,16 @@ class LanguageHelper
             $this->logWert($sectionName, $name);
             $value = '#' . $sectionName . '.' . $name . '#';
         } elseif ($argsCount > 2) {
-            // String formatieren, vsprintf gibt false zurück,
-            // sollte die Anzahl der Parameter nicht der Anzahl der Format-Liste entsprechen!
             $args = [];
             for ($i = 2; $i < $argsCount; $i++) {
                 $args[] = \func_get_arg($i);
             }
-            if (\vsprintf($value, $args) !== false) {
-                $value = \vsprintf($value, $args);
+            try {
+                $res = \vsprintf($value, $args);
+                if ($res !== false) { // php < 8.0
+                    $value = $res;
+                }
+            } catch (\ValueError $e) {
             }
         }
 
@@ -692,7 +694,7 @@ class LanguageHelper
         $isoID = $this->mappekISO($isoCode);
         if ($isoID > 0) {
             $ins                 = new stdClass();
-            $ins->kSprachISO     = (int)$isoID;
+            $ins->kSprachISO     = $isoID;
             $ins->kSprachsektion = $sectionID;
             $ins->cName          = $name;
             $ins->cWert          = $value;
@@ -803,7 +805,7 @@ class LanguageHelper
             ];
         }
         $fileName = \tempnam('../' . \PFAD_DBES_TMP, 'csv');
-        $handle   = \fopen($fileName, 'w');
+        $handle   = \fopen($fileName, 'wb');
         foreach ($csvData as $csv) {
             \fputcsv($handle, $csv, ';');
         }
@@ -820,7 +822,7 @@ class LanguageHelper
      */
     private function mappedImport(string $fileName, string $iso, int $type)
     {
-        $handle = \fopen($fileName, 'r');
+        $handle = \fopen($fileName, 'rb');
         if (!$handle) {
             return false;
         }
@@ -928,7 +930,7 @@ class LanguageHelper
     }
 
     /**
-     * @return array|mixed|null
+     * @return stdClass[]
      */
     private function mappedGetLangArray()
     {
@@ -945,7 +947,7 @@ class LanguageHelper
         if ($languageID <= 0) {
             return false;
         }
-        if (!\is_array($languages) || \count($languages) === 0) {
+        if (\count($languages) === 0) {
             $languages = $this->mappedGetAllLanguages(1);
         }
 
@@ -980,30 +982,30 @@ class LanguageHelper
      * 0 = Normales Array
      * 1 = Gib ein Assoc mit Key = kSprache
      * 2 = Gib ein Assoc mit Key = cISO
-     * @param bool $forceLoad
+     * @param bool $force
      * @param bool $onlyActive
      * @return LanguageModel[]
      * @throws \Exception
      * @former gibAlleSprachen()
      * @since  5.0.0
      */
-    private function mappedGetAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
+    private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($forceLoad || \count($languages) === 0) {
+        if ($force || \count($languages) === 0) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
         switch ($returnType) {
             case 2:
-                return reindex($languages, static function ($e) {
-                    return $e->cISO;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getCode();
                 });
 
             case 1:
-                return reindex($languages, static function ($e) {
-                    return $e->kSprache;
+                return reindex($languages, static function (LanguageModel $e) {
+                    return $e->getId();
                 });
 
             case 0:
@@ -1046,10 +1048,10 @@ class LanguageHelper
     private function mappedGetDefaultLanguage(bool $shop = true): LanguageModel
     {
         foreach (Frontend::getLanguages() as $language) {
-            if ($language->isDefault() && !$shop) {
+            if (!$shop && $language->isDefault()) {
                 return $language;
             }
-            if ($language->isShopDefault() && $shop) {
+            if ($shop && $language->isShopDefault()) {
                 return $language;
             }
         }
@@ -1232,6 +1234,12 @@ class LanguageHelper
      */
     public function getLanguageByID(int $langID): LanguageModel
     {
+        foreach (Frontend::getLanguages() as $language) {
+            if ($language->getId() === $langID) {
+                return $language;
+            }
+        }
+
         return LanguageModel::loadByAttributes(['id' => $langID], $this->db);
     }
 }

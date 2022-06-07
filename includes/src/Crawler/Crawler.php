@@ -30,7 +30,7 @@ class Crawler
     private $id = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
@@ -45,7 +45,7 @@ class Crawler
     private $description = '';
 
     /**
-     * @var string
+     * @var string|null
      */
     private $link;
 
@@ -99,17 +99,17 @@ class Crawler
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      */
-    public function setName(string $name): void
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
@@ -131,17 +131,17 @@ class Crawler
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getLink(): string
+    public function getLink(): ?string
     {
         return $this->link;
     }
 
     /**
-     * @param string $link
+     * @param string|null $link
      */
-    public function setLink(string $link): void
+    public function setLink(?string $link): void
     {
         $this->link = $link;
     }

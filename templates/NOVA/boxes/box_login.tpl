@@ -1,12 +1,13 @@
 {block name='boxes-box-login'}
     <div id="sidebox{$oBox->getID()}" class="box box-login box-normal">
         {block name='boxes-box-login-content'}
+            {$customer = JTL\Session\Frontend::getCustomer()}
             {block name='boxes-box-login-title'}
                 <div class="productlist-filter-headline">
-                    {if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}
+                    {if $customer->getID() === 0}{lang key='login'}{else}{lang key='hello'}, {$customer->cVorname} {$customer->cNachname}{/if}
                 </div>
             {/block}
-            {if empty($smarty.session.Kunde->kKunde)}
+            {if $customer->getID() === 0}
                 {block name='boxes-box-login-form'}
                     <div class="box-content-wrapper">
                     {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="form jtl-validate" slide=true}

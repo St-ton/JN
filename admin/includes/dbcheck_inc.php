@@ -72,7 +72,8 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
     }
 
     if ($dbStructure === false) {
-        $dbData = $db->getObjects(
+        $dbStructure = [];
+        $dbData      = $db->getObjects(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
@@ -281,8 +282,6 @@ function determineEngineUpdate(array $dbStruct): stdClass
     $result             = new stdClass();
     $result->tableCount = 0;
     $result->dataSize   = 0;
-    $result->estimated  = [];
-
     foreach ($dbStruct as $meta) {
         if (isset($meta->Migration) && $meta->Migration !== DBMigrationHelper::MIGRATE_NONE) {
             $result->tableCount++;
@@ -553,6 +552,9 @@ function doMigrateToInnoDB_utf8(
                 Shop::Container()->getLogService()->error(sprintf(__('errorEmptyCache'), $e->getMessage()));
             }
             $callback    = static function (array $pParameters) {
+                if (strpos($pParameters['filename'], '.') === 0) {
+                    return;
+                }
                 if (!$pParameters['isdir']) {
                     @unlink($pParameters['path'] . $pParameters['filename']);
                 } else {

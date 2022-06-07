@@ -19,32 +19,32 @@ class LegacyPlugin extends PluginBC
     /**
      * @var array
      */
-    public $oPluginHook_arr = [];
+    public array $oPluginHook_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellung_arr = [];
+    public array $oPluginEinstellung_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellungConf_arr = [];
+    public array $oPluginEinstellungConf_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellungAssoc_arr = [];
+    public array $oPluginEinstellungAssoc_arr = [];
 
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    public $oPluginUninstall;
+    public ?stdClass $oPluginUninstall = null;
 
     /**
      * @var string
      */
-    public $cFehler = '';
+    public string $cFehler = '';
 
     /**
      * LegacyPlugin constructor.
@@ -187,9 +187,8 @@ class LegacyPlugin extends PluginBC
     public function mapPluginStatus(int $state): string
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $mapper = new PluginState();
 
-        return $mapper->map($state);
+        return (new PluginState())->map($state);
     }
 
     /**

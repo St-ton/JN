@@ -22,37 +22,37 @@ final class MigrationManager
     /**
      * @var IMigration[]
      */
-    private $migrations;
+    private array $migrations = [];
 
     /**
      * @var array|null
      */
-    private $executedMigrations;
+    private ?array $executedMigrations = null;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var string
      */
-    private $pluginID;
+    private string $pluginID;
 
     /**
      * @var string
      */
-    private $path;
+    private string $path;
 
     /**
      * @var MigrationHelper
      */
-    private $helper;
+    private MigrationHelper $helper;
 
     /**
-     * @var Version
+     * @var Version|null
      */
-    private $version;
+    private ?Version $version;
 
     /**
      * MigrationManager constructor.
@@ -192,7 +192,7 @@ final class MigrationManager
      * @param string $direction
      * @throws Exception
      */
-    public function executeMigrationById($id, $direction = IMigration::UP): void
+    public function executeMigrationById($id, string $direction = IMigration::UP): void
     {
         $this->executeMigration($this->getMigrationById($id), $direction);
     }
@@ -260,7 +260,7 @@ final class MigrationManager
      */
     public function getMigrations(): array
     {
-        if (\is_array($this->migrations) && \count($this->migrations) > 0) {
+        if (\count($this->migrations) > 0) {
             return $this->migrations;
         }
         $migrations = [];
@@ -314,15 +314,14 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $version = $this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT kMigration 
                 FROM tpluginmigration 
                 WHERE pluginID = :pid
                 ORDER BY kMigration DESC',
+            'kMigration',
             ['pid' => $this->pluginID]
         );
-
-        return (int)($version->kMigration ?? 0);
     }
 
     /**

@@ -91,3 +91,6 @@ msgstr "Would you like to continue?"
 
 msgid "deleteShopSettings"
 msgstr "Shopeigene Einstellungen auf Werkseinstellungen zurücksetzen."
+
+msgid "generalresetwarning"
+msgstr "Partial resetting of customer and/or order data can result in asynchrony with JTL-Wawi. Make sure that you have the maintenance mode active and that a synchronization with JTL-Wawi has been carried out before (but after resetting) you exit it. This prevents new customers / orders from being assigned to incorrect data records in JTL-Wawi."

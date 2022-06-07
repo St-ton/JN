@@ -5,6 +5,7 @@ namespace JTL\Boxes\Items;
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\GeneralObject;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * Class RecentlyViewedProducts
@@ -25,8 +26,9 @@ final class RecentlyViewedProducts extends AbstractBox
         ) {
             $products       = [];
             $defaultOptions = Artikel::getDefaultOptions();
+            $db             = Shop::Container()->getDB();
             foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $item) {
-                $product = new Artikel();
+                $product = new Artikel($db);
                 $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $products[$i] = $product;

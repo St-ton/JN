@@ -95,9 +95,22 @@ class PortletInstance implements \JsonSerializable
         $dom->loadHTML('<?xml encoding="utf-8" ?>' . $result);
         \libxml_clear_errors();
         /** @var \DOMElement $root */
-        $root = $dom->getElementsByTagName('body')[0]->firstChild;
-        $root->setAttribute('data-portlet', \json_encode($this->getData()));
-        $result = $dom->saveHTML($root);
+        $body = $dom->getElementsByTagName('body')[0];
+
+        if ($body !== null) {
+            $root = $dom->getElementsByTagName('body')[0]->firstChild;
+            $root->setAttribute('data-portlet', \json_encode($this->getData()));
+            $result = $dom->saveHTML($root);
+        } else {
+            $result = '
+                <div data-portlet="' . \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES) . '"
+                    style="text-align:center;height:4em;line-height:4em;'
+                    . 'background-color:#ffe1dd;color:red;border:1px dashed red;">
+                        <i class="fas fa-exclamation-circle"></i> '
+                    . \__('missingPortletHTML') . '
+                </div>
+            ';
+        }
 
         Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
             'portletInstance' => $this,
@@ -594,7 +607,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'     => $srcset,
             'srcsizes'   => $srcsizes,
-            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_XL)),
             'alt'        => $alt,
             'title'      => $title,
             'realWidth'  => $realWidth,
@@ -675,7 +688,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerializeShort()
+    public function jsonSerializeShort(): array
     {
         return [
             'id'              => $this->portlet->getId(),
@@ -689,7 +702,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $result             = $this->jsonSerializeShort();
         $result['subareas'] = $this->subareaList->jsonSerialize();

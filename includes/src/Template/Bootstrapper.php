@@ -16,22 +16,22 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @var Model
      */
-    private $template;
+    private Model $template;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Bootstrapper constructor.

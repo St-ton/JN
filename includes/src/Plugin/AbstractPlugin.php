@@ -28,97 +28,97 @@ abstract class AbstractPlugin implements PluginInterface
     /**
      * @var int
      */
-    protected $id;
+    protected int $id;
 
     /**
      * @var string
      */
-    protected $pluginID;
+    protected string $pluginID;
 
     /**
      * @var int
      */
-    protected $state = State::DISABLED;
+    protected int $state = State::DISABLED;
 
     /**
      * @var Meta
      */
-    protected $meta;
+    protected Meta $meta;
 
     /**
      * @var Paths
      */
-    protected $paths;
+    protected Paths $paths;
 
     /**
      * @var int
      */
-    protected $priority = 5;
+    protected int $priority = 5;
 
     /**
      * @var Config
      */
-    protected $config;
+    protected Config $config;
 
     /**
      * @var Links
      */
-    protected $links;
+    protected Links $links;
 
     /**
      * @var License
      */
-    protected $license;
+    protected License $license;
 
     /**
      * @var Cache
      */
-    protected $cache;
+    protected Cache $cache;
 
     /**
      * @var bool
      */
-    protected $isLegacy = false;
+    protected bool $isLegacy = false;
 
     /**
      * @var bool
      */
-    protected $bootstrap = false;
+    protected bool $bootstrap = false;
 
     /**
      * @var Hook[]
      */
-    protected $hooks;
+    protected array $hooks = [];
 
     /**
      * @var AdminMenu
      */
-    protected $adminMenu;
+    protected AdminMenu $adminMenu;
 
     /**
      * @var Localization
      */
-    protected $localization;
+    protected Localization $localization;
 
     /**
      * @var Widget
      */
-    protected $widgets;
+    protected Widget $widgets;
 
     /**
      * @var MailTemplates
      */
-    protected $mailTemplates;
+    protected MailTemplates $mailTemplates;
 
     /**
      * @var PaymentMethods
      */
-    protected $paymentMethods;
+    protected PaymentMethods $paymentMethods;
 
     /**
      * @var int|null
      */
-    public $nCalledHook;
+    public ?int $nCalledHook;
 
     /**
      * @inheritdoc

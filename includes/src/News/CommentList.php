@@ -30,7 +30,7 @@ final class CommentList implements ItemListInterface
     private Collection $items;
 
     /**
-     * LinkList constructor.
+     * CommentList constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
@@ -126,12 +126,13 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @param $whatcount
+     * @param string $whatcount
      * @return int
      */
-    public function getCommentsCount($whatcount = 'parent'): int
+    public function getCommentsCount(string $whatcount = 'parent'): int
     {
-        $parent = $child = 0;
+        $parent = 0;
+        $child  = 0;
         foreach ($this->items as $comment) {
             if ($comment->getParentCommentID() === 0) {
                 $parent++;
@@ -140,11 +141,7 @@ final class CommentList implements ItemListInterface
             }
         }
 
-        if ($whatcount === 'parent') {
-            return $parent;
-        } else {
-            return $child;
-        }
+        return $whatcount === 'parent' ? $parent : $child;
     }
 
     /**

@@ -69,6 +69,10 @@ final class Listing
         return Model::loadByAttributes(['type' => 'standard'], $this->db);
     }
 
+    /**
+     * @return Model|null
+     * @throws Exception
+     */
     private function getPreviewTemplate(): ?Model
     {
         return Model::loadByAttributes(['type' => 'test'], $this->db);

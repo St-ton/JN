@@ -515,7 +515,7 @@ class Frontend extends AbstractSession
         if ($currency !== null && \get_class($currency) === Currency::class) {
             return $currency;
         }
-        if (\get_class($currency) === stdClass::class) {
+        if ($currency !== null && \get_class($currency) === stdClass::class) {
             $_SESSION['Waehrung'] = new Currency((int)$_SESSION['Waehrung']->kWaehrung);
         }
 

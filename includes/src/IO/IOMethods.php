@@ -1090,9 +1090,11 @@ class IOMethods
                     "SELECT COUNT(kPage) AS count
                     FROM topcpage
                     WHERE cPageId LIKE '%\"type\":\"product\"%'
-                        AND cPageId LIKE CONCAT('%\"id\":', :id,'%')",
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%'))",
                     'count',
-                    ['id' => $tmpProduct->kArtikel]
+                    ['id' => $tmpProduct->kArtikel, 'last_id' => $childProductID]
                 ) > 0;
                 if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(

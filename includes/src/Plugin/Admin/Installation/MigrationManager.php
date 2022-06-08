@@ -30,29 +30,9 @@ final class MigrationManager
     private ?array $executedMigrations = null;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var string
-     */
-    private string $pluginID;
-
-    /**
-     * @var string
-     */
-    private string $path;
-
-    /**
      * @var MigrationHelper
      */
     private MigrationHelper $helper;
-
-    /**
-     * @var Version|null
-     */
-    private ?Version $version;
 
     /**
      * MigrationManager constructor.
@@ -61,13 +41,13 @@ final class MigrationManager
      * @param string       $pluginID
      * @param Version|null $version
      */
-    public function __construct(DbInterface $db, string $path, string $pluginID, Version $version = null)
-    {
-        $this->helper   = new MigrationHelper($path, $db);
-        $this->db       = $db;
-        $this->pluginID = $pluginID;
-        $this->path     = $path;
-        $this->version  = $version;
+    public function __construct(
+        private DbInterface $db,
+        private string $path,
+        private string $pluginID,
+        private ?Version $version = null
+    ) {
+        $this->helper = new MigrationHelper($path, $db);
     }
 
     /**

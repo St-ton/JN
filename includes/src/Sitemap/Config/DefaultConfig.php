@@ -19,38 +19,18 @@ use JTL\Sitemap\Factories\Product;
 final class DefaultConfig implements ConfigInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var array
-     */
-    private array $config;
-
-    /**
-     * @var string
-     */
-    private string $baseURL;
-
-    /**
-     * @var string
-     */
-    private string $baseImageURL;
-
-    /**
      * DefaultConfig constructor.
      * @param DbInterface $db
      * @param array       $config
      * @param string      $baseURL
      * @param string      $baseImageURL
      */
-    public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL)
-    {
-        $this->db           = $db;
-        $this->config       = $config;
-        $this->baseURL      = $baseURL;
-        $this->baseImageURL = $baseImageURL;
+    public function __construct(
+        private DbInterface $db,
+        private array $config,
+        private string $baseURL,
+        private string $baseImageURL
+    ) {
     }
 
     /**

@@ -21,16 +21,6 @@ final class Listing
     private const TEMPLATE_DIR = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $validator;
-
-    /**
      * @var Collection
      */
     private Collection $items;
@@ -40,11 +30,9 @@ final class Listing
      * @param DbInterface        $db
      * @param ValidatorInterface $validator
      */
-    public function __construct(DbInterface $db, ValidatorInterface $validator)
+    public function __construct(private DbInterface $db, private ValidatorInterface $validator)
     {
-        $this->db        = $db;
-        $this->validator = $validator;
-        $this->items     = new Collection();
+        $this->items = new Collection();
     }
 
     /**

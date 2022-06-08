@@ -21,11 +21,6 @@ class Config
     public const TYPE_DYNAMIC = 'M';
 
     /**
-     * @var string
-     */
-    private string $adminPath;
-
-    /**
      * @var Collection
      */
     private Collection $options;
@@ -34,10 +29,9 @@ class Config
      * Config constructor.
      * @param string $adminPath
      */
-    public function __construct(string $adminPath)
+    public function __construct(private string $adminPath)
     {
-        $this->adminPath = $adminPath;
-        $this->options   = new Collection();
+        $this->options = new Collection();
     }
 
     /**

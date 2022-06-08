@@ -19,21 +19,6 @@ use JTL\Smarty\JTLSmarty;
 class Sitemap
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var array
-     */
-    private array $conf;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var int
      */
     private int $langID;
@@ -49,11 +34,8 @@ class Sitemap
      * @param JTLCacheInterface $cache
      * @param array             $conf
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, array $conf)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache, private array $conf)
     {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->conf            = $conf;
         $this->langID          = Shop::getLanguageID();
         $this->customerGroupID = Frontend::getCustomerGroup()->getID();
     }

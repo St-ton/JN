@@ -15,29 +15,17 @@ abstract class AbstractValidator implements ValidatorInterface
     protected const BASE_DIR = \PFAD_ROOT . \PFAD_PLUGIN;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * @var string|null
      */
     protected ?string $dir = null;
-
-    /**
-     * @var XMLParser
-     */
-    protected XMLParser $parser;
 
     /**
      * AbstractValidator constructor.
      * @param DbInterface $db
      * @param XMLParser   $parser
      */
-    public function __construct(DbInterface $db, XMLParser $parser)
+    public function __construct(protected DbInterface $db, protected XMLParser $parser)
     {
-        $this->db     = $db;
-        $this->parser = $parser;
     }
 
     /**

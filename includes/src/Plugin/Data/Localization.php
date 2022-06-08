@@ -21,18 +21,12 @@ class Localization
     private Collection $langVars;
 
     /**
-     * @var string
-     */
-    private string $currentLanguageCode;
-
-    /**
      * Localization constructor.
      * @param string $currentLanguageCode
      */
-    public function __construct(string $currentLanguageCode)
+    public function __construct(private string $currentLanguageCode)
     {
-        $this->langVars            = new Collection();
-        $this->currentLanguageCode = $currentLanguageCode;
+        $this->langVars = new Collection();
     }
 
     /**

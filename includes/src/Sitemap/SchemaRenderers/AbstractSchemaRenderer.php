@@ -11,7 +11,7 @@ abstract class AbstractSchemaRenderer implements SchemaRendererInterface
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var string

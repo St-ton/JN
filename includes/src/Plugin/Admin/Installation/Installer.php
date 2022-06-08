@@ -30,39 +30,14 @@ use function Functional\select;
 final class Installer
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var string|null
      */
     private ?string $dir = null;
 
     /**
-     * @var Uninstaller
-     */
-    private Uninstaller $uninstaller;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $legacyValidator;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $pluginValidator;
-
-    /**
      * @var PluginInterface|null
      */
     private ?PluginInterface $plugin = null;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
 
     /**
      * Installer constructor.
@@ -73,17 +48,13 @@ final class Installer
      * @param JTLCacheInterface|null $cache
      */
     public function __construct(
-        DbInterface $db,
-        Uninstaller $uninstaller,
-        ValidatorInterface $legacyValidator,
-        ValidatorInterface $pluginValidator,
-        ?JTLCacheInterface $cache = null
+        private DbInterface $db,
+        private Uninstaller $uninstaller,
+        private ValidatorInterface $legacyValidator,
+        private ValidatorInterface $pluginValidator,
+        private ?JTLCacheInterface $cache = null
     ) {
-        $this->db              = $db;
-        $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
-        $this->cache           = $cache ?? Shop::Container()->getCache();
+        $this->cache = $cache ?? Shop::Container()->getCache();
     }
 
     /**

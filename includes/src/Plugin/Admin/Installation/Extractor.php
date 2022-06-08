@@ -33,11 +33,6 @@ class Extractor
     private InstallationResponse $response;
 
     /**
-     * @var XMLParser
-     */
-    private XMLParser $parser;
-
-    /**
      * @var MountManager
      */
     private MountManager $manager;
@@ -46,9 +41,8 @@ class Extractor
      * Extractor constructor.
      * @param XMLParser $parser
      */
-    public function __construct(XMLParser $parser)
+    public function __construct(private XMLParser $parser)
     {
-        $this->parser   = $parser;
         $jtlFS          = Shop::Container()->get(Filesystem::class);
         $this->response = new InstallationResponse();
         $this->manager  = new MountManager([
@@ -145,13 +139,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('plgn://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'plgn://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $this->manager->delete('plgn://' . $target);
                     $this->manager->move($source, 'plgn://' . $target);
                 }
@@ -163,7 +157,7 @@ class Extractor
         }
         try {
             $this->manager->deleteDirectory('root://' . \PFAD_DBES_TMP . $dirName);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
         if ($ok === true) {
             $this->response->setPath($base . $dirName);
@@ -204,13 +198,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $this->manager->delete('tpl://' . $target);
                     $this->manager->move($source, 'tpl://' . $target);
                 }
@@ -218,7 +212,7 @@ class Extractor
         }
         try {
             $this->manager->deleteDirectory('root://' . \PFAD_DBES_TMP . $dirName);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
         if ($ok === true) {
             $this->response->setPath($base . $dirName);

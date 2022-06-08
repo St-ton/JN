@@ -20,16 +20,6 @@ use SimpleXMLElement;
 class TemplateService implements TemplateServiceInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var Model|null
      */
     private ?Model $activeTemplate = null;
@@ -49,10 +39,8 @@ class TemplateService implements TemplateServiceInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**

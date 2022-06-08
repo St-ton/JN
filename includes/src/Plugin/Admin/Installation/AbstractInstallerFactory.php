@@ -34,24 +34,9 @@ use stdClass;
 abstract class AbstractInstallerFactory
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var stdClass|null
-     */
-    protected ?stdClass $plugin;
-
-    /**
-     * @var PluginInterface|null
-     */
-    protected ?PluginInterface $oldPlugin;
-
-    /**
      * @var array|null
      */
-    protected $baseNode;
+    protected ?array $baseNode;
 
     /**
      * AbstractInstallerFactory constructor.
@@ -60,12 +45,13 @@ abstract class AbstractInstallerFactory
      * @param stdClass|null        $plugin
      * @param PluginInterface|null $oldPlugin
      */
-    public function __construct(DbInterface $db, array $xml, ?stdClass $plugin, ?PluginInterface $oldPlugin = null)
-    {
-        $this->db        = $db;
-        $this->baseNode  = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;
-        $this->plugin    = $plugin;
-        $this->oldPlugin = $oldPlugin;
+    public function __construct(
+        protected DbInterface $db,
+        array $xml,
+        protected ?stdClass $plugin,
+        protected ?PluginInterface $oldPlugin = null
+    ) {
+        $this->baseNode = $xml['jtlshopplugin'][0] ?? $xml['jtlshop3plugin'][0] ?? null;
     }
 
     /**

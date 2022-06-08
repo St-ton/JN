@@ -205,7 +205,7 @@ class ListingItem
             $this->addChecksums();
             try {
                 $this->version = Version::parse($version);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $xml['cFehlercode'] = TemplateValidator::RES_SHOP_VERSION_NOT_FOUND;
             }
         }

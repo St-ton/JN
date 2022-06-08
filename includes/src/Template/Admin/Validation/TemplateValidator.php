@@ -32,11 +32,6 @@ class TemplateValidator implements ValidatorInterface
     public const RES_INVALID_VERSION = 8;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * @var string
      */
     protected string $dir;
@@ -45,9 +40,8 @@ class TemplateValidator implements ValidatorInterface
      * AbstractValidator constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

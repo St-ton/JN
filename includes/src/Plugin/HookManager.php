@@ -22,31 +22,6 @@ class HookManager
     private static ?HookManager $instance;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var TimeDataCollector
-     */
-    private TimeDataCollector $timer;
-
-    /**
-     * @var array
-     */
-    private array $hookList;
-
-    /**
-     * @var Dispatcher
-     */
-    private Dispatcher $dispatcher;
-
-    /**
      * @var int
      */
     private int $lockedForPluginID = 0;
@@ -60,18 +35,13 @@ class HookManager
      * @param array             $hookList
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        TimeDataCollector $timer,
-        Dispatcher $dispatcher,
-        array $hookList
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private TimeDataCollector $timer,
+        private Dispatcher $dispatcher,
+        private array $hookList
     ) {
-        $this->db         = $db;
-        $this->cache      = $cache;
-        $this->timer      = $timer;
-        $this->dispatcher = $dispatcher;
-        $this->hookList   = $hookList;
-        self::$instance   = $this;
+        self::$instance = $this;
         $this->createEvents();
     }
 

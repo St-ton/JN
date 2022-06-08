@@ -21,11 +21,6 @@ class Resources
     private array $groups = [];
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var bool
      */
     private bool $initialized = false;
@@ -46,9 +41,8 @@ class Resources
      * @param SimpleXMLElement      $xml
      * @param SimpleXMLElement|null $parentXML
      */
-    public function __construct(DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
+    public function __construct(private DbInterface $db, SimpleXMLElement $xml, ?SimpleXMLElement $parentXML = null)
     {
-        $this->db      = $db;
         $this->xmlList = [$parentXML, $xml];
     }
 

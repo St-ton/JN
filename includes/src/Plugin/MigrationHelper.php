@@ -27,24 +27,12 @@ final class MigrationHelper
     public const MIGRATION_CLASS_NAME_PATTERN = '/Migration(\d{14})$/';
 
     /**
-     * @var string
-     */
-    private string $path;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * MigrationHelper constructor.
      * @param string      $path
      * @param DbInterface $db
      */
-    public function __construct(string $path, DbInterface $db)
+    public function __construct(private string $path, private DbInterface $db)
     {
-        $this->path = $path;
-        $this->db   = $db;
     }
 
     /**

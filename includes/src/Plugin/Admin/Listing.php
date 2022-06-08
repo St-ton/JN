@@ -29,26 +29,6 @@ final class Listing
     private const PLUGINS_DIR = \PFAD_ROOT . \PLUGIN_DIR;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $legacyValidator;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $validator;
-
-    /**
      * @var Collection
      */
     private Collection $items;
@@ -57,20 +37,16 @@ final class Listing
      * Listing constructor.
      * @param DbInterface        $db
      * @param JTLCacheInterface  $cache
+     * @param ValidatorInterface $legacyValidator
      * @param ValidatorInterface $validator
-     * @param ValidatorInterface $modernValidator
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        ValidatorInterface $validator,
-        ValidatorInterface $modernValidator
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private ValidatorInterface $legacyValidator,
+        private ValidatorInterface $validator
     ) {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->legacyValidator = $validator;
-        $this->validator       = $modernValidator;
-        $this->items           = new Collection();
+        $this->items = new Collection();
         $this->init();
     }
 
@@ -87,7 +63,7 @@ final class Listing
     {
         try {
             $all = $this->db->selectAll('tplugin', [], [], '*', 'cName, cAutor, nPrio');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $all = $this->db->getObjects(
                 'SELECT *, 0 AS bExtension
                     FROM tplugin

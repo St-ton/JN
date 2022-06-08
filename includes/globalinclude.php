@@ -72,7 +72,7 @@ try {
 if (!defined('CLI_BATCHRUN')) {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
-    $lang   = LanguageHelper::getInstance($db, $cache);
+    $lang = LanguageHelper::getInstance($db, $cache);
 }
 $config = Shopsetting::getInstance()->getAll();
 if (PHP_SAPI !== 'cli'

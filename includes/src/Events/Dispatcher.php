@@ -59,6 +59,17 @@ final class Dispatcher
     }
 
     /**
+     * @param int      $hookID
+     * @param callable $listener
+     * @param int      $priority
+     * @return void
+     */
+    public function hookInto(int $hookID, callable $listener, int $priority = 5): void
+    {
+        $this->listeners['shop.hook.' . $hookID][] = (object)['listener' => $listener, 'priority' => $priority];
+    }
+
+    /**
      * Fire an event and call the listeners.
      *
      * @param string       $eventName

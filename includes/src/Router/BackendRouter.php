@@ -97,11 +97,11 @@ use JTL\Router\Controller\Backend\WishlistController;
 use JTL\Router\Controller\Backend\WizardController;
 use JTL\Router\Controller\Backend\ZipImportController;
 use JTL\Router\Middleware\AuthMiddleware;
+use JTL\Router\Middleware\RevisionMiddleware;
 use JTL\Router\Middleware\UpdateCheckMiddleware;
 use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -347,12 +347,15 @@ class BackendRouter
         $updateCheckMiddleWare = new UpdateCheckMiddleware($db);
 
         $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
+            $revisionMiddleware = new RevisionMiddleware($this->db);
             foreach ($controllers as $slug => $controller) {
                 if ($slug === self::ROUTE_PASS || $slug === self::ROUTE_DASHBOARD || $slug === self::ROUTE_CODE) {
                     continue;
                 }
                 $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
-                $route->post('/' . $slug, $controller . '::getResponse')->setName('post' . $slug);
+                $route->post('/' . $slug, $controller . '::getResponse')
+                    ->middleware($revisionMiddleware)
+                    ->setName('post' . $slug);
             }
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
@@ -378,7 +381,6 @@ class BackendRouter
 
     public function dispatch(): void
     {
-        Shop::setRouter(new \JTL\Router\Router($this->db, $this->cache, new State()));
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
         $menu    = new Menu($this->db, $this->account, $this->getText);
         $data    = $menu->build($request);

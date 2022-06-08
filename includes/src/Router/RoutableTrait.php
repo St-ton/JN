@@ -6,6 +6,10 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
+/**
+ * Trait RoutableTrait
+ * @package JTL\Router
+ */
 trait RoutableTrait
 {
     /**

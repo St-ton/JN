@@ -2,7 +2,8 @@
 
 namespace JTL\Router;
 
-use FastRoute\Dispatcher;
+use Exception;
+use FastRoute\BadRouteException;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
@@ -23,9 +24,10 @@ use JTL\Router\Middleware\PhpFileCheckMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -40,11 +42,6 @@ use League\Route\Strategy\JsonStrategy;
 class Router
 {
     /**
-     * @var Dispatcher
-     */
-    private Dispatcher $dispatcher;
-
-    /**
      * @var string
      */
     private string $uri = '';
@@ -58,6 +55,11 @@ class Router
      * @var bool
      */
     private bool $isMultilang = false;
+
+    /**
+     * @var array|string[]
+     */
+    private array $groups = [''];
 
     /**
      * @var string
@@ -80,12 +82,14 @@ class Router
      * @param             $cache
      * @param State       $state
      */
-    public function __construct(protected DbInterface $db, protected $cache, protected State $state)
-    {
+    public function __construct(
+        protected DbInterface $db,
+        protected $cache,
+        protected State $state,
+        AlertServiceInterface $alert,
+        array $conf
+    ) {
         $cgid       = Frontend::getCustomer()->getGroupID();
-        $conf       = Shopsetting::getInstance()->getAll();
-        $alert      = Shop::Container()->getAlertService();
-        $groups     = [''];
         $codes      = [];
         $currencies = [];
 
@@ -103,8 +107,7 @@ class Router
         $this->router->middleware(new MaintenanceModeMiddleware());
         $this->router->middleware(new WishlistCheckMiddleware());
         $this->router->middleware(new CartcheckMiddleware());
-        $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
-        $visibilityMiddleware   = new VisibilityMiddleware();
+        $visibilityMiddleware = new VisibilityMiddleware();
 
         foreach (LanguageHelper::getAllLanguages() as $language) {
             if (!\defined('URL_SHOP_' . \mb_convert_case($language->getIso(), \MB_CASE_UPPER))) {
@@ -114,7 +117,7 @@ class Router
         if (\count($codes) > 1) {
             $this->isMultilang = true;
 
-            $groups[] = '/{lang:(?:' . \implode('|', $codes) . ')}';
+            $this->groups[] = '/{lang:(?:' . \implode('|', $codes) . ')}';
         }
         foreach (Frontend::getCurrencies() as $currency) {
             $currencies[] = $currency->getCode();
@@ -122,7 +125,7 @@ class Router
         $currencyPath = \count($currencies) > 1
             ? '[/{currency:(?:' . \implode('|', $currencies) . ')}]'
             : '';
-        foreach ($groups as $localized) {
+        foreach ($this->groups as $localized) {
             $this->router->get($localized . '/products/{id:\d+}' . $currencyPath, [$productController, 'getResponse'])
                 ->setName('ROUTE_PRODUCT_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''))
                 ->middleware($visibilityMiddleware);
@@ -168,9 +171,6 @@ class Router
         $this->router->get('/io', [$ioController, 'getResponse']);
         $this->router->post('/io', [$ioController, 'getResponse']);
 
-        $this->router->get('/{slug}', [$defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
-        $this->router->post('/{slug}', [$defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
-
         $this->router->get('/', [$rootController, 'getResponse']);
         $this->router->post('/', [$rootController, 'getResponse']);
 
@@ -181,19 +181,40 @@ class Router
     }
 
     /**
+     * @param string      $route
+     * @param callable    $cb
+     * @param array       $methods
+     * @param string|null $name
+     * @return void
+     */
+    public function addRoute(string $route, callable $cb, array $methods = ['GET'], string $name = null): void
+    {
+        if (!\str_starts_with($route, '/')) {
+            $route = '/' . $route;
+        }
+        $methods = \array_map('\mb_strtoupper', $methods);
+        foreach ($this->groups as $group) {
+            foreach ($methods as $method) {
+                $item = $this->router->map($method, $group . $route, $cb);
+                if ($name !== null) {
+                    $item->setName($name . $method);
+                }
+            }
+        }
+    }
+
+    /**
      * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
      * @return string
      */
     public function getRequestUri(bool $decoded = false): string
     {
-        $shopURLdata = \parse_url(Shop::getURL());
-        $baseURLdata = \parse_url($this->getRequestURL());
-
-        $uri = isset($baseURLdata['path'])
-            ? \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1)
+        $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+        $basePath = \parse_url($this->getRequestURL(), \PHP_URL_PATH);
+        $uri      = $basePath
+            ? \mb_substr($basePath, \mb_strlen($shopPath) + 1)
             : '';
-        $uri = '/' . $uri;
-
+        $uri      = '/' . $uri;
         if ($decoded) {
             $uri = \rawurldecode($uri);
         }
@@ -271,12 +292,11 @@ class Router
 
         $quoted = [];
         foreach ($matches['keys'] as $key) {
-            $quoted[] = preg_quote($key);
+            $quoted[] = \preg_quote($key, '/');
         }
         $isOptionalRegex = '/(.*)?{('
             . \implode('|', $quoted)
             . ')(:.*)?}(.*)?/';
-//        Shop::dbg($matches['keys'], false, 'mathcKey');
 
         $isPartiallyOptionalRegex = '/^([^\[\]{}]+)?\[((?:.*)?{(?:'
             . \implode('|', $matches['keys'])
@@ -301,18 +321,14 @@ class Router
             $c0 = !\preg_match('/{(.*?)}/', $segment);
             $c1 = \preg_match($hasReplacementRegex, $segment);
             if ($c0 || $c1) {
-                $item = \preg_replace(['/\[$/', '/\]+$/'], '', $segment);
-//                Shop::dbg($item, false,'add@0');
+                $item       = \preg_replace(['/\[$/', '/\]+$/'], '', $segment);
                 $segments[] = $item;
                 continue;
             }
 
             // segment is a required wildcard, no replacement, still gets added
-//            Shop::dbg($isOptionalRegex, false, 'optRegEx:');
-//            Shop::dbg($segment,false,'seg:');
             if (!\preg_match($isOptionalRegex, $segment)) {
-                $item = \preg_replace(['/\[$/', '/\]+$/'], '', $segment);
-                Shop::dbg($item, false, 'add@1');
+                $item       = \preg_replace(['/\[$/', '/\]+$/'], '', $segment);
                 $segments[] = $item;
                 continue;
             }
@@ -322,7 +338,6 @@ class Router
                 break;
             }
         }
-//        Shop::dbg($segments, false, 'segments:');
 
         return \preg_replace(\array_keys($toReplace), \array_values($toReplace), '/' . \implode('/', $segments));
     }
@@ -336,22 +351,42 @@ class Router
             . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 
-    public function dispatch(): void
+    /**
+     * @param JTLSmarty $smarty
+     * @return void
+     */
+    public function dispatch(JTLSmarty $smarty): void
     {
-        $strategy = new SmartyStrategy(new ResponseFactory(), Shop::Smarty(), $this->state);
+        $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $request     = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-        $shopURLdata = \parse_url(Shop::getURL());
-        if (isset($shopURLdata['path'])) { // @todo find a better solution
-            $baseURLdata = \parse_url($this->getRequestURL());
-            $path        = '/' . \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path'] ?? '') + 1);
-            $uri         = $request->getUri();
-            $request     = $request->withUri($uri->withPath($path));
+        $request  = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+        $uri      = $request->getUri();
+        if ($shopPath !== null) { // @todo find a better solution
+            $basePath = \parse_url($this->getRequestURL(), \PHP_URL_PATH);
+            $path     = '/' . \mb_substr($basePath, \mb_strlen($shopPath) + 1);
+            $request  = $request->withUri($uri->withPath($path));
         }
+        $uriPath = $request->getUri()->getPath();
+        $oldURI  = $uriPath;
+        \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uriPath]);
+        if ($oldURI !== $uriPath) {
+            $request = $request->withUri($uri->withPath($uriPath));
+        }
+        \executeHook(\HOOK_ROUTER_PRE_DISPATCH, ['router' => $this]);
+
+        $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
+        // this is added after HOOK_ROUTER_PRE_DISPATCH since plugins could register static routes
+        // which would otherwise be shadowed by this
+        $this->router->get('/{slug}', [$this->defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
+        $this->router->post('/{slug}', [$this->defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
         try {
             $response = $this->router->dispatch($request);
-        } catch (\Exception $e) {
-            $response = $this->defaultController->getResponse($request, [], Shop::Smarty());
+        } catch (BadRouteException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            Shop::Container()->getLogService()->error('Routing error: ' . $e->getMessage());
+            $response = $this->defaultController->getResponse($request, [], $smarty);
         }
         CoreDispatcher::getInstance()->fire(Event::EMIT);
         try {
@@ -386,22 +421,6 @@ class Router
     }
 
     /**
-     * @return Dispatcher
-     */
-    public function getDispatcher(): Dispatcher
-    {
-        return $this->dispatcher;
-    }
-
-    /**
-     * @param Dispatcher $dispatcher
-     */
-    public function setDispatcher(Dispatcher $dispatcher): void
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    /**
      * @return string
      */
     public function getUri(): string
@@ -415,5 +434,37 @@ class Router
     public function setUri(string $uri): void
     {
         $this->uri = $uri;
+    }
+
+    /**
+     * @return BaseRouter
+     */
+    public function getRouter(): BaseRouter
+    {
+        return $this->router;
+    }
+
+    /**
+     * @param BaseRouter $router
+     */
+    public function setRouter(BaseRouter $router): void
+    {
+        $this->router = $router;
+    }
+
+    /**
+     * @return array|string[]
+     */
+    public function getGroups(): array
+    {
+        return $this->groups;
+    }
+
+    /**
+     * @param array|string[] $groups
+     */
+    public function setGroups(array $groups): void
+    {
+        $this->groups = $groups;
     }
 }

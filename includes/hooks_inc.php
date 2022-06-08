@@ -1976,3 +1976,9 @@ const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 355;
  * @param JTL\News\Item item
  */
 const HOOK_NEWS_ITEM_MAPPED = 360;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Router\Router router
+ */
+const HOOK_ROUTER_PRE_DISPATCH = 4000;

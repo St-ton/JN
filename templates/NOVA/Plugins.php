@@ -34,12 +34,12 @@ class Plugins
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Plugins constructor.
@@ -256,7 +256,7 @@ class Plugins
         $alt   = isset($params['alt']) ? ' alt="' . $this->truncate($params['alt'], 75) . '"' : '';
         $title = isset($params['title']) ? ' title="' . $this->truncate($params['title'], 75) . '"' : '';
         $class = isset($params['class']) ? ' class="' . $this->truncate($params['class'], 75) . '"' : '';
-        if (\strpos($url, 'http') !== 0) {
+        if (!\str_starts_with($url, 'http')) {
             $url = Shop::getImageBaseURL() . \ltrim($url, '/');
         }
         if ($size !== null && $size->size->width > 0 && $size->size->height > 0) {
@@ -470,7 +470,7 @@ class Plugins
             }
         }
 
-        $sep = (\strpos($url, '?') === false) ? '?' : '&';
+        $sep = (!\str_contains($url, '?')) ? '?' : '&';
 
         return $url . $sep . ($reset ? 'aaReset=' : 'aaParams=') . \base64_encode($paramString);
     }
@@ -545,7 +545,7 @@ class Plugins
         }
         $imageBaseURL = Shop::getImageBaseURL();
         foreach ($result as $size => $data) {
-            if (isset($data->src) && \strpos($data->src, 'http') !== 0) {
+            if (isset($data->src) && !\str_starts_with($data->src, 'http')) {
                 $data->src = $imageBaseURL . $data->src;
             }
         }
@@ -562,7 +562,7 @@ class Plugins
      */
     public function getImageSize($image)
     {
-        $path = \strpos($image, \PFAD_BILDER) === 0
+        $path = \str_starts_with($image, \PFAD_BILDER)
             ? PFAD_ROOT . $image
             : $image;
         if (\file_exists($path)) {
@@ -613,7 +613,7 @@ class Plugins
         if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
             $linkID  = (int)$params['kLink'];
             $link    = Shop::Container()->getLinkService()->getLinkByID($linkID);
-            $content = $link !== null ? $link->getContent() : null;
+            $content = $link?->getContent();
             if (isset($params['assign'])) {
                 $smarty->assign($params['assign'], $content);
             } else {
@@ -646,15 +646,15 @@ class Plugins
 
         $maxVariationCount = isset($params['maxVariationCount']) ? (int)$params['maxVariationCount'] : 1;
         $maxWerteCount     = isset($params['maxWerteCount']) ? (int)$params['maxWerteCount'] : 3;
-        $variationCheck    = function ($Variationen, $maxVariationCount, $maxWerteCount) {
+        $variationCheck    = static function ($variations, $maxVariationCount, $maxValueCount) {
             $result   = true;
-            $varCount = \is_array($Variationen) ? \count($Variationen) : 0;
+            $varCount = \is_array($variations) ? \count($variations) : 0;
 
             if ($varCount > 0 && $varCount <= $maxVariationCount) {
-                foreach ($Variationen as $oVariation) {
+                foreach ($variations as $oVariation) {
                     if ($oVariation->cTyp !== 'SELECTBOX'
                         && (!\in_array($oVariation->cTyp, ['TEXTSWATCHES', 'IMGSWATCHES', 'RADIO'], true)
-                            || \count($oVariation->Werte) > $maxWerteCount)) {
+                            || \count($oVariation->Werte) > $maxValueCount)) {
                         $result = false;
                         break;
                     }
@@ -712,7 +712,7 @@ class Plugins
     {
         $to = $to ?: Shop::getLanguageCode();
 
-        return \is_string($mixed) ?: isset($mixed[$to]);
+        return \is_string($mixed) || isset($mixed[$to]);
     }
 
     /**

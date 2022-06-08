@@ -154,7 +154,7 @@ final class Shop extends ShopBC
      * @param mixed  $arguments
      * @return mixed
      */
-    public function __call(string $method, $arguments)
+    public function __call(string $method, mixed $arguments)
     {
         return ($mapping = self::map($method)) !== null
             ? \call_user_func_array([$this, $mapping], $arguments)
@@ -185,7 +185,7 @@ final class Shop extends ShopBC
      * @param mixed  $arguments
      * @return mixed
      */
-    public static function __callStatic(string $method, $arguments)
+    public static function __callStatic(string $method, mixed $arguments)
     {
         return ($mapping = self::map($method)) !== null
             ? \call_user_func_array([self::getInstance(), $mapping], $arguments)
@@ -196,7 +196,7 @@ final class Shop extends ShopBC
      * @param string $key
      * @return null|mixed
      */
-    public function registryGet(string $key)
+    public function registryGet(string $key): mixed
     {
         return $this->registry[$key] ?? null;
     }
@@ -206,7 +206,7 @@ final class Shop extends ShopBC
      * @param mixed  $value
      * @return $this
      */
-    public function registrySet(string $key, $value): self
+    public function registrySet(string $key, mixed $value): self
     {
         $this->registry[$key] = $value;
 
@@ -278,12 +278,12 @@ final class Shop extends ShopBC
     /**
      * quick&dirty debugging
      *
-     * @param mixed           $var - the variable to debug
-     * @param bool            $die - set true to die() afterwards
-     * @param null|int|string $beforeString - a prefix string
-     * @param int             $backtrace - backtrace depth
+     * @param mixed      $var - the variable to debug
+     * @param bool       $die - set true to die() afterwards
+     * @param mixed|null $beforeString - a prefix string
+     * @param int        $backtrace - backtrace depth
      */
-    public static function dbg($var, bool $die = false, $beforeString = null, int $backtrace = 0): void
+    public static function dbg(mixed $var, bool $die = false, mixed $beforeString = null, int $backtrace = 0): void
     {
         $nl     = \PHP_SAPI === 'cli' ? \PHP_EOL : '<br>';
         $trace  = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace);
@@ -296,9 +296,11 @@ final class Shop extends ShopBC
         if (\PHP_SAPI !== 'cli') {
             echo '<pre>';
         }
+        /** @noinspection ForgottenDebugOutputInspection */
         \var_dump($var);
         if ($backtrace > 0) {
             echo $nl . 'Backtrace:' . $nl;
+            /** @noinspection ForgottenDebugOutputInspection */
             \var_dump(tail($trace));
         }
         if (\PHP_SAPI !== 'cli') {
@@ -315,7 +317,7 @@ final class Shop extends ShopBC
      * @return int|string
      * @var bool $iso
      */
-    public static function getLanguage(bool $iso = false)
+    public static function getLanguage(bool $iso = false): int|string
     {
         return $iso === false ? self::$kSprache : self::$cISO;
     }
@@ -357,10 +359,10 @@ final class Shop extends ShopBC
     }
 
     /**
-     * @param array|int $config
+     * @param int|array $config
      * @return array
      */
-    public static function getSettings($config): array
+    public static function getSettings(int|array $config): array
     {
         return Shopsetting::getInstance()->getSettings($config);
     }
@@ -377,9 +379,9 @@ final class Shop extends ShopBC
     /**
      * @param int    $section
      * @param string $option
-     * @return string|array|int|null
+     * @return mixed
      */
-    public static function getSettingValue(int $section, string $option)
+    public static function getSettingValue(int $section, string $option): mixed
     {
         return Shopsetting::getInstance()->getValue($section, $option);
     }
@@ -447,7 +449,7 @@ final class Shop extends ShopBC
     public static function dispatch(): void
     {
         self::run();
-        self::$router->dispatch();
+        self::$router->dispatch(self::Smarty(false, ContextType::FRONTEND));
     }
 
     /**
@@ -568,13 +570,6 @@ final class Shop extends ShopBC
      */
     public static function seoCheck(): void
     {
-//        self::getLanguageFromServerName();
-//        $uri = self::$uri;
-//        \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
-//        if (\str_starts_with($uri, '/')) {
-//            $uri = \mb_substr($uri, 1);
-//        }
-//        self::seoCheckFinish();
     }
 
     public static function seoCheckFinish(): void
@@ -648,13 +643,13 @@ final class Shop extends ShopBC
      * build product filter object from parameters
      *
      * @param array                       $params
-     * @param stdClass|null|ProductFilter $productFilter
+     * @param stdClass|ProductFilter|null $productFilter
      * @param bool                        $validate
      * @return ProductFilter
      */
     public static function buildProductFilter(
         array $params,
-        $productFilter = null,
+        ProductFilter|stdClass $productFilter = null,
         bool $validate = true
     ): ProductFilter {
         $pf = new ProductFilter(
@@ -893,8 +888,10 @@ final class Shop extends ShopBC
             \session_name('JTLSHOP');
             \session_id($frontendId);
             \session_start();
-            self::$adminToken          = $_SESSION['adminToken'] = $adminToken;
-            self::$adminLangTag        = $_SESSION['adminLangTag'] = $adminLangTag;
+            self::$adminToken          = $adminToken;
+            self::$adminLangTag        = $adminLangTag;
+            $_SESSION['adminToken']    = $adminToken;
+            $_SESSION['adminLangTag']  = $adminLangTag;
             $_SESSION['loggedAsAdmin'] = self::$logged;
         } else {
             // no information about admin session available
@@ -998,7 +995,7 @@ final class Shop extends ShopBC
         $homeURL = self::getURL() . '/';
         try {
             if (!LanguageHelper::isDefaultLanguageActive()) {
-                $homeURL = self::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)->getURL();
+                $homeURL = self::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)?->getURL();
             }
         } catch (SpecialPageNotFoundException $e) {
             self::Container()->getLogService()->error($e->getMessage());

@@ -1,11 +1,6 @@
 <?php declare(strict_types=1);
 
 use JTL\Backend\AdminLoginStatus;
-use JTL\Backend\Revision;
-use JTL\Events\Dispatcher;
-use JTL\Events\Event;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
 use JTL\Router\Router;
@@ -14,8 +9,8 @@ use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Update\Updater;
-use JTLShop\SemVer\Version;
 
 if (!isset($bExtern) || !$bExtern) {
     if (isset($_REQUEST['safemode'])) {
@@ -25,32 +20,24 @@ if (!isset($bExtern) || !$bExtern) {
     require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
     require DEFINES_PFAD . 'defines.php';
     require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
-    defined('DB_HOST') || die('Kein MySQL-Datenbank Host angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_NAME') || die('Kein MySQL Datenbanknamen angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_USER') || die('Kein MySQL-Datenbank Benutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_PASS') || die('Kein MySQL-Datenbank Passwort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+    defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
-define(
-    'JTL_VERSION',
-    (int)sprintf(
-        '%d%02d',
-        Version::parse(APPLICATION_VERSION)->getMajor(),
-        Version::parse(APPLICATION_VERSION)->getMinor()
-    )
-); // DEPRECATED since 5.0.0
-define('JTL_MINOR_VERSION', (int)Version::parse(APPLICATION_VERSION)->getPatch()); // DEPRECATED since 5.0.0
-
 if (!function_exists('Shop')) {
     /**
      * @return Shop
+     * @deprecated since 5.2.0
      */
     function Shop(): Shop
     {
+        trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
         return Shop::getInstance();
     }
 }
@@ -66,23 +53,20 @@ function routeRedirect(string $route): void
 }
 
 Profiler::start();
-$db    = Shop::Container()->getDB();
-$cache = Shop::Container()->getCache()->setJtlCacheConfig(
+Shop::setIsFrontend(false);
+$db         = Shop::Container()->getDB();
+$cache      = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-Shop::setIsFrontend(false);
 $session    = Backend::getInstance();
 $lang       = LanguageHelper::getInstance($db, $cache);
 $oAccount   = Shop::Container()->getAdminAccount();
 $loggedIn   = $oAccount->logged();
-$updater    = new Updater($db);
-$hasUpdates = $updater->hasPendingUpdates();
-
 if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     if ($GLOBALS['plgSafeMode']) {
-        touch(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
-    } elseif (file_exists(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck')) {
-        unlink(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck');
+        touch(SAFE_MODE_LOCK);
+    } elseif (file_exists(SAFE_MODE_LOCK)) {
+        unlink(SAFE_MODE_LOCK);
     }
 }
 
@@ -103,32 +87,22 @@ if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
     $session = new Backend();
     $session::set('frontendUpToDate', true);
 }
-Shop::setRouter(new Router($db, $cache, new State()));
+Shop::setRouter(new Router(
+    $db,
+    $cache,
+    new State(),
+    Shop::Container()->getAlertService(),
+    Shopsetting::getInstance()->getAll()
+));
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {
     return new SimpleCaptchaService(true);
 });
-if (!$hasUpdates) {
+if ((new Updater($db))->hasPendingUpdates() === false) {
     Shop::bootstrap(false);
 }
-if ($loggedIn) {
-    if (!$session->isValid()) {
-        $oAccount->logout();
-        $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
-    }
-
-    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
-        $revision = new Revision($db);
-        Dispatcher::getInstance()->fire(Event::REVISION_RESTORE_DELETE, ['revision' => $revision]);
-        if ($_POST['revision-action'] === 'restore') {
-            $revision->restoreRevision(
-                $_POST['revision-type'],
-                (int)$_POST['revision-id'],
-                Request::postInt('revision-secondary') === 1
-            );
-        } elseif ($_POST['revision-action'] === 'delete') {
-            $revision->deleteRevision((int)$_POST['revision-id']);
-        }
-    }
+if ($loggedIn && !$session->isValid()) {
+    $oAccount->logout();
+    $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
 }

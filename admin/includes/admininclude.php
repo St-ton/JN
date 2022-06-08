@@ -54,14 +54,14 @@ function routeRedirect(string $route): void
 
 Profiler::start();
 Shop::setIsFrontend(false);
-$db         = Shop::Container()->getDB();
-$cache      = Shop::Container()->getCache()->setJtlCacheConfig(
+$db       = Shop::Container()->getDB();
+$cache    = Shop::Container()->getCache()->setJtlCacheConfig(
     $db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
 );
-$session    = Backend::getInstance();
-$lang       = LanguageHelper::getInstance($db, $cache);
-$oAccount   = Shop::Container()->getAdminAccount();
-$loggedIn   = $oAccount->logged();
+$session  = Backend::getInstance();
+$lang     = LanguageHelper::getInstance($db, $cache);
+$oAccount = Shop::Container()->getAdminAccount();
+$loggedIn = $oAccount->logged();
 if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     if ($GLOBALS['plgSafeMode']) {
         touch(SAFE_MODE_LOCK);

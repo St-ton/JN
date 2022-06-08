@@ -38,7 +38,13 @@
                 </div>
                 <div class="card-body">
                     {if $section->key === 'header'}
-                        <style>.preset-button.selected { border: 5px solid; }</style>
+                        <style>
+                            .preset-button {
+                                border: 5px solid transparent;
+                                max-width: 222px;
+                            }
+                            .preset-button.selected { border: 5px solid; }
+                        </style>
                         <script>
                             {literal}
                             $(document).ready(function(){

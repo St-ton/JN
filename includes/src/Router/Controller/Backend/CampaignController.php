@@ -216,10 +216,10 @@ class CampaignController extends AbstractBackendController
 
                 $stats = $this->db->getObjects(
                     'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
-                FROM tkampagnevorgang
-                ' . $where . '
-                    AND kKampagne = ' . $campaignID . '
-                    AND kKampagneDef = ' . (int)$definition->kKampagneDef
+                    FROM tkampagnevorgang
+                    ' . $where . '
+                        AND kKampagne = ' . $campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef
                 );
 
                 $paginationDefinitionDetail = (new Pagination('defdetail'))

@@ -4,11 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
-use JTL\Alert\Alert;
-use JTL\Checkout\ShippingSurcharge;
-use JTL\Checkout\ShippingSurchargeArea;
 use JTL\Checkout\Versandart;
-use JTL\Checkout\ZipValidator;
 use JTL\Country\Country;
 use JTL\Country\Manager;
 use JTL\Customer\CustomerGroup;
@@ -23,11 +19,9 @@ use JTL\Plugin\Helper as PluginHelper;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Shop;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use SmartyException;
 use stdClass;
 
 /**

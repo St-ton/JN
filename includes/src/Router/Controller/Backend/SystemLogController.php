@@ -69,7 +69,7 @@ class SystemLogController extends AbstractBackendController
         $filter->assemble();
 
         $searchString     = $searchfield->getValue();
-        $selectedLevel    = $levelSelect->getSelectedOption()->getValue();
+        $selectedLevel    = $levelSelect->getSelectedOption()?->getValue();
         $totalLogCount    = Jtllog::getLogCount();
         $filteredLogCount = Jtllog::getLogCount($searchString, (int)$selectedLevel);
         $pagination       = (new Pagination('syslog'))

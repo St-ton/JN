@@ -226,7 +226,7 @@ class PluginController extends AbstractBackendController
                     $menu->html = $this->smarty->fetch($menu->tpl);
                 } elseif ($plugin->isBootstrap() === true) {
                     $menu->html = Helper::bootstrap($plugin->getID(), $loader)
-                        ->renderAdminMenuTab($menu->name, $menu->id, $this->smarty);
+                        ?->renderAdminMenuTab($menu->name, $menu->id, $this->smarty);
                 }
             } elseif ($menu->configurable === true) {
                 $hidden = true;

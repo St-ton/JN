@@ -24,8 +24,8 @@ class WishlistCheckMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
         $params   = $request->getQueryParams();
         if (($params['wlid'] ?? '') !== '' && ($params['error'] ?? '') === '') {
-            $state = $handler->getStrategy()->getState();
-            if ($state->wishlistID === 0) {
+            $state = $handler->getStrategy()?->getState();
+            if ($state === null || $state->wishlistID === 0) {
                 return new RedirectResponse(LinkService::getInstance()->getStaticRoute('wunschliste.php')
                     . '?wlid=' . Text::filterXSS($params['wlid']) . '&error=1', 303);
             }

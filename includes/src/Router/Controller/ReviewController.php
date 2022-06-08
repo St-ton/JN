@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller;
 
 use Exception;
-use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;

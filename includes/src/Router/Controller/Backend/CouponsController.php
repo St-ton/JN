@@ -418,7 +418,7 @@ class CouponsController extends AbstractBackendController
         foreach ($items as $item) {
             $item->kHersteller = (int)$item->kHersteller;
             $manufacturer      = new Hersteller($item->kHersteller, $langID);
-            $item->cName       = $manufacturer->cName;
+            $item->cName       = $manufacturer->getName($langID);
             $item->selected    = \in_array($item->kHersteller, $selected, true);
             unset($manufacturer);
         }
@@ -847,9 +847,7 @@ class CouponsController extends AbstractBackendController
                     if ($categoryID <= 0) {
                         continue;
                     }
-                    $category       = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
-                    $category->cURL = $category->cURLFull;
-                    $categories[]   = $category;
+                    $categories[] = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
                 }
             }
             $products = [];

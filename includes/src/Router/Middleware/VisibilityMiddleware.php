@@ -22,7 +22,7 @@ class VisibilityMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
-        $state    = $handler->getStrategy()->getState();
+        $state    = $handler->getStrategy()?->getState();
         if (($state->productID > 0 || $state->categoryID > 0) && !Frontend::getCustomerGroup()->mayViewCategories()) {
             // falls Artikel/Kategorien nicht gesehen werden duerfen -> login
             return new RedirectResponse(LinkService::getInstance()->getStaticRoute('jtl.php') . '?li=1', 303);

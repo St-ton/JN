@@ -30,9 +30,9 @@ use JTL\Router\Controller\RegistrationController;
 use JTL\Router\Controller\ReviewController;
 use JTL\Router\Controller\WishlistController;
 use JTL\Session\Frontend;
+use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use JTL\Shop;
 
 /**
  * Class ControllerFactory

@@ -42,7 +42,7 @@ class DashboardController extends AbstractBackendController
         $this->smarty->assign('pw_updated', Request::getVar('pw_updated') === 'true')
             ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
             ->assign('alertList', $this->alertService)
-            ->assign('plgSafeMode', $GLOBALS['plgSafeMode'] ?? false);
+            ->assign('plgSafeMode', (bool)($GLOBALS['plgSafeMode'] ?? false));
         if (!$this->account->getIsAuthenticated()) {
             $this->account->redirectOnUrl();
             if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {

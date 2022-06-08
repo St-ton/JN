@@ -56,7 +56,7 @@ abstract class GenericModelController extends AbstractBackendController
         $valid      = Form::validateToken();
         $action     = Request::postVar('action') ?? Request::getVar('action');
         $itemID     = $_SESSION['modelid'] ?? Request::postInt('id', null) ?? Request::getInt('id', null);
-        $continue   = $_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1;
+        $continue   = (bool)($_SESSION['continue'] ?? Request::postInt('save-model-continue') === 1);
         $save       = $valid && ($continue || Request::postInt('save-model') === 1);
         $modelIDs   = Request::postVar('mid', []);
         $cancel     = Request::postInt('go-back') === 1;

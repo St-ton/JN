@@ -47,7 +47,7 @@ class DBUpdateController extends AbstractBackendController
             );
             unset($_SESSION['disabledPlugins']);
         }
-        if (($_SESSION['maintenance_forced'] ?? false) === true) {
+        if ((bool)($_SESSION['maintenance_forced'] ?? false) === true) {
             $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'N']);
             $this->cache->flushTags([\CACHING_GROUP_OPTION]);
         }

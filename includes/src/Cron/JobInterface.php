@@ -115,7 +115,7 @@ interface JobInterface
     public function setStartTime($startTime): void;
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getStartDate(): ?DateTime;
 

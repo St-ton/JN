@@ -11,3 +11,6 @@ Parameter
 
 ``int`` **kArtikel**
     **kArtikel** Artikel-ID
+
+``int`` **kVaterArtikel** (ab 5.1.3)
+    **kVaterArtikel** Artikel-ID des Vaterartikels

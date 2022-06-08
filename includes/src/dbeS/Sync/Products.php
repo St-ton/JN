@@ -903,7 +903,7 @@ final class Products extends AbstractSync
         $this->upsertXML($product, 'tartikelattribut', 'mArtikelAttribut', 'kArtikelAttribut');
         $this->upsertXML($product, 'tartikelsichtbarkeit', 'mArtikelSichtbarkeit', 'kKundengruppe', 'kArtikel');
         $this->upsertXML($product, 'txsell', 'mXSell', 'kXSell');
-        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMermalWert');
+        $this->upsertXML($product, 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMerkmalWert', 'kArtikel');
         $this->addStockData($products[0]);
         $this->handleSQL($xml);
         $this->addWarehouseData($xml, $productID);
@@ -962,7 +962,10 @@ final class Products extends AbstractSync
                 Artikel::beachteVarikombiMerkmalLagerbestand($parent);
                 $res[] = $parent;
             }
-            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
+            \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, [
+                'kArtikel'      => $productID,
+                'kVaterArtikel' => $parent,
+            ]);
         }
 
         return $res;

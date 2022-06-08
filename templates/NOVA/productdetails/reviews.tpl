@@ -28,7 +28,7 @@
                                                 {assign var=int1 value=5}
                                                 {math equation='x - y' x=$int1 y=$i assign='schluessel'}
                                                 {assign var=int2 value=100}
-                                                {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
+                                                {math equation='(a/b)*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
                                                 {row}
                                                     {col cols=4}
                                                     {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}

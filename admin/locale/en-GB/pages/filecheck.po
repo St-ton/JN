@@ -33,7 +33,7 @@ msgid "fileCheckNumberOrphanedFiles"
 msgstr "Number of orphaned files"
 
 msgid "errorFileNotFound"
-msgstr "The file %s  with the current file list does not exist."
+msgstr "The file %s with the current file list does not exist."
 
 msgid "And %d more"
 msgstr "And %d more"

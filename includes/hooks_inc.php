@@ -1903,19 +1903,40 @@ const HOOK_BESTELLUNG_SETZEGUTHABEN = 335;
 /**
  * @since 5.1.3
  * @file includes/src/dbeS/Sync/AbstractSync.php
- * @param bool   &sendMails
- * @param object product
- * @param array  subscriptions
+ * @param bool   &$sendMails
+ * @param object $product
+ * @param array  $subscriptions
  */
 const HOOK_SYNC_SEND_AVAILABILITYMAILS = 336;
+
 
 /**
  * @since 5.1.3
  * @file includes/src/Cart/Cart.php
- * @param JTL\Cart\CartItem positionItem
- * @param bool              &delete
+ * @param CartItem $positionItem
+ * @param bool     &$delete
  */
 const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
+
+/**
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $deliveryNote
+ */
+const HOOK_DELIVERYNOTES_XML_INSERT = 340;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param object $shipping
+ */
+const HOOK_DELIVERYNOTES_XML_SHIPPING = 341;
+
+/**
+ * @since 5.1.3
+ * @file includes/src/dbeS/Sync/DeliveryNotes.php
+ * @param int $deliveryNoteID
+ */
+const HOOK_DELIVERYNOTES_XML_DELETE = 342;
 
 /**
  * @since 5.2.0
@@ -1923,7 +1944,7 @@ const HOOK_CART_DELETE_PARENT_CART_ITEM = 337;
  * @param JTL\Export\FormatExporter exporter
  * @param int                       exportID
  */
-const HOOK_EXPORT_PRE_RENDER = 340;
+const HOOK_EXPORT_PRE_RENDER = 350;
 
 /**
  * @since 5.2.0
@@ -1933,7 +1954,7 @@ const HOOK_EXPORT_PRE_RENDER = 340;
  * @param bool                      isAsync
  * @param bool                      isCron
  */
-const HOOK_EXPORT_START = 341;
+const HOOK_EXPORT_START = 351;
 
 /**
  * @since 5.2.0
@@ -1941,24 +1962,24 @@ const HOOK_EXPORT_START = 341;
  * @param int                       exportID
  * @param JTL\Export\Model          model
  */
-const HOOK_EXPORT_FACTORY_GET_EXPORTER = 342;
+const HOOK_EXPORT_FACTORY_GET_EXPORTER = 352;
 
 /**
  * @since 5.2.0
  * @param JTL\Catalog\Product\Artikel product
  * @param int|string|float            &qty
  */
-const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 345;
+const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 355;
 
 /**
  * @since 5.2.0
  * @param JTL\News\Item item
  */
-const HOOK_NEWS_ITEM_MAPPED = 350;
+const HOOK_NEWS_ITEM_MAPPED = 360;
 
 /**
  * @since 5.2.0
  * @param JTL\Template\TemplateServiceInterface service
  * @param array arguments
  */
-const HOOK_TPL_LOAD_PRE = 351;
+const HOOK_TPL_LOAD_PRE = 361;

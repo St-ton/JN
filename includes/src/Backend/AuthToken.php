@@ -79,10 +79,11 @@ class AuthToken
      */
     private function load(): void
     {
-        $this->authCode = null;
-        $this->token    = null;
-        $this->hash     = null;
-        $this->verified = null;
+        $this->authCode       = null;
+        $this->token          = null;
+        $this->hash           = null;
+        $this->verified       = null;
+        $this->decryptedToken = null;
 
         $token = $this->db->getSingleObject(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,

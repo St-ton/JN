@@ -27,17 +27,17 @@ final class SyntaxChecker
     /**
      * @var RendererInterface
      */
-    private $renderer;
+    private RendererInterface $renderer;
 
     /**
      * @var HydratorInterface
      */
-    private $hydrator;
+    private HydratorInterface $hydrator;
 
     /**
      * @var TemplateFactory
      */
-    private $factory;
+    private TemplateFactory $factory;
 
     /**
      * SyntaxChecker constructor.
@@ -130,7 +130,7 @@ final class SyntaxChecker
             $html = $this->renderer->renderHTML($id);
             $text = $this->renderer->renderText($id);
             if (!\in_array($moduleID, ['core_jtl_footer', 'core_jtl_header'], true)
-                && (\mb_strlen(\trim($html)) === 0 || \mb_strlen(\trim($text)) === 0)
+                && (\trim($html) === '' || \trim($text) === '')
             ) {
                 $model->setHasError(true);
                 $res->state   = 'fail';
@@ -206,7 +206,7 @@ final class SyntaxChecker
             $model->setSyntaxCheck($model::SYNTAX_NOT_CHECKED);
             $model->save();
 
-            foreach (LanguageHelper::getAllLanguages() as $lang) {
+            foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
                 $template->load($lang->getId(), 1);
                 $res->result[$lang->getCode()] = $sc->doCheck($lang, $model);
             }

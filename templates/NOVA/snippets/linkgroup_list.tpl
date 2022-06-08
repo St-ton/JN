@@ -19,7 +19,7 @@
                     {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}
                         {block name='snippets-linkgroup-list-links-dropdown'}
                             <li class="link-group-item nav-item nav-scrollbar-item dropdown dropdown-full{if $activeId == $li->getId()} active{/if}">
-                                {link href=$li->getURL() title=$li->getName() class="nav-link dropdown-toggle" target="_self"}
+                                {link href=$li->getURL() title=$li->getName() class="nav-link dropdown-toggle" target=$li->getTarget()}
                                     <span class="text-truncate nav-mobile-heading">{$li->getName()}</span>
                                 {/link}
                                 <div class="dropdown-menu">
@@ -28,7 +28,7 @@
                                             {row class="lg-row-lg nav"}
                                                 {col lg=4 xl=3 class="nav-item-lg-m nav-item dropdown d-lg-none"}
                                                     {block name='snippets-linkgroup-list-links-header'}
-                                                        {link href=$li->getURL() title=$li->getName()}
+                                                        {link href=$li->getURL() title=$li->getName() target=$li->getTarget()}
                                                             <strong class="nav-mobile-heading">{lang key='menuShow' printf=$li->getName()}</strong>
                                                         {/link}
                                                     {/block}
@@ -56,7 +56,11 @@
                         {/block}
                     {else}
                         {block name='snippets-linkgroup-list-links-navitem'}
-                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}" router-class="{if $tplscope=='sitemap'}nice-deco{/if}"}
+                            {navitem href=$li->getURL()
+                                nofollow=$li->getNoFollow()
+                                class="nav-scrollbar-item {if $activeId == $li->getId()}active{/if}"
+                                router-class="{if $tplscope=='sitemap'}nice-deco{/if}"
+                                target=$li->getTarget()}
                                 {$li->getName()}
                             {/navitem}
                         {/block}

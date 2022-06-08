@@ -1,4 +1,4 @@
-HOOK_NEWS_ITEM_MAPPED (350)
+HOOK_NEWS_ITEM_MAPPED (360)
 ===========================
 
 Triggerpunkt

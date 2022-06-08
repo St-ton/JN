@@ -55,8 +55,7 @@ class LegacyPluginLoader extends AbstractLoader
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()::getDefaultLanguage()->kSprache;
         }
-        $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
+        $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         if ($this->plugin === null) {
             $this->plugin = new LegacyPlugin();
         }

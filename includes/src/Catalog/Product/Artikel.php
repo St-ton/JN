@@ -2979,11 +2979,8 @@ class Artikel
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx = $varDetailPrice->kEigenschaftWert;
-
-            $tmpProduct                            = null;
-            $tmpOptions                            = new stdClass();
-            $tmpOptions->nKeinLagerbestandBeachten = 1;
+            $idx        = $varDetailPrice->kEigenschaftWert;
+            $tmpProduct = null;
             if ($varDetailPrice->kArtikel !== $lastProduct) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB());
@@ -3496,6 +3493,14 @@ class Artikel
             }
         }
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
+        if ((int)$this->conf['global']['global_sichtbarkeit'] === 2
+            && $this->Preise !== null
+            && $this->Preise->fVKNetto === 0
+            && Frontend::getCustomerGroup()->mayViewPrices()
+        ) {
+            // zero-ed prices were saved to cache
+            $this->Preise = null;
+        }
         if ($this->Preise === null || !\method_exists($this->Preise, 'rabbatierePreise')) {
             $this->holPreise($customerGroupID, $this);
         }

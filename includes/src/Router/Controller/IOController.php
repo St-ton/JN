@@ -26,14 +26,14 @@ class IOController extends AbstractController
         $ioMethods = new IOMethods($io, $this->db);
         $ioMethods->registerMethods();
         $smarty->setCaching(false)
-            ->assign('nSeitenTyp', PAGE_IO)
+            ->assign('nSeitenTyp', \PAGE_IO)
             ->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('ShopURL', Shop::getURL())
-            ->assignDeprecated('BILD_KEIN_KATEGORIEBILD_VORHANDEN', BILD_KEIN_KATEGORIEBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_ARTIKELBILD_VORHANDEN', BILD_KEIN_ARTIKELBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN, '5.0.0')
-            ->assignDeprecated('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN, '5.0.0');
+            ->assignDeprecated('BILD_KEIN_KATEGORIEBILD_VORHANDEN', \BILD_KEIN_KATEGORIEBILD_VORHANDEN, '5.0.0')
+            ->assignDeprecated('BILD_KEIN_ARTIKELBILD_VORHANDEN', \BILD_KEIN_ARTIKELBILD_VORHANDEN, '5.0.0')
+            ->assignDeprecated('BILD_KEIN_HERSTELLERBILD_VORHANDEN', \BILD_KEIN_HERSTELLERBILD_VORHANDEN, '5.0.0')
+            ->assignDeprecated('BILD_KEIN_MERKMALBILD_VORHANDEN', \BILD_KEIN_MERKMALBILD_VORHANDEN, '5.0.0')
+            ->assignDeprecated('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', \BILD_KEIN_MERKMALWERTBILD_VORHANDEN, '5.0.0');
 
         if (!isset($_REQUEST['io'])) {
             return (new Response())->withStatus(400);

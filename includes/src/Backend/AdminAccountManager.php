@@ -56,7 +56,7 @@ class AdminAccountManager
      */
     public function __construct(JTLSmarty $smarty, DbInterface $db, AlertServiceInterface $alertService)
     {
-        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore. ', \E_USER_DEPRECATED);
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $this->smarty       = $smarty;
         $this->db           = $db;
         $this->alertService = $alertService;

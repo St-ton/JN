@@ -223,6 +223,12 @@ class Frontend extends AbstractSession
                     break;
                 }
             }
+        } elseif (isset($_SESSION['currentLanguage']) && \get_class($_SESSION['currentLanguage']) === stdClass::class) {
+            foreach ($_SESSION['Sprachen'] as $lang) {
+                if ($_SESSION['kSprache'] === $lang->kSprache) {
+                    $_SESSION['currentLanguage'] = clone $lang;
+                }
+            }
         }
         if (isset($_SESSION['Waehrung'])) {
             if (\get_class($_SESSION['Waehrung']) === stdClass::class) {
@@ -505,6 +511,14 @@ class Frontend extends AbstractSession
      */
     public static function getCurrency(): Currency
     {
+        $currency = $_SESSION['Waehrung'] ?? null;
+        if ($currency !== null && \get_class($currency) === Currency::class) {
+            return $currency;
+        }
+        if (\get_class($currency) === stdClass::class) {
+            $_SESSION['Waehrung'] = new Currency((int)$_SESSION['Waehrung']->kWaehrung);
+        }
+
         return $_SESSION['Waehrung'] ?? (new Currency())->getDefault();
     }
 

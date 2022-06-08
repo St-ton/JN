@@ -34,8 +34,8 @@ class SitemapExportController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/sitemapexport');
 
         $this->smarty->assign('route', $this->route);
-        if (Request::postVar('action') === 'update') {
-            return $this->actionUpdate();
+        if (Request::postVar('action') === 'export') {
+            return $this->actionExport();
         }
         $exportDir = \PFAD_ROOT . \PFAD_EXPORT;
 
@@ -196,7 +196,7 @@ class SitemapExportController extends AbstractBackendController
     /**
      * @return ResponseInterface
      */
-    private function actionUpdate(): ResponseInterface
+    private function actionExport(): ResponseInterface
     {
         $config       = Shop::getSettings([\CONF_GLOBAL, \CONF_SITEMAP]);
         $exportConfig = new DefaultConfig($this->db, $config, Shop::getURL() . '/', Shop::getImageBaseURL());

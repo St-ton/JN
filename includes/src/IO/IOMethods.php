@@ -1092,9 +1092,14 @@ class IOMethods
                     WHERE cPageId LIKE '%\"type\":\"product\"%'
                         AND (
                             cPageId LIKE CONCAT('%\"id\":', :id,'%')
-                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%'))",
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
                     'count',
-                    ['id' => $tmpProduct->kArtikel, 'last_id' => $childProductID]
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
                 ) > 0;
                 if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(

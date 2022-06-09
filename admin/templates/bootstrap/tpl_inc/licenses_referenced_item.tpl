@@ -11,14 +11,14 @@
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}
-        {$disabled = $licData->isExpired() || ($subscription->isExpired() && !$subscription->canBeUsed()) || $referencedItem->canBeUpdated() === false}
+        {$disabled = $licData->isExpired() || ($subscription->isExpired() && !$subscription->canBeUsed()) || (!$referencedItem->isFilesMissing() && !$referencedItem->canBeUpdated())}
         {if isset($licenseErrorMessage)}
             <div class="alert alert-danger">
                 {__($licenseErrorMessage)}
             </div>
         {/if}
         {$installedVersion = $referencedItem->getInstalledVersion()}
-        {if $installedVersion === null}
+        {if $installedVersion === null || $referencedItem->isFilesMissing()}
             {$avail = $license->getReleases()->getAvailable()}
             {if $avail === null}
                 {$disabled = true}
@@ -29,7 +29,12 @@
                 </span>
             {/if}
             {form method="post" class="mt-2{if !$disabled} install-item-form{/if}"}
-                <input type="hidden" name="action" value="install">
+                {if $referencedItem->isFilesMissing()}
+                    <input type="hidden" name="exs-id" value="{$license->getExsID()}">
+                    <input type="hidden" name="action" value="update">
+                {else}
+                    <input type="hidden" name="action" value="install">
+                {/if}
                 <input type="hidden" name="item-type" value="{$license->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
                 <input type="hidden" name="license-type" value="{$license->getLicense()->getType()}">

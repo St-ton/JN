@@ -35,7 +35,7 @@
         "phpmyadmin/sql-parser": "^5.4.2",
         "phpgangsta/googleauthenticator": "dev-master",
         "phpmailer/phpmailer": "^6.0",
-        "jtlshop/qrcodegenerator": "dev-master",
+        "jtlshop/qrcodegenerator": "0.1.0",
         "erusev/parsedown": "1.8.0-beta-5",
         "chamilo/pclzip": "^2.8",
         "psr/log": "^1.1",

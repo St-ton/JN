@@ -137,6 +137,7 @@ final class Controller
             Type::IMAGECACHE,
             Type::STATUSMAIL,
             Type::DATAPROTECTION,
+            Type::TOPSELLER,
         ];
         Dispatcher::getInstance()->fire(Event::GET_AVAILABLE_CRONJOBS, ['jobs' => &$available]);
 

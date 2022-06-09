@@ -1762,7 +1762,7 @@ Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-
 
 .. code-block:: php
 
-    {lang var='lang_var_one' section='jtl_example_plugin'}
+    {lang key='lang_var_one' section='jtl_example_plugin'}
     {lang key='lang_var_two' section='jtl_example_plugin' printf='Peter'}
 
 

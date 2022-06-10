@@ -176,6 +176,11 @@ class Preise
     public $discountPercentage = 0;
 
     /**
+     * @var bool
+     */
+    public $noDiscount = false;
+
+    /**
      * @var array
      */
     public array $cAufpreisLocalized = [];
@@ -261,6 +266,9 @@ class Preise
                 // Kundenpreis?
                 if ((int)$price->kKunde > 0) {
                     $this->Kundenpreis_aktiv = true;
+                }
+                if ((int)$price->noDiscount > 0) {
+                    $this->noDiscount = true;
                 }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
@@ -429,7 +437,7 @@ class Preise
      */
     public function isDiscountable(): bool
     {
-        return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv);
+        return !($this->Kundenpreis_aktiv || $this->Sonderpreis_aktiv || $this->noDiscount);
     }
 
     /**

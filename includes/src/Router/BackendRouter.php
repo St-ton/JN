@@ -50,6 +50,7 @@ use JTL\Router\Controller\Backend\LanguageController;
 use JTL\Router\Controller\Backend\LicenseController;
 use JTL\Router\Controller\Backend\LinkController;
 use JTL\Router\Controller\Backend\LivesearchController;
+use JTL\Router\Controller\Backend\LocalizationController;
 use JTL\Router\Controller\Backend\LogoController;
 use JTL\Router\Controller\Backend\LogoutController;
 use JTL\Router\Controller\Backend\MarkdownController;
@@ -208,6 +209,7 @@ class BackendRouter
     public const ROUTE_SEARCHRESULTS         = 'searchresults';
     public const ROUTE_ELFINDER              = 'elfinder';
     public const ROUTE_CODE                  = 'code';
+    public const ROUTE_LOCALIZATION_CHECK    = 'localizationcheck';
 
     /**
      * @var Router
@@ -324,6 +326,7 @@ class BackendRouter
             self::ROUTE_SEARCHRESULTS         => SearchController::class,
             self::ROUTE_ELFINDER              => ElfinderController::class,
             self::ROUTE_CODE                  => CodeController::class,
+            self::ROUTE_LOCALIZATION_CHECK    => LocalizationController::class,
 
         ];
         foreach ($controllers as $route => $controller) {

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Middleware;
 
+use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
 use JTL\Router\BackendRouter;
 use JTL\Shop;
@@ -19,9 +20,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 class UpdateCheckMiddleware implements MiddlewareInterface
 {
     /**
-     * @param DbInterface $db
+     * @param DbInterface  $db
+     * @param AdminAccount $account
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private DbInterface $db, private AdminAccount $account)
     {
     }
 
@@ -39,7 +41,7 @@ class UpdateCheckMiddleware implements MiddlewareInterface
                     && !\str_contains($path, BackendRouter::ROUTE_DBUPDATER)
                     && !\str_ends_with($path, BackendRouter::ROUTE_IO)
                     && ($request->getQueryParams()['action'] ?? null) !== 'quick_change_language'
-                    && Shop::Container()->getAdminAccount()->logged()
+                    && $this->account->logged()
                 ) {
                     return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_DBUPDATER);
                 }

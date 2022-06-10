@@ -19,6 +19,7 @@ use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\RootController;
 use JTL\Router\Middleware\CartcheckMiddleware;
+use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
@@ -64,7 +65,12 @@ class Router
     /**
      * @var string
      */
-    private string $currentLanguageCode;
+    private string $defaultLocale = 'de';
+
+    /**
+     * @var bool
+     */
+    private bool $ignoreDefaultLocale = false;
 
     public const TYPE_CATEGORY      = 'categories';
     public const TYPE_PRODUCT       = 'products';
@@ -104,20 +110,24 @@ class Router
         $ioController           = new IOController($this->db, $cache, $state, $cgid, $conf, $alert);
 
         $this->router = new BaseRouter();
-        $this->router->middleware(new MaintenanceModeMiddleware());
-        $this->router->middleware(new WishlistCheckMiddleware());
-        $this->router->middleware(new CartcheckMiddleware());
-        $visibilityMiddleware = new VisibilityMiddleware();
 
         foreach (LanguageHelper::getAllLanguages() as $language) {
             if (!\defined('URL_SHOP_' . \mb_convert_case($language->getIso(), \MB_CASE_UPPER))) {
                 $codes[] = $language->getIso639();
             }
+            if ($language->isShopDefault()) {
+                $this->defaultLocale = $language->getIso639();
+            }
         }
-        if (\count($codes) > 1) {
-            $this->isMultilang = true;
-
-            $this->groups[] = '/{lang:(?:' . \implode('|', $codes) . ')}';
+        if ($conf['global']['routing_scheme'] !== 'F') {
+            $this->ignoreDefaultLocale = $conf['global']['routing_default_language'] === 'F';
+            if (\count($codes) > 1) {
+                $this->isMultilang = true;
+                $this->groups[]    = '/{lang:(?:' . \implode('|', $codes) . ')}';
+            }
+            if ($this->ignoreDefaultLocale === true) {
+                $this->router->middleware(new LocaleRedirectMiddleware($this->defaultLocale));
+            }
         }
         foreach (Frontend::getCurrencies() as $currency) {
             $currencies[] = $currency->getCode();
@@ -125,6 +135,12 @@ class Router
         $currencyPath = \count($currencies) > 1
             ? '[/{currency:(?:' . \implode('|', $currencies) . ')}]'
             : '';
+
+        $this->router->middleware(new MaintenanceModeMiddleware());
+        $this->router->middleware(new WishlistCheckMiddleware());
+        $this->router->middleware(new CartcheckMiddleware());
+        $visibilityMiddleware = new VisibilityMiddleware();
+
         foreach ($this->groups as $localized) {
             $this->router->get($localized . '/products/{id:\d+}' . $currencyPath, [$productController, 'getResponse'])
                 ->setName('ROUTE_PRODUCT_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''))
@@ -239,7 +255,13 @@ class Router
             default => 'ROUTE_XXX_BY_'
         };
         $name .= ($byName === true ? 'NAME' : 'ID');
-        $name .= ($this->isMultilang === true ? '_LOCALIZED' : '');
+        if ($this->isMultilang === true
+            && ($this->ignoreDefaultLocale === false
+                || ($replacements['lang'] ?? '') !== $this->defaultLocale
+            )
+        ) {
+            $name .= '_LOCALIZED';
+        }
 
         return $this->getNamedPath($name, $replacements);
     }

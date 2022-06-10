@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Middleware;
 
+use JTL\DB\DbInterface;
 use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
 use JTL\Shop;
@@ -20,6 +21,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 class WizardCheckMiddleware implements MiddlewareInterface
 {
     /**
+     * @param DbInterface $db
+     */
+    public function __construct(private DbInterface $db)
+    {
+    }
+
+    /**
      * @inheritdoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -28,7 +36,7 @@ class WizardCheckMiddleware implements MiddlewareInterface
             && !Backend::get('redirectedToWizard')
             && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
             && !\str_contains($request->getUri()->getPath(), BackendRouter::ROUTE_WIZARD)
-            && (new Updater(Shop::Container()->getDB()))->hasPendingUpdates() === false
+            && (new Updater($this->db))->hasPendingUpdates() === false
         ) {
             return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_WIZARD);
         }

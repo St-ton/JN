@@ -344,7 +344,7 @@ class BackendRouter
         }
         $strategy->setContainer($container);
         $this->router->setStrategy($strategy);
-        $updateCheckMiddleWare = new UpdateCheckMiddleware($db);
+        $updateCheckMiddleWare = new UpdateCheckMiddleware($db, $account);
 
         $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
             $revisionMiddleware = new RevisionMiddleware($this->db);
@@ -359,7 +359,7 @@ class BackendRouter
             }
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
-            ->middleware(new WizardCheckMiddleware());
+            ->middleware(new WizardCheckMiddleware($this->db));
 
         $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
             ->setName(self::ROUTE_PASS);

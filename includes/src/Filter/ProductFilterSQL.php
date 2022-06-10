@@ -166,7 +166,8 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         }
         \executeHook(\HOOK_STOCK_FILTER, [
             'conf'      => $filterType,
-            'filterSQL' => &$filterSQL
+            'filterSQL' => &$filterSQL,
+            'withAnd'   => $withAnd,
         ]);
 
         return $filterSQL;

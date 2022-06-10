@@ -24,6 +24,8 @@ class ReferencedPlugin extends ReferencedItem
         if ($installed === null) {
             return;
         }
+        $filesMissing     = !\is_dir(\PFAD_ROOT . \PLUGIN_DIR . $installed->cPluginID . '/')
+            || !\file_exists(\PFAD_ROOT . \PLUGIN_DIR . $installed->cPluginID . '/' . \PLUGIN_INFO_FILE);
         $available        = $releases->getAvailable();
         $latest           = $releases->getLatest();
         $installedVersion = Version::parse($installed->nVersion);
@@ -46,6 +48,7 @@ class ReferencedPlugin extends ReferencedItem
         $this->setInstalledVersion($installedVersion);
         $this->setActive((int)$installed->nStatus === State::ACTIVATED);
         $this->setInternalID((int)$installed->kPlugin);
+        $this->setFilesMissing($filesMissing);
         try {
             $carbon        = new Carbon($installed->dInstalliert);
             $dateInstalled = $carbon->toIso8601ZuluString();

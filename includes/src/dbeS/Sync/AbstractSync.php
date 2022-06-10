@@ -432,7 +432,8 @@ abstract class AbstractSync
             'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 VALUES (:productID, :customerGroup, :customerID)
                 ON DUPLICATE KEY UPDATE
-                    kKunde = :customerID',
+                    kKunde     = :customerID,
+                    noDiscount = IF(:customerID > 0, 0, noDiscount)',
             [
                 'productID'     => $productID,
                 'customerGroup' => $customerGroupID,
@@ -503,12 +504,17 @@ abstract class AbstractSync
                     AND tpreisdetail.nAnzahlAb > 0',
             ['productID' => $productID]
         );
-        // Insert price record for each customer group - ignore existing
+        // Insert price record for each customer group - update existing
         $this->db->queryPrepared(
-            'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
-                SELECT :productID, kKundengruppe, 0
-                FROM tkundengruppe',
-            ['productID' => $productID]
+            'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde, noDiscount)
+                SELECT :productID, kKundengruppe, 0, COALESCE(:noDiscount, 0)
+                FROM tkundengruppe
+                ON DUPLICATE KEY UPDATE
+                    tpreis.noDiscount = COALESCE(:noDiscount, noDiscount)',
+            [
+                'productID'  => $productID,
+                'noDiscount' => isset($xml['nNichtRabattfaehig']) ? (int)$xml['nNichtRabattfaehig'] : null,
+            ]
         );
         // Insert base price for each price record - update existing
         $this->db->queryPrepared(

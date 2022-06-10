@@ -14,3 +14,6 @@ Parameter
 
 ``string`` **&filterSQL**
     **&filterSQL** Filter-SQL
+
+``bool`` **withAnd** (ab 5.1.3)
+    **withAnd** AND / OR - Filter

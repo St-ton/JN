@@ -48,7 +48,6 @@
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.16",
         "gettext/gettext": "^5.5.4",
-        "jtl/oauth2-client": "^1.0",
         "illuminate/container": "^8.12",
         "symfony/console": "^5.1",
         "symfony/finder": "^5.1",
@@ -95,10 +94,6 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://gitlab.com/jtl-software/oauth2/client.git"
         },
         {
             "type": "vcs",

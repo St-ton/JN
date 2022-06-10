@@ -1233,63 +1233,6 @@
             "time": "2014-01-12T16:20:24+00:00"
         },
         {
-            "name": "jtl/oauth2-client",
-            "version": "v1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/jtl-software/oauth2/client.git",
-                "reference": "d94b4862ffc2104ed8201f911ac23b9883c28a29"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Foauth2%2Fclient/repository/archive.zip?sha=d94b4862ffc2104ed8201f911ac23b9883c28a29",
-                "reference": "d94b4862ffc2104ed8201f911ac23b9883c28a29",
-                "shasum": ""
-            },
-            "require": {
-                "league/oauth2-client": "^2.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "~0.9",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Jtl\\OAuth2\\Client\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Jtl\\OAuth2\\Client\\Test\\": "tests/src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "JTL-Software GmbH",
-                    "email": "info@jtl-software.de",
-                    "homepage": "https://jtl-software.de"
-                }
-            ],
-            "description": "JTL-Software OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-            "keywords": [
-                "authorisation",
-                "authorization",
-                "client",
-                "jtl",
-                "oauth",
-                "oauth2"
-            ],
-            "support": {
-                "source": "https://gitlab.com/jtl-software/oauth2/client/-/tree/v1.0.2"
-            },
-            "time": "2018-09-27T15:08:24+02:00"
-        },
-        {
             "name": "jtlshop/phpquery",
             "version": "1.0.1",
             "source": {

@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class UnitsOfMeasurement
+ * Class UnitsOfMeasurement
  * @package JTL\Backend\LocalizationCheck
  */
 class UnitsOfMeasurement extends AbstractLocalizationCheck
@@ -67,6 +67,6 @@ class UnitsOfMeasurement extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationUnitsOfMeasurement');
+        return \__('locationUnitsOfMeasurement');
     }
 }

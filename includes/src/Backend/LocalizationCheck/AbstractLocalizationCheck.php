@@ -7,7 +7,7 @@ use JTL\DB\DbInterface;
 use JTL\Language\LanguageModel;
 
 /**
- * class AbstractLocalizationCheck
+ * Class AbstractLocalizationCheck
  * @package JTL\Backend\LocalizationCheck
  */
 abstract class AbstractLocalizationCheck implements LocalizationCheckInterface

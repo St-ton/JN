@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class Uploads
+ * Class Uploads
  * @package JTL\Backend\LocalizationCheck
  */
 class Uploads extends AbstractLocalizationCheck
@@ -67,6 +67,6 @@ class Uploads extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationUploads');
+        return \__('locationUploads');
     }
 }

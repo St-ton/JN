@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class PaymentMethods
+ * Class PaymentMethods
  * @package JTL\Backend\LocalizationCheck
  */
 class PaymentMethods extends AbstractLocalizationCheck
@@ -72,6 +72,6 @@ class PaymentMethods extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationPaymentMethods');
+        return \__('locationPaymentMethods');
     }
 }

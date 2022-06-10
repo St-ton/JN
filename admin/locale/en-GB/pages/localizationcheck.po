@@ -1,0 +1,153 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Localization check"
+msgstr "Localisation check"
+
+msgid "localizationCheckDesc"
+msgstr "Here you can find missing or redundant translations"
+
+msgid "localizationCheckURL"
+msgstr ""
+
+msgid "%d errors"
+msgstr "%d errors"
+
+msgid "Localization problems found."
+msgstr "We found localisation problems."
+
+msgid "No problems detected."
+msgstr "No problems found."
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "Deleted %d item(s)."
+msgstr "Deleted %d entries."
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Language ID"
+msgstr "Language ID"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Excess translations"
+msgstr "Translation in non-existent languages"
+
+msgid "Missing translations"
+msgstr "Missing translations"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Attributes"
+msgstr "Attributes"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Categories"
+msgstr "Categories"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Characteristics"
+msgstr "Characteristics"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CharacteristicValues"
+msgstr "Characteristic values"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigGroups"
+msgstr "Configuration groups"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ConfigItems"
+msgstr "Configuration components"
+
+msgid "JTL\\Backend\\LocalizationCheck\\CustomerGroups"
+msgstr "Customer groups"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Manufacturers"
+msgstr "Manufacturers"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Packagings"
+msgstr "Additional packaging"
+
+msgid "JTL\\Backend\\LocalizationCheck\\PaymentMethods"
+msgstr "Payment methods"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Products"
+msgstr "Items"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingFees"
+msgstr "Surcharge lists"
+
+msgid "JTL\\Backend\\LocalizationCheck\\ShippingMethods"
+msgstr "Shipping methods"
+
+msgid "JTL\\Backend\\LocalizationCheck\\UnitsOfMeasurement"
+msgstr "Measurement units"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Uploads"
+msgstr "Upload file description"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Varcombi"
+msgstr "Parent-child relationships"
+
+msgid "JTL\\Backend\\LocalizationCheck\\VarcombiValues"
+msgstr "Variation values"
+
+msgid "JTL\\Backend\\LocalizationCheck\\Warehouses"
+msgstr "Warehouses"
+
+msgid "locationAttributes"
+msgstr "JTL-Wawi > menu: Items > Attributes"
+
+msgid "locationCategories"
+msgstr "JTL-Wawi > Item management > Category > tab: Description"
+
+msgid "locationCharacteristics"
+msgstr "JTL-Wawi > menu: Items > Characteristics"
+
+msgid "locationCharacteristicValues"
+msgstr "JTL-Wawi > menu: Items > Characteristics > Expand characteristic >Value"
+
+msgid "locationConfigGroups"
+msgstr "JTL-Wawi > menu: Items > Configuration groups > Edit"
+
+msgid "locationConfigItems"
+msgstr "JTL-Wawi > menu: Items > Configuration groups > Components > Edit"
+
+msgid "locationCustomerGroups"
+msgstr "JTL-Wawi > menu: Customers > Customer groups"
+
+msgid "locationManufacturers"
+msgstr "JTL-Wawi > menu: Items > Manufacturers"
+
+msgid "locationPackagings"
+msgstr "JTL-Shop back end > Administration > Shipments > Additional packaging"
+
+msgid "locationPaymentMethods"
+msgstr "JTL-Shop back end > Administration > Payment methods"
+
+msgid "locationProducts"
+msgstr "JTL-Wawi > Item management > tab: Description"
+
+msgid "locationShippingFees"
+msgstr "JTL-Shop back end > Administration > Shipments > Shipping methods"
+
+msgid "locationShippingMethods"
+msgstr "JTL-Shop back end > Administration > Shipments > Shipping methods"
+
+msgid "locationUnitsOfMeasurement"
+msgstr "JTL-Wawi > menu: Items > Sales/Measurement units"
+
+msgid "locationUploads"
+msgstr "JTL-Wawi > Item management > tab: Files"
+
+msgid "locationVarcombi"
+msgstr "JTL-Wawi > Item management > tab: Variations"
+
+msgid "locationVarcombiValues"
+msgstr "JTL-Wawi > Item management > tab: Variations"
+
+msgid "locationWarehouses"
+msgstr "JTL-Shop back end > View > Standard elements > Warehouses"
+
+msgid "Can be found: "
+msgstr "Can be found here: "

@@ -137,7 +137,7 @@ class WarmCacheCommand extends Command
                                 : ' could not be loaded'));
                     }
                     if ($this->list === true) {
-                        $product = (new Artikel($this->db), $customerGroup)->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $listOpt,
                             $customerGroup->getID(),

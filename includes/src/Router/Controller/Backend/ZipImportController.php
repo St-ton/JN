@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\CSV\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -22,7 +23,7 @@ class ZipImportController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('PLZ_ORT_IMPORT_VIEW');
+        $this->checkPermissions(Permissions::PLZ_ORT_IMPORT_VIEW);
         $this->getText->loadAdminLocale('pages/plz_ort_import');
 
         $isoMap    = [];

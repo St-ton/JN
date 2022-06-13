@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\phpQuery\phpQuery;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -21,7 +22,7 @@ class SystemCheckController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DIAGNOSTIC_VIEW');
+        $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/systemcheck');
 
         $phpInfo = '';

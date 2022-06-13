@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Checkout\Bestellung;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -24,7 +25,7 @@ class OrderController extends AbstractBackendController
     {
         $this->getText->loadAdminLocale('pages/bestellungen');
         $this->smarty = $smarty;
-        $this->checkPermissions('ORDER_VIEW');
+        $this->checkPermissions(Permissions::ORDER_VIEW);
 
         $searchFilter = '';
         if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {

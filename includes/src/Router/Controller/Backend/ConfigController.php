@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\SectionFactory;
@@ -39,33 +40,33 @@ class ConfigController extends AbstractBackendController
         $this->getText->loadConfigLocales(true, true);
         $this->route = \str_replace('[/{id}]', '', $this->route);
         if ($isSearch) {
-            $this->checkPermissions('SETTINGS_SEARCH_VIEW');
+            $this->checkPermissions(Permissions::SETTINGS_SEARCH_VIEW);
         }
         switch ($sectionID) {
             case \CONF_GLOBAL:
-                $this->checkPermissions('SETTINGS_GLOBAL_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_GLOBAL_VIEW);
                 break;
             case \CONF_STARTSEITE:
-                $this->checkPermissions('SETTINGS_STARTPAGE_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_STARTPAGE_VIEW);
                 break;
             case \CONF_EMAILS:
-                $this->checkPermissions('SETTINGS_EMAILS_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_EMAILS_VIEW);
                 break;
             case \CONF_ARTIKELUEBERSICHT:
-                $this->checkPermissions('SETTINGS_ARTICLEOVERVIEW_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
                 // Sucheinstellungen haben eigene Logik
                 return new RedirectResponse(Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
             case \CONF_ARTIKELDETAILS:
-                $this->checkPermissions('SETTINGS_ARTICLEDETAILS_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_ARTICLEDETAILS_VIEW);
                 break;
             case \CONF_KUNDEN:
-                $this->checkPermissions('SETTINGS_CUSTOMERFORM_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_CUSTOMERFORM_VIEW);
                 break;
             case \CONF_KAUFABWICKLUNG:
-                $this->checkPermissions('SETTINGS_BASKET_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_BASKET_VIEW);
                 break;
             case \CONF_BILDER:
-                $this->checkPermissions('SETTINGS_IMAGES_VIEW');
+                $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
                 break;
             default:
                 $this->account->redirectOnFailure();

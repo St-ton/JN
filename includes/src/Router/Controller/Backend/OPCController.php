@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -24,7 +25,7 @@ class OPCController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('OPC_VIEW');
+        $this->checkPermissions(Permissions::OPC_VIEW);
         $this->getText->loadAdminLocale('pages/opc');
 
         $pageKey   = Request::verifyGPCDataInt('pageKey');

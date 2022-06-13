@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Cron\Admin\Controller;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -22,7 +23,7 @@ class CronController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('CRON_VIEW');
+        $this->checkPermissions(Permissions::CRON_VIEW);
         $this->getText->loadAdminLocale('pages/cron');
 
         $admin    = Shop::Container()->get(Controller::class);

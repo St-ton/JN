@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -22,7 +23,7 @@ class GlobalMetaDataController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_GLOBAL_META_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_GLOBAL_META_VIEW);
         $this->getText->loadAdminLocale('pages/globalemetaangaben');
         $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];

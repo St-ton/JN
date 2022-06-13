@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Emailhistory;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -22,7 +23,7 @@ class EmailHistoryController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EMAILHISTORY_VIEW');
+        $this->checkPermissions(Permissions::EMAILHISTORY_VIEW);
         $this->getText->loadAdminLocale('pages/emailhistory');
 
         $step    = 'uebersicht';

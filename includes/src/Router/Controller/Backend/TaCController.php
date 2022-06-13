@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -23,7 +24,7 @@ class TaCController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('ORDER_AGB_WRB_VIEW');
+        $this->checkPermissions(Permissions::ORDER_AGB_WRB_VIEW);
         $this->getText->loadAdminLocale('pages/agbwrb');
         $this->step = 'agbwrb_uebersicht';
         $this->setLanguage();

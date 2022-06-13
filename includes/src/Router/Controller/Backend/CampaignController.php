@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use DateTimeImmutable;
+use JTL\Backend\Permissions;
 use JTL\Campaign;
 use JTL\Catalog\Product\Preise;
 use JTL\Customer\CustomerGroup;
@@ -40,7 +41,7 @@ class CampaignController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('STATS_CAMPAIGN_VIEW');
+        $this->checkPermissions(Permissions::STATS_CAMPAIGN_VIEW);
         $this->getText->loadAdminLocale('pages/kampagne');
 
 

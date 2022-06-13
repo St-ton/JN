@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Smarty\JTLSmarty;
@@ -21,7 +22,7 @@ class SitemapController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_SITEMAP_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
         $this->getText->loadAdminLocale('pages/shopsitemap');
         if (isset($_POST['einstellungen']) && Form::validateToken()) {
             $this->saveAdminSectionSettings(\CONF_SITEMAP, $_POST);

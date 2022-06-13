@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use DateTime;
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -20,7 +21,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
- * Class SelectionWizardController
+ * Class BannerController
  * @package JTL\Router\Controller\Backend
  */
 class BannerController extends AbstractBackendController
@@ -37,7 +38,7 @@ class BannerController extends AbstractBackendController
     {
         $this->getText->loadAdminLocale('pages/banner');
         $this->smarty = $smarty;
-        $this->checkPermissions('DISPLAY_BANNER_VIEW');
+        $this->checkPermissions(Permissions::DISPLAY_BANNER_VIEW);
         $this->action = (isset($_REQUEST['action']) && Form::validateToken()) ? $_REQUEST['action'] : 'view';
         $postData     = Text::filterXSS($_POST);
         $imageMap     = null;

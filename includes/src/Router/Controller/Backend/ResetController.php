@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Reset\Reset;
@@ -22,7 +23,7 @@ class ResetController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('RESET_SHOP_VIEW');
+        $this->checkPermissions(Permissions::RESET_SHOP_VIEW);
         $this->getText->loadAdminLocale('pages/shopzuruecksetzen');
         if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
             $options = $_POST['cOption_arr'];

@@ -48,7 +48,7 @@ class ManufacturerController extends AbstractController
         if ($seo === null) {
             $this->state->is404 = true;
 
-            return $this->state;
+            return $this->updateProductFilter();
         }
         $slug          = $seo->cSeo;
         $seo->kSprache = (int)$seo->kSprache;

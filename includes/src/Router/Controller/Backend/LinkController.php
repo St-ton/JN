@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -46,7 +47,7 @@ class LinkController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('CONTENT_PAGE_VIEW');
+        $this->checkPermissions(Permissions::CONTENT_PAGE_VIEW);
         $this->getText->loadAdminLocale('pages/links');
 
         $this->step      = 'uebersicht';

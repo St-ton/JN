@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -27,7 +28,7 @@ class SystemLogController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SYSTEMLOG_VIEW');
+        $this->checkPermissions(Permissions::SYSTEMLOG_VIEW);
         $this->getText->loadAdminLocale('pages/systemlog');
 
         $minLogLevel    = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');

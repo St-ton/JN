@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -29,7 +30,7 @@ class DBManagerController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DBCHECK_VIEW');
+        $this->checkPermissions(Permissions::DBCHECK_VIEW);
         $this->getText->loadAdminLocale('pages/dbmanager');
 
         $tables = DBManager::getStatus(DB_NAME);

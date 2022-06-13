@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\SqlObject;
@@ -29,7 +30,7 @@ class NewsletterController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_NEWSLETTER_VIEW');
+        $this->checkPermissions(Permissions::MODULE_NEWSLETTER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletter');
 
         $conf          = Shop::getSettings([\CONF_NEWSLETTER]);

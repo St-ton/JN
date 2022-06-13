@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Network\JTLApi;
 use JTL\Shop;
@@ -21,7 +22,7 @@ class StatusController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DIAGNOSTIC_VIEW');
+        $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/status');
 
         return $smarty->assign('status', Status::getInstance($this->db, $this->cache, true))

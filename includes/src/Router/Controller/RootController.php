@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Router\ControllerFactory;
 use JTL\Router\State;
 use JTL\Shop;
@@ -20,15 +21,16 @@ class RootController extends AbstractController
      */
     public function getStateFromSlug(array $args): State
     {
-        $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
-        if ($home === null) {
+        try {
+            $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+        } catch (SpecialPageNotFoundException) {
             return $this->state;
         }
         $this->state->pageType = \PAGE_STARTSEITE;
         $this->state->linkType = \LINKTYP_STARTSEITE;
 
         return $this->state->type !== ''
-            ? $this->state
+            ? $this->updateProductFilter()
             : $this->updateState(
                 (object)[
                     'cSeo'     => $home->getSEO(),

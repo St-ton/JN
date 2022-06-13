@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
@@ -23,7 +24,7 @@ class WishlistController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_WISHLIST_VIEW');
+        $this->checkPermissions(Permissions::MODULE_WISHLIST_VIEW);
         $this->getText->loadAdminLocale('pages/wunschliste');
 
         $settingsIDs = [

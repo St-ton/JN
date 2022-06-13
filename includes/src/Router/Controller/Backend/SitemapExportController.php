@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -30,7 +31,7 @@ class SitemapExportController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EXPORT_SITEMAP_VIEW');
+        $this->checkPermissions(Permissions::EXPORT_SITEMAP_VIEW);
         $this->getText->loadAdminLocale('pages/sitemapexport');
 
         $this->smarty->assign('route', $this->route);

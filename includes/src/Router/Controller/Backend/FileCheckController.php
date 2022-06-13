@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\FileCheck;
+use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -24,7 +25,7 @@ class FileCheckController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('FILECHECK_VIEW');
+        $this->checkPermissions(Permissions::FILECHECK_VIEW);
         $this->getText->loadAdminLocale('pages/filecheck');
 
         $this->cache->flush(Status::CACHE_ID_MODIFIED_FILE_STRUCT);

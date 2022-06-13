@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AuthToken;
+use JTL\Backend\Permissions;
 use JTL\Backend\Wizard\Controller;
 use JTL\Backend\Wizard\DefaultFactory;
 use JTL\Helpers\Request;
@@ -48,7 +49,7 @@ class WizardController extends AbstractBackendController
             );
         }
         unset($_SESSION['wizard-authenticated']);
-        $this->checkPermissions('WIZARD_VIEW');
+        $this->checkPermissions(Permissions::WIZARD_VIEW);
 
         return $smarty->assign('steps', $controller->getSteps())
             ->assign('authRedirect', $authRedirect)

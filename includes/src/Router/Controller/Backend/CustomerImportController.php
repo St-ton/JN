@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Customer\Import;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -21,7 +22,7 @@ class CustomerImportController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('IMPORT_CUSTOMER_VIEW');
+        $this->checkPermissions(Permissions::IMPORT_CUSTOMER_VIEW);
         $this->getText->loadAdminLocale('pages/kundenimport');
 
         if (isset($_FILES['csv']['tmp_name'])

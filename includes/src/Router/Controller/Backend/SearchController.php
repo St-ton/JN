@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\Sections\SectionInterface;
@@ -28,7 +29,7 @@ class SearchController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_SEARCH_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_SEARCH_VIEW);
         $query = $_GET['cSuche'] ?? '';
 
         $this->adminSearch(\trim($query), true);

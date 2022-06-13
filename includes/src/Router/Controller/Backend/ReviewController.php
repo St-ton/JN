@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Backend\AdminAccount;
+use JTL\Backend\Permissions;
 use JTL\Cache\JTLCacheInterface;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
@@ -77,7 +78,7 @@ class ReviewController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_VOTESYSTEM_VIEW');
+        $this->checkPermissions(Permissions::MODULE_VOTESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/bewertung');
 
         $this->setLanguage();

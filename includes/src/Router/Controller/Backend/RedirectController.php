@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
 use JTL\Helpers\Form;
@@ -28,7 +29,7 @@ class RedirectController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('REDIRECT_VIEW');
+        $this->checkPermissions(Permissions::REDIRECT_VIEW);
         $this->getText->loadAdminLocale('pages/redirect');
 
         $action = Request::verifyGPDataString('action');

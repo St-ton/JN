@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Profiler;
@@ -22,7 +23,7 @@ class ProfilerController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('PROFILER_VIEW');
+        $this->checkPermissions(Permissions::PROFILER_VIEW);
         $this->getText->loadAdminLocale('pages/profiler');
 
         if (isset($_POST['delete-run-submit']) && Form::validateToken()) {

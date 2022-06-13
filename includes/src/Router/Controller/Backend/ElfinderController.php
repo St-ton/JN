@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use elFinder;
 use elFinderConnector;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -24,7 +25,7 @@ class ElfinderController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('IMAGE_UPLOAD');
+        $this->checkPermissions(Permissions::IMAGE_UPLOAD);
 
         if (!Form::validateToken()) {
             $response = (new Response())->withStatus(200)->withAddedHeader('content-type', 'text/html');

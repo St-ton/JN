@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -21,7 +22,7 @@ class GiftsController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_GIFT_VIEW');
+        $this->checkPermissions(Permissions::MODULE_GIFT_VIEW);
         $this->getText->loadAdminLocale('pages/gratisgeschenk');
 
         $settingsIDs = [

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -26,7 +27,7 @@ class ContactFormsController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kontaktformular');
-        $this->checkPermissions('SETTINGS_CONTACTFORM_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_CONTACTFORM_VIEW);
 
         $this->step = 'uebersicht';
         $tab        = 'config';

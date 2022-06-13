@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\MigrationManager;
@@ -22,7 +23,7 @@ class DBUpdateController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SHOP_UPDATE_VIEW');
+        $this->checkPermissions(Permissions::SHOP_UPDATE_VIEW);
         $this->getText->loadAdminLocale('pages/dbupdater');
         $smarty->clearCompiledTemplate();
         $updater             = new Updater($this->db);

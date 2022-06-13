@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Catalog\Currency;
 use JTL\Cron\Checker;
 use JTL\Cron\JobFactory;
@@ -33,7 +34,7 @@ class ExportQueueController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EXPORT_SCHEDULE_VIEW');
+        $this->checkPermissions(Permissions::EXPORT_SCHEDULE_VIEW);
         $this->getText->loadAdminLocale('pages/exportformat_queue');
 
         $action   = isset($_GET['action'])

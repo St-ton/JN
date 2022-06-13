@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Cart\PersistentCart;
 use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
@@ -25,7 +26,7 @@ class PersistentCartController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_SAVED_BASKETS_VIEW');
+        $this->checkPermissions(Permissions::MODULE_SAVED_BASKETS_VIEW);
         $this->getText->loadAdminLocale('pages/warenkorbpers');
 
         $this->step = 'uebersicht';

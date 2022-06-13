@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\DB\SqlObject;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -25,7 +26,7 @@ class LivesearchController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_LIVESEARCH_VIEW');
+        $this->checkPermissions(Permissions::MODULE_LIVESEARCH_VIEW);
         $this->getText->loadAdminLocale('pages/livesuche');
 
         $this->setLanguage();

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -26,7 +27,7 @@ class CheckboxController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('CHECKBOXES_VIEW');
+        $this->checkPermissions(Permissions::CHECKBOXES_VIEW);
         $this->getText->loadAdminLocale('pages/checkbox');
 
         $step     = 'uebersicht';

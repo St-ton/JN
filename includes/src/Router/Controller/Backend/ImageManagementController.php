@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Media\Image;
 use JTL\Media\Manager;
 use JTL\Smarty\JTLSmarty;
@@ -20,7 +21,7 @@ class ImageManagementController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DISPLAY_IMAGES_VIEW');
+        $this->checkPermissions(Permissions::DISPLAY_IMAGES_VIEW);
         $this->getText->loadAdminLocale('pages/bilderverwaltung');
 
         $manager = new Manager($this->db, $this->getText);

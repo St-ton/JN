@@ -25,6 +25,7 @@ class DefaultController extends AbstractController
     public function getStateFromSlug(array $args): State
     {
         $slug = $args['slug'] ?? $args['any'] ?? null;
+
         if ($slug === null) {
             return $this->state;
         }

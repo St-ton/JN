@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Request;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -19,7 +20,7 @@ class PriceHistoryController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('MODULE_PRICECHART_VIEW');
+        $this->checkPermissions(Permissions::MODULE_PRICECHART_VIEW);
         $this->getText->loadAdminLocale('pages/preisverlauf');
         if (Request::postInt('einstellungen') === 1) {
             $this->saveAdminSectionSettings(\CONF_PREISVERLAUF, $_POST);

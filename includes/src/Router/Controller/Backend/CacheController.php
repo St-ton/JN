@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Backend\DirManager;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\SectionInterface;
@@ -35,7 +36,7 @@ class CacheController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('OBJECTCACHE_VIEW');
+        $this->checkPermissions(Permissions::OBJECTCACHE_VIEW);
         $this->getText->loadAdminLocale('pages/cache');
 
         $this->tab      = Request::postVar('tab', 'uebersicht');

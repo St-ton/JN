@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Media\Image;
@@ -24,7 +25,7 @@ class BrandingController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DISPLAY_BRANDING_VIEW');
+        $this->checkPermissions(Permissions::DISPLAY_BRANDING_VIEW);
         $this->getText->loadAdminLocale('pages/branding');
 
         $step = 'branding_uebersicht';

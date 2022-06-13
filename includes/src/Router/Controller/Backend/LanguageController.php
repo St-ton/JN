@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\CSV\Export;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -31,7 +32,7 @@ class LanguageController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('LANGUAGE_VIEW');
+        $this->checkPermissions(Permissions::LANGUAGE_VIEW);
         $this->getText->loadAdminLocale('pages/sprache');
         $this->setLanguage();
 

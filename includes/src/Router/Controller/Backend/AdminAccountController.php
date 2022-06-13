@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use DateTime;
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Backend\TwoFA;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -958,7 +959,7 @@ class AdminAccountController extends AbstractBackendController
     {
         $this->url    = Shop::getAdminURL() . $this->route;
         $this->smarty = $smarty;
-        $this->checkPermissions('ACCOUNT_VIEW');
+        $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
 
         $this->finalize($this->getNextAction());

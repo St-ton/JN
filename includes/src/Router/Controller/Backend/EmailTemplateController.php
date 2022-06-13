@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
@@ -35,7 +36,7 @@ class EmailTemplateController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('CONTENT_EMAIL_TEMPLATE_VIEW');
+        $this->checkPermissions(Permissions::CONTENT_EMAIL_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/emailvorlagen');
 
         $this->cache->flushTags([Status::CACHE_ID_EMAIL_SYNTAX_CHECK]);

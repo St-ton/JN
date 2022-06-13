@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -28,7 +29,7 @@ class SliderController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SLIDER_VIEW');
+        $this->checkPermissions(Permissions::SLIDER_VIEW);
         $this->getText->loadAdminLocale('pages/slider');
 
         $_kSlider    = 0;

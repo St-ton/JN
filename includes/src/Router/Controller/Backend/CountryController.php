@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Country\Manager;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -20,7 +21,7 @@ class CountryController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('COUNTRY_VIEW');
+        $this->checkPermissions(Permissions::COUNTRY_VIEW);
         $this->getText->loadAdminLocale('pages/countrymanager');
 
         $manager = new Manager(

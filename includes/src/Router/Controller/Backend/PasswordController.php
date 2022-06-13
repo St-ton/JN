@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -23,7 +24,7 @@ class PasswordController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('WAWI_SYNC_VIEW');
+        $this->checkPermissions(Permissions::WAWI_SYNC_VIEW);
         $this->getText->loadAdminLocale('pages/pass');
 
         $step = 'prepare';

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Type;
@@ -33,7 +34,7 @@ class BoxController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('BOXES_VIEW');
+        $this->checkPermissions(Permissions::BOXES_VIEW);
         $this->getText->loadAdminLocale('pages/boxen');
 
         $boxService     = Shop::Container()->getBoxService();

@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Alert\Alert;
+use JTL\Backend\Permissions;
 use JTL\Export\RSS;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -23,7 +24,7 @@ class RSSController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EXPORT_RSSFEED_VIEW');
+        $this->checkPermissions(Permissions::EXPORT_RSSFEED_VIEW);
         $this->getText->loadAdminLocale('pages/rss');
         if (Request::getInt('f') === 1 && Form::validateToken()) {
             $rss = new RSS($this->db, Shop::Container()->getLogService());

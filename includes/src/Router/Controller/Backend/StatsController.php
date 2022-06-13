@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Crawler\Controller;
 use JTL\Helpers\Request;
 use JTL\Linechart;
@@ -33,11 +34,11 @@ class StatsController extends AbstractBackendController
             $statsType = \STATS_ADMIN_TYPE_BESUCHER;
         }
         $perm = match ($statsType) {
-            2 => 'STATS_VISITOR_LOCATION_VIEW',
-            3 => 'STATS_CRAWLER_VIEW',
-            4 => 'STATS_EXCHANGE_VIEW',
-            5 => 'STATS_LANDINGPAGES_VIEW',
-            default => 'STATS_VISITOR_VIEW',
+            2 => Permissions::STATS_VISITOR_LOCATION_VIEW,
+            3 => Permissions::STATS_CRAWLER_VIEW,
+            4 => Permissions::STATS_EXCHANGE_VIEW,
+            5 => Permissions::STATS_LANDINGPAGES_VIEW,
+            default => Permissions::STATS_VISITOR_VIEW,
         };
         $this->checkPermissions($perm);
         $this->route = \str_replace('[/{id}]', '/' . $statsType, $this->route);

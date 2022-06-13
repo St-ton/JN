@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Smarty\JTLSmarty;
@@ -21,7 +22,7 @@ class StatusMailController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EMAIL_REPORTS_VIEW');
+        $this->checkPermissions(Permissions::EMAIL_REPORTS_VIEW);
         $this->getText->loadAdminLocale('pages/statusemail');
 
         $statusMail = new Statusmail($this->db);

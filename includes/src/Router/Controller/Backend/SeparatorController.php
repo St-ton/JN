@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Catalog\Separator;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -23,7 +24,7 @@ class SeparatorController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_SEPARATOR_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_SEPARATOR_VIEW);
         $this->getText->loadAdminLocale('pages/trennzeichen');
         $this->setLanguage();
 

@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use DateTime;
+use JTL\Backend\Permissions;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;
 use JTL\Customer\Customer;
@@ -25,7 +26,7 @@ class CouponStatsController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('STATS_COUPON_VIEW');
+        $this->checkPermissions(Permissions::STATS_COUPON_VIEW);
         $this->getText->loadAdminLocale('pages/kuponstatistik');
 
         $step      = 'kuponstatistik_uebersicht';

@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
+use JTL\Backend\Permissions;
 use JTL\Backend\Wizard\ExtensionInstaller;
 use JTL\Helpers\Request;
 use JTL\License\Manager as LicenseManager;
@@ -27,7 +28,7 @@ class PremiumPluginController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('PLUGIN_ADMIN_VIEW');
+        $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/premiumplugin');
         $recommendationID = Request::verifyGPDataString('id');
         $manager          = new LicenseManager($this->db, $this->cache);

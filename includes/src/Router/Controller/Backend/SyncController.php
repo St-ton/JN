@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -21,7 +22,7 @@ class SyncController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('WAWI_SYNC_VIEW');
+        $this->checkPermissions(Permissions::WAWI_SYNC_VIEW);
         $this->getText->loadAdminLocale('pages/wawisync');
 
         if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {

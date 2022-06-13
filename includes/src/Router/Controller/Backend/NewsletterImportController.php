@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -28,7 +29,7 @@ class NewsletterImportController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('IMPORT_NEWSLETTER_RECEIVER_VIEW');
+        $this->checkPermissions(Permissions::IMPORT_NEWSLETTER_RECEIVER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletterimport');
 
         if (isset($_FILES['csv']['tmp_name'])

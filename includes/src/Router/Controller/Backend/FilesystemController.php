@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Filesystem\AdapterFactory;
 use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
@@ -25,7 +26,7 @@ class FilesystemController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('FILESYSTEM_VIEW');
+        $this->checkPermissions(Permissions::FILESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/filesystem');
         $this->getText->loadConfigLocales(true, true);
 

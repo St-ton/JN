@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -41,7 +42,7 @@ class PluginController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('PLUGIN_ADMIN_VIEW');
+        $this->checkPermissions(Permissions::PLUGIN_ADMIN_VIEW);
         $this->getText->loadAdminLocale('pages/plugin');
 
         $pluginID    = (int)$args['id'];

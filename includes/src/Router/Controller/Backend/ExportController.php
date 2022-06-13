@@ -5,6 +5,7 @@ namespace JTL\Router\Controller\Backend;
 use Exception;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Sections\Export;
@@ -41,7 +42,7 @@ class ExportController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->step   = 'overview';
-        $this->checkPermissions('EXPORT_FORMATS_VIEW');
+        $this->checkPermissions(Permissions::EXPORT_FORMATS_VIEW);
         $this->getText->loadAdminLocale('pages/exportformate');
         $this->getText->loadConfigLocales(true, true);
         $this->cache->flushTags([Status::CACHE_ID_EXPORT_SYNTAX_CHECK]);

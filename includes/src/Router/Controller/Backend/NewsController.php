@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -32,7 +33,7 @@ class NewsController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('CONTENT_NEWS_SYSTEM_VIEW');
+        $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
 
 

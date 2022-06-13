@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use DateInterval;
 use Exception;
+use JTL\Backend\Permissions;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
@@ -43,7 +44,7 @@ class CouponsController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kupons');
-        $this->checkPermissions('ORDER_COUPON_VIEW');
+        $this->checkPermissions(Permissions::ORDER_COUPON_VIEW);
 
         $action    = Request::verifyGPDataString('action');
         $tab       = Kupon::TYPE_STANDARD;

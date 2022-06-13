@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\CustomerFields;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -23,7 +24,7 @@ class CustomerFieldsController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('ORDER_CUSTOMERFIELDS_VIEW');
+        $this->checkPermissions(Permissions::ORDER_CUSTOMERFIELDS_VIEW);
         $this->getText->loadAdminLocale('pages/kundenfeld');
         $this->setLanguage();
         $languageID = (int)$_SESSION['editLanguageID'];

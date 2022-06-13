@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Request;
 use JTL\License\Admin;
 use JTL\License\Checker;
@@ -32,7 +33,7 @@ class LicenseController extends AbstractBackendController
             $admin->handleAuth();
             exit();
         }
-        $this->checkPermissions('LICENSE_MANAGER');
+        $this->checkPermissions(Permissions::LICENSE_MANAGER);
         $admin->handle($smarty);
 
         return $smarty->assign('route', $this->route)

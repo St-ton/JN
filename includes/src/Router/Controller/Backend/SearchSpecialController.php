@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -23,7 +24,7 @@ class SearchSpecialController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_SPECIALPRODUCTS_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_SPECIALPRODUCTS_VIEW);
         $this->getText->loadAdminLocale('pages/suchspecials');
 
         $this->setLanguage();

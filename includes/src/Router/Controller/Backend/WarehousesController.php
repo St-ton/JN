@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Catalog\Warehouse;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -23,7 +24,7 @@ class WarehousesController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('WAREHOUSE_VIEW');
+        $this->checkPermissions(Permissions::WAREHOUSE_VIEW);
         $this->getText->loadAdminLocale('pages/warenlager');
 
         $step     = 'uebersicht';

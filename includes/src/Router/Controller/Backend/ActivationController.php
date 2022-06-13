@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Customer\Customer;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
@@ -27,7 +28,7 @@ class ActivationController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('UNLOCK_CENTRAL_VIEW');
+        $this->checkPermissions(Permissions::UNLOCK_CENTRAL_VIEW);
         $this->getText->loadAdminLocale('pages/freischalten');
 
         $this->setLanguage();

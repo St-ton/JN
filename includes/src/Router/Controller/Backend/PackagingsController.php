@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Alert\Alert;
+use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -30,7 +31,7 @@ class PackagingsController extends AbstractBackendController
     {
         $this->getText->loadAdminLocale('pages/zusatzverpackung');
         $this->smarty = $smarty;
-        $this->checkPermissions('ORDER_PACKAGE_VIEW');
+        $this->checkPermissions(Permissions::ORDER_PACKAGE_VIEW);
 
         if (Form::validateToken()) {
             if (isset($_POST['action'])) {

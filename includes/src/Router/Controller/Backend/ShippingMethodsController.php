@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use JTL\Backend\Permissions;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Country\Manager;
@@ -56,7 +57,7 @@ class ShippingMethodsController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('ORDER_SHIPMENT_VIEW');
+        $this->checkPermissions(Permissions::ORDER_SHIPMENT_VIEW);
         $this->getText->loadAdminLocale('pages/versandarten');
         Tax::setTaxRates();
         $this->step            = 'uebersicht';

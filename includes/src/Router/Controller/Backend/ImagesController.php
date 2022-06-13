@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
@@ -26,7 +27,7 @@ class ImagesController extends AbstractBackendController
     ): ResponseInterface {
         $this->getText->loadAdminLocale('pages/bilder');
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_SITEMAP_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
 
         if (isset($_POST['speichern']) && Form::validateToken()) {
             $this->actionSaveConfig();

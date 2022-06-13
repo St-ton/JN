@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
@@ -50,7 +51,7 @@ class TemplateController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DISPLAY_TEMPLATE_VIEW');
+        $this->checkPermissions(Permissions::DISPLAY_TEMPLATE_VIEW);
         $this->getText->loadAdminLocale('pages/shoptemplate');
         $this->smarty->assign('route', $this->route);
 

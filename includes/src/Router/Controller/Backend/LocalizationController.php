@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
+use JTL\Backend\Permissions;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -23,7 +24,7 @@ class LocalizationController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DIAGNOSTIC_VIEW');
+        $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/localizationcheck');
 
         $action    = Request::postVar('action');

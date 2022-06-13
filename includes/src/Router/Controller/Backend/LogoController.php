@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -27,7 +28,7 @@ class LogoController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('DISPLAY_OWN_LOGO_VIEW');
+        $this->checkPermissions(Permissions::DISPLAY_OWN_LOGO_VIEW);
         $this->getText->loadAdminLocale('pages/shoplogouploader');
 
         if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Extensions\SelectionWizard\Group;
 use JTL\Extensions\SelectionWizard\Question;
 use JTL\Extensions\SelectionWizard\Wizard;
@@ -25,7 +26,7 @@ class SelectionWizardController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('EXTENSION_SELECTIONWIZARD_VIEW');
+        $this->checkPermissions(Permissions::EXTENSION_SELECTIONWIZARD_VIEW);
         $step     = '';
         $nice     = Nice::getInstance();
         $tab      = 'uebersicht';

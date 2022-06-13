@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
+use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Smarty\JTLSmarty;
@@ -20,7 +21,7 @@ class NavFilterController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_NAVIGATION_FILTER_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_NAVIGATION_FILTER_VIEW);
         $this->getText->loadAdminLocale('pages/navigationsfilter');
 
         if (isset($_POST['speichern']) && Form::validateToken()) {

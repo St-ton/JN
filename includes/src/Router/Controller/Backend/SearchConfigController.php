@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
@@ -26,7 +27,7 @@ class SearchConfigController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions('SETTINGS_ARTICLEOVERVIEW_VIEW');
+        $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
         $this->getText->loadAdminLocale('pages/sucheinstellungen');
         $this->getText->loadAdminLocale('pages/einstellungen');
 

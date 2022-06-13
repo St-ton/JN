@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use InvalidArgumentException;
+use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\PluginPaymentMethod;
@@ -49,7 +50,7 @@ class PaymentMethodsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
-        $this->checkPermissions('ORDER_PAYMENT_VIEW');
+        $this->checkPermissions(Permissions::ORDER_PAYMENT_VIEW);
 
         $defaultCurrency      = $this->db->select('twaehrung', 'cStandard', 'Y');
         $this->step           = 'uebersicht';

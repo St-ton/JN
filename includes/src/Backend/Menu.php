@@ -74,7 +74,7 @@ class Menu
                     ],
                     \__('Statistics') => [
                         \__('Sales')             => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=4',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/4',
                             'permissions' => 'STATS_EXCHANGE_VIEW',
                         ],
                         \__('Campaigns')         => (object)[
@@ -90,19 +90,19 @@ class Menu
                             'permissions' => 'STATS_COUPON_VIEW',
                         ],
                         \__('Visitors')          => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=1',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/1',
                             'permissions' => 'STATS_VISITOR_VIEW',
                         ],
                         \__('Referrer pages')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=2',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/2',
                             'permissions' => 'STATS_VISITOR_LOCATION_VIEW',
                         ],
                         \__('Entry pages')       => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=5',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/5',
                             'permissions' => 'STATS_LANDINGPAGES_VIEW',
                         ],
                         \__('Search engines')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '?s=3',
+                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/3',
                             'permissions' => 'STATS_CRAWLER_VIEW',
                         ],
                         \__('Search queries')    => (object)[
@@ -125,7 +125,7 @@ class Menu
                     ],
                     \__('Default views')    => [
                         \__('Home page')        => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_STARTSEITE,
+                            'link'        => $configLink . '/' . \CONF_STARTSEITE,
                             'permissions' => 'SETTINGS_STARTPAGE_VIEW',
                             'section'     => \CONF_STARTSEITE,
                         ],
@@ -136,12 +136,12 @@ class Menu
                             'specialSetting' => true,
                         ],
                         \__('Item detail page') => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS,
+                            'link'        => $configLink . '/' . \CONF_ARTIKELDETAILS,
                             'permissions' => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'section'     => \CONF_ARTIKELDETAILS,
                         ],
                         \__('Checkout')         => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_KAUFABWICKLUNG,
+                            'link'        => $configLink . '/' . \CONF_KAUFABWICKLUNG,
                             'permissions' => 'SETTINGS_BASKET_VIEW',
                             'section'     => \CONF_KAUFABWICKLUNG,
                         ],
@@ -164,7 +164,7 @@ class Menu
                             'settingsAnchor' => '#config',
                         ],
                         \__('Registration')     => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_KUNDEN,
+                            'link'        => $configLink . '/' . \CONF_KUNDEN,
                             'permissions' => 'SETTINGS_CUSTOMERFORM_VIEW',
                             'section'     => \CONF_KUNDEN,
                         ],
@@ -187,16 +187,16 @@ class Menu
                             'specialSetting' => true,
                         ],
                         \__('Question on item')           => (object)[
-                            'link'                  => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS .
-                                '&group=configgroup_5_product_question',
+                            'link'                  => $configLink . '/' . \CONF_ARTIKELDETAILS .
+                                '?group=configgroup_5_product_question',
                             'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'excludeFromAccessView' => true,
                             'section'               => \CONF_ARTIKELDETAILS,
                             'group'                 => 'configgroup_5_product_question',
                         ],
                         \__('Availability notifications') => (object)[
-                            'link'                  => $configLink . '?kSektion=' . \CONF_ARTIKELDETAILS .
-                                '&group=configgroup_5_product_available',
+                            'link'                  => $configLink . '/' . \CONF_ARTIKELDETAILS .
+                                '?group=configgroup_5_product_available',
                             'permissions'           => 'SETTINGS_ARTICLEDETAILS_VIEW',
                             'excludeFromAccessView' => true,
                             'section'               => \CONF_ARTIKELDETAILS,
@@ -267,7 +267,7 @@ class Menu
                     ],
                     \__('Settings')         => [
                         \__('Global')         => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_GLOBAL,
+                            'link'        => $configLink . '/' . \CONF_GLOBAL,
                             'permissions' => 'SETTINGS_GLOBAL_VIEW',
                             'section'     => \CONF_GLOBAL,
                         ],
@@ -375,7 +375,7 @@ class Menu
                     ],
                     \__('Email')           => [
                         \__('Server')          => (object)[
-                            'link'        => $configLink . '?kSektion=' . \CONF_EMAILS,
+                            'link'        => $configLink . '/' . \CONF_EMAILS,
                             'permissions' => 'SETTINGS_EMAILS_VIEW',
                             'section'     => \CONF_EMAILS,
                         ],

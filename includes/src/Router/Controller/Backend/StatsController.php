@@ -27,32 +27,23 @@ class StatsController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/statistik');
-        $statsType = Request::verifyGPCDataInt('s');
+        $statsType = (int)($args['id'] ?? Request::verifyGPCDataInt('s'));
         $crawler   = null;
-
-        switch ($statsType) {
-            case 2:
-                $perm = 'STATS_VISITOR_LOCATION_VIEW';
-                break;
-            case 3:
-                $perm = 'STATS_CRAWLER_VIEW';
-                break;
-            case 4:
-                $perm = 'STATS_EXCHANGE_VIEW';
-                break;
-            case 5:
-                $perm = 'STATS_LANDINGPAGES_VIEW';
-                break;
-            default:
-                $statsType = \STATS_ADMIN_TYPE_BESUCHER;
-                $perm      = 'STATS_VISITOR_VIEW';
-                break;
+        if ($statsType === 0) {
+            $statsType = \STATS_ADMIN_TYPE_BESUCHER;
         }
+        $perm = match ($statsType) {
+            2 => 'STATS_VISITOR_LOCATION_VIEW',
+            3 => 'STATS_CRAWLER_VIEW',
+            4 => 'STATS_EXCHANGE_VIEW',
+            5 => 'STATS_LANDINGPAGES_VIEW',
+            default => 'STATS_VISITOR_VIEW',
+        };
         $this->checkPermissions($perm);
-
-        $interval  = 0;
-        $filter    = new Filter('statistics');
-        $dateRange = $filter->addDaterangefield(
+        $this->route = \str_replace('[/{id}]', '/' . $statsType, $this->route);
+        $interval    = 0;
+        $filter      = new Filter('statistics');
+        $dateRange   = $filter->addDaterangefield(
             'Zeitraum',
             '',
             \date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . \date('d.m.Y')

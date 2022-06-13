@@ -75,7 +75,7 @@ msgid "newsletterSubscriber"
 msgstr "Newsletter subscription"
 
 msgid "moreDetailsStatistics"
-msgstr "For more details, please see the <a href=\"%s/stats?s=3\">Statistics</a>"
+msgstr "For more details, please see the <a href=\"%s/stats/3\">Statistics</a>"
 
 msgid "noStatisticsFound"
 msgstr "No statistics found."

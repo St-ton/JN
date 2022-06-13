@@ -31,13 +31,13 @@ class ConfigController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/einstellungen');
-
-        $sectionID      = (int)($_REQUEST['kSektion'] ?? 0);
+        $sectionID      = (int)($args['id'] ?? $_REQUEST['kSektion'] ?? 0);
         $isSearch       = (int)($_REQUEST['einstellungen_suchen'] ?? 0) === 1;
         $sectionFactory = new SectionFactory();
         $search         = Request::verifyGPDataString('cSuche');
         $settingManager = new Manager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
         $this->getText->loadConfigLocales(true, true);
+        $this->route = \str_replace('[/{id}]', '', $this->route);
         if ($isSearch) {
             $this->checkPermissions('SETTINGS_SEARCH_VIEW');
         }
@@ -147,6 +147,7 @@ class ConfigController extends AbstractBackendController
 
         return $smarty->assign('cPrefURL', \__('prefURL' . $sectionID))
             ->assign('step', $step)
+            ->assign('route', $this->route)
             ->assign('countries', ShippingMethod::getPossibleShippingCountries())
             ->assign('waehrung', $defaultCurrency->cName)
             ->getResponse('einstellungen.tpl');

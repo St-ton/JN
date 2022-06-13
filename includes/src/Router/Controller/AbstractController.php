@@ -167,7 +167,6 @@ abstract class AbstractController implements ControllerInterface
         \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
 
         return $this->state;
-        ;
     }
 
     /**

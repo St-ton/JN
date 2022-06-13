@@ -63,7 +63,8 @@
         "gettext/translator": "^1.0",
         "mrclay/minify": "^3.0",
         "wikimedia/less.php": "~3.0.0",
-        "scssphp/scssphp": "^1.5.2"
+        "scssphp/scssphp": "^1.5.2",
+        "guzzlehttp/guzzle": "^7.4"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",
@@ -94,6 +95,10 @@
         {
             "type": "vcs",
             "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.com/jtl-software/oauth2/client.git"
         },
         {
             "type": "vcs",

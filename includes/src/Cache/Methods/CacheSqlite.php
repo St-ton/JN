@@ -189,8 +189,8 @@ class CacheSqlite implements ICachingMethod
         $this->db->exec('PRAGMA auto_vacuum = FULL;');
         $this->db->exec('VACUUM;');
 
-        $result    = $this->db->query('SELECT count(*) num FROM cache');
-        $resultTag = $this->db->query('SELECT count(*) num FROM cache_tag');
+        $result    = $this->db->query('SELECT COUNT(*) num FROM cache');
+        $resultTag = $this->db->query('SELECT COUNT(*) num FROM cache_tag');
         $num       = $result->fetchArray(\SQLITE3_ASSOC)['num'];
         $numTags   = $resultTag->fetchArray(\SQLITE3_ASSOC)['num'];
         $total     = (\file_exists($this->dbRoot . $this->dbName)) ? \filesize($this->dbRoot . $this->dbName) : 0;

@@ -54,7 +54,7 @@ class Search
         $where    = "(ec.cModulId IS NULL OR ec.cModulId = '')
             AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
         $idList   = \explode(',', $query);
-        $isIdList = count($idList) > 1;
+        $isIdList = \count($idList) > 1;
         if ($isIdList) {
             foreach ($idList as $i => $item) {
                 $idList[$i] = (int)$item;
@@ -71,7 +71,7 @@ class Search
             $this->title = \sprintf(\__('searchForID'), \implode(', ', $idList));
         } else {
             $rangeList = \explode('-', $query);
-            $isIdRange = count($rangeList) === 2;
+            $isIdRange = \count($rangeList) === 2;
             if ($isIdRange) {
                 $rangeList[0] = (int)$rangeList[0];
                 $rangeList[1] = (int)$rangeList[1];

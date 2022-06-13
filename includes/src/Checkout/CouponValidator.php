@@ -43,7 +43,7 @@ class CouponValidator
         }
         self::validateNewCustomerCoupon($customer);
 
-        return (count($errors) > 0)
+        return (\count($errors) > 0)
             ? $errors
             : 0;
     }

@@ -279,7 +279,7 @@ class StockUpdater
             ['slid' => $bomID]
         );
 
-        if (count($boms) > 0) {
+        if (\count($boms) > 0) {
             // wenn ja, dann wird für diese auch der Bestand aktualisiert
             $currency                            = Frontend::getCurrency();
             $customerGroup                       = Frontend::getCustomerGroup();

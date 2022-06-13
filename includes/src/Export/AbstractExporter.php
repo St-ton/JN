@@ -121,19 +121,13 @@ abstract class AbstractExporter implements ExporterInterface
      */
     public function getExportSQL(bool $countOnly = false): string
     {
-        $where = '';
         $join  = '';
         $limit = '';
-        switch ($this->getModel()->getVarcombOption()) {
-            case 2:
-                $where = ' AND kVaterArtikel = 0';
-                break;
-            case 3:
-                $where = ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)';
-                break;
-            default:
-                break;
-        }
+        $where = match ($this->getModel()->getVarcombOption()) {
+            2 => ' AND kVaterArtikel = 0',
+            3 => ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)',
+            default => '',
+        };
         if ($this->config['exportformate_lager_ueber_null'] === 'Y') {
             $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
         } elseif ($this->config['exportformate_lager_ueber_null'] === 'O') {

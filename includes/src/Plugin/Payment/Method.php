@@ -419,7 +419,7 @@ class Method implements MethodInterface
 
         $customerGroups = PaymentMethod::load($this->db, $this->moduleID)->getCustomerGroups();
         $customerGroup  = (int)($customer->kKundengruppe ?? CustomerGroup::getCurrent());
-        if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
+        if (\count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
             return false;
         }
         if (($minOrders = $this->getSetting('min_bestellungen')) > 0) {

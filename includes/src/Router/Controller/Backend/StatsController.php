@@ -98,7 +98,6 @@ class StatsController extends AbstractBackendController
             ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
             ->assign('pagination', $pagination)
             ->assign('oFilter', $filter)
-            ->assign('route', $this->route)
             ->getResponse('statistik.tpl');
     }
 
@@ -116,23 +115,14 @@ class StatsController extends AbstractBackendController
         if ($type > 0 && $from > 0 && $to > 0) {
             $stats     = new Statistik($from, $to);
             $intervall = $stats->getAnzeigeIntervall();
-            switch ($type) {
-                case \STATS_ADMIN_TYPE_BESUCHER:
-                    $data = $stats->holeBesucherStats();
-                    break;
-                case \STATS_ADMIN_TYPE_KUNDENHERKUNFT:
-                    $data = $stats->holeKundenherkunftStats();
-                    break;
-                case \STATS_ADMIN_TYPE_SUCHMASCHINE:
-                    $data = $stats->holeBotStats();
-                    break;
-                case \STATS_ADMIN_TYPE_UMSATZ:
-                    $data = $stats->holeUmsatzStats();
-                    break;
-                case \STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
-                    $data = $stats->holeEinstiegsseiten();
-                    break;
-            }
+            $data      = match ($type) {
+                \STATS_ADMIN_TYPE_BESUCHER => $stats->holeBesucherStats(),
+                \STATS_ADMIN_TYPE_KUNDENHERKUNFT => $stats->holeKundenherkunftStats(),
+                \STATS_ADMIN_TYPE_SUCHMASCHINE => $stats->holeBotStats(),
+                \STATS_ADMIN_TYPE_UMSATZ => $stats->holeUmsatzStats(),
+                \STATS_ADMIN_TYPE_EINSTIEGSSEITEN => $stats->holeEinstiegsseiten(),
+                default => [],
+            };
         }
 
         return $data;
@@ -144,36 +134,33 @@ class StatsController extends AbstractBackendController
      */
     private function getMappingByType(int $type): array
     {
-        if (!$type) {
-            return [];
-        }
-
-        $mapping                                    = [];
-        $mapping[\STATS_ADMIN_TYPE_BESUCHER]        = [
-            'nCount' => \__('count'),
-            'dZeit'  => \__('date')
-        ];
-        $mapping[\STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = [
-            'nCount'   => \__('count'),
-            'dZeit'    => \__('date'),
-            'cReferer' => \__('origin')
-        ];
-        $mapping[\STATS_ADMIN_TYPE_SUCHMASCHINE]    = [
-            'nCount'     => \__('count'),
-            'dZeit'      => \__('date'),
-            'cUserAgent' => \__('userAgent')
-        ];
-        $mapping[\STATS_ADMIN_TYPE_UMSATZ]          = [
-            'nCount' => \__('amount'),
-            'dZeit'  => \__('date')
-        ];
-        $mapping[\STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = [
-            'nCount'          => \__('count'),
-            'dZeit'           => \__('date'),
-            'cEinstiegsseite' => \__('entryPage')
+        $mapping = [
+            \STATS_ADMIN_TYPE_BESUCHER        => [
+                'nCount' => \__('count'),
+                'dZeit'  => \__('date')
+            ],
+            \STATS_ADMIN_TYPE_KUNDENHERKUNFT  => [
+                'nCount'   => \__('count'),
+                'dZeit'    => \__('date'),
+                'cReferer' => \__('origin')
+            ],
+            \STATS_ADMIN_TYPE_SUCHMASCHINE    => [
+                'nCount'     => \__('count'),
+                'dZeit'      => \__('date'),
+                'cUserAgent' => \__('userAgent')
+            ],
+            \STATS_ADMIN_TYPE_UMSATZ          => [
+                'nCount' => \__('amount'),
+                'dZeit'  => \__('date')
+            ],
+            \STATS_ADMIN_TYPE_EINSTIEGSSEITEN => [
+                'nCount'          => \__('count'),
+                'dZeit'           => \__('date'),
+                'cEinstiegsseite' => \__('entryPage')
+            ]
         ];
 
-        return $mapping[$type];
+        return $mapping[$type] ?? [];
     }
 
     /**

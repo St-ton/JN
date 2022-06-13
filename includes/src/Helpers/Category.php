@@ -600,7 +600,7 @@ class Category
             // we have an incomplete category tree (because of high category count)
             // or did not find the desired category (because it is a lost category)
             $fallback = $this->getFallBackFlatTree($id);
-            if (count($fallback) === 0) {
+            if (\count($fallback) === 0) {
                 // this category does not exists
                 return null;
             }

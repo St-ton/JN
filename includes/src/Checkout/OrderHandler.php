@@ -155,7 +155,7 @@ class OrderHandler
         // füge alle Warenkorbpositionen ein
         $this->tagsToFlush = [];
         $langCode          = Shop::getLanguageCode();
-        if (\is_array($this->cart->PositionenArr) && count($this->cart->PositionenArr) > 0) {
+        if (\is_array($this->cart->PositionenArr) && \count($this->cart->PositionenArr) > 0) {
             $productFilter = (int)Shop::getSettingValue(\CONF_GLOBAL, 'artikel_artikelanzeigefilter');
             foreach ($this->cart->PositionenArr as $item) {
                 if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -172,7 +172,7 @@ class OrderHandler
                 $item->kWarenkorb    = $this->cart->kWarenkorb;
                 $item->fMwSt         = Tax::getSalesTax($item->kSteuerklasse);
                 $item->kWarenkorbPos = $item->insertInDB();
-                if (\is_array($item->WarenkorbPosEigenschaftArr) && count($item->WarenkorbPosEigenschaftArr) > 0) {
+                if (\is_array($item->WarenkorbPosEigenschaftArr) && \count($item->WarenkorbPosEigenschaftArr) > 0) {
                     $idx = Shop::getLanguageCode();
                     // Bei einem Varkombikind dürfen nur FREIFELD oder PFLICHT-FREIFELD gespeichert werden,
                     // da sonst eventuelle Aufpreise in der Wawi doppelt berechnet werden

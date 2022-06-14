@@ -3,6 +3,8 @@
 namespace JTL\Template;
 
 use Exception;
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 
 /**
  * Interface TemplateServiceInterface
@@ -41,4 +43,44 @@ interface TemplateServiceInterface
      * @return bool
      */
     public function setActiveTemplate(string $dir, string $type = 'standard'): bool;
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface;
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void;
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface;
+
+    /**
+     * @param JTLCacheInterface $cache
+     */
+    public function setCache(JTLCacheInterface $cache): void;
+
+    /**
+     * @return bool
+     */
+    public function isLoaded(): bool;
+
+    /**
+     * @param bool $loaded
+     */
+    public function setLoaded(bool $loaded): void;
+
+    /**
+     * @return string
+     */
+    public function getCacheID(): string;
+
+    /**
+     * @param string $cacheID
+     */
+    public function setCacheID(string $cacheID): void;
 }

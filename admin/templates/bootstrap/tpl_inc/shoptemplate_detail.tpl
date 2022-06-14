@@ -38,7 +38,13 @@
                 </div>
                 <div class="card-body">
                     {if $section->key === 'header'}
-                        <style>.preset-button.selected { border: 3px solid; }</style>
+                        <style>
+                            .preset-button {
+                                border: 5px solid transparent;
+                                max-width: 222px;
+                            }
+                            .preset-button.selected { border: 5px solid; }
+                        </style>
                         <script>
                             {literal}
                             $(document).ready(function(){
@@ -139,9 +145,7 @@
                                     let isSelected = value.name === menuTemplateCurrent ? 'selected' : '';
                                     $('#preset-items').append(
                                         '<div class="col col-auto">' +
-                                        '<button type="button" id="' + value.name + '" ' +
-                                            'class="btn btn-outline-primary preset-button ' + isSelected + '">'
-                                            + value.name + '</button>' +
+                                        '<img src="{/literal}{$templateBaseURL}{literal}gfx/header/' + value.name + '.png" id="' + value.name + '" class="preset-button ' + isSelected + '"/>'  +
                                         '</div>')
                                 });
                                 let $presetButtons = $('.preset-button');
@@ -280,7 +284,12 @@
                             <div class="col-xs-12 col-md-12 {if !empty($setting->rawAttributes.MarginBottom)}mb-5{/if}">
                                 <div class="item form-group form-row align-items-center">
                                     {if $setting->isEditable}
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">{__($setting->name)}:</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->elementID}">
+                                            {if $setting->key === 'use_minify' && $action === 'setPreview'}
+                                                <span class="badge badge-warning">{__('Might not work correctly in preview mode')}</span>
+                                            {/if}
+                                            {__($setting->name)}:
+                                        </label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $setting->cType === 'number'}config-type-number{/if}">
                                             {if $setting->cType === 'select'}
                                                 {include file='tpl_inc/option_select.tpl' setting=$setting section=$section}

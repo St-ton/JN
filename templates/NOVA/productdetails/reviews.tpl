@@ -148,6 +148,11 @@
         {/if}
 
         {if $ratingPagination->getPageItemCount() > 0}
+            {block name='productdetails-reviews-verified-purchase-notice'}
+                {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{lang key='verifiedPurchaseNotice' section='product rating'}"]}
+                    {lang key='reviewsHowTo' section='product rating'}
+                {/button}
+            {/block}
             {block name='productdetails-reviews-include-pagination-bottom'}
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes'}
             {/block}

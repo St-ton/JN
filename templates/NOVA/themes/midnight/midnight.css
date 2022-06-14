@@ -25930,6 +25930,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   font-weight: 700;
 }
 
+.verified-purchase-notice {
+  margin-bottom: 1rem;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

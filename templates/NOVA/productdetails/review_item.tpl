@@ -81,6 +81,12 @@
                                         <span itemprop="name">{$oBewertung->cName}</span>
                                     </span>,
                                     <meta itemprop="datePublished" content="{$oBewertung->dDatum}" />{$oBewertung->Datum}
+                                    {block name='productdetails-review-item-details-verified-purchase'}
+                                        {if !empty($oBewertung->wasPurchased)}
+                                            <span class="blockquote-divider"></span>
+                                            <span class="verified-purchase">{lang key='verifiedPurchase' section='product rating'}</span>
+                                        {/if}
+                                    {/block}
                                 </div>
                             </blockquote>
                             <meta itemprop="thumbnailURL" content="{$Artikel->cVorschaubildURL}">

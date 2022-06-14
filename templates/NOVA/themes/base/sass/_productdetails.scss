@@ -869,3 +869,13 @@
 		}
 	}
 }
+
+.blockquote-divider {
+	&::before {
+		content: "\2014";
+	}
+}
+
+.verified-purchase {
+	font-weight: $font-weight-bold;
+}

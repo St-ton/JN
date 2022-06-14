@@ -92,12 +92,17 @@ class Bewertung
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
-                        tbewertunghilfreich.nBewertung AS rated
+                        tbewertunghilfreich.nBewertung AS rated,
+                        IF(tbestellung.kKunde IS NOT NULL, 1, 0) AS wasPurchased
                     FROM tbewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = :pid" .
+                    LEFT JOIN (
+                        tbestellung
+                        INNER JOIN twarenkorbpos ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                    ) ON tbestellung.kKunde = tbewertung.kKunde AND twarenkorbpos.kArtikel = tbewertung.kArtikel
+                    WHERE tbewertung.kArtikel = :pid" .
                         $langSQL . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
@@ -214,12 +219,17 @@ class Bewertung
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
-                        tbewertunghilfreich.nBewertung AS rated
+                        tbewertunghilfreich.nBewertung AS rated,
+                        IF(tbestellung.kKunde IS NOT NULL, 1, 0) AS wasPurchased
                     FROM tbewertung
                     LEFT JOIN tbewertunghilfreich
                       ON tbewertung.kBewertung = tbewertunghilfreich.kBewertung
                       AND tbewertunghilfreich.kKunde = :customerID
-                    WHERE kArtikel = :pid" . $langSQL . $condSQL . $activateSQL . '
+                    LEFT JOIN (
+                            tbestellung
+                            INNER JOIN twarenkorbpos ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
+                        ) ON tbestellung.kKunde = tbewertung.kKunde AND twarenkorbpos.kArtikel = tbewertung.kArtikel
+                    WHERE tbewertung.kArtikel = :pid" . $langSQL . $condSQL . $activateSQL . '
                     ORDER BY' . $orderSQL . $limitSQL,
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );

@@ -117,7 +117,12 @@ function schalteBewertungFrei(array $reviewIDs): bool
     if (count($reviewIDs) === 0) {
         return false;
     }
-    $controller = new ReviewAdminController(Shop::Container()->getDB(), Shop::Container()->getCache());
+    $controller = new ReviewAdminController(
+        Shop::Container()->getDB(),
+        Shop::Container()->getCache(),
+        Shop::Container()->getAlertService(),
+        Shop::Smarty()
+    );
     $controller->activate($reviewIDs);
 
     return true;

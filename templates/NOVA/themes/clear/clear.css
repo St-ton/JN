@@ -22256,6 +22256,13 @@ label {
   margin-bottom: 1rem;
 }
 
+.productbox-show-variations .productbox-variations {
+  margin-bottom: 0;
+}
+.productbox-show-variations .productbox-variations .productbox-onhover {
+  padding-bottom: 1rem;
+}
+
 .productbox-price {
   font-size: 1rem;
 }
@@ -24944,6 +24951,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 #product-list .product-wrapper:not(:last-child) {
   margin-bottom: 4rem;
+}
+#product-list .product-wrapper .productbox-show-variations.transition, #product-list .product-wrapper .productbox-show-variations:hover {
+  position: absolute;
+  background: #f5f7fa;
+  z-index: 1000;
+  padding: 1rem;
+  width: 100%;
+  margin: -1rem;
 }
 
 #result-wrapper .title {

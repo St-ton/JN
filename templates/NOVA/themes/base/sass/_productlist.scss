@@ -169,6 +169,21 @@
 		&:not(:last-child) {
 			margin-bottom: map-get($spacers, 7);
 		}
+
+		.productbox-show-variations {
+			&.transition,
+			&:hover{
+				position: absolute;
+				background: $gray-lighter;
+				z-index: $zindex-dropdown;
+				padding: 1rem;
+				width: 100%;
+				margin: -1rem;
+			}
+		}
+
+
+
 	}
 }
 

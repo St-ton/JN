@@ -66,6 +66,13 @@
 
 .productbox-variations { margin-bottom: $spacer; }
 
+.productbox-show-variations .productbox-variations {
+	margin-bottom: 0;
+	.productbox-onhover {
+		padding-bottom: $spacer;
+	}
+}
+
 .productbox-price { font-size: $font-size-lg; @extend .text-accent; }
 
 .productbox-onhover { transition: $transition-base-duration; }

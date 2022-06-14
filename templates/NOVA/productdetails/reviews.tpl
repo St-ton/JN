@@ -149,7 +149,7 @@
 
         {if $ratingPagination->getPageItemCount() > 0}
             {block name='productdetails-reviews-verified-purchase-notice'}
-                {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{lang key='verifiedPurchaseNotice' section='product rating'}"]}
+                {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{{lang key='verifiedPurchaseNotice' section='product rating'}|escape:"html"}"]}
                     {lang key='reviewsHowTo' section='product rating'}
                 {/button}
             {/block}

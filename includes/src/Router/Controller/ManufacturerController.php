@@ -9,6 +9,7 @@ use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use stdClass;
 
 /**
  * Class ManufacturerController
@@ -46,15 +47,42 @@ class ManufacturerController extends AbstractController
                 ['key' => 'kHersteller', 'seo' => $manufacturerName, 'lid' => $languageID]
             );
         if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->updateProductFilter();
+            return $this->handleSeoError($manufacturerID, $languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kSprache = (int)$seo->kSprache;
         $seo->kKey     = (int)$seo->kKey;
 
         return $this->updateState($seo, $slug);
+    }
+
+    /**
+     * @param int $manufacturerID
+     * @param int $languageID
+     * @return State
+     */
+    private function handleSeoError(int $manufacturerID, int $languageID): State
+    {
+        if ($manufacturerID > 0) {
+            $exists = $this->db->getSingleObject(
+                'SELECT kHersteller
+                    FROM thersteller
+                    WHERE kHersteller = :pid',
+                ['pid' => $manufacturerID]
+            );
+            if ($exists !== null) {
+                $seo           = new stdClass();
+                $seo->cSeo     = '';
+                $seo->cKey     = 'kHersteller';
+                $seo->kKey     = $manufacturerID;
+                $seo->kSprache = $languageID;
+
+                return $this->updateState($seo, $seo->cSeo);
+            }
+        }
+        $this->state->is404 = true;
+
+        return $this->updateProductFilter();
     }
 
     /**

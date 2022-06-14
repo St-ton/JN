@@ -261,7 +261,7 @@ class Item extends AbstractItem implements RoutableInterface
             $this->setDate(\date_create($item->dateCreated));
             $this->setDateValidFrom(\date_create($item->dateValidFrom));
         }
-        $this->createBySlug();
+        $this->createBySlug($this->id);
         $this->comments->createItemsByNewsItem($this->id);
         $this->commentCount      = $this->comments->getCommentsCount();
         $this->commentChildCount = $this->comments->getCommentsCount('child');

@@ -109,7 +109,7 @@ trait RoutableTrait
                     $locale = $languageModel->getIso639();
                     $route  = $router->getPathByType(
                         $this->getRouteType(),
-                        ['lang' => $locale, 'name' => $slug]
+                        ['lang' => $locale, 'name' => $slug, 'id' => $fallbackID]
                     );
                     $this->setURLPath($route, $langID);
                     $this->setURL($base . $route, $langID);

@@ -374,7 +374,7 @@ final class Link extends AbstractLink implements RoutableInterface
                     $localeCode = Text::convertISO2ISO639($link->cISOSprache);
                     $route      = Shop::getRouter()->getPathByLinkType(
                         $this->getLinkType(),
-                        ['lang' => $localeCode, 'name' => $link->localizedUrl]
+                        ['lang' => $localeCode, 'name' => $link->localizedUrl ?? '', 'id' => $link->kLink]
                     );
                     $this->setSlug($route, $link->languageID);
                     $this->setURL(Shop::getURL() . $route, $link->languageID);
@@ -402,6 +402,7 @@ final class Link extends AbstractLink implements RoutableInterface
      */
     private function sanitizeLinkData(stdClass $link): stdClass
     {
+        $link->kLink       = (int)$link->kLink;
         $link->languageID  = (int)$link->languageID;
         $link->kVaterLink  = (int)$link->kVaterLink;
         $link->kPlugin     = (int)$link->kPlugin;

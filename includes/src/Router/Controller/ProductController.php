@@ -21,7 +21,6 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class ProductController
@@ -109,11 +108,12 @@ class ProductController extends AbstractController
                 ['pid' => $productID]
             );
             if ($exists !== null) {
-                $seo           = new stdClass();
-                $seo->cSeo     = '';
-                $seo->cKey     = 'kArtikel';
-                $seo->kKey     = $productID;
-                $seo->kSprache = $languageID;
+                $seo = (object)[
+                    'cSeo'     => '',
+                    'cKey'     => 'kArtikel',
+                    'kKey'     => $productID,
+                    'kSprache' => $languageID
+                ];
 
                 return $this->updateState($seo, $seo->cSeo);
             }

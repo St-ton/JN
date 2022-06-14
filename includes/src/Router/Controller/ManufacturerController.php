@@ -9,7 +9,6 @@ use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class ManufacturerController
@@ -71,11 +70,12 @@ class ManufacturerController extends AbstractController
                 ['pid' => $manufacturerID]
             );
             if ($exists !== null) {
-                $seo           = new stdClass();
-                $seo->cSeo     = '';
-                $seo->cKey     = 'kHersteller';
-                $seo->kKey     = $manufacturerID;
-                $seo->kSprache = $languageID;
+                $seo = (object)[
+                    'cSeo'     => '',
+                    'cKey'     => 'kHersteller',
+                    'kKey'     => $manufacturerID,
+                    'kSprache' => $languageID
+                ];
 
                 return $this->updateState($seo, $seo->cSeo);
             }

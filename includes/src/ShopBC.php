@@ -304,4 +304,14 @@ class ShopBC
         \trigger_error(__METHOD__ . ' is deprecated - use JTL\Shop::getSettingValue() instead.', \E_USER_DEPRECATED);
         return Shopsetting::getInstance()->getValue($section, $option);
     }
+
+    /**
+     * @return Services\DefaultServicesInterface
+     * @deprecated since 5.2.0
+     */
+    public function _Container()
+    {
+        //\trigger_error(__METHOD__ . ' is deprecated - use JTL\Shop::Container() instead.', \E_USER_DEPRECATED);
+        return Shop::Container();
+    }
 }

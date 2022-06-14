@@ -32,6 +32,7 @@ use JTL\Router\State;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use JTL\Visitor;
 use Mobile_Detect;
@@ -249,7 +250,7 @@ abstract class AbstractController implements ControllerInterface
     public function preRender(): void
     {
         global $nStartzeit;
-
+        $this->config             = Shopsetting::getInstance()->getAll();
         $cart                     = Frontend::getCart();
         $linkHelper               = Shop::Container()->getLinkService();
         $this->expandedCategories = $this->expandedCategories ?? new KategorieListe();
@@ -271,8 +272,8 @@ abstract class AbstractController implements ControllerInterface
         }
         $this->productFilter->setAvailableFilters($filters);
         $linkHelper->activate($pageType);
-        $origin = Frontend::getCustomer()->cLand ?? '';
 
+        $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
         $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())

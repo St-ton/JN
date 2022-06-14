@@ -1540,11 +1540,13 @@
                     $item.append(label);
                     break;
                 case 'swatch':
-                    $item.tooltip({
-                        title: note,
-                        trigger: 'hover',
-                        container: 'body'
-                    });
+                    if (!$item.hasClass('gall-preview')) {
+                        $item.tooltip({
+                            title: note,
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }
                     if (notExists) {
                         $item.addClass('swatches-not-in-stock');
                     } else {

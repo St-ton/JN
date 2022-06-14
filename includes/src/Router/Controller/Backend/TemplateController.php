@@ -87,10 +87,9 @@ class TemplateController extends AbstractBackendController
                 return $this->displayTemplateSettings();
             case 'switch':
                 $this->switch();
-                if (Request::verifyGPCDataInt('config') === 1) {
-                    return $this->displayTemplateSettings();
-                }
-                return $this->displayOverview();
+                return Request::verifyGPCDataInt('config') === 1
+                    ? $this->displayTemplateSettings()
+                    : $this->displayOverview();
             case 'save-config':
                 $this->saveConfig();
                 return $this->displayOverview();
@@ -99,10 +98,9 @@ class TemplateController extends AbstractBackendController
                 return $this->displayOverview();
             case 'setPreview':
                 $this->switch('test');
-                if (Request::verifyGPCDataInt('config') === 1) {
-                    return $this->displayTemplateSettings();
-                }
-                return $this->displayOverview();
+                return Request::verifyGPCDataInt('config') === 1
+                    ? $this->displayTemplateSettings()
+                    : $this->displayOverview();
             case 'upload':
                 return $this->upload($_FILES['template-install-upload']);
             case 'save-config-continue':

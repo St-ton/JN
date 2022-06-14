@@ -86,6 +86,7 @@
                     </div>
                 {/col}
             {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
+            $Einstellungen.template.productlist.hover_productlist === 'Y' && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]) &&
             $Einstellungen.template.productlist.variation_productlist_gallery === 'Y' && $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
             ($Artikel->Variationen[0]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX') &&
             (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX'))}

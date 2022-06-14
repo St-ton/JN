@@ -144,8 +144,14 @@ class MinifyService
                 }
                 if ($allowStatic === true) {
                     $uri = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
+                    if ($template->getIsPreview()) {
+                        $uri .= '&preview=1';
+                    }
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
+                    if ($template->getIsPreview()) {
+                        $uri .= '&preview=1';
+                    }
                 }
                 $res[$type][$group] = $uri;
             }
@@ -163,7 +169,9 @@ class MinifyService
             }
             $combinedCSS .= '?v=' . $tplVersion;
         }
-
+        if ($template->getIsPreview()) {
+            $combinedCSS .= '&preview=1';
+        }
         $smarty->assign('cPluginCss_arr', $minify['plugin_css'])
             ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
             ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])

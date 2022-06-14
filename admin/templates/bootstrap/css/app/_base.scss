@@ -120,6 +120,13 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 		margin-left: auto;
 	}
 }
+
+.action-buttons {
+	.btn {
+		margin-bottom: 8px;
+	}
+}
+
 .systemcheck {
 	.card-title {
 		margin-bottom: 0;

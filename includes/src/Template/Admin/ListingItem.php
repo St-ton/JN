@@ -176,6 +176,11 @@ class ListingItem
     private $checksums;
 
     /**
+     * @var bool
+     */
+    private bool $isPreview = false;
+
+    /**
      * @param array $xml
      * @param int   $validationResult
      * @return ListingItem
@@ -802,5 +807,21 @@ class ListingItem
     public function setChecksums($checksums): void
     {
         $this->checksums = $checksums;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPreview(): bool
+    {
+        return $this->isPreview;
+    }
+
+    /**
+     * @param bool $isPreview
+     */
+    public function setIsPreview(bool $isPreview): void
+    {
+        $this->isPreview = $isPreview;
     }
 }

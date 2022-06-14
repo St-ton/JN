@@ -58,6 +58,9 @@ class TemplateController extends AbstractBackendController
         return $this->handleAction();
     }
 
+    /**
+     * @return ResponseInterface
+     */
     public function handleAction(): ResponseInterface
     {
         $action                   = Request::verifyGPDataString('action');
@@ -68,6 +71,7 @@ class TemplateController extends AbstractBackendController
             $this->currentTemplateDir = null;
             $valid                    = false;
         }
+        $this->smarty->assign('action', $action);
         $this->config = new Config($this->currentTemplateDir, $this->db);
         if (!empty($_FILES['template-install-upload'])) {
             $action = 'upload';
@@ -90,6 +94,15 @@ class TemplateController extends AbstractBackendController
             case 'save-config':
                 $this->saveConfig();
                 return $this->displayOverview();
+            case 'unsetPreview':
+                $this->unsetPreview();
+                return $this->displayOverview();
+            case 'setPreview':
+                $this->switch('test');
+                if (Request::verifyGPCDataInt('config') === 1) {
+                    return $this->displayTemplateSettings();
+                }
+                return $this->displayOverview();
             case 'upload':
                 return $this->upload($_FILES['template-install-upload']);
             case 'save-config-continue':
@@ -100,6 +113,9 @@ class TemplateController extends AbstractBackendController
         }
     }
 
+    /**
+     * @return ResponseInterface
+     */
     private function failResponse(): ResponseInterface
     {
         $response = new InstallationResponse();
@@ -115,7 +131,6 @@ class TemplateController extends AbstractBackendController
     /**
      * @param array $files
      * @return ResponseInterface
-     * @throws \SmartyException
      */
     private function upload(array $files): ResponseInterface
     {
@@ -139,6 +154,11 @@ class TemplateController extends AbstractBackendController
         $data->getBody()->write($response->toJson());
 
         return $data;
+    }
+
+    private function unsetPreview(): void
+    {
+        $this->db->delete('ttemplate', 'eTyp', 'test');
     }
 
     private function saveConfig(): void
@@ -180,8 +200,8 @@ class TemplateController extends AbstractBackendController
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
             }
         }
+        $check = $service->setActiveTemplate($this->currentTemplateDir, Request::postVar('eTyp', 'standard'));
         $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
-        $check = $service->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -272,6 +292,9 @@ class TemplateController extends AbstractBackendController
         return $value;
     }
 
+    /**
+     * @return ResponseInterface
+     */
     private function displayOverview(): ResponseInterface
     {
         $lstng = new Listing($this->db, new TemplateValidator($this->db));
@@ -289,12 +312,15 @@ class TemplateController extends AbstractBackendController
         return $this->db->select('ttemplate', 'eTyp', 'standard')->cTemplate ?? null;
     }
 
-    private function switch(): void
+    /**
+     * @param string $type
+     */
+    private function switch(string $type = 'standard'): void
     {
         if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
             $bootstrapper->disabled();
         }
-        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir)) {
+        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type)) {
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }
@@ -320,7 +346,7 @@ class TemplateController extends AbstractBackendController
         $service      = Shop::Container()->getTemplateService();
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
-        Shop::Container()->getGetText()->loadTemplateLocale('base', $current);
+        $this->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }

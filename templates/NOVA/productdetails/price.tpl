@@ -90,6 +90,25 @@
                                 </span>
                             {/block}
 
+                            {block name='productdetails-price-min-value-info'}
+                                {$minOrderValue = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
+                                {if $minOrderValue > 0}
+                                    {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+                                        {if $NettoPreise == 1}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minNettoPrice}
+                                        {else}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minBruttoPrice}
+                                        {/if}
+                                    {else}
+                                        {$minPrice = $Artikel->Preise->fVK[$NettoPreise]}
+                                    {/if}
+
+                                    {if $minOrderValue > $minPrice}
+                                        <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$minOrderValue|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                    {/if}
+                                {/if}
+                            {/block}
+
                             {block name='productdetails-price-special-prices-detail'}
                                 {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
                                     <div class="text-danger text-stroke text-nowrap-util">

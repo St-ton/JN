@@ -87,7 +87,7 @@ class Bewertung
     {
         $this->oBewertung_arr = [];
         if ($productID > 0 && $languageID > 0) {
-            $langSQL = $allLanguages ? '' : ' AND kSprache = ' . $languageID . ' ';
+            $langSQL = $allLanguages ? '' : ' AND tbewertung.kSprache = ' . $languageID . ' ';
             $data    = Shop::Container()->getDB()->getSingleObject(
                 "SELECT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
@@ -104,8 +104,8 @@ class Bewertung
                     ) ON tbestellung.kKunde = tbewertung.kKunde AND twarenkorbpos.kArtikel = tbewertung.kArtikel
                     WHERE tbewertung.kArtikel = :pid" .
                         $langSQL . '
-                        AND nAktiv = 1
-                    ORDER BY nHilfreich DESC
+                        AND tbewertung.nAktiv = 1
+                    ORDER BY tbewertung.nHilfreich DESC
                     LIMIT 1',
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
@@ -144,18 +144,18 @@ class Bewertung
     {
         switch ($option) {
             case 3:
-                return ' dDatum ASC';
+                return ' tbewertung.dDatum ASC';
             case 4:
-                return ' nSterne DESC';
+                return ' tbewertung.nSterne DESC';
             case 5:
-                return ' nSterne ASC';
+                return ' tbewertung.nSterne ASC';
             case 6:
-                return ' nHilfreich DESC';
+                return ' tbewertung.nHilfreich DESC';
             case 7:
-                return ' nHilfreich ASC';
+                return ' tbewertung.nHilfreich ASC';
             case 2:
             default:
-                return ' dDatum DESC';
+                return ' tbewertung.dDatum DESC';
         }
     }
 
@@ -191,13 +191,13 @@ class Bewertung
         \executeHook(\HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
         $activateSQL = $activate === 'Y'
-            ? ' AND nAktiv = 1'
+            ? ' AND tbewertung.nAktiv = 1'
             : '';
-        $langSQL     = $allLanguages ? '' : ' AND kSprache = ' . $languageID;
+        $langSQL     = $allLanguages ? '' : ' AND tbewertung.kSprache = ' . $languageID;
         // Anzahl Bewertungen für jeden Stern unabhängig von Sprache SHOP-2313
         if ($stars !== -1) {
             if ($stars > 0) {
-                $condSQL = ' AND nSterne = ' . $stars;
+                $condSQL = ' AND tbewertung.nSterne = ' . $stars;
             }
             $ratingCounts = $db->getObjects(
                 'SELECT COUNT(*) AS nAnzahl, nSterne

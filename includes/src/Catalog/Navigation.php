@@ -242,6 +242,7 @@ class Navigation
         $ele0->setURLFull($this->baseURL);
 
         $breadCrumb[] = $ele0;
+        $langID       = $this->language->kSprache;
         $ele          = new NavigationEntry();
         $ele->setHasChild(false);
         switch ($this->pageType) {
@@ -259,9 +260,9 @@ class Navigation
                 for ($i = $elemCount; $i >= 0; $i--) {
                     if (isset($this->categoryList->elemente[$i])) {
                         $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->getShortName());
-                        $ele->setURL($this->categoryList->elemente[$i]->getURL());
-                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL());
+                        $ele->setName($this->categoryList->elemente[$i]->getShortName($langID));
+                        $ele->setURL($this->categoryList->elemente[$i]->getURL($langID));
+                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL($langID));
                         $breadCrumb[] = $ele;
                     }
                 }
@@ -285,9 +286,9 @@ class Navigation
                 for ($i = $elemCount - 1; $i >= 0; $i--) {
                     if (isset($this->categoryList->elemente[$i])) {
                         $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->getShortName());
-                        $ele->setURL($this->categoryList->elemente[$i]->getURL());
-                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL());
+                        $ele->setName($this->categoryList->elemente[$i]->getShortName($langID));
+                        $ele->setURL($this->categoryList->elemente[$i]->getURL($langID));
+                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL($langID));
                         $breadCrumb[] = $ele;
                     }
                 }

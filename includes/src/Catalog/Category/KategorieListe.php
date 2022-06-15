@@ -131,8 +131,9 @@ class KategorieListe
         $languageID       = $languageID ?: Shop::getLanguageID();
         $allCategories    = static::getCategoryList($customerGroupID, $languageID);
         while ($currentParent > 0) {
-            $category         = $allCategories['oKategorie_arr'][$currentParent]
+            $category = $allCategories['oKategorie_arr'][$currentParent]
                 ?? new Kategorie($currentParent, $languageID, $customerGroupID);
+            $category->setCurrentLanguageID($languageID);
             $this->elemente[] = $category;
             $currentParent    = $category->getParentID();
         }
@@ -160,6 +161,7 @@ class KategorieListe
             foreach ($subCategories as $subCatID) {
                 $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
                     ?? new Kategorie($subCatID, $languageID, $customerGroupID);
+                $categories[$subCatID]->setCurrentLanguageID($languageID);
             }
 
             return $categories;

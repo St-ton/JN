@@ -260,7 +260,7 @@ abstract class AbstractController implements ControllerInterface
         $link                     = $this->currentLink ?? new Link($this->db);
         $this->currentCategory    = $this->currentCategory
             ?? new Kategorie(Request::verifyGPCDataInt('kategorie'), $this->languageID, $this->customerGroupID);
-        $this->expandedCategories->getOpenCategories($this->currentCategory);
+        $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
         // put availability on top
         $filters = $this->productFilter->getAvailableContentFilters();
         foreach ($filters as $key => $filter) {

@@ -423,7 +423,7 @@ class URL
                 if (!empty($obj->cSeo)) {
                     $route = $router->getPathByType(
                         Router::TYPE_PRODUCT,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo]
+                        ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kArtikel ?? null]
                     );
                 }
                 return $route !== null
@@ -433,16 +433,12 @@ class URL
             case \URLART_KATEGORIE:
                 if ($obj instanceof MenuItem) {
                     $base  = $obj->getURL();
-                    $route = null;
-                    if (!empty($base)) {
-                        $route = $router->getPathByType(
-                            Router::TYPE_CATEGORY,
-                            ['lang' => $localeCode, 'name' => $base]
-                        );
-                    }
-                    return $route !== null
-                        ? \rtrim($prefix, '/') . $route
-                        : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
+                    $route = $router->getPathByType(
+                        Router::TYPE_CATEGORY,
+                        ['lang' => $localeCode, 'name' => $base, 'id' => $obj->getID()]
+                    );
+
+                    return \rtrim($prefix, '/') . $route;
                 }
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
@@ -452,7 +448,7 @@ class URL
                 if (!empty($obj->cSeo)) {
                     $route = $router->getPathByType(
                         Router::TYPE_PAGE,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo]
+                        ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
                     );
                 }
                 if ($route !== null) {

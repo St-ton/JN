@@ -122,14 +122,15 @@ class PageController extends AbstractController
             $this->currentLink->setRedirectCode(301);
         }
         $requestURL = URL::buildURL($this->currentLink, \URLART_SEITE);
+        $linkType   = $this->currentLink->getLinkType();
         if (!str_contains($requestURL, '.php')) {
             $this->canonicalURL = $this->currentLink->getURL();
         }
-        $mapped = ControllerFactory::getControllerClassByLinkType($this->currentLink->getLinkType());
+        $mapped = ControllerFactory::getControllerClassByLinkType($linkType);
         if ($mapped !== null && $mapped !== __CLASS__) {
             return $this->delegateResponse($mapped, $request, $args, $smarty);
         }
-        if ($this->currentLink->getLinkType() === \LINKTYP_STARTSEITE) {
+        if ($linkType === \LINKTYP_STARTSEITE) {
             $this->canonicalURL = Shop::getHomeURL();
             if ($this->currentLink->getRedirectCode() > 0) {
                 return new RedirectResponse($this->canonicalURL, $this->currentLink->getRedirectCode());
@@ -139,21 +140,17 @@ class PageController extends AbstractController
                     ? CMS::getHomeNews($this->config)
                     : []);
             Wizard::startIfRequired(\AUSWAHLASSISTENT_ORT_STARTSEITE, 1, $this->languageID, $this->smarty);
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_AGB) {
+        } elseif ($linkType === \LINKTYP_AGB) {
             $this->smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
                 $this->languageID,
                 $this->customerGroupID
             ));
-        } elseif (\in_array(
-            $this->currentLink->getLinkType(),
-            [\LINKTYP_WRB, \LINKTYP_WRB_FORMULAR, \LINKTYP_DATENSCHUTZ],
-            true
-        )) {
+        } elseif (\in_array($linkType, [\LINKTYP_WRB, \LINKTYP_WRB_FORMULAR, \LINKTYP_DATENSCHUTZ], true)) {
             $this->smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
                 $this->languageID,
                 $this->customerGroupID
             ));
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_VERSAND) {
+        } elseif ($linkType === \LINKTYP_VERSAND) {
             $error = '';
             if (isset($_POST['land'], $_POST['plz'])
                 && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $error)
@@ -167,7 +164,7 @@ class PageController extends AbstractController
                 $this->alertService->addError($error, 'shippingCostError');
             }
             $this->smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID));
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_LIVESUCHE) {
+        } elseif ($linkType === \LINKTYP_LIVESUCHE) {
             $liveSearchTop  = CMS::getLiveSearchTop($this->config);
             $liveSearchLast = CMS::getLiveSearchLast($this->config);
             if (\count($liveSearchTop) === 0 && \count($liveSearchLast) === 0) {
@@ -175,23 +172,23 @@ class PageController extends AbstractController
             }
             $this->smarty->assign('LivesucheTop', $liveSearchTop)
                 ->assign('LivesucheLast', $liveSearchLast);
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_HERSTELLER) {
+        } elseif ($linkType === \LINKTYP_HERSTELLER) {
             $this->smarty->assign(
                 'oHersteller_arr',
                 Hersteller::getAll(true, $this->languageID, $this->customerGroupID)
             );
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_NEWSLETTERARCHIV) {
+        } elseif ($linkType === \LINKTYP_NEWSLETTERARCHIV) {
             $this->smarty->assign('oNewsletterHistory_arr', CMS::getNewsletterHistory());
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_SITEMAP) {
+        } elseif ($linkType === \LINKTYP_SITEMAP) {
             Shop::setPageType(\PAGE_SITEMAP);
             $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_404) {
+        } elseif ($linkType === \LINKTYP_404) {
             $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
             Shop::setPageType(\PAGE_404);
             $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_GRATISGESCHENK) {
+        } elseif ($linkType === \LINKTYP_GRATISGESCHENK) {
             if ($this->config['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
                 $freeGifts = CMS::getFreeGifts($this->config);
                 if (\count($freeGifts) > 0) {
@@ -203,7 +200,7 @@ class PageController extends AbstractController
                     );
                 }
             }
-        } elseif ($this->currentLink->getLinkType() === \LINKTYP_AUSWAHLASSISTENT) {
+        } elseif ($linkType === \LINKTYP_AUSWAHLASSISTENT) {
             Wizard::startIfRequired(
                 \AUSWAHLASSISTENT_ORT_LINK,
                 $this->currentLink->getID(),

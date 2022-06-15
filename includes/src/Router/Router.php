@@ -267,7 +267,7 @@ class Router
             self::TYPE_PAGE => 'ROUTE_PAGE_BY_',
             default => 'ROUTE_XXX_BY_'
         };
-        $name .= ($byName === true ? 'NAME' : 'ID');
+        $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
             && ($this->ignoreDefaultLocale === false
                 || ($replacements['lang'] ?? '') !== $this->defaultLocale
@@ -275,6 +275,7 @@ class Router
         ) {
             $name .= '_LOCALIZED';
         }
+        //@todo???: fallback to index.php?k=123&lang=fre
 
         return $this->getNamedPath($name, $replacements);
     }
@@ -293,7 +294,7 @@ class Router
 //            \LINKTYP_BESTELLVORGANG => 'ROUTE_CHECKOUT_BY_',
             default => 'ROUTE_PAGE_BY_'
         };
-        $name .= ($byName === true ? 'NAME' : 'ID');
+        $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         $name .= ($this->isMultilang === true ? '_LOCALIZED' : '');
 
         return $this->getNamedPath($name, $replacements);

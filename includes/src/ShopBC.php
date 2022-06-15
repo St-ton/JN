@@ -6,7 +6,7 @@ use JTL\Events\Dispatcher;
 use JTL\Filter\FilterInterface;
 
 /**
- * Class Shop
+ * Class ShopBC
  * @package JTL
  */
 class ShopBC

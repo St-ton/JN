@@ -84,15 +84,43 @@ class ProductController extends AbstractController
                 ['key' => 'kArtikel', 'seo' => $productName]
             );
         if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->updateProductFilter();
+            return $this->handleSeoError($productID, $languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kKey     = (int)$seo->kKey;
         $seo->kSprache = (int)$seo->kSprache;
 
         return $this->updateState($seo, $slug);
+    }
+
+    /**
+     * @param int $productID
+     * @param int $languageID
+     * @return State
+     */
+    private function handleSeoError(int $productID, int $languageID): State
+    {
+        if ($productID > 0) {
+            $exists = $this->db->getSingleObject(
+                'SELECT kArtikel
+                    FROM tartikel
+                    WHERE kArtikel = :pid',
+                ['pid' => $productID]
+            );
+            if ($exists !== null) {
+                $seo = (object)[
+                    'cSeo'     => '',
+                    'cKey'     => 'kArtikel',
+                    'kKey'     => $productID,
+                    'kSprache' => $languageID
+                ];
+
+                return $this->updateState($seo, $seo->cSeo);
+            }
+        }
+        $this->state->is404 = true;
+
+        return $this->updateProductFilter();
     }
 
     /**

@@ -244,7 +244,7 @@ class Kategorie
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategoriepict.cPfad, tkategoriepict.cType,
                 atr.cWert AS customImgName, tkategorie.lft, tkategorie.rght,
-                COALESCE(tseo.cSeo, tkategoriesprache.cSeo, tkategorie.cSeo) cSeo,
+                COALESCE(tseo.cSeo, tkategoriesprache.cSeo, \'\') cSeo,
                 COALESCE(tkategoriesprache.cName, tkategorie.cName) cName,
                 COALESCE(tkategoriesprache.cBeschreibung, tkategorie.cBeschreibung) cBeschreibung,
                 COALESCE(tkategoriesprache.cMetaDescription, \'\') cMetaDescription,
@@ -287,7 +287,7 @@ class Kategorie
             return $this;
         }
         $this->mapData($items);
-        $this->createBySlug();
+        $this->createBySlug($id);
         $this->categoryPath       = Category::getInstance($languageID, $customerGroupID)->getPath($this, false);
         $this->categoryPathString = \implode(' > ', $this->categoryPath);
         $this->addImage(first($items));

@@ -27,9 +27,11 @@ class CategoryController extends AbstractController
         if ($categoryID < 1 && $categoryName === null) {
             return $this->state;
         }
-        $parser       = new DefaultParser($this->db, $this->state);
-        $categoryName = $parser->parse($categoryName);
-        $languageID   = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
+        if ($categoryName !== null) {
+            $parser       = new DefaultParser($this->db, $this->state);
+            $categoryName = $parser->parse($categoryName);
+        }
+        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
 
         $seo = $categoryID > 0
             ? $this->db->getSingleObject(
@@ -48,9 +50,7 @@ class CategoryController extends AbstractController
                 ['key' => 'kKategorie', 'seo' => $categoryName]
             );
         if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->updateProductFilter();
+            return $this->handleSeoError($categoryID, $languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kSprache = (int)$seo->kSprache;
@@ -58,6 +58,36 @@ class CategoryController extends AbstractController
         $this->updateState($seo, $slug);
 
         return $this->state;
+    }
+
+    /**
+     * @param int $categoryID
+     * @param int $languageID
+     * @return State
+     */
+    private function handleSeoError(int $categoryID, int $languageID): State
+    {
+        if ($categoryID > 0) {
+            $exists = $this->db->getSingleObject(
+                'SELECT kKategorie
+                    FROM tkategorie
+                    WHERE kKategorie = :cid',
+                ['cid' => $categoryID]
+            );
+            if ($exists !== null) {
+                $seo = (object)[
+                    'cSeo'     => '',
+                    'cKey'     => 'kKategorie',
+                    'kKey'     => $categoryID,
+                    'kSprache' => $languageID
+                ];
+
+                return $this->updateState($seo, $seo->cSeo);
+            }
+        }
+        $this->state->is404 = true;
+
+        return $this->updateProductFilter();
     }
 
     /**

@@ -4,6 +4,7 @@ namespace JTL\Router;
 
 use Exception;
 use FastRoute\BadRouteException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
@@ -35,6 +36,7 @@ use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\Exception\EmitterException;
 use League\Route\Router as BaseRouter;
 use League\Route\Strategy\JsonStrategy;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Class Router
@@ -84,13 +86,15 @@ class Router
     private ControllerInterface $defaultController;
 
     /**
-     * @param DbInterface $db
-     * @param             $cache
-     * @param State       $state
+     * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
+     * @param State                 $state
+     * @param AlertServiceInterface $alert
+     * @param array                 $conf
      */
     public function __construct(
         protected DbInterface $db,
-        protected $cache,
+        protected JTLCacheInterface $cache,
         protected State $state,
         AlertServiceInterface $alert,
         array $conf
@@ -197,14 +201,20 @@ class Router
     }
 
     /**
-     * @param string      $route
-     * @param callable    $cb
-     * @param array       $methods
-     * @param string|null $name
+     * @param string                   $route
+     * @param callable                 $cb
+     * @param array                    $methods
+     * @param string|null              $name
+     * @param MiddlewareInterface|null $middleware
      * @return void
      */
-    public function addRoute(string $route, callable $cb, array $methods = ['GET'], string $name = null): void
-    {
+    public function addRoute(
+        string $route,
+        callable $cb,
+        array $methods = ['GET'],
+        string $name = null,
+        ?MiddlewareInterface $middleware = null
+    ): void {
         if (!\str_starts_with($route, '/')) {
             $route = '/' . $route;
         }
@@ -214,6 +224,9 @@ class Router
                 $item = $this->router->map($method, $group . $route, $cb);
                 if ($name !== null) {
                     $item->setName($name . $method);
+                }
+                if ($middleware !== null) {
+                    $item->middleware($middleware);
                 }
             }
         }

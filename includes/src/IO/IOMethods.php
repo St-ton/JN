@@ -1262,11 +1262,10 @@ class IOMethods
         $response   = new IOResponse();
         $list       = new KategorieListe();
         $category   = new Kategorie($categoryID);
-        $categories = $list->getChildCategories($category->kKategorie, 0, 0);
-
+        $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->kOberKategorie);
-            $categories = $list->getChildCategories($category->kKategorie, 0, 0);
+            $category   = new Kategorie($category->getParentID());
+            $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 
         $smarty->assign('result', (object)['current' => $category, 'items' => $categories])

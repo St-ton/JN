@@ -23,26 +23,6 @@ use stdClass;
 final class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var JobHydrator
-     */
-    private JobHydrator $hydrator;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Controller constructor.
      * @param DbInterface       $db
      * @param LoggerInterface   $logger
@@ -50,15 +30,11 @@ final class Controller
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
-        JTLCacheInterface $cache
+        private DbInterface $db,
+        private LoggerInterface $logger,
+        private JobHydrator $hydrator,
+        private JTLCacheInterface $cache
     ) {
-        $this->db       = $db;
-        $this->logger   = $logger;
-        $this->hydrator = $hydrator;
-        $this->cache    = $cache;
     }
 
     /**

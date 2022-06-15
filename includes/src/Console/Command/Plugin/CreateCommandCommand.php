@@ -93,7 +93,7 @@ class CreateCommandCommand extends Command
         $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new Exception('Cannot create dir ' . $relPath);
         }
         $content = Shop::Smarty()

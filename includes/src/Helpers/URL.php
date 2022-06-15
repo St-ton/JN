@@ -64,7 +64,7 @@ class URL
     /**
      * @var array
      */
-    private $defaultPorts = ['http' => '80', 'https' => '443'];
+    private array $defaultPorts = ['http' => '80', 'https' => '443'];
 
     /**
      * @param string|null $url

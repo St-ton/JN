@@ -34,17 +34,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @var bool
      */
-    protected $overwrite = true;
-
-    /**
-     * @var InputInterface
-     */
-    private $input;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    protected bool $overwrite = true;
 
     /**
      * @var SymfonyQuestionHelper|null
@@ -59,17 +49,12 @@ class ConsoleIO extends OutputStyle
     /**
      * @var int
      */
-    private $lineLength;
+    private int $lineLength;
 
     /**
      * @var BufferedOutput
      */
-    private $bufferedOutput;
-
-    /**
-     * @var HelperSet
-     */
-    private $helperSet;
+    private BufferedOutput $bufferedOutput;
 
     /**
      * ConsoleIO constructor.
@@ -77,16 +62,15 @@ class ConsoleIO extends OutputStyle
      * @param OutputInterface $output
      * @param HelperSet|null  $helperSet
      */
-    public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helperSet = null)
-    {
+    public function __construct(
+        private InputInterface $input,
+        private OutputInterface $output,
+        private ?HelperSet $helperSet = null
+    ) {
         $formatter = null;
         if ($output->getFormatter() !== null) {
             $formatter = clone $output->getFormatter();
         }
-
-        $this->input          = $input;
-        $this->output         = $output;
-        $this->helperSet      = $helperSet;
         $this->bufferedOutput = new BufferedOutput($output->getVerbosity(), false, $formatter);
         $this->lineLength     = $this->getTerminalWidth() - (int)(\DIRECTORY_SEPARATOR === '\\');
 

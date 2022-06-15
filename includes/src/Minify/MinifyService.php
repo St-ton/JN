@@ -15,7 +15,7 @@ class MinifyService
     /**
      * @var string
      */
-    protected $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
+    protected string $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
 
     public const TYPE_CSS = 'css';
 
@@ -144,14 +144,11 @@ class MinifyService
                 }
                 if ($allowStatic === true) {
                     $uri = $this->buildURI('static', 'g=' . $group, $type, $cacheTime);
-                    if ($template->getIsPreview()) {
-                        $uri .= '&preview=1';
-                    }
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
-                    if ($template->getIsPreview()) {
-                        $uri .= '&preview=1';
-                    }
+                }
+                if ($template->getIsPreview()) {
+                    $uri .= '&preview=1';
                 }
                 $res[$type][$group] = $uri;
             }

@@ -31,11 +31,6 @@ class Notification implements IteratorAggregate, Countable
     private array $array = [];
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var Notification|null
      */
     private static ?Notification $instance = null;
@@ -44,9 +39,8 @@ class Notification implements IteratorAggregate, Countable
      * Notification constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db       = $db;
         self::$instance = $this;
     }
 

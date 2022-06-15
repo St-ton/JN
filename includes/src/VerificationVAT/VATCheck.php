@@ -13,12 +13,12 @@ class VATCheck
     /**
      * @var VATCheckInterface
      */
-    private $location;
+    private VATCheckInterface $location;
 
     /**
      * @var string
      */
-    private $ustID;
+    private string $ustID;
 
     /**
      * VATCheck constructor.

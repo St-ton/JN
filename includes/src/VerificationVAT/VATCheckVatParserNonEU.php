@@ -47,22 +47,22 @@ class VATCheckVatParserNonEU
     /**
      * @var string
      */
-    public $vatID = '';
+    public string $vatID = '';
 
     /**
      * @var string
      */
-    private $errorInfo = '';
+    private string $errorInfo = '';
 
     /**
      * @var int
      */
-    private $errorCode = 0;
+    private int $errorCode = 0;
 
     /**
      * @var int
      */
-    private $errorPos = 0;
+    private int $errorPos = 0;
 
     /**
      * VATCheckVatParserNonEU constructor.

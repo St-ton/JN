@@ -22,24 +22,12 @@ use stdClass;
 final class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * Manager constructor.
+     * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private DbInterface $db, private array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**

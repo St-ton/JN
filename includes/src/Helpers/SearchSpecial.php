@@ -18,24 +18,12 @@ use function Functional\map;
 class SearchSpecial
 {
     /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * SearchSpecial constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**

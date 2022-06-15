@@ -22,35 +22,35 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @var array
      * Stores the property values
      */
-    protected $members = [];
+    protected array $members = [];
 
     /**
      * @var callable[]
      * List of setting handlers
      */
-    protected $setters = [];
+    protected array $setters = [];
 
     /**
      * @var callable[]
      * List of getting handlers
      */
-    protected $getters = [];
+    protected array $getters = [];
 
     /**
      * @var array
      */
-    protected static $nameMapping = [];
+    protected static array $nameMapping = [];
 
     /**
      * true when loaded from database
      * @var bool
      */
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
      * @inheritDoc
@@ -213,7 +213,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return $this
      * @throws Exception
      */
-    protected function createNew($option = self::NONE): self
+    protected function createNew(int $option = self::NONE): self
     {
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
         if (!empty($pkValue)) {

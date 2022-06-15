@@ -24,22 +24,22 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     /**
      * @var bool
      */
-    private $hasSendingPermission = false;
+    private bool $hasSendingPermission = false;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $historyID;
+    private ?int $historyID = null;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertHelper;
+    private AlertServiceInterface $alertHelper;
 
     /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * OptinNewsletter constructor.

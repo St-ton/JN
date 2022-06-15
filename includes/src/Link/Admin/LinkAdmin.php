@@ -10,15 +10,8 @@ use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
-use JTL\Link\LinkGroupCollection;
-use JTL\Link\LinkGroupInterface;
-use JTL\Link\LinkGroupList;
-use JTL\Link\LinkInterface;
-use JTL\Services\JTL\LinkService;
-use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class LinkAdmin
@@ -33,24 +26,12 @@ final class LinkAdmin
     public const ERROR_LINK_GROUP_NOT_FOUND = 3;
 
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
      * LinkAdmin constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -70,203 +51,9 @@ final class LinkAdmin
     }
 
     /**
-     * @return LinkGroupCollection
-     */
-    public function getLinkGroups(): LinkGroupCollection
-    {
-        $ls  = new LinkService($this->db, $this->cache);
-        $lgl = new LinkGroupList($this->db, $this->cache);
-        $lgl->loadAll();
-        $linkGroups = $lgl->getLinkGroups()->filter(static function (LinkGroupInterface $e) {
-            return $e->isSpecial() === false || $e->getTemplate() === 'unassigned';
-        });
-        foreach ($linkGroups as $linkGroup) {
-            /** @var LinkGroupInterface $linkGroup */
-            $filtered = $this->buildNavigation($linkGroup, $ls);
-            $linkGroup->setLinks($filtered);
-        }
-
-        return $linkGroups;
-    }
-
-    /**
-     * @param LinkGroupInterface   $linkGroup
-     * @param LinkServiceInterface $service
-     * @param int                  $parentID
-     * @return Collection
-     * @former build_navigation_subs_admin()
-     */
-    private function buildNavigation(
-        LinkGroupInterface $linkGroup,
-        LinkServiceInterface $service,
-        int $parentID = 0
-    ): Collection {
-        $news = new Collection();
-        foreach ($linkGroup->getLinks() as $link) {
-            $link->setLevel(\count($service->getParentIDs($link->getID())));
-            /** @var LinkInterface $link */
-            if ($link->getParent() !== $parentID) {
-                continue;
-            }
-            $link->setChildLinks($this->buildNavigation($linkGroup, $service, $link->getID()));
-            $news->push($link);
-        }
-
-        return $news;
-    }
-
-    /**
-     * @param int   $id
-     * @param array $post
-     * @return stdClass
-     */
-    public function createOrUpdateLinkGroup(int $id, array $post): stdClass
-    {
-        $linkGroup                = new stdClass();
-        $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
-        $linkGroup->cName         = $this->specialChars($post['cName']);
-        $linkGroup->cTemplatename = $this->specialChars($post['cTemplatename']);
-
-        if ($id === 0) {
-            $groupID = $this->db->insert('tlinkgruppe', $linkGroup);
-        } else {
-            $groupID = (int)$post['kLinkgruppe'];
-            $this->db->update('tlinkgruppe', 'kLinkgruppe', $groupID, $linkGroup);
-        }
-        $localized              = new stdClass();
-        $localized->kLinkgruppe = $groupID;
-        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
-            $localized->cISOSprache = $language->getIso();
-            $localized->cName       = $linkGroup->cName;
-            $idx                    = 'cName_' . $language->getIso();
-            if (isset($post[$idx])) {
-                $localized->cName = $this->specialChars($post[$idx]);
-            }
-            $this->db->delete(
-                'tlinkgruppesprache',
-                ['kLinkgruppe', 'cISOSprache'],
-                [$groupID, $language->getIso()]
-            );
-            $this->db->insert('tlinkgruppesprache', $localized);
-        }
-
-        return $linkGroup;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLinkGroupCountForLinkIDs(): array
-    {
-        $assocCount             = $this->db->getObjects(
-            'SELECT tlink.kLink, COUNT(*) AS cnt 
-                FROM tlink 
-                JOIN tlinkgroupassociations
-                    ON tlinkgroupassociations.linkID = tlink.kLink
-                GROUP BY tlink.kLink
-                HAVING COUNT(*) > 1'
-        );
-        $linkGroupCountByLinkID = [];
-        foreach ($assocCount as $item) {
-            $linkGroupCountByLinkID[(int)$item->kLink] = (int)$item->cnt;
-        }
-
-        return $linkGroupCountByLinkID;
-    }
-
-    /**
-     * @param int $linkID
-     * @param int $linkGroupID
-     * @return int
-     */
-    public function removeLinkFromLinkGroup(int $linkID, int $linkGroupID): int
-    {
-        $link = (new Link($this->db))->load($linkID);
-        foreach ($link->getChildLinks() as $childLink) {
-            $this->removeLinkFromLinkGroup($childLink->getID(), $linkGroupID);
-        }
-
-        return $this->db->delete(
-            'tlinkgroupassociations',
-            ['linkGroupID', 'linkID'],
-            [$linkGroupID, $linkID]
-        );
-    }
-
-    /**
-     * @param int $linkID
-     * @param int $parentLinkID
-     * @return bool|stdClass
-     */
-    public function updateParentID(int $linkID, int $parentLinkID)
-    {
-        $link       = $this->db->select('tlink', 'kLink', $linkID);
-        $parentLink = $this->db->select('tlink', 'kLink', $parentLinkID);
-
-        if (isset($link->kLink)
-            && $link->kLink > 0
-            && ((isset($parentLink->kLink) && $parentLink->kLink > 0) || $parentLinkID === 0)
-        ) {
-            $this->db->update('tlink', 'kLink', $linkID, (object)['kVaterLink' => $parentLinkID]);
-
-            return $link;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int $linkID
-     * @return int
-     */
-    public function deleteLink(int $linkID): int
-    {
-        return $this->db->getAffectedRows(
-            "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
-                FROM tlink
-                LEFT JOIN tlinkgroupassociations
-                    ON tlinkgroupassociations.linkID = tlink.kLink
-                LEFT JOIN tlinksprache
-                    ON tlink.kLink = tlinksprache.kLink
-                LEFT JOIN tseo
-                    ON tseo.cKey = 'kLink'
-                    AND tseo.kKey = :lid
-                WHERE tlink.kLink = :lid
-                    OR tlink.reference = :lid",
-            ['lid' => $linkID]
-        );
-    }
-
-    /**
-     * @param int  $linkGroupID
-     * @param bool $names
-     * @return array
-     */
-    public function getPreDeletionLinks(int $linkGroupID, bool $names = true): array
-    {
-        $links = $this->db->getObjects(
-            'SELECT tlink.cName
-                FROM tlink
-                JOIN tlinkgroupassociations A
-                    ON tlink.kLink = A.linkID
-                JOIN tlinkgroupassociations B
-                    ON A.linkID = B.linkID
-                WHERE A.linkGroupID = :lgid
-                GROUP BY A.linkID
-                HAVING COUNT(A.linkID) > 1',
-            ['lgid' => $linkGroupID]
-        );
-
-        return $names === true
-            ? map($links, static function ($l) {
-                return $l->cName;
-            })
-            : $links;
-    }
-
-    /**
      * @param int $id
      * @return stdClass[]
+     * @todo!!! used in template
      */
     public function getMissingLinkTranslations(int $id): array
     {
@@ -309,6 +96,9 @@ final class LinkAdmin
         });
     }
 
+    /**
+     * @return Collection
+     */
     public function getMissingSystemPages(): Collection
     {
         $all          = $this->db->getCollection(
@@ -366,155 +156,6 @@ final class LinkAdmin
                     AND tlinkgruppe.kLinkgruppe = :lgid',
             ['lgid' => $id]
         );
-    }
-
-    /**
-     * @param int $linkID
-     * @param int $targetLinkGroupID
-     * @return int|Link
-     */
-    public function createReference(int $linkID, int $targetLinkGroupID)
-    {
-        $link = new Link($this->db);
-        $link->load($linkID);
-        if ($link->getID() === 0) {
-            return self::ERROR_LINK_NOT_FOUND;
-        }
-        if ($link->getReference() > 0) {
-            $linkID = $link->getReference();
-        }
-        $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
-        if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
-            return self::ERROR_LINK_GROUP_NOT_FOUND;
-        }
-        $exists = $this->db->select(
-            'tlinkgroupassociations',
-            ['linkID', 'linkGroupID'],
-            [$linkID, $targetLinkGroupID]
-        );
-        if (!empty($exists)) {
-            return self::ERROR_LINK_ALREADY_EXISTS;
-        }
-        $ref            = new stdClass();
-        $ref->kPlugin   = $link->getPluginID();
-        $ref->nLinkart  = \LINKTYP_REFERENZ;
-        $ref->reference = $linkID;
-        $ref->cName     = \__('Referenz') . ' ' . $linkID;
-        $linkID         = $this->db->insert('tlink', $ref);
-
-        $ins              = new stdClass();
-        $ins->linkID      = $linkID;
-        $ins->linkGroupID = $targetLinkGroupID;
-        $this->db->insert('tlinkgroupassociations', $ins);
-        $this->copyChildLinksToLinkGroup($link, $targetLinkGroupID);
-
-        return $link;
-    }
-
-    /**
-     * @param int $linkID
-     * @param int $oldLinkGroupID
-     * @param int $newLinkGroupID
-     * @return int|Link
-     */
-    public function updateLinkGroup(int $linkID, int $oldLinkGroupID, int $newLinkGroupID)
-    {
-        $link = new Link($this->db);
-        $link->load($linkID);
-        if ($link->getID() === 0) {
-            return self::ERROR_LINK_NOT_FOUND;
-        }
-        $linkgruppe = $this->db->select('tlinkgruppe', 'kLinkgruppe', $newLinkGroupID);
-        if (!isset($linkgruppe->kLinkgruppe) || $linkgruppe->kLinkgruppe <= 0) {
-            return self::ERROR_LINK_GROUP_NOT_FOUND;
-        }
-        $exists = $this->db->select(
-            'tlinkgroupassociations',
-            ['linkGroupID', 'linkID'],
-            [$newLinkGroupID, $link->getID()]
-        );
-        if (!empty($exists)) {
-            return self::ERROR_LINK_ALREADY_EXISTS;
-        }
-        $upd              = new stdClass();
-        $upd->linkGroupID = $newLinkGroupID;
-        $rows             = $this->db->update(
-            'tlinkgroupassociations',
-            ['linkGroupID', 'linkID'],
-            [$oldLinkGroupID, $link->getID()],
-            $upd
-        );
-        if ($rows === 0) {
-            // previously unassigned link
-            $upd              = new stdClass();
-            $upd->linkGroupID = $newLinkGroupID;
-            $upd->linkID      = $link->getID();
-            $this->db->insert('tlinkgroupassociations', $upd);
-        }
-        unset($upd->linkID);
-        $this->updateChildLinkGroups($link, $oldLinkGroupID, $newLinkGroupID);
-
-        return $link;
-    }
-
-    /**
-     * @param int $linkGroupID
-     * @return int
-     */
-    public function deleteLinkGroup(int $linkGroupID): int
-    {
-        $this->db->delete('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
-        $res = $this->db->delete('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
-        $this->db->delete('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
-
-        return $res;
-    }
-
-    /**
-     * @param LinkInterface $link
-     * @param int           $old
-     * @param int           $new
-     */
-    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
-    {
-        $upd              = new stdClass();
-        $upd->linkGroupID = $new;
-        foreach ($link->getChildLinks() as $childLink) {
-            if ($old < 0) {
-                // previously unassigned
-                $ins              = new stdClass();
-                $ins->linkGroupID = $new;
-                $ins->linkID      = $childLink->getID();
-                $this->db->insert('tlinkgroupassociations', $ins);
-            } else {
-                $this->db->update(
-                    'tlinkgroupassociations',
-                    ['linkGroupID', 'linkID'],
-                    [$old, $childLink->getID()],
-                    $upd
-                );
-            }
-            $this->updateChildLinkGroups($childLink, $old, $new);
-        }
-    }
-
-    /**
-     * @param LinkInterface $link
-     * @param int           $linkGroupID
-     */
-    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
-    {
-        $link->buildChildLinks();
-        $ins              = new stdClass();
-        $ins->linkGroupID = $linkGroupID;
-        foreach ($link->getChildLinks() as $childLink) {
-            $ins->linkID = $childLink->getID();
-            $this->db->insert(
-                'tlinkgroupassociations',
-                $ins
-            );
-            $this->copyChildLinksToLinkGroup($childLink, $linkGroupID);
-        }
     }
 
     /**
@@ -725,33 +366,6 @@ final class LinkAdmin
 
             return $link;
         });
-    }
-
-    /**
-     * @param int $linkID
-     * @return int|string
-     */
-    public function getLastImageNumber(int $linkID)
-    {
-        $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
-        $images    = [];
-        if (\is_dir($uploadDir . $linkID)) {
-            $handle = \opendir($uploadDir . $linkID);
-            while (($file = \readdir($handle)) !== false) {
-                if ($file !== '.' && $file !== '..') {
-                    $images[] = $file;
-                }
-            }
-        }
-        $max = 0;
-        foreach ($images as $image) {
-            $num = \mb_substr($image, 4, (\mb_strlen($image) - \mb_strpos($image, '.')) - 3);
-            if ($num > $max) {
-                $max = $num;
-            }
-        }
-
-        return $max;
     }
 
     /**

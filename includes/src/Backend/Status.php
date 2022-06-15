@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
 use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
-use JTL\Backend\LocalizationCheck\LocalizationCheckInterface;
 use JTL\Backend\LocalizationCheck\Result;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
@@ -298,7 +297,7 @@ class Status
                 'php'  => $phpTime->format('Y-m-d H:i:s'),
                 'diff' => \abs($dbTime->getTimestamp() - $phpTime->getTimestamp())
             ];
-        } catch (Exception $e) {
+        } catch (Exception) {
             return ['diff' => 0];
         }
     }
@@ -310,7 +309,7 @@ class Status
     {
         try {
             $template = Shop::Container()->getTemplateService()->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         return $template->getVersion() !== \APPLICATION_VERSION;
@@ -323,7 +322,7 @@ class Status
     {
         try {
             $template = Shop::Container()->getTemplateService()->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($template->isResponsive()) {
@@ -510,7 +509,7 @@ class Status
         foreach ($data as $item) {
             try {
                 $plugin = Helper::getLoader((int)$item->bExtension === 1)->init((int)$item->kPlugin);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             if ($plugin->getCurrentVersion()->greaterThan($item->nVersion)) {

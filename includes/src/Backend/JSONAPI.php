@@ -11,7 +11,7 @@ use JTL\Shop;
 class JSONAPI
 {
     /**
-     * @var JSONAPI
+     * @var JSONAPI|null
      */
     private static $instance;
 

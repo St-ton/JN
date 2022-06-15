@@ -10,7 +10,6 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Router\RoutableTrait;
-use JTL\Router\Router;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;

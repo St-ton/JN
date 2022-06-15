@@ -13,21 +13,6 @@ use JTL\Smarty\ExportSmarty;
 class FileWriter implements ExportWriterInterface
 {
     /**
-     * @var ExportSmarty|null
-     */
-    private ?ExportSmarty $smarty;
-
-    /**
-     * @var Model
-     */
-    private Model $model;
-
-    /**
-     * @var array
-     */
-    private array $config;
-
-    /**
      * @var string
      */
     private string $tmpFileName;
@@ -40,11 +25,8 @@ class FileWriter implements ExportWriterInterface
     /**
      * @inheritdoc
      */
-    public function __construct(Model $model, array $config, ExportSmarty $smarty = null)
+    public function __construct(private Model $model, private array $config, private ?ExportSmarty $smarty = null)
     {
-        $this->model       = $model;
-        $this->config      = $config;
-        $this->smarty      = $smarty;
         $this->tmpFileName = 'tmp_' . \basename($this->model->getFilename());
     }
 

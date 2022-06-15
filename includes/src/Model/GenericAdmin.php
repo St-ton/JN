@@ -15,41 +15,6 @@ use Psr\Http\Message\ResponseInterface;
 class GenericAdmin
 {
     /**
-     * @var string
-     */
-    private string $adminBaseFile;
-
-    /**
-     * @var string
-     */
-    private string $modelClass;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
-
-    /**
-     * @var string
-     */
-    private string $step = 'overview';
-
-    /**
-     * @var DataModelInterface
-     */
-    private $item;
-
-    /**
-     * @var string
-     */
-    private string $tab = 'overview';
-
-    /**
      * GenericAdmin constructor.
      * @param DataModelInterface    $model
      * @param string                $adminBaseFile
@@ -137,6 +102,7 @@ class GenericAdmin
      */
     public function updateFromPost(DataModelInterface $model, array $post): bool
     {
+        return false;
     }
 
     /**
@@ -145,6 +111,7 @@ class GenericAdmin
      */
     public function deleteFromPost(array $ids): bool
     {
+        return false;
     }
 
     /**

@@ -22,10 +22,10 @@ class Controller
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private AlertServiceInterface $alertService,
-        private JTLSmarty $smarty
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        AlertServiceInterface $alertService,
+        JTLSmarty $smarty
     ) {
     }
 }

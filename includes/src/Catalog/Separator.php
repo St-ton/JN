@@ -45,7 +45,7 @@ class Separator
     /**
      * @var array
      */
-    private static $unitObject = [];
+    private static array $unitObject = [];
 
     /**
      * Separator constructor.

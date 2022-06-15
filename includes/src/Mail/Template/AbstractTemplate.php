@@ -16,11 +16,6 @@ use function Functional\first;
 abstract class AbstractTemplate implements TemplateInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * @var string
      */
     protected $id;
@@ -28,7 +23,7 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var string
      */
-    protected $settingsTable = 'temailvorlageeinstellungen';
+    protected string $settingsTable = 'temailvorlageeinstellungen';
 
     /**
      * @var string|null
@@ -48,12 +43,12 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var array
      */
-    protected $overrideCopyTo = [];
+    protected array $overrideCopyTo = [];
 
     /**
      * @var array
      */
-    protected $legalData = [];
+    protected array $legalData = [];
 
     /**
      * @var Model|null
@@ -88,15 +83,14 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * AbstractTemplate constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->init();
     }
 

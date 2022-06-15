@@ -2,20 +2,15 @@
 
 namespace JTL\Backend;
 
-use DateTime;
 use Exception;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Language\LanguageHelper;
-use JTL\Media\Image;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
 use function Functional\pluck;
-use function Functional\reindex;
 
 /**
  * Class AdminAccountManager

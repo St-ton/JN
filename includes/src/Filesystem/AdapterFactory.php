@@ -16,18 +16,12 @@ use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
 class AdapterFactory
 {
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
      * AdapterFactory constructor.
      *
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(private array $config)
     {
-        $this->config = $config;
     }
 
     /**

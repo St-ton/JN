@@ -14,8 +14,8 @@ use stdClass;
  */
 class MenuItem
 {
-    use MagicCompatibilityTrait,
-        MultiSizeImage;
+    use MagicCompatibilityTrait;
+    use MultiSizeImage;
 
     /**
      * @var string[]

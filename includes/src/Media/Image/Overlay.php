@@ -18,7 +18,7 @@ class Overlay
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'cURLKlein'           => 'URLKlein',
         'cURLNormal'          => 'URLNormal',
         'cURLGross'           => 'URLGross',

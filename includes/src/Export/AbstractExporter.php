@@ -37,26 +37,6 @@ abstract class AbstractExporter implements ExporterInterface
     protected ?Model $model;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var ExportWriterInterface|null
-     */
-    protected ?ExportWriterInterface $writer;
-
-    /**
      * @var float
      */
     protected float $startedAt;
@@ -69,15 +49,11 @@ abstract class AbstractExporter implements ExporterInterface
      * @param ExportWriterInterface|null $writer
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JTLCacheInterface $cache,
-        ?ExportWriterInterface $writer = null
+        protected DbInterface $db,
+        protected LoggerInterface $logger,
+        protected JTLCacheInterface $cache,
+        protected ?ExportWriterInterface $writer = null
     ) {
-        $this->db     = $db;
-        $this->logger = $logger;
-        $this->cache  = $cache;
-        $this->writer = $writer;
     }
 
     /**

@@ -14,81 +14,81 @@ class QueueEntry
     /**
      * @var int
      */
-    public $jobQueueID;
+    public int $jobQueueID;
 
     /**
      * @var int
      */
-    public $cronID;
+    public int $cronID;
 
     /**
      * @var int
      */
-    public $foreignKeyID;
+    public int $foreignKeyID;
 
     /**
      * @var int
      */
-    public $taskLimit;
+    public int $taskLimit;
 
     /**
      * @var int
      */
-    public $tasksExecuted;
+    public int $tasksExecuted;
 
     /**
      * @var int
      */
-    public $lastProductID;
+    public int $lastProductID;
 
     /**
      * @var int
      */
-    public $isRunning;
+    public int $isRunning;
 
     /**
      * @var string
      */
-    public $jobType;
+    public string $jobType;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $tableName;
+    public ?string $tableName;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $foreignKey;
-
-    /**
-     * @var DateTime
-     */
-    public $startTime;
+    public ?string $foreignKey;
 
     /**
      * @var DateTime
      */
-    public $lastStart;
+    public DateTime $startTime;
 
     /**
      * @var DateTime
      */
-    public $lastFinish;
+    public DateTime $lastStart;
+
+    /**
+     * @var DateTime
+     */
+    public DateTime $lastFinish;
 
     /**
      * compatibility only
      *
      * @var int
      */
-    public $nLimitN;
+    public int $nLimitN;
 
     /**
      * compatibility only
      *
      * @var int
      */
-    public $nLimitM;
+    public int $nLimitM;
 
     /**
      * QueueEntry constructor.

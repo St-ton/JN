@@ -21,17 +21,17 @@ class MigrationManager
     /**
      * @var IMigration[]
      */
-    protected static $migrations = [];
+    protected static array $migrations = [];
 
     /**
      * @var array|null
      */
-    protected $executedMigrations;
+    protected ?array $executedMigrations = null;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * MigrationManager constructor.

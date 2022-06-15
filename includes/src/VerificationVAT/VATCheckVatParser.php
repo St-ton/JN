@@ -25,7 +25,7 @@ class VATCheckVatParser
      * " "  - spaces has to match too - but can't handled by the VIES-system, so we have to left out them here
      * "_"  - wildcard for any character
      */
-    private $countryPattern = [
+    private array $countryPattern = [
         // AT-Oesterreich                ATU99999999          1 Block mit 9 Ziffern    (comment: 8 !?)
         'AT' => ['ATU99999999'],         // example: ATU48075808(ok)
 
@@ -165,7 +165,7 @@ class VATCheckVatParser
     /**
      * @var string
      */
-    private $vatID;
+    private string $vatID;
 
     /**
      * @var array
@@ -175,17 +175,17 @@ class VATCheckVatParser
     /**
      * @var int
      */
-    private $errorCode = 0;
+    private int $errorCode = 0;
 
     /**
      * @var string
      */
-    private $errorInfo = '';
+    private string $errorInfo = '';
 
     /**
      * @var int
      */
-    private $errorPos = 0;
+    private int $errorPos = 0;
 
     /**
      * VATCheckVatParser constructor.

@@ -41,27 +41,22 @@ class DemoDataInstaller
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var Generator
      */
-    private $faker;
+    private Generator $faker;
 
     /**
      * @var Slugify
      */
-    private $slugify;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private Slugify $slugify;
 
     /**
      * @var array
      */
-    private static $defaultConfig = [
+    private static array $defaultConfig = [
         'manufacturers' => self::NUM_MANUFACTURERS,
         'categories'    => self::NUM_CATEGORIES,
         'articles'      => self::NUM_ARTICLES,
@@ -73,9 +68,8 @@ class DemoDataInstaller
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config = [])
+    public function __construct(private DbInterface $db, array $config = [])
     {
-        $this->db     = $db;
         $this->config = \array_merge(static::$defaultConfig, $config);
         $this->faker  = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
@@ -404,7 +398,7 @@ class DemoDataInstaller
                 if (\count($res) > 0) {
                     throw new OverflowException();
                 }
-            } catch (OverflowException $e) {
+            } catch (OverflowException) {
                 $name = $this->faker->unique(true)->company . '_' . ++$index;
             }
 
@@ -456,7 +450,7 @@ class DemoDataInstaller
                 if (\count($res) > 0) {
                     throw new OverflowException();
                 }
-            } catch (OverflowException $e) {
+            } catch (OverflowException) {
                 $name = $this->faker->unique(true)->department . '_' . ++$nameIDX;
             }
             $category                        = new stdClass();

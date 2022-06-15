@@ -21,36 +21,6 @@ use JTL\Smarty\JTLSmarty;
 class Manager
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected $smarty;
-
-    /**
-     * @var CountryServiceInterface
-     */
-    protected $countryService;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
-     * @var GetText
-     */
-    protected $getText;
-
-    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param JTLSmarty $smarty
@@ -60,21 +30,14 @@ class Manager
      * @param GetText $getText
      */
     public function __construct(
-        DbInterface $db,
-        JTLSmarty $smarty,
-        CountryServiceInterface $countryService,
-        JTLCacheInterface $cache,
-        AlertServiceInterface $alertService,
-        GetText $getText
+        protected DbInterface $db,
+        protected JTLSmarty $smarty,
+        protected CountryServiceInterface $countryService,
+        protected JTLCacheInterface $cache,
+        protected AlertServiceInterface $alertService,
+        protected GetText $getText
     ) {
-        $this->db             = $db;
-        $this->smarty         = $smarty;
-        $this->countryService = $countryService;
-        $this->cache          = $cache;
-        $this->alertService   = $alertService;
-        $this->getText        = $getText;
-
-        $getText->loadAdminLocale('pages/countrymanager');
+        $this->getText->loadAdminLocale('pages/countrymanager');
     }
 
     /**
@@ -88,11 +51,10 @@ class Manager
                 break;
             case 'update':
                 $country = $this->countryService->getCountry(Request::verifyGPDataString('cISO'));
-                if ($country->isShippingAvailable()) {
+                if ($country?->isShippingAvailable() === true) {
                     $this->alertService->addWarning(\__('warningShippingAvailable'), 'warningShippingAvailable');
                 }
-                $this->smarty
-                    ->assign('countryPost', Text::filterXSS($_POST))
+                $this->smarty->assign('countryPost', Text::filterXSS($_POST))
                     ->assign('country', $country);
                 break;
             default:
@@ -282,8 +244,6 @@ class Manager
                     WHERE cISO IN ('" . \implode("', '", Text::filterXSS($deactivated)) . "')"
             );
         }
-
-
         if ($showAlerts) {
             if (\count($activated) > 0) {
                 $activatedCountries = $this->countryService->getFilteredCountryList($activated)->map(

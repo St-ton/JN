@@ -17,59 +17,59 @@ use stdClass;
 class Category
 {
     /**
-     * @var Category
+     * @var Category|null
      */
     private static $instance;
 
     /**
      * @var int
      */
-    private static $languageID;
+    private static int $languageID;
 
     /**
      * @var int
      */
-    private static $customerGroupID;
+    private static int $customerGroupID;
 
     /**
      * @var int
      */
-    private static $depth;
+    private static int $depth;
 
     /**
      * @var string
      */
-    private static $cacheID;
+    private static string $cacheID;
 
     /**
      * @var array
      */
-    private static $config;
+    private static array $config;
 
     /**
      * @var array|null
      */
-    private static $fullCategories;
+    private static ?array $fullCategories = null;
 
     /**
-     * @var int[]|null
+     * @var int[]|null|bool
      */
     private static $lostCategories;
 
     /**
      * @var bool
      */
-    private static $limitReached = false;
+    private static bool $limitReached = false;
 
     /**
      * @var DbInterface
      */
-    private static $db;
+    private static DbInterface $db;
 
     /**
      * @var array|null
      */
-    private static $prodCatAssociations;
+    private static ?array $prodCatAssociations = null;
 
     /**
      * Category constructor.
@@ -568,11 +568,14 @@ class Category
             if ((self::$lostCategories = $cache->get($cacheID)) === false) {
                 self::$lostCategories = Shop::Container()->getDB()->getCollection(
                     'SELECT child.kKategorie
-                    FROM tkategorie
-                    LEFT JOIN tkategorie parent ON tkategorie.kOberKategorie = parent.kKategorie
-                    LEFT JOIN tkategorie child ON tkategorie.lft <= child.lft AND tkategorie.rght >= child.rght
-                    WHERE tkategorie.kOberKategorie > 0
-                        AND parent.kKategorie IS NULL'
+                        FROM tkategorie
+                        LEFT JOIN tkategorie parent
+                            ON tkategorie.kOberKategorie = parent.kKategorie
+                        LEFT JOIN tkategorie child
+                            ON tkategorie.lft <= child.lft
+                            AND tkategorie.rght >= child.rght
+                        WHERE tkategorie.kOberKategorie > 0
+                            AND parent.kKategorie IS NULL'
                 )->map(static function ($item) {
                     return (int)$item->kKategorie;
                 })->toArray();

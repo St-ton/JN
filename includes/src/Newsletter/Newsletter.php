@@ -27,29 +27,17 @@ use stdClass;
 class Newsletter
 {
     /**
-     * @var DbInterface
+     * @var JTLSmarty|null
      */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var JTLSmarty
-     */
-    private $smarty;
+    private ?JTLSmarty $smarty = null;
 
     /**
      * Newsletter constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private DbInterface $db, private array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**
@@ -444,26 +432,26 @@ class Newsletter
         }
         $manufacturers = [];
         $shopURL       = Shop::getURL() . '/';
-        $imageBaseURL  = Shop::getImageBaseURL();
+        $langID        = $langID ?: Shop::getLanguageID();
         foreach ($manufacturerIDs as $id) {
             $id = (int)$id;
             if ($id <= 0) {
                 continue;
             }
             $manufacturer = new Hersteller($id, $langID);
-            if ($manufacturer->kHersteller <= 0) {
+            if ($manufacturer->getID() <= 0) {
                 continue;
             }
-            if (!\str_contains($manufacturer->cURL, $shopURL)) {
-                $manufacturer->cURL = $shopURL . $manufacturer->cURL;
+            if (!\str_contains($manufacturer->getURL($langID), $shopURL)) {
+                $manufacturer->setURL($shopURL . $manufacturer->getURL($langID), $langID);
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
-                $sep                 = \str_contains($manufacturer->cURL, '.php') ? '&' : '?';
-                $manufacturer->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
+                $sep = \str_contains($manufacturer->getURL($langID), '.php') ? '&' : '?';
+                $manufacturer->setURL(
+                    $manufacturer->getURL($langID) . $sep . $campaign->cParameter . '=' . $campaign->cWert,
+                    $langID
+                );
             }
-            $manufacturer->cBildpfadKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
-            $manufacturer->cBildpfadNormal = $imageBaseURL . $manufacturer->cBildpfadNormal;
-
             $manufacturers[] = $manufacturer;
         }
 
@@ -490,18 +478,18 @@ class Newsletter
                 continue;
             }
             $category = new Kategorie($id);
-            if ($category->kKategorie <= 0) {
+            if ($category->getID() <= 0) {
                 continue;
             }
-            if (!\str_contains($category->cURL, $shopURL)) {
-                $category->cURL = $shopURL . $category->cURL;
+            if (!\str_contains($category->getURL(), $shopURL)) {
+                $category->setURL($shopURL . $category->getURL());
             }
             if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
                 $sep = '?';
-                if (\str_contains($category->cURL, '.php')) {
+                if (\str_contains($category->getURL(), '.php')) {
                     $sep = '&';
                 }
-                $category->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
+                $category->setURL($category->getURL() . $sep . $campaign->cParameter . '=' . $campaign->cWert);
             }
             $categories[] = $category;
         }

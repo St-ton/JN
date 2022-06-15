@@ -23,7 +23,7 @@ class Backend extends AbstractSession
     private const SESSION_HASH_KEY = 'session.hash';
 
     /**
-     * @var Backend
+     * @var Backend|null
      */
     protected static $instance;
 

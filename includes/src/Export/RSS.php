@@ -16,23 +16,11 @@ use Psr\Log\LoggerInterface;
 class RSS
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
     }
 
     /**

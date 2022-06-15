@@ -5,6 +5,7 @@ namespace JTL\Review;
 /**
  * Class ReviewAdminController
  * @package JTL\Review
+ * @deprecated since 5.2.0
  */
 final class ReviewAdminController extends BaseController
 {

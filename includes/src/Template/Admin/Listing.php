@@ -79,16 +79,13 @@ final class Listing
         $preview = null;
         try {
             $active = $this->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $active = new Model($this->db);
             $active->setTemplate('no-template');
         }
         try {
-            $tpl = $this->getPreviewTemplate();
-            if ($tpl !== null) {
-                $preview = $tpl->getTemplate();
-            }
-        } catch (Exception $e) {
+            $preview = $this->getPreviewTemplate()?->getTemplate();
+        } catch (Exception) {
         }
         $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($templateDir) as $fileinfo) {

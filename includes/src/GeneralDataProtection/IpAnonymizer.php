@@ -55,26 +55,26 @@ class IpAnonymizer
      *
      * @var string
      */
-    private $placeholderIP = '0.0.0.0';
+    private string $placeholderIP = '0.0.0.0';
 
     /**
      * flag for old-fashioned anonymization ("do not anonymize again")
      *
      * @var bool
      */
-    private $oldFashionedAnon = false;
+    private bool $oldFashionedAnon = false;
 
     /**
      * flag to get "0:0:0:0:0:0:0:0" instead of "::" ("::" is a valid IPv6-notation too!)
      *
      * @var bool
      */
-    private $beautifyFlag = false;
+    private bool $beautifyFlag = false;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    private ?LoggerInterface $logger;
 
     /**
      * @param string $ip

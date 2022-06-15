@@ -5,7 +5,6 @@ namespace JTL\Export;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
-use JTL\Catalog\Currency;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Category;

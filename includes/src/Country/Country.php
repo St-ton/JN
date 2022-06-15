@@ -17,7 +17,7 @@ class Country
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'nEU'        => 'EU',
         'cDeutsch'   => 'Name',
         'cEnglisch'  => 'Name',
@@ -61,7 +61,7 @@ class Country
     /**
      * @var bool
      */
-    private $shippingAvailable = false;
+    private bool $shippingAvailable = false;
 
     /**
      * @var bool
@@ -76,7 +76,7 @@ class Country
     /**
      * @var array
      */
-    private $states = [];
+    private array $states = [];
 
     /**
      * Country constructor.

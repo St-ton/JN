@@ -82,6 +82,17 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
     /**
      * @inheritdoc
      */
+    public function directoryExists(string $path): bool
+    {
+        $archive  = $this->zipArchiveProvider->createZipArchive();
+        $location = $this->pathPrefixer->prefixDirectoryPath($path);
+
+        return $archive->statName($location) !== false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function write(string $path, string $contents, Config $config): void
     {
         try {
@@ -155,9 +166,8 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
         $prefixedPath = $this->pathPrefixer->prefixPath($path);
         $zipArchive   = $this->zipArchiveProvider->createZipArchive();
         $success      = $zipArchive->locateName($prefixedPath) === false || $zipArchive->deleteName($prefixedPath);
-        $statusString = $zipArchive->getStatusString();
         if (!$success) {
-            throw UnableToDeleteFile::atLocation($path, $statusString);
+            throw UnableToDeleteFile::atLocation($path, $zipArchive->getStatusString());
         }
     }
 

@@ -27,7 +27,6 @@ use JTL\Helpers\SearchSpecial;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Helpers\URL;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\Image\Product;

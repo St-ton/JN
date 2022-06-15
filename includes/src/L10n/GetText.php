@@ -23,17 +23,17 @@ class GetText
     /**
      * @var string
      */
-    private $langTag;
+    private string $langTag;
 
     /**
      * @var Translations[]
      */
-    private $translations;
+    private array $translations;
 
     /**
      * @var Translator
      */
-    private $translator;
+    private Translator $translator;
 
     /**
      * GetText constructor.

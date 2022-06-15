@@ -315,13 +315,9 @@ class TemplateController extends AbstractBackendController
      */
     private function switch(string $type = 'standard'): void
     {
-        if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
-            $bootstrapper->disabled();
-        }
+        BootChecker::bootstrap($this->getPreviousTemplate())?->disabled();
         if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type)) {
-            if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
-                $bootstrapper->enabled();
-            }
+            BootChecker::bootstrap($this->currentTemplateDir)?->enabled();
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
             $this->alertService->addError(\__('errorTemplateSave'), 'errorTemplateSave');

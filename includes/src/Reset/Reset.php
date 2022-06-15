@@ -3,7 +3,7 @@
 namespace JTL\Reset;
 
 use JTL\DB\DbInterface;
-use JTL\News\Admin\Controller;
+use JTL\Router\Controller\Backend\NewsController;
 
 /**
  * Class Reset
@@ -12,17 +12,11 @@ use JTL\News\Admin\Controller;
 class Reset
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Reset constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -172,7 +166,7 @@ class Reset
     private function resetNews(): void
     {
         foreach ($this->db->getInts('SELECT kNews FROM tnews', 'kNews') as $id) {
-            Controller::deleteImageDir($id);
+            NewsController::deleteImageDir($id);
         }
         $this->db->query('TRUNCATE tnews');
         $this->db->delete('trevisions', 'type', 'news');
@@ -292,7 +286,6 @@ class Reset
         $this->db->query('DELETE FROM tbesucher WHERE kBestellung > 0');
         $this->db->query('DELETE FROM tbesucherarchiv WHERE kBestellung > 0');
         $this->db->query('DELETE FROM tcheckboxlogging WHERE kBestellung > 0');
-
 
         $this->resetUploadFiles();
     }

@@ -13,26 +13,14 @@ abstract class AbstractValidator implements ValidatorInterface
     /**
      * @var array
      */
-    protected array $data;
-
-    /**
-     * @var array
-     */
-    protected array $config;
-
-    /**
-     * @var array
-     */
     protected array $errors = [];
 
     /**
      * @param array $data
      * @param array $config
      */
-    public function __construct(array $data, array $config)
+    public function __construct(protected array $data, protected array $config)
     {
-        $this->data   = $data;
-        $this->config = $config;
     }
 
     /**

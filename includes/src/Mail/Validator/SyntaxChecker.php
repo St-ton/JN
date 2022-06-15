@@ -25,34 +25,16 @@ use stdClass;
 final class SyntaxChecker
 {
     /**
-     * @var RendererInterface
-     */
-    private RendererInterface $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private HydratorInterface $hydrator;
-
-    /**
-     * @var TemplateFactory
-     */
-    private TemplateFactory $factory;
-
-    /**
      * SyntaxChecker constructor.
      * @param TemplateFactory   $factory
      * @param RendererInterface $renderer
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        TemplateFactory $factory,
-        RendererInterface $renderer,
-        HydratorInterface $hydrator
+        private TemplateFactory $factory,
+        private RendererInterface $renderer,
+        private HydratorInterface $hydrator
     ) {
-        $this->factory  = $factory;
-        $this->hydrator = $hydrator;
-        $this->renderer = $renderer;
     }
 
     /**

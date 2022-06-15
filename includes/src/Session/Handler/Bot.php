@@ -11,14 +11,14 @@ use JTL\Shop;
 class Bot extends JTLDefault
 {
     /**
-     * @var string
+     * @var string|bool
      */
-    protected $sessionID = '';
+    protected $sessionID;
 
     /**
      * @var bool
      */
-    private $doSave;
+    private bool $doSave;
 
     /**
      * @param bool $doSave - when true, session is saved, otherwise it will be discarded immediately

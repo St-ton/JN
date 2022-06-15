@@ -14,6 +14,7 @@ use function Functional\map;
 /**
  * Class BoxAdmin
  * @package Boxes\Admin
+ * @todo!!! move to router
  */
 final class BoxAdmin
 {

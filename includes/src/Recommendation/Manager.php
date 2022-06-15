@@ -32,33 +32,22 @@ class Manager
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var Collection
      */
-    private $recommendations;
-
-    /**
-     * @var string
-     */
-    private $scope;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private $alertService;
+    private Collection $recommendations;
 
     /**
      * Manager constructor.
      * @param AlertServiceInterface $alertService
      * @param string                $scope
      */
-    public function __construct(AlertServiceInterface $alertService, string $scope)
+    public function __construct(private AlertServiceInterface $alertService, private string $scope)
     {
-        $this->alertService = $alertService;
-        $this->scope        = $scope;
-        $this->client       = new Client();
+        $this->client          = new Client();
+        $this->recommendations = new Collection();
         $this->setRecommendations();
     }
 
@@ -67,8 +56,6 @@ class Manager
      */
     public function setRecommendations(): void
     {
-        $this->recommendations = new Collection();
-
         foreach ($this->getJSONFromAPI($this->getScope()) as $recommendation) {
             $this->recommendations->push(new Recommendation($recommendation));
         }
@@ -126,7 +113,7 @@ class Manager
             Shop::Container()->getLogService()->error($e->getMessage());
         }
 
-        return empty($res) ? [] : \json_decode((string)$res->getBody())->extensions;
+        return empty($res) ? [] : \json_decode((string)$res->getBody(), false)->extensions;
     }
 
     /**

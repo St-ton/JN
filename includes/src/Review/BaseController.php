@@ -15,6 +15,7 @@ use stdClass;
 /**
  * Class BaseController
  * @package JTL\Review
+ * @deprecated since 5.2.0
  */
 abstract class BaseController
 {

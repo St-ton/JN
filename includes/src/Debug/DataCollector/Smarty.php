@@ -15,7 +15,7 @@ class Smarty extends DataCollector implements Renderable
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
      * SmartyCollector constructor.

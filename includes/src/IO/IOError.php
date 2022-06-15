@@ -11,16 +11,6 @@ use JsonSerializable;
 class IOError implements JsonSerializable
 {
     /**
-     * @var string
-     */
-    public string $message = '';
-
-    /**
-     * @var int
-     */
-    public int $code = 500;
-
-    /**
      * @var array
      */
     public array $errors = [];
@@ -32,11 +22,9 @@ class IOError implements JsonSerializable
      * @param int        $code
      * @param array|null $errors
      */
-    public function __construct(string $message, int $code = 500, array $errors = null)
+    public function __construct(public string $message, public int $code = 500, array $errors = null)
     {
-        $this->message = $message;
-        $this->code    = $code;
-        $this->errors  = $errors ?? [];
+        $this->errors = $errors ?? [];
     }
 
     /**

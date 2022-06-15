@@ -57,26 +57,6 @@ class Admin
     public const STATE_FAILED = 'failed';
 
     /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var Checker
-     */
-    private Checker $checker;
-
-    /**
      * @var AuthToken
      */
     private AuthToken $auth;
@@ -105,13 +85,13 @@ class Admin
      * @param JTLCacheInterface $cache
      * @param Checker           $checker
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache, Checker $checker)
-    {
-        $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
-        $this->checker = $checker;
-        $this->auth    = AuthToken::getInstance($this->db);
+    public function __construct(
+        private Manager $manager,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private Checker $checker
+    ) {
+        $this->auth = AuthToken::getInstance($this->db);
     }
 
     public function handleAuth(): void
@@ -247,7 +227,7 @@ class Admin
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             if ($e->getResponse()->getStatusCode() === 400) {
-                $body = \json_decode((string)$e->getResponse()->getBody());
+                $body = \json_decode((string)$e->getResponse()->getBody(), false);
                 if (isset($body->code, $body->message) && $body->code === 422) {
                     $response->error = $body->message;
                 }

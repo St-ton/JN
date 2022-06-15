@@ -20,9 +20,9 @@ use stdClass;
 class NiceDB implements DbInterface
 {
     /**
-     * @var pdo|null
+     * @var PDO|null
      */
-    protected ?pdo $db = null;
+    protected ?PDO $db = null;
 
     /**
      * @var bool

@@ -14,22 +14,16 @@ use function Functional\map;
 final class ItemList implements ItemListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var Collection
      */
     private Collection $items;
 
     /**
-     * LinkList constructor.
+     * ItemList constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db    = $db;
         $this->items = new Collection();
     }
 

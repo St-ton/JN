@@ -216,7 +216,7 @@ class Collection extends \Illuminate\Support\Collection
     public function getUpdateableItems(): self
     {
         return $this->getBound()->getInstalled()->filter(static function (ExsLicense $e) {
-            return $e->getReferencedItem()->hasUpdate() === true;
+            return $e->getReferencedItem()?->hasUpdate() === true;
         });
     }
 

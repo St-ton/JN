@@ -15,16 +15,6 @@ use function Functional\group;
 final class LinkGroupList implements LinkGroupListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var LinkGroupCollection
      */
     private LinkGroupCollection $linkGroups;
@@ -39,10 +29,8 @@ final class LinkGroupList implements LinkGroupListInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db                = $db;
-        $this->cache             = $cache;
         $this->linkGroups        = new LinkGroupCollection();
         $this->visibleLinkGroups = new LinkGroupCollection();
     }

@@ -14,17 +14,17 @@ class DB extends JTLDefault
     /**
      * @var int
      */
-    protected $lifeTime;
+    protected int $lifeTime;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var string
      */
-    protected $tableName;
+    protected string $tableName;
 
     /**
      * SessionHandlerDB constructor.
@@ -35,6 +35,7 @@ class DB extends JTLDefault
     {
         $this->db        = $db;
         $this->tableName = $tableName;
+        $this->lifeTime  = (int)\get_cfg_var('session.gc_maxlifetime');
     }
 
     /**
@@ -42,8 +43,6 @@ class DB extends JTLDefault
      */
     public function open($path, $name)
     {
-        $this->lifeTime = (int)\get_cfg_var('session.gc_maxlifetime');
-
         return $this->db->isConnected();
     }
 

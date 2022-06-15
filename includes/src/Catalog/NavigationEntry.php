@@ -15,7 +15,7 @@ class NavigationEntry
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'name'     => 'Name',
         'url'      => 'URL',
         'urlFull'  => 'URLFull',

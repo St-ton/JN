@@ -20,19 +20,9 @@ use JTL\Shop;
 class Navigation
 {
     /**
-     * @var LanguageHelper
-     */
-    private LanguageHelper $language;
-
-    /**
      * @var int
      */
     private int $pageType = \PAGE_UNBEKANNT;
-
-    /**
-     * @var LinkServiceInterface
-     */
-    private LinkServiceInterface $linkService;
 
     /**
      * @var KategorieListe|null
@@ -75,11 +65,9 @@ class Navigation
      * @param LanguageHelper       $language
      * @param LinkServiceInterface $linkService
      */
-    public function __construct(LanguageHelper $language, LinkServiceInterface $linkService)
+    public function __construct(private LanguageHelper $language, private LinkServiceInterface $linkService)
     {
-        $this->language    = $language;
-        $this->linkService = $linkService;
-        $this->baseURL     = Shop::getURL() . '/';
+        $this->baseURL = Shop::getURL() . '/';
     }
 
     /**

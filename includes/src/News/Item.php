@@ -123,7 +123,7 @@ class Item extends AbstractItem implements RoutableInterface
     /**
      * @var int
      */
-    protected $commentChildCount = 0;
+    protected int $commentChildCount = 0;
 
     /**
      * @var stdClass|null

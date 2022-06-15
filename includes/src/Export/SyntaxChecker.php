@@ -29,16 +29,6 @@ class SyntaxChecker
     private ExportSmarty $smarty;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var int
-     */
-    private int $id;
-
-    /**
      * @var int
      */
     public int $errorCode = self::SYNTAX_NOT_CHECKED;
@@ -48,10 +38,8 @@ class SyntaxChecker
      * @param int         $id
      * @param DbInterface $db
      */
-    public function __construct(int $id, DbInterface $db)
+    public function __construct(private int $id, private DbInterface $db)
     {
-        $this->id = $id;
-        $this->db = $db;
     }
 
     /**

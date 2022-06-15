@@ -17,24 +17,12 @@ use JTL\XMLParser;
 class TemplateInstaller implements InstallerInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
      * TemplateInstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**

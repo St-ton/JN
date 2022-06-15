@@ -53,14 +53,14 @@ class KategorieListe
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
-            $category->Unterkategorien = [];
+            $category->bAktiv = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
+            $category->setSubCategories([]);
             if ($showLevel2 === 'Y') {
-                $category->Unterkategorien = $this->getChildCategories(
+                $category->setSubCategories($this->getChildCategories(
                     $category->getID(),
                     $customerGroupID,
                     $languageID
-                );
+                ));
             }
             $this->elemente[] = $category;
         }

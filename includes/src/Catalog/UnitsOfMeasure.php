@@ -17,7 +17,7 @@ class UnitsOfMeasure
      *
      * @var array
      */
-    public static $UCUMcodeToPrint = [
+    public static array $UCUMcodeToPrint = [
         'm'      => 'm',
         'mm'     => 'mm',
         'cm'     => 'cm',
@@ -42,7 +42,7 @@ class UnitsOfMeasure
     /**
      * @var array
      */
-    public static $conversionTable = [
+    public static array $conversionTable = [
         'mm'  => null,
         'cm'  => [10 => 'mm'],
         'dm'  => [10 => 'cm'],

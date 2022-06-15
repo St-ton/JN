@@ -11,25 +11,13 @@ use JsonSerializable;
 class IOFile implements JsonSerializable
 {
     /**
-     * @var string
-     */
-    public $filename = '';
-
-    /**
-     * @var string
-     */
-    public $mimetype = '';
-
-    /**
      * IOFile constructor.
      *
      * @param string $filename
      * @param string $mimetype
      */
-    public function __construct(string $filename, string $mimetype)
+    public function __construct(public string $filename, public string $mimetype)
     {
-        $this->filename = $filename;
-        $this->mimetype = $mimetype;
     }
 
     /**

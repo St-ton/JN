@@ -17,8 +17,8 @@ use stdClass;
  */
 class Category implements CategoryInterface
 {
-    use MagicCompatibilityTrait,
-        MultiSizeImage;
+    use MagicCompatibilityTrait;
+    use MultiSizeImage;
 
     /**
      * @var array
@@ -134,17 +134,11 @@ class Category implements CategoryInterface
     protected $items;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Category constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db               = $db;
         $this->items            = new Collection();
         $this->children         = new Collection();
         $this->dateLastModified = \date_create();

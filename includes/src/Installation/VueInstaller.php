@@ -16,21 +16,6 @@ use Systemcheck\Platform\Filesystem;
 class VueInstaller
 {
     /**
-     * @var string
-     */
-    private string $task;
-
-    /**
-     * @var array|null
-     */
-    private ?array $post;
-
-    /**
-     * @var bool
-     */
-    private bool $cli;
-
-    /**
      * @var NiceDB|null
      */
     private ?NiceDB $db = null;
@@ -57,11 +42,8 @@ class VueInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct(string $task, array $post = null, bool $cli = false)
+    public function __construct(private string $task, private ?array $post = null, private bool $cli = false)
     {
-        $this->task = $task;
-        $this->post = $post;
-        $this->cli  = $cli;
     }
 
     /**

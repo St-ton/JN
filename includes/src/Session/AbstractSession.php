@@ -16,12 +16,12 @@ abstract class AbstractSession
     /**
      * @var JTLHandlerInterface
      */
-    protected static $handler;
+    protected static JTLHandlerInterface $handler;
 
     /**
      * @var string
      */
-    protected static $sessionName;
+    protected static string $sessionName;
 
     /**
      * AbstractSession constructor.

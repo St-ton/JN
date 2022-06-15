@@ -22,31 +22,16 @@ use Psr\Log\LoggerInterface;
 class Checker
 {
     /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Checker constructor.
      * @param LoggerInterface   $logger
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(LoggerInterface $logger, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->logger = $logger;
-        $this->db     = $db;
-        $this->cache  = $cache;
+    public function __construct(
+        private LoggerInterface $logger,
+        private DbInterface $db,
+        private JTLCacheInterface $cache
+    ) {
     }
 
     /**
@@ -63,8 +48,7 @@ class Checker
      */
     public function handleExpiredLicenses(Manager $manager): void
     {
-        $mapper     = new Mapper($manager);
-        $collection = $mapper->getCollection();
+        $collection = (new Mapper($manager))->getCollection();
         $this->notifyPlugins($collection);
         $this->notifyTemplates($collection);
         $this->handleExpiredPluginTestLicenses($collection);
@@ -121,9 +105,7 @@ class Checker
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for template %s is expired.', $license->getID()));
             $bootstrapper = BootChecker::bootstrap($license->getID());
-            if ($bootstrapper !== null) {
-                $bootstrapper->licenseExpired($license);
-            }
+            $bootstrapper?->licenseExpired($license);
         }
     }
 
@@ -137,7 +119,7 @@ class Checker
         foreach ($collection->getPlugins()->getDedupedActiveExpired() as $license) {
             /** @var ExsLicense $license */
             $this->logger->info(\sprintf('License for plugin %s is expired.', $license->getID()));
-            if (($p = PluginHelper::bootstrap($license->getReferencedItem()->getInternalID(), $loader)) !== null) {
+            if (($p = PluginHelper::bootstrap($license->getReferencedItem()?->getInternalID(), $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->licenseExpired($license);
             }

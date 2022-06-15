@@ -12,11 +12,6 @@ use JTL\Model\DataModelInterface;
 class AbstractRateLimiter implements RateLimiterInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * @var string
      */
     protected $ip;
@@ -29,7 +24,7 @@ class AbstractRateLimiter implements RateLimiterInterface
     /**
      * @var string
      */
-    protected $type = 'generic';
+    protected string $type = 'generic';
 
     protected const LIMIT = 3;
 
@@ -40,9 +35,8 @@ class AbstractRateLimiter implements RateLimiterInterface
     /**
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

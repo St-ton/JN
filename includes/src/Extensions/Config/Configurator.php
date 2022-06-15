@@ -20,7 +20,7 @@ class Configurator
     /**
      * @var array
      */
-    private static $groups = [];
+    private static array $groups = [];
 
     /**
      * @return bool

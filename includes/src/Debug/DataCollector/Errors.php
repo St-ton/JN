@@ -15,7 +15,7 @@ class Errors extends DataCollector implements Renderable
     /**
      * @var array
      */
-    private $errors = [];
+    private array $errors = [];
 
     /**
      * Errors constructor.

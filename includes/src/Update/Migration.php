@@ -12,8 +12,8 @@ use JTL\DB\DbInterface;
  */
 class Migration implements JsonSerializable
 {
-    use MigrationTrait,
-        MigrationTableTrait;
+    use MigrationTableTrait;
+    use MigrationTrait;
 
     /**
      * @var string
@@ -38,7 +38,7 @@ class Migration implements JsonSerializable
     /**
      * @var bool
      */
-    protected $deleteData = true;
+    protected bool $deleteData = true;
 
     /**
      * Migration constructor.

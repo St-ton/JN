@@ -24,24 +24,24 @@ use function Functional\some;
 class ShippingMethod
 {
     /**
-     * @var ShippingMethod
+     * @var ShippingMethod|null
      */
     private static $instance;
 
     /**
      * @var string
      */
-    public $cacheID;
+    public string $cacheID;
 
     /**
      * @var stdClass[]
      */
-    public $shippingMethods;
+    public array $shippingMethods;
 
     /**
      * @var array
      */
-    public $countries = [];
+    public array $countries = [];
 
     /**
      * ShippingMethod constructor.

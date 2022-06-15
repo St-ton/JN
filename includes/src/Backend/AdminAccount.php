@@ -36,64 +36,28 @@ class AdminAccount
     private bool $twoFaAuthenticated = false;
 
     /**
-     * @var Loggerinterface
-     */
-    private LoggerInterface $authLogger;
-
-    /**
-     * @var AdminLoginStatusToLogLevel
-     */
-    private AdminLoginStatusToLogLevel $levelMapper;
-
-    /**
-     * @var AdminLoginStatusMessageMapper
-     */
-    private AdminLoginStatusMessageMapper $messageMapper;
-
-    /**
      * @var int
      */
     private int $lockedMinutes = 0;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var GetText
-     */
-    private GetText $getText;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
-
-    /**
      * AdminAccount constructor.
      * @param DbInterface                   $db
-     * @param LoggerInterface               $logger
-     * @param AdminLoginStatusMessageMapper $statusMessageMapper
+     * @param LoggerInterface               $authLogger
+     * @param AdminLoginStatusMessageMapper $messageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
      * @param GetText                       $getText
      * @param AlertServiceInterface         $alertService
      * @throws Exception
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        AdminLoginStatusMessageMapper $statusMessageMapper,
-        AdminLoginStatusToLogLevel $levelMapper,
-        GetText $getText,
-        AlertServiceInterface $alertService
+        private DbInterface $db,
+        private LoggerInterface $authLogger,
+        private AdminLoginStatusMessageMapper $messageMapper,
+        private AdminLoginStatusToLogLevel $levelMapper,
+        private GetText $getText,
+        private AlertServiceInterface $alertService
     ) {
-        $this->db            = $db;
-        $this->authLogger    = $logger;
-        $this->messageMapper = $statusMessageMapper;
-        $this->levelMapper   = $levelMapper;
-        $this->getText       = $getText;
-        $this->alertService  = $alertService;
         Backend::getInstance();
         Shop::setIsFrontend(false);
         $this->initDefaults();
@@ -101,7 +65,7 @@ class AdminAccount
     }
 
     /**
-     *
+     * @return void
      */
     private function initDefaults(): void
     {

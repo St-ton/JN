@@ -14,17 +14,11 @@ use stdClass;
 class Mapper
 {
     /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
      * Mapper constructor.
      * @param Manager     $manager
      */
-    public function __construct(Manager $manager)
+    public function __construct(private Manager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**

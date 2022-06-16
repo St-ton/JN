@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -116,7 +115,7 @@ class SliderController extends AbstractBackendController
 
         return $smarty->assign('action', $action)
             ->assign('kSlider', $kSlider)
-            ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
+            ->assign('validPageTypes', BoxController::getMappedValidPageTypes())
             ->assign('pagination', $pagination)
             ->assign('route', $this->route)
             ->assign('oSlider_arr', $pagination->getPageItems())

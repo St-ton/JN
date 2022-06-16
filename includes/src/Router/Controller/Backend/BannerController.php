@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use DateTime;
 use Exception;
 use JTL\Backend\Permissions;
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -71,7 +70,7 @@ class BannerController extends AbstractBackendController
             ->assemble();
 
         return $smarty->assign('action', $this->action)
-            ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
+            ->assign('validPageTypes', BoxController::getMappedValidPageTypes())
             ->assign('pagination', $pagination)
             ->assign('route', $this->route)
             ->assign('banners', $pagination->getPageItems())

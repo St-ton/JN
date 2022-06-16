@@ -22,10 +22,9 @@ class MarkdownController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->account->redirectOnFailure();
-
-        if (isset($_POST['path']) && Form::validateToken()) {
-            $path  = \realpath($_POST['path']);
+        $path         = $request->getParsedBody()['path'] ?? null;
+        if ($path !== null && Form::validateToken()) {
+            $path  = \realpath($path);
             $base1 = \realpath(\PFAD_ROOT . \PLUGIN_DIR);
             $base2 = \realpath(\PFAD_ROOT . \PFAD_PLUGIN);
             if ($path !== false && (\str_starts_with($path, $base1) || \str_starts_with($path, $base2))) {

@@ -69,8 +69,7 @@ class ConfigController extends AbstractBackendController
                 $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
                 break;
             default:
-                $this->account->redirectOnFailure();
-                break;
+                return $this->notFoundResponse($request, $args, $smarty);
         }
         $postData        = Text::filterXSS($_POST);
         $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');

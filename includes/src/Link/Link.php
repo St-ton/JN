@@ -338,7 +338,7 @@ final class Link extends AbstractLink implements RoutableInterface
             $this->setPluginID($link->kPlugin);
             $this->setPluginEnabled($link->enabled);
             $this->setLinkGroups(\array_unique(\array_map('\intval', \explode(',', $link->linkGroups))));
-            $this->setLinkGroupID((int)$this->linkGroups[0]);
+            $this->setLinkGroupID($this->linkGroups[0]);
             $this->setLinkType($link->nLinkart);
             $this->setNoFollow($link->cNoFollow === 'Y');
             $this->setCustomerGroups(self::parseSSKAdvanced($link->cKundengruppen));
@@ -385,7 +385,7 @@ final class Link extends AbstractLink implements RoutableInterface
             }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
-            if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
+            if ($this->id === 0 && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
         }

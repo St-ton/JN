@@ -102,7 +102,3 @@ Shop::Container()->singleton(CaptchaServiceInterface::class, static function () 
 if ((new Updater($db))->hasPendingUpdates() === false) {
     Shop::bootstrap(false);
 }
-if ($loggedIn && !$session->isValid()) {
-    $oAccount->logout();
-    $oAccount->redirectOnFailure(AdminLoginStatus::ERROR_SESSION_INVALID);
-}

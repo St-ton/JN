@@ -3,6 +3,8 @@
 namespace JTL\Router\Middleware;
 
 use JTL\Backend\AdminAccount;
+use JTL\Backend\AdminLoginStatus;
+use JTL\Session\Backend;
 use JTL\Shop;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -35,6 +37,11 @@ class AuthMiddleware implements MiddlewareInterface
                 : '/';
 
             return new RedirectResponse(Shop::getAdminURL() . $url, 301);
+        }
+        if (!Backend::getInstance()->isValid()) {
+            $this->account->logout();
+
+            return new RedirectResponse(Shop::getAdminURL() . '/?errCode=' . AdminLoginStatus::ERROR_SESSION_INVALID);
         }
 
         return $handler->handle($request);

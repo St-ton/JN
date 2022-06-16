@@ -6,6 +6,7 @@ use JTL\Backend\AdminAccount;
 use JTL\Backend\Menu;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Exceptions\PermissionException;
 use JTL\L10n\GetText;
 use JTL\Router\Controller\Backend\ActivationController;
 use JTL\Router\Controller\Backend\AdminAccountController;
@@ -392,6 +393,8 @@ class BackendRouter
             $response = $this->router->dispatch($request);
         } catch (NotFoundException) {
             $response = (new Response())->withStatus(404);
+        } catch (PermissionException) {
+            $response = $this->smarty->getResponse('tpl_inc/berechtigung.tpl');
         }
         try {
             (new SapiEmitter())->emit($response);

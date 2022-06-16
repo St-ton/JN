@@ -10,6 +10,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
+use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -62,10 +63,21 @@ abstract class AbstractBackendController implements ControllerInterface
     /**
      * @param string $permissions
      * @return void
+     * @throws PermissionException
      */
     protected function checkPermissions(string $permissions): void
     {
-        $this->account->permission($permissions, true, true);
+        // grant full access to admin
+        $account = $this->account->account();
+        if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            return;
+        }
+        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && \in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
+        if (!$hasAccess) {
+            throw new PermissionException('No permissions to access page');
+        }
     }
 
     /**
@@ -121,7 +133,7 @@ abstract class AbstractBackendController implements ControllerInterface
         }
         if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
             // Fehlendes cISO ergänzen
-            $language = $this->db->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
+            $language = $this->db->select('tsprache', 'kSprache', $_SESSION['editLanguageID']);
             if ((int)$language->kSprache > 0) {
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
@@ -208,7 +220,7 @@ abstract class AbstractBackendController implements ControllerInterface
      * @return void
      * @former bearbeiteListBox()
      */
-    private function updateListBox($listBoxes, string $valueName, int $configSectionID, Manager $manager): void
+    private function updateListBox(mixed $listBoxes, string $valueName, int $configSectionID, Manager $manager): void
     {
         if (\is_array($listBoxes) && \count($listBoxes) > 0) {
             $manager->addLogListbox($valueName, $listBoxes);
@@ -288,10 +300,10 @@ abstract class AbstractBackendController implements ControllerInterface
 
     /**
      * @param int|int[] $configSectionID
-     * @param bool $byName
+     * @param bool      $byName
      * @return stdClass[]
      */
-    public function getAdminSectionSettings($configSectionID, bool $byName = false): array
+    public function getAdminSectionSettings(array|int $configSectionID, bool $byName = false): array
     {
         $sections       = [];
         $filterNames    = [];
@@ -379,14 +391,14 @@ abstract class AbstractBackendController implements ControllerInterface
     }
 
     /**
-     * @param string $size
+     * @param string|int $size
      * @return float|int|string
      * @former getMaxFileSize()
      * @since 5.2.0
      */
-    public static function getMaxFileSize($size): float|int|string
+    public static function getMaxFileSize(string|int $size): float|int|string
     {
-        return match (mb_substr($size, -1)) {
+        return match (mb_substr((string)$size, -1)) {
             'M', 'm' => (int)$size * 1048576,
             'K', 'k' => (int)$size * 1024,
             'G', 'g' => (int)$size * 1073741824,

@@ -194,7 +194,7 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
             $manager = new Manager($this->getDB(), $this->getCache());
             $license = $manager->getLicenseByItemID('some_item_id');
             if ($license !== null && $license->getLicense()->getSubscription()->isExpired()) {
-                // do something else
+                // do something
             }
             $otherLicense = $manager->getLicenseByExsID('exsidOfAnotherPlugin');
             if ($license !== null && $license->getLicense()->getSubscription()->isExpired()) {

@@ -593,15 +593,15 @@ class BoxController extends AbstractBackendController
         }
 
         return $this->db->queryPrepared(
-                'INSERT INTO tboxenanzeige 
+            'INSERT INTO tboxenanzeige 
                 SET bAnzeigen = :show, nSeite = :page, ePosition = :position
                 ON DUPLICATE KEY UPDATE bAnzeigen = :show',
-                [
+            [
                     'show'     => (int)$show,
                     'page'     => $pageID,
                     'position' => $position
                 ]
-            ) !== 0;
+        ) !== 0;
     }
 
     /**
@@ -655,17 +655,17 @@ class BoxController extends AbstractBackendController
         }
 
         return $this->db->queryPrepared(
-                'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
+            'INSERT INTO tboxensichtbar (kBox, kSeite, nSort, bAktiv)
                     VALUES (:boxID, :validPageType, :sort, :active)
                     ON DUPLICATE KEY UPDATE
                       nSort = :sort, bAktiv = :active',
-                [
+            [
                     'boxID'         => $boxID,
                     'validPageType' => $pageID,
                     'sort'          => $sort,
                     'active'        => (int)$active
                 ]
-            ) !== 0;
+        ) !== 0;
     }
 
     /**

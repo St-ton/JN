@@ -20074,7 +20074,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #product-list .product-wrapper .productbox-show-variations.transition, #product-list .product-wrapper .productbox-show-variations:hover {
   position: absolute;
-  background: #f5f5f5;
   z-index: 1000;
   padding: 1rem;
   width: 100%;

@@ -20266,7 +20266,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #product-list .product-wrapper .productbox-show-variations.transition, #product-list .product-wrapper .productbox-show-variations:hover {
   position: absolute;
-  background: #fafafa;
   z-index: 1000;
   padding: 1rem;
   width: 100%;

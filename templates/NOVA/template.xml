@@ -175,7 +175,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Variationsauswahl in Galerie anzeigen" Key="variation_productlist_gallery" Type="select" Value="Y">
+            <Setting Description="Variationsauswahl in Galerie anzeigen" Key="variation_productlist_gallery" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>

@@ -1774,7 +1774,7 @@ class Product
     /**
      * @param Artikel $parent
      * @param Artikel $child
-     * @return mixed
+     * @return Artikel
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */

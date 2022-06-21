@@ -1255,7 +1255,7 @@ class ShippingMethod
      * @return string
      * @former baueVersandkostenfreiString()
      */
-    public static function getShippingFreeString($method, $cartSumGros, $cartSumNet): string
+    public static function getShippingFreeString($method, $cartSumGros, $cartSumNet = 0): string
     {
         if (isset($_SESSION['oVersandfreiKupon'])) {
             return '';
@@ -1304,7 +1304,7 @@ class ShippingMethod
      * @param float|int  $cartSumNet
      * @return float
      */
-    public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet): float
+    public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
     {
         // check if vkfreiabx is calculated net or gross
         if ($method->eSteuer === 'netto') {

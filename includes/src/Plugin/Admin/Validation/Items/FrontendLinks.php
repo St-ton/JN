@@ -113,7 +113,7 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_ISO;
                     }
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    \preg_match('/[a-zA-Z\d- ]+/', $localized['Seo'], $hits1);
+                    \preg_match('/[a-zA-Z\d\- ]+/', $localized['Seo'], $hits1);
                     $len = \mb_strlen($localized['Seo']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_SEO;

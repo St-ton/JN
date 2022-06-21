@@ -71,7 +71,6 @@ class NewsController extends AbstractController
         if ($newsID < 1 && $newItem === null) {
             return $this->state;
         }
-        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
 
         $seo = $newsID > 0
             ? $this->db->getSingleObject(
@@ -80,7 +79,7 @@ class NewsController extends AbstractController
                     WHERE cKey = :key 
                       AND kKey = :kid
                       AND kSprache = :lid',
-                ['key' => 'kNews', 'kid' => $newsID, 'lid' => $languageID]
+                ['key' => 'kNews', 'kid' => $newsID, 'lid' => $this->state->languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *

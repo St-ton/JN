@@ -95,7 +95,6 @@ class DefaultController extends AbstractController
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
-            dd($test);
 
             return new RedirectResponse(Shop::getURL() . $test, 301);
         }

@@ -26,7 +26,6 @@ class ManufacturerController extends AbstractController
         if ($manufacturerID < 1 && $manufacturerName === null) {
             return $this->state;
         }
-        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
 
         $seo = $manufacturerID > 0
             ? $this->db->getSingleObject(
@@ -35,7 +34,7 @@ class ManufacturerController extends AbstractController
                     WHERE cKey = :key
                       AND kKey = :kid
                       AND kSprache = :lid',
-                ['key' => 'kHersteller', 'kid' => $manufacturerID, 'lid' => $languageID]
+                ['key' => 'kHersteller', 'kid' => $manufacturerID, 'lid' => $this->state->languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *
@@ -43,10 +42,10 @@ class ManufacturerController extends AbstractController
                     WHERE cKey = :key
                       AND cSeo = :seo
                       AND kSprache = :lid',
-                ['key' => 'kHersteller', 'seo' => $manufacturerName, 'lid' => $languageID]
+                ['key' => 'kHersteller', 'seo' => $manufacturerName, 'lid' => $this->state->languageID]
             );
         if ($seo === null) {
-            return $this->handleSeoError($manufacturerID, $languageID);
+            return $this->handleSeoError($manufacturerID, $this->state->languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kSprache = (int)$seo->kSprache;

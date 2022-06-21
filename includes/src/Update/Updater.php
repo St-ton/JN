@@ -221,10 +221,8 @@ class Updater
     }
 
     /**
-     * getPreviousVersion
-     *
      * @param int $version
-     * @return int|mixed
+     * @return int
      */
     public function getPreviousVersion(int $version)
     {

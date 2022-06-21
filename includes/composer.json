@@ -35,7 +35,7 @@
         "phpmyadmin/sql-parser": "^5.4.2",
         "phpgangsta/googleauthenticator": "dev-master",
         "phpmailer/phpmailer": "^6.0",
-        "jtlshop/qrcodegenerator": "dev-master",
+        "jtlshop/qrcodegenerator": "0.1.0",
         "erusev/parsedown": "1.8.0-beta-5",
         "chamilo/pclzip": "^2.8",
         "psr/log": "^1.1",
@@ -47,7 +47,6 @@
         "studio-42/elfinder": "^2.1",
         "maximebf/debugbar": "^1.16",
         "gettext/gettext": "^5.5.4",
-        "jtl/oauth2-client": "^1.0",
         "illuminate/container": "^8.12",
         "symfony/var-dumper": "^5.1",
         "symfony/process": "^5.1",
@@ -68,7 +67,8 @@
         "gettext/translator": "^1.0",
         "mrclay/minify": "^3.0",
         "wikimedia/less.php": "~3.0.0",
-        "scssphp/scssphp": "^1.5.2"
+        "scssphp/scssphp": "^1.5.2",
+        "guzzlehttp/guzzle": "^7.4"
     },
     "require-dev": {
         "phpunit/php-token-stream": "^3.0",

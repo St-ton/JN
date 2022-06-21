@@ -1051,6 +1051,26 @@ class Artikel implements RoutableInterface
     public $fAnzahl_stueckliste;
 
     /**
+     * @var string|null
+     */
+    public $cURLDEL;
+
+    /**
+     * @var string|null
+     */
+    public $cBestellwert;
+
+    /**
+     * @var int|null
+     */
+    public $nGGAnzahl;
+
+    /**
+     * @var bool|null
+     */
+    public $isKonfigItem;
+
+    /**
      * @var Currency
      */
     protected Currency $currency;
@@ -4690,18 +4710,17 @@ class Artikel implements RoutableInterface
         if (!$this->customerGroup->mayViewPrices()) {
             return $this;
         }
+        $this->SieSparenX->anzeigen = $show;
         if ($this->customerGroup->isMerchant()) {
-            $this->fUVP                            /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
-            $this->SieSparenX->anzeigen             = $show;
-            $this->SieSparenX->nProzent             = \round(
+            $this->fUVP /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
+
+            $this->SieSparenX->nProzent    = \round(
                 (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
                 2
             );
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
-            $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
+            $this->SieSparenX->fSparbetrag = $this->fUVP - $this->Preise->fVKNetto;
         } else {
-            $this->SieSparenX->anzeigen             = $show;
-            $this->SieSparenX->nProzent             = \round(
+            $this->SieSparenX->nProzent    = \round(
                 (($this->fUVP - Tax::getGross(
                     $this->Preise->fVKNetto,
                     Tax::getSalesTax($this->kSteuerklasse)
@@ -4709,12 +4728,12 @@ class Artikel implements RoutableInterface
                 / $this->fUVP,
                 2
             );
-            $this->SieSparenX->fSparbetrag          = $this->fUVP - Tax::getGross(
+            $this->SieSparenX->fSparbetrag = $this->fUVP - Tax::getGross(
                 $this->Preise->fVKNetto,
                 Tax::getSalesTax($this->kSteuerklasse)
             );
-            $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
         }
+        $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
 
         return $this;
     }

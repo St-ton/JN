@@ -854,9 +854,7 @@ class BaseSearchQuery extends AbstractFilter
                 }
             }
 
-            for ($i = 0; $i < ($brackets - 1); ++$i) {
-                $sql .= ')';
-            }
+            $sql .= \str_repeat(')', ($brackets - 1));
 
             if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $prep['lid'] = $this->getLanguageID();

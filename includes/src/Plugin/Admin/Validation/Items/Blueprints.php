@@ -37,8 +37,8 @@ final class Blueprints extends AbstractItem
             if (!isset($blueprint['JSONFile'])) {
                 return InstallCode::INVALID_BLUEPRINT_FILE;
             }
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 \preg_match(
                     '/[\w\/\-() ]+/u',

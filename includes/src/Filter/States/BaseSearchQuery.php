@@ -109,9 +109,8 @@ class BaseSearchQuery extends AbstractFilter
                 $hits
             );
             if (\count($hits) === 0) {
-                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
-                    $minChars . ' ' .
-                    Shop::Lang()->get('lettersDigits');
+                $this->error = Shop::Lang()->get('expressionHasTo')
+                    . ' ' . $minChars . ' ' . Shop::Lang()->get('lettersDigits');
             }
         }
 

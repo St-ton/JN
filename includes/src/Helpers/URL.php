@@ -233,7 +233,7 @@ class URL
         if ($this->path) {
             // case normalization
             $this->path = \preg_replace_callback(
-                '/(%([0-9abcdef][0-9abcdef]))/x',
+                '/(%([\dabcdef][\dabcdef]))/x',
                 static function ($x) {
                     return '%' . \mb_convert_case($x[2], \MB_CASE_UPPER);
                 },

@@ -97,7 +97,7 @@ class CreateCommand extends Command
         ];
 
         foreach ($attribs as $attrib) {
-            $dataType    = \preg_match('/^([a-zA-Z0-9]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
+            $dataType    = \preg_match('/^([a-zA-Z\d]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
             $tableDesc[] = (object)[
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,

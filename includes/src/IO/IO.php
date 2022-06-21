@@ -209,9 +209,9 @@ class IO
     {
         $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browserAgent = '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'ie';
         }
 

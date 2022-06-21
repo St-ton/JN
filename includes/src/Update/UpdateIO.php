@@ -112,7 +112,7 @@ class UpdateIO
      */
     public function download($file)
     {
-        if (!\preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
+        if (!\preg_match('/^([\d_a-z]+).sql.gz$/', $file, $m)) {
             return new IOError('Wrong download request');
         }
         $filePath = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . $file;

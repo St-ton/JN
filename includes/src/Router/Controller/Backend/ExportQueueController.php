@@ -304,7 +304,7 @@ class ExportQueueController extends AbstractBackendController
     private function checkStartTime($start): bool
     {
         if (\preg_match(
-            '/^([0-3]{1}[0-9]{1}[.]{1}[0-1]{1}[0-9]{1}[.]{1}[0-9]{4}[ ]{1}[0-2]{1}[0-9]{1}[:]{1}[0-6]{1}[0-9]{1})/',
+            '/^([0-3]\d[.][0-1]\d[.]\d{4}[ ][0-2]\d[:][0-6]\d)/',
             $start
         )) {
             return true;

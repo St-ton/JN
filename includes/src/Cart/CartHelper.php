@@ -1304,7 +1304,7 @@ class CartHelper
                         'kEigenschaftWert' => $properties[$a],
                     ];
                 }, $variKombi->kEigenschaft_arr);
-            } elseif (\preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && \count($hits) === 3) {
+            } elseif (\preg_match('/([\d:]+)?_([\d:]+)/', $key, $hits) && \count($hits) === 3) {
                 if (empty($hits[1])) {
                     // 1-dimensional matrix - key is combination of property id and property value
                     unset($hits[1]);

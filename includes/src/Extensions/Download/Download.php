@@ -639,9 +639,9 @@ class Download
     {
         $browser   = 'other';
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $log_version)) {
             $browser = 'ie';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

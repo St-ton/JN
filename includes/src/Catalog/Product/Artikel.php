@@ -1687,7 +1687,7 @@ class Artikel implements RoutableInterface
         }
         $this->cMerkmalAssoc_arr = [];
         foreach ($this->oMerkmale_arr as $item) {
-            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $item->cName);
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->cName);
             if (\mb_strlen($item->cName) > 0) {
                 $values                         = \array_filter(\array_map(static function ($e) {
                     return $e->cWert ?? null;
@@ -6060,7 +6060,7 @@ class Artikel implements RoutableInterface
         $optStr = \transliterator_transliterate('Latin-ASCII;', $optStr);
         $optStr = \mb_convert_case($optStr, \MB_CASE_LOWER);
 
-        return \preg_replace('/[^-a-z0-9_]+/', '', $optStr);
+        return \preg_replace('/[^-a-z\d_]+/', '', $optStr);
     }
 
     /**

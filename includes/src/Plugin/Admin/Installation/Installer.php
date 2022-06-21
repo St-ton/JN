@@ -260,7 +260,7 @@ final class Installer
                 continue;
             }
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/\d+\sattr/', $i, $hits1);
 
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
@@ -502,7 +502,7 @@ final class Installer
      */
     private function getTableName(string $sql, string $action = 'create table( if not exists)')
     {
-        \preg_match('/' . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
+        \preg_match('/' . $action . "? ([`']?)([a-z\d_]+)\\2/i", $sql, $matches);
 
         return \end($matches);
     }

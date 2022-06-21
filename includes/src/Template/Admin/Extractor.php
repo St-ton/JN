@@ -19,7 +19,7 @@ class Extractor
 {
     private const UNZIP_DIR = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z\d]{40}))\/(.*)/';
 
     /**
      * @var InstallationResponse

@@ -119,7 +119,7 @@ class ImageProvider extends Base
      */
     private static function hexColor(string $color): string
     {
-        if (\preg_match('/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color, $rgb)) {
+        if (\preg_match('/^#?([A-Fa-f\d]{6}|[A-Fa-f\d]{3})$/', $color, $rgb)) {
             return '#' . $rgb[1];
         }
         throw new \InvalidArgumentException(\sprintf('Unrecognized hexcolor "%s"', $color));

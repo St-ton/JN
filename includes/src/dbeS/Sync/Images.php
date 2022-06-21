@@ -678,7 +678,7 @@ final class Images extends AbstractSync
     {
         $str = \str_replace(['/', ' '], '-', $str);
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $str);
+        return \preg_replace('/[^a-zA-Z\d\.\-_]/', '', $str);
     }
 
     /**

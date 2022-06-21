@@ -20,7 +20,7 @@ final class DateCreated extends AbstractItem
             return InstallCode::INVALID_DATE;
         }
         \preg_match(
-            '/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
+            '/\d{4}-[0-1]\d-[0-3]\d/',
             $baseNode['CreateDate'],
             $hits
         );

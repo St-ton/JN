@@ -48,12 +48,12 @@ class RegistrationForm extends AbstractValidator
             }
         }
         if ($this->config['kunden']['kundenregistrierung_pruefen_ort'] === 'Y'
-            && \preg_match('#[0-9]+#', $this->data['ort'])
+            && \preg_match('#\d+#', $this->data['ort'])
         ) {
             $this->errors['ort'] = 3;
         }
         if ($this->config['kunden']['kundenregistrierung_pruefen_name'] === 'Y'
-            && \preg_match('#[0-9]+#', $this->data['nachname'])
+            && \preg_match('#\d+#', $this->data['nachname'])
         ) {
             $this->errors['nachname'] = 2;
         }

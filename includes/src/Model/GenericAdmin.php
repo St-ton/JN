@@ -5,7 +5,6 @@ namespace JTL\Model;
 use JTL\DB\DbInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class GenericAdmin

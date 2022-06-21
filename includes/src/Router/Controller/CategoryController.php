@@ -5,7 +5,6 @@ namespace JTL\Router\Controller;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Session\Frontend;
-use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -31,7 +30,6 @@ class CategoryController extends AbstractController
             $parser       = new DefaultParser($this->db, $this->state);
             $categoryName = $parser->parse($categoryName);
         }
-        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
 
         $seo = $categoryID > 0
             ? $this->db->getSingleObject(
@@ -40,7 +38,7 @@ class CategoryController extends AbstractController
                     WHERE cKey = :key
                         AND kKey = :kid
                         AND kSprache = :lid',
-                ['key' => 'kKategorie', 'kid' => $categoryID, 'lid' => $languageID]
+                ['key' => 'kKategorie', 'kid' => $categoryID, 'lid' => $this->state->languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *
@@ -50,7 +48,7 @@ class CategoryController extends AbstractController
                 ['key' => 'kKategorie', 'seo' => $categoryName]
             );
         if ($seo === null) {
-            return $this->handleSeoError($categoryID, $languageID);
+            return $this->handleSeoError($categoryID, $this->state->languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kSprache = (int)$seo->kSprache;

@@ -450,4 +450,12 @@ class Wizard
     {
         return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', \LINKTYP_AUSWAHLASSISTENT);
     }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->kSprache;
+    }
 }

@@ -102,7 +102,7 @@ class Path
      *
      * @param string $path
      * @param bool   $trailingSlash
-     * @return bool|string
+     * @return string
      */
     public static function clean(string $path, bool $trailingSlash = false)
     {
@@ -111,7 +111,7 @@ class Path
         $prefix   = '';
         $absolute = false;
 
-        if (\preg_match('{^([0-9a-z]+:(?://(?:[a-z]:)?)?)}i', $path, $match)) {
+        if (\preg_match('{^([\da-z]+:(?://(?:[a-z]:)?)?)}i', $path, $match)) {
             $prefix = $match[1];
             $path   = \substr($path, \strlen($prefix));
         }

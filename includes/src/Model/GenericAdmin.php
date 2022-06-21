@@ -82,9 +82,9 @@ class GenericAdmin
     /**
      * @param JTLSmarty $smarty
      * @param string    $template
-     * @return ResponseInterface
+     * @return void
      */
-    public function display(JTLSmarty $smarty, string $template): ResponseInterface
+    public function display(JTLSmarty $smarty, string $template): void
     {
     }
 

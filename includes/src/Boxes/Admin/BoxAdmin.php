@@ -2,14 +2,7 @@
 
 namespace JTL\Boxes\Admin;
 
-use JTL\Boxes\Type;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Text;
-use JTL\Mapper\PageTypeToPageNiceName;
-use JTL\Shop;
-use stdClass;
-use function Functional\filter;
-use function Functional\map;
 
 /**
  * Class BoxAdmin

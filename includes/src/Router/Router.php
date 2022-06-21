@@ -221,7 +221,7 @@ class Router
         if (!\str_starts_with($slug, '/')) {
             $slug = '/' . $slug;
         }
-        $routes  = []:
+        $routes  = [];
         $methods = \array_map('\mb_strtoupper', $methods);
         foreach ($this->groups as $group) {
             foreach ($methods as $method) {

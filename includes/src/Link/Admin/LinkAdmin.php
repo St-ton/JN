@@ -286,9 +286,9 @@ final class LinkAdmin
     /**
      * @param string $text
      * @param int    $linkID
-     * @return mixed
+     * @return string
      */
-    private function parseText(string $text, int $linkID)
+    private function parseText(string $text, int $linkID): string
     {
         $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
         $baseURL   = Shop::getURL() . '/' . \PFAD_BILDER . \PFAD_LINKBILDER;

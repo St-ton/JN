@@ -169,10 +169,11 @@
 		&:not(:last-child) {
 			margin-bottom: map-get($spacers, 7);
 		}
-
+	}
+	&.layout-gallery {
 		.productbox-show-variations {
 			&.transition,
-			&:hover{
+			&:hover {
 				position: absolute;
 				z-index: $zindex-dropdown;
 				padding: 1rem;
@@ -180,9 +181,6 @@
 				margin: -1rem;
 			}
 		}
-
-
-
 	}
 }
 

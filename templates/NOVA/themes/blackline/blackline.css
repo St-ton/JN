@@ -20072,7 +20072,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 #product-list .product-wrapper:not(:last-child) {
   margin-bottom: 4rem;
 }
-#product-list .product-wrapper .productbox-show-variations.transition, #product-list .product-wrapper .productbox-show-variations:hover {
+#product-list.layout-gallery .productbox-show-variations.transition, #product-list.layout-gallery .productbox-show-variations:hover {
   position: absolute;
   z-index: 1000;
   padding: 1rem;

@@ -15,7 +15,7 @@ final class DefaultSchemaRenderer extends AbstractSchemaRenderer
     public function buildIndex(array $sitemapFiles): string
     {
         $xml  = $this->getXmlHeader();
-        $xml .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+        $xml .= '<sitemapindex xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
         foreach ($sitemapFiles as $url) {
             $xml .= "<sitemap>\n<loc>" . $url . "</loc>\n";
             if ($this->config['sitemap']['sitemap_insert_lastmod'] === 'Y') {

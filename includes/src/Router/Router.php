@@ -20,6 +20,7 @@ use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\RootController;
 use JTL\Router\Middleware\CartcheckMiddleware;
+use JTL\Router\Middleware\LocaleCheckMiddleware;
 use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
@@ -34,6 +35,7 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\Exception\EmitterException;
+use League\Route\Route;
 use League\Route\Router as BaseRouter;
 use League\Route\Strategy\JsonStrategy;
 use Psr\Http\Server\MiddlewareInterface;
@@ -143,6 +145,7 @@ class Router
         $this->router->middleware(new MaintenanceModeMiddleware());
         $this->router->middleware(new WishlistCheckMiddleware());
         $this->router->middleware(new CartcheckMiddleware());
+        $this->router->middleware(new LocaleCheckMiddleware());
         $visibilityMiddleware = new VisibilityMiddleware();
 
         foreach ($this->groups as $localized) {
@@ -201,35 +204,39 @@ class Router
     }
 
     /**
-     * @param string                   $route
+     * @param string                   $slug
      * @param callable                 $cb
      * @param array                    $methods
      * @param string|null              $name
      * @param MiddlewareInterface|null $middleware
-     * @return void
+     * @return Route[]
      */
     public function addRoute(
-        string $route,
-        callable $cb,
-        array $methods = ['GET'],
-        string $name = null,
+        string               $slug,
+        callable             $cb,
+        array                $methods = ['GET'],
+        string               $name = null,
         ?MiddlewareInterface $middleware = null
-    ): void {
-        if (!\str_starts_with($route, '/')) {
-            $route = '/' . $route;
+    ): array {
+        if (!\str_starts_with($slug, '/')) {
+            $slug = '/' . $slug;
         }
+        $routes  = []:
         $methods = \array_map('\mb_strtoupper', $methods);
         foreach ($this->groups as $group) {
             foreach ($methods as $method) {
-                $item = $this->router->map($method, $group . $route, $cb);
+                $route = $this->router->map($method, $group . $slug, $cb);
                 if ($name !== null) {
-                    $item->setName($name . $method);
+                    $route->setName($name . $method);
                 }
                 if ($middleware !== null) {
-                    $item->middleware($middleware);
+                    $route->middleware($middleware);
                 }
+                $routes[] = $route;
             }
         }
+
+        return $routes;
     }
 
     /**

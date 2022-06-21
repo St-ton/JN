@@ -1306,9 +1306,11 @@ class ShippingMethod
      */
     public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
     {
-        // check if vkfreiabx is calculated net or gross
+        if ($cartSumNet === 0) {
+            $cartSumNet = $cartSumGros;
+        }
+        // check if vkfreiabx is calculated net or gros
         if ($method->eSteuer === 'netto') {
-            // calculate net with default tax class
             $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumNet;
         } else {
             $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumGros;

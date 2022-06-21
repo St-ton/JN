@@ -170,6 +170,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
      */
     public function getNewsService(): NewsServiceInterface
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         return $this->get(NewsServiceInterface::class);
     }
 

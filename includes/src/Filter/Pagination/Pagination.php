@@ -18,7 +18,7 @@ class Pagination
     /**
      * @var ItemFactory
      */
-    private ItemFactory$factory;
+    private ItemFactory $factory;
 
     /**
      * @var array

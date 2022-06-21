@@ -301,7 +301,7 @@ class ExportQueueController extends AbstractBackendController
      * @return bool
      * @former dStartPruefen()
      */
-    private function checkStartTime($start): bool
+    private function checkStartTime(string $start): bool
     {
         if (\preg_match('/^([0-3]\d[.][0-1]\d[.]\d{4} [0-2]\d:[0-6]\d)/', $start)) {
             return true;
@@ -315,7 +315,7 @@ class ExportQueueController extends AbstractBackendController
      * @param bool   $asTime
      * @return string
      */
-    private function formatDate(string$dateStart, bool $asTime = false): string
+    private function formatDate(string $dateStart, bool $asTime = false): string
     {
         [$date, $time]        = \explode(' ', $dateStart);
         [$day, $month, $year] = \explode('.', $date);
@@ -492,7 +492,7 @@ class ExportQueueController extends AbstractBackendController
     private function stepCreateInsert(JTLSmarty $smarty, array &$messages): string
     {
         $id                    = Request::postInt('kExportformat');
-        $start                 = $_POST['dStart'];
+        $start                 = $_POST['dStart'] ?? '';
         $freq                  = !empty($_POST['nAlleXStundenCustom'])
             ? (int)$_POST['nAlleXStundenCustom']
             : (int)$_POST['nAlleXStunden'];

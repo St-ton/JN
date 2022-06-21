@@ -68,6 +68,8 @@ class ConfigController extends AbstractBackendController
             case \CONF_BILDER:
                 $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
                 break;
+            case 0:
+                break;
             default:
                 return $this->notFoundResponse($request, $args, $smarty);
         }
@@ -89,7 +91,7 @@ class ConfigController extends AbstractBackendController
         }
         if (Request::postVar('resetSetting') !== null) {
             $settingManager->resetSetting(Request::postVar('resetSetting'));
-        } elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+        } elseif ($sectionID > 0 && Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
             // Einstellungssuche
             $step = 'einstellungen bearbeiten';
             if ($isSearch) {

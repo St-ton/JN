@@ -47,9 +47,9 @@ class VATCheck
      *      , errorinfo : additional information to show it the user in the frontend
      * ]
      *
-     * @return mixed  array if error, location-object otherwise
+     * @return array
      */
-    public function doCheckID()
+    public function doCheckID(): array
     {
         if ($this->ustID === '') {
             return [

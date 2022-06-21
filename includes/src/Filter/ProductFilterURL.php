@@ -260,7 +260,7 @@ class ProductFilterURL
         }
 
         // remove numeric indices from array representation
-        return \preg_replace('/%5B[\d]+%5D/imU', '%5B%5D', $url);
+        return \preg_replace('/%5B\d+%5D/imU', '%5B%5D', $url);
     }
 
     /**

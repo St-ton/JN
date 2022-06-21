@@ -45,11 +45,7 @@ final class Menus extends AbstractItem
             \preg_match('/\d+\sattr/', $i, $hits1);
             \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                \preg_match(
-                    '/[\w\- ]+/u',
-                    $customLink['Name'],
-                    $hits
-                );
+                \preg_match('/[\w\- ]+/u', $customLink['Name'], $hits);
                 if (empty($customLink['Name']) || \mb_strlen($hits[0]) !== \mb_strlen($customLink['Name'])) {
                     return InstallCode::INVALID_CUSTOM_LINK_NAME;
                 }

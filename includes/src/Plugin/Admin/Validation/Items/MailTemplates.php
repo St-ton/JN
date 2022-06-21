@@ -35,11 +35,7 @@ final class MailTemplates extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            \preg_match(
-                '/[\w\/\- ]+/u',
-                $tpl['Name'],
-                $hits1
-            );
+            \preg_match('/[\w\/\- ]+/u', $tpl['Name'], $hits1);
             if (\mb_strlen($hits1[0]) !== \mb_strlen($tpl['Name'])) {
                 return InstallCode::INVALID_TEMPLATE_NAME;
             }

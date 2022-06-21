@@ -158,11 +158,7 @@ final class LegacyPluginValidator extends AbstractValidator
                 if (!\is_dir($dir . '/' . \PFAD_PLUGIN_VERSION . $version)) {
                     return InstallCode::MISSING_VERSION_DIR;
                 }
-                \preg_match(
-                    '/\d{4}-[0-1]\d-[0-3]\d/',
-                    $Version['CreateDate'],
-                    $hits
-                );
+                \preg_match('/\d{4}-[0-1]\d-[0-3]\d/', $Version['CreateDate'], $hits);
                 if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($Version['CreateDate'])) {
                     return InstallCode::INVALID_DATE;
                 }

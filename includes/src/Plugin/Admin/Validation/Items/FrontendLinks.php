@@ -43,11 +43,7 @@ final class FrontendLinks extends AbstractItem
             ) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
-            \preg_match(
-                '/[\w\- ]+/u',
-                $link['Name'],
-                $hits1
-            );
+            \preg_match('/[\w\- ]+/u', $link['Name'], $hits1);
             $len = \mb_strlen($link['Name']);
             if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                 return InstallCode::INVALID_FRONTEND_LINK_NAME;
@@ -118,47 +114,27 @@ final class FrontendLinks extends AbstractItem
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_SEO;
                     }
-                    \preg_match(
-                        '/[\w\- ]+/u',
-                        $localized['Name'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\- ]+/u', $localized['Name'], $hits1);
                     $len = \mb_strlen($localized['Name']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['Title'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['Title'], $hits1);
                     $len = \mb_strlen($localized['Title']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['MetaTitle'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['MetaTitle'], $hits1);
                     $len = \mb_strlen($localized['MetaTitle']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
-                    \preg_match(
-                        '/[\w,\- ]+/u',
-                        $localized['MetaKeywords'],
-                        $hits1
-                    );
+                    \preg_match('/[\w,\- ]+/u', $localized['MetaKeywords'], $hits1);
                     $len = \mb_strlen($localized['MetaKeywords']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['MetaDescription'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['MetaDescription'], $hits1);
                     $len = \mb_strlen($localized['MetaDescription']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_DESCRIPTION;

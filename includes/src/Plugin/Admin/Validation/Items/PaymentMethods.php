@@ -52,11 +52,7 @@ final class PaymentMethods extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            \preg_match(
-                '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
-                $method['Name'],
-                $hits1
-            );
+            \preg_match('/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u', $method['Name'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Name'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_NAME;
             }
@@ -105,11 +101,7 @@ final class PaymentMethods extends AbstractItem
                 return InstallCode::INVALID_PAYMENT_METHOD_CLASS_NAME;
             }
             if (isset($method['TemplateFile']) && \mb_strlen($method['TemplateFile']) > 0) {
-                \preg_match(
-                    '/[a-zA-Z\d\/_\-.]+.tpl/',
-                    $method['TemplateFile'],
-                    $hits1
-                );
+                \preg_match('/[a-zA-Z\d\/_\-.]+.tpl/', $method['TemplateFile'], $hits1);
                 if (\mb_strlen($hits1[0]) !== \mb_strlen($method['TemplateFile'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_TEMPLATE;
                 }
@@ -118,11 +110,7 @@ final class PaymentMethods extends AbstractItem
                 }
             }
             if (isset($method['AdditionalTemplateFile']) && \mb_strlen($method['AdditionalTemplateFile']) > 0) {
-                \preg_match(
-                    '/[a-zA-Z\d\/_\-.]+.tpl/',
-                    $method['AdditionalTemplateFile'],
-                    $hits1
-                );
+                \preg_match('/[a-zA-Z\d\/_\-.]+.tpl/', $method['AdditionalTemplateFile'], $hits1);
                 if (\mb_strlen($hits1[0]) !== \mb_strlen($method['AdditionalTemplateFile'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_ADDITIONAL_STEP_TEMPLATE_FILE;
                 }
@@ -167,22 +155,14 @@ final class PaymentMethods extends AbstractItem
                 if (!isset($localized['Name'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
                 }
-                \preg_match(
-                    '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
-                    $localized['Name'],
-                    $hits1
-                );
+                \preg_match('/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u', $localized['Name'], $hits1);
                 if (\mb_strlen($hits1[0]) !== \mb_strlen($localized['Name'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_NAME_LOCALIZED;
                 }
                 if (!isset($localized['ChargeName'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME;
                 }
-                \preg_match(
-                    '/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u',
-                    $localized['ChargeName'],
-                    $hits1
-                );
+                \preg_match('/[\w.,!"§$%&\/()=`´+~*\';\-?{}\[\] ]+/u', $localized['ChargeName'], $hits1);
                 if (\mb_strlen($hits1[0]) !== \mb_strlen($localized['ChargeName'])) {
                     return InstallCode::INVALID_PAYMENT_METHOD_CHARGE_NAME;
                 }

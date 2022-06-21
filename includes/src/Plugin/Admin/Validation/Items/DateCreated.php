@@ -19,11 +19,7 @@ final class DateCreated extends AbstractItem
         if (!isset($baseNode['CreateDate'])) {
             return InstallCode::INVALID_DATE;
         }
-        \preg_match(
-            '/\d{4}-[0-1]\d-[0-3]\d/',
-            $baseNode['CreateDate'],
-            $hits
-        );
+        \preg_match('/\d{4}-[0-1]\d-[0-3]\d/', $baseNode['CreateDate'], $hits);
 
         return !isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['CreateDate'])
             ? InstallCode::INVALID_DATE

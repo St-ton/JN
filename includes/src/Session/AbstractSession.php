@@ -173,8 +173,7 @@ abstract class AbstractSession
         $quality  = 0;
         foreach ($accepted as $lang) {
             $res = \preg_match(
-                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
+                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)(?:;\s*q=(0(?:\.\d{1,3})?|1(?:\.0{1,3})?))?$/i',
                 $lang,
                 $matches
             );

@@ -34,11 +34,7 @@ final class Portlets extends AbstractItem
             \preg_match('/\d+\sattr/', $i, $hits1);
             \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
-                \preg_match(
-                    '/[\w\/\-() ]+/u',
-                    $portlet['Title'],
-                    $hits1
-                );
+                \preg_match('/[\w\/\-() ]+/u', $portlet['Title'], $hits1);
                 $len = \mb_strlen($portlet['Title']);
                 if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                     return InstallCode::INVALID_PORTLET_TITLE;
@@ -54,11 +50,7 @@ final class Portlets extends AbstractItem
                 } else {
                     return InstallCode::INVALID_PORTLET_CLASS;
                 }
-                \preg_match(
-                    '/[\w\/\-() ]+/u',
-                    $portlet['Group'],
-                    $hits1
-                );
+                \preg_match('/[\w\/\-() ]+/u', $portlet['Group'], $hits1);
                 $len = \mb_strlen($portlet['Group']);
                 if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                     return InstallCode::INVALID_PORTLET_GROUP;

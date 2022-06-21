@@ -38,11 +38,7 @@ final class Widgets extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            \preg_match(
-                '/[\w\/\-() ]+/u',
-                $widget['Title'],
-                $hits1
-            );
+            \preg_match('/[\w\/\-() ]+/u', $widget['Title'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Title'])) {
                 return InstallCode::INVALID_WIDGET_TITLE;
             }

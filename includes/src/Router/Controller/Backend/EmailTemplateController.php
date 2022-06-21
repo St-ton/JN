@@ -323,11 +323,7 @@ class EmailTemplateController extends AbstractBackendController
                 $postIndex           = $post['cPDFNames_' . $langID][$i];
                 if (\mb_strlen($postIndex) > 0) {
                     $regs = [];
-                    \preg_match(
-                        '/[A-Za-z0-9_-]+/',
-                        $postIndex,
-                        $regs
-                    );
+                    \preg_match('/[A-Za-z\d_\-]+/', $postIndex, $regs);
                     if (\mb_strlen($regs[0]) === \mb_strlen($postIndex)) {
                         $filenames[$langID][] = $postIndex;
                         unset($postIndex);

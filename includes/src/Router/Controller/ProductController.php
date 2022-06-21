@@ -66,8 +66,6 @@ class ProductController extends AbstractController
         if ($productID < 1 && $productName === null) {
             return $this->state;
         }
-        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
-
         $seo = $productID > 0
             ? $this->db->getSingleObject(
                 'SELECT *
@@ -75,7 +73,7 @@ class ProductController extends AbstractController
                     WHERE cKey = :key
                       AND kKey = :kid
                       AND kSprache = :lid',
-                ['key' => 'kArtikel', 'kid' => $productID, 'lid' => $languageID]
+                ['key' => 'kArtikel', 'kid' => $productID, 'lid' => $this->state->languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *
@@ -84,7 +82,7 @@ class ProductController extends AbstractController
                 ['key' => 'kArtikel', 'seo' => $productName]
             );
         if ($seo === null) {
-            return $this->handleSeoError($productID, $languageID);
+            return $this->handleSeoError($productID, $this->state->languageID);
         }
         $slug          = $seo->cSeo;
         $seo->kKey     = (int)$seo->kKey;

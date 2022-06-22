@@ -1472,12 +1472,12 @@
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/shop5-systemcheck.git",
-                "reference": "5062b697029c253c9073303f603a58c13f43f047"
+                "reference": "63f3576bb14b641abf1c664c763c65e0eecf60ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=5062b697029c253c9073303f603a58c13f43f047",
-                "reference": "5062b697029c253c9073303f603a58c13f43f047",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fshop5-systemcheck/repository/archive.zip?sha=63f3576bb14b641abf1c664c763c65e0eecf60ea",
+                "reference": "63f3576bb14b641abf1c664c763c65e0eecf60ea",
                 "shasum": ""
             },
             "require": {

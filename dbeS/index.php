@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\dbeS\FileHandler;
 use JTL\dbeS\Starter;

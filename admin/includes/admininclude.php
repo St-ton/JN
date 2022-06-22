@@ -76,7 +76,7 @@ if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     }
 }
 
-if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
+if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate']) && !$hasUpdates) {
     $adminToken   = $_SESSION['jtl_token'];
     $adminLangTag = $_SESSION['AdminAccount']->language ?? 'de-DE';
     $eSIdAdm      = session_id();

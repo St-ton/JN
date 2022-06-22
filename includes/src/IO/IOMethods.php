@@ -613,7 +613,10 @@ class IOMethods
                        ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
                        ->assign('FavourableShipping', $cart->getFavourableShipping(
                            $shippingFreeMin !== 0
-                           && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValueGros, $cartValueNet) <= 0
+                           && ShippingMethod::getShippingFreeDifference(
+                                    $shippingFreeMin,
+                                    $cartValueGros,
+                                    $cartValueNet) <= 0
                                ? (int)$shippingFreeMin->kVersandart
                                : null
                        ))

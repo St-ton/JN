@@ -1364,7 +1364,7 @@ final class Shop
     {
         $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {
-            Frontend::checkReset($iso);
+            Frontend::checkReset($iso ?? '');
             Tax::setTaxRates();
         }
         if (self::$productFilter->getFilterConfig()->getLanguageID() !== $languageID) {

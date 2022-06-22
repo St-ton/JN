@@ -70,15 +70,16 @@ class CountryService implements CountryServiceInterface
                 \explode(' ', $shippingMethod->cLaender)
             ));
         }
+        $languages = Shop::Lang()->getAllLanguages();
         foreach ($countries as $country) {
-            $countryTMP = new Country($country->cISO);
+            $countryTMP = new Country($country->cISO, false, $languages);
             $countryTMP->setEU((int)$country->nEU)
-                       ->setContinent($country->cKontinent)
-                       ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch)
-                       ->setPermitRegistration((int)$country->bPermitRegistration === 1)
-                       ->setRequireStateDefinition((int)$country->bRequireStateDefinition === 1)
-                       ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
+                ->setContinent($country->cKontinent)
+                ->setNameDE($country->cDeutsch)
+                ->setNameEN($country->cEnglisch)
+                ->setPermitRegistration((int)$country->bPermitRegistration === 1)
+                ->setRequireStateDefinition((int)$country->bRequireStateDefinition === 1)
+                ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
             if (\in_array($countryTMP->getISO(), $possibleStates, true)) {
                 $countryTMP->setStates($this->getStates($countryTMP->getISO()));
             }

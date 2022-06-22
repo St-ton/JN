@@ -566,10 +566,7 @@ class EmailTemplateController extends AbstractBackendController
             $convertText        = \mb_detect_encoding($upd->cContentText, ['UTF-8'], true) !== 'UTF-8';
             $upd->cContentHtml  = $convertHTML === true ? Text::convertUTF8($upd->cContentHtml) : $upd->cContentHtml;
             $upd->cContentText  = $convertText === true ? Text::convertUTF8($upd->cContentText) : $upd->cContentText;
-            $updCount           = $db->upsert(
-                'temailvorlagesprache',
-                $upd
-            );
+            $updCount           = $db->upsert('temailvorlagesprache', $upd);
             $affected          += \max($updCount, 0);
         }
 

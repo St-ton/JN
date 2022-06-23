@@ -20,7 +20,6 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class PluginController
@@ -28,13 +27,35 @@ use stdClass;
  */
 class PluginController extends AbstractBackendController
 {
-    private bool $updated         = false;
-    private bool $hasError        = false;
-    private bool $invalidateCache = false;
-    private bool $pluginNotFound  = false;
+    /**
+     * @var bool
+     */
+    private bool $updated = false;
 
+    /**
+     * @var bool
+     */
+    private bool $hasError = false;
+
+    /**
+     * @var bool
+     */
+    private bool $invalidateCache = false;
+
+    /**
+     * @var bool
+     */
+    private bool $pluginNotFound = false;
+
+    /**
+     * @var string
+     */
     private string $notice = '';
-    private string $error  = '';
+
+    /**
+     * @var string
+     */
+    private string $error = '';
 
     /**
      * @inheritdoc
@@ -78,6 +99,7 @@ class PluginController extends AbstractBackendController
         }
         $this->smarty->assign('defaultTabbertab', $activeTab);
         $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
+        global $plugin;
         if ($loader !== null) {
             try {
                 $plugin = $loader->init($pluginID, $this->invalidateCache);
@@ -112,8 +134,6 @@ class PluginController extends AbstractBackendController
             }
             $this->renderMenu($plugin, $loader);
         }
-
-
         $this->alertService->addNotice($this->notice, 'pluginNotice');
         $this->alertService->addError($this->error, 'pluginError');
         if ($plugin !== null && $plugin->getState() === State::DISABLED) {
@@ -156,9 +176,11 @@ class PluginController extends AbstractBackendController
                     ['kPlugin', 'cName'],
                     [$pluginID, $current->cWertName]
                 );
-                $upd          = new stdClass();
-                $upd->kPlugin = $pluginID;
-                $upd->cName   = $current->cWertName;
+                $upd = (object)[
+                    'kPlugin' => $pluginID,
+                    'cName'   => $current->cWertName,
+                    'cWert'   => null
+                ];
                 if (isset($_POST[$current->cWertName])) {
                     if (\is_array($_POST[$current->cWertName])) {
                         if ($current->cConf === Config::TYPE_DYNAMIC) {
@@ -172,9 +194,6 @@ class PluginController extends AbstractBackendController
                         // textarea/text
                         $upd->cWert = $_POST[$current->cWertName];
                     }
-                } else {
-                    // checkboxes that are not checked
-                    $upd->cWert = null;
                 }
                 if (!$this->db->insert('tplugineinstellungen', $upd)) {
                     $this->hasError = true;
@@ -194,7 +213,6 @@ class PluginController extends AbstractBackendController
             $this->pluginNotFound = true;
             $plugin               = null;
         }
-
         if ($plugin !== null && $plugin->isBootstrap()) {
             Helper::updatePluginInstance($plugin);
         }

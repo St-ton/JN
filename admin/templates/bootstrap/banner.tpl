@@ -47,7 +47,7 @@
         }
     </script>
     <div id="settings">
-        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="{$adminURL}/banner.php" method="post" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="{$action}" />
             {if $action === 'edit'}
@@ -84,7 +84,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        {if $bannerFiles|@count > 0}
+                        {if $bannerFiles|count > 0}
                             <select id="cPath" name="cPath" class="custom-select">
                                 <option value="">{__('chooseBanner')}</option>
                                 {foreach $bannerFiles as $file}
@@ -326,7 +326,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="banner.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
@@ -351,7 +351,7 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$banner|@json_encode nofilter}
+                'data': {$banner|json_encode nofilter}
             });
 
             $('#article_unlink').on('click', () => {
@@ -417,7 +417,7 @@
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block" href="banner.php" id="cancel">
+                <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php" id="cancel">
                     {__('cancelWithIcon')}
                 </a>
             </div>
@@ -469,7 +469,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center">
-                                    <form action="banner.php" method="post">
+                                    <form action="{$adminURL}/banner.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$banner->kImageMap}" />
                                         <div class="btn-group">
@@ -506,7 +506,7 @@
                     </table>
 
                 </div>
-            {if $banners|@count === 0}
+            {if $banners|count === 0}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}
@@ -514,7 +514,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-primary btn-block" href="banner.php?action=new&token={$smarty.session.jtl_token}">
+                        <a class="btn btn-primary btn-block" href="{$adminURL}/banner.php?action=new&token={$smarty.session.jtl_token}">
                             <i class="fa fa-share"></i> {__('addBanner')}
                         </a>
                     </div>

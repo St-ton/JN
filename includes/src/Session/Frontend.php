@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
+use Exception;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
@@ -11,6 +12,7 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\Firma;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
@@ -34,19 +36,27 @@ class Frontend extends AbstractSession
     private const DEFAULT_SESSION = 'JTLSHOP';
 
     /**
-     * @var Frontend
+     * @var Frontend|null
      */
-    protected static $instance;
+    protected static ?Frontend $instance = null;
+
+    /**
+     * @var bool
+     */
+    private bool $mustUpdate = false;
 
     /**
      * @param bool   $start       - call session_start()?
      * @param bool   $force       - force new instance?
      * @param string $sessionName - if null, then default to current session name
      * @return Frontend
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function getInstance(bool $start = true, $force = false, $sessionName = self::DEFAULT_SESSION): self
-    {
+    public static function getInstance(
+        bool $start = true,
+        bool $force = false,
+        string $sessionName = self::DEFAULT_SESSION
+    ): self {
         return ($force === true || self::$instance === null || self::$sessionName !== $sessionName)
             ? new self($start, $sessionName)
             : self::$instance;
@@ -56,7 +66,7 @@ class Frontend extends AbstractSession
      * Frontend constructor.
      * @param bool   $start
      * @param string $sessionName
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(bool $start = true, string $sessionName = self::DEFAULT_SESSION)
     {
@@ -69,16 +79,31 @@ class Frontend extends AbstractSession
     }
 
     /**
+     * this method is split from updateGlobals() to allow a later execution after the plugin bootstrapper
+     * was initialized. otherwise the hooks executed by these method calls could not be handled with the
+     * event dispatcher
+     */
+    public function deferredUpdate(): void
+    {
+        if ($this->mustUpdate !== true) {
+            return;
+        }
+        self::getCart()->loescheDeaktiviertePositionen();
+        Tax::setTaxRates();
+    }
+
+    /**
      * setzt Sessionvariablen beim ersten Sessionaufbau oder wenn globale Daten aktualisiert werden müssen
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setStandardSessionVars(): self
     {
         LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
         $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Cart();
+        $_SESSION['consentVersion'] = (int)($_SESSION['consentVersion'] ?? 1);
 
         $updateGlobals  = $this->checkGlobals();
         $updateLanguage = $this->checkLanguageUpdate();
@@ -166,6 +191,7 @@ class Frontend extends AbstractSession
 
     /**
      * @return bool
+     * @throws Exception
      */
     private function checkGlobals(): bool
     {
@@ -173,29 +199,34 @@ class Frontend extends AbstractSession
         if (isset($_SESSION['Globals_TS'])) {
             $doUpdate = false;
             $last     = Shop::Container()->getDB()->getSingleObject(
-                'SELECT dLetzteAenderung 
+                'SELECT * 
                     FROM tglobals 
                     WHERE dLetzteAenderung > :ts',
                 ['ts' => $_SESSION['Globals_TS']]
             );
             if ($last !== null) {
-                $_SESSION['Globals_TS'] = $last->dLetzteAenderung;
-                $doUpdate               = true;
+                $_SESSION['Globals_TS']     = $last->dLetzteAenderung;
+                $_SESSION['consentVersion'] = (int)$last->consentVersion;
+                $doUpdate                   = true;
             }
         } else {
-            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->getSingleObject(
-                'SELECT dLetzteAenderung FROM tglobals'
-            )->dLetzteAenderung;
+            $data = Shop::Container()->getDB()->getSingleObject('SELECT * FROM tglobals');
+            if ($data === null) {
+                throw new Exception('Fatal: could not load tglobals');
+            }
+            $_SESSION['Globals_TS']     = $data->dLetzteAenderung;
+            $_SESSION['consentVersion'] = (int)$data->consentVersion;
         }
 
         return $doUpdate || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe']);
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateGlobals(): void
     {
+
         unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
@@ -215,9 +246,9 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['kSprache'])) {
             $default = Text::convertISO6392ISO($defaultLang);
             foreach ($_SESSION['Sprachen'] as $lang) {
-                if ($lang->cISO === $default || (empty($default) && $lang->cShopStandard === 'Y')) {
-                    $_SESSION['kSprache']    = $lang->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
+                if ($lang->getCode() === $default || (empty($default) && $lang->isShopDefault())) {
+                    $_SESSION['kSprache']    = $lang->getId();
+                    $_SESSION['cISOSprache'] = \trim($lang->getCode());
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     $_SESSION['currentLanguage'] = clone $lang;
                     break;
@@ -277,9 +308,18 @@ class Frontend extends AbstractSession
             $_SESSION['Linkgruppen'] = Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
+        if (\defined('STEUERSATZ_STANDARD_LAND')) {
+            $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
+        } else {
+            $company = new Firma(true, Shop::Container()->getDB());
+            if (!empty($company->cLand)) {
+                $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($company->cLand);
+            }
+        }
+        $_SESSION['Steuerland']     = $merchantCountryCode ?? 'DE';
+        $_SESSION['cLieferlandISO'] = $_SESSION['Steuerland'];
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-        self::getCart()->loescheDeaktiviertePositionen();
-        Tax::setTaxRates();
+        $this->mustUpdate = true;
         Shop::Lang()->reset();
     }
 
@@ -290,7 +330,7 @@ class Frontend extends AbstractSession
     {
         $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
-            $wl = new Wishlist();
+            $wl = self::getWishList();
             $wl->entfernePos($index);
         }
 
@@ -409,31 +449,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Customer
-     * @deprecated since 5.0.0
-     */
-    public static function customer(): Customer
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomer();
-    }
-
-    /**
      * @return CustomerGroup
      */
     public static function getCustomerGroup(): CustomerGroup
     {
         return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
-    }
-
-    /**
-     * @return CustomerGroup
-     * @deprecated since 5.0.0
-     */
-    public static function customerGroup(): CustomerGroup
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCustomerGroup();
     }
 
     /**
@@ -444,20 +464,10 @@ class Frontend extends AbstractSession
         $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
-        $lang->kSprachISO        = (int)$lang->mappekISO($_SESSION['cISOSprache']);
+        $lang->kSprachISO        = $lang->mappekISO($_SESSION['cISOSprache']);
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
 
         return $lang;
-    }
-
-    /**
-     * @return LanguageHelper
-     * @deprecated since 5.0.0
-     */
-    public function language(): LanguageHelper
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getLanguage();
     }
 
     /**
@@ -470,40 +480,10 @@ class Frontend extends AbstractSession
 
     /**
      * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function languages(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getLanguages();
-    }
-
-    /**
-     * @return array
      */
     public function getPaymentMethods(): array
     {
         return $_SESSION['Zahlungsarten'] ?? [];
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function payments(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getPaymentMethods();
-    }
-
-    /**
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function deliveryCountries(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return [];
     }
 
     /**
@@ -523,31 +503,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Currency
-     * @deprecated since 5.0.0
-     */
-    public static function currency(): Currency
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrency();
-    }
-
-    /**
      * @return Cart
      */
     public static function getCart(): Cart
     {
         return $_SESSION['Warenkorb'] ?? new Cart();
-    }
-
-    /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public static function cart(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCart();
     }
 
     /**
@@ -559,26 +519,6 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Currency[]
-     * @deprecated since 5.0.0
-     */
-    public static function currencies(): array
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCurrencies();
-    }
-
-    /**
-     * @return Cart
-     * @deprecated since 5.0.0
-     */
-    public function basket(): Cart
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Cart();
-    }
-
-    /**
      * @return Wishlist
      */
     public static function getWishList(): Wishlist
@@ -587,31 +527,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Wishlist
-     * @deprecated since 5.0.0
-     */
-    public static function wishList(): Wishlist
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getWishList();
-    }
-
-    /**
      * @return ComparisonList
      */
     public static function getCompareList(): ComparisonList
     {
         return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
-    }
-
-    /**
-     * @return ComparisonList
-     * @deprecated since 5.0.0
-     */
-    public static function compareList(): ComparisonList
-    {
-        \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return self::getCompareList();
     }
 
     /**
@@ -627,7 +547,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr_new'] = [];
             }
             $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
-                return $l->getIso() === $langISO;
+                return $l->getCode() === $langISO;
             });
             if ($lang === null) {
                 self::urlFallback();
@@ -679,6 +599,9 @@ class Frontend extends AbstractSession
         LanguageHelper::getInstance()->autoload();
     }
 
+    /**
+     * @since 5.0.0
+     */
     private static function urlFallback(): void
     {
         $productID             = Request::verifyGPCDataInt('a');
@@ -696,17 +619,15 @@ class Frontend extends AbstractSession
         $val                   = 0;
         \http_response_code(301);
         if ($productID > 0) {
-            $key = 'kArtikel';
             $val = $productID;
+        } elseif ($childProductID > 0) {
+            $val = $childProductID;
         } elseif ($categoryID > 0) {
             $key = 'kKategorie';
             $val = $categoryID;
         } elseif ($pageID > 0) {
             $key = 'kLink';
             $val = $pageID;
-        } elseif ($childProductID > 0) {
-            $key = 'kArtikel';
-            $val = $childProductID;
         } elseif ($manufacturerID > 0) {
             $key = 'kHersteller';
             $val = $manufacturerID;

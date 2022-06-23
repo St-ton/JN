@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Checkout\Bestellung;
 use JTL\Shop;
@@ -17,16 +17,17 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
         $searchFilter = ' WHERE cBestellNr LIKE :fltr';
         $prep['fltr'] = '%' . $query . '%';
     }
-    $items = Shop::Container()->getDB()->getObjects(
+    $items = Shop::Container()->getDB()->getInts(
         'SELECT kBestellung
             FROM tbestellung
             ' . $searchFilter . '
             ORDER BY dErstellt DESC' . $limitSQL,
+        'kBestellung',
         $prep
     );
-    foreach ($items as $item) {
-        if ($item->kBestellung > 0) {
-            $order = new Bestellung((int)$item->kBestellung);
+    foreach ($items as $orderID) {
+        if ($orderID > 0) {
+            $order = new Bestellung($orderID);
             $order->fuelleBestellung(true, 0, false);
             $orders[] = $order;
         }

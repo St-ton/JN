@@ -218,6 +218,11 @@ final class Link extends AbstractLink
     private $fallbackLanguageID;
 
     /**
+     * @var string
+     */
+    private $target = '_self';
+
+    /**
      * Link constructor.
      * @param DbInterface $db
      */
@@ -322,7 +327,7 @@ final class Link extends AbstractLink
     }
 
     /**
-     * @return array
+     * @return stdClass[]
      */
     public function getData(): array
     {
@@ -331,6 +336,7 @@ final class Link extends AbstractLink
             $languageCode          = $this->getLanguageCode($languageID);
             $data                  = new stdClass();
             $data->content         = $this->getContent($languageID);
+            $data->cContent        = $data->content;
             $data->url             = $this->getURL($languageID);
             $data->languageID      = $languageID;
             $data->languageCode    = $languageCode;
@@ -381,6 +387,7 @@ final class Link extends AbstractLink
             $this->setName($link->localizedName ?? $link->cName, $link->languageID);
             $this->setTitle($link->localizedTitle ?? $link->cName, $link->languageID);
             $this->setLanguageID($link->languageID, $link->languageID);
+            $this->setTarget($link->target ?? '_self');
             if ($this->getLinkType() === \LINKTYP_EXTERNE_URL) {
                 $this->setSEO($link->linkURL, $link->languageID);
                 $this->setURL($link->linkURL, $link->languageID);
@@ -550,6 +557,22 @@ final class Link extends AbstractLink
         return $this->names[$idx ?? $this->currentLanguageID]
             ?? $this->names[$this->fallbackLanguageID]
             ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTarget(): string
+    {
+        return $this->target;
+    }
+
+    /**
+     * @param string $target
+     */
+    public function setTarget(string $target): void
+    {
+        $this->target = $target;
     }
 
     /**

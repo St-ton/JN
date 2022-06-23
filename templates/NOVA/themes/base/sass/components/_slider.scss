@@ -47,3 +47,55 @@
     }
   }
 }
+
+.js-slider-wrapper {
+  .js-slider-items {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: auto hidden;
+    scroll-snap-type: x mandatory;
+    touch-action: manipulation;
+
+    .js-slider-item {
+      pointer-events: auto;
+      width: calc(100%/5);
+      min-width: calc(100%/5);
+      scroll-snap-align: start;
+    }
+    @include media-breakpoint-up(lg) {
+      .js-slider-item {
+        pointer-events: auto;
+        width: calc(100%/6);
+        min-width: calc(100%/6);
+      }
+    }
+  }
+  .js-btn-slider-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &.js-slider-disabled {
+    .js-slider-items {
+      flex-wrap: wrap;
+      overflow: initial;
+    }
+  }
+}
+.productbox-variations {
+  .js-slider-wrapper {
+    .js-slider-items {
+      .js-slider-item {
+        width: calc(100% / 5);
+        min-width: calc(100% / 5);
+        padding: 0 2px;
+        img {
+          padding: 0;
+        }
+      }
+    }
+    .js-btn-slider-btns .btn {
+      padding: 0 map-get($spacers, 2);
+    }
+  }
+}

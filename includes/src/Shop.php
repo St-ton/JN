@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
 use Exception;
-use JTL\Alert\Alert;
 use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginConfig;
 use JTL\Boxes\Factory as BoxFactory;
@@ -31,7 +30,6 @@ use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Form;
-use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -104,11 +102,8 @@ use function Functional\tail;
 /**
  * Class Shop
  * @package JTL
- * @method static JTLCacheInterface Cache()
  * @method static LanguageHelper Lang()
  * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
- * @method static Media Media()
- * @method static Events\Dispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -311,12 +306,6 @@ final class Shop
     public static $bHerstellerFilterNotFound;
 
     /**
-     * @var bool
-     * @deprecated since 5.0.0
-     */
-    public static $isSeoMainword = false;
-
-    /**
      * @var null|Shop
      */
     private static $instance;
@@ -455,15 +444,11 @@ final class Shop
      * @var array
      */
     private static $mapping = [
-        'DB'     => '_DB',
-        'Cache'  => '_Cache',
-        'Lang'   => '_Language',
-        'Smarty' => '_Smarty',
-        'Media'  => '_Media',
-        'Event'  => '_Event',
-        'has'    => '_has',
-        'set'    => '_set',
-        'get'    => '_get'
+        'Lang'   => 'getLanguageHelper',
+        'Smarty' => 'getSmarty',
+        'has'    => 'registryHas',
+        'set'    => 'registrySet',
+        'get'    => 'registryGet'
     ];
 
     /**
@@ -515,7 +500,7 @@ final class Shop
      * @param string $key
      * @return null|mixed
      */
-    public function _get($key)
+    public function registryGet(string $key)
     {
         return $this->registry[$key] ?? null;
     }
@@ -525,7 +510,7 @@ final class Shop
      * @param mixed  $value
      * @return $this
      */
-    public function _set($key, $value): self
+    public function registrySet(string $key, $value): self
     {
         $this->registry[$key] = $value;
 
@@ -536,7 +521,7 @@ final class Shop
      * @param string $key
      * @return bool
      */
-    public function _has($key): bool
+    public function registryHas(string $key): bool
     {
         return isset($this->registry[$key]);
     }
@@ -547,7 +532,7 @@ final class Shop
      * @param string $method
      * @return string|null
      */
-    private static function map($method): ?string
+    private static function map(string $method): ?string
     {
         return self::$mapping[$method] ?? null;
     }
@@ -573,127 +558,13 @@ final class Shop
     }
 
     /**
-     * get remote service instance
-     *
-     * @return JTLApi
-     * @deprecated since 5.0.0 use Shop::Container()->get(JTLApi::class) instead
-     */
-    public function RS(): JTLApi
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->get(JTLApi::class);
-    }
-
-    /**
-     * get session instance
-     *
-     * @return Frontend
-     * @throws Exception
-     * @deprecated since 5.0.0
-     */
-    public function Session(): Frontend
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Frontend::getInstance();
-    }
-
-    /**
-     * get db adapter instance
-     *
-     * @return DbInterface
-     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
-     */
-    public function _DB(): DbInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getDB();
-    }
-
-    /**
-     * @return DbInterface
-     * @deprecated since 5.0.0 - use Shop::Container()->getDB() instead
-     */
-    public static function DB(): DbInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getDB();
-    }
-
-    /**
      * get language instance
      *
      * @return LanguageHelper
      */
-    public function _Language(): LanguageHelper
+    public function getLanguageHelper(): LanguageHelper
     {
         return LanguageHelper::getInstance();
-    }
-
-    /**
-     * get config
-     *
-     * @return Shopsetting
-     * @deprecated since 5.0.0
-     */
-    public function Config(): Shopsetting
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::$settings;
-    }
-
-    /**
-     * get garbage collector
-     *
-     * @return GcServiceInterface
-     * @deprecated since 5.0.0 -> use Shop::Container()->getGc() instead
-     */
-    public function Gc(): GcServiceInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return static::Container()->getDBServiceGC();
-    }
-
-    /**
-     * get logger
-     *
-     * @return Jtllog
-     * @deprecated since 5.0.0
-     */
-    public function Logger(): Jtllog
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return new Jtllog();
-    }
-
-    /**
-     * @return PHPSettings
-     * @deprecated since 5.0.0
-     */
-    public function PHPSettingsHelper(): PHPSettings
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return PHPSettings::getInstance();
-    }
-
-    /**
-     * get cache instance
-     *
-     * @return JTLCacheInterface
-     * @deprecated since 5.0.0
-     */
-    public function _Cache(): JTLCacheInterface
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return self::Container()->getCache();
     }
 
     /**
@@ -701,38 +572,12 @@ final class Shop
      * @param string|null $context
      * @return JTLSmarty
      */
-    public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
+    public function getSmarty(bool $fast = false, string $context = null): JTLSmarty
     {
         if ($context === null) {
             $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
         }
         return JTLSmarty::getInstance($fast, $context);
-    }
-
-    /**
-     * get media instance
-     *
-     * @return Media
-     * @deprecated since 5.0.0
-     */
-    public function _Media(): Media
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Media::getInstance();
-    }
-
-    /**
-     * get event instance
-     *
-     * @return Dispatcher
-     * @deprecated since 5.0.0
-     */
-    public function _Event(): Dispatcher
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return Dispatcher::getInstance();
     }
 
     /**
@@ -835,6 +680,15 @@ final class Shop
     }
 
     /**
+     * @param int $sectionID
+     * @return array|null
+     */
+    public static function getSettingSection(int $sectionID): ?array
+    {
+        return (self::$settings ?? Shopsetting::getInstance())->getSection($sectionID);
+    }
+
+    /**
      * @param array|int $config
      * @return array
      */
@@ -848,7 +702,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getSettingValue(int $section, $option)
+    public static function getSettingValue(int $section, string $option)
     {
         return self::getConfigValue($section, $option);
     }
@@ -858,7 +712,7 @@ final class Shop
      * @param string $option
      * @return string|array|int|null
      */
-    public static function getConfigValue(int $section, $option)
+    public static function getConfigValue(int $section, string $option)
     {
         return (self::$settings ?? Shopsetting::getInstance())->getValue($section, $option);
     }
@@ -875,19 +729,18 @@ final class Shop
         }
         $db      = self::Container()->getDB();
         $cache   = self::Container()->getCache();
-        $cacheID = 'plgnbtsrp';
+        $cacheID = 'plgnbtstrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->getObjects(
-                'SELECT kPlugin, bBootstrap, bExtension
+                'SELECT kPlugin AS id, bExtension AS modern
                     FROM tplugin
                     WHERE nStatus = :state
                       AND bBootstrap = 1
                     ORDER BY nPrio ASC',
                 ['state' => State::ACTIVATED]
             ) ?: [], static function ($e) {
-                $e->kPlugin    = (int)$e->kPlugin;
-                $e->bBootstrap = (int)$e->bBootstrap;
-                $e->bExtension = (int)$e->bExtension;
+                $e->id     = (int)$e->id;
+                $e->modern = (int)$e->modern;
 
                 return $e;
             });
@@ -897,8 +750,8 @@ final class Shop
         $extensionLoader = new PluginLoader($db, $cache);
         $pluginLoader    = new LegacyPluginLoader($db, $cache);
         foreach ($plugins as $plugin) {
-            $loader = $plugin->bExtension === 1 ? $extensionLoader : $pluginLoader;
-            if (($p = PluginHelper::bootstrap($plugin->kPlugin, $loader)) !== null) {
+            $loader = $plugin->modern === 1 ? $extensionLoader : $pluginLoader;
+            if (($p = PluginHelper::bootstrap($plugin->id, $loader)) !== null) {
                 $p->boot($dispatcher);
                 $p->loaded();
             }
@@ -1509,7 +1362,7 @@ final class Shop
      */
     private static function updateLanguage(int $languageID): void
     {
-        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? null;
+        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {
             Frontend::checkReset($iso ?? '');
             Tax::setTaxRates();
@@ -1597,26 +1450,11 @@ final class Shop
                 \header('Location: ' . self::getURL(), true, 301);
                 exit;
             }
-            if ($requestFile === '/') {
+            if ($requestFile === '/' && !self::$is404) {
                 // special case: home page is accessible without seo url
-                $link = null;
                 self::setPageType(\PAGE_STARTSEITE);
                 self::$fileName = 'seite.php';
-                if (Frontend::getCustomerGroup()->getID() > 0) {
-                    $customerGroupSQL = " AND (FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
-                        . "', REPLACE(cKundengruppen, ';', ',')) > 0
-                        OR cKundengruppen IS NULL
-                        OR cKundengruppen = 'NULL'
-                        OR tlink.cKundengruppen = '')";
-                    $link             = self::Container()->getDB()->getSingleObject(
-                        'SELECT kLink
-                            FROM tlink
-                            WHERE nLinkart = ' . \LINKTYP_STARTSEITE . $customerGroupSQL
-                    );
-                }
-                self::$kLink = isset($link->kLink)
-                    ? (int)$link->kLink
-                    : self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
+                self::$kLink    = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } else {
@@ -1628,15 +1466,12 @@ final class Shop
             $link = self::Container()->getLinkService()->getLinkByID(self::$kLink);
             if ($link !== null && ($linkType = $link->getLinkType()) > 0) {
                 self::$nLinkart = $linkType;
-
                 if ($linkType === \LINKTYP_EXTERNE_URL) {
                     \header('Location: ' . $link->getURL(), true, 303);
                     exit;
                 }
-
                 self::$fileName = 'seite.php';
                 self::setPageType(\PAGE_EIGENE);
-
                 if ($linkType === \LINKTYP_STARTSEITE) {
                     self::setPageType(\PAGE_STARTSEITE);
                 } elseif ($linkType === \LINKTYP_DATENSCHUTZ) {
@@ -1709,21 +1544,18 @@ final class Shop
                 $successMsg = (new Optin())
                     ->setCode(self::$optinCode)
                     ->handleOptin();
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_INFO,
+                self::Container()->getAlertService()->addInfo(
                     self::Lang()->get($successMsg, 'messages'),
                     'optinSucceeded'
                 );
             } catch (Exceptions\EmptyResultSetException $e) {
                 self::Container()->getLogService()->notice($e->getMessage());
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
                     'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
-                self::Container()->getAlertService()->addAlert(
-                    Alert::TYPE_ERROR,
+                self::Container()->getAlertService()->addError(
                     self::Lang()->get('optinActionUnknown', 'errorMessages'),
                     'optinUnknownAction'
                 );
@@ -1758,24 +1590,6 @@ final class Shop
     }
 
     /**
-     * build navigation filter object from parameters
-     *
-     * @param array                     $params
-     * @param object|null|ProductFilter $productFilter
-     * @return ProductFilter
-     * @deprecated since 5.0.0
-     */
-    public static function buildNaviFilter(array $params, $productFilter = null): ProductFilter
-    {
-        \trigger_error(
-            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::buildProductFilter() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::buildProductFilter($params, $productFilter);
-    }
-
-    /**
      * build product filter object from parameters
      *
      * @param array                       $params
@@ -1804,20 +1618,6 @@ final class Shop
 
     /**
      * @return ProductFilter
-     * @deprecated since 5.0.0
-     */
-    public static function getNaviFilter(): ProductFilter
-    {
-        \trigger_error(
-            __METHOD__ . 'is deprecated. Use ' . __CLASS__ . '::getProductFilter() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::getProductFilter();
-    }
-
-    /**
-     * @return ProductFilter
      */
     public static function getProductFilter(): ProductFilter
     {
@@ -1837,15 +1637,6 @@ final class Shop
     }
 
     /**
-     * @param null|ProductFilter $productFilter
-     * @deprecated since 5.0.0 - this is done in ProductFilter:validate()
-     */
-    public static function checkNaviFilter($productFilter = null): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-    }
-
-    /**
      * @return Version
      */
     public static function getShopDatabaseVersion(): Version
@@ -1857,22 +1648,6 @@ final class Shop
         }
 
         return Version::parse($version);
-    }
-
-    /**
-     * Return version of files
-     *
-     * @deprecated since 5.0.0
-     * @return string
-     */
-    public static function getVersion(): string
-    {
-        \trigger_error(
-            __METHOD__ . ' is deprecated. Use ' . __CLASS__ . '::getApplicationVersion() instead',
-            \E_USER_DEPRECATED
-        );
-
-        return self::getApplicationVersion();
     }
 
     /**
@@ -1894,8 +1669,7 @@ final class Shop
     public static function getLogo(bool $fullUrl = false): ?string
     {
         $ret  = null;
-        $conf = self::getSettings([\CONF_LOGO]);
-        $logo = $conf['logo']['shop_logo'] ?? null;
+        $logo = self::getSettingValue(\CONF_LOGO, 'shop_logo');
         if ($logo !== null && $logo !== '') {
             $ret = \PFAD_SHOPLOGO . $logo;
         } elseif (\is_dir(\PFAD_ROOT . \PFAD_SHOPLOGO)) {
@@ -2120,21 +1894,11 @@ final class Shop
      */
     public static function Container(): DefaultServicesInterface
     {
-        if (!static::$container) {
-            static::createContainer();
+        if (!self::$container) {
+            self::createContainer();
         }
 
-        return static::$container;
-    }
-
-    /**
-     * Get the default container of the jtl shop
-     *
-     * @return DefaultServicesInterface
-     */
-    public function _Container(): DefaultServicesInterface
-    {
-        return self::Container();
+        return self::$container;
     }
 
     /**
@@ -2142,8 +1906,8 @@ final class Shop
      */
     private static function createContainer(): void
     {
-        $container         = new Services\Container();
-        static::$container = $container;
+        $container       = new Services\Container();
+        self::$container = $container;
 
         $container->singleton(DbInterface::class, static function () {
             return new NiceDB(\DB_HOST, \DB_USER, \DB_PASS, \DB_NAME);
@@ -2341,6 +2105,9 @@ final class Shop
         return $homeURL;
     }
 
+    /**
+     * @return string
+     */
     public static function getRequestURL(): string
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')

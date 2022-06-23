@@ -9,7 +9,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SCHEDULE_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.php';
 
 $action   = isset($_GET['action'])

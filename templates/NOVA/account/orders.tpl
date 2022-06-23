@@ -3,7 +3,7 @@
         <div class="h1">{lang key='yourOrders' section='login'}</div>
     {/block}
     {block name='account-orders-content'}
-        {if $Bestellungen|@count > 0}
+        {if $Bestellungen|count > 0}
             {block name='account-orders-orders'}
                 {foreach $orderPagination->getPageItems() as $order}
                     {card no-body=true class='account-orders-item'}

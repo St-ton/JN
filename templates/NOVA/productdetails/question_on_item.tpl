@@ -167,7 +167,7 @@
         </fieldset>
         {/block}
         {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-            isset($Einstellungen.artikeldetails.produktfrage_abfragen_captcha) && $Einstellungen.artikeldetails.produktfrage_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
+            isset($Einstellungen.artikeldetails.produktfrage_abfragen_captcha) && $Einstellungen.artikeldetails.produktfrage_abfragen_captcha !== 'N' && JTL\Session\Frontend::getCustomer()->getID() === 0}
             {block name='productdetails-question-on-item-form-captcha'}
                 {row}
                     {col class="{if !empty($fehlendeAngaben_fragezumprodukt.captcha)}has-error{/if}"}

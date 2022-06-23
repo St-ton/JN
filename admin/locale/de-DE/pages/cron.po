@@ -41,6 +41,9 @@ msgstr "Bilder-Cache"
 msgid "licensecheck"
 msgstr "Lizenzprüfungen"
 
+msgid "topsellerupdate"
+msgstr "Bestseller berechnen"
+
 msgid "statusemail"
 msgstr "Status-E-Mails"
 

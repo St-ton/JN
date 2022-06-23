@@ -254,5 +254,17 @@ msgstr "Die folgenden Spezialseiten fehlen:"
 msgid "Please create the missing pages manually."
 msgstr "Legen Sie die fehlenden Seitentypen bitte manuell an."
 
+msgid "linkTarget"
+msgstr "Öffnen in"
+
+msgid "targetSelf"
+msgstr "selbes Fenster"
+
+msgid "targetBlank"
+msgstr "neues Fenster/Tab"
+
+msgid "targetDesc"
+msgstr "Für die Option „in neuem Fenster/Tab“ gilt: Der Browser entscheidet selbst, ob die Seite in einem neuen Fenster oder in einem neuen Tab geöffnet wird."
+
 msgid "cSeoDescription"
 msgstr "Geben Sie für externe Links bitte immer die vollständige URL inklusive Protokoll an (z.B. https://example.com)"

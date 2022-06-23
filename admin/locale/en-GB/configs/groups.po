@@ -253,3 +253,6 @@ msgstr "Selection wizard"
 
 msgid "configgroup_127_filesystem"
 msgstr "File system"
+
+msgid "configgroup_6_forgot_password"
+msgstr "Forgot password"

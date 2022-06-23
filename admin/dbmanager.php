@@ -25,9 +25,10 @@ $valid            = Form::validateToken();
 
 /**
  * @param string $query
- * @return array|int|object
+ * @return array
+ * @throws PDOException
  */
-function exec_query(string $query)
+function exec_query(string $query): array
 {
     try {
         Shop::Container()->getDB()->beginTransaction();
@@ -69,7 +70,7 @@ switch (true) {
     case isset($_GET['select']) && $valid:
         $table = $_GET['select'];
 
-        if (!preg_match('/^\w+$/i', $table, $m) || !$valid) {
+        if (!preg_match('/^\w+$/i', $table, $m)) {
             die('Not allowed.');
         }
 

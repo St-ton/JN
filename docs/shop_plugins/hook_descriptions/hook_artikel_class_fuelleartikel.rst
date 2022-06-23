@@ -9,8 +9,8 @@ Nach dem Laden eines Artikels
 Parameter
 """""""""
 
-``JTL\Catalog\Product\Artikel`` **&oArtikel**
-    **&oArtikel** geladener Artikel
+``JTL\Catalog\Product\Artikel`` **oArtikel**
+    **oArtikel** geladener Artikel
 
 ``array`` **cacheTags**
     **cacheTags** Umfang des Zwischenspeicherns

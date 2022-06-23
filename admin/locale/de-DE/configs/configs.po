@@ -86,6 +86,12 @@ msgstr "Mindestanzahl Verkäufe für Bestseller"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Hier legen Sie fest, wie oft ein Artikel mindestens verkauft werden muss, um als Bestseller markiert zu werden."
 
+msgid "global_bestseller_tage_name"
+msgstr "Bestseller anhand letzter X Tage ermitteln"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Hier legen Sie fest, wie viele vergangene Tage für die Berechnung von Bestsellern berücksichtigt werden. So können Sie beispielsweise eingrenzen, ob nur Bestellungen der letzten 3 Monate oder des gesamten Jahres in die Bestsellerermittlung einfließen sollen."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Kategorieanzeige"
 
@@ -1010,6 +1016,12 @@ msgstr "Abmessungen anzeigen"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob die in JTL-Wawi hinterlegten Maße (Länge x Breite x Höhe) auf der Artikeldetailseite angezeigt werden."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Inhalt anzeigen"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Hier legen Sie fest, ob der in JTL-Wawi hinterlegten Inhalt/Menge auf der Artikeldetailseite angezeigt werden."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Artikelattribute an Beschreibung anhängen"
 
@@ -1339,6 +1351,12 @@ msgstr "Artikelattribute anzeigen"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
+
+msgid "bestellvorgang_partlist_name"
+msgstr "Stücklistenkomponenten anzeigen"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Sollen die Stücklistenkomponenten in Warenkorb und Checkout angezeigt werden?"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Eindeutige Artikelkurzbeschreibung anzeigen"
@@ -1818,24 +1836,6 @@ msgid "zahlungsart_nachnahme_max_name"
 msgstr "Maximaler Bestellwert"
 
 msgid "zahlungsart_nachnahme_max_desc"
-msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Anzahl nötiger Bestellungen"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Hier legen Sie fest, wie oft ein Kunde mindestens bei Ihnen bestellt haben muss, damit ihm diese Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Mindestbestellwert"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Hier legen Sie fest, wie hoch der Warenkorbwert mindestens sein muss, damit eine Zahlungsart angeboten wird."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximaler Bestellwert"
-
-msgid "zahlungsart_kreditkarte_max_desc"
 msgstr "Hier legen Sie fest, bis zu welchem Warenkorbwert eine Zahlungsart angeboten wird."
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"
@@ -2636,6 +2636,12 @@ msgstr "Blogkategorien unter dem Blog anzeigen"
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Hier legen Sie fest, ob unter einem ausgewählten Blogbeitrag auch die Blogkategorien angezeigt werden."
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_name"
+msgstr "Zeige Anzahl der Antworten an"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_desc"
+msgstr "Zeige die Anzahl der Antworten, in Klammern, neben der Kommentar-Anzahl an. Standard = Y"
+
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Alle eigenen Seiten anzeigen"
 
@@ -3034,3 +3040,9 @@ msgstr "Cookie-Banner anzeigen"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Legen Sie fest, wann das Banner zum Erteilen oder Ablehnen einer globalen Einwilligung dem Besucher im Onlineshop angezeigt werden soll."
+
+msgid "forgot_password_captcha_name"
+msgstr "Spamschutz aktivieren"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."

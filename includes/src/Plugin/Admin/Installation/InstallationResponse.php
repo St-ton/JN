@@ -17,47 +17,47 @@ class InstallationResponse
     /**
      * @var string
      */
-    private $status = self::STATUS_OK;
+    private string $status = self::STATUS_OK;
 
     /**
      * @var string|null
      */
-    private $errorMessage;
+    private ?string $errorMessage;
 
     /**
      * @var string|null
      */
-    private $dir_name;
+    private ?string $dir_name;
 
     /**
      * @var string|null
      */
-    private $path;
+    private ?string $path;
 
     /**
      * @var array
      */
-    private $files_unpacked = [];
+    private array $files_unpacked = [];
 
     /**
      * @var array
      */
-    private $files_failed = [];
+    private array $files_failed = [];
 
     /**
      * @var array
      */
-    private $messages = [];
+    private array $messages = [];
 
     /**
      * @var stdClass
      */
-    private $html;
+    private stdClass $html;
 
     /**
      * @var string|null
      */
-    private $license;
+    private ?string $license;
 
     /**
      * @return string
@@ -261,9 +261,9 @@ class InstallationResponse
     }
 
     /**
-     * @return false|string
+     * @return string
      */
-    public function toJson()
+    public function toJson(): string
     {
         return \json_encode(\get_object_vars($this));
     }

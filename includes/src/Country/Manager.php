@@ -2,13 +2,12 @@
 
 namespace JTL\Country;
 
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\L10n\GetText;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\CountryService;
 use JTL\Services\JTL\CountryServiceInterface;
@@ -90,11 +89,7 @@ class Manager
             case 'update':
                 $country = $this->countryService->getCountry(Request::verifyGPDataString('cISO'));
                 if ($country->isShippingAvailable()) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_WARNING,
-                        \__('warningShippingAvailable'),
-                        'warningShippingAvailable'
-                    );
+                    $this->alertService->addWarning(\__('warningShippingAvailable'), 'warningShippingAvailable');
                 }
                 $this->smarty
                     ->assign('countryPost', Text::filterXSS($_POST))
@@ -122,11 +117,7 @@ class Manager
         switch ($action) {
             case 'add':
                 $action = $this->addCountry(Text::filterXSS($_POST));
-                $this->alertService->addAlert(
-                    Alert::TYPE_WARNING,
-                    \__('warningCreateCountryInWawi'),
-                    'warningCreateCountryInWawi'
-                );
+                $this->alertService->addWarning(\__('warningCreateCountryInWawi'), 'warningCreateCountryInWawi');
                 break;
             case 'delete':
                 $action = $this->deleteCountry();
@@ -149,11 +140,7 @@ class Manager
     {
         $iso = \mb_strtoupper($postData['cISO'] ?? '');
         if ($this->countryService->getCountry($iso) !== null) {
-            $this->alertService->addAlert(
-                Alert::TYPE_DANGER,
-                \sprintf(\__('errorCountryIsoExists'), $iso),
-                'errorCountryIsoExists'
-            );
+            $this->alertService->addDanger(\sprintf(\__('errorCountryIsoExists'), $iso), 'errorCountryIsoExists');
             return 'add';
         }
         if ($iso === '' || Request::postInt('save') !== 1 || !$this->checkIso($iso)) {
@@ -170,8 +157,7 @@ class Manager
 
         $this->db->insert('tland', $country);
         $this->cache->flush(CountryService::CACHE_ID);
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successCountryAdd'), $iso),
             'successCountryAdd',
             ['saveInSession' => true]
@@ -190,8 +176,7 @@ class Manager
         $iso = Text::filterXSS(Request::verifyGPDataString('cISO'));
         if ($this->db->delete('tland', 'cISO', $iso) > 0) {
             $this->cache->flush(CountryService::CACHE_ID);
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 \sprintf(\__('successCountryDelete'), $iso),
                 'successCountryDelete',
                 ['saveInSession' => true]
@@ -227,8 +212,7 @@ class Manager
             $country
         );
         $this->cache->flush(CountryService::CACHE_ID);
-        $this->alertService->addAlert(
-            Alert::TYPE_SUCCESS,
+        $this->alertService->addSuccess(
             \sprintf(\__('successCountryUpdate'), $postData['cISO']),
             'successCountryUpdate',
             ['saveInSession' => true]
@@ -247,11 +231,7 @@ class Manager
     {
         $countryName = \locale_get_display_region('sl-Latn-' . $iso . '-nedis', 'en');
         if ($countryName === '' || $countryName === $iso) {
-            $this->alertService->addAlert(
-                Alert::TYPE_ERROR,
-                \sprintf(\__('errorIsoDoesNotExist'), $iso),
-                'errorIsoDoesNotExist'
-            );
+            $this->alertService->addError(\sprintf(\__('errorIsoDoesNotExist'), $iso), 'errorIsoDoesNotExist');
 
             return false;
         }
@@ -312,8 +292,7 @@ class Manager
                         return $country->getName();
                     }
                 )->toArray();
-                $this->alertService->addAlert(
-                    Alert::TYPE_INFO,
+                $this->alertService->addInfo(
                     \sprintf(\__('infoRegistrationCountriesActivated'), \implode(', ', $activatedCountries)),
                     'infoRegistrationCountriesActivated'
                 );
@@ -324,8 +303,7 @@ class Manager
                         return $country->getName();
                     }
                 )->toArray();
-                $this->alertService->addAlert(
-                    Alert::TYPE_WARNING,
+                $this->alertService->addWarning(
                     \sprintf(\__('warningRegistrationCountriesDeactivated'), \implode(', ', $deactivatedCountries)),
                     'warningRegistrationCountriesDeactivated'
                 );

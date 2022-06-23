@@ -6,7 +6,6 @@ use DateTime;
 use DirectoryIterator;
 use Exception;
 use Illuminate\Support\Collection;
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
@@ -26,7 +25,6 @@ use JTL\News\ItemList;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Controller
@@ -43,42 +41,42 @@ final class Controller
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLSmarty
      */
-    private $smarty;
+    private JTLSmarty $smarty;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var string
      */
-    private $step = 'news_uebersicht';
+    private string $step = 'news_uebersicht';
 
     /**
      * @var int
      */
-    private $continueWith = 0;
+    private int $continueWith = 0;
 
     /**
      * @var string
      */
-    private $msg = '';
+    private string $msg = '';
 
     /**
      * @var string
      */
-    private $errorMsg = '';
+    private string $errorMsg = '';
 
     /**
      * @var bool
      */
-    private $allEmpty = false;
+    private bool $allEmpty = false;
 
     /**
      * Controller constructor.
@@ -118,7 +116,7 @@ final class Controller
         $previewImage    = $_FILES['previewImage']['name'] ?? '';
         $authorID        = (int)($post['kAuthor'] ?? 0);
         $validation      = $this->pruefeNewsPost($customerGroups, $newsCategoryIDs, $post, $languages);
-        if (\is_array($validation) && \count($validation) === 0) {
+        if (\count($validation) === 0) {
             $newsItem                = new stdClass();
             $newsItem->cKundengruppe = ';' . \implode(';', $customerGroups) . ';';
             $newsItem->nAktiv        = $active;
@@ -239,7 +237,7 @@ final class Controller
             }
 
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
-            $this->addImages($oldImages, $newsItemID);
+            $this->addImages($newsItemID);
             if ($previewImage !== '') {
                 $upd                = new stdClass();
                 $upd->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
@@ -263,7 +261,7 @@ final class Controller
                 $this->newsRedirect(empty($tab) ? 'aktiv' : $tab, $this->getMsg());
             }
         } else {
-            $newsItem   = new Item($this->db);
+            $newsItem   = new Item($this->db, $this->cache);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
                 ->assign('cPlausiValue_arr', $validation)
@@ -289,15 +287,13 @@ final class Controller
      */
     public function saveComment(int $id, array $post): bool
     {
-        if ($id > 0) {
-            $upd             = new stdClass();
-            $upd->cName      = $post['cName'];
-            $upd->cKommentar = $post['cKommentar'];
-            $this->flushCache();
-            return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
+        if ($id < 1) {
+            return $this->insertComment($post);
         }
+        $upd = (object)['cName' => $post['cName'], 'cKommentar' => $post['cKommentar']];
+        $this->flushCache();
 
-        return $this->insertComment($post);
+        return $this->db->update('tnewskommentar', 'kNewsKommentar', $id, $upd) >= 0;
     }
 
     /**
@@ -306,7 +302,6 @@ final class Controller
      */
     public function insertComment(array $post): bool
     {
-        $adminID                 = (int)$_SESSION['AdminAccount']->kAdminlogin;
         $insert                  = new stdClass();
         $insert->kNews           = $post['kNews'];
         $insert->cKommentar      = $post['cKommentar'];
@@ -314,13 +309,26 @@ final class Controller
         $insert->nAktiv          = $post['nAktiv'] ?? 1;
         $insert->cName           = $post['cName'] ?? 'Admin';
         $insert->cEmail          = $post['cEmail'] ?? '';
-        $insert->isAdmin         = $post['isAdmin'] ?? $adminID ?? 0;
+        $insert->isAdmin         = $post['isAdmin'] ?? (int)($_SESSION['AdminAccount']->kAdminlogin ?? 0);
         $insert->parentCommentID = $post['parentCommentID'] ?? 0;
         $insert->dErstellt       = 'NOW()';
         $this->flushCache();
 
         return $this->db->insert('tnewskommentar', $insert) >= 0;
     }
+
+    /**
+     * @param int[] $commentIDs
+     */
+    public function activateComments(array $commentIDs): void
+    {
+        foreach ($commentIDs as $id) {
+            $this->db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
+        }
+        $this->setMsg(\__('successNewsCommentUnlock'));
+        $this->flushCache();
+    }
+
 
     /**
      * @param array         $newsItems
@@ -336,7 +344,7 @@ final class Controller
             $author->clearAuthor('NEWS', $newsItemID);
             $newsData = $this->db->select('tnews', 'kNews', $newsItemID);
             $this->db->delete('tnews', 'kNews', $newsItemID);
-            \loescheNewsBilderDir($newsItemID, self::UPLOAD_DIR);
+            self::deleteImageDir($newsItemID);
             $this->db->delete('tnewskommentar', 'kNews', $newsItemID);
             $this->db->delete('tseo', ['cKey', 'kKey'], ['kNews', $newsItemID]);
             $this->db->delete('tnewskategorienews', 'kNews', $newsItemID);
@@ -402,15 +410,14 @@ final class Controller
      */
     private function getCategoryAndChildrenByID(int $categoryID): array
     {
-        return map($this->db->getObjects(
+        return $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node, tnewskategorie AS parent
                 WHERE node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kNewsKategorie = :cid',
+            'id',
             ['cid' => $categoryID]
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+        );
     }
 
     /**
@@ -607,11 +614,10 @@ final class Controller
     }
 
     /**
-     * @param array $oldImages
-     * @param int   $newsItemID
+     * @param int $newsItemID
      * @return int
      */
-    private function addImages(array $oldImages, int $newsItemID): int
+    private function addImages(int $newsItemID): int
     {
         if (empty($_FILES['Bilder']['name']) || \count($_FILES['Bilder']['name']) === 0) {
             return 0;
@@ -641,9 +647,9 @@ final class Controller
     }
 
     /**
-     * @param array|null $customerGroups
-     * @param array|null $categories
-     * @param array|null $post
+     * @param array|null           $customerGroups
+     * @param array|null           $categories
+     * @param array|null           $post
      * @param LanguageModel[]|null $languages
      * @return array
      */
@@ -675,12 +681,10 @@ final class Controller
     public function getAllNews(): Collection
     {
         $itemList = new ItemList($this->db);
-        $ids      = map($this->db->getObjects(
-            'SELECT kNews FROM tnews'
-        ), static function ($e) {
-            return (int)$e->kNews;
-        });
-        $itemList->createItems($ids);
+        $itemList->createItems($this->db->getInts(
+            'SELECT kNews FROM tnews',
+            'kNews'
+        ));
 
         return $itemList->getItems()->sortByDesc(static function (Item $e) {
             return $e->getDateCreated();
@@ -693,17 +697,16 @@ final class Controller
     public function getNonActivatedComments(): Collection
     {
         $itemList = new CommentList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT tnewskommentar.kNewsKommentar AS id
                 FROM tnewskommentar
                 JOIN tnews 
                     ON tnews.kNews = tnewskommentar.kNews
                 JOIN tnewssprache t 
                     ON tnews.kNews = t.kNews
-                WHERE tnewskommentar.nAktiv = 0'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                WHERE tnewskommentar.nAktiv = 0',
+            'id'
+        );
         $itemList->createItems($ids, false);
 
         return $itemList->getItems();
@@ -716,17 +719,16 @@ final class Controller
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = map($this->db->getObjects(
+        $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
                 WHERE node.lvl > 0 
                     AND parent.lvl > 0 ' . ($showOnlyActive ? ' AND node.nAktiv = 1 ' : '') .
             ' GROUP BY node.kNewsKategorie
-                ORDER BY node.lft, node.nSort ASC'
-        ), static function ($e) {
-            return (int)$e->id;
-        });
+                ORDER BY node.lft, node.nSort ASC',
+            'id'
+        );
         $itemList->createItems($ids);
 
         return $itemList->generateTree();
@@ -875,11 +877,11 @@ final class Controller
 
 
     /**
-     * @param string     $tab
-     * @param string     $msg
-     * @param array|null $urlParams
+     * @param string      $tab
+     * @param string|null $msg
+     * @param array|null  $urlParams
      */
-    public function newsRedirect(string $tab = '', string $msg = '', ?array $urlParams = null): void
+    public function newsRedirect(string $tab = '', ?string $msg = '', ?array $urlParams = null): void
     {
         $tabPageMapping = [
             'inaktiv'    => 's1',
@@ -890,15 +892,10 @@ final class Controller
         if (empty($msg)) {
             $alertService->removeAlertByKey('newsMessage');
         } else {
-            $alertService->addAlert(Alert::TYPE_NOTE, $msg, 'newsMessage', ['saveInSession' => true]);
+            $alertService->addNotice($msg, 'newsMessage', ['saveInSession' => true]);
         }
         if ($this->isAllEmpty()) {
-            $alertService->addAlert(
-                Alert::TYPE_WARNING,
-                \__('All content is empty'),
-                'newsAllEmpty',
-                ['saveInSession' => true]
-            );
+            $alertService->addWarning(\__('All content is empty'), 'newsAllEmpty', ['saveInSession' => true]);
         }
 
         if (!empty($tab)) {
@@ -914,9 +911,8 @@ final class Controller
             }
         }
 
-        \header('Location: news.php' . (\is_array($urlParams)
-                ? '?' . \http_build_query($urlParams, '', '&')
-                : ''));
+        \header('Location: ' . Shop::getAdminURL() . '/news.php'
+            . (\is_array($urlParams) ? '?' . \http_build_query($urlParams) : ''));
         exit;
     }
 
@@ -926,6 +922,26 @@ final class Controller
     public function getImageType(): string
     {
         return Image::TYPE_NEWS;
+    }
+
+    /**
+     * @param int $newsID
+     * @return bool
+     */
+    public static function deleteImageDir(int $newsID): bool
+    {
+        if (!\is_dir(self::UPLOAD_DIR . $newsID)) {
+            return false;
+        }
+        $handle = \opendir(self::UPLOAD_DIR . $newsID);
+        while (($file = \readdir($handle)) !== false) {
+            if ($file !== '.' && $file !== '..') {
+                \unlink(self::UPLOAD_DIR . $newsID . '/' . $file);
+            }
+        }
+        \rmdir(self::UPLOAD_DIR . $newsID);
+
+        return true;
     }
 
     /**

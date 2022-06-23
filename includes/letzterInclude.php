@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
@@ -11,6 +10,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\ExtensionPoint;
+use JTL\Filter\Items\Availability;
 use JTL\Filter\Metadata;
 use JTL\Filter\SearchResults;
 use JTL\Firma;
@@ -27,19 +27,17 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Visitor;
 
-$smarty     = Shop::Smarty();
-$tplService = Shop::Container()->getTemplateService();
-$template   = $tplService->getActiveTemplate();
-$tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
-$shopURL    = Shop::getURL();
-$cart       = $_SESSION['Warenkorb'] ?? new Cart();
-$conf       = Shopsetting::getInstance()->getAll();
-$linkHelper = Shop::Container()->getLinkService();
-$link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
-$themeDir   = empty($conf['template']['theme']['theme_default'])
-    ? 'evo'
-    : $conf['template']['theme']['theme_default'];
-
+$smarty             = Shop::Smarty();
+$db                 = Shop::Container()->getDB();
+$tplService         = Shop::Container()->getTemplateService();
+$template           = $tplService->getActiveTemplate();
+$paths              = $template->getPaths();
+$shopURL            = Shop::getURL();
+$cart               = Frontend::getCart();
+$conf               = Shopsetting::getInstance()->getAll();
+$linkHelper         = Shop::Container()->getLinkService();
+$link               = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
+$languageID         = Shop::getLanguageID();
 $device             = new Mobile_Detect();
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
@@ -47,17 +45,8 @@ $debugbarRenderer   = $debugbar->getJavascriptRenderer();
 $customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
     : Frontend::getCustomerGroup()->getID();
-$globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
+$globalMetaData     = $globalMetaData[$languageID] ?? null;
 $pageType           = Shop::getPageType();
-$specialPageTypes   = [
-    PAGE_REGISTRIERUNG,
-    PAGE_WARENKORB,
-    PAGE_PASSWORTVERGESSEN,
-    PAGE_NEWSLETTER,
-    PAGE_KONTAKT,
-    PAGE_MEINKONTO,
-    PAGE_LOGIN
-];
 if ($link !== null) {
     $cMetaTitle       = $link->getMetaTitle();
     $cMetaDescription = $link->getMetaDescription();
@@ -82,30 +71,25 @@ if (is_object($globalMetaData)) {
     );
 }
 if (!isset($AktuelleKategorie)) {
-    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'));
+    $AktuelleKategorie = new Kategorie(Request::verifyGPCDataInt('kategorie'), $languageID, $customerGroupID);
 }
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-//put availability on top
+// put availability on top
 $filters = $NaviFilter->getAvailableContentFilters();
 foreach ($filters as $key => $filter) {
-    if ($filter->getClassName() === 'JTL\Filter\Items\Availability') {
+    if ($filter->getClassName() === Availability::class) {
         unset($filters[$key]);
         array_unshift($filters, $filter);
         break;
     }
 }
 $NaviFilter->setAvailableFilters($filters);
-
 $linkHelper->activate($pageType);
-$origin  = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
-    ? $_SESSION['Kunde']->cLand
-    : '';
-$service = new MinifyService();
-$service->buildURIs($smarty, $template, $themeDir);
-
+$origin = Frontend::getCustomer()->cLand ?? '';
+(new MinifyService())->buildURIs($smarty, $template, $paths->getThemeDirName());
 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
 $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
 $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
@@ -119,11 +103,11 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
         $AktuelleKategorie->rght ?? -1,
     ))
     ->assign('nTemplateVersion', $template->getVersion())
-    ->assign('currentTemplateDir', $tplDir)
-    ->assign('currentTemplateDirFull', $shopURL . '/' . $tplDir)
-    ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
-    ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
-    ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
+    ->assign('currentTemplateDir', $paths->getBaseRelDir())
+    ->assign('currentTemplateDirFull', $paths->getBaseURL())
+    ->assign('currentTemplateDirFullPath', $paths->getBaseDir())
+    ->assign('currentThemeDir', $paths->getRealRelThemeDir())
+    ->assign('currentThemeDirFull', $paths->getRealThemeURL())
     ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
     ->assign('session_name', session_name())
     ->assign('session_id', session_id())
@@ -180,7 +164,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('deletedPositions', Cart::$deletedPositions)
     ->assign('updatedPositions', Cart::$updatedPositions)
     ->assign('cCanonicalURL', $cCanonicalURL ?? null)
-    ->assign('Firma', new Firma())
+    ->assign('Firma', new Firma(true, $db))
     ->assign('AktuelleKategorie', $AktuelleKategorie)
     ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
     ->assign('PFAD_SLIDER', $shopURL . '/' . PFAD_BILDER_SLIDER)
@@ -200,7 +184,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('countries', Shop::Container()->getCountryService()->getCountrylist());
 
 if ($smarty->getTemplateVars('Link') === null) {
-    $smarty->assign('Link', $link ?? new Link(Shop::Container()->getDB()));
+    $smarty->assign('Link', $link ?? new Link($db));
 }
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
@@ -221,13 +205,10 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
     $nav->setCustomNavigationEntry($breadCrumbEntry);
 }
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Campaign::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();
-$ep = new ExtensionPoint($pageType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
-$ep->load();
+(new ExtensionPoint($pageType, Shop::getParameters(), $languageID, $customerGroupID))->load($db);
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
 $boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
@@ -236,32 +217,16 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
 $visitorCount = $conf['global']['global_zaehler_anzeigen'] === 'Y'
-    ? (int)Shop::Container()->getDB()->getSingleObject('SELECT nZaehler FROM tbesucherzaehler')->nZaehler
+    ? $db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
     : 0;
 $debugbar->getTimer()->stopMeasure('init');
-
-// backwards compatibility, create error and note messages for previously used globals $cFehler, $cHinweis, $hinweis
-// since 5.0.0: the new AlertService should be used instead
-$alertHelper = Shop::Container()->getAlertService();
-if (isset($cFehler)) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, $cFehler, 'miscFehler');
-    trigger_error('global $cFehler is deprecated.', E_USER_DEPRECATED);
-}
-if (isset($cHinweis)) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $cHinweis, 'miscCHinweis');
-    trigger_error('global $cHinweis is deprecated.', E_USER_DEPRECATED);
-}
-if (isset($hinweis)) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, $hinweis, 'miscHinweis');
-    trigger_error('global $hinweis is deprecated.', E_USER_DEPRECATED);
-}
 $tplService->save();
 $smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
     ->assign('Brotnavi', $nav->createNavigation())
     ->assign('nIsSSL', Request::checkSSL())
     ->assign('boxes', $boxesToShow)
     ->assign('boxesLeftActive', !empty($boxesToShow['left']))
-    ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems(Shop::getLanguageID()))
+    ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems($languageID))
     ->assign('nZeitGebraucht', isset($nStartzeit) ? (microtime(true) - $nStartzeit) : 0)
     ->assign('Besucherzaehler', $visitorCount)
     ->assign('alertList', Shop::Container()->getAlertService())

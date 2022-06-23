@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -107,49 +107,57 @@ final class Shopsetting implements ArrayAccess
     /**
      * @param string $offset
      * @param mixed  $value
-     * @return $this
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             $this->container[] = $value;
         } else {
             $this->container[$offset] = $value;
         }
-
-        return $this;
     }
 
     /**
      * @param string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->container[$offset]);
     }
 
     /**
      * @param string $offset
-     * @return $this
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->container[$offset]);
+    }
 
-        return $this;
+    /**
+     * @param int    $sectionID
+     * @param array  $value
+     */
+    public function overrideSection(int $sectionID, array $value): void
+    {
+        $mapping = self::mapSettingName($sectionID);
+        if ($mapping !== null) {
+            $this->container[$mapping]   = $value;
+            $this->allSettings[$mapping] = $value;
+        }
     }
 
     /**
      * @param mixed $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (isset($this->container[$offset])) {
             return $this->container[$offset];
         }
-        $section = static::mapSettingName(null, $offset);
+        $section = self::mapSettingName(null, $offset);
         $cacheID = 'setting_' . $section;
         if ($section === false || $section === null) {
             return null;
@@ -201,7 +209,7 @@ final class Shopsetting implements ArrayAccess
      * @param string $offset
      * @param array  $settings
      */
-    private function addContainerData($offset, array $settings): void
+    private function addContainerData(string $offset, array $settings): void
     {
         $this->container[$offset] = [];
         foreach ($settings as $setting) {
@@ -219,10 +227,10 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param string $section
+     * @param int $section
      * @return array
      */
-    private function getSectionData($section): array
+    private function getSectionData(int $section): array
     {
         if ($section === \CONF_PLUGINZAHLUNGSARTEN) {
             return Shop::Container()->getDB()->getObjects(
@@ -251,10 +259,7 @@ final class Shopsetting implements ArrayAccess
     public function getSettings($sections): array
     {
         $ret = [];
-        if (!\is_array($sections)) {
-            $sections = (array)$sections;
-        }
-        foreach ($sections as $section) {
+        foreach ((array)$sections as $section) {
             $mapping = self::mapSettingName($section);
             if ($mapping !== null) {
                 $ret[$mapping] = $this[$mapping];
@@ -265,16 +270,26 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param int    $section
+     * @param int    $sectionID
      * @param string $option
      * @return string|array|int|null
      */
-    public function getValue(int $section, $option)
+    public function getValue(int $sectionID, string $option)
     {
-        $settings    = $this->getSettings([$section]);
-        $sectionName = self::mapSettingName($section);
+        $section = $this->getSection($sectionID);
 
-        return $settings[$sectionName][$option] ?? null;
+        return $section[$option] ?? null;
+    }
+
+    /**
+     * @param int $sectionID
+     * @return array|null
+     */
+    public function getSection(int $sectionID): ?array
+    {
+        $settings = $this->getSettings([$sectionID]);
+
+        return $settings[self::mapSettingName($sectionID)] ?? null;
     }
 
     /**
@@ -282,7 +297,7 @@ final class Shopsetting implements ArrayAccess
      * @param null|string $name
      * @return mixed|null
      */
-    public static function mapSettingName($section = null, $name = null)
+    public static function mapSettingName(?int $section = null, ?string $name = null)
     {
         if ($section === null && $name === null) {
             return false;

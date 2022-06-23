@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -8,6 +8,16 @@ namespace JTL\Services\JTL;
  */
 interface PasswordServiceInterface
 {
+
+    /**
+     * only use for upgrading from shop 4 --> 5!
+     *
+     * @param string      $password
+     * @param null|string $passwordHash
+     * @return bool|string
+     */
+    public function cryptOldPasswort($password, $passwordHash = null);
+
     /**
      * @param int $length
      * @return string

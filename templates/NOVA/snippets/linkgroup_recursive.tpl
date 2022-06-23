@@ -60,6 +60,7 @@
                             {block name='snippets-linkgroup-recursive-has-not-items'}
                                 {navitem class="{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}"
                                     href=$li->getURL()
+                                    target=$li->getTarget()
                                 }
                                     {$li->getName()}
                                 {/navitem}
@@ -73,7 +74,8 @@
                             {link href=$mainLink->getURL()
                                 nofollow=$mainLink->getNoFollow()
                                 class="d-lg-block {if $firstChild}submenu-headline submenu-headline-toplevel{/if} {$subCategory} {if $mainLink->getChildLinks()->count() > 0}nav-link dropdown-toggle{/if}"
-                                aria=["expanded"=>"false"]}
+                                aria=["expanded"=>"false"]
+                                target=$mainLink->getTarget()}
                                 <span class="text-truncate d-block">
                                     {$mainLink->getName()}
                                 </span>
@@ -85,7 +87,7 @@
                                     {nav}
                                     {block name='snippets-linkgroup-recursive-mega-child-header'}
                                         <li class="nav-item d-lg-none">
-                                            {link href=$mainLink->getURL() nofollow=true}
+                                            {link href=$mainLink->getURL() nofollow=true target=$mainLink->getTarget()}
                                                 <strong class="nav-mobile-heading">
                                                     {lang key='menuShow' printf=$mainLink->getName()}
                                                 </strong>
@@ -110,7 +112,8 @@
                                             {else}
                                                 {block name='snippets-linkgroup-recursive-mega-child-link-no-child'}
                                                     {navitem href=$link->getURL()
-                                                        nofollow=$link->getNoFollow()}
+                                                        nofollow=$link->getNoFollow()
+                                                        target=$link->getTarget()}
                                                         <span class="text-truncate d-block">
                                                             {$link->getName()}
                                                         </span>

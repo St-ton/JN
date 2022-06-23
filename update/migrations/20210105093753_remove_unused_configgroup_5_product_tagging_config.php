@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20210105093753 extends Migration implements IMigration
 {
     protected $author = 'je';
-    protected $description = 'remove unused configgroup_5_product_tagging config';
+    protected $description = 'Remove unused configgroup_5_product_tagging config';
 
     /**
      * @inheritDoc
@@ -23,7 +23,9 @@ class Migration_20210105093753 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "DELETE FROM `teinstellungenconf` WHERE kEinstellungenSektion = 5 AND cWertName = 'configgroup_5_product_tagging'"
+            "DELETE FROM `teinstellungenconf`
+                WHERE kEinstellungenSektion = 5
+                AND cWertName = 'configgroup_5_product_tagging'"
         );
     }
 

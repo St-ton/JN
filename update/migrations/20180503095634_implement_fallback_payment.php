@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20180503095634 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'implement fallback-payment';
+    protected $description = 'Implement fallback-payment';
 
     protected string $szPaymentModuleId = 'za_null_jtl';
 

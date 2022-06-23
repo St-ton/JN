@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170228163100 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'sets nofollow for special pages';
+    protected $description = 'Set nofollow for special pages';
 
     /**
      * @inheritDoc

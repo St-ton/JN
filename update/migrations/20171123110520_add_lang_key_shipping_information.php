@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20171123110520 extends Migration implements IMigration
 {
     protected $author      = 'msc';
-    protected $description = 'add_lang_key_shipping_information';
+    protected $description = 'Add lang key shipping information';
 
     /**
      * @inheritDoc

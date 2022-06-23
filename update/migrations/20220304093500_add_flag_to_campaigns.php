@@ -9,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20220304093500 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds "internal" flag to campaigns';
+    protected $description = 'Add "internal" flag to campaigns';
 
     /**
      * @inheritdoc

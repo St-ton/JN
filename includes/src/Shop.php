@@ -370,6 +370,7 @@ final class Shop extends ShopBC
     /**
      * @param int $sectionID
      * @return array|null
+     * @since 5.2.0
      */
     public static function getSettingSection(int $sectionID): ?array
     {

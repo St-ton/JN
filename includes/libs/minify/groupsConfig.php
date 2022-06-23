@@ -8,8 +8,7 @@
 use JTL\Backend\AdminTemplate;
 use JTL\Shop;
 
-$isAdmin = isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css');
-if ($isAdmin) {
+if (isset($_GET['g']) && ($_GET['g'] === 'admin_js' || $_GET['g'] === 'admin_css')) {
     return AdminTemplate::getInstance()->getMinifyArray(true);
 }
 $resources = Shop::Container()->getTemplateService()->getActiveTemplate()->getResources();

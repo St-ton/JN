@@ -85,6 +85,7 @@ class Controller
             $this->currentTemplateDir = null;
             $valid                    = false;
         }
+        $this->smarty->assign('action', $action);
         $this->config = new Config($this->currentTemplateDir, $this->db);
         if (!empty($_FILES['template-install-upload'])) {
             $action = 'upload';
@@ -112,6 +113,18 @@ class Controller
             case 'save-config':
                 $this->saveConfig();
                 $this->displayOverview();
+                break;
+            case 'unsetPreview':
+                $this->unsetPreview();
+                $this->displayOverview();
+                break;
+            case 'setPreview':
+                $this->switch('test');
+                if (Request::verifyGPCDataInt('config') === 1) {
+                    $this->displayTemplateSettings();
+                } else {
+                    $this->displayOverview();
+                }
                 break;
             case 'upload':
                 $this->upload($_FILES['template-install-upload']);
@@ -154,6 +167,11 @@ class Controller
         die($response->toJson());
     }
 
+    private function unsetPreview(): void
+    {
+        $this->db->delete('ttemplate', 'eTyp', 'test');
+    }
+
     private function saveConfig(): void
     {
         $parentFolder = null;
@@ -193,8 +211,8 @@ class Controller
                 $this->config->updateConfigInDB($setting->section, $setting->key, $value);
             }
         }
+        $check = $service->setActiveTemplate($this->currentTemplateDir, Request::postVar('eTyp', 'standard'));
         $this->cache->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
-        $check = $service->setActiveTemplate($this->currentTemplateDir);
         if ($check) {
             $this->alertService->addSuccess(\__('successTemplateSave'), 'successTemplateSave');
         } else {
@@ -301,12 +319,15 @@ class Controller
         return $this->db->select('ttemplate', 'eTyp', 'standard')->cTemplate ?? null;
     }
 
-    private function switch(): void
+    /**
+     * @param string $type
+     */
+    private function switch(string $type = 'standard'): void
     {
         if (($bootstrapper = BootChecker::bootstrap($this->getPreviousTemplate())) !== null) {
             $bootstrapper->disabled();
         }
-        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir)) {
+        if (Shop::Container()->getTemplateService()->setActiveTemplate($this->currentTemplateDir, $type)) {
             if (($bootstrapper = BootChecker::bootstrap($this->currentTemplateDir)) !== null) {
                 $bootstrapper->enabled();
             }

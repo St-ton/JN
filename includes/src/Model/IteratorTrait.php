@@ -33,6 +33,7 @@ trait IteratorTrait
     /**
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $key = \current($this->iteratorKeys);
@@ -51,6 +52,7 @@ trait IteratorTrait
     /**
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return \current($this->iteratorKeys);

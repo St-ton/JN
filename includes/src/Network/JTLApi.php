@@ -22,12 +22,12 @@ final class JTLApi
     /**
      * @var array
      */
-    private $session;
+    private array $session;
 
     /**
      * @var Nice
      */
-    private $nice;
+    private Nice $nice;
 
     /**
      * JTLApi constructor.
@@ -64,13 +64,15 @@ final class JTLApi
     /**
      * @return array|null
      */
-    public function getAvailableVersions()
+    public function getAvailableVersions(): ?array
     {
         if (!isset($this->session['rs']['versions'])) {
             $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
         }
 
-        return $this->session['rs']['versions'];
+        return $this->session['rs']['versions'] === null
+            ? null
+            : (array)$this->session['rs']['versions'];
     }
 
     /**

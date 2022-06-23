@@ -86,12 +86,16 @@
   .js-slider-wrapper {
     .js-slider-items {
       .js-slider-item {
-        width: calc(100% / 4);
-        min-width: calc(100% / 4);
+        width: calc(100% / 5);
+        min-width: calc(100% / 5);
+        padding: 0 2px;
         img {
-          padding: 0.3rem;
+          padding: 0;
         }
       }
+    }
+    .js-btn-slider-btns .btn {
+      padding: 0 map-get($spacers, 2);
     }
   }
 }

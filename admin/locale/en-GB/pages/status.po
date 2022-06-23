@@ -58,3 +58,6 @@ msgstr "All requirements are met."
 
 msgid "extensions"
 msgstr "Extensions"
+
+msgid "Localizations"
+msgstr "Localizations"

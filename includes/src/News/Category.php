@@ -184,7 +184,7 @@ class Category implements CategoryInterface
     /**
      * @param array $categoryLanguages
      * @param bool  $activeOnly
-     * @return $this|CategoryInterface
+     * @return CategoryInterface
      */
     public function map(array $categoryLanguages, bool $activeOnly = true): CategoryInterface
     {

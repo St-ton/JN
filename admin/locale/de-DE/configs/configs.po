@@ -86,6 +86,12 @@ msgstr "Mindestanzahl Verkäufe für Bestseller"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Hier legen Sie fest, wie oft ein Artikel mindestens verkauft werden muss, um als Bestseller markiert zu werden."
 
+msgid "global_bestseller_tage_name"
+msgstr "Bestseller anhand letzter X Tage ermitteln"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Hier legen Sie fest, wie viele vergangene Tage für die Berechnung von Bestsellern berücksichtigt werden. So können Sie beispielsweise eingrenzen, ob nur Bestellungen der letzten 3 Monate oder des gesamten Jahres in die Bestsellerermittlung einfließen sollen."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Kategorieanzeige"
 
@@ -2629,6 +2635,12 @@ msgstr "Blogkategorien unter dem Blog anzeigen"
 
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Hier legen Sie fest, ob unter einem ausgewählten Blogbeitrag auch die Blogkategorien angezeigt werden."
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_name"
+msgstr "Zeige Anzahl der Antworten an"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_desc"
+msgstr "Zeige die Anzahl der Antworten, in Klammern, neben der Kommentar-Anzahl an. Standard = Y"
 
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Alle eigenen Seiten anzeigen"

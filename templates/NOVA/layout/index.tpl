@@ -146,6 +146,10 @@
                     {/block}
                 {/if}
             {/block}
+
+            {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}
+                {opcMountPoint id='opc_inner_content'}
+            {/if}
         {/block}
 
         {block name='layout-index-include-footer'}

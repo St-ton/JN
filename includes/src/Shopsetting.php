@@ -107,43 +107,51 @@ final class Shopsetting implements ArrayAccess
     /**
      * @param string $offset
      * @param mixed  $value
-     * @return $this
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             $this->container[] = $value;
         } else {
             $this->container[$offset] = $value;
         }
-
-        return $this;
     }
 
     /**
      * @param string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->container[$offset]);
     }
 
     /**
      * @param string $offset
-     * @return $this
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->container[$offset]);
+    }
 
-        return $this;
+    /**
+     * @param int    $sectionID
+     * @param array  $value
+     */
+    public function overrideSection(int $sectionID, array $value): void
+    {
+        $mapping = self::mapSettingName($sectionID);
+        if ($mapping !== null) {
+            $this->container[$mapping]   = $value;
+            $this->allSettings[$mapping] = $value;
+        }
     }
 
     /**
      * @param mixed $offset
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if (isset($this->container[$offset])) {

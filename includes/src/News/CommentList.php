@@ -126,6 +126,28 @@ final class CommentList implements ItemListInterface
     }
 
     /**
+     * @param $whatcount
+     * @return int
+     */
+    public function getCommentsCount($whatcount = 'parent'): int
+    {
+        $parent = $child = 0;
+        foreach ($this->items as $comment) {
+            if ($comment->getParentCommentID() === 0) {
+                $parent++;
+            } else {
+                $child++;
+            }
+        }
+
+        if ($whatcount === 'parent') {
+            return $parent;
+        } else {
+            return $child;
+        }
+    }
+
+    /**
      * @return Collection
      */
     public function getThreadedItems(): Collection

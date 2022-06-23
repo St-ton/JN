@@ -67,6 +67,15 @@
                         that.setArticleContent(event.state.a, event.state.a2, event.state.url, event.state.variations);
                     }
                 }, false);
+
+                if (this.isBackToListDisabled()) {
+                    this.disableBackToList();
+                    this.resetVisitCount();
+                } else {
+                    this.incrementProductVisitCount();
+                }
+            } else {
+                this.resetVisitCount();
             }
         },
 
@@ -91,6 +100,64 @@
             return $current;
         },
 
+        isBackToListDisabled: function() {
+            if (document.referrer === '') {
+                return true;
+            }
+
+            if (this.isSingleArticle()) {
+                let last_product       = window.sessionStorage.getItem('last_visited_product');
+                let form               = $.evo.io().getFormValues('buy_form');
+                let current_product_id = form.a;
+
+                if(last_product !== null && last_product !== current_product_id) {
+                    return true;
+                }
+            }
+        },
+
+        disableBackToList: function() {
+            $('.breadcrumb-backtolist').remove();
+        },
+
+        incrementProductVisitCount: function() {
+            if (this.isSingleArticle()) {
+                let form               = $.evo.io().getFormValues('buy_form');
+                let current_product_id = form.a;
+                let storage_id         = 'product_page_visits_' + current_product_id;
+                let visits             = window.sessionStorage.getItem(storage_id);
+
+                if (visits === null) {
+                    visits = 1;
+                } else if (performance.getEntriesByType('navigation')[0].type !== 'reload') {
+                    visits ++;
+                }
+
+                window.sessionStorage.setItem(storage_id, visits);
+                window.sessionStorage.setItem('last_visited_product', current_product_id);
+            }
+        },
+
+        navigateBackToList: function() {
+            if (this.isSingleArticle()) {
+                let form               = $.evo.io().getFormValues('buy_form');
+                let current_product_id = form.a;
+                let storage_id         = 'product_page_visits_' + current_product_id;
+                let visits             = window.sessionStorage.getItem(storage_id);
+
+                if (visits !== null && !this.isBackToListDisabled()) {
+                    window.history.go(-visits);
+                }
+            }
+        },
+
+        resetVisitCount: function() {
+            let last_visited_product = window.sessionStorage.getItem('last_visited_product');
+            let storage_id           = 'product_page_visits_' + last_visited_product;
+            window.sessionStorage.removeItem(storage_id);
+            window.sessionStorage.removeItem('last_visited_product');
+        },
+
         register: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
@@ -106,6 +173,7 @@
             this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
+            this.registerImageHover($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
             this.initAbnahmeIntervallError();
@@ -517,6 +585,17 @@
                         }
                     });
             }
+        },
+
+        registerImageHover: function($wrapper) {
+            $('.productbox-show-variations', $wrapper).on('mouseenter', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('show');
+            });
+            $('.productbox-show-variations', $wrapper).on(' mouseleave', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('hide');
+            });
         },
 
         registerFinish: function($wrapper) {
@@ -1130,7 +1209,7 @@
 
         variationRefreshAll: function($wrapper) {
             $('.variations select', $wrapper).selectpicker('refresh');
-            $.evo().initSliders()
+            $.evo.initSliders()
         },
 
         getConfigGroupQuantity: function (groupId) {
@@ -1274,7 +1353,7 @@
                     }
                 );
             } else if (this.isSingleArticle()) {
-                $.evo.extended().loadContent(url, function (content) {
+                $.evo.extended().loadContent(url, () => {
                     $.evo.extended().register();
                     $.evo.article().register(wrapper);
 
@@ -1283,6 +1362,7 @@
                     });
 
                     if (document.location.href !== url) {
+                        this.incrementProductVisitCount();
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
                     $.evo.extended().stopSpinner();
@@ -1317,6 +1397,17 @@
             }
         },
 
+        redirectToArticle: function(id, variation, url, variations, wrapper) {
+            var $wrapper  = this.getWrapper(wrapper),
+                listStyle = $('#product-list-type').val();
+
+            $.evo.extended().startSpinner($wrapper);
+
+            window.open(url, '_top');
+
+            $.evo.extended().stopSpinner($wrapper);
+        },
+
         variationResetAll: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
@@ -1349,6 +1440,13 @@
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
             $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
+        },
+
+        showGalleryVariation: function(key, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('.variation-' + key, $wrapper);
+
+            $item.collapse();
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1464,6 +1562,7 @@
                     value    = $current.data('value'),
                     io       = $.evo.io(),
                     args     = io.getFormValues(formID),
+                    layout   = $('#product-list-type').val(),
                     $wrapper = this.getWrapper(wrapper);
 
                 if (animation) {
@@ -1474,6 +1573,7 @@
 
                 $('.tooltip.show').remove();
                 args.wrapper = wrapper;
+                args.layout  = layout;
 
                 $.evo.article()
                     .variationDispose(wrapper);

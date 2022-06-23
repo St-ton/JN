@@ -5,7 +5,7 @@
         var href = '';
 
         if (bCheck) {
-            href += 'pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=' + kPlugin;
+            href += '{$adminURL}/pluginverwaltung.php?pluginverwaltung_uebersicht=1&updaten=1&token={$smarty.session.jtl_token}&kPlugin=' + kPlugin;
             if (hash && hash.length > 0) {
                 href += '#' + hash;
             }

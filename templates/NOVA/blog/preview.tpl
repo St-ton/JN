@@ -55,7 +55,12 @@
                                                 {lang key='newsComments' section='news'}
                                             {/if}
                                         </span>
-                                    <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                    <span itemprop="commentCount">
+                                        {$newsItem->getCommentCount()}
+                                        {if $newsItem->getChildCommentsCount() && $Einstellungen.news.news_kommentare_anzahl_antwort_kommentare_anzeigen === 'Y'}
+                                            ({$newsItem->getChildCommentsCount()})
+                                        {/if}
+                                    </span>
                                 {/link}
                             {/block}
                         {/if}

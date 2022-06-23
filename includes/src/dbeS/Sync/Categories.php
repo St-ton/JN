@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -23,7 +23,7 @@ final class Categories extends AbstractSync
     {
         $categoryIDs = [];
         $this->db->query('START TRANSACTION');
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
@@ -38,7 +38,7 @@ final class Categories extends AbstractSync
             return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
         }));
         $lastJob = new LastJob($this->db, $this->logger);
-        $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
+        $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'CategoryUpdate');
         $this->db->query('COMMIT');
 
         return null;
@@ -87,12 +87,13 @@ final class Categories extends AbstractSync
             return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
-        $oldData = $this->db->getSingleObject(
+        $oldData    = $this->db->getSingleObject(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
             ['categoryID' => $category->kKategorie]
         );
+        $oldSeoData = $this->getSeoFromDB($category->kKategorie, 'kKategorie', null, 'kSprache');
         $this->db->delete('tseo', ['kKey', 'cKey'], [$category->kKategorie, 'kKategorie']);
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
@@ -125,7 +126,7 @@ final class Categories extends AbstractSync
             );
             \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $categories[0]]);
         }
-        $this->setLanguages($xml, $category->kKategorie, $categories[0]);
+        $this->setLanguages($xml, $category->kKategorie, $categories[0], $oldSeoData);
         $this->setCustomerGroups($xml, $category->kKategorie);
         $this->setCategoryDiscount($category->kKategorie);
         foreach ($this->getLinkedDiscountCategories($category->kKategorie) as $linkedCategory) {
@@ -138,13 +139,14 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xml
-     * @param int    $categoryID
-     * @param object $category
+     * @param array    $xml
+     * @param int      $categoryID
+     * @param stdClass $category
+     * @param array|null $oldSeoData
      */
-    private function setLanguages(array $xml, int $categoryID, $category): void
+    private function setLanguages(array $xml, int $categoryID, stdClass $category, $oldSeoData = null): void
     {
-        $seoData      = $this->getSeoFromDB($categoryID, 'kKategorie', null, 'kSprache');
+        $seoData      = $oldSeoData ?? $this->getSeoFromDB($categoryID, 'kKategorie', null, 'kSprache');
         $catLanguages = $this->mapper->mapArray($xml['tkategorie'], 'tkategoriesprache', 'mKategorieSprache');
         $langIDs      = [];
         $allLanguages = LanguageHelper::getAllLanguages(1);
@@ -284,11 +286,11 @@ final class Categories extends AbstractSync
     }
 
     /**
-     * @param array  $xmlParent
-     * @param object $attribute
+     * @param array    $xmlParent
+     * @param stdClass $attribute
      * @return int
      */
-    private function saveAttribute($xmlParent, $attribute): int
+    private function saveAttribute(array $xmlParent, stdClass $attribute): int
     {
         // Fix: die Wawi überträgt für die normalen Attribute die ID in kAttribut statt in kKategorieAttribut
         if (!isset($attribute->kKategorieAttribut) && isset($attribute->kAttribut)) {

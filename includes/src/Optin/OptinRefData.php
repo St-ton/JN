@@ -8,87 +8,79 @@ use JTL\GeneralDataProtection\IpAnonymizer;
  * Class OptinRefData
  * @package JTL\Optin
  */
-class OptinRefData implements \Serializable
+class OptinRefData
 {
     /**
      * @var string
      */
-    private $optinClass;
+    private string $optinClass;
 
     /**
      * @var int
      */
-    private $languageID;
+    private int $languageID;
 
     /**
      * @var int
      */
-    private $customerID;
+    private int $customerID;
 
     /**
      * @var string
      */
-    private $salutation = '';
+    private string $salutation = '';
 
     /**
      * @var string
      */
-    private $firstName = '';
+    private string $firstName = '';
 
     /**
      * @var string
      */
-    private $lastName = '';
+    private string $lastName = '';
 
     /**
      * @var string
      */
-    private $email = '';
+    private string $email = '';
 
     /**
      * @var string
      */
-    private $realIP = '';
+    private string $realIP = '';
 
     /**
      * @var int
      */
-    private $productID;
+    private int $productID;
 
     /**
-     * @return string
+     * @return array
      */
-    public function serialize(): string
+    public function __serialize(): array
     {
-        return \serialize([
-            $this->optinClass,
-            $this->languageID,
-            $this->customerID,
-            $this->salutation,
-            $this->firstName,
-            $this->lastName,
-            $this->email,
-            $this->realIP,
-            $this->productID
-        ]);
+        return [
+            'optinClass' => $this->optinClass,
+            'languageID' => $this->languageID,
+            'customerID' => $this->customerID,
+            'salutation' => $this->salutation,
+            'firstName'  => $this->firstName,
+            'lastName'   => $this->lastName,
+            'email'      => $this->email,
+            'realIP'     => $this->realIP,
+            'productID'  => $this->productID
+        ];
     }
 
     /**
-     * @param string $serialized
+     * @param array $data
      */
-    public function unserialize($serialized): void
+    public function __unserialize(array $data): void
     {
-        [
-            $this->optinClass,
-            $this->languageID,
-            $this->customerID,
-            $this->salutation,
-            $this->firstName,
-            $this->lastName,
-            $this->email,
-            $this->realIP,
-            $this->productID
-        ] = \unserialize($serialized, ['OptinRefData']);
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
     }
 
     /**

@@ -73,13 +73,4 @@ class KategoriePict
 
         return Shop::Container()->getDB()->update('tkategoriepict', 'kKategoriePict', $obj->kKategoriePict, $obj);
     }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function setzePostDaten(): bool
-    {
-        return false;
-    }
 }

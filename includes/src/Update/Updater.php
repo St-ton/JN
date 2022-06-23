@@ -5,6 +5,7 @@ namespace JTL\Update;
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
@@ -515,6 +516,28 @@ class Updater
             \JTL_MIN_SHOP_UPDATE_VERSION,
             \APPLICATION_VERSION,
             \__('dbupdaterURL')
+        );
+    }
+
+    public function forceMaintenanceMode(): void
+    {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') !== 'Y') {
+            $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'Y']);
+            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION]);
+            $_SESSION['maintenance_forced'] = true;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function disablePlugins(): int
+    {
+        return $this->db->query(
+            'UPDATE tplugin
+                SET nStatus = 1
+                WHERE nStatus = 2',
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

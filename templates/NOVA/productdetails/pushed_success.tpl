@@ -91,11 +91,10 @@
                     {block name='productdetails-pushed-success-product-cell-links'}
                         {row class="pushed-success-buttons"}
                             {col cols=12 md=6}
-                                {link href=$pushedArtikel->cURLFull
+                                {link href="#" attribs=["onclick"=>"$.evo.article().navigateBackToList()"]
                                     class="btn btn-outline-primary btn-block continue-shopping"
-                                    data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]
                                     aria=["label"=>"Close"]}
-                                    <i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}
+                                    <i class="fa fa-arrow-circle-left"></i> {lang key='continueShopping' section='checkout'}
                                 {/link}
                             {/col}
                             {col cols=12 md=6}

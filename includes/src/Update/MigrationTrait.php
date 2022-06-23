@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -26,7 +26,7 @@ trait MigrationTrait
      * @return mixed
      * @throws InvalidArgumentException
      */
-    protected function __execute(string $query, int $return)
+    protected function exec(string $query, int $return)
     {
         if (\JTL_CHARSET === 'iso-8859-1') {
             $query = Text::utf8_convert_recursive($query, false);
@@ -57,7 +57,7 @@ trait MigrationTrait
      */
     public function execute(string $query)
     {
-        return $this->__execute($query, ReturnType::AFFECTED_ROWS);
+        return $this->exec($query, ReturnType::AFFECTED_ROWS);
     }
 
     /**
@@ -66,7 +66,7 @@ trait MigrationTrait
      */
     public function fetchOne(string $query)
     {
-        return $this->__execute($query, ReturnType::SINGLE_OBJECT);
+        return $this->exec($query, ReturnType::SINGLE_OBJECT);
     }
 
     /**
@@ -75,7 +75,7 @@ trait MigrationTrait
      */
     public function fetchAll(string $query)
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_OBJECTS);
+        return $this->exec($query, ReturnType::ARRAY_OF_OBJECTS);
     }
 
     /**
@@ -84,6 +84,6 @@ trait MigrationTrait
      */
     public function fetchArray(string $query)
     {
-        return $this->__execute($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
+        return $this->exec($query, ReturnType::ARRAY_OF_ASSOC_ARRAYS);
     }
 }

@@ -191,8 +191,11 @@ msgstr "Zum JTL-Extension Store"
 msgid "Your shop version is not compatible with this plugin version"
 msgstr "Ihre Shop-Version ist für die neue Version zu niedrig"
 
-msgid "Cannot be updated right now"
-msgstr "Kann momentan nicht aktualisiert werden"
+msgid "Shop version not compatible or subscription expired"
+msgstr "Shopversion zu niedrig oder Subscription abgelaufen"
 
 msgid "Key"
 msgstr "Key"
+
+msgid "Invalid token."
+msgstr "Ungültiger Token."

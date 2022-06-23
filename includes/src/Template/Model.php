@@ -13,6 +13,7 @@ use JTL\Model\DataModel;
  * @package JTL\Template
  * @property string $cTemplate
  * @property ExsLicense|null $license
+ * @property Paths $paths
  * @method string getCTemplate()
  * @method void setCTemplate(string $value)
  * @property string $type
@@ -79,6 +80,8 @@ use JTL\Model\DataModel;
  * @method void setDocumentationURL(string $value)
  * @method void setIsChild(bool $value)
  * @method void setIsActive(bool $value)
+ * @method void setIsPreview(bool $value)
+ * @method bool getIsPreview()
  * @method void setHasError(bool $value)
  * @method void setHasConfig(bool $value)
  * @method void setIsResponsive(bool $value)
@@ -224,6 +227,38 @@ final class Model extends DataModel
     }
 
     /**
+     * @return Paths
+     */
+    public function getPaths(): Paths
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param Paths $paths
+     */
+    public function setPaths(Paths $paths): void
+    {
+        $this->paths = $paths;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setTemplateType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getAttributes(): array
@@ -357,6 +392,22 @@ final class Model extends DataModel
                 ->setNullable(true)
                 ->setDynamic(true);
             $attributes['license'] = $license;
+
+            $paths = new DataAttribute();
+            $paths->setName('paths')
+                ->setDataType('object')
+                ->setDefault(null)
+                ->setNullable(true)
+                ->setDynamic(true);
+            $attributes['paths'] = $paths;
+
+            $isPreview = new DataAttribute();
+            $isPreview->setName('isPreview')
+                ->setDataType('bool')
+                ->setDefault(false)
+                ->setNullable(false)
+                ->setDynamic(true);
+            $attributes['isPreview'] = $isPreview;
         }
 
         return $attributes;

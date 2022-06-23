@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
@@ -24,8 +23,7 @@ $conf  = Shop::getSettings([
     CONF_KUNDENFELD,
     CONF_NEWSLETTER
 ]);
-$kLink = $linkHelper->getSpecialPageID(LINKTYP_REGISTRIEREN);
-$link  = $linkHelper->getPageLink($kLink);
+$link  = $linkHelper->getSpecialPage(LINKTYP_REGISTRIEREN);
 $step  = 'formular';
 $titel = Shop::Lang()->get('newAccount', 'login');
 $edit  = Request::getInt('editRechnungsadresse');
@@ -59,11 +57,7 @@ if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'])
 }
 
 if (Request::verifyGPCDataInt('accountDeleted') === 1) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        Shop::Lang()->get('accountDeleted', 'messages'),
-        'accountDeleted'
-    );
+    Shop::Container()->getAlertService()->addSuccess(Shop::Lang()->get('accountDeleted', 'messages'), 'accountDeleted');
 }
 
 executeHook(HOOK_REGISTRIEREN_PAGE);

@@ -5,12 +5,12 @@ namespace JTL\License;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
-use JTL\Alert\Alert;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\License\Exception\AuthException;
 use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
@@ -155,7 +155,7 @@ class Admin
             }
         }
         if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
-            $this->getLicenses(true);
+            $this->getLicenses();
             $this->getList($smarty);
             return;
         }
@@ -251,6 +251,8 @@ class Admin
                 }
             }
             $smarty->assign('bindErrorMessage', $response->error);
+        } catch (AuthException $e) {
+            $smarty->assign('bindErrorMessage', $e->getMessage());
         }
         $this->getLicenses(true);
         $this->getList($smarty);
@@ -278,7 +280,7 @@ class Admin
                 Request::postVar('key')
             );
             $responseData = \json_decode($apiResponse);
-        } catch (ClientException | GuzzleException $e) {
+        } catch (ClientException | GuzzleException | AuthException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('extendErrorMessage', $e->getMessage());
         }
@@ -367,9 +369,8 @@ class Admin
             $this->manager->update($force, $this->getInstalledExtensionPostData());
             $this->checker->handleExpiredLicenses($this->manager);
         } catch (Exception $e) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
-                \__('errorFetchLicenseAPI') . '' . $e->getMessage(),
+            Shop::Container()->getAlertService()->addError(
+                \__('errorFetchLicenseAPI') . ' ' . $e->getMessage(),
                 'errorFetchLicenseAPI'
             );
         }

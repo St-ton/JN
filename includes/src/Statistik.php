@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\DB\SqlObject;
 use JTL\Helpers\Date;
 use stdClass;
 
@@ -79,7 +80,7 @@ class Statistik
             if ($interval > 0) {
                 $this->nAnzeigeIntervall = $interval;
             }
-            $dateSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->getDateSQL('dZeit');
             $stats   = Shop::Container()->getDB()->getObjects(
                 "SELECT * , COUNT(t.dZeit) AS nCount
                     FROM (
@@ -88,8 +89,8 @@ class Statistik
                             DATE_FORMAT(dZeit, '%H') AS nHour,
                             DATE_FORMAT(dZeit, '%d') AS nDay,
                             DATE_FORMAT(dZeit, '%Y') AS nYear
-                        FROM tbesucherarchiv
-                        " . $dateSQL->cWhere . "
+                        FROM tbesucherarchiv "
+                            . $dateSQL->getWhere() . "
                             AND kBesucherBot = 0
                         UNION ALL
                         SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime,
@@ -97,12 +98,13 @@ class Statistik
                             DATE_FORMAT( dZeit, '%H' ) AS nHour,
                             DATE_FORMAT( dZeit, '%d' ) AS nDay,
                             DATE_FORMAT( dZeit, '%Y' ) AS nYear
-                        FROM tbesucher
-                        " . $dateSQL->cWhere . '
+                        FROM tbesucher "
+                            . $dateSQL->getWhere() . '
                             AND kBesucherBot = 0
                     ) AS t
-                    ' . $dateSQL->cGroupBy . '
-                    ORDER BY dTime ASC'
+                    ' . $dateSQL->getGroupBy() . '
+                    ORDER BY dTime ASC',
+                $dateSQL->getParams()
             );
 
             return $this->mergeDaten($stats);
@@ -122,28 +124,28 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $dateSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->getDateSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
                 "SELECT t.cReferer, SUM(t.nCount) AS nCount
                     FROM (
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer,
                         COUNT(dZeit) AS nCount
-                        FROM tbesucher
-                        " . $dateSQL->cWhere . "
-                        AND kBesucherBot = 0
+                        FROM tbesucher "
+                            . $dateSQL->getWhere() . "
+                            AND kBesucherBot = 0
                         GROUP BY cReferer
                         UNION ALL
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer,
                         COUNT(dZeit) AS nCount
-                        FROM tbesucherarchiv
-                        " . $dateSQL->cWhere . '
+                        FROM tbesucherarchiv "
+                            . $dateSQL->getWhere() . '
                             AND kBesucherBot = 0
                         GROUP BY cReferer
                     ) AS t
                     GROUP BY t.cReferer
                     ORDER BY nCount DESC',
-                ['directEntry' => \__('directEntry')]
+                \array_merge(['directEntry' => \__('directEntry')], $dateSQL->getParams())
             );
         }
 
@@ -152,7 +154,7 @@ class Statistik
 
     /**
      * @param int $limit
-     *@return array
+     * @return array
      */
     public function holeBotStats(int $limit = -1): array
     {
@@ -162,23 +164,24 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $dateSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->getDateSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
                 'SELECT tbesucherbot.cUserAgent, COUNT(tbesucherbot.kBesucherBot) AS nCount
                     FROM
                         (
                             SELECT kBesucherBot
-                            FROM tbesucherarchiv
-                            ' . $dateSQL->cWhere . ' AND kBesucherBot > 0
+                            FROM tbesucherarchiv '
+                                . $dateSQL->getWhere() . ' AND kBesucherBot > 0
                             UNION ALL
                             SELECT kBesucherBot
-                            FROM tbesucher
-                            ' . $dateSQL->cWhere . ' AND kBesucherBot > 0
+                            FROM tbesucher '
+                                . $dateSQL->getWhere() . ' AND kBesucherBot > 0
                         ) AS t
                         JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY tbesucherbot.cUserAgent
-                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : '')
+                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : ''),
+                $dateSQL->getParams()
             );
         }
 
@@ -196,7 +199,7 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $dateSQL = $this->baueDatumSQL('tbestellung.dErstellt');
+            $dateSQL = $this->getDateSQL('tbestellung.dErstellt');
 
             return $this->mergeDaten(Shop::Container()->getDB()->getObjects(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
@@ -204,11 +207,12 @@ class Statistik
                     DATE_FORMAT(tbestellung.dErstellt, '%H') AS nHour,
                     DATE_FORMAT(tbestellung.dErstellt, '%d') AS nDay,
                     DATE_FORMAT(tbestellung.dErstellt, '%Y') AS nYear
-                    FROM tbestellung
-                    " . $dateSQL->cWhere . "
-                    AND cStatus != '-1'
-                    " . $dateSQL->cGroupBy . '
-                    ORDER BY tbestellung.dErstellt ASC'
+                    FROM tbestellung "
+                        . $dateSQL->getWhere() . "
+                        AND cStatus != '-1'
+                    " . $dateSQL->getGroupBy() . '
+                    ORDER BY tbestellung.dErstellt ASC',
+                $dateSQL->getParams()
             ));
         }
 
@@ -226,24 +230,25 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $dateSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->getDateSQL('dZeit');
 
             return Shop::Container()->getDB()->getObjects(
                 'SELECT t.cEinstiegsseite, COUNT(t.cEinstiegsseite) AS nCount
                     FROM
                     (
                         SELECT cEinstiegsseite
-                        FROM tbesucher
-                        ' .  $dateSQL->cWhere . '
+                        FROM tbesucher '
+                            . $dateSQL->getWhere() . '
                             AND kBesucherBot = 0
                         UNION ALL
                         SELECT cEinstiegsseite
-                        FROM tbesucherarchiv
-                        ' . $dateSQL->cWhere . '
+                        FROM tbesucherarchiv '
+                            . $dateSQL->getWhere() . '
                             AND kBesucherBot = 0
                     ) AS t
                     GROUP BY t.cEinstiegsseite
-                    ORDER BY nCount DESC'
+                    ORDER BY nCount DESC',
+                $dateSQL->getParams()
             );
         }
 
@@ -294,52 +299,46 @@ class Statistik
     }
 
     /**
-     * @param string $cDatumSpalte
-     * @return stdClass
+     * @param string $row
+     * @return SqlObject
      */
-    private function baueDatumSQL(string $cDatumSpalte): stdClass
+    private function getDateSQL(string $row): SqlObject
     {
-        $date           = new stdClass();
-        $date->cWhere   = '';
-        $date->cGroupBy = '';
-
+        $date = new SqlObject();
         if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
-            $cZeitVon = '00:00:00';
+            $timeStart = '00:00:00';
             if (isset($this->cDatumVon_arr['cZeit']) && \mb_strlen($this->cDatumVon_arr['cZeit']) > 0) {
-                $cZeitVon = $this->cDatumVon_arr['cZeit'];
+                $timeStart = $this->cDatumVon_arr['cZeit'];
             }
-
-            $cZeitBis = '23:59:59';
+            $timeEnd = '23:59:59';
             if (isset($this->cDatumBis_arr['cZeit']) && \mb_strlen($this->cDatumBis_arr['cZeit']) > 0) {
-                $cZeitBis = $this->cDatumBis_arr['cZeit'];
+                $timeEnd = $this->cDatumBis_arr['cZeit'];
             }
-
-            $date->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
-                $this->cDatumVon_arr['cDatum'] . ' ' . $cZeitVon . "' AND '" .
-                $this->cDatumBis_arr['cDatum'] . ' ' . $cZeitBis . "' ";
+            $date->setWhere(' WHERE ' . $row . ' BETWEEN :strt AND :nd ');
+            $date->addParam(':strt', $this->cDatumVon_arr['cDatum'] . ' ' . $timeStart);
+            $date->addParam(':nd', $this->cDatumBis_arr['cDatum'] . ' ' . $timeEnd);
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $date->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
-                \date('Y-m-d H:i:s', $this->nStampVon) . "' AND '" .
-                \date('Y-m-d H:i:s', $this->nStampBis) . "' ";
+            $date->setWhere(' WHERE ' . $row . ' BETWEEN :strt AND :nd');
+            $date->addParam(':strt', \date('Y-m-d H:i:s', $this->nStampVon));
+            $date->addParam(':nd', \date('Y-m-d H:i:s', $this->nStampBis));
         }
 
         if ($this->nAnzeigeIntervall > 0) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
-                    $date->cGroupBy = ' GROUP BY HOUR(' . $cDatumSpalte . ')';
+                    $date->setGroupBy(' GROUP BY HOUR(' . $row . ')');
                     break;
 
                 case 2: // Tage
-                    $date->cGroupBy = ' GROUP BY DAY(' . $cDatumSpalte . '), YEAR(' .
-                        $cDatumSpalte . '), MONTH(' . $cDatumSpalte . ')';
+                    $date->setGroupBy(' GROUP BY DAY(' . $row . '), YEAR(' . $row . '), MONTH(' . $row . ')');
                     break;
 
                 case 3: // Monate
-                    $date->cGroupBy = ' GROUP BY MONTH(' . $cDatumSpalte . '), YEAR(' . $cDatumSpalte . ')';
+                    $date->setGroupBy(' GROUP BY MONTH(' . $row . '), YEAR(' . $row . ')');
                     break;
 
                 case 4: // Jahre
-                    $date->cGroupBy = ' GROUP BY YEAR(' . $cDatumSpalte . ')';
+                    $date->setGroupBy(' GROUP BY YEAR(' . $row . ')');
                     break;
             }
         }
@@ -363,57 +362,57 @@ class Statistik
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
                 for ($i = 0; $i <= 23; $i++) {
-                    $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime($i, 0, 0, $month, $day, $year);
-                    $oStat->nCount = 0;
-                    $stats[]       = $oStat;
+                    $stat         = new stdClass();
+                    $stat->dZeit  = \mktime($i, 0, 0, $month, $day, $year);
+                    $stat->nCount = 0;
+                    $stats[]      = $stat;
                 }
                 break;
 
             case 2: // Tage
                 for ($i = 0; $i <= 30; $i++) {
-                    $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(0, 0, 0, $month, $day + $i, $year);
-                    $oStat->nCount = 0;
-                    $stats[]       = $oStat;
+                    $stat         = new stdClass();
+                    $stat->dZeit  = \mktime(0, 0, 0, $month, $day + $i, $year);
+                    $stat->nCount = 0;
+                    $stats[]      = $stat;
                 }
                 break;
 
             case 3: // Monate
                 for ($i = 0; $i <= 11; $i++) {
-                    $oStat         = new stdClass();
-                    $nextYear      = $month + $i > 12;
-                    $monthTMP      = $nextYear ? $month + $i - 12 : $month + $i;
-                    $yearTMP       = $nextYear ? $year + 1 : $year;
-                    $oStat->dZeit  = \mktime(
+                    $stat         = new stdClass();
+                    $nextYear     = $month + $i > 12;
+                    $monthTMP     = $nextYear ? $month + $i - 12 : $month + $i;
+                    $yearTMP      = $nextYear ? $year + 1 : $year;
+                    $stat->dZeit  = \mktime(
                         0,
                         0,
                         0,
                         $monthTMP,
-                        \min($day, \cal_days_in_month(CAL_GREGORIAN, $monthTMP, $yearTMP)),
+                        \min($day, \cal_days_in_month(\CAL_GREGORIAN, $monthTMP, $yearTMP)),
                         $yearTMP
                     );
-                    $oStat->nCount = 0;
-                    $stats[]       = $oStat;
+                    $stat->nCount = 0;
+                    $stats[]      = $stat;
                 }
                 break;
 
             case 4:    // Jahre
                 if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
-                    $nYearFrom = (int)\date('Y', \strtotime($this->cDatumVon_arr['cDatum']));
-                    $nYearTo   = (int)\date('Y', \strtotime($this->cDatumBis_arr['cDatum']));
+                    $yearStart = (int)\date('Y', \strtotime($this->cDatumVon_arr['cDatum']));
+                    $yearEnd   = (int)\date('Y', \strtotime($this->cDatumBis_arr['cDatum']));
                 } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-                    $nYearFrom = (int)\date('Y', $this->nStampVon);
-                    $nYearTo   = (int)\date('Y', $this->nStampBis);
+                    $yearStart = (int)\date('Y', $this->nStampVon);
+                    $yearEnd   = (int)\date('Y', $this->nStampBis);
                 } else {
-                    $nYearFrom = (int)\date('Y') - 1;
-                    $nYearTo   = (int)\date('Y') + 10;
+                    $yearStart = (int)\date('Y') - 1;
+                    $yearEnd   = (int)\date('Y') + 10;
                 }
-                for ($i = $nYearFrom; $i <= $nYearTo; $i++) {
-                    $oStat         = new stdClass();
-                    $oStat->dZeit  = \mktime(0, 0, 0, 1, 1, $i);
-                    $oStat->nCount = 0;
-                    $stats[]       = $oStat;
+                for ($i = $yearStart; $i <= $yearEnd; $i++) {
+                    $stat         = new stdClass();
+                    $stat->dZeit  = \mktime(0, 0, 0, 1, 1, $i);
+                    $stat->nCount = 0;
+                    $stats[]      = $stat;
                 }
                 break;
         }
@@ -425,7 +424,7 @@ class Statistik
      * @param array $tmpData
      * @return array
      */
-    private function mergeDaten($tmpData): array
+    private function mergeDaten(array $tmpData): array
     {
         $stats     = $this->vordefStats();
         $dayFrom   = (int)\date('d', $this->nStampVon);
@@ -453,7 +452,7 @@ class Statistik
                         59,
                         59,
                         $monthTo,
-                        \cal_days_in_month(CAL_GREGORIAN, $monthTo, $yearTo),
+                        \cal_days_in_month(\CAL_GREGORIAN, $monthTo, $yearTo),
                         $yearTo
                     );
                     break;
@@ -469,81 +468,80 @@ class Statistik
                     break;
             }
 
-            foreach ($stats as $i => $oStat) {
-                $time = (int)$oStat->dZeit;
+            foreach ($stats as $i => $item) {
+                $time = (int)$item->dZeit;
                 if ($time < $start || $time > $end) {
                     unset($stats[$i]);
                 }
             }
             $stats = \array_values($stats);
         }
-        if (\count($stats) > 0 && \count($tmpData) > 0) {
-            foreach ($stats as $i => $oStat) {
-                $bFound = false;
-                foreach ($tmpData as $oStatTMP) {
-                    $bBreak = false;
-                    switch ($this->nAnzeigeIntervall) {
-                        case 1: // Stunden
-                            if (\date('H', $oStat->dZeit) === $oStatTMP->nHour) {
-                                $stats[$i]->nCount = $oStatTMP->nCount;
-                                $stats[$i]->dZeit  = $oStatTMP->nHour;
-                                $bBreak            = true;
-                            }
-                            break;
-
-                        case 2: // Tage
-                            if (\date('d.m.', $oStat->dZeit) === $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.') {
-                                $stats[$i]->nCount = $oStatTMP->nCount;
-                                $stats[$i]->dZeit  = $oStatTMP->nDay . '.' . $oStatTMP->nMonth . '.';
-                                $bBreak            = true;
-                            }
-                            break;
-
-                        case 3: // Monate
-                            if (\date('m.Y', $oStat->dZeit) === $oStatTMP->nMonth . '.' . $oStatTMP->nYear) {
-                                $stats[$i]->nCount = $oStatTMP->nCount;
-                                $stats[$i]->dZeit  = $oStatTMP->nMonth . '.' . $oStatTMP->nYear;
-                                $bBreak            = true;
-                            }
-                            break;
-
-                        case 4: // Jahre
-                            if (\date('Y', $oStat->dZeit) === $oStatTMP->nYear) {
-                                $stats[$i]->nCount = $oStatTMP->nCount;
-                                $stats[$i]->dZeit  = $oStatTMP->nYear;
-                                $bBreak            = true;
-                            }
-                            break;
-                    }
-
-                    if ($bBreak) {
-                        $bFound = true;
+        if (\count($tmpData) === 0) {
+            return [];
+        }
+        foreach ($stats as $item) {
+            $found = false;
+            foreach ($tmpData as $tmpItem) {
+                $break = false;
+                switch ($this->nAnzeigeIntervall) {
+                    case 1: // Stunden
+                        if (\date('H', $item->dZeit) === $tmpItem->nHour) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nHour;
+                            $break        = true;
+                        }
                         break;
-                    }
+
+                    case 2: // Tage
+                        if (\date('d.m.', $item->dZeit) === $tmpItem->nDay . '.' . $tmpItem->nMonth . '.') {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nDay . '.' . $tmpItem->nMonth . '.';
+                            $break        = true;
+                        }
+                        break;
+
+                    case 3: // Monate
+                        if (\date('m.Y', $item->dZeit) === $tmpItem->nMonth . '.' . $tmpItem->nYear) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nMonth . '.' . $tmpItem->nYear;
+                            $break        = true;
+                        }
+                        break;
+
+                    case 4: // Jahre
+                        if (\date('Y', $item->dZeit) === $tmpItem->nYear) {
+                            $item->nCount = $tmpItem->nCount;
+                            $item->dZeit  = $tmpItem->nYear;
+                            $break        = true;
+                        }
+                        break;
                 }
 
-                if (!$bFound) {
-                    switch ($this->nAnzeigeIntervall) {
-                        case 1: // Stunden
-                            $stats[$i]->dZeit = \date('H', $stats[$i]->dZeit);
-                            break;
-                        case 2: // Tage
-                            $stats[$i]->dZeit = \date('d.m.', $stats[$i]->dZeit);
-                            break;
-                        case 3: // Monate
-                            $stats[$i]->dZeit = \date('m.Y', $stats[$i]->dZeit);
-                            break;
-                        case 4: // Jahre
-                            $stats[$i]->dZeit = \date('Y', $stats[$i]->dZeit);
-                            break;
-                    }
+                if ($break) {
+                    $found = true;
+                    break;
                 }
             }
 
-            return $stats;
+            if (!$found) {
+                switch ($this->nAnzeigeIntervall) {
+                    case 1: // Stunden
+                        $item->dZeit = \date('H', $item->dZeit);
+                        break;
+                    case 2: // Tage
+                        $item->dZeit = \date('d.m.', $item->dZeit);
+                        break;
+                    case 3: // Monate
+                        $item->dZeit = \date('m.Y', $item->dZeit);
+                        break;
+                    case 4: // Jahre
+                        $item->dZeit = \date('Y', $item->dZeit);
+                        break;
+                }
+            }
         }
 
-        return [];
+        return $stats;
     }
 
     /**

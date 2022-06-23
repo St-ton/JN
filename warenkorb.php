@@ -13,7 +13,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
 $warning = '';
@@ -30,8 +29,7 @@ Shop::setPageType(PAGE_WARENKORB);
 $linkHelper      = Shop::Container()->getLinkService();
 $couponCodeValid = true;
 $cart            = Frontend::getCart();
-$kLink           = $linkHelper->getSpecialPageID(LINKTYP_WARENKORB);
-$link            = $linkHelper->getPageLink($kLink);
+$link            = $linkHelper->getSpecialPage(LINKTYP_WARENKORB);
 $alertHelper     = Shop::Container()->getAlertService();
 $valid           = Form::validateToken();
 // Warenkorbaktualisierung?
@@ -46,9 +44,7 @@ if ($valid && isset($_POST['land'], $_POST['plz'])
     $warning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 if ($valid
-    && $cart !== null
-    && isset($_POST['Kuponcode'])
-    && mb_strlen($_POST['Kuponcode']) > 0
+    && Request::postVar('Kuponcode', '') !== ''
     && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
 ) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
@@ -56,7 +52,7 @@ if ($valid
     $coupon            = $coupon->getByCode($_POST['Kuponcode']);
     $invalidCouponCode = 11;
     if ($coupon !== false && $coupon->kKupon > 0) {
-        $couponError       = Kupon::checkCoupon($coupon);
+        $couponError       = $coupon->check();
         $check             = angabenKorrekt($couponError);
         $invalidCouponCode = 0;
         executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
@@ -65,15 +61,14 @@ if ($valid
         ]);
         if ($check) {
             if ($coupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                Kupon::acceptCoupon($coupon);
+                $coupon->accept();
                 executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
             } elseif (!empty($coupon->kKupon) && $coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                 $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                 $_SESSION['oVersandfreiKupon'] = $coupon;
-                $alertHelper->addAlert(
-                    Alert::TYPE_SUCCESS,
-                    Shop::Lang()->get('couponSucc1') . ' ' .
-                        trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
+                $alertHelper->addSuccess(
+                    Shop::Lang()->get('couponSucc1') . ' '
+                    . trim(str_replace(';', ', ', $coupon->cLieferlaender), ', '),
                     'shippingFreeSuccess'
                 );
             }
@@ -112,8 +107,9 @@ if ($valid && isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int
         } else {
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
-                 ->fuegeEin($giftID, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            PersistentCart::addToCheck($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                ->fuegeEin($giftID, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            PersistentCart::getInstance(Frontend::getCustomer()->getID())
+                ->check($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
@@ -140,19 +136,19 @@ $maxSize         = Upload::uploadMax();
 
 //alerts
 if (($quickBuyNote = CartHelper::checkQuickBuy()) !== '') {
-    $alertHelper->addAlert(Alert::TYPE_INFO, $quickBuyNote, 'quickBuyNote');
+    $alertHelper->addInfo($quickBuyNote, 'quickBuyNote');
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
     foreach ($_SESSION['Warenkorbhinweise'] as $key => $cartNotice) {
-        $alertHelper->addAlert(Alert::TYPE_WARNING, $cartNotice, 'cartNotice' . $key);
+        $alertHelper->addWarning($cartNotice, 'cartNotice' . $key);
     }
     unset($_SESSION['Warenkorbhinweise']);
 }
 if ($warning !== '') {
-    $alertHelper->addAlert(Alert::TYPE_DANGER, $warning, 'cartWarning', ['id' => 'msgWarning']);
+    $alertHelper->addDanger($warning, 'cartWarning', ['id' => 'msgWarning']);
 }
 if (($orderAmountStock = CartHelper::checkOrderAmountAndStock($conf)) !== '') {
-    $alertHelper->addAlert(Alert::TYPE_WARNING, $orderAmountStock, 'orderAmountStock');
+    $alertHelper->addWarning($orderAmountStock, 'orderAmountStock');
 }
 
 CartHelper::addVariationPictures($cart);
@@ -172,10 +168,10 @@ $smarty->assign('MsgWarning', $warning)
         : null))
     ->assign('xselling', CartHelper::getXSelling())
     ->assign('oArtikelGeschenk_arr', CartHelper::getFreeGifts($conf))
-    ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
-    ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
     ->assign('KuponcodeUngueltig', !$couponCodeValid)
-    ->assign('Warenkorb', $cart);
+    ->assign('Warenkorb', $cart)
+    ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
+    ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

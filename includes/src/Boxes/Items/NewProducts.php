@@ -6,7 +6,6 @@ use JTL\Catalog\Product\ArtikelListe;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * Class NewProducts
@@ -32,12 +31,12 @@ final class NewProducts extends AbstractBox
             $days           = $config['boxen']['box_neuimsortiment_alter_tage'] > 0
                 ? (int)$config['boxen']['box_neuimsortiment_alter_tage']
                 : 30;
-            $cacheID        = 'bx_nw_' . $customerGroupID .
-                '_' . $days . '_' .
-                $limit . \md5($stockFilterSQL . $parentSQL);
+            $cacheID        = 'bx_nwp_' . $customerGroupID
+                . '_' . $days . '_'
+                . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
                 $cached     = false;
-                $productIDs = Shop::Container()->getDB()->getObjects(
+                $productIDs = Shop::Container()->getDB()->getInts(
                     "SELECT tartikel.kArtikel
                         FROM tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -47,17 +46,13 @@ final class NewProducts extends AbstractBox
                             AND tartikel.cNeu = 'Y' " . $stockFilterSQL . $parentSQL . '
                             AND DATE_SUB(NOW(), INTERVAL :dys DAY) < dErstellt
                         LIMIT :lmt',
+                    'kArtikel',
                     ['lmt' => $limit, 'dys' => $days, 'cgid' => $customerGroupID]
                 );
                 Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
             }
             \shuffle($productIDs);
-            $res = map(
-                \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']),
-                static function ($productID) {
-                    return (int)$productID->kArtikel;
-                }
-            );
+            $res = \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']);
 
             if (\count($res) > 0) {
                 $this->setShow(true);

@@ -81,7 +81,7 @@ $couponAmountAll       = 0;
 $tmpUser               = [];
 $date                  = [];
 foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-    $usedCouponOrder['kKunde']           = isset($usedCouponOrder['kKunde']) ? (int)$usedCouponOrder['kKunde'] : 0;
+    $usedCouponOrder['kKunde']           = (int)($usedCouponOrder['kKunde'] ?? 0);
     $customer                            = new Customer($usedCouponOrder['kKunde']);
     $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
     unset($customer);
@@ -110,7 +110,7 @@ foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
     $countUsedCouponsOrder++;
     $shoppingCartAmountAll += $usedCouponOrder['fGesamtsummeBrutto'];
     $couponAmountAll       += (float)$usedCouponOrder['fKuponwertBrutto'];
-    if (!in_array($usedCouponOrder['kKunde'], $tmpUser)) {
+    if (!in_array($usedCouponOrder['kKunde'], $tmpUser, true)) {
         $countCustomers++;
         $tmpUser[] = $usedCouponOrder['kKunde'];
     }

@@ -830,6 +830,12 @@ msgstr "No"
 msgid "artikeldetails_abmessungen_anzeigen_value(Y)"
 msgstr "Yes"
 
+msgid "artikeldetails_inhalt_anzeigen_value(N)"
+msgstr "No"
+
+msgid "artikeldetails_inhalt_anzeigen_value(Y)"
+msgstr "Yes"
+
 msgid "artikeldetails_attribute_anhaengen_value(Y)"
 msgstr "Yes"
 
@@ -1200,6 +1206,12 @@ msgid "bestellvorgang_artikelattribute_value(Y)"
 msgstr "Yes"
 
 msgid "bestellvorgang_artikelattribute_value(N)"
+msgstr "No"
+
+msgid "bestellvorgang_partlist_value(Y)"
+msgstr "Yes"
+
+msgid "bestellvorgang_partlist_value(N)"
 msgstr "No"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_value(Y)"
@@ -1937,6 +1949,12 @@ msgstr "Yes"
 msgid "news_kategorie_unternewsanzeigen_value(N)"
 msgstr "No"
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(Y)"
+msgstr "Show"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_value(N)"
+msgstr "Hide"
+
 msgid "sitemap_seiten_anzeigen_value(Y)"
 msgstr "Yes"
 
@@ -2342,9 +2360,6 @@ msgstr "Memcached"
 msgid "caching_method_value(memcache)"
 msgstr "Memcache"
 
-msgid "caching_method_value(xcache)"
-msgstr "XCache"
-
 msgid "caching_method_value(file)"
 msgstr "Files"
 
@@ -2353,6 +2368,9 @@ msgstr "Files (extended)"
 
 msgid "caching_method_value(redisCluster)"
 msgstr "RedisCluster"
+
+msgid "caching_method_value(sqlite)"
+msgstr "SQLite3"
 
 msgid "caching_redis_persistent_value(N)"
 msgstr "No"
@@ -2470,3 +2488,9 @@ msgstr "Show at second page view (2)"
 
 msgid "consent_manager_show_banner_value(3)"
 msgstr "Show at third page view (3)"
+
+msgid "forgot_password_captcha_value(N)"
+msgstr "No"
+
+msgid "forgot_password_captcha_value(Y)"
+msgstr "Yes"

@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
@@ -20,14 +19,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $uploadDir      = PFAD_ROOT . PFAD_NEWSBILDER;
 $uploadDirCat   = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $newsCategories = [];
 $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
-$controller     = new Controller($db, $smarty, Shop::Container()->getCache());
+$cache          = Shop::Container()->getCache();
+$controller     = new Controller($db, $smarty, $cache);
 $newsCategory   = new Category($db);
 $languages      = LanguageHelper::getAllLanguages(0, true, true);
 $adminID        = (int)$_SESSION['AdminAccount']->kAdminlogin;
@@ -40,32 +39,32 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         case 'inaktiv':
             if (Request::verifyGPCDataInt('s1') > 1) {
                 $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s1'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s1'));
             }
             break;
         case 'aktiv':
             if (Request::verifyGPCDataInt('s2') > 1) {
                 $smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s2'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s2'));
             }
             break;
         case 'kategorien':
             if (Request::verifyGPCDataInt('s3') > 1) {
                 $smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
-                       ->assign('cSeite', Request::verifyGPCDataInt('s3'));
+                    ->assign('cSeite', Request::verifyGPCDataInt('s3'));
             }
             break;
     }
 }
-if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
+if ((Request::postInt('einstellungen') === 1 || Request::verifyGPCDataInt('news') === 1) && Form::validateToken()) {
     if (Request::postInt('einstellungen') > 0) {
-        $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
+        saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]);
         if (count($languages) > 0) {
             $db->query('TRUNCATE tnewsmonatspraefix');
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
                 $monthPrefix->kSprache = $lang->getId();
-                if (mb_strlen($_POST['praefix_' . $lang->getIso()]) > 0) {
+                if (!empty($_POST['praefix_' . $lang->getIso()])) {
                     $monthPrefix->cPraefix = htmlspecialchars(
                         $_POST['praefix_' . $lang->getIso()],
                         ENT_COMPAT | ENT_HTML401,
@@ -84,11 +83,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     ) {
         $newsCategories = $controller->getAllNewsCategories();
         if (count($newsCategories) > 0) {
-            $newsItem = new Item($db);
+            $newsItem = new Item($db, $cache);
             $controller->setStep('news_erstellen');
             $smarty->assign('oNewsKategorie_arr', $newsCategories)
-                   ->assign('oNews', $newsItem)
-                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                ->assign('oNews', $newsItem)
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
             $controller->setErrorMsg(__('errorNewsCatFirst'));
             $controller->setStep('news_uebersicht');
@@ -104,7 +103,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->setMsg(__('successNewsCommmentEdit'));
 
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
-                    header('Location: freischalten.php');
+                    header('Location: ' . Shop::getAdminURL() . '/freischalten.php');
                     exit();
                 }
                 $tab = Request::verifyGPDataString('tab');
@@ -121,11 +120,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             } else {
                 $controller->setStep('news_kommentar_editieren');
                 $controller->setErrorMsg(__('errorCheckInput'));
-                $comment                 = new stdClass();
-                $comment->kNewsKommentar = (int)$_POST['kNewsKommentar'];
-                $comment->kNews          = (int)$_POST['kNews'];
-                $comment->cName          = Text::filterXSS($_POST['cName']);
-                $comment->cKommentar     = Text::filterXSS($_POST['cKommentar']);
+                $comment = new Comment($db);
+                $comment->load((int)$_POST['kNewsKommentar']);
+                $comment->setName(Text::filterXSS($_POST['cName']));
+                $comment->setText(Text::filterXSS($_POST['cKommentar']));
                 $smarty->assign('oNewsKommentar', $comment);
             }
         } else {
@@ -191,19 +189,16 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $newsCategory->load(Request::getInt('kNewsKategorie'), false);
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory)
-                       ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
+                    ->assign('files', $controller->getCategoryImages($newsCategory->getID(), $uploadDirCat));
             } else {
                 $controller->setStep('news_uebersicht');
                 $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
             }
         }
     } elseif (Request::postInt('newskommentar_freischalten') > 0 && !isset($_POST['kommentareloeschenSubmit'])) {
-        $deleteIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
-        if (count($deleteIDs) > 0) {
-            foreach ($deleteIDs as $id) {
-                $db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
-            }
-            $controller->setMsg(__('successNewsCommentUnlock'));
+        $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
+        if (count($commentIDs) > 0) {
+            $controller->activateComments($commentIDs);
             $tab = Request::verifyGPDataString('tab');
             $controller->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $controller->getMsg());
         } else {
@@ -232,10 +227,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
 
         if ($newsItemID > 0 && count($newsCategories) > 0) {
             $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                   ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
-                   ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+                ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $controller->setStep('news_editieren');
-            $newsItem = new Item($db);
+            $newsItem = new Item($db, $cache);
             $newsItem->load($newsItemID);
 
             if ($newsItem->getID() > 0) {
@@ -243,8 +238,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                     $controller->setMsg(__('OPC content available'));
                 }
                 $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-                       ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                       ->assign('oNews', $newsItem);
+                    ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                    ->assign('oNews', $newsItem);
             }
         } else {
             $controller->setErrorMsg(__('errorNewsCatFirst'));
@@ -253,7 +248,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     } elseif ($controller->getStep() === 'news_vorschau' || Request::verifyGPCDataInt('nd') === 1) {
         $controller->setStep('news_vorschau');
         $newsItemID = Request::verifyGPCDataInt('kNews');
-        $newsItem   = new Item($db);
+        $newsItem   = new Item($db, $cache);
         $newsItem->load($newsItemID);
 
         if ($newsItem->getID() > 0) {
@@ -261,8 +256,8 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
             $smarty->assign('oNews', $newsItem)
-                   ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
-                   ->assign('comments', $newsItem->getComments()->getThreadedItems());
+                ->assign('files', $controller->getNewsImages($newsItem->getID(), $uploadDir))
+                ->assign('comments', $newsItem->getComments()->getThreadedItems());
         }
     }
 }
@@ -295,25 +290,24 @@ if ($controller->getStep() === 'news_uebersicht') {
     $categoryPagination = (new Pagination('kats'))
         ->setItemArray($newsCategories)
         ->assemble();
-    $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWS))
-           ->assign('comments', $commentPagination->getPageItems())
-           ->assign('oNews_arr', $itemPagination->getPageItems())
-           ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
-           ->assign('oNewsMonatsPraefix_arr', $prefixes)
-           ->assign('oPagiKommentar', $commentPagination)
-           ->assign('oPagiNews', $itemPagination)
-           ->assign('oPagiKats', $categoryPagination);
+    getAdminSectionSettings(CONF_NEWS);
+    $smarty->assign('comments', $commentPagination->getPageItems())
+        ->assign('oNews_arr', $itemPagination->getPageItems())
+        ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
+        ->assign('oNewsMonatsPraefix_arr', $prefixes)
+        ->assign('oPagiKommentar', $commentPagination)
+        ->assign('oPagiNews', $itemPagination)
+        ->assign('oPagiKats', $categoryPagination);
 } elseif ($controller->getStep() === 'news_kategorie_erstellen') {
     $smarty->assign('oNewsKategorie_arr', $controller->getAllNewsCategories())
-           ->assign('oNewsKategorie', $newsCategory);
+        ->assign('oNewsKategorie', $newsCategory);
 }
 
-$maxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
 $alertService = Shop::Container()->getAlertService();
-$alertService->addAlert(Alert::TYPE_NOTE, $controller->getMsg(), 'newsMessage');
-$alertService->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
+$alertService->addNotice($controller->getMsg(), 'newsMessage');
+$alertService->addError($controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('customerGroups', CustomerGroup::getGroups())
-       ->assign('step', $controller->getStep())
-       ->assign('nMaxFileSize', $maxFileSize)
-       ->display('news.tpl');
+    ->assign('step', $controller->getStep())
+    ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
+    ->display('news.tpl');

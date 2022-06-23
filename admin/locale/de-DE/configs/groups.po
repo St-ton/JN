@@ -253,3 +253,6 @@ msgstr "Auswahlassistent"
 
 msgid "configgroup_127_filesystem"
 msgstr "Dateisystem"
+
+msgid "configgroup_6_forgot_password"
+msgstr "Passwort vergessen"

@@ -8,8 +8,6 @@ use JTL\Shop;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
-use League\Flysystem\ZipArchive\FilesystemZipArchiveProvider;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Throwable;
@@ -120,13 +118,14 @@ class Filesystem extends \League\Flysystem\Filesystem
      */
     public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
-        $manager = new MountManager([
+        $provider = new JTLZipArchiveProvider($archive);
+        $manager  = new MountManager([
             'root' => Shop::Container()->get(LocalFilesystem::class),
-            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+            'zip'  => new Filesystem(new JTLZipArchiveAdapter($provider))
         ]);
-        $count   = $finder->count();
-        $index   = 0;
-        foreach ($finder->files() as $file) {
+        $count    = $finder->count();
+        $index    = 0;
+        foreach ($finder as $file) {
             /** @var SplFileInfo $file */
             $path = $file->getPathname();
             $pos  = \strpos($path, \PFAD_ROOT);
@@ -147,6 +146,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                 ++$index;
             }
         }
+        $provider->createZipArchive()->close();
 
         return true;
     }
@@ -167,7 +167,7 @@ class Filesystem extends \League\Flysystem\Filesystem
         }
         $manager = new MountManager([
             'root' => new Filesystem(new LocalFilesystemAdapter($realSource)),
-            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+            'zip'  => new Filesystem(new JTLZipArchiveAdapter(new JTLZipArchiveProvider($archive)))
         ]);
         foreach ($manager->listContents('root:///', true) as $item) {
             $path   = $item->path();

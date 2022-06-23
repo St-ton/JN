@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -24,7 +23,7 @@ if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
         && speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])
     ) {
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
     }
     if ($oID > 0) {
         $overlay = gibSuchspecialOverlay($oID);

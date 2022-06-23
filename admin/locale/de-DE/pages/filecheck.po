@@ -33,7 +33,10 @@ msgid "fileCheckNumberOrphanedFiles"
 msgstr "Anzahl verwaister Dateien"
 
 msgid "errorFileNotFound"
-msgstr "Datei mit der aktuellen Dateiliste existiert nicht."
+msgstr "Datei %s mit der aktuellen Dateiliste existiert nicht."
+
+msgid "And %d more"
+msgstr "Und %d weitere"
 
 msgid "errorFileListEmpty"
 msgstr "Die Datei mit der aktuellen Dateiliste ist leer."

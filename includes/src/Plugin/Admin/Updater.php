@@ -17,12 +17,12 @@ class Updater
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var Installer
      */
-    private $installer;
+    private Installer $installer;
 
     /**
      * Updater constructor.
@@ -63,7 +63,7 @@ class Updater
      */
     public function updateFromListingItem(ListingItem $item): int
     {
-        if ($item === null || $item->getID() === 0) {
+        if ($item->getID() === 0) {
             return InstallCode::WRONG_PARAM;
         }
         $loader = Helper::getLoaderByPluginID($item->getID(), $this->db);

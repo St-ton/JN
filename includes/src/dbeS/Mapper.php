@@ -3,6 +3,7 @@
 namespace JTL\dbeS;
 
 use JTL\Helpers\GeneralObject;
+use SimpleXMLElement;
 use stdClass;
 
 /**
@@ -14,7 +15,7 @@ final class Mapper
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'mKunde' => [
             'cKundenNr',
             'cAnrede',
@@ -129,7 +130,6 @@ final class Mapper
             'cBeschreibung'
         ],
 
-//
         'mHerstellerSpracheSeo' => [
             'cSeo'
         ],
@@ -682,14 +682,14 @@ final class Mapper
     }
 
     /**
-     * @param object $xmlTree
-     * @param string $toMap
+     * @param SimpleXMLElement $xmlTree
+     * @param string           $toMap
      * @return stdClass
      */
-    public function map($xmlTree, string $toMap): stdClass
+    public function map(SimpleXMLElement $xmlTree, string $toMap): stdClass
     {
         $mapped = new stdClass();
-        foreach ($xmlTree->Attributes() as $key => $val) {
+        foreach ($xmlTree->attributes() as $key => $val) {
             $mapped->$key = (string)$val;
         }
         foreach (self::getTableMapping($toMap) as $mapping) {
@@ -742,17 +742,16 @@ final class Mapper
     }
 
     /**
-     * @param stdClass|object|null $obj
-     * @param array|mixed          $xml
-     * @param string               $toMap
+     * @param object|null  $obj
+     * @param array|string $xml
+     * @param string       $toMap
      */
-    public function mapObject(&$obj, $xml, $toMap): void
+    public function mapObject(?object &$obj, $xml, string $toMap): void
     {
         $map = self::getTableMapping($toMap);
         if ($obj === null) {
             $obj = new stdClass();
         }
-
         if ($this->isAssoc($map)) {
             foreach ($map as $key => $value) {
                 $val = null;
@@ -774,19 +773,16 @@ final class Mapper
      * @param stdClass|null $obj
      * @param array|mixed   $xml
      */
-    public function mapAttributes(&$obj, $xml): void
+    public function mapAttributes(?stdClass &$obj, $xml): void
     {
         if (!\is_array($xml)) {
             return;
         }
-        $keys = \array_keys($xml);
-        if (\is_array($keys)) {
-            if ($obj === null) {
-                $obj = new stdClass();
-            }
-            foreach ($keys as $key) {
-                $obj->$key = $xml[$key];
-            }
+        if ($obj === null) {
+            $obj = new stdClass();
+        }
+        foreach (\array_keys($xml) as $key) {
+            $obj->$key = $xml[$key];
         }
     }
 }

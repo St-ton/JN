@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -43,31 +42,26 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
     if (isset($_POST['delete'])) {
         $delete = deleteShopLogo(Shop::getLogo());
         if ($delete === true) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoDelete'), 'successLogoDelete');
+            $alertHelper->addSuccess(__('successLogoDelete'), 'successLogoDelete');
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                sprintf(__('errorLogoDelete'), PFAD_ROOT . Shop::getLogo()),
-                'errorLogoDelete'
-            );
+            $alertHelper->addError(sprintf(__('errorLogoDelete'), PFAD_ROOT . Shop::getLogo()), 'errorLogoDelete');
         }
     }
     $saved = saveShopLogo($_FILES);
     if ($saved === 1) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoUpload'), 'successLogoUpload');
+        $alertHelper->addSuccess(__('successLogoUpload'), 'successLogoUpload');
     } else {
         // 2 = Dateiname entspricht nicht der Konvention oder fehlt
         // 3 = Dateityp entspricht nicht der (Nur jpg/gif/png/bmp/ Bilder) Konvention oder fehlt
         switch ($saved) {
             case 2:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileName'), 'errorFileName');
+                $alertHelper->addError(__('errorFileName'), 'errorFileName');
                 break;
             case 3:
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileType'), 'errorFileType');
+                $alertHelper->addError(__('errorFileType'), 'errorFileType');
                 break;
             case 4:
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $alertHelper->addError(
                     sprintf(__('errorFileMove'), PFAD_ROOT . PFAD_SHOPLOGO . basename($_FILES['shopLogo']['name'])),
                     'errorFileMove'
                 );

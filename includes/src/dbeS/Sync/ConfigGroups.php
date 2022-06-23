@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
 use JTL\Extensions\Config\Group;
+use SimpleXMLElement;
 
 /**
  * Class Configurations
@@ -17,7 +18,7 @@ final class ConfigGroups extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             if ($fileName === 'del_konfig.xml') {
@@ -31,9 +32,9 @@ final class ConfigGroups extends AbstractSync
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleInserts($xml): void
+    private function handleInserts(SimpleXMLElement $xml): void
     {
         foreach ($xml->tkonfiggruppe as $groupData) {
             $group = $this->mapper->map($groupData, 'mKonfigGruppe');
@@ -74,15 +75,15 @@ final class ConfigGroups extends AbstractSync
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleDeletes($xml): void
+    private function handleDeletes(SimpleXMLElement $xml): void
     {
         if (!Group::checkLicense()) {
             return;
         }
-        foreach (\array_map('\intval', $xml->kKonfiggruppe) as $groupID) {
-            $this->deleteGroup($groupID);
+        foreach ($xml->kKonfiggruppe as $groupID) {
+            $this->deleteGroup((int)$groupID);
         }
     }
 

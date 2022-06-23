@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
@@ -10,12 +9,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-if (isset($_POST['speichern']) && Form::validateToken()) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_SUCCESS,
-        saveAdminSectionSettings(CONF_SITEMAP, $_POST),
-        'saveSettings'
-    );
+if (isset($_POST['einstellungen']) && Form::validateToken()) {
+    saveAdminSectionSettings(CONF_SITEMAP, $_POST);
     if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
         $db = Shop::Container()->getDB();
         $db->query('TRUNCATE TABLE tpreisspannenfilter');
@@ -30,6 +25,5 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         }
     }
 }
-
-$smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-    ->display('shopsitemap.tpl');
+getAdminSectionSettings(CONF_SITEMAP);
+$smarty->display('shopsitemap.tpl');

@@ -1092,7 +1092,6 @@ function gibLieferadresseAusSession()
     $shippingAddress->cUSTID      = $deliveryAddress->cUSTID ?? null;
     $shippingAddress->cWWW        = $deliveryAddress->cWWW ?? null;
     $shippingAddress->cMail       = $deliveryAddress->cMail;
-    $shippingAddress->cAnrede     = $deliveryAddress->cAnrede;
 
     return $shippingAddress;
 }

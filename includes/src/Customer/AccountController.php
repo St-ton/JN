@@ -1070,7 +1070,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function getLieferadressen(): void
     {
@@ -1099,7 +1099,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function loadShippingAddress(): void
     {
@@ -1133,7 +1133,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function updateShippingAddress(): void
     {
@@ -1173,6 +1173,7 @@ class AccountController
             header('Location: ' . Shop::Container()
                     ->getLinkService()
                     ->getStaticRoute('bestellvorgang.php').'?editRechnungsadresse=1');
+            die;
         }
         header('Location: ' . Shop::Container()
                 ->getLinkService()
@@ -1181,7 +1182,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function saveShippingAddress(): void
     {
@@ -1217,7 +1218,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function deleteShippingAddress(): void
     {
@@ -1241,7 +1242,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function setShippingAddressAsDefault(): void
     {
@@ -1267,7 +1268,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function getCustomerFields(): void
     {
@@ -1322,7 +1323,7 @@ class AccountController
     }
 
     /**
-     *
+     * @return void
      */
     private function changeCustomerData(): void
     {

@@ -24,7 +24,7 @@
                                         {lang key='saveAddress' section='account data'}
                                     {/button}
                                 {else if isset($Lieferadresse->kLieferadresse) && isset($smarty.get.fromCheckout)}
-                                    {input type="hidden" name="editAddress" value=$Lieferadresse->kLieferadresse}
+                                    {input type="hidden" name="updateAddress" value=$Lieferadresse->kLieferadresse}
                                     {input type="hidden" name="backToCheckout" value="1"}
                                     {button type="submit" value="1" block=true variant="primary"}
                                         {lang key='updateAddressBackToCheckout' section='account data'}

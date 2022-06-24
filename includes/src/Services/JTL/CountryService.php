@@ -69,8 +69,9 @@ class CountryService implements CountryServiceInterface
                 \explode(' ', $shippingMethod->cLaender)
             ));
         }
+        $languages = Shop::Lang()->getAllLanguages();
         foreach ($countries as $country) {
-            $countryTMP = new Country($country->cISO);
+            $countryTMP = new Country($country->cISO, false, $languages);
             $countryTMP->setEU((int)$country->nEU)
                        ->setContinent($country->cKontinent)
                        ->setNameDE($country->cDeutsch)

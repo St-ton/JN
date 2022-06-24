@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Create setting for top selling
  *
@@ -6,11 +7,9 @@
  * @created Tue, 03 May 2022 12:28:42 +0200
  */
 
-use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
-use JTL\Cron\Admin\Controller;
 
 /**
  * Class Migration_20220503122842
@@ -42,14 +41,13 @@ class Migration_20220503122842 extends Migration implements IMigration
             ]
         );
 
-        /** @var Controller $controller */
-        $controller = Shop::Container()->get(Controller::class);
-        $controller->addQueueEntry([
-            'type'      => Type::TOPSELLER,
-            'frequency' => '24',
-            'time'      => '01:00',
-            'date'      => (new DateTime())->format('Y-m-d H:i:s'),
-        ]);
+        $ins            = new stdClass();
+        $ins->frequency = 24;
+        $ins->jobType   = Type::TOPSELLER;
+        $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
+        $ins->startTime = '01:00:00';
+        $ins->startDate = (new DateTime())->format('Y-m-d H:i:s');
+        $this->db->insert('tcron', $ins);
     }
 
     /**
@@ -57,14 +55,13 @@ class Migration_20220503122842 extends Migration implements IMigration
      */
     public function down()
     {
-        /** @var Controller $controller */
-        $controller = Shop::Container()->get(Controller::class);
-        $crons      = array_filter($controller->getJobs(), static function (JobInterface $job) {
-            return $job->getType() === Type::TOPSELLER;
-        });
-        if (count($crons) > 0) {
-            $cron = array_shift($crons);
-            $controller->deleteQueueEntry($cron->getCronID());
+        $crons = $this->db->getObjects(
+            'SELECT cronID FROM tcron WHERE jobType = :tp',
+            ['tp' => Type::TOPSELLER]
+        );
+        foreach ($crons as $cron) {
+            $this->db->delete('tjobqueue', 'cronID', (int)$cron->cronID);
+            $this->db->delete('tcron', 'cronID', (int)$cron->cronID);
         }
 
         $this->removeConfig('global_bestseller_tage');

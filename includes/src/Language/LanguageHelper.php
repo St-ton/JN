@@ -1095,12 +1095,13 @@ class LanguageHelper
         $shopURL       = Shop::getURL() . '/';
         $helper        = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
-        if ($pageID !== null && $pageID > 0) {
+        $pageType      = Shop::getPageType();
+        if ($pageID !== null && $pageID > 0 && $pageType !== \PAGE_ARTIKELLISTE) {
             $linkID = $pageID;
         }
         $ls     = Shop::Container()->getLinkService();
         $mapper = new PageTypeToLinkType();
-        $mapped = $mapper->map(Shop::getPageType());
+        $mapped = $mapper->map($pageType);
         try {
             $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
         } catch (SpecialPageNotFoundException $e) {
@@ -1122,7 +1123,7 @@ class LanguageHelper
                         $lang->setUrl($url);
                     }
                 } elseif ($specialPage !== null) {
-                    if (Shop::getPageType() === \PAGE_STARTSEITE) {
+                    if ($pageType === \PAGE_STARTSEITE) {
                         $url = $shopURL . '?lang=' . $langISO;
                     } elseif ($specialPage->getFileName() !== '') {
                         if (Shop::$kNews > 0) {
@@ -1178,7 +1179,7 @@ class LanguageHelper
                 } elseif ($specialPage !== null) {
                     $url = $specialPage->getURL();
                     if (empty($url)) {
-                        if (Shop::getPageType() === \PAGE_STARTSEITE) {
+                        if ($pageType === \PAGE_STARTSEITE) {
                             $url = '';
                         } elseif ($specialPage->getFileName() !== null) {
                             $url = $helper->getStaticRoute($specialPage->getFileName(), false);

@@ -557,7 +557,7 @@ class ExportQueueController extends AbstractBackendController
         }
 
         return new RedirectResponse(
-            Shop::getAdminURL() . $this->route
+            $this->baseURL . $this->route
             . (\is_array($urlParams) ? '?' . \http_build_query($urlParams, '', '&') : '')
         );
     }

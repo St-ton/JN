@@ -45,6 +45,11 @@ abstract class AbstractBackendController implements ControllerInterface
     protected string $route = '';
 
     /**
+     * @var string
+     */
+    protected string $baseURL;
+
+    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param AlertServiceInterface $alertService
@@ -58,6 +63,7 @@ abstract class AbstractBackendController implements ControllerInterface
         protected AdminAccount $account,
         protected GetText $getText
     ) {
+        $this->baseURL = Shop::getAdminURL(true);
     }
 
     /**
@@ -175,10 +181,11 @@ abstract class AbstractBackendController implements ControllerInterface
             return \__('errorConfigSave');
         }
         foreach ($confData as $config) {
-            $val                        = new stdClass();
-            $val->cWert                 = $post[$config->cWertName] ?? null;
-            $val->cName                 = $config->cWertName;
-            $val->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+            $val = (object)[
+                'cWert'                 => $post[$config->cWertName] ?? null,
+                'cName'                 => $config->cWertName,
+                'kEinstellungenSektion' => (int)$config->kEinstellungenSektion
+            ];
             switch ($config->cInputTyp) {
                 case 'kommazahl':
                     $val->cWert = (float)$val->cWert;
@@ -188,7 +195,7 @@ abstract class AbstractBackendController implements ControllerInterface
                     $val->cWert = (int)$val->cWert;
                     break;
                 case 'text':
-                    $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
+                    $val->cWert = Text::filterXSS(\mb_substr($val->cWert, 0, 255));
                     break;
                 case 'listbox':
                     $this->updateListBox($val->cWert, $val->cName, $val->kEinstellungenSektion, $manager);
@@ -398,7 +405,7 @@ abstract class AbstractBackendController implements ControllerInterface
      */
     public static function getMaxFileSize(string|int $size): float|int|string
     {
-        return match (mb_substr((string)$size, -1)) {
+        return match (\mb_substr((string)$size, -1)) {
             'M', 'm' => (int)$size * 1048576,
             'K', 'k' => (int)$size * 1024,
             'G', 'g' => (int)$size * 1073741824,

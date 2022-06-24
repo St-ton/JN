@@ -13,6 +13,7 @@ use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -258,8 +259,7 @@ class WishlistController extends AbstractController
                 $wishlistID = $wishlist->getID();
             }
             if (!$wishlistID) {
-                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
-                exit;
+                return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
             }
         }
         $link = ($this->state->linkID > 0) ? $linkHelper->getPageLink($this->state->linkID) : null;
@@ -275,8 +275,7 @@ class WishlistController extends AbstractController
                 );
             }
         } elseif ($wishlist->getID() === 0) {
-            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
-            exit;
+            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
         }
         $wishListItems = $wishlist->getItems();
 

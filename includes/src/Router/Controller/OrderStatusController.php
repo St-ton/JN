@@ -10,6 +10,7 @@ use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -57,8 +58,8 @@ class OrderStatusController extends PageController
                     'statusOrderNotFound',
                     ['saveInSession' => true]
                 );
-                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
-                exit;
+
+                return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 303);
             }
             $order    = new Bestellung((int)$status->kBestellung, true);
             $plzValid = false;
@@ -99,8 +100,8 @@ class OrderStatusController extends PageController
                 'wrongUID',
                 ['saveInSession' => true]
             );
-            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
-            exit;
+
+            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 303);
         }
 
         $step = 'bestellung';

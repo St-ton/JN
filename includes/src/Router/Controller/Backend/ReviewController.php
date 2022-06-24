@@ -123,7 +123,7 @@ class ReviewController extends AbstractBackendController
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addSuccess(\__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
-                    \header('Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_ACTIVATE);
+                    \header('Location: ' . $this->baseURL . '/' . BackendRouter::ROUTE_ACTIVATE);
                     exit();
                 }
             } else {

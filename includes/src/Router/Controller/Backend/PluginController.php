@@ -16,7 +16,6 @@ use JTL\Plugin\LoaderInterface;
 use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -75,7 +74,7 @@ class PluginController extends AbstractBackendController
         $this->smarty->assign('hasDifferentVersions', false)
             ->assign('currentDatabaseVersion', 0)
             ->assign('currentFileVersion', 0)
-            ->assign('pluginBackendURL', Shop::getAdminURL() . $this->route)
+            ->assign('pluginBackendURL', $this->baseURL . $this->route)
             ->assign('route', $this->route);
 
         if (\SAFE_MODE) {

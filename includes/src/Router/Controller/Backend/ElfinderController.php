@@ -123,7 +123,7 @@ class ElfinderController extends AbstractBackendController
             ->assign('isCKEditor', $isCKEditor)
             ->assign('route', $this->route)
             ->assign('CKEditorFuncNum', $CKEditorFuncNum)
-            ->assign('templateUrl', Shop::getAdminURL() . '/' . $smarty->getTemplateUrlPath())
+            ->assign('templateUrl', $this->baseURL . '/' . $smarty->getTemplateUrlPath())
             ->assign('mediafilesBaseUrlPath', $mediafilesBaseUrlPath)
             ->getResponse('elfinder.tpl');
     }

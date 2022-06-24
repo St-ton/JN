@@ -8,7 +8,6 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class SyncController
@@ -47,22 +46,21 @@ class SyncController extends AbstractBackendController
         $passwordService = Shop::Container()->getPasswordService();
         if (!$passwordService->hasOnlyValidCharacters($pass)) {
             $this->alertService->addError(\__('errorInvalidPassword'), 'errorInvalidPassword');
+
             return;
         }
-        $passInfo   = $passwordService->getInfo($pass);
-        $upd        = new stdClass();
-        $upd->cName = $user;
-        $upd->cPass = $passInfo['algo'] > 0
+        $passInfo = $passwordService->getInfo($pass);
+        $pass     = $passInfo['algo'] > 0
             ? $pass // hashed password was not changed
             : $passwordService->hash($pass); // new clear text password was given
 
         $this->db->queryPrepared(
             'INSERT INTO `tsynclogin` (kSynclogin, cName, cPass)
-                    VALUES (1, :cName, :cPass)
-                    ON DUPLICATE KEY UPDATE
-                    cName = :cName,
-                    cPass = :cPass',
-            ['cName' => $upd->cName, 'cPass' => $upd->cPass]
+                VALUES (1, :cName, :cPass)
+                ON DUPLICATE KEY UPDATE
+                cName = :cName,
+                cPass = :cPass',
+            ['cName' => $user, 'cPass' => $pass]
         );
 
         $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');

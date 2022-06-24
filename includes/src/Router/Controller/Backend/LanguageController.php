@@ -174,7 +174,7 @@ class LanguageController extends AbstractBackendController
         foreach ($data as $item) {
             $variable->cWertAlt_arr[$item->cISO] = $item->cWert;
         }
-        if (!\preg_match('/([\w\d]+)/', $variable->cName)) {
+        if (!\preg_match('/(\w+)/', $variable->cName)) {
             $errors[] = \__('errorVarFormat');
         }
         if (\count($variable->bOverwrite_arr) !== \count($data)) {

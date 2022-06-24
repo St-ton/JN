@@ -10,7 +10,6 @@ use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class WarehousesController
@@ -45,14 +44,15 @@ class WarehousesController extends AbstractBackendController
                     $this->db->delete('twarenlagersprache', 'kWarenlager', (int)$id);
                     foreach ($assocLang as $languageID => $name) {
                         if (\mb_strlen(\trim($name)) > 1) {
-                            $data              = new stdClass();
-                            $data->kWarenlager = (int)$id;
-                            $data->kSprache    = (int)$languageID;
-                            $data->cName       = \htmlspecialchars(
-                                \trim($name),
-                                \ENT_COMPAT | \ENT_HTML401,
-                                \JTL_CHARSET
-                            );
+                            $data = (object)[
+                                'kWarenlager' => (int)$id,
+                                'kSprache'    => (int)$languageID,
+                                'cName'       => \htmlspecialchars(
+                                    \trim($name),
+                                    \ENT_COMPAT | \ENT_HTML401,
+                                    \JTL_CHARSET
+                                )
+                            ];
                             $this->db->insert('twarenlagersprache', $data);
                         }
                     }

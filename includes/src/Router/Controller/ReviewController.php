@@ -14,6 +14,7 @@ use JTL\Review\ReviewModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -45,15 +46,13 @@ class ReviewController extends PageController
 
             return $this->smarty->getResponse('productdetails/review_form.tpl');
         }
-
         try {
             $product = (new Artikel($this->db))->fuelleArtikel($this->state->productID);
-            \header('Location: ' . ($product !== null ? $product->cURLFull : Shop::getURL()));
-        } catch (Exception) {
-            \header('Location: ' . Shop::getURL());
-        }
 
-        exit;
+            return new RedirectResponse($product !== null ? $product->cURLFull : Shop::getURL());
+        } catch (Exception) {
+            return new RedirectResponse(Shop::getURL());
+        }
     }
 
     /**

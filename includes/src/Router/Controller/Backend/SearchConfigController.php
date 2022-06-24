@@ -106,7 +106,7 @@ class SearchConfigController extends AbstractBackendController
         ) {
             $this->alertService->addError(
                 \__('errorCreateTime') .
-                '<a href="' . Shop::getAdminURL() . $this->route
+                '<a href="' . $this->baseURL . $this->route
                 . '" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>',
                 'errorCreateTime'
             );

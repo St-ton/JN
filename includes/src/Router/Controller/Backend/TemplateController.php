@@ -21,7 +21,6 @@ use JTLShop\SemVer\Version;
 use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 use function Functional\first;
 
 /**
@@ -140,12 +139,13 @@ class TemplateController extends AbstractBackendController
         ) {
             $bootstrapper->installed();
         }
-        $lstng         = new Listing($this->db, new TemplateValidator($this->db));
-        $html          = new stdClass();
-        $html->id      = '#shoptemplate-overview';
-        $html->content = $this->smarty->assign('listingItems', $lstng->getAll())
-            ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
-            ->fetch('tpl_inc/shoptemplate_overview.tpl');
+        $lstng = new Listing($this->db, new TemplateValidator($this->db));
+        $html  = (object)[
+            'id'      => '#shoptemplate-overview',
+            'content' => $this->smarty->assign('listingItems', $lstng->getAll())
+                ->assign('shopVersion', Version::parse(\APPLICATION_VERSION))
+                ->fetch('tpl_inc/shoptemplate_overview.tpl')
+        ];
         $response->setHtml($html);
 
         $data = (new Response())->withStatus(200)->withAddedHeader('content-type', 'application/json');

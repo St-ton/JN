@@ -9,7 +9,6 @@ use JTL\Backend\Wizard\DefaultFactory;
 use JTL\Helpers\Request;
 use JTL\Router\BackendRouter;
 use JTL\Session\Backend;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -45,7 +44,7 @@ class WizardController extends AbstractBackendController
             Backend::set('wizard-authenticated', Request::getVar('wizard-authenticated'));
             $token->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL() . '/' . BackendRouter::ROUTE_CODE . '/wizard'
+                $this->baseURL . '/' . BackendRouter::ROUTE_CODE . '/wizard'
             );
         }
         unset($_SESSION['wizard-authenticated']);

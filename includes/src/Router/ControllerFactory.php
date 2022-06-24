@@ -110,6 +110,7 @@ class ControllerFactory
                     // Redirect POST
                     $cRP = '&cRP=' . \base64_encode($cRP);
                 }
+                // @todo!!! - use correct route
                 \http_response_code(301);
                 \header('Location: ' . Shop::getURL() . '/?a=' . $productID . $cRP);
                 exit();

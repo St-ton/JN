@@ -35,17 +35,15 @@ class OPCController extends AbstractBackendController
         $action    = Request::verifyGPDataString('action');
         $draftKeys = \array_map('\intval', $_POST['draftKeys'] ?? []);
         $shopURL   = Shop::getURL();
-        $adminURL  = Shop::getAdminURL();
         $error     = null;
-
         $opc       = Shop::Container()->getOPC();
         $opcPage   = Shop::Container()->getOPCPageService();
         $opcPageDB = Shop::Container()->getOPCPageDB();
 
-        $templateUrl = $adminURL . '/' . $smarty->getTemplateUrlPath();
+        $templateUrl = $this->baseURL . '/' . $smarty->getTemplateUrlPath();
 
         $smarty->assign('shopUrl', $shopURL)
-            ->assign('adminUrl', $adminURL)
+            ->assign('adminUrl', $this->baseURL)
             ->assign('templateUrl', $templateUrl)
             ->assign('pageKey', $pageKey)
             ->assign('route', $this->route)
@@ -60,7 +58,7 @@ class OPCController extends AbstractBackendController
 
             return $smarty->assign('error', [
                 'heading' => \__('dbUpdate') . ' ' . \__('required'),
-                'desc'    => \sprintf(\__('dbUpdateNeeded'), $adminURL),
+                'desc'    => \sprintf(\__('dbUpdateNeeded'), $this->baseURL),
             ])
                 ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
         }
@@ -96,7 +94,7 @@ class OPCController extends AbstractBackendController
                 $error = $e->getMessage();
             }
 
-            return new RedirectResponse($adminURL . $this->route . '?pageKey=' . $pageKey . '&action=edit');
+            return new RedirectResponse($this->baseURL . $this->route . '?pageKey=' . $pageKey . '&action=edit');
         } elseif ($action === 'adopt') {
             // Adopt new draft from another draft
             try {
@@ -113,7 +111,8 @@ class OPCController extends AbstractBackendController
             } catch (Exception $e) {
                 $error = $e->getMessage();
             }
-            return new RedirectResponse($adminURL . $this->route . '?pageKey=' . $pageKey . '&action=edit');
+
+            return new RedirectResponse($this->baseURL . $this->route . '?pageKey=' . $pageKey . '&action=edit');
         } elseif ($action === 'duplicate-bulk') {
             // duplicate multiple drafts from existing drafts
             try {

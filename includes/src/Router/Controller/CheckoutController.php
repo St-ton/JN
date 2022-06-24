@@ -247,12 +247,16 @@ class CheckoutController extends RegistrationController
             $this->getStepDeliveryAddress();
         }
         if ($this->step === 'edit_customer_address' || $this->step === 'Lieferadresse') {
-            $this->validateCouponInCheckout();
+            if (($response = $this->validateCouponInCheckout()) !== null) {
+                return $response;
+            }
             $this->getStepGuestCheckout();
             $this->getStepDeliveryAddress();
         }
         if ($this->step === 'Versand' || $this->step === 'Zahlung') {
-            $this->validateCouponInCheckout();
+            if (($response = $this->validateCouponInCheckout()) !== null) {
+                return $response;
+            }
             $this->getStepShipping();
             $this->getStepPayment();
             Cart::refreshChecksum($this->cart);
@@ -262,7 +266,9 @@ class CheckoutController extends RegistrationController
             Cart::refreshChecksum($this->cart);
         }
         if ($this->step === 'Bestaetigung') {
-            $this->validateCouponInCheckout();
+            if (($response = $this->validateCouponInCheckout()) !== null) {
+                return $response;
+            }
             Order::checkBalance($_POST);
             CouponValidator::validateCoupon($_POST, $this->customer);
             //evtl genutztes guthaben anpassen
@@ -1349,23 +1355,25 @@ class CheckoutController extends RegistrationController
     }
 
     /**
-     * @return void
+     * @return null|ResponseInterface
      * @since 5.2.0
      * @former validateCouponInCheckout()
      */
-    public function validateCouponInCheckout(): void
+    public function validateCouponInCheckout(): ?ResponseInterface
     {
         if (!isset($_SESSION['Kupon'])) {
-            return;
+            return null;
         }
         $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
         if (\count($checkCouponResult) !== 0) {
             $this->cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
-            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
-            exit(0);
+
+            return new RedirectResponse(Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php'));
         }
+
+        return null;
     }
 
     /**

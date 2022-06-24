@@ -16,6 +16,7 @@ use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -75,7 +76,9 @@ class ProductListController extends AbstractController
                 ['showInAlertListTemplate' => false]
             );
         }
-        $this->checkProductRedirect();
+        if (($response = $this->checkProductRedirect()) !== null) {
+            return $response;
+        }
         $this->assignPagination();
         $this->assignBestsellers();
         if (!isset($_SESSION['ArtikelProSeite'])
@@ -166,15 +169,15 @@ class ProductListController extends AbstractController
     }
 
     /**
-     * @return void
+     * @return null|ResponseInterface
      */
-    protected function checkProductRedirect(): void
+    protected function checkProductRedirect(): ?ResponseInterface
     {
         if ($this->config['navigationsfilter']['allgemein_weiterleitung'] !== 'Y'
             || $this->searchResults->getVisibleProductCount() !== 1
             || Request::isAjaxRequest()
         ) {
-            return;
+            return null;
         }
         $hasSubCategories = ($categoryID = $this->productFilter->getCategory()->getValue()) > 0
             && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))->existierenUnterkategorien();
@@ -182,10 +185,10 @@ class ProductListController extends AbstractController
             || $this->productFilter->getRealSearch() !== null
             || ($this->productFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
         ) {
-            \http_response_code(301);
-            \header('Location: ' . $this->searchResults->getProducts()->pop()->cURLFull);
-            exit;
+            return new RedirectResponse($this->searchResults->getProducts()->pop()->cURLFull, 301);
         }
+
+        return null;
     }
 
     /**

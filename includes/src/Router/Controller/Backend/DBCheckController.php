@@ -12,6 +12,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
+use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -47,11 +48,11 @@ class DBCheckController extends AbstractBackendController
                 . $this->db->getConfig()['database'] . '_'
                 . \date('YmdHis') . '.sql';
 
-            \header('Content-Type: text/plain');
-            \header('Content-Disposition: attachment; filename="' . $scriptName . '"');
-            echo $this->doEngineUpdateScript($scriptName, \array_keys($dbFileStruct));
-
-            exit;
+            return new TextResponse(
+                $this->doEngineUpdateScript($scriptName, \array_keys($dbFileStruct)),
+                200,
+                ['Content-Disposition' => 'attachment; filename="' . $scriptName . '"']
+            );
         }
 
         $dbStruct = $this->getDBStruct(true, true);

@@ -141,8 +141,7 @@ class NewsController extends AbstractBackendController
                         $this->setMsg(\__('successNewsCommmentEdit'));
 
                         if (Request::verifyGPCDataInt('nFZ') === 1) {
-                            \header('Location: ' . Shop::getURL() . $this->route);
-                            exit();
+                            return new RedirectResponse(Shop::getURL() . $this->route);
                         }
                         $tab = Request::verifyGPDataString('tab');
                         if ($tab === 'aktiv') {
@@ -254,8 +253,7 @@ class NewsController extends AbstractBackendController
                 $_POST['kNewsKommentar'],
                 $_POST['kommentareloeschenSubmit']
             )) {
-                $response = $this->deleteComments($_POST['kNewsKommentar']);
-                if ($response !== null) {
+                if (($response = $this->deleteComments($_POST['kNewsKommentar'])) !== null) {
                     return $response;
                 }
             }
@@ -536,8 +534,7 @@ class NewsController extends AbstractBackendController
             $oldImages = $this->getNewsImages($newsItemID, self::UPLOAD_DIR, false);
             $this->addImages($newsItemID);
             if ($previewImage !== '') {
-                $upd                = new stdClass();
-                $upd->cPreviewImage = $this->addPreviewImage($oldImages, $newsItemID);
+                $upd = (object)['cPreviewImage' => $this->addPreviewImage($oldImages, $newsItemID)];
                 $this->db->update('tnews', 'kNews', $newsItemID, $upd);
             }
 
@@ -1209,7 +1206,7 @@ class NewsController extends AbstractBackendController
             }
         }
 
-        return new RedirectResponse(Shop::getAdminURL() . $this->route
+        return new RedirectResponse($this->baseURL . $this->route
             . (\is_array($urlParams) ? '?' . \http_build_query($urlParams) : ''));
     }
 

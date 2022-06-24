@@ -366,10 +366,10 @@ class LivesearchController extends AbstractBackendController
     }
 
     /**
-     * @param mixed $data
+     * @param array|null $data
      * @return void
      */
-    private function actionDeleteMapping($data): void
+    private function actionDeleteMapping(?array $data): void
     {
         if (!\is_array($data)) {
             $this->alertService->addError(\__('errorAtLeastOneSearchMap'), 'errorAtLeastOneSearchMap');

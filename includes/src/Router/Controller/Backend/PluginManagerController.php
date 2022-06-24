@@ -136,7 +136,7 @@ class PluginManagerController extends AbstractBackendController
 
         if ($this->reload === true) {
             $_SESSION['plugin_msg'] = $this->notice;
-            return new RedirectResponse(Shop::getAdminURL() . $this->route, 303);
+            return new RedirectResponse($this->baseURL . $this->route, 303);
         }
 
         if (\SAFE_MODE) {
@@ -254,7 +254,7 @@ class PluginManagerController extends AbstractBackendController
             $this->enterKeyStep($pluginID);
         } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
             $this->enterKey(Request::postInt('kPlugin'));
-        } elseif (\is_array($_POST['kPlugin'] ?? false) && \count($_POST['kPlugin']) > 0) {
+        } elseif (\is_array($_POST['kPlugin'] ?? null) && \count($_POST['kPlugin']) > 0) {
             $this->massAction();
         } elseif (Request::verifyGPCDataInt('updaten') === 1) {
             $this->update();

@@ -55,7 +55,7 @@ class ConfigController extends AbstractBackendController
             case \CONF_ARTIKELUEBERSICHT:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
                 // Sucheinstellungen haben eigene Logik
-                return new RedirectResponse(Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
+                return new RedirectResponse($this->baseURL . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
             case \CONF_ARTIKELDETAILS:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEDETAILS_VIEW);
                 break;

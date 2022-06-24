@@ -479,9 +479,9 @@ class AdminAccountController extends AbstractBackendController
                 try {
                     $tmpAcc->dGueltigBis = new DateTime($_POST['dGueltigBis']);
                 } catch (Exception) {
-                    $tmpAcc->dGueltigBis = '';
+                    $tmpAcc->dGueltigBis = false;
                 }
-                if ($tmpAcc->dGueltigBis !== false && $tmpAcc->dGueltigBis !== '') {
+                if ($tmpAcc->dGueltigBis !== false) {
                     $tmpAcc->dGueltigBis = $tmpAcc->dGueltigBis->format('Y-m-d H:i:s');
                 }
             }
@@ -841,7 +841,7 @@ class AdminAccountController extends AbstractBackendController
     {
         $this->changeAdminUserLanguage(Request::verifyGPDataString('language'));
         $url = Request::verifyGPDataString('referer');
-        if (!\str_starts_with($url, Shop::getAdminURL())) {
+        if (!\str_starts_with($url, $this->baseURL)) {
             return;
         }
         \header('Location: ' . $url);
@@ -849,6 +849,7 @@ class AdminAccountController extends AbstractBackendController
 
     /**
      * @param string $tab
+     * @former benutzerverwaltungRedirect()
      */
     public function benutzerverwaltungRedirect(string $tab = ''): void
     {
@@ -957,7 +958,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->url    = Shop::getAdminURL() . $this->route;
+        $this->url    = $this->baseURL . $this->route;
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');

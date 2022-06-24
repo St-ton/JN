@@ -75,9 +75,9 @@ abstract class Job implements JobInterface
     private $startDate;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $tableName = '';
+    private ?string $tableName = '';
 
     /**
      * @var bool

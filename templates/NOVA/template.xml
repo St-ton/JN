@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.1.2</MinShopVersion>
-    <Version>1.1.1</Version>
+    <MinShopVersion>5.1.3</MinShopVersion>
+    <Version>1.1.2</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>

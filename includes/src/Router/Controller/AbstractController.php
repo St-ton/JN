@@ -275,7 +275,8 @@ abstract class AbstractController implements ControllerInterface
 
         $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
-        $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -304,7 +305,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
             ->assign(
                 'WarenkorbVersandkostenfreiHinweis',
-                ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValue)
+                ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValueGros, $cartValueNet)
             )
             ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
             ->assign('bAjaxRequest', Request::isAjaxRequest())
@@ -316,7 +317,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
             ->assign('FavourableShipping', $cart->getFavourableShipping(
                 $shippingFreeMin !== 0
-                && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValueGros, $cartValueNet) <= 0
                     ? (int)$shippingFreeMin->kVersandart
                     : null
             ))

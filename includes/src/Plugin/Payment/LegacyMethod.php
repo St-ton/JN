@@ -335,7 +335,7 @@ class LegacyMethod
      */
     public function isValidIntern($args_arr = [])
     {
-        return $this->methodInstance->isValidIntern($args_arr);
+        return $this->methodInstance !== null && $this->methodInstance->isValidIntern($args_arr);
     }
 
     /**

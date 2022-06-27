@@ -80,13 +80,14 @@ class Country
 
     /**
      * Country constructor.
-     * @param string $iso
-     * @param bool   $initFromDB
+     * @param string               $iso
+     * @param bool                 $initFromDB
+     * @param LanguageModel[]|null $languages
      */
-    public function __construct(string $iso, bool $initFromDB = false)
+    public function __construct(string $iso, bool $initFromDB = false, ?array $languages = null)
     {
         $this->setISO($iso);
-        foreach (Shop::Lang()->getAllLanguages() as $lang) {
+        foreach ($languages ?? Shop::Lang()->getAllLanguages() as $lang) {
             $this->setName($lang);
         }
         if ($initFromDB) {

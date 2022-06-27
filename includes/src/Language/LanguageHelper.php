@@ -46,7 +46,7 @@ use function Functional\reindex;
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
- * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false)
  * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
@@ -992,7 +992,7 @@ class LanguageHelper
     private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($force || \count($languages) === 0) {
+        if ($force || \count($languages) === 0 || \get_class($languages[0]) === stdClass::class) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();

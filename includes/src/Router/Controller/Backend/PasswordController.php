@@ -23,7 +23,6 @@ class PasswordController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions(Permissions::WAWI_SYNC_VIEW);
         $this->getText->loadAdminLocale('pages/pass');
 
         $step = 'prepare';

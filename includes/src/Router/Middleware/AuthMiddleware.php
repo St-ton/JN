@@ -38,6 +38,13 @@ class AuthMiddleware implements MiddlewareInterface
 
             return new RedirectResponse(Shop::getAdminURL() . $url, 301);
         }
+        if (isset($GLOBALS['plgSafeMode'])) {
+            if ($GLOBALS['plgSafeMode']) {
+                \touch(\SAFE_MODE_LOCK);
+            } elseif (\file_exists(\SAFE_MODE_LOCK)) {
+                \unlink(\SAFE_MODE_LOCK);
+            }
+        }
         if (!Backend::getInstance()->isValid()) {
             $this->account->logout();
 

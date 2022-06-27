@@ -61,32 +61,6 @@ $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
 $session  = Backend::getInstance();
 $lang     = LanguageHelper::getInstance($db, $cache);
 $oAccount = Shop::Container()->getAdminAccount();
-$loggedIn = $oAccount->logged();
-if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
-    if ($GLOBALS['plgSafeMode']) {
-        touch(SAFE_MODE_LOCK);
-    } elseif (file_exists(SAFE_MODE_LOCK)) {
-        unlink(SAFE_MODE_LOCK);
-    }
-}
-
-if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate']) && !$hasUpdates) {
-    $adminToken   = $_SESSION['jtl_token'];
-    $adminLangTag = $_SESSION['AdminAccount']->language ?? 'de-DE';
-    $eSIdAdm      = session_id();
-    session_write_close();
-    session_name('JTLSHOP');
-    session_id($_COOKIE['JTLSHOP']);
-    session_start();
-    $_SESSION['loggedAsAdmin'] = $loggedIn;
-    $_SESSION['adminToken']    = $adminToken;
-    $_SESSION['adminLangTag']  = $adminLangTag;
-    session_write_close();
-    session_name('eSIdAdm');
-    session_id($eSIdAdm);
-    $session = new Backend();
-    $session::set('frontendUpToDate', true);
-}
 Shop::setRouter(new Router(
     $db,
     $cache,

@@ -104,7 +104,7 @@
                     placeholder="{if isset($placeholder)}{$placeholder}{else} {/if}"
                     required=$isRequired
                     autocomplete=$autocomplete
-                    size=$size
+                    size-class=$size
                 }
             {/block}
         {/if}

@@ -43,7 +43,7 @@
                                 {row tag='fieldset' class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
                                      {col cols=12 lg=4}
                                         {block name='contact-index-legend-contact'}
-                                            <legend class="h3">{lang key='contact'}</legend>
+                                            <div class="h3">{lang key='contact'}</div>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -173,7 +173,7 @@
                                 {row tag='fieldset'}
                                     {col cols=12 lg=4}
                                         {block name='contact-index-legend-message'}
-                                            <legend class="h3">{lang key='message' section='contact'}</legend>
+                                            <div class="h3">{lang key='message' section='contact'}</div>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}

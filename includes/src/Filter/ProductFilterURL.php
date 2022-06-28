@@ -78,8 +78,8 @@ class ProductFilterURL
             }
         }
         if ($canonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL() .
-                $this->buildURLString(
+            return $this->productFilter->getFilterConfig()->getBaseURL()
+                . $this->buildURLString(
                     $seoFilterParams,
                     $nonSeoFilterParams
                 );
@@ -219,7 +219,7 @@ class ProductFilterURL
                 return $l->getId() === $languageID;
             });
             if ($language !== null) {
-                $nonSeoFilterParams['lang'] = $language->cISO;
+                $nonSeoFilterParams['lang'] = $language->getCode();
             }
         }
 

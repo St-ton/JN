@@ -30,7 +30,6 @@
                                     {buttongroup}
                                         {button
                                             variant="outline-secondary"
-                                            role="button"
                                             data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
                                         }
                                             {lang key='filter'}

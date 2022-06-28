@@ -166,7 +166,7 @@ class Overlay
         $overlay = $this->getDataForLanguage($this->getLanguage());
         // get overlay data for fallback language
         $overlay = $overlay ?? $this->getDataForLanguage(LanguageHelper::getDefaultLanguage()->kSprache);
-        if (!empty($overlay)) {
+        if ($overlay !== null) {
             $this->setActive((int)$overlay->nAktiv)
                 ->setMargin((int)$overlay->nMargin)
                 ->setPosition((int)$overlay->nPosition)
@@ -596,69 +596,5 @@ class Overlay
     public function getMargin(): int
     {
         return $this->margin;
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathKlein(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathklein here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathNormal(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathnormal here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathGross(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathgross here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPathRetina(string $path): void
-    {
-        \trigger_error(__CLASS__ . ': setting pathretina here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLKlein(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlklein here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLNormal(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlnormal here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLGross(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlgross here is not possible anymore.', \E_USER_DEPRECATED);
-    }
-
-    /**
-     * @param string $url
-     */
-    public function setURLRetina(string $url): void
-    {
-        \trigger_error(__CLASS__ . ': setting urlretina here is not possible anymore.', \E_USER_DEPRECATED);
     }
 }

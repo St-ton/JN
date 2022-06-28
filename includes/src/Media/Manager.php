@@ -255,14 +255,12 @@ class Manager
                 break;
             }
             $cachedImage = $instance->cacheImage($image);
-
-            foreach ($cachedImage as $size => $sizeImg) {
+            foreach ($cachedImage as $sizeImg) {
                 if ($sizeImg->success === false) {
                     $result->lastRenderError = $sizeImg->error;
                     break;
                 }
             }
-
             $result->images[] = $cachedImage;
             ++$index;
             ++$_SESSION['renderedImages'];
@@ -283,6 +281,7 @@ class Manager
      * @param int    $limit
      * @return array
      * @throws Exception
+     * @todo: make this work for all image types
      */
     public function getCorruptedImages(string $type, int $limit): array
     {

@@ -4,6 +4,7 @@ namespace JTL\Helpers;
 
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\MerkmalWert;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
 use JTL\News\Item;
@@ -484,6 +485,9 @@ class URL
                     : $prefix . '?l=' . $obj->kSuchanfrage . self::getLocalizedFallback();
 
             case \URLART_MERKMAL:
+                if ($obj instanceof MerkmalWert) {
+                    return $obj->getURL();
+                }
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
                     : $prefix . '?m=' . $obj->kMerkmalWert . self::getLocalizedFallback();

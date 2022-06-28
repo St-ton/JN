@@ -36,13 +36,15 @@ class ProductListController extends AbstractController
         if ($this->state->is404) {
             return false;
         }
-        $this->currentCategory = new Kategorie();
-        $this->productFilter   = Shop::getProductFilter();
+        $this->productFilter = Shop::getProductFilter();
         if (!$this->productFilter->hasCategory()) {
+            $this->currentCategory = new Kategorie();
+
             return true;
         }
         $categoryID                  = $this->productFilter->getCategory()->getValue();
         $_SESSION['LetzteKategorie'] = $categoryID;
+        $this->currentCategory       = new Kategorie($categoryID, $this->languageID, $this->customerGroupID);
         if ($this->currentCategory->getID() === null) {
             // temp. workaround: do not return 404 when non-localized existing category is loaded
             if (Category::categoryExists($categoryID)) {
@@ -62,7 +64,6 @@ class ProductListController extends AbstractController
     {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_ARTIKELLISTE);
-
         if ($this->productFilter->hasCategory()) {
             $this->expandedCategories->getOpenCategories($this->currentCategory);
         }

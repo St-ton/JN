@@ -211,6 +211,7 @@ class Hersteller implements RoutableInterface
         }
         if ($data !== null) {
             $this->map($data);
+            $this->currentLanguageID = $languageID;
         }
 
         return $this;

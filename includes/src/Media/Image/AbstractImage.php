@@ -38,12 +38,12 @@ abstract class AbstractImage implements IMedia
     /**
      * @var array
      */
-    protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
+    protected static array $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * AbstractImage constructor.
@@ -181,9 +181,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {

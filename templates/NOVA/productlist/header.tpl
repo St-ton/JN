@@ -88,10 +88,10 @@
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getCharacteristicValue() !== null
-            && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getCharacteristicValue()->getDescription()|strlen > 0}
             {block name='productlist-header-description-attributes'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->getDescription()}</p>
                 </div>
             {/block}
         {/if}

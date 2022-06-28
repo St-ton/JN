@@ -230,6 +230,7 @@ class Kategorie
             foreach (\get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
+            $this->currentLanguageID = $languageID;
             \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
                 'oKategorie' => &$this,
                 'cacheTags'  => [],

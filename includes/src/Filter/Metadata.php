@@ -306,6 +306,7 @@ class Metadata implements MetadataInterface
      */
     public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface
     {
+        $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
             $this->setName($this->category->getName() ?? '');
@@ -313,23 +314,26 @@ class Metadata implements MetadataInterface
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller(
                 $this->productFilter->getManufacturer()->getValue(),
-                $this->productFilter->getFilterConfig()->getLanguageID()
+                $languageID
             );
             if ($this->manufacturer->getID() > 0) {
                 $this->setName($this->manufacturer->getName() ?? '')
                     ->setImageURL($this->manufacturer->getImage())
-                    ->setMetaTitle($this->manufacturer->getMetaTitle())
-                    ->setMetaDescription($this->manufacturer->getMetaDescription())
-                    ->setMetaKeywords($this->manufacturer->getMetaKeywords());
+                    ->setMetaTitle($this->manufacturer->getMetaTitle($languageID))
+                    ->setMetaDescription($this->manufacturer->getMetaDescription($languageID))
+                    ->setMetaKeywords($this->manufacturer->getMetaKeywords($languageID));
             }
         } elseif ($this->productFilter->hasCharacteristicValue()) {
-            $this->characteristicValue = new MerkmalWert($this->productFilter->getCharacteristicValue()->getValue());
-            if ($this->characteristicValue->kMerkmalWert > 0) {
-                $this->setName($this->characteristicValue->cWert)
+            $this->characteristicValue = new MerkmalWert(
+                $this->productFilter->getCharacteristicValue()->getValue(),
+                $languageID
+            );
+            if ($this->characteristicValue->getID() > 0) {
+                $this->setName($this->characteristicValue->getValue($languageID))
                     ->setImageURL($this->characteristicValue->getImage())
-                    ->setMetaTitle($this->characteristicValue->cMetaTitle)
-                    ->setMetaDescription($this->characteristicValue->cMetaDescription)
-                    ->setMetaKeywords($this->characteristicValue->cMetaKeywords);
+                    ->setMetaTitle($this->characteristicValue->getMetaTitle($languageID))
+                    ->setMetaDescription($this->characteristicValue->getMetaDescription($languageID))
+                    ->setMetaKeywords($this->characteristicValue->getMetaKeywords($languageID));
             }
         }
 

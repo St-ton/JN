@@ -71,17 +71,19 @@ class Characteristic extends AbstractImage
         switch (Image::getSettings()['naming'][Image::TYPE_CHARACTERISTIC]) {
             case 2:
                 /** @var string|null $result */
-                $result = $mixed->path ?? $mixed->cBildpfad ?? null;
+                $result = \method_exists($mixed, 'getImagePath')
+                    ? $mixed->getImagePath()
+                    : ($mixed->path ?? $mixed->cBildpfad ?? null);
                 if ($result !== null) {
                     $result = \pathinfo($result)['filename'];
                 }
                 break;
             case 1:
-                $result = $mixed->cName ?? null;
+                $result = \method_exists($mixed, 'getName') ? $mixed->getName() : ($mixed->cName ?? null);
                 break;
             case 0:
             default:
-                $result = $mixed->id ?? $mixed->kMerkmal ?? null;
+                $result = \method_exists($mixed, 'getID') ? $mixed->getID() : ($mixed->id ?? $mixed->kMerkmal ?? null);
                 break;
         }
         if ($result === null && $mixed->currentImagePath !== null) {

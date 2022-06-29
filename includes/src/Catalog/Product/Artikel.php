@@ -466,7 +466,7 @@ class Artikel implements RoutableInterface
     public $bHasKonfig;
 
     /**
-     * @var array
+     * @var Merkmal[]
      */
     public $oMerkmale_arr;
 
@@ -1660,7 +1660,8 @@ class Artikel implements RoutableInterface
     public function holeMerkmale(): self
     {
         $this->oMerkmale_arr = [];
-        $characteristics     = $this->getDB()->getObjects(
+        $db                  = $this->getDB();
+        $characteristics     = $db->getObjects(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
@@ -1677,21 +1678,19 @@ class Artikel implements RoutableInterface
         foreach ($characteristics as $item) {
             $item->kMerkmal     = (int)$item->kMerkmal;
             $item->kMerkmalWert = (int)$item->kMerkmalWert;
-            $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache);
-            $characteristic     = new Merkmal($item->kMerkmal, false, $this->kSprache);
-            if (!isset($this->oMerkmale_arr[$characteristic->kMerkmal])) {
-                $this->oMerkmale_arr[$characteristic->kMerkmal]                   = $characteristic;
-                $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr = [];
+            $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache, $db);
+            if (!isset($this->oMerkmale_arr[$item->kMerkmal])) {
+                $this->oMerkmale_arr[$item->kMerkmal] = new Merkmal($item->kMerkmal, false, $this->kSprache, $db);
             }
-            $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr[] = $charValue;
+            $this->oMerkmale_arr[$item->kMerkmal]->addCharacteristicValue($charValue);
         }
         $this->cMerkmalAssoc_arr = [];
         foreach ($this->oMerkmale_arr as $item) {
-            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->cName);
-            if (\mb_strlen($item->cName) > 0) {
-                $values                         = \array_filter(\array_map(static function ($e) {
-                    return $e->cWert ?? null;
-                }, $item->oMerkmalWert_arr));
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache));
+            if (\mb_strlen($name) > 0) {
+                $values                         = \array_filter(\array_map(static function (MerkmalWert $e) {
+                    return $e->getValue();
+                }, $item->getCharacteristicValues()));
                 $this->cMerkmalAssoc_arr[$name] = \implode(', ', $values);
             }
         }

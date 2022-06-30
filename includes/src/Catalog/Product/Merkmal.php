@@ -152,12 +152,12 @@ class Merkmal
             return $this;
         }
         $data = $this->db->getObjects(
-            'SELECT tmerkmal.*, fremdSprache.kSprache, COALESCE(fremdSprache.cName, standardSprache.cName) AS cName
-                FROM tmerkmal INNER JOIN tmerkmalsprache AS standardSprache 
-                    ON standardSprache.kMerkmal = tmerkmal.kMerkmal
-                    AND standardSprache.kSprache = :lid
-                LEFT JOIN tmerkmalsprache AS fremdSprache 
-                    ON fremdSprache.kMerkmal = tmerkmal.kMerkmal
+            'SELECT tmerkmal.*, loc.kSprache, COALESCE(loc.cName, def.cName) AS cName
+                FROM tmerkmal INNER JOIN tmerkmalsprache AS def 
+                    ON def.kMerkmal = tmerkmal.kMerkmal
+                    AND def.kSprache = :lid
+                LEFT JOIN tmerkmalsprache AS loc 
+                    ON loc.kMerkmal = tmerkmal.kMerkmal
                 WHERE tmerkmal.kMerkmal = :mid
                 ORDER BY tmerkmal.nSort',
             ['mid' => $id, 'lid' => LanguageHelper::getDefaultLanguage()->getId()]

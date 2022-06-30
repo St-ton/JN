@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -20,7 +20,7 @@ use function Functional\sort;
 class ComparisonList
 {
     /**
-     * @var array
+     * @var Artikel[]
      */
     public array $oArtikel_arr = [];
 
@@ -76,13 +76,13 @@ class ComparisonList
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
         foreach ($compareList->oArtikel_arr as $i => $item) {
-            $product    = new stdClass();
             $tmpProduct = new Artikel($db);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
             } catch (Exception) {
                 continue;
             }
+            $product                       = new stdClass();
             $product->kArtikel             = $item->kArtikel;
             $product->cName                = $tmpProduct->cName ?? '';
             $product->cURLFull             = $tmpProduct->cURLFull ?? '';
@@ -103,9 +103,9 @@ class ComparisonList
         $product           = new stdClass();
         $tmpProduct        = (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
         $product->kArtikel = $productID;
-        $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
-        $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
-        $product->image    = $tmpProduct !== null ? $tmpProduct->Bilder[0] : '';
+        $product->cName    = $tmpProduct->cName ?? '';
+        $product->cURLFull = $tmpProduct->cURLFull ?? '';
+        $product->image    = $tmpProduct->Bilder[0] ?? '';
         if (\is_array($variations) && \count($variations) > 0) {
             $product->Variationen = $variations;
         }
@@ -139,7 +139,6 @@ class ComparisonList
         $characteristics = [];
         $variations      = [];
         foreach ($this->oArtikel_arr as $product) {
-            /** @var Artikel $product */
             if (\count($product->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
                 if (\count($characteristics) > 0) {
@@ -165,11 +164,9 @@ class ComparisonList
                 }
             }
         }
-        if (\count($characteristics) > 0) {
-            \uasort($characteristics, static function (Merkmal $a, Merkmal $b) {
-                return $a->getSort() <=> $b->getSort();
-            });
-        }
+        \uasort($characteristics, static function (Merkmal $a, Merkmal $b) {
+            return $a->getSort() <=> $b->getSort();
+        });
 
         return [$characteristics, $variations];
     }

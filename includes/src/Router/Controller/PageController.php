@@ -8,6 +8,7 @@ use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Mapper\LinkTypeToPageType;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Router\ControllerFactory;
 use JTL\Router\State;
@@ -69,8 +70,13 @@ class PageController extends AbstractController
     {
         parent::init();
         $this->currentLink = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
+        if ($this->currentLink === null) {
+            return false;
+        }
+        $this->state->linkType = $this->currentLink->getLinkType();
+        $this->state->pageType = (new LinkTypeToPageType())->map($this->currentLink->getLinkType());
 
-        return $this->currentLink !== null && $this->currentLink->getLinkType() !== \LINKTYP_404;
+        return $this->state->linkType !== \LINKTYP_404;
     }
 
     /**

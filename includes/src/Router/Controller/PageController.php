@@ -242,7 +242,8 @@ class PageController extends AbstractController
         if ($linkFile === null || empty($linkFile->cDatei)) {
             return;
         }
-        global $oPlugin, $plugin;
+        global $oPlugin, $plugin, $smarty;
+        $smarty   = $this->smarty;
         $pluginID = (int)$linkFile->kPlugin;
         $plugin   = PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID);
         $oPlugin  = $plugin;
@@ -250,8 +251,8 @@ class PageController extends AbstractController
             ->assign('plugin', $plugin)
             ->assign('Link', $this->currentLink);
         if ($linkFile->cTemplate !== null && \mb_strlen($linkFile->cTemplate) > 0) {
-            $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
-                \PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)
+            $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath()
+                . \PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)
                 ->assign('nFullscreenTemplate', 0);
         } else {
             $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .

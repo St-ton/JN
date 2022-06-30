@@ -16,7 +16,7 @@ class KategorieListe
     /**
      * @var Kategorie[]
      */
-    public $elemente;
+    public array $elemente = [];
 
     /**
      * @var bool

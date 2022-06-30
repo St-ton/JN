@@ -84,7 +84,7 @@ class BaseCategory extends AbstractFilter
         $seoData           = [];
         $currentLanguageID = $this->getLanguageID();
         foreach ((array)$this->getValue() as $id) {
-            $seoData[] = new Kategorie($id);
+            $seoData[] = new Kategorie($id, $currentLanguageID);
         }
         foreach ($languages as $language) {
             $id              = $language->getId();

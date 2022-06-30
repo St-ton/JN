@@ -28,7 +28,7 @@ class LocaleRedirectMiddleware implements MiddlewareInterface
     {
         if ($request->getAttribute('lang') === $this->defaultLocale) {
             $uri = $request->getUri();
-            if (str_starts_with($uri->getPath(), '/' . $this->defaultLocale)) {
+            if (\str_starts_with($uri->getPath(), '/' . $this->defaultLocale)) {
                 $path = \mb_substr($uri->getPath(), \strlen('/' . $this->defaultLocale));
 
                 return new RedirectResponse($uri->withPath($path), 301);

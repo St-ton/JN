@@ -61,8 +61,8 @@ class BaseCharacteristic extends AbstractFilter
             $id              = $language->getId();
             $this->cSeo[$id] = \ltrim($characteristicValue->getURLPath($id), '/');
         }
-        if (\mb_strlen($characteristicValue->getValue()) > 0) {
-            $this->setName($characteristicValue->getCharacteristicName() . ': ' . $characteristicValue->getValue());
+        if (($value = $characteristicValue->getValue()) !== null && \mb_strlen($value) > 0) {
+            $this->setName($characteristicValue->getCharacteristicName() . ': ' . $value);
         }
 
         return $this;

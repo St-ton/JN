@@ -25,6 +25,7 @@ use JTL\Router\Middleware\LocaleCheckMiddleware;
 use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
+use JTL\Router\Middleware\SSLRedirectMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
@@ -148,7 +149,8 @@ class Router
             : '';
         $name     = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
 
-        $this->router->middleware(new MaintenanceModeMiddleware());
+        $this->router->middleware(new MaintenanceModeMiddleware($conf['global']));
+        $this->router->middleware(new SSLRedirectMiddleware($conf['global']));
         $this->router->middleware(new WishlistCheckMiddleware());
         $this->router->middleware(new CartcheckMiddleware());
         $this->router->middleware(new LocaleCheckMiddleware());

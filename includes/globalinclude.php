@@ -2,7 +2,6 @@
 
 use JTL\Debug\DataCollector\Smarty;
 use JTL\Filter\Metadata;
-use JTL\Helpers\PHPSettings;
 use JTL\Language\LanguageHelper;
 use JTL\Profiler;
 use JTL\Router\Router;
@@ -31,8 +30,7 @@ function handleFatal(string $message): void
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    handleFatal('Could not get configuration from config file. ' .
-        'For shop installation <a href="install/">click here</a>.');
+    handleFatal('Could not load configuration file. For shop installation <a href="install/">click here</a>.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
@@ -59,10 +57,6 @@ if (!function_exists('Shop')) {
         return Shop::getInstance();
     }
 }
-// PHP memory_limit work around
-if (!PHPSettings::getInstance()->hasMinLimit(64 * 1024 * 1024)) {
-    ini_set('memory_limit', '64M');
-}
 
 try {
     $db = Shop::Container()->getDB();
@@ -73,39 +67,19 @@ if (!defined('CLI_BATCHRUN')) {
     $cache = Shop::Container()->getCache();
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
     $lang = LanguageHelper::getInstance($db, $cache);
-}
-$config = Shopsetting::getInstance()->getAll();
-if (PHP_SAPI !== 'cli'
-    && $config['global']['kaufabwicklung_ssl_nutzen'] === 'P'
-    && (!isset($_SERVER['HTTPS'])
-        || (mb_convert_case($_SERVER['HTTPS'], MB_CASE_LOWER) !== 'on' && (int)$_SERVER['HTTPS'] !== 1))
-) {
-    $https = ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? '' === 'ssl.webpack.de')
-        || str_starts_with($_SERVER['SCRIPT_URI'] ?? '', 'ssl-id')
-        || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '' === 'https')
-        || str_starts_with($_SERVER['HTTP_X_FORWARDED_HOST'] ?? '', 'ssl');
-    if (!$https && isset($_SERVER['SERVER_NAME'], $_SERVER['REQUEST_URI'])) {
-        $lang = '';
-        if (!LanguageHelper::isDefaultLanguageActive(true)) {
-            $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
-                ? '&lang=' . $_SESSION['cISOSprache']
-                : '?lang=' . $_SESSION['cISOSprache'];
-        }
-        header('Location: https://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . $lang, true, 301);
-        exit();
+    if (!JTL_INCLUDE_ONLY_DB) {
+        $config   = Shopsetting::getInstance()->getAll();
+        $debugbar = Shop::Container()->getDebugBar();
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+        Shop::setRouter(new Router($db, $cache, new State(), Shop::Container()->getAlertService(), $config));
+        $globalMetaData = Metadata::getGlobalMetaData();
+        $session        = (defined('JTLCRON') && JTLCRON === true)
+            ? Frontend::getInstance(true, true, 'JTLCRON')
+            : Frontend::getInstance();
+        Shop::bootstrap();
+        executeHook(HOOK_GLOBALINCLUDE_INC);
+        $session->deferredUpdate();
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+        $debugbar->addCollector(new Smarty(Shop::Smarty()));
     }
-}
-if (!JTL_INCLUDE_ONLY_DB && !defined('CLI_BATCHRUN')) {
-    $debugbar = Shop::Container()->getDebugBar();
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
-    Shop::setRouter(new Router($db, $cache, new State(), Shop::Container()->getAlertService(), $config));
-    $globalMetaData = Metadata::getGlobalMetaData();
-    $session        = (defined('JTLCRON') && JTLCRON === true)
-        ? Frontend::getInstance(true, true, 'JTLCRON')
-        : Frontend::getInstance();
-    Shop::bootstrap();
-    executeHook(HOOK_GLOBALINCLUDE_INC);
-    $session->deferredUpdate();
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-    $debugbar->addCollector(new Smarty(Shop::Smarty()));
 }

@@ -27,7 +27,7 @@ class Kategorie
     use RoutableTrait;
 
     /**
-     * @var array
+     * @var string[]
      */
     public static array $mapping = [
         'kSprache'                   => 'CurrentLanguageID',
@@ -273,7 +273,7 @@ class Kategorie
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
             ['kid' => $id, 'cgid' => $customerGroupID]
         );
-        if (false && $items === null) {
+        if (false && $items === null) { // @todo!!!
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();

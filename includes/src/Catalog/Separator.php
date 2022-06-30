@@ -72,13 +72,12 @@ class Separator
             Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
         if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
-            foreach (\array_keys(\get_object_vars($data)) as $member) {
-                $this->$member = $data->$member;
-            }
-            $this->nEinheit        = (int)$this->nEinheit;
-            $this->nDezimalstellen = (int)$this->nDezimalstellen;
-            $this->kSprache        = (int)$this->nEinheit;
-            $this->kTrennzeichen   = (int)$this->kTrennzeichen;
+            $this->kTrennzeichen     = (int)$data->kTrennzeichen;
+            $this->kSprache          = (int)$data->kSprache;
+            $this->nEinheit          = (int)$data->nEinheit;
+            $this->nDezimalstellen   = (int)$data->nDezimalstellen;
+            $this->cDezimalZeichen   = $data->cDezimalZeichen;
+            $this->cTausenderZeichen = $data->cTausenderZeichen;
         }
 
         return $this;
@@ -135,8 +134,7 @@ class Separator
     public static function getUnit(int $unitID, int $languageID, $qty = -1)
     {
         if (!$languageID) {
-            $language   = LanguageHelper::getDefaultLanguage();
-            $languageID = (int)$language->kSprache;
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
         if ($unitID > 0 && $languageID > 0) {
             $data = self::getUnitObject($unitID, $languageID);

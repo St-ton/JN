@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -25,22 +25,22 @@ class NavigationEntry
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * @var string
      */
-    private $urlFull;
+    private string $urlFull;
 
     /**
      * @var bool
      */
-    private $hasChild = false;
+    private bool $hasChild = false;
 
     /**
      * @return string

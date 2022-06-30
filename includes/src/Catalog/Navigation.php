@@ -501,7 +501,7 @@ class Navigation
                 break;
 
             default:
-                if ($this->link !== null && $this->link instanceof Link) {
+                if ($this->link instanceof Link) {
                     $elems = $this->linkService->getParentLinks($this->link->getID())
                         ->map(static function (LinkInterface $l) {
                             $res = new NavigationEntry();

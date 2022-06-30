@@ -756,7 +756,7 @@ class Kategorie
      */
     public function getCategoryFunctionAttributes(int $idx = null): array
     {
-        return $this->categoryAttributes[$idx ?? $this->currentLanguageID];
+        return $this->categoryFunctionAttributes[$idx ?? $this->currentLanguageID];
     }
 
     /**

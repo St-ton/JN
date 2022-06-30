@@ -71,13 +71,13 @@
 
                                         {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                             {block name='account-order-item-characteristics'}
-                                                {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
                                                     <li class="characteristic">
-                                                        {$oMerkmale_arr->cName}:
+                                                        {$characteristic->getName()}:
                                                         <span class="values">
-                                                            {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                {if !$oWert@first}, {/if}
-                                                                {$oWert->cWert}
+                                                            {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                                {if !$characteristicValue@first}, {/if}
+                                                                {$characteristicValue->getValue()}
                                                             {/foreach}
                                                         </span>
                                                     </li>

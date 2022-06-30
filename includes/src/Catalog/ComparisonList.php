@@ -80,7 +80,7 @@ class ComparisonList
             $tmpProduct = new Artikel($db);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             $product->kArtikel             = $item->kArtikel;
@@ -136,28 +136,28 @@ class ComparisonList
      */
     public function buildAttributeAndVariation(): array
     {
-        $attributes = [];
-        $variations = [];
+        $characteristics = [];
+        $variations      = [];
         foreach ($this->oArtikel_arr as $product) {
             /** @var Artikel $product */
             if (\count($product->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
-                if (\count($attributes) > 0) {
-                    foreach ($product->oMerkmale_arr as $oMerkmale) {
-                        if (!$this->containsAttribute($attributes, $oMerkmale->kMerkmal)) {
-                            $attributes[] = $oMerkmale;
+                if (\count($characteristics) > 0) {
+                    foreach ($product->oMerkmale_arr as $characteristic) {
+                        if (!$this->containsCharacteristic($characteristics, $characteristic->getID())) {
+                            $characteristics[] = $characteristic;
                         }
                     }
                 } else {
-                    $attributes = $product->oMerkmale_arr;
+                    $characteristics = $product->oMerkmale_arr;
                 }
             }
             // Falls ein Artikel min. eine Variation enthält
             if (\count($product->Variationen) > 0) {
                 if (\count($variations) > 0) {
-                    foreach ($product->Variationen as $oVariationen) {
-                        if (!$this->containsVariation($variations, $oVariationen->cName)) {
-                            $variations[] = $oVariationen;
+                    foreach ($product->Variationen as $variation) {
+                        if (!$this->containsVariation($variations, $variation->cName)) {
+                            $variations[] = $variation;
                         }
                     }
                 } else {
@@ -165,13 +165,13 @@ class ComparisonList
                 }
             }
         }
-        if (\count($attributes) > 0) {
-            \uasort($attributes, static function (Merkmal $a, Merkmal $b) {
-                return $a->nSort <=> $b->nSort;
+        if (\count($characteristics) > 0) {
+            \uasort($characteristics, static function (Merkmal $a, Merkmal $b) {
+                return $a->getSort() <=> $b->getSort();
             });
         }
 
-        return [$attributes, $variations];
+        return [$characteristics, $variations];
     }
 
     /**
@@ -180,11 +180,25 @@ class ComparisonList
      * @return bool
      * @former istMerkmalEnthalten()
      * @since 5.0.0
+     * @deprecated since 5.2.0
      */
     public function containsAttribute(array $attributes, int $id): bool
     {
-        return some($attributes, static function ($e) use ($id) {
-            return (int)$e->kMerkmal === $id;
+        \trigger_error(__METHOD__ . ' is deprecated. User containsCharacteristic() instead.', \E_USER_DEPRECATED);
+        return $this->containsCharacteristic($attributes, $id);
+    }
+
+    /**
+     * @param array $characteristics
+     * @param int   $id
+     * @return bool
+     * @former istMerkmalEnthalten()
+     * @since 5.2.0
+     */
+    public function containsCharacteristic(array $characteristics, int $id): bool
+    {
+        return some($characteristics, static function (Merkmal $e) use ($id) {
+            return $e->getID() === $id;
         });
     }
 

@@ -86,7 +86,8 @@ class PageController extends AbstractController
             $this->state->languageID = Shop::getLanguageID();
         }
         $this->state->is404  = true;
-        $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+        $this->currentLink   = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_404);
+        $this->state->linkID = $this->currentLink->getID();
         $sitemap             = new Sitemap($this->db, $this->cache, $this->config);
         $sitemap->assignData($this->smarty);
         Shop::setPageType(\PAGE_404);

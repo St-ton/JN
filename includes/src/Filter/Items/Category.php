@@ -254,9 +254,7 @@ class Category extends BaseCategory
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->kKategorie)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($category->cName)

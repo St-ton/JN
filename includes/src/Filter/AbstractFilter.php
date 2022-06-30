@@ -2,6 +2,8 @@
 
 namespace JTL\Filter;
 
+use JTL\Shop;
+
 /**
  * Class AbstractFilter
  * @package JTL\Filter
@@ -519,7 +521,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getFilterConfig()->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID() ?: Shop::getLanguageID();
     }
 
     /**

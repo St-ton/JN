@@ -2,7 +2,7 @@
     {if isset($linkgroupIdentifier)}
     {strip}
         {assign var=checkLinkParents value=false}
-        {assign var=$activeId value=0}
+        {assign var=activeId value=0}
         {if isset($Link) && $Link->getID() > 0}
             {assign var=activeId value=$Link->getID()}
         {elseif JTL\Shop::$kLink > 0}

@@ -21,6 +21,8 @@ use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\RootController;
+use JTL\Router\Controller\SearchQueryController;
+use JTL\Router\Controller\SearchSpecialController;
 use JTL\Router\Middleware\CartcheckMiddleware;
 use JTL\Router\Middleware\CurrencyCheckMiddleware;
 use JTL\Router\Middleware\LocaleCheckMiddleware;
@@ -32,7 +34,6 @@ use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ResponseFactory;
@@ -98,6 +99,8 @@ class Router
     public const TYPE_NEWS                 = 'news';
     public const TYPE_PAGE                 = 'pages';
     public const TYPE_PRODUCT              = 'products';
+    public const TYPE_SEARCH_SPECIAL       = 'searchspecials';
+    public const TYPE_SEARCH_QUERY         = 'searchqueries';
 
     /**
      * @var ControllerInterface
@@ -119,6 +122,8 @@ class Router
         array                       $conf
     ) {
         $products        = new ProductController($db, $cache, $state, $conf, $alert);
+        $specials        = new SearchSpecialController($db, $cache, $state, $conf, $alert);
+        $queries         = new SearchQueryController($db, $cache, $state, $conf, $alert);
         $characteristics = new CharacteristicValueController($db, $cache, $state, $conf, $alert);
         $categories      = new CategoryController($db, $cache, $state, $conf, $alert);
         $manufacturers   = new ManufacturerController($db, $cache, $state, $conf, $alert);
@@ -200,6 +205,24 @@ class Router
                     ->setName('ROUTE_CATEGORY_BY_ID' . $dynName . 'POST');
                 $this->router->post($dyn . '/categories/{' . $name . '}', [$categories, 'getResponse'])
                     ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/searchspecials/{id:\d+}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName);
+                $this->router->get($dyn . '/searchspecials/{' . $name . '}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/searchspecials/{id:\d+}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/searchspecials/{' . $name . '}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/searchqueries/{id:\d+}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName);
+                $this->router->get($dyn . '/searchqueries/{' . $name . '}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/searchqueries/{id:\d+}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/searchqueries/{' . $name . '}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName . 'POST');
 
                 $this->router->get($dyn . '/manufacturers/{id:\d+}', [$manufacturers, 'getResponse'])
                     ->setName('ROUTE_MANUFACTURER_BY_ID' . $dynName);
@@ -312,13 +335,13 @@ class Router
             self::TYPE_NEWS => 'ROUTE_NEWS_BY_',
             self::TYPE_PAGE => 'ROUTE_PAGE_BY_',
             self::TYPE_PRODUCT => 'ROUTE_PRODUCT_BY_',
+            self::TYPE_SEARCH_SPECIAL => 'ROUTE_SEARCHSPECIAL_BY_',
+            self::TYPE_SEARCH_QUERY => 'ROUTE_SEARCHQUERY_BY_',
             default => 'ROUTE_XXX_BY_'
         };
         $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
-            && ($this->ignoreDefaultLocale === false
-                || ($replacements['lang'] ?? '') !== $this->defaultLocale
-            )
+            && ($this->ignoreDefaultLocale === false || ($replacements['lang'] ?? '') !== $this->defaultLocale)
         ) {
             $name .= '_LOCALIZED';
         }

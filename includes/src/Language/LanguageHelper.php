@@ -1146,34 +1146,36 @@ class LanguageHelper
         }
         if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangCode     = Shop::getLanguageCode();
+            $currentLangID       = Shop::getLanguageID();
             foreach ($currencies as $currency) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
-                    $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
-                } elseif ($specialPage !== null) {
-                    $url = $specialPage->getURL();
-                    if (empty($url)) {
-                        if ($pageType === \PAGE_STARTSEITE) {
-                            $url = '';
-                        } elseif ($specialPage->getFileName() !== null) {
-                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false);
-                            // check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) {
-                                // no SEO link - fall back to php file with GET param
-                                $url = $shopURL . $specialPage->getFileName();
-                            } else {
-                                // there is a SEO link - make it a full URL
-                                $url = $linkService->getStaticRoute($specialPage->getFileName());
-                            }
-                        }
-                    }
-                } elseif ($page !== null) {
-                    $url = $page->getURL();
-                } else {
-                    $url = $productFilter->getFilterURL()->getURL();
+                $code       = $currency->getCode();
+                $additional = $currency->getID() === $currentCurrencyCode
+                    ? []
+                    : ['currency' => $code];
+                if (isset($AktuellerArtikel)) {
+                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
+                    $url = $AktuellerArtikel->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
                 }
-                if ($currency->getID() !== $currentCurrencyCode) {
-                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $currency->getCode();
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                $url = $productFilter->getFilterURL()->getURL(null, false, $additional);
+                if ($currency->getID() !== $currentCurrencyCode && !\str_contains($url, '/' . $code . '/')) {
+                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $code;
                 }
                 $currency->setURL($url);
                 $currency->setURLFull(!\str_contains($url, Shop::getURL())

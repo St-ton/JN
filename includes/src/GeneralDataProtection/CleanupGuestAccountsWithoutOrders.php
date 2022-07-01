@@ -58,16 +58,16 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
             // (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
 
             $customer = new Customer((int)$guestAccount->kKunde);
-            $r = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
+            $r        = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
 
             // --TO-CHECK-- the following ist wrong - it's only 'n idea
             switch ($customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0)) {
-                case Customer::CUSTOMER_DELETE_DEACT :
-                case Customer::CUSTOMER_DELETE_DONE :
+                case Customer::CUSTOMER_DELETE_DEACT:
+                case Customer::CUSTOMER_DELETE_DONE:
                     break;
-                case Customer::CUSTOMER_DELETE_NO :
+                case Customer::CUSTOMER_DELETE_NO:
                     break;
-                default :
+                default:
                     break;
             }
             $oLogger->debug('remove-call: '.print_r($r, true));   // --DEBUG--

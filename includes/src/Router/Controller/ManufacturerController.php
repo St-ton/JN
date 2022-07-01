@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller;
 
 use JTL\Router\State;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -94,7 +93,6 @@ class ManufacturerController extends AbstractController
             $this->db,
             $this->cache,
             $this->state,
-            Frontend::getCustomer()->getGroupID(),
             Shopsetting::getInstance()->getAll(),
             Shop::Container()->getAlertService()
         );

@@ -57,6 +57,11 @@ abstract class AbstractController implements ControllerInterface
     protected ?int $languageID = null;
 
     /**
+     * @var int|null
+     */
+    protected ?int $customerGroupID = null;
+
+    /**
      * @var Artikel|null
      */
     protected ?Artikel $currentProduct = null;
@@ -110,7 +115,6 @@ abstract class AbstractController implements ControllerInterface
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param State                 $state
-     * @param int                   $customerGroupID
      * @param array                 $config
      * @param AlertServiceInterface $alertService
      */
@@ -118,7 +122,6 @@ abstract class AbstractController implements ControllerInterface
         protected DbInterface $db,
         protected JTLCacheInterface $cache,
         protected State $state,
-        protected int $customerGroupID,
         protected array $config,
         protected AlertServiceInterface $alertService
     ) {
@@ -132,7 +135,8 @@ abstract class AbstractController implements ControllerInterface
      */
     public function init(): bool
     {
-        $this->languageID = $this->state->languageID ?: Shop::getLanguageID();
+        $this->languageID      = $this->state->languageID ?: Shop::getLanguageID();
+        $this->customerGroupID = Frontend::getCustomerGroup()->getID();
 
         return true;
     }
@@ -235,7 +239,6 @@ abstract class AbstractController implements ControllerInterface
             $this->db,
             $this->cache,
             $this->state,
-            $this->customerGroupID,
             $this->config,
             $this->alertService
         );

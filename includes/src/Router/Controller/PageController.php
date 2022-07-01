@@ -286,7 +286,6 @@ class PageController extends AbstractController
             $this->db,
             $this->cache,
             $this->state,
-            $this->customerGroupID,
             $this->config,
             $this->alertService
         );

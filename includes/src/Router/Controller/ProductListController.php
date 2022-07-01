@@ -87,7 +87,7 @@ class ProductListController extends AbstractController
         ) {
             $_SESSION['ArtikelProSeite'] = \min(
                 (int)$this->config['artikeluebersicht']['artikeluebersicht_artikelproseite'],
-                ARTICLES_PER_PAGE_HARD_LIMIT
+                \ARTICLES_PER_PAGE_HARD_LIMIT
             );
         }
         $this->searchResults->getProducts()->transform(function ($product) {

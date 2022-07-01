@@ -16,7 +16,6 @@ use JTL\News\CategoryList;
 use JTL\News\Item;
 use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
-use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -54,49 +53,17 @@ class NewsController extends AbstractController
     private string $noticeMsg = '';
 
     /**
+     * @var string
+     */
+    protected string $tseoSelector = 'kHersteller';
+
+    /**
      * @inheritdoc
      */
     public function init(): bool
     {
         parent::init();
         return true;
-    }
-    /**
-     * @inheritdoc
-     */
-    public function getStateFromSlug(array $args): State
-    {
-        $newsID  = (int)($args['id'] ?? 0);
-        $newItem = $args['name'] ?? null;
-        if ($newsID < 1 && $newItem === null) {
-            return $this->state;
-        }
-
-        $seo = $newsID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key 
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kNews', 'kid' => $newsID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kNews', 'seo' => $newItem]
-            );
-        if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->updateProductFilter();
-        }
-        $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
-        $seo->kKey     = (int)$seo->kKey;
-
-        return $this->updateState($seo, $slug);
     }
 
     /**

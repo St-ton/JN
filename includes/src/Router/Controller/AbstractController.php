@@ -28,6 +28,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
 use JTL\Minify\MinifyService;
+use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
@@ -110,6 +111,11 @@ abstract class AbstractController implements ControllerInterface
      * @var string|null
      */
     protected ?string $metaKeywords = null;
+
+    /**
+     * @var string
+     */
+    protected string $tseoSelector = '';
 
     /**
      * @param DbInterface           $db
@@ -214,12 +220,53 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * @param int $id
+     * @param int $languageID
+     * @return State
+     */
+    protected function handleSeoError(int $id, int $languageID): State
+    {
+        return $this->state;
+    }
+
+    /**
      * @param array $args
      * @return State
      */
     public function getStateFromSlug(array $args): State
     {
-        return $this->state;
+        $id   = (int)($args['id'] ?? 0);
+        $name = $args['name'] ?? null;
+        if ($id < 1 && $name === null) {
+            return $this->state;
+        }
+        if ($name !== null) {
+            $parser = new DefaultParser($this->db, $this->state);
+            $name   = $parser->parse($name);
+        }
+        $seo = $id > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key
+                      AND kKey = :kid
+                      AND kSprache = :lid',
+                ['key' => $this->tseoSelector, 'kid' => $id, 'lid' => $this->state->languageID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => $this->tseoSelector, 'seo' => $name]
+            );
+        if ($seo === null) {
+            return $this->handleSeoError($id, $this->state->languageID);
+        }
+        $slug          = $seo->cSeo;
+        $seo->kKey     = (int)$seo->kKey;
+        $seo->kSprache = (int)$seo->kSprache;
+
+        return $this->updateState($seo, $slug);
     }
 
     /**

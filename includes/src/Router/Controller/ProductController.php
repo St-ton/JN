@@ -29,6 +29,11 @@ use Psr\Http\Message\ServerRequestInterface;
 class ProductController extends AbstractController
 {
     /**
+     * @var string
+     */
+    protected string $tseoSelector = 'kArtikel';
+
+    /**
      * @inheritdoc
      */
     public function init(): bool
@@ -59,57 +64,20 @@ class ProductController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getStateFromSlug(array $args): State
+    protected function handleSeoError(int $id, int $languageID): State
     {
-        $productID   = (int)($args['id'] ?? 0);
-        $productName = $args['name'] ?? null;
-        if ($productID < 1 && $productName === null) {
-            return $this->state;
-        }
-        $seo = $productID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kArtikel', 'kid' => $productID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kArtikel', 'seo' => $productName]
-            );
-        if ($seo === null) {
-            return $this->handleSeoError($productID, $this->state->languageID);
-        }
-        $slug          = $seo->cSeo;
-        $seo->kKey     = (int)$seo->kKey;
-        $seo->kSprache = (int)$seo->kSprache;
-
-        return $this->updateState($seo, $slug);
-    }
-
-    /**
-     * @param int $productID
-     * @param int $languageID
-     * @return State
-     */
-    private function handleSeoError(int $productID, int $languageID): State
-    {
-        if ($productID > 0) {
+        if ($id > 0) {
             $exists = $this->db->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel
                     WHERE kArtikel = :pid',
-                ['pid' => $productID]
+                ['pid' => $id]
             );
             if ($exists !== null) {
                 $seo = (object)[
                     'cSeo'     => '',
-                    'cKey'     => 'kArtikel',
-                    'kKey'     => $productID,
+                    'cKey'     => $this->tseoSelector,
+                    'kKey'     => $id,
                     'kSprache' => $languageID
                 ];
 

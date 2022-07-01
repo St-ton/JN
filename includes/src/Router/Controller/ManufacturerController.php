@@ -16,62 +16,27 @@ use Psr\Http\Message\ServerRequestInterface;
 class ManufacturerController extends AbstractController
 {
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function getStateFromSlug(array $args): State
-    {
-        $manufacturerID   = (int)($args['id'] ?? 0);
-        $manufacturerName = $args['name'] ?? null;
-        if ($manufacturerID < 1 && $manufacturerName === null) {
-            return $this->state;
-        }
-
-        $seo = $manufacturerID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kHersteller', 'kid' => $manufacturerID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND cSeo = :seo
-                      AND kSprache = :lid',
-                ['key' => 'kHersteller', 'seo' => $manufacturerName, 'lid' => $this->state->languageID]
-            );
-        if ($seo === null) {
-            return $this->handleSeoError($manufacturerID, $this->state->languageID);
-        }
-        $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
-        $seo->kKey     = (int)$seo->kKey;
-
-        return $this->updateState($seo, $slug);
-    }
+    protected string $tseoSelector = 'kHersteller';
 
     /**
-     * @param int $manufacturerID
-     * @param int $languageID
-     * @return State
+     * @inheritdoc
      */
-    private function handleSeoError(int $manufacturerID, int $languageID): State
+    protected function handleSeoError(int $id, int $languageID): State
     {
-        if ($manufacturerID > 0) {
+        if ($id > 0) {
             $exists = $this->db->getSingleObject(
                 'SELECT kHersteller
                     FROM thersteller
                     WHERE kHersteller = :pid',
-                ['pid' => $manufacturerID]
+                ['pid' => $id]
             );
             if ($exists !== null) {
                 $seo = (object)[
                     'cSeo'     => '',
-                    'cKey'     => 'kHersteller',
-                    'kKey'     => $manufacturerID,
+                    'cKey'     => $this->tseoSelector,
+                    'kKey'     => $id,
                     'kSprache' => $languageID
                 ];
 

@@ -11,7 +11,6 @@ use JTL\Helpers\URL;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Router\ControllerFactory;
-use JTL\Router\State;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
@@ -26,42 +25,9 @@ use Psr\Http\Message\ServerRequestInterface;
 class PageController extends AbstractController
 {
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function getStateFromSlug(array $args): State
-    {
-        $linkID   = (int)($args['id'] ?? 0);
-        $linkName = $args['name'] ?? null;
-        if ($linkID < 1 && $linkName === null) {
-            return $this->state;
-        }
-
-        $seo = $linkID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kLink', 'kid' => $linkID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kLink', 'seo' => $linkName]
-            );
-        if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->state;
-        }
-        $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
-        $seo->kKey     = (int)$seo->kKey;
-
-        return $this->updateState($seo, $slug);
-    }
+    protected string $tseoSelector = 'kLink';
 
     /**
      * @inheritdoc

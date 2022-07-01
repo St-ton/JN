@@ -2,9 +2,6 @@
 
 namespace JTL\Router\Middleware;
 
-use JTL\Cart\CartHelper;
-use JTL\Language\LanguageHelper;
-use JTL\Shop;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

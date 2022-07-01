@@ -6,10 +6,10 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;
@@ -213,6 +213,7 @@ final class Link extends AbstractLink implements RoutableInterface
      */
     public function __construct(DbInterface $db)
     {
+        $this->routeType  = Router::TYPE_PAGE;
         $this->db         = $db;
         $this->childLinks = new Collection();
         $this->initLanguageID();
@@ -366,21 +367,10 @@ final class Link extends AbstractLink implements RoutableInterface
                 $this->setURL($link->linkURL, $link->languageID);
             } else {
                 $this->setSEO($link->localizedUrl ?? '', $link->languageID);
+                $this->setSlug($link->localizedUrl ?? '', $link->languageID);
                 if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
                     // @todo!!!
                     $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
-                } else {
-                    $localeCode = Text::convertISO2ISO639($link->cISOSprache);
-                    $route      = Shop::getRouter()->getPathByLinkType(
-                        $this->getLinkType(),
-                        ['lang' => $localeCode, 'name' => $link->localizedUrl ?? '', 'id' => $link->kLink]
-                    );
-                    $this->setSlug($route, $link->languageID);
-                    $this->setURL(Shop::getURL() . $route, $link->languageID);
-//                    $this->setURL(
-//                        Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl,
-//                        $link->languageID
-//                    );
                 }
             }
             $this->setHandler($link->handler ?? '');
@@ -388,6 +378,9 @@ final class Link extends AbstractLink implements RoutableInterface
             if ($this->id === 0 && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
+        }
+        if ($this->getLinkType() !== \LINKTYP_EXTERNE_URL) {
+            $this->createBySlug();
         }
         $this->setChildLinks($this->buildChildLinks());
         \executeHook(\HOOK_LINK_MAPPED, ['link' => $this]);

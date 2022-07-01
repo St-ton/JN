@@ -679,19 +679,21 @@ class ProductFilter
         }
         // @todo: how to handle \mb_strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = $this->db->select(
+            $queryData = $this->db->select(
                 'tsuchanfrage',
                 'kSuchanfrage',
                 $params['kSuchanfrage']
             );
-            if (isset($oSuchanfrage->cSuche) && \mb_strlen($oSuchanfrage->cSuche) > 0) {
-                $this->search->setName($oSuchanfrage->cSuche);
+            if (isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
+                $this->search->setName($queryData->cSuche);
             }
             // Suchcache beachten / erstellen
             $searchName = $this->search->getName();
             if (!empty($searchName)) {
+                $this->searchQuery->setName($searchName);
                 $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
-                $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
+                $this->searchQuery->setID((int)$queryData->kSuchanfrage);
+                $this->searchQuery->init($queryData->cSuche);
                 $this->searchQuery->setSearchCacheID($this->search->getSearchCacheID())
                     ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
@@ -702,7 +704,7 @@ class ProductFilter
             $params['cSuche'] = Text::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage = $this->db->select(
+            $queryData = $this->db->select(
                 'tsuchanfrage',
                 'cSuche',
                 $params['cSuche'],
@@ -713,13 +715,13 @@ class ProductFilter
                 false,
                 'kSuchanfrage'
             );
-            $kSuchCache   = $this->searchQuery->editSearchCache();
-            $kSuchAnfrage = isset($oSuchanfrage->kSuchanfrage)
-                ? (int)$oSuchanfrage->kSuchanfrage
+            $cacheID   = $this->searchQuery->editSearchCache();
+            $queryID   = isset($queryData->kSuchanfrage)
+                ? (int)$queryData->kSuchanfrage
                 : $params['kSuchanfrage'];
-            $this->search->setSearchCacheID($kSuchCache);
-            $this->searchQuery->setSearchCacheID($kSuchCache)
-                ->init($kSuchAnfrage)
+            $this->search->setSearchCacheID($cacheID);
+            $this->searchQuery->setSearchCacheID($cacheID)
+                ->init($queryID)
                 ->setName($params['cSuche']);
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];

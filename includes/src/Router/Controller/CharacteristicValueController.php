@@ -2,26 +2,11 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Catalog\Product\ArtikelListe;
-use JTL\Catalog\Product\Bestseller;
-use JTL\Extensions\SelectionWizard\Wizard;
-use JTL\Filter\Metadata;
-use JTL\Filter\Pagination\ItemFactory;
-use JTL\Filter\Pagination\Pagination;
-use JTL\Helpers\Category;
-use JTL\Helpers\Product;
-use JTL\Helpers\Request;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
-use JTL\Session\Frontend;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class CharacteristicValueController

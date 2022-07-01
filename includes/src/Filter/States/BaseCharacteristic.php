@@ -71,6 +71,18 @@ class BaseCharacteristic extends AbstractFilter
     /**
      * @inheritdoc
      */
+    public function getRoute(array $additional): ?string
+    {
+        $currentLanguageID   = $this->getLanguageID();
+        $characteristicValue = new MerkmalWert($this->getValue(), $currentLanguageID);
+        $characteristicValue->createBySlug($this->getValue(), $additional);
+
+        return \ltrim($characteristicValue->getURLPath($currentLanguageID), '/');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPrimaryKeyRow(): string
     {
         return 'kMerkmalWert';

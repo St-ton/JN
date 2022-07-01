@@ -811,7 +811,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isParamExclusive(): bool
     {
@@ -819,7 +819,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setParamExclusive(bool $paramExclusive): FilterInterface
     {
@@ -829,7 +829,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilterName(): ?string
     {
@@ -837,7 +837,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFilterName(?string $characteristic): FilterInterface
     {
@@ -859,8 +859,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @param string $query
-     * @return string
+     * @inheritdoc
      */
     public function getCacheID(string $query): string
     {
@@ -875,5 +874,13 @@ abstract class AbstractFilter implements FilterInterface
             . '_' . $this->getLanguageID()
             . '_' . \md5($query)
             . $valuePart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        return null;
     }
 }

@@ -104,6 +104,25 @@ class BaseCategory extends AbstractFilter
     /**
      * @inheritdoc
      */
+    public function getRoute(array $additional): ?string
+    {
+        if ($this->getValue() <= 0) {
+            return null;
+        }
+        $currentLanguageID = $this->getLanguageID();
+        foreach ((array)$this->getValue() as $id) {
+            $category = new Kategorie($id, $currentLanguageID);
+            $category->createBySlug($id, $additional);
+
+            return \ltrim($category->getURLPath($currentLanguageID), '/');
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPrimaryKeyRow(): string
     {
         return 'kKategorie';

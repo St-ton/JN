@@ -37,11 +37,12 @@ class ProductFilterURL
     }
 
     /**
-     * @param FilterInterface|null $extraFilter
-     * @param bool                 $canonical
+     * @param FilterInterface|stdClass|null $extraFilter
+     * @param bool                          $canonical
+     * @param array                         $additional
      * @return string
      */
-    public function getURL($extraFilter = null, $canonical = false): string
+    public function getURL($extraFilter = null, bool $canonical = false, array $additional = []): string
     {
         $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -61,7 +62,10 @@ class ProductFilterURL
             'misc'   => []
         ];
         if ($base->isInitialized()) {
-            $filterSeoUrl = $base->getSeo($languageID);
+            $filterSeoUrl = \count($additional) > 0
+                ? $base->getRoute($additional)
+                : null;
+            $filterSeoUrl = $filterSeoUrl ?? $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = $base->getValue();

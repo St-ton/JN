@@ -98,6 +98,18 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @inheritdoc
      */
+    public function getRoute(array $additional): ?string
+    {
+        $currentLanguageID = $this->getLanguageID();
+        $manufacturer      = new Hersteller($this->getValue(), $currentLanguageID);
+        $manufacturer->createBySlug($this->getValue(), $additional);
+
+        return \ltrim($manufacturer->getURLPath($currentLanguageID), '/');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getPrimaryKeyRow(): string
     {
         return 'kHersteller';

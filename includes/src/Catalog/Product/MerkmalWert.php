@@ -25,6 +25,11 @@ class MerkmalWert
     /**
      * @var int
      */
+    private int $id = 0;
+
+    /**
+     * @var int
+     */
     public int $characteristicID = 0;
 
     /**
@@ -165,6 +170,7 @@ class MerkmalWert
     {
         $languageID = $languageID ?: Shop::getLanguageID();
         $cacheID    = 'mmw_' . $id;
+        $this->initLanguageID($languageID);
         if (Shop::has($cacheID)) {
             foreach (\get_object_vars(Shop::get($cacheID)) as $k => $v) {
                 $this->$k = $v;
@@ -175,26 +181,29 @@ class MerkmalWert
         }
         $defaultLanguageID = LanguageHelper::getDefaultLanguage()->getId();
         $data              = $this->db->getObjects(
-            'SELECT tmerkmalwert.*, COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
-                    COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
-                    COALESCE(fremdSprache.cMetaTitle, standardSprache.cMetaTitle) AS cMetaTitle, 
-                    COALESCE(fremdSprache.cMetaKeywords, standardSprache.cMetaKeywords) AS cMetaKeywords,
-                    COALESCE(fremdSprache.cMetaDescription, standardSprache.cMetaDescription) AS cMetaDescription, 
-                    COALESCE(fremdSprache.cBeschreibung, standardSprache.cBeschreibung) AS cBeschreibung,
-                    COALESCE(fremdSprache.cSeo, standardSprache.cSeo) AS cSeo,
-                    tmerkmalsprache.cName
+            'SELECT tmerkmalwert.*, COALESCE(loc.kSprache, def.kSprache) AS kSprache, 
+                    COALESCE(loc.cWert, def.cWert) AS cWert,
+                    COALESCE(loc.cMetaTitle, def.cMetaTitle) AS cMetaTitle, 
+                    COALESCE(loc.cMetaKeywords, def.cMetaKeywords) AS cMetaKeywords,
+                    COALESCE(loc.cMetaDescription, def.cMetaDescription) AS cMetaDescription, 
+                    COALESCE(loc.cBeschreibung, def.cBeschreibung) AS cBeschreibung,
+                    COALESCE(loc.cSeo, def.cSeo) AS cSeo,
+                    COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName
                 FROM tmerkmalwert 
-                INNER JOIN tmerkmalwertsprache AS standardSprache 
-                    ON standardSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    AND standardSprache.kSprache = :lid
-                LEFT JOIN tmerkmalwertsprache AS fremdSprache 
-                    ON fremdSprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                JOIN tmerkmalsprache
+                INNER JOIN tmerkmalwertsprache AS def 
+                    ON def.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                    AND def.kSprache = :lid
+                JOIN tmerkmal
+					ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                LEFT JOIN tmerkmalwertsprache AS loc 
+                    ON loc.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                LEFT JOIN tmerkmalsprache
                     ON tmerkmalsprache.kMerkmal = tmerkmalwert.kMerkmal
-                    AND tmerkmalsprache.kSprache = fremdSprache.kSprache
+                    AND tmerkmalsprache.kSprache = loc.kSprache
                 WHERE tmerkmalwert.kMerkmalWert = :mid',
             ['mid' => $id, 'lid' => $defaultLanguageID]
         );
+        $this->setID($id);
         $this->map($data);
         $this->createBySlug($id);
         $this->setCurrentLanguageID($languageID);
@@ -248,15 +257,25 @@ class MerkmalWert
      */
     public function getID(): int
     {
-        return $this->characteristicID;
+        return $this->id;
     }
 
     /**
+     * @param int $id
+     * @return void
+     */
+    public function setID(int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param int|null $idx
      * @return string|null
      */
     public function getValue(int $idx = null): ?string
     {
-        return $this->values[$idx ?? $this->currentLanguageID] ?? null;
+        return $this->values[$idx ?? $this->currentLanguageID] ?? $this->values[$this->fallbackLanguageID] ?? null;
     }
 
     /**
@@ -323,7 +342,9 @@ class MerkmalWert
      */
     public function getMetaKeywords(int $idx = null): ?string
     {
-        return $this->metaTitles[$idx ?? $this->currentLanguageID] ?? $this->metaTitles[$this->fallbackLanguageID];
+        return $this->metaTitles[$idx ?? $this->currentLanguageID]
+            ?? $this->metaTitles[$this->fallbackLanguageID]
+            ?? null;
     }
 
     /**
@@ -343,7 +364,8 @@ class MerkmalWert
     public function getMetaDescription(int $idx = null): ?string
     {
         return $this->metaDescriptions[$idx ?? $this->currentLanguageID]
-            ?? $this->metaDescriptions[$this->fallbackLanguageID];
+            ?? $this->metaDescriptions[$this->fallbackLanguageID]
+            ?? null;
     }
 
     /**
@@ -362,7 +384,9 @@ class MerkmalWert
      */
     public function getMetaTitle(int $idx = null): ?string
     {
-        return $this->metaTitles[$idx ?? $this->currentLanguageID] ?? $this->metaTitles[$this->fallbackLanguageID];
+        return $this->metaTitles[$idx ?? $this->currentLanguageID]
+            ?? $this->metaTitles[$this->fallbackLanguageID]
+            ?? null;
     }
 
     /**
@@ -381,7 +405,9 @@ class MerkmalWert
      */
     public function getDescription(int $idx = null): ?string
     {
-        return $this->descriptions[$idx ?? $this->currentLanguageID] ?? $this->descriptions[$this->fallbackLanguageID];
+        return $this->descriptions[$idx ?? $this->currentLanguageID]
+            ?? $this->descriptions[$this->fallbackLanguageID]
+            ?? null;
     }
 
     /**
@@ -401,7 +427,8 @@ class MerkmalWert
     public function getCharacteristicName(int $idx = null): string
     {
         return $this->characteristicNames[$idx ?? $this->currentLanguageID]
-            ?? $this->characteristicNames[$this->fallbackLanguageID];
+            ?? $this->characteristicNames[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -436,24 +463,6 @@ class MerkmalWert
     /**
      * @return string|null
      */
-    public function getURLFull(int $idx = null): ?string
-    {
-        return $this->getURL($idx);
-    }
-
-    /**
-     * @param string|null $url
-     * @param int|null    $idx
-     * @return void
-     */
-    public function seCURLFull(?string $url, int $idx = null): void
-    {
-        $this->setURL($url, $idx);
-    }
-
-    /**
-     * @return string|null
-     */
     public function getImagePath(): ?string
     {
         return $this->imagePath;
@@ -465,125 +474,5 @@ class MerkmalWert
     public function setImagePath(?string $path): void
     {
         $this->imagePath = $path;
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.2.0
-     */
-    public function getImagePathSmall(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->cBildpfadKlein;
-    }
-
-    /**
-     * @param string $path
-     * @deprecated since 5.2.0
-     */
-    public function setImagePathSmall(string $path): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->cBildpfadKlein = $path;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.2.0
-     */
-    public function hasSmallImage(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->nBildKleinVorhanden === 1;
-    }
-
-    /**
-     * @param bool $has
-     * @deprecated since 5.2.0
-     */
-    public function setHasSmallImage(bool $has): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->nBildKleinVorhanden = (int)$has;
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.2.0
-     */
-    public function getImagePathNormal(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->cBildpfadNormal;
-    }
-
-    /**
-     * @param string $path
-     * @deprecated since 5.2.0
-     */
-    public function setImagePathNormal(string $path): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->cBildpfadNormal = $path;
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.2.0
-     */
-    public function hasNormalImage(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->nBildNormalVorhanden === 1;
-    }
-
-    /**
-     * @param bool $has
-     * @deprecated since 5.2.0
-     */
-    public function setHasNormalImage(bool $has): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->nBildNormalVorhanden = (int)$has;
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.2.0
-     */
-    public function getImageURLSmall(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->cBildURLKlein;
-    }
-
-    /**
-     * @param string $url
-     * @deprecated since 5.2.0
-     */
-    public function setImageURLSmall(string $url): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->cBildURLKlein = $url;
-    }
-
-    /**
-     * @return string
-     * @deprecated since 5.2.0
-     */
-    public function getImageURLNormal(): string
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        return $this->cBildURLNormal;
-    }
-
-    /**
-     * @param string $url
-     * @deprecated since 5.2.0
-     */
-    public function setImageURLNormal(string $url): void
-    {
-        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->cBildURLNormal = $url;
     }
 }

@@ -201,11 +201,10 @@ class ControllerFactory
      */
     private function createController(string $class): ControllerInterface
     {
-        $customerGroupID = Frontend::getCustomer()->getGroupID();
-        $config          = Shopsetting::getInstance()->getAll();
-        $service         = Shop::Container()->getAlertService();
+        $config  = Shopsetting::getInstance()->getAll();
+        $service = Shop::Container()->getAlertService();
 
-        return new $class($this->db, $this->cache, $this->state, $customerGroupID, $config, $service, $this->smarty);
+        return new $class($this->db, $this->cache, $this->state, $config, $service, $this->smarty);
     }
 
     /**

@@ -97,7 +97,7 @@ class TableCleaner
      * @param integer $taskIdx
      * @return void
      */
-    public function executeByStep(int $taskIdx)
+    public function executeByStep(int $taskIdx): void
     {
         if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
             ($this->logger === null) ?: $this->logger->log(

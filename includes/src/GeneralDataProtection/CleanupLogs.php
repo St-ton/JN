@@ -39,6 +39,8 @@ class CleanupLogs extends Method implements MethodInterface
 
     /**
      * runs all anonymize methods
+     *
+     * @return void
      */
     public function execute(): void
     {
@@ -58,6 +60,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete email history
      * older than given interval
+     *
+     * @return int
      */
     private function cleanupEmailHistory(): int
     {
@@ -77,6 +81,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete customer history
      * older than given interval
+     *
+     * @return int
      */
     private function cleanupContactHistory(): int
     {
@@ -96,6 +102,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete upload request history
      * older than given interval
+     *
+     * @return int
      */
     private function cleanupFloodProtect(): int
     {
@@ -115,6 +123,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete log entries of payments
      * older than the given interval
+     *
+     * @return int
      */
     private function cleanupPaymentLogEntries(): int
     {
@@ -134,6 +144,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete product inquiries of customers
      * older than the given interval
+     *
+     * @return int
      */
     private function cleanupProductInquiries(): int
     {
@@ -153,6 +165,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete availability demands of customers
      * older than the given interval
+     *
+     * @return int
      */
     private function cleanupAvailabilityInquiries(): int
     {
@@ -172,6 +186,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete jtl log entries
      * older than the given interval
+     *
+     * @return int
      */
     private function cleanupLogs(): int
     {
@@ -193,6 +209,8 @@ class CleanupLogs extends Method implements MethodInterface
     /**
      * delete payment confirmations of customers
      * not collected by 'wawi' and older than the given interval
+     *
+     * @return int
      */
     private function cleanupPaymentConfirmations(): int
     {
@@ -216,6 +234,8 @@ class CleanupLogs extends Method implements MethodInterface
      * CONSIDER: using no time base or limit here!
      *
      * (§76 BDSG Abs(4) : "Die Protokolldaten sind am Ende des auf deren Generierung folgenden Jahres zu löschen.")
+     *
+     * @return int
      */
     private function cleanupCustomerDataHistory(): int
     {

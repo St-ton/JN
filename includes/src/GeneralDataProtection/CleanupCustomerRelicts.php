@@ -38,6 +38,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
 
     /**
      * runs all anonymize-routines
+     *
+     * @return void
      */
     public function execute(): void
     {
@@ -57,6 +59,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     /**
      * delete visitors in the visitors archive immediately (at each run of the cron),
      * without a valid customer account
+     *
+     * @return int
      */
     private function cleanupVisitorArchive(): int
     {
@@ -85,6 +89,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     /**
      * delete customer attributes
      * for which there are no valid customer accounts
+     *
+     * @return int
      */
     private function cleanupCustomerAttributes(): int
     {
@@ -112,6 +118,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     /**
      * delete orphaned payment information about customers
      * which have no valid account
+     *
+     * @return int
      */
     private function cleanupPaymentInformation(): int
     {
@@ -140,6 +148,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     /**
      * delete orphaned bank account information of customers
      * which have no valid account
+     *
+     * @return int
      */
     private function cleanupCustomerAccountData(): int
     {
@@ -170,6 +180,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      * which assigned to no valid customer account
      *
      * (ATTENTION: no work limit possible here)
+     *
+     * @return int
      */
     private function cleanupDeliveryAddresses(): int
     {
@@ -202,6 +214,8 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      * delete billing addresses witout valid customer accounts
      *
      * (ATTENTION: no work limit possible here)
+     *
+     * @return int
      */
     private function cleanupBillingAddresses(): int
     {

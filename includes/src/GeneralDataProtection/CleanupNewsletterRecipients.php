@@ -20,6 +20,8 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
     /**
      * runs all anonymize routines
+     *
+     * @return void
      */
     public function execute(): void
     {
@@ -30,6 +32,8 @@ class CleanupNewsletterRecipients extends Method implements MethodInterface
     /**
      * delete newsletter registrations with no "opt-in"
      * within the given interval
+     *
+     * @return void
      */
     private function cleanupNewsletters(): void
     {

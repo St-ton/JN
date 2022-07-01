@@ -86,6 +86,8 @@ class CleanupService extends Method implements MethodInterface
 
     /**
      * remove data from various tables
+     *
+     * @return void
      */
     public function execute(): void
     {

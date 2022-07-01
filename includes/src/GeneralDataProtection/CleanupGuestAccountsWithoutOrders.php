@@ -18,6 +18,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
 {
     /**
      * @inheritDoc
+     * @return void
      */
     public function execute(): void
     {
@@ -28,6 +29,8 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
 
     /**
      * delete not registered customers (relicts)
+     *
+     * @return void
      */
     private function cleanupCustomers(): void
     {
@@ -60,7 +63,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
             $customer = new Customer((int)$guestAccount->kKunde);
             $r        = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
 
-            // --TO-CHECK-- the following ist wrong - it's only 'n idea
+            // --TO-CHECK-- the following may be still wrong - it's only 'n idea
             switch ($customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0)) {
                 case Customer::CUSTOMER_DELETE_DEACT:
                 case Customer::CUSTOMER_DELETE_DONE:

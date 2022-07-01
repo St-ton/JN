@@ -120,6 +120,8 @@ class TableCleaner
 
     /**
      * run all anonymize and clean up methods
+     *
+     * @return void
      */
     public function executeAll(): void
     {

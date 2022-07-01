@@ -19,6 +19,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
 
     /**
      * runs all anonymize-routines
+     *
+     * @return void
      */
     public function execute(): void
     {
@@ -38,6 +40,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     /**
      * anonymize orphaned ratings.
      * (e.g. of canceled memberships)
+     *
+     * @return int
      */
     private function anonymizeRatings(): int
     {
@@ -72,6 +76,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
     /**
      * anonymize received payments.
      * (replace `cZahler`(e-mail) in `tzahlungseingang`)
+     *
+     * @return int
      */
     private function anonymizeReceivedPayments(): int
     {
@@ -109,6 +115,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      * (delete names and e-mails from `tnewskommentar` and remove the customer-relation)
      *
      * CONSIDER: using no time base or limit!
+     *
+     * @return int
      */
     private function anonymizeNewsComments(): int
     {

@@ -408,7 +408,7 @@ class CouponsController extends AbstractBackendController
     private function getManufacturers(?string $selectedManufacturers = ''): array
     {
         $selected = Text::parseSSKint($selectedManufacturers);
-        $items    = $this->db->getObjects('SELECT kHersteller, cName FROM thersteller');
+        $items    = $this->db->getObjects('SELECT kHersteller FROM thersteller WHERE nAktiv = 1');
         $langID   = Shop::getLanguageID();
         foreach ($items as $item) {
             $item->kHersteller = (int)$item->kHersteller;

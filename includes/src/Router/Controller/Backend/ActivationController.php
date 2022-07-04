@@ -29,9 +29,8 @@ class ActivationController extends AbstractBackendController
     {
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::UNLOCK_CENTRAL_VIEW);
-        $this->getText->loadAdminLocale('pages/freischalten');
-
         $this->setLanguage();
+        $this->getText->loadAdminLocale('pages/freischalten');
 
         $ratingsSQL    = new SqlObject();
         $liveSearchSQL = new SqlObject();
@@ -278,17 +277,17 @@ class ActivationController extends AbstractBackendController
      */
     private function getReviews(string $sql, SqlObject $searchSQL): array
     {
-        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
+        $searchSQL->addParam('lid', $this->currentLanguageID);
 
         return $this->db->getObjects(
             "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
-            FROM tbewertung
-            LEFT JOIN tartikel 
-                ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = :lid
-                AND tbewertung.nAktiv = 0
-                " . $searchSQL->getWhere() . '
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
+                FROM tbewertung
+                LEFT JOIN tartikel 
+                    ON tbewertung.kArtikel = tartikel.kArtikel
+                WHERE tbewertung.kSprache = :lid
+                    AND tbewertung.nAktiv = 0
+                    " . $searchSQL->getWhere() . '
+                ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
             $searchSQL->getParams()
         );
     }
@@ -301,14 +300,14 @@ class ActivationController extends AbstractBackendController
      */
     private function getSearchQueries(string $sql, SqlObject $searchSQL): array
     {
-        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
+        $searchSQL->addParam('lid', $this->currentLanguageID);
 
         return $this->db->getObjects(
             "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
-            FROM tsuchanfrage
-            WHERE nAktiv = 0 
-                AND kSprache = :lid " . $searchSQL->getWhere() . '
-            ORDER BY ' . $searchSQL->getOrder() . $sql,
+                FROM tsuchanfrage
+                WHERE nAktiv = 0 
+                    AND kSprache = :lid " . $searchSQL->getWhere() . '
+                ORDER BY ' . $searchSQL->getOrder() . $sql,
             $searchSQL->getParams()
         );
     }
@@ -321,7 +320,7 @@ class ActivationController extends AbstractBackendController
      */
     private function getNewsComments(string $sql, SqlObject $searchSQL): array
     {
-        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
+        $searchSQL->addParam('lid', $this->currentLanguageID);
 
         $newsComments = $this->db->getObjects(
             "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, 
@@ -339,8 +338,7 @@ class ActivationController extends AbstractBackendController
             $searchSQL->getParams()
         );
         foreach ($newsComments as $comment) {
-            $customer = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
-
+            $customer           = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
             $comment->cNachname = $customer->cNachname;
         }
 
@@ -355,7 +353,7 @@ class ActivationController extends AbstractBackendController
      */
     private function getNewsletterRecipients(string $sql, SqlObject $searchSQL): array
     {
-        $searchSQL->addParam('lid', (int)$_SESSION['editLanguageID']);
+        $searchSQL->addParam('lid', $this->currentLanguageID);
 
         return $this->db->getObjects(
             "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, 
@@ -405,8 +403,8 @@ class ActivationController extends AbstractBackendController
         foreach (\array_map('\intval', $searchQueries) as $qid) {
             $query = $db->getSingleObject(
                 'SELECT kSuchanfrage, kSprache, cSuche
-                FROM tsuchanfrage
-                WHERE kSuchanfrage = :qid',
+                    FROM tsuchanfrage
+                    WHERE kSuchanfrage = :qid',
                 ['qid' => $qid]
             );
             if ($query !== null && $query->kSuchanfrage > 0) {
@@ -445,8 +443,8 @@ class ActivationController extends AbstractBackendController
         }
         $this->db->query(
             'UPDATE tnewskommentar
-            SET nAktiv = 1
-            WHERE kNewsKommentar IN (' . \implode(',', \array_map('\intval', $newsComments)) . ')'
+                SET nAktiv = 1
+                WHERE kNewsKommentar IN (' . \implode(',', \array_map('\intval', $newsComments)) . ')'
         );
         $this->cache->flushTags([\CACHING_GROUP_NEWS]);
 
@@ -465,8 +463,8 @@ class ActivationController extends AbstractBackendController
         }
         $this->db->query(
             'UPDATE tnewsletterempfaenger
-            SET nAktiv = 1
-            WHERE kNewsletterEmpfaenger IN (' . \implode(',', \array_map('\intval', $recipients)) .')'
+                SET nAktiv = 1
+                WHERE kNewsletterEmpfaenger IN (' . \implode(',', \array_map('\intval', $recipients)) .')'
         );
 
         return true;
@@ -484,7 +482,7 @@ class ActivationController extends AbstractBackendController
         }
         $this->db->query(
             'DELETE FROM tbewertung
-            WHERE kBewertung IN (' . \implode(',', \array_map('\intval', $ratings)) . ')'
+                WHERE kBewertung IN (' . \implode(',', \array_map('\intval', $ratings)) . ')'
         );
 
         return true;
@@ -527,7 +525,7 @@ class ActivationController extends AbstractBackendController
         }
         $this->db->query(
             'DELETE FROM tnewskommentar
-            WHERE kNewsKommentar IN (' . \implode(',', \array_map('\intval', $comments)) . ')'
+                WHERE kNewsKommentar IN (' . \implode(',', \array_map('\intval', $comments)) . ')'
         );
         $this->cache->flushTags([\CACHING_GROUP_NEWS]);
 
@@ -572,12 +570,12 @@ class ActivationController extends AbstractBackendController
             if (\mb_convert_case($query->cSuche, \MB_CASE_LOWER) === \mb_convert_case($mapTo, \MB_CASE_LOWER)) {
                 return 6; // Es kann nicht auf sich selbst gemappt werden
             }
-            $oSuchanfrageNeu = $db->select('tsuchanfrage', 'cSuche', $mapTo);
-            if ($oSuchanfrageNeu === null || empty($oSuchanfrageNeu->kSuchanfrage)) {
+            $newQuery = $db->select('tsuchanfrage', 'cSuche', $mapTo);
+            if ($newQuery === null || empty($newQuery->kSuchanfrage)) {
                 return 5; // Sie haben versucht auf eine nicht existierende Suchanfrage zu mappen
             }
             $mapping                 = new stdClass();
-            $mapping->kSprache       = $_SESSION['editLanguageID'];
+            $mapping->kSprache       = $this->currentLanguageID;
             $mapping->cSuche         = $query->cSuche;
             $mapping->cSucheNeu      = $mapTo;
             $mapping->nAnzahlGesuche = $query->nAnzahlGesuche;
@@ -594,16 +592,16 @@ class ActivationController extends AbstractBackendController
                         AND kSuchanfrage = :sid',
                 [
                     'cnt' => $query->nAnzahlGesuche,
-                    'lid' => (int)$_SESSION['editLanguageID'],
-                    'sid' => (int)$oSuchanfrageNeu->kSuchanfrage
+                    'lid' => $this->currentLanguageID,
+                    'sid' => (int)$newQuery->kSuchanfrage
                 ]
             );
             $db->delete('tsuchanfrage', 'kSuchanfrage', (int)$query->kSuchanfrage);
             $db->queryPrepared(
                 "UPDATE tseo
-                SET kKey = :sqid
-                WHERE cKey = 'kSuchanfrage'
-                    AND kKey = :sqid",
+                    SET kKey = :sqid
+                    WHERE cKey = 'kSuchanfrage'
+                        AND kKey = :sqid",
                 ['sqid' => (int)$query->kSuchanfrage]
             );
         }
@@ -622,7 +620,7 @@ class ActivationController extends AbstractBackendController
                 FROM tbewertung
                 WHERE nAktiv = 0
                     AND kSprache = :lid',
-            ['lid' => (int)$_SESSION['editLanguageID']]
+            ['lid' => $this->currentLanguageID]
         )->cnt;
     }
 
@@ -637,7 +635,7 @@ class ActivationController extends AbstractBackendController
                 FROM tsuchanfrage
                 WHERE nAktiv = 0
                     AND kSprache = :lid',
-            ['lid' => (int)$_SESSION['editLanguageID']]
+            ['lid' => $this->currentLanguageID]
         )->cnt;
     }
 
@@ -656,7 +654,7 @@ class ActivationController extends AbstractBackendController
                     ON tnews.kNews = t.kNews
                 WHERE tnewskommentar.nAktiv = 0
                     AND t.languageID = :lid',
-            ['lid' => (int)$_SESSION['editLanguageID']],
+            ['lid' => $this->currentLanguageID],
         )->cnt;
     }
 
@@ -671,7 +669,7 @@ class ActivationController extends AbstractBackendController
                 FROM tnewsletterempfaenger
                 WHERE nAktiv = 0
                     AND kSprache = :lid',
-            ['lid' => (int)$_SESSION['editLanguageID']],
+            ['lid' => $this->currentLanguageID],
         )->cnt;
     }
 }

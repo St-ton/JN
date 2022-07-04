@@ -28,9 +28,8 @@ class LivesearchController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_LIVESEARCH_VIEW);
         $this->getText->loadAdminLocale('pages/livesuche');
-
         $this->setLanguage();
-        $languageID  = (int)$_SESSION['editLanguageID'];
+
         $settingsIDs = [
             'livesuche_max_ip_count',
             'sonstiges_livesuche_all_top_count',
@@ -48,25 +47,25 @@ class LivesearchController extends AbstractBackendController
         if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
             // Suchanfragen aktualisieren
             if (isset($_POST['suchanfragenUpdate'])) {
-                $this->actionUpdate($languageID);
+                $this->actionUpdate($this->currentLanguageID);
             } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
-                $this->actionMap($languageID);
+                $this->actionMap($this->currentLanguageID);
             } elseif (isset($_POST['delete'])) { // Auswahl loeschen
                 $deleteQueryIDs = Request::verifyGPDataIntegerArray('kSuchanfrage');
                 $this->actionDelete($deleteQueryIDs);
             }
         } elseif (Request::postInt('livesuche') === 2) { // Erfolglos mapping
-            $this->actionMapWithoutSuccess($languageID);
+            $this->actionMapWithoutSuccess($this->currentLanguageID);
             $this->smarty->assign('tab', 'erfolglos');
         } elseif (Request::postInt('livesuche') === 3) { // Blacklist
-            $this->actionBlacklist($languageID);
+            $this->actionBlacklist($this->currentLanguageID);
         } elseif (Request::postInt('livesuche') === 4) { // Mappinglist
             if (isset($_POST['delete'])) {
                 $this->actionDeleteMapping($_POST['kSuchanfrageMapping'] ?? null);
             }
             $this->smarty->assign('tab', 'mapping');
         }
-        $this->assignData($languageID);
+        $this->assignData($this->currentLanguageID);
         $this->getAdminSectionSettings($settingsIDs, true);
 
         return $this->smarty->assign('route', $this->route)

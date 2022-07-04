@@ -46,7 +46,7 @@ class TaCController extends AbstractBackendController
         }
 
         return $this->smarty->assign('step', $this->step)
-            ->assign('languageID', (int)$_SESSION['editLanguageID'])
+            ->assign('languageID', $this->currentLanguageID)
             ->assign('route', $this->route)
             ->assign('recommendations', new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS))
             ->getResponse('agbwrb.tpl');
@@ -63,7 +63,7 @@ class TaCController extends AbstractBackendController
             $data       = $this->db->select(
                 'ttext',
                 'kSprache',
-                (int)$_SESSION['editLanguageID'],
+                $this->currentLanguageID,
                 'kKundengruppe',
                 $customerGroupID
             );
@@ -77,7 +77,7 @@ class TaCController extends AbstractBackendController
     private function assignOverview(): void
     {
         $agbWrb = [];
-        $data   = $this->db->selectAll('ttext', 'kSprache', (int)$_SESSION['editLanguageID']);
+        $data   = $this->db->selectAll('ttext', 'kSprache', $this->currentLanguageID);
         foreach ($data as $item) {
             $item->kKundengruppe          = (int)$item->kKundengruppe;
             $item->kText                  = (int)$item->kText;
@@ -98,8 +98,7 @@ class TaCController extends AbstractBackendController
      */
     private function actionSave(int $customerGroupID, array $post, int $textID = 0): void
     {
-        $languageID = (int)$_SESSION['editLanguageID'];
-        if ($customerGroupID <= 0 || $languageID <= 0) {
+        if ($customerGroupID <= 0 || $this->currentLanguageID <= 0) {
             $this->alertService->addError(\__('errorSave'), 'agbWrbErrorSave');
             return;
         }
@@ -108,7 +107,7 @@ class TaCController extends AbstractBackendController
             $this->db->delete('ttext', 'kText', $textID);
             $item->kText = $textID;
         }
-        $item->kSprache            = $languageID;
+        $item->kSprache            = $this->currentLanguageID;
         $item->kKundengruppe       = $customerGroupID;
         $item->cAGBContentText     = $post['cAGBContentText'];
         $item->cAGBContentHtml     = $post['cAGBContentHtml'];

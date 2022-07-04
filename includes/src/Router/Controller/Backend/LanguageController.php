@@ -38,13 +38,12 @@ class LanguageController extends AbstractBackendController
 
         $this->step   = 'overview';
         $this->helper = LanguageHelper::getInstance($this->db, $this->cache);
-        $langCode     = $_SESSION['editLanguageCode'];
         $langActive   = false;
         if (isset($_FILES['csvfile']['tmp_name'])
             && Form::validateToken()
             && Request::verifyGPDataString('importcsv') === 'langvars'
         ) {
-            $this->import($_FILES['csvfile']['tmp_name'], $langCode);
+            $this->import($_FILES['csvfile']['tmp_name'], $this->currentLanguageCode);
         }
         $installedLanguages = $this->helper->getInstalled();
         $availableLanguages = $this->helper->getAvailable();
@@ -52,7 +51,7 @@ class LanguageController extends AbstractBackendController
             $this->alertService->addNotice(\__('newLangAvailable'), 'newLangAvailable');
         }
         foreach ($installedLanguages as $language) {
-            if ($language->getIso() === $langCode) {
+            if ($language->getIso() === $this->currentLanguageCode) {
                 $langActive = true;
                 break;
             }
@@ -64,7 +63,7 @@ class LanguageController extends AbstractBackendController
         if ($this->step === 'newvar') {
             $smarty->assign('oSektion_arr', $this->helper->getSections());
         } elseif ($this->step === 'overview') {
-            $this->getOverview($langCode, $langActive);
+            $this->getOverview($this->currentLanguageCode, $langActive);
         }
 
         return $smarty->assign('tab', $_REQUEST['tab'] ?? 'variables')
@@ -252,7 +251,6 @@ class LanguageController extends AbstractBackendController
      */
     private function handleAction(string $action): void
     {
-        $langCode = $_SESSION['editLanguageCode'];
         switch ($action) {
             case 'newvar':
                 // neue Variable erstellen
@@ -275,11 +273,11 @@ class LanguageController extends AbstractBackendController
 
                 break;
             case 'saveall':
-                $this->actionSaveAll($langCode);
+                $this->actionSaveAll($this->currentLanguageCode);
 
                 break;
             case 'clearlog':
-                $this->helper->setzeSprache($langCode)
+                $this->helper->setzeSprache($this->currentLanguageCode)
                     ->clearLog();
                 $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
                 $this->alertService->addSuccess(\__('successListReset'), 'successListReset');

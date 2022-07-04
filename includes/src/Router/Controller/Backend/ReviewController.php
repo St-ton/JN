@@ -35,11 +35,6 @@ use function Functional\map;
 class ReviewController extends AbstractBackendController
 {
     /**
-     * @var int
-     */
-    private int $languageID;
-
-    /**
      * @var int[]
      */
     private array $importedProductIDs = [];
@@ -80,13 +75,11 @@ class ReviewController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_VOTESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/bewertung');
-
         $this->setLanguage();
-        $tab              = \mb_strlen(Request::verifyGPDataString('tab')) > 0
+        $tab  = \mb_strlen(Request::verifyGPDataString('tab')) > 0
             ? Request::verifyGPDataString('tab')
             : 'freischalten';
-        $step             = $this->handleRequest();
-        $this->languageID = (int)$_SESSION['editLanguageID'];
+        $step = $this->handleRequest();
 
         if ($step === 'bewertung_editieren' || Request::getVar('a') === 'editieren') {
             $step = 'bewertung_editieren';
@@ -326,7 +319,7 @@ class ReviewController extends AbstractBackendController
                     WHERE tbewertung.kSprache = :lang
                         AND (tartikel.cArtNr LIKE :cartnr OR tartikel.cName LIKE :cartnr)
                     ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC",
-                ['lang' => $this->languageID, 'cartnr' => '%' . $data['cArtNr'] . '%']
+                ['lang' => $this->currentLanguageID, 'cartnr' => '%' . $data['cArtNr'] . '%']
             );
             $this->smarty->assign('cArtNr', Text::filterXSS($data['cArtNr']))
                 ->assign('filteredReviews', $filtered);
@@ -402,7 +395,7 @@ class ReviewController extends AbstractBackendController
                 WHERE tbewertung.kSprache = :lid
                     AND tbewertung.nAktiv = 0
                 ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $limit,
-            ['lid' => $this->languageID]
+            ['lid' => $this->currentLanguageID]
         )->each([$this, 'sanitize'])->toArray();
     }
 
@@ -425,7 +418,7 @@ class ReviewController extends AbstractBackendController
                 WHERE tbewertung.kSprache = :lid
                     AND tbewertung.nAktiv = 1
                 ORDER BY tbewertung.dDatum DESC" . $limit,
-            ['lid' => $this->languageID]
+            ['lid' => $this->currentLanguageID]
         )->each([$this, 'sanitize'])->toArray();
     }
 
@@ -440,7 +433,7 @@ class ReviewController extends AbstractBackendController
                 WHERE kSprache = :lid
                     AND nAktiv = 0',
             'cnt',
-            ['lid' => $this->languageID]
+            ['lid' => $this->currentLanguageID]
         );
 
         return (new Pagination('inactive'))
@@ -459,7 +452,7 @@ class ReviewController extends AbstractBackendController
                 WHERE kSprache = :lid
                     AND nAktiv = 1',
             'cnt',
-            ['lid' => $this->languageID]
+            ['lid' => $this->currentLanguageID]
         );
 
         return (new Pagination('active'))

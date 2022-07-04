@@ -34,7 +34,6 @@ class SelectionWizardController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/auswahlassistent');
         $this->getText->loadConfigLocales();
         $this->setLanguage();
-        $languageID = (int)$_SESSION['editLanguageID'];
         if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $group    = new Group();
             $question = new Question();
@@ -91,7 +90,7 @@ class SelectionWizardController extends AbstractBackendController
 
             if (isset($postData['a']) && $csrfOK) {
                 if ($postData['a'] === 'addGrp') {
-                    $group->kSprache      = $languageID;
+                    $group->kSprache      = $this->currentLanguageID;
                     $group->cName         = \htmlspecialchars(
                         $postData['cName'],
                         \ENT_COMPAT | \ENT_HTML401,
@@ -136,7 +135,7 @@ class SelectionWizardController extends AbstractBackendController
             if ($step === 'uebersicht') {
                 $this->smarty->assign(
                     'oAuswahlAssistentGruppe_arr',
-                    $group->getGroups($languageID, false, false, true)
+                    $group->getGroups($this->currentLanguageID, false, false, true)
                 );
             } elseif ($step === 'edit-group') {
                 $this->smarty->assign('oLink_arr', Wizard::getLinks());
@@ -144,10 +143,10 @@ class SelectionWizardController extends AbstractBackendController
                 $defaultLanguage = $this->db->select('tsprache', 'cShopStandard', 'Y');
                 $select          = 'tmerkmal.*';
                 $join            = '';
-                if ((int)$defaultLanguage->kSprache !== $languageID) {
+                if ((int)$defaultLanguage->kSprache !== $this->currentLanguageID) {
                     $select = 'tmerkmalsprache.*';
                     $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = ' . $languageID;
+                            AND tmerkmalsprache.kSprache = ' . $this->currentLanguageID;
                 }
                 $attributes = $this->db->getObjects(
                     'SELECT ' . $select . '
@@ -158,7 +157,7 @@ class SelectionWizardController extends AbstractBackendController
                 $this->smarty->assign('oMerkmal_arr', $attributes)
                     ->assign(
                         'oAuswahlAssistentGruppe_arr',
-                        $group->getGroups($languageID, false, false, true)
+                        $group->getGroups($this->currentLanguageID, false, false, true)
                     );
             }
         } else {
@@ -168,7 +167,7 @@ class SelectionWizardController extends AbstractBackendController
 
         return $this->smarty->assign('step', $step)
             ->assign('cTab', $tab)
-            ->assign('languageID', $languageID)
+            ->assign('languageID', $this->currentLanguageID)
             ->assign('route', $this->route)
             ->getResponse('auswahlassistent.tpl');
     }

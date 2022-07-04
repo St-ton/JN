@@ -59,7 +59,7 @@ class SeparatorController extends AbstractBackendController
 
         return $smarty->assign('step', $step)
             ->assign('route', $this->route)
-            ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['editLanguageID']))
+            ->assign('oTrennzeichenAssoc_arr', Separator::getAll($this->currentLanguageID))
             ->getResponse('trennzeichen.tpl');
     }
 
@@ -76,7 +76,7 @@ class SeparatorController extends AbstractBackendController
                 continue;
             }
             $separator = new Separator();
-            $separator->setSprache((int)$_SESSION['editLanguageID'])
+            $separator->setSprache($this->currentLanguageID)
                 ->setEinheit($unt)
                 ->setDezimalstellen((int)$post['nDezimal_' . $unt])
                 ->setDezimalZeichen($post['cDezZeichen_' . $unt])

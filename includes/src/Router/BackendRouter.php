@@ -272,7 +272,7 @@ class BackendRouter
             self::ROUTE_SLIDERS               => SliderController::class,
             self::ROUTE_IMAGE_MANAGEMENT      => ImageManagementController::class,
             self::ROUTE_BOXES                 => BoxController::class,
-            self::ROUTE_BRANDING              => BrandingController::class,
+            self::ROUTE_BRANDING . '[/{id}]'  => BrandingController::class,
             self::ROUTE_CACHE                 => CacheController::class,
             self::ROUTE_CHECKBOX              => CheckboxController::class,
             self::ROUTE_COUNTRIES             => CountryController::class,

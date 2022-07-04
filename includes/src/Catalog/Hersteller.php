@@ -331,7 +331,7 @@ class Hersteller implements RoutableInterface
      */
     public function getName(int $idx = null): string
     {
-        return $this->names[$idx ?? $this->currentLanguageID] ?? $this->names[$this->fallbackLanguageID];
+        return $this->names[$idx ?? $this->currentLanguageID] ?? $this->names[$this->fallbackLanguageID] ?? '';
     }
 
     /**
@@ -367,7 +367,9 @@ class Hersteller implements RoutableInterface
      */
     public function getMetaTitle(int $idx = null): string
     {
-        return $this->metaTitles[$idx ?? $this->currentLanguageID] ?? $this->metaTitles[$this->fallbackLanguageID];
+        return $this->metaTitles[$idx ?? $this->currentLanguageID]
+            ?? $this->metaTitles[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -386,7 +388,9 @@ class Hersteller implements RoutableInterface
      */
     public function getMetaKeywords(int $idx = null): string
     {
-        return $this->metaKeywords[$idx ?? $this->currentLanguageID] ?? $this->metaKeywords[$this->fallbackLanguageID];
+        return $this->metaKeywords[$idx ?? $this->currentLanguageID]
+            ?? $this->metaKeywords[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -406,7 +410,8 @@ class Hersteller implements RoutableInterface
     public function getMetaDescription(int $idx = null): string
     {
         return $this->metaDescriptions[$idx ?? $this->currentLanguageID]
-            ?? $this->metaDescriptions[$this->fallbackLanguageID];
+            ?? $this->metaDescriptions[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**
@@ -425,7 +430,9 @@ class Hersteller implements RoutableInterface
      */
     public function getDescription(int $idx = null): string
     {
-        return $this->descriptions[$idx ?? $this->currentLanguageID] ?? $this->descriptions[$this->fallbackLanguageID];
+        return $this->descriptions[$idx ?? $this->currentLanguageID]
+            ?? $this->descriptions[$this->fallbackLanguageID]
+            ?? '';
     }
 
     /**

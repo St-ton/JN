@@ -28,14 +28,16 @@ class BrandingController extends AbstractBackendController
         $this->checkPermissions(Permissions::DISPLAY_BRANDING_VIEW);
         $this->getText->loadAdminLocale('pages/branding');
 
-        $step = 'branding_uebersicht';
+        $currentID   = (int)($args['id'] ?? 1);
+        $this->route = \str_replace('[/{id}]', '', $this->route);
+        $step        = 'branding_uebersicht';
         if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
             $id = Request::postInt('id');
             $this->deleteImage($id);
             $response         = new stdClass();
             $response->id     = $id;
             $response->status = 'OK';
-            die(\json_encode($response));
+            die(\json_encode($response, \JSON_THROW_ON_ERROR));
         }
         if (Request::verifyGPCDataInt('branding') === 1) {
             $step = 'branding_detail';
@@ -47,14 +49,13 @@ class BrandingController extends AbstractBackendController
                 }
             }
             if (Request::verifyGPCDataInt('kBranding') > 0) {
-                $smarty->assign('oBranding', $this->getBranding(Request::verifyGPCDataInt('kBranding')));
+                $currentID = Request::verifyGPCDataInt('kBranding');
             }
-        } else {
-            $smarty->assign('oBranding', $this->getBranding(1));
         }
 
         return $smarty->assign('cRnd', \time())
-            ->assign('oBranding_arr', $this->getBrandings())
+            ->assign('branding', $this->getBranding($currentID))
+            ->assign('brandings', $this->getBrandings())
             ->assign('PFAD_BRANDINGBILDER', \PFAD_BRANDINGBILDER)
             ->assign('step', $step)
             ->assign('route', $this->route)
@@ -67,7 +68,13 @@ class BrandingController extends AbstractBackendController
      */
     private function getBrandings(): array
     {
-        return $this->db->selectAll('tbranding', [], [], '*', 'cBildKategorie');
+        return $this->db->getCollection('SELECT * FROM tbranding ORDER BY cBildKategorie')
+            ->map(static function (stdClass $item) {
+                $item->kBranding = (int)$item->kBranding;
+
+                return $item;
+            })
+            ->toArray();
     }
 
     /**
@@ -77,7 +84,7 @@ class BrandingController extends AbstractBackendController
      */
     private function getBranding(int $brandingID): ?stdClass
     {
-        return $this->db->getSingleObject(
+        $item = $this->db->getSingleObject(
             'SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
                 FROM tbranding
                 LEFT JOIN tbrandingeinstellung 
@@ -86,6 +93,19 @@ class BrandingController extends AbstractBackendController
                 GROUP BY tbranding.kBranding',
             ['bid' => $brandingID]
         );
+        if ($item === null) {
+            return null;
+        }
+
+        $item->kBrandingEinstellung = (int)$item->kBrandingEinstellung;
+        $item->kBranding            = (int)$item->kBranding;
+        $item->kBrandingTMP         = (int)$item->kBrandingTMP;
+        $item->nAktiv               = (int)$item->nAktiv;
+        $item->dTransparenz         = (int)$item->dTransparenz;
+        $item->dGroesse             = (int)$item->dGroesse;
+        $item->dRandabstand         = (int)$item->dRandabstand;
+
+        return $item;
     }
 
     /**
@@ -188,7 +208,7 @@ class BrandingController extends AbstractBackendController
             'image/gif' => '.gif',
             'image/png' => '.png',
             'image/bmp' => '.bmp',
-            default     => '.jpg',
+            default => '.jpg',
         };
     }
 }

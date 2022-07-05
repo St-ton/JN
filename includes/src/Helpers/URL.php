@@ -444,6 +444,7 @@ class URL
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
                     : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
+
             case \URLART_SEITE:
                 $route = null;
                 if (!empty($obj->cSeo)) {
@@ -515,9 +516,20 @@ class URL
                     : $prefix . '?nk=' . $obj->kNewsKategorie . self::getLocalizedFallback();
 
             case \URLART_SEARCHSPECIALS:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?q=' . $obj->kSuchspecial . self::getLocalizedFallback();
+                if (!empty($obj->cSeo)) {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                    );
+                } else {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo, 'lang' => $localeCode],
+                        false
+                    );
+                }
+
+                return $prefix . \ltrim($url, '/');
             default:
                 return '';
         }

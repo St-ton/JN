@@ -34,10 +34,7 @@ class BrandingController extends AbstractBackendController
         if (Request::verifyGPDataString('action') === 'delete' && Form::validateToken()) {
             $id = Request::postInt('id');
             $this->deleteImage($id);
-            $response         = new stdClass();
-            $response->id     = $id;
-            $response->status = 'OK';
-            die(\json_encode($response, \JSON_THROW_ON_ERROR));
+            die(\json_encode((object)['id' => $id, 'status' => 'OK'], \JSON_THROW_ON_ERROR));
         }
         if (Request::verifyGPCDataInt('branding') === 1) {
             $step = 'branding_detail';

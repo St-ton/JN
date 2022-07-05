@@ -139,7 +139,7 @@ class SearchSpecial
 
         $seo->kSuchspecial = $type;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
-        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS);
+        $url = URL::buildURL($seo, \URLART_SEARCHSPECIALS, true);
         $this->cache->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);
 
         return $url;

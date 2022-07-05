@@ -102,7 +102,6 @@ class SmartyStrategy extends ApplicationStrategy
                             Shop::Container()->getDB(),
                             Shop::Container()->getCache(),
                             $this->state,
-                            1,
                             Shopsetting::getInstance()->getAll(),
                             Shop::Container()->getAlertService()
                         );

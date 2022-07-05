@@ -129,7 +129,7 @@
                             <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item link-shop" href="{$URL_SHOP}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
+                            <a class="dropdown-item link-shop" href="{$shopURL}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
                             <a class="dropdown-item link-logout" href="{$adminURL}/logout?token={$smarty.session.jtl_token}"

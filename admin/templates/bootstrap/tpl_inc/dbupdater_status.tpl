@@ -61,7 +61,7 @@
     </div>
 {/function}
 
-{assign var=migrationURL value=$migrationURL|default:($adminURL|cat:'/'|cat:JTL\Router\Routes::DBUPDATER)}
+{assign var=migrationURL value=$migrationURL|default:($adminURL|cat:'/'|cat:JTL\Router\Route::DBUPDATER)}
 {assign var=pluginID value=$pluginID|default:null}
 {if $pluginID === null}
     <form name="updateForm" method="post" id="form-update">

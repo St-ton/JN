@@ -91,7 +91,7 @@ $logger      = Shop::Container()->getLogService()->withName('dbeS');
 $pluginHooks = Helper::getHookList();
 $language    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
-Shop::bootstrap();
+Shop::bootstrap(true, $db, $cache);
 ob_start('handleError');
 $starter = new Starter(new Synclogin($db, $logger), new FileHandler($logger), $db, $cache, $logger);
 $starter->start($fileID, $_POST, $_FILES);

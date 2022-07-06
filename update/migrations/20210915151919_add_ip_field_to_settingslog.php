@@ -12,7 +12,7 @@ class Migration_20210915151919 extends Migration implements IMigration
     protected $description = 'Add ip field to settingslog';
 
     /**
-     * @inheritDoc
+     * @inheridoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20210915151919 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDor
+     * @inheridoc
      */
     public function down()
     {

@@ -87,7 +87,6 @@ class DBCheckController extends AbstractBackendController
             ->assign('maintenanceResult', $maintenanceResult)
             ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
             ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
-            ->assign('Einstellungen', $conf)
             ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
             ->assign('FulltextIndizes', $fulltextIndizes)
             ->assign('engineUpdate', $engineUpdate)

@@ -215,7 +215,6 @@ class EmailTemplateController extends AbstractBackendController
             ->assign('checkTemplate', $doCheck ?? 0)
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
-            ->assign('Einstellungen', $settings->getAll())
             ->assign('route', $this->route)
             ->getResponse('emailvorlagen.tpl');
     }

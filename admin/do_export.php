@@ -1,4 +1,4 @@
 <?php declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admininclude.php';
-routeRedirect(JTL\Router\Routes::EXPORT_START);
+routeRedirect(JTL\Router\Route::EXPORT_START);

@@ -1,4 +1,4 @@
 <?php declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admininclude.php';
-routeRedirect(JTL\Router\Routes::BRANDING);
+routeRedirect(JTL\Router\Route::BRANDING);

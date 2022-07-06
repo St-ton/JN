@@ -1,4 +1,4 @@
 <?php declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admininclude.php';
-routeRedirect(JTL\Router\Routes::IMAGE_MANAGEMENT);
+routeRedirect(JTL\Router\Route::IMAGE_MANAGEMENT);

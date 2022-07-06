@@ -43,7 +43,7 @@
                                     {/foreach}
                                 </table>
                             </div>
-                            <form method="post" action="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_LOCALIZATION_CHECK}">
+                            <form method="post" action="{$adminURL}/{JTL\Router\Route::LOCALIZATION_CHECK}">
                                 {$jtl_token}
                                 <input type="hidden" name="action" value="deleteExcess">
                                 <input type="hidden" name="type" value="{$result->getClassName()}">

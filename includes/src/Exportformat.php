@@ -19,7 +19,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
@@ -243,7 +243,7 @@ class Exportformat
     private function quit(bool $hasError = false): void
     {
         if (Request::getVar('back') === 'admin') {
-            $location = 'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
+            $location = 'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT
                 . '?action=exported&token=' . $_SESSION['jtl_token']
                 . '&kExportformat=' . (int)$this->queue->foreignKeyID;
             if ($hasError) {

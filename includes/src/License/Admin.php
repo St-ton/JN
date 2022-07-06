@@ -3,9 +3,9 @@
 namespace JTL\License;
 
 use Exception;
-use JsonException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -16,7 +16,7 @@ use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -125,7 +125,7 @@ class Admin
             if ($action === self::ACTION_RECHECK) {
                 $this->getLicenses(true);
                 $this->getList($smarty);
-                \header('Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE, true, 303);
+                \header('Location: ' . Shop::getAdminURL() . '/' . Route::LICENSE, true, 303);
                 exit();
             }
             if ($action === self::ACTION_REVOKE) {
@@ -144,7 +144,7 @@ class Admin
         if ($action === self::ACTION_REDIRECT) {
             $this->auth->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_CODE . '/license'
+                Shop::getAdminURL(true) . '/' . Route::CODE . '/license'
             );
         }
         if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {

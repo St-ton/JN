@@ -3,7 +3,7 @@
 namespace JTL\Router\Middleware;
 
 use JTL\DB\DbInterface;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -35,10 +35,10 @@ class WizardCheckMiddleware implements MiddlewareInterface
         if ($request->getMethod() === 'GET'
             && !Backend::get('redirectedToWizard')
             && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
-            && !\str_contains($request->getUri()->getPath(), BackendRouter::ROUTE_WIZARD)
+            && !\str_contains($request->getUri()->getPath(), Route::WIZARD)
             && (new Updater($this->db))->hasPendingUpdates() === false
         ) {
-            return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_WIZARD);
+            return new RedirectResponse(Shop::getAdminURL() . '/' . Route::WIZARD);
         }
 
         return $handler->handle($request);

@@ -11,7 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Mail\SmtpTest;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -55,7 +55,7 @@ class ConfigController extends AbstractBackendController
             case \CONF_ARTIKELUEBERSICHT:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
                 // Sucheinstellungen haben eigene Logik
-                return new RedirectResponse($this->baseURL . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
+                return new RedirectResponse($this->baseURL . '/' . Route::SEARCHCONFIG);
             case \CONF_ARTIKELDETAILS:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEDETAILS_VIEW);
                 break;

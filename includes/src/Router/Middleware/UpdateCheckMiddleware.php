@@ -4,7 +4,7 @@ namespace JTL\Router\Middleware;
 
 use JTL\Backend\AdminAccount;
 use JTL\DB\DbInterface;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Update\Updater;
@@ -38,13 +38,13 @@ class UpdateCheckMiddleware implements MiddlewareInterface
         }
         if ((new Updater($this->db))->hasPendingUpdates()) {
             $path = $request->getUri()->getPath();
-            if (!\str_contains($path, BackendRouter::ROUTE_LOGOUT)
-                && !\str_contains($path, BackendRouter::ROUTE_DBUPDATER)
-                && !\str_ends_with($path, BackendRouter::ROUTE_IO)
+            if (!\str_contains($path, Route::LOGOUT)
+                && !\str_contains($path, Route::DBUPDATER)
+                && !\str_ends_with($path, Route::IO)
                 && ($request->getQueryParams()['action'] ?? null) !== 'quick_change_language'
                 && $this->account->logged()
             ) {
-                return new RedirectResponse(Shop::getAdminURL() . '/' . BackendRouter::ROUTE_DBUPDATER);
+                return new RedirectResponse(Shop::getAdminURL() . '/' . Route::DBUPDATER);
             }
         } elseif (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
             $adminToken   = $_SESSION['jtl_token'];

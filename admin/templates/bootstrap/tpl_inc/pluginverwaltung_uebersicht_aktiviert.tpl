@@ -104,14 +104,14 @@
                                     {/if}
                                     <div class="btn-group">
                                         {if $plugin->getOptionsCount() > 0}
-                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_PLUGIN}/{$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\Routes::PLUGIN}/{$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-cogs"></span>
                                                     <span class="fas fa-cogs"></span>
                                                 </span>
                                             </a>
                                         {elseif $plugin->getLicenseMD() || $plugin->getReadmeMD()}
-                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\BackendRouter::ROUTE_PLUGIN}/{$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
+                                            <a class="btn btn-link px-1" href="{$adminURL}/{JTL\Router\Routes::PLUGIN}/{$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-copy"></span>
                                                     <span class="fas fa-copy"></span>

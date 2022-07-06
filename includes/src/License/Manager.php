@@ -11,7 +11,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Exception\AuthException;
 use JTL\License\Struct\ExsLicense;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -192,8 +192,8 @@ class Manager
                     'domain'  => $this->domain
                 ],
                 'redirect_urls' => (object)[
-                    'return_url' => Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE . '?extend=success',
-                    'cancel_url' => Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE . '?extend=fail'
+                    'return_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=success',
+                    'cancel_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=fail'
                 ],
             ], \JSON_THROW_ON_ERROR);
         } catch (JsonException) {

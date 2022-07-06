@@ -11,7 +11,7 @@ use JTL\License\Checker;
 use JTL\License\Manager;
 use JTL\License\Mapper;
 use JTL\Plugin\Admin\StateChanger;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
@@ -97,6 +97,6 @@ $smarty->assign('URL_SHOP', $shopURL)
     ->assign(
         'wizardDone',
         (($conf['global']['global_wizard_done'] ?? 'Y') === 'Y'
-            || !str_contains($_SERVER['REQUEST_URI'], BackendRouter::ROUTE_WIZARD))
+            || !str_contains($_SERVER['REQUEST_URI'], Route::WIZARD))
         && !Request::getVar('fromWizard')
     );

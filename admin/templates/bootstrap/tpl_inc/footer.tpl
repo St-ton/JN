@@ -51,7 +51,7 @@
         </div>
     </div>
 </div>{* /backend-wrapper *}
-{$finderURL = $adminURL|cat:'/'|cat:JTL\Router\BackendRouter::ROUTE_ELFINDER}
+{$finderURL = $adminURL|cat:'/'|cat:JTL\Router\Routes::ELFINDER}
 <script>
     if(typeof CKEDITOR !== 'undefined') {
         CKEDITOR.editorConfig = function(config) {

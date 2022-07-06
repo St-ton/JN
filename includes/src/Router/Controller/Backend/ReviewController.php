@@ -19,7 +19,7 @@ use JTL\Pagination\Pagination;
 use JTL\Review\Manager;
 use JTL\Review\ReviewBonusModel;
 use JTL\Review\ReviewModel;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -116,7 +116,7 @@ class ReviewController extends AbstractBackendController
                 $step = 'bewertung_uebersicht';
                 $this->alertService->addSuccess(\__('successRatingEdit'), 'successRatingEdit');
                 if (Request::verifyGPCDataInt('nFZ') === 1) {
-                    \header('Location: ' . $this->baseURL . '/' . BackendRouter::ROUTE_ACTIVATE);
+                    \header('Location: ' . $this->baseURL . '/' . Route::ACTIVATE);
                     exit();
                 }
             } else {

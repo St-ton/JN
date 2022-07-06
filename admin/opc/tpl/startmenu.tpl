@@ -1,6 +1,6 @@
 {if $opc->isEditMode() === false && $opc->isPreviewMode() === false && \JTL\Shop::isAdmin(true)}
     {$shopHasUpdates    = $opc->shopHasUpdates()}
-    {$opcStartUrl       = "{$ShopURL}/{$smarty.const.PFAD_ADMIN}{JTL\Router\BackendRouter::ROUTE_OPC}"}
+    {$opcStartUrl       = "{$ShopURL}/{$smarty.const.PFAD_ADMIN}{JTL\Router\Route::OPC}"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
 
     {if $opcPageService->isCurPageModifiable()}

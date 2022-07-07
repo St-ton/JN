@@ -99,6 +99,9 @@ class BackendSmarty extends JTLSmarty
         $resourcePaths      = $template->getResources(false);
         $gettext            = Shop::Container()->getGetText();
         $langTag            = $_SESSION['AdminAccount']->language ?? $gettext->getLanguage();
+        $faviconUrl         = $adminURL . (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')
+                ? '/favicon.ico'
+                : '/favicon-default.ico');
         $this->assignDeprecated('URL_SHOP', $shopURL, '5.2.0')
             ->assignDeprecated('PFAD_ADMIN', PFAD_ADMIN, '5.0.0')
             ->assignDeprecated('JTL_CHARSET', JTL_CHARSET, '5.0.0')
@@ -123,7 +126,7 @@ class BackendSmarty extends JTLSmarty
             ->assign('availableLanguages', $availableLanguages)
             ->assign('languageName', \Locale::getDisplayLanguage($langTag, $langTag))
             ->assign('languages', $gettext->getAdminLanguages())
-            ->assign('faviconAdminURL', Shop::getFaviconURL(true))
+            ->assign('faviconAdminURL', $faviconUrl)
             ->assign('cTab', Text::filterXSS(Request::verifyGPDataString('tab')))
             ->assign(
                 'wizardDone',

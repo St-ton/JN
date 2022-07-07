@@ -181,7 +181,7 @@ class ComparisonList
      */
     public function containsAttribute(array $attributes, int $id): bool
     {
-        \trigger_error(__METHOD__ . ' is deprecated. User containsCharacteristic() instead.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated. Use containsCharacteristic() instead.', \E_USER_DEPRECATED);
         return $this->containsCharacteristic($attributes, $id);
     }
 

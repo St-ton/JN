@@ -425,7 +425,7 @@ abstract class AbstractBackendController implements ControllerInterface
             'M', 'm' => (int)$size * 1048576,
             'K', 'k' => (int)$size * 1024,
             'G', 'g' => (int)$size * 1073741824,
-            default => $size,
+            default  => $size,
         };
     }
 

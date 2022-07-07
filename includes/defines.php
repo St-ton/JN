@@ -284,6 +284,11 @@ ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
 
+const ADMINGROUP                          = 1;
+const MAX_LOGIN_ATTEMPTS                  = 3;
+const LOCK_TIME                           = 5;
+const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
+
 /**
  * @param string $constant
  * @param mixed  $value

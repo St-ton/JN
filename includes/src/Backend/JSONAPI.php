@@ -271,6 +271,7 @@ class JSONAPI
      * @param string|string[]|null $searchFor
      * @param int                  $limit
      * @return array
+     * @todo: add URL hints for new URL scheme (like cSeo:/de/products/myproduct instead of cSeo:myproduct)
      */
     public function getItems(
         string $table,
@@ -348,10 +349,6 @@ class JSONAPI
             $result = [];
         }
 
-        if (!\is_array($result)) {
-            $result = [];
-        }
-
         Shop::Container()->getCache()->set($cacheId, $result, $cacheTags);
 
         return $result;
@@ -359,10 +356,11 @@ class JSONAPI
 
     /**
      * @param array|mixed $items
-     * @return string|bool
+     * @return false|string
+     * @throws \JsonException
      */
     public function itemsToJson($items)
     {
-        return \json_encode($items);
+        return \json_encode($items, \JSON_THROW_ON_ERROR);
     }
 }

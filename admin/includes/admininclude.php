@@ -18,19 +18,20 @@ use JTL\Shopsetting;
 use JTL\Smarty\BackendSmarty;
 use JTL\Update\Updater;
 
-if (!isset($bExtern) || !$bExtern) {
-    if (isset($_REQUEST['safemode'])) {
-        $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
-    }
-    define('DEFINES_PFAD', __DIR__ . '/../../includes/');
-    require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
-    require DEFINES_PFAD . 'defines.php';
-    require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
-    defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+if (isset($_REQUEST['safemode'])) {
+    $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
 }
+const DEFINES_PFAD = __DIR__ . '/../../includes/';
+require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
+require DEFINES_PFAD . 'defines.php';
+
+error_reporting(ADMIN_LOG_LEVEL);
+date_default_timezone_set(SHOP_TIMEZONE);
+
+defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';

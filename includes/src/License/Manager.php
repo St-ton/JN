@@ -75,7 +75,7 @@ class Manager
         return [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
-            'User-Agent'    => 'JTL-Shop/' . Shop::getApplicationVersion() . '-' . $this->domain,
+            'User-Agent'    => 'JTL-Shop/' . \APPLICATION_VERSION . '-' . $this->domain,
             'Authorization' => 'Bearer ' . $this->token
         ];
     }

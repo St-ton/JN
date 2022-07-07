@@ -76,8 +76,8 @@ class BackendPlugins
         $inputId = $params['inputId'];
         $button  = '<button type="button" class="btn btn-tooltip btn-link px-1" id="' .
             $inputId . 'Tooltip" data-html="true"';
-        $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
-        $button  .= '<i class="fa fa-eur"></i></button>';
+        $button .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
+        $button .= '<i class="fa fa-eur"></i></button>';
 
         return $button;
     }

@@ -3,9 +3,9 @@
 namespace JTL\Widgets;
 
 use JTL\Catalog\Product\Preise;
+use JTL\Customer\Visitor;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use JTL\Visitor;
 use stdClass;
 
 /**
@@ -19,7 +19,7 @@ class VisitorsOnline extends AbstractWidget
      */
     public function init()
     {
-        Visitor::archive();
+        (new Visitor($this->getDB(), Shop::Container()->getCache()))->archive();
         $this->setPermission('STATS_VISITOR_VIEW');
     }
 

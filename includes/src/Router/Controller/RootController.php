@@ -50,7 +50,7 @@ class RootController extends AbstractController
     {
         $this->getStateFromSlug($args);
         $factory    = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
-        $controller = $factory->getEntryPoint();
+        $controller = $factory->getEntryPoint($request);
         if (!$controller->init()) {
             return $controller->notFoundResponse($request, $args, $smarty);
         }

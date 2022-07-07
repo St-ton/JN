@@ -5,12 +5,10 @@ namespace JTL\Router;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\Exceptions\EmptyResultSetException;
-use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Product as ProductHelper;
+use JTL\Helpers\Text;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Media\Media;
-use JTL\Optin\Optin;
 use JTL\Redirect;
 use JTL\Router\Controller\AccountController;
 use JTL\Router\Controller\CartController;
@@ -61,37 +59,14 @@ class ControllerFactory
 
     /**
      * @param ServerRequestInterface $request
-     * @param array                  $args
      * @return ControllerInterface
      */
-    public function getEntryPoint(ServerRequestInterface $request, array $args): ControllerInterface
+    public function getEntryPoint(ServerRequestInterface $request): ControllerInterface
     {
         $state           = $this->state;
         $fileName        = $this->state->fileName;
         $state->pageType = \PAGE_UNBEKANNT;
         $controller      = null;
-        if (\mb_strlen($state->optinCode) > 8) {
-            try {
-                $successMsg = (new Optin())
-                    ->setCode($state->optinCode)
-                    ->handleOptin();
-                Shop::Container()->getAlertService()->addInfo(
-                    Shop::Lang()->get($successMsg, 'messages'),
-                    'optinSucceeded'
-                );
-            } catch (EmptyResultSetException $e) {
-                Shop::Container()->getLogService()->notice($e->getMessage());
-                Shop::Container()->getAlertService()->addError(
-                    Shop::Lang()->get('optinCodeUnknown', 'errorMessages'),
-                    'optinCodeUnknown'
-                );
-            } catch (InvalidInputException) {
-                Shop::Container()->getAlertService()->addError(
-                    Shop::Lang()->get('optinActionUnknown', 'errorMessages'),
-                    'optinUnknownAction'
-                );
-            }
-        }
         if ($fileName === 'wartung.php') {
             $this->setLinkTypeByFileName($fileName);
             $controller = $this->getPageControllerByLinkType($this->state->linkType);
@@ -107,19 +82,13 @@ class ControllerFactory
                 return $this->fail($request);
             }
             if ($parentID > 0) {
-                $productID = $parentID;
-                // save data from child product POST and add to redirect
-                $cRP = '';
-                if (\is_array($_POST) && \count($_POST) > 0) {
-                    foreach (\array_keys($_POST) as $key) {
-                        $cRP .= '&' . $key . '=' . $_POST[$key];
-                    }
-                    // Redirect POST
-                    $cRP = '&cRP=' . \base64_encode($cRP);
-                }
-                // @todo!!! - use correct route
-                \http_response_code(301);
-                \header('Location: ' . Shop::getURL() . '/?a=' . $productID . $cRP);
+                $code = \is_array($_POST) && \count($_POST) > 0 ? 308 : 301;
+                $path = Shop::getRouter()->getPathByType(
+                    Router::TYPE_PRODUCT,
+                    ['id' => $parentID, 'lang' => Text::convertISO2ISO639(Shop::getLanguageCode())]
+                );
+                \http_response_code($code);
+                \header('Location: ' . Shop::getURL() . $path);
                 exit();
             }
             $controller      = $this->createController(ProductController::class);
@@ -228,20 +197,24 @@ class ControllerFactory
      */
     private function createController(string $class): ControllerInterface
     {
-        $config  = Shopsetting::getInstance()->getAll();
-        $service = Shop::Container()->getAlertService();
-
-        return new $class($this->db, $this->cache, $this->state, $config, $service, $this->smarty);
+        return new $class(
+            $this->db,
+            $this->cache,
+            $this->state,
+            Shopsetting::getInstance()->getAll(),
+            Shop::Container()->getAlertService(),
+            $this->smarty
+        );
     }
 
     /**
-     * @return false|ControllerInterface
+     * @return ControllerInterface|void|null
      */
     private function getPageController()
     {
         $link = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
         if ($link === null) {
-            return false;
+            return null;
         }
         $linkType = $link->getLinkType();
         if ($linkType <= 0) {
@@ -265,22 +238,22 @@ class ControllerFactory
     public static function getControllerClassByLinkType(int $linkType): ?string
     {
         return match ($linkType) {
-            \LINKTYP_VERGLEICHSLISTE => ComparelistController::class,
-            \LINKTYP_WUNSCHLISTE => WishlistController::class,
-            \LINKTYP_NEWS => NewsController::class,
-            \LINKTYP_NEWSLETTER => NewsletterController::class,
-            \LINKTYP_LOGIN => AccountController::class,
-            \LINKTYP_REGISTRIEREN => RegistrationController::class,
+            \LINKTYP_VERGLEICHSLISTE    => ComparelistController::class,
+            \LINKTYP_WUNSCHLISTE        => WishlistController::class,
+            \LINKTYP_NEWS               => NewsController::class,
+            \LINKTYP_NEWSLETTER         => NewsletterController::class,
+            \LINKTYP_LOGIN              => AccountController::class,
+            \LINKTYP_REGISTRIEREN       => RegistrationController::class,
             \LINKTYP_PASSWORD_VERGESSEN => ForgotPasswordController::class,
-            \LINKTYP_KONTAKT => ContactController::class,
-            \LINKTYP_WARENKORB => CartController::class,
-            \LINKTYP_WARTUNG => MaintenanceController::class,
-            \LINKTYP_BESTELLVORGANG => CheckoutController::class,
-            \LINKTYP_BESTELLABSCHLUSS => OrderCompleteController::class,
-            \LINKTYP_BESTELLSTATUS => OrderStatusController::class,
-            \LINKTYP_BEWERTUNG => ReviewController::class,
-            0 => null,
-            default => PageController::class
+            \LINKTYP_KONTAKT            => ContactController::class,
+            \LINKTYP_WARENKORB          => CartController::class,
+            \LINKTYP_WARTUNG            => MaintenanceController::class,
+            \LINKTYP_BESTELLVORGANG     => CheckoutController::class,
+            \LINKTYP_BESTELLABSCHLUSS   => OrderCompleteController::class,
+            \LINKTYP_BESTELLSTATUS      => OrderStatusController::class,
+            \LINKTYP_BEWERTUNG          => ReviewController::class,
+            0                           => null,
+            default                     => PageController::class
         };
     }
 
@@ -305,18 +278,18 @@ class ControllerFactory
     private function setLinkTypeByFileName(string $fileName): void
     {
         $this->state->linkType = match ($fileName) {
-            'news.php' => \LINKTYP_NEWS,
-            'jtl.php' => \LINKTYP_LOGIN,
-            'kontakt.php' => \LINKTYP_KONTAKT,
-            'newsletter.php' => \LINKTYP_NEWSLETTER,
-            'pass.php' => \LINKTYP_PASSWORD_VERGESSEN,
+            'news.php'         => \LINKTYP_NEWS,
+            'jtl.php'          => \LINKTYP_LOGIN,
+            'kontakt.php'      => \LINKTYP_KONTAKT,
+            'newsletter.php'   => \LINKTYP_NEWSLETTER,
+            'pass.php'         => \LINKTYP_PASSWORD_VERGESSEN,
             'registrieren.php' => \LINKTYP_REGISTRIEREN,
-            'warenkorb.php' => \LINKTYP_WARENKORB,
-            'wunschliste.php' => \LINKTYP_WUNSCHLISTE,
-            'wartung.php' => \LINKTYP_WARTUNG,
-            'status.php' => \LINKTYP_BESTELLSTATUS,
-            'bewertung.php' => \LINKTYP_BEWERTUNG,
-            default => $this->state->linkType,
+            'warenkorb.php'    => \LINKTYP_WARENKORB,
+            'wunschliste.php'  => \LINKTYP_WUNSCHLISTE,
+            'wartung.php'      => \LINKTYP_WARTUNG,
+            'status.php'       => \LINKTYP_BESTELLSTATUS,
+            'bewertung.php'    => \LINKTYP_BEWERTUNG,
+            default            => $this->state->linkType,
         };
     }
 }

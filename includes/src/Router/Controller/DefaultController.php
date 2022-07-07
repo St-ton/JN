@@ -72,12 +72,12 @@ class DefaultController extends AbstractController
         }
         $this->getStateFromSlug($args);
         $cf         = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
-        $controller = $cf->getEntryPoint();
+        $controller = $cf->getEntryPoint($request);
         $check      = $controller->init();
         if ($check === false) {
             return $controller->notFoundResponse($request, $args, $smarty);
         }
-        if (false && \REDIR_OLD_ROUTES === true) {
+        if (\REDIR_OLD_ROUTES === true) {
             $langID = $this->state->languageID ?: Shop::getLanguageID();
             $locale = null;
             foreach (LanguageHelper::getAllLanguages() as $language) {
@@ -85,11 +85,18 @@ class DefaultController extends AbstractController
                     $locale = $language->getIso639();
                 }
             }
-            $type = match (\get_class($controller)) {
-                CategoryController::class => Router::TYPE_CATEGORY,
-                ProductController::class => Router::TYPE_PRODUCT,
-                NewsController::class => Router::TYPE_NEWS,
-                default => Router::TYPE_PAGE
+            $className = $controller instanceof PageController
+                ? PageController::class
+                : \get_class($controller);
+            $type      = match ($className) {
+                CategoryController::class            => Router::TYPE_CATEGORY,
+                CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
+                ManufacturerController::class        => Router::TYPE_MANUFACTURERS,
+                NewsController::class                => Router::TYPE_NEWS,
+                ProductController::class             => Router::TYPE_PRODUCT,
+                SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
+                SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
+                default                              => Router::TYPE_PAGE
             };
             $test = Shop::getRouter()->getPathByType($type, [
                 'name' => $args['slug'],

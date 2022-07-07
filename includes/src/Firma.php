@@ -121,8 +121,8 @@ class Firma
     public function __construct(
         bool                       $load = true,
         private ?DbInterface       $db = null,
-        private ?JTLCacheInterface $cache = null)
-    {
+        private ?JTLCacheInterface $cache = null
+    ) {
         $this->db    = $db ?? Shop::Container()->getDB();
         $this->cache = $this->cache ?? Shop::Container()->getCache();
         if ($load) {

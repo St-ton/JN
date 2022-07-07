@@ -1367,8 +1367,8 @@ class CampaignController extends AbstractBackendController
         }
 
         $interval = match ($view) {
-            1 => 'month',
-            2 => 'week',
+            1       => 'month',
+            2       => 'week',
             default => 'day',
         };
         $now     = \date_create();

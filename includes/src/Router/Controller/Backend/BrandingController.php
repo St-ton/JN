@@ -205,7 +205,7 @@ class BrandingController extends AbstractBackendController
             'image/gif' => '.gif',
             'image/png' => '.png',
             'image/bmp' => '.bmp',
-            default => '.jpg',
+            default     => '.jpg',
         };
     }
 }

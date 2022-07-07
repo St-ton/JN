@@ -40,9 +40,9 @@ class CodeController extends AbstractBackendController
     private function getRedirectURL(string $redir): string
     {
         return match ($redir) {
-            'wizard' => Route::WIZARD,
+            'wizard'        => Route::WIZARD,
             'premiumplugin' => Route::PREMIUM_PLUGIN,
-            default => Route::LICENSE,
+            default         => Route::LICENSE,
         };
     }
 }

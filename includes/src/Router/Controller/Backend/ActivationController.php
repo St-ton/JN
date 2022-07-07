@@ -191,11 +191,11 @@ class ActivationController extends AbstractBackendController
                 $res = $this->mapLiveSearch($_POST['kSuchanfrage'], $mapping);
                 if ($res !== 1) {
                     $searchError = match ($res) {
-                        2 => \__('errorMapUnknown'),
-                        3 => \__('errorSearchNotFoundDB'),
-                        4 => \__('errorMapDB'),
-                        5 => \__('errorMapToNotExisting'),
-                        6 => \__('errorMapSelf'),
+                        2       => \__('errorMapUnknown'),
+                        3       => \__('errorSearchNotFoundDB'),
+                        4       => \__('errorMapDB'),
+                        5       => \__('errorMapToNotExisting'),
+                        6       => \__('errorMapSelf'),
                         default => '',
                     };
                     $this->alertService->addError($searchError, 'searchError');

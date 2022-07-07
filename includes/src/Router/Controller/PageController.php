@@ -103,7 +103,7 @@ class PageController extends AbstractController
             return $this->delegateResponse($mapped, $request, $args, $smarty);
         }
         if ($linkType === \LINKTYP_STARTSEITE) {
-            $this->canonicalURL = Shop::getHomeURL();
+            $this->canonicalURL = $this->getHomeURL(Shop::getURL());
             if ($this->currentLink->getRedirectCode() > 0) {
                 return new RedirectResponse($this->canonicalURL, $this->currentLink->getRedirectCode());
             }

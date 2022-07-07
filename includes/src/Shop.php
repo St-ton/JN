@@ -3,9 +3,11 @@
 namespace JTL;
 
 use Exception;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Consent\ManagerInterface;
 use JTL\Cron\Starter\StarterFactory;
+use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Filter\Config;
@@ -388,17 +390,17 @@ final class Shop extends ShopBC
     }
 
     /**
-     * Load plugin event driven system
-     * @param bool $isFrontend
+     * @param bool              $isFrontend
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     * @return void
      */
-    public static function bootstrap(bool $isFrontend = true): void
+    public static function bootstrap(bool $isFrontend, DbInterface $db, JTLCacheInterface $cache): void
     {
         self::$isFrontend = $isFrontend;
         if (\SAFE_MODE === true) {
             return;
         }
-        $db      = self::Container()->getDB();
-        $cache   = self::Container()->getCache();
         $cacheID = 'plgnbtstrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = map($db->getObjects(
@@ -617,30 +619,6 @@ final class Shop extends ShopBC
     }
 
     /**
-     * @return bool
-     */
-    public static function check404(): bool
-    {
-        if (self::$state->is404 !== true) {
-            return false;
-        }
-        \executeHook(\HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
-        if (!self::$state->linkID) {
-            $hookInfos = Redirect::urlNotFoundRedirect([
-                'key'   => 'kLink',
-                'value' => self::$state->linkID
-            ]);
-            $linkID    = $hookInfos['value'];
-            if (!$linkID) {
-                self::$state->linkID = self::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
-                self::$kLink         = self::$state->linkID;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * build product filter object from parameters
      *
      * @param array                       $params
@@ -699,16 +677,6 @@ final class Shop extends ShopBC
         }
 
         return Version::parse($version);
-    }
-
-    /**
-     * Return version of files
-     *
-     * @return string
-     */
-    public static function getApplicationVersion(): string
-    {
-        return \APPLICATION_VERSION;
     }
 
     /**
@@ -818,25 +786,6 @@ final class Shop extends ShopBC
     public static function getPageType(): int
     {
         return self::$state->pageType ?? \PAGE_UNBEKANNT;
-    }
-
-    /**
-     * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
-     * @return string
-     */
-    public static function getRequestUri(bool $decoded = false): string
-    {
-        $shopPath = \parse_url(self::getURL(), \PHP_URL_PATH) ?? '';
-        $basePath = \parse_url(self::getRequestURL(), \PHP_URL_PATH);
-        $uri      = $basePath !== null
-            ? \mb_substr($basePath, \mb_strlen($shopPath) + 1)
-            : '';
-        $uri      = '/' . $uri;
-        if ($decoded) {
-            $uri = \rawurldecode($uri);
-        }
-
-        return $uri;
     }
 
     /**
@@ -951,66 +900,5 @@ final class Shop extends ShopBC
         }
 
         return self::$container;
-    }
-
-    /**
-     * @param bool $admin
-     * @return string
-     */
-    public static function getFaviconURL(bool $admin = false): string
-    {
-        if ($admin) {
-            $faviconUrl = self::getAdminURL();
-            if (\file_exists(\PFAD_ROOT . \PFAD_ADMIN . 'favicon.ico')) {
-                $faviconUrl .= '/favicon.ico';
-            } else {
-                $faviconUrl .= '/favicon-default.ico';
-            }
-        } else {
-            $smarty           = JTLSmarty::getInstance();
-            $templateDir      = $smarty->getTemplateDir($smarty->context);
-            $shopTemplatePath = $smarty->getTemplateUrlPath();
-            $faviconUrl       = self::getURL() . '/';
-
-            if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
-                $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
-            } elseif (\file_exists($templateDir . 'favicon.ico')) {
-                $faviconUrl .= $shopTemplatePath . 'favicon.ico';
-            } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
-                $faviconUrl .= 'favicon.ico';
-            } else {
-                $faviconUrl .= 'favicon-default.ico';
-            }
-        }
-
-        return $faviconUrl;
-    }
-
-    /**
-     * @return string
-     * @throws Exceptions\CircularReferenceException
-     * @throws Exceptions\ServiceNotFoundException
-     */
-    public static function getHomeURL(): string
-    {
-        $homeURL = self::getURL() . '/';
-        try {
-            if (!LanguageHelper::isDefaultLanguageActive()) {
-                $homeURL = self::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)?->getURL();
-            }
-        } catch (SpecialPageNotFoundException $e) {
-            self::Container()->getLogService()->error($e->getMessage());
-        }
-
-        return $homeURL;
-    }
-
-    /**
-     * @return string
-     */
-    public static function getRequestURL(): string
-    {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-            . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 }

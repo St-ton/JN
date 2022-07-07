@@ -819,7 +819,14 @@ class NewsController extends AbstractBackendController
             if (empty($seoData->cSeo)) {
                 continue;
             }
-            if ($update === true) {
+            $exists = $this->db->getSingleObject(
+                'SELECT *
+                    FROM tnewskategoriesprache
+                    WHERE kNewsKategorie = :nid
+                        AND languageID = :lid',
+                ['nid' => $categoryID, 'lid' => $language->getId()]
+            );
+            if ($exists !== null) {
                 unset($loc->kNewsKategorie);
                 $this->db->update(
                     'tnewskategoriesprache',

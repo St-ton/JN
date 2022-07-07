@@ -3,6 +3,7 @@
 namespace JTL\Backend;
 
 use Carbon\Carbon;
+use JsonException;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -26,27 +27,32 @@ class AuthToken
     /**
      * @var string|null
      */
-    private $authCode;
+    private ?string $authCode;
 
     /**
      * @var string|null
      */
-    private $token;
+    private ?string $token;
 
     /**
      * @var string|null
      */
-    private $hash;
+    private ?string $decryptedToken = null;
 
     /**
      * @var string|null
      */
-    private $verified;
+    private ?string $hash;
+
+    /**
+     * @var string|null
+     */
+    private ?string $verified;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * AuthToken constructor.
@@ -73,10 +79,11 @@ class AuthToken
      */
     private function load(): void
     {
-        $this->authCode = null;
-        $this->token    = null;
-        $this->hash     = null;
-        $this->verified = null;
+        $this->authCode       = null;
+        $this->token          = null;
+        $this->hash           = null;
+        $this->verified       = null;
+        $this->decryptedToken = null;
 
         $token = $this->db->getSingleObject(
             'SELECT tstoreauth.auth_code, tstoreauth.access_token,
@@ -154,8 +161,12 @@ class AuthToken
         if (!isset($parts[1])) {
             return true;
         }
-        $payload    = \base64_decode($parts[1]);
-        $expiration = Carbon::createFromTimestamp(\json_decode($payload)->exp);
+        $payload = \base64_decode($parts[1]);
+        try {
+            $expiration = Carbon::createFromTimestamp(\json_decode($payload, false, 512, \JSON_THROW_ON_ERROR)->exp);
+        } catch (JsonException $e) {
+            return true;
+        }
 
         return Carbon::now()->diffInSeconds($expiration, false) < 0;
     }
@@ -165,9 +176,9 @@ class AuthToken
      */
     public function isValid(): bool
     {
-        $token = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
+        $token = $this->decryptToken();
 
-        return ($token !== '') && (\sha1($token) === $this->verified) && !$this->isExpired($token);
+        return $token !== '' && (\sha1($token) === $this->verified) && !$this->isExpired($token);
     }
 
     /**
@@ -175,7 +186,11 @@ class AuthToken
      */
     public function get(): string
     {
-        return $this->isValid() ? \rtrim($this->getCrypto()->decrypt($this->token ?? '')) : '';
+        if (!$this->isValid()) {
+            return '';
+        }
+
+        return $this->decryptToken();
     }
 
     /**
@@ -186,7 +201,6 @@ class AuthToken
         if (!self::isEditable()) {
             return;
         }
-
         $this->db->query('TRUNCATE TABLE tstoreauth');
         $this->load();
     }
@@ -271,5 +285,17 @@ class AuthToken
         $this->set($authCode, $token);
         \http_response_code($this->isValid() ? 200 : 404);
         exit;
+    }
+
+    /**
+     * @return string
+     */
+    private function decryptToken(): string
+    {
+        if ($this->decryptedToken === null) {
+            $this->decryptedToken = \rtrim($this->getCrypto()->decrypt($this->token ?? ''));
+        }
+
+        return $this->decryptedToken;
     }
 }

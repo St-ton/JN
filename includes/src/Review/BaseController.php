@@ -7,6 +7,7 @@ use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Model\DataModelInterface;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -21,27 +22,27 @@ abstract class BaseController
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var JTLSmarty
      */
-    protected $smarty;
+    protected JTLSmarty $smarty;
 
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var AlertServiceInterface
      */
-    protected $alertService;
+    protected AlertServiceInterface $alertService;
 
     /**
      * @param int    $productID
@@ -51,12 +52,13 @@ abstract class BaseController
     public function updateAverage(int $productID, string $activate): bool
     {
         $sql = $activate === 'Y' ? ' AND nAktiv = 1' : '';
-        $cnt = (int)$this->db->getSingleObject(
-            'SELECT COUNT(*) AS nAnzahl
+        $cnt = $this->db->getSingleInt(
+            'SELECT COUNT(*) AS cnt
                 FROM tbewertung
                 WHERE kArtikel = :pid' . $sql,
+            'cnt',
             ['pid' => $productID]
-        )->nAnzahl;
+        );
         if ($cnt === 1) {
             $sql = '';
         } elseif ($cnt === 0) {
@@ -72,10 +74,7 @@ abstract class BaseController
         );
         if ($avg !== null && $avg->fDurchschnitt > 0) {
             $this->db->delete('tartikelext', 'kArtikel', $productID);
-            $ext                          = new stdClass();
-            $ext->kArtikel                = $productID;
-            $ext->fDurchschnittsBewertung = (float)$avg->fDurchschnitt;
-
+            $ext = (object)['kArtikel' => $productID, 'fDurchschnittsBewertung' => (float)$avg->fDurchschnitt];
             $this->db->insert('tartikelext', $ext);
         }
 
@@ -126,7 +125,7 @@ abstract class BaseController
         $reviewBonus = ReviewBonusModel::loadByAttributes(
             ['customerID' => $review->getCustomerID(), 'reviewID' => $review->getId()],
             $this->db,
-            ReviewBonusModel::ON_NOTEXISTS_NEW
+            DataModelInterface::ON_NOTEXISTS_NEW
         );
         $reviewBonus->setBonus($reward);
         $reviewBonus->setReviewID($review->getId());

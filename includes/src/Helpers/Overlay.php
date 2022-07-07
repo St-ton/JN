@@ -2,7 +2,6 @@
 
 namespace JTL\Helpers;
 
-use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\Shop;
 
@@ -44,8 +43,7 @@ class Overlay
             return false;
         }
         if (!\is_writable($overlayPath)) {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 \sprintf(\__('errorOverlayWritePermissions'), \PFAD_TEMPLATES . $template . \PFAD_OVERLAY_TEMPLATE),
                 'errorOverlayWritePermissions',
                 ['saveInSession' => true]

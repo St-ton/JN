@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -22,7 +22,7 @@ final class MediaFiles extends AbstractPush
         $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, 1);
         $xml    .= '</mediafiles>' . "\n";
         $zip     = \time() . '.jtl';
-        $xmlfile = \fopen(self::TEMP_DIR . self::XML_FILE, 'w');
+        $xmlfile = \fopen(self::TEMP_DIR . self::XML_FILE, 'wb');
         \fwrite($xmlfile, $xml);
         \fclose($xmlfile);
         if (!\file_exists(self::TEMP_DIR . self::XML_FILE)) {

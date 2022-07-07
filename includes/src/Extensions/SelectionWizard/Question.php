@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\SelectionWizard;
 
@@ -16,57 +16,67 @@ class Question
     /**
      * @var int
      */
-    public $kAuswahlAssistentFrage = 0;
+    public int $kAuswahlAssistentFrage = 0;
 
     /**
      * @var int
      */
-    public $kAuswahlAssistentGruppe = 0;
+    public int $kAuswahlAssistentGruppe = 0;
 
     /**
      * @var int
      */
-    public $kMerkmal = 0;
+    public int $kMerkmal = 0;
 
     /**
      * @var string
      */
-    public $cFrage = '';
+    public string $cFrage = '';
+
+    /**
+     * @var string
+     */
+    public string $cName = '';
+
+    /**
+     * @var string
+     */
+    public string $cBildpfad = '';
 
     /**
      * @var int
      */
-    public $nSort = 0;
+    public int $nSort = 0;
 
     /**
      * @var int
      */
-    public $nAktiv = 0;
+    public int $nAktiv = 0;
 
     /**
      * @var array
      */
-    public $oWert_arr = [];
+    public array $oWert_arr = [];
 
     /**
      * @var array - mapping from kMerkmalWert to tmerkmalwert object
      */
-    public $oWert_assoc = [];
+    public array $oWert_assoc = [];
 
     /**
      * @var int - how many products found that have a value of this attribute
      */
-    public $nTotalResultCount = 0;
+    public int $nTotalResultCount = 0;
 
     /**
-     * @var object - used by old AWA
+     * @var object|null - used by old AWA
      */
-    public $oMerkmal;
+    public ?object $oMerkmal = null;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db;
 
     /**
      * Location constructor.
@@ -101,14 +111,14 @@ class Question
             ['qid' => $id]
         );
         if ($data !== null) {
-            foreach (\get_object_vars($data) as $name => $value) {
-                $this->$name = $value;
-            }
-            $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
-            $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-            $this->kMerkmal                = (int)$this->kMerkmal;
-            $this->nSort                   = (int)$this->nSort;
-            $this->nAktiv                  = (int)$this->nAktiv;
+            $this->kAuswahlAssistentFrage  = (int)$data->kAuswahlAssistentFrage;
+            $this->kAuswahlAssistentGruppe = (int)$data->kAuswahlAssistentGruppe;
+            $this->kMerkmal                = (int)$data->kMerkmal;
+            $this->nSort                   = (int)$data->nSort;
+            $this->nAktiv                  = (int)$data->nAktiv;
+            $this->cFrage                  = $data->cFrage;
+            $this->cName                   = $data->cName;
+            $this->cBildpfad               = $data->cBildpfad;
         }
     }
 
@@ -211,13 +221,10 @@ class Question
         if (\mb_strlen($this->cFrage) === 0) {
             $checks['cFrage'] = 1;
         }
-        if ($this->kAuswahlAssistentGruppe === null
-            || $this->kAuswahlAssistentGruppe === 0
-            || $this->kAuswahlAssistentGruppe === -1
-        ) {
+        if ($this->kAuswahlAssistentGruppe < 1) {
             $checks['kAuswahlAssistentGruppe'] = 1;
         }
-        if ($this->kMerkmal === null || $this->kMerkmal === 0 || $this->kMerkmal === -1) {
+        if ($this->kMerkmal < 1) {
             $checks['kMerkmal'] = 1;
         }
         if (!$update && $this->isMerkmalTaken($this->kMerkmal, $this->kAuswahlAssistentGruppe)) {

@@ -74,7 +74,7 @@
             <div id="inaktiv" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiv'} active show{/if}">
                 {if $comments && $comments|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
-                    <form method="post" action="news.php">
+                    <form method="post" action="{$adminURL}/news.php">
                         {$jtl_token}
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="newskommentar_freischalten" value="1" />
@@ -114,7 +114,7 @@
                                             <td class="text-center">{$comment->getDateCreatedCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&kNews={$comment->getNewsID()}&kNewsKommentar={$comment->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -156,7 +156,7 @@
             </div>
             <div id="aktiv" class="tab-pane fade{if $cTab === 'aktiv'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}/news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_loeschen" value="1" />
@@ -179,7 +179,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNews_arr|@count > 0}
+                                {if $oNews_arr|count > 0}
                                     {foreach $oNews_arr as $oNews}
                                         <tr>
                                             <td class="check">
@@ -200,7 +200,7 @@
                                             </td>
                                             <td class="text-center">
                                                 {if $oNews->getCommentCount() > 0}
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
+                                                    <a href="{$adminURL}/news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                                 {else}
                                                     {$oNews->getCommentCount()}
                                                 {/if}
@@ -208,7 +208,7 @@
                                             <td class="text-center">{$oNews->getDateCompat()}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('preview')}"
                                                        data-toggle="tooltip">
@@ -217,7 +217,7 @@
                                                             <span class="fas fa-eye"></span>
                                                         </span>
                                                     </a>
-                                                    <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -264,15 +264,14 @@
                     </div>
                 </form>
                 <div class="container2">
-                    <form name="erstellen" method="post" action="news.php">
+                    <form name="erstellen" method="post" action="{$adminURL}/news.php">
                         {$jtl_token}
                     </form>
                 </div>
             </div>
-            <!-- #inaktiv -->
             <div id="kategorien" class="tab-pane fade{if $cTab === 'kategorien'} active show{/if}">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
-                <form name="news" method="post" action="news.php">
+                <form name="news" method="post" action="{$adminURL}/news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_kategorie_loeschen" value="1" />
@@ -293,7 +292,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNewsKategorie_arr|@count}
+                                {if $oNewsKategorie_arr|count}
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
                                             <th class="check">
@@ -313,7 +312,7 @@
                                             <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}/news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -366,84 +365,16 @@
                 </form>
             </div>
             <div id="einstellungen" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                <form name="einstellen" method="post" action="news.php">
-                    {$jtl_token}
-                    <input type="hidden" name="einstellungen" value="1" />
-                    <input type="hidden" name="tab" value="einstellungen" />
-                    <input type="hidden" name="news" value="1" />
-
-                    <div class="settings">
-                        <div class="subheading1">
-                            {__('settings')}
-                            <hr class="mb-3">
-                        </div>
-                        <div>
-                            {foreach $oConfig_arr as $oConfig}
-                                {if $oConfig->cConf === 'Y'}
-                                    <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                                            {if $oConfig->cInputTyp === 'selectbox'}
-                                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]"
-                                                        id="{$oConfig->cWertName}"
-                                                        multiple="multiple"
-                                                        class="selectpicker custom-select"
-                                                        data-selected-text-format="count > 2"
-                                                        data-size="7"
-                                                        data-actions-box="true">
-                                                    {foreach $oConfig->ConfWerte as $wert}
-                                                        <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
-                                                    {/foreach}
-                                                </select>
-                                            {elseif $oConfig->cInputTyp === 'number'}
-                                                <div class="input-group form-counter">
-                                                    <div class="input-group-prepend">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                                            <span class="fas fa-minus"></span>
-                                                        </button>
-                                                    </div>
-                                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                                                    <div class="input-group-append">
-                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                                            <span class="fas fa-plus"></span>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            {else}
-                                                <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                                            {/if}
-                                        </div>
-                                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                                    </div>
-                                {/if}
-                            {/foreach}
-
-                            {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
-                                <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
-                                    </div>
-                                </div>
-                            {/foreach}
-                        </div>
-                        <div class="card-footer save-wrapper">
-                            <div class="row">
-                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                        {__('saveWithIcon')}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                {include file='tpl_inc/news_month_prefixes.tpl' assign='additional'}
+                {include file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    a='saveSettings'
+                    action=$adminURL|cat:'/news.php'
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    skipHeading=true
+                    additional=$additional
+                    tab='einstellungen'}
             </div>
         </div>
     </div>

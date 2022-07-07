@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Profiler;
@@ -18,17 +17,17 @@ $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
     if (is_numeric(Request::postVar('run-id'))) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
-        if (is_numeric($res) && $res > 0) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntryDelete'), 'successEntryDelete');
+        if ($res > 0) {
+            $alertHelper->addSuccess(__('successEntryDelete'), 'successEntryDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntryDelete'), 'errorEntryDelete');
+            $alertHelper->addError(__('errorEntryDelete'), 'errorEntryDelete');
         }
     } elseif (Request::postVar('delete-all') === 'y') {
         $res = deleteProfileRun(true);
-        if (is_numeric($res) && $res > 0) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntriesDelete'), 'successEntriesDelete');
+        if ($res > 0) {
+            $alertHelper->addSuccess(__('successEntriesDelete'), 'successEntriesDelete');
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntriesDelete'), 'errorEntriesDelete');
+            $alertHelper->addError(__('errorEntriesDelete'), 'errorEntriesDelete');
         }
     }
 }

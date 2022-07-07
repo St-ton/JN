@@ -11,22 +11,22 @@ class CronjobHistory
     /**
      * @var string
      */
-    public $cExportformat;
+    public string $cExportformat;
 
     /**
      * @var string
      */
-    public $cDateiname;
+    public string $cDateiname;
 
     /**
      * @var int
      */
-    public $nDone;
+    public int $nDone;
 
     /**
      * @var string
      */
-    public $cLastStartDate;
+    public string $cLastStartDate;
 
     /**
      * @param string $name
@@ -34,7 +34,7 @@ class CronjobHistory
      * @param int    $done
      * @param string $lastStartDate
      */
-    public function __construct($name, $fileName, $done, $lastStartDate)
+    public function __construct(string $name, string $fileName, int $done, string $lastStartDate)
     {
         $this->cExportformat  = $name;
         $this->cDateiname     = $fileName;

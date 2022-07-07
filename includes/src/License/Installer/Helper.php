@@ -12,7 +12,6 @@ use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Manager;
 use JTL\License\Struct\ExsLicense;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Helper
@@ -23,17 +22,17 @@ class Helper
     /**
      * @var Manager
      */
-    private $manager;
+    private Manager $manager;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * Helper constructor.
@@ -50,9 +49,9 @@ class Helper
 
     /**
      * @param string $itemID
-     * @return PluginInstaller|TemplateInstaller
+     * @return InstallerInterface
      */
-    public function getInstaller(string $itemID)
+    public function getInstaller(string $itemID): InstallerInterface
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -75,14 +74,14 @@ class Helper
 
     /**
      * @param string $itemID
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws InvalidArgumentException
      * @throws ApiResultCodeException
      * @throws FilePermissionException
      * @throws ChecksumValidationException
      */
-    public function getDownload(string $itemID)
+    public function getDownload(string $itemID): string
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -92,8 +91,7 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
         }
-        $downloader = new Downloader();
 
-        return $downloader->downloadRelease($available);
+        return (new Downloader())->downloadRelease($available);
     }
 }

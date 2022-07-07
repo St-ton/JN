@@ -8,7 +8,7 @@
                 {block name='register-form-customer-account-unreg'}
                     {col cols=12}<hr>{/col}
                     {col cols=12 md=4}
-                        {if !$smarty.session.Warenkorb->hasDigitalProducts() && isset($checkout)
+                        {if !JTL\Session\Frontend::getCart()->hasDigitalProducts() && isset($checkout)
                             && $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                             <div class="form-group checkbox register-form-account-unreg control-toggle">
                                 {input type="hidden" name="unreg_form" value="1"}
@@ -28,7 +28,7 @@
                 {block name='register-form-customer-account-password'}
                     {col cols=12 md=8}
                         {formrow id="create_account_data" class="collapse collapse-non-validate {if empty($checkout)
-                        || $smarty.session.Warenkorb->hasDigitalProducts()
+                        || JTL\Session\Frontend::getCart()->hasDigitalProducts()
                         || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'
                         || ($unregForm !== 1 && !empty($fehlendeAngaben))}show{else}hidden{/if}" aria-expanded="true"}
                             {block name='register-form-customer-account-password-first'}

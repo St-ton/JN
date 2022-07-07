@@ -1,6 +1,5 @@
-<?php
+<?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Shop;
 
@@ -31,13 +30,13 @@ if (isset($_POST['wawi-pass'], $_POST['wawi-user']) && Form::validateToken()) {
             ['cName' => $upd->cName, 'cPass' => $upd->cPass]
         );
 
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
+        $alertHelper->addSuccess(__('successConfigSave'), 'successConfigSave');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorInvalidPassword'), 'errorInvalidPassword');
+        $alertHelper->addError(__('errorInvalidPassword'), 'errorInvalidPassword');
     }
 }
 
 $user = Shop::Container()->getDB()->select('tsynclogin', 'kSynclogin', 1);
 $smarty->assign('wawiuser', htmlentities($user->cName))
-       ->assign('wawipass', $user->cPass)
-       ->display('wawisync.tpl');
+    ->assign('wawipass', $user->cPass)
+    ->display('wawisync.tpl');

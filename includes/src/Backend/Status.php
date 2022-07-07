@@ -2,7 +2,12 @@
 
 namespace JTL\Backend;
 
+use DateTime;
 use Exception;
+use Illuminate\Support\Collection;
+use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
+use JTL\Backend\LocalizationCheck\LocalizationCheckInterface;
+use JTL\Backend\LocalizationCheck\Result;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
@@ -37,14 +42,16 @@ class Status
     /**
      * @var JTLCacheInterface
      */
-    protected $cache;
+    protected JTLCacheInterface $cache;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
-
+    /**
+     * @var self
+     */
     private static $instance;
 
     public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
@@ -56,7 +63,7 @@ class Status
 
     /**
      * Status constructor.
-     * @param DbInterface $db
+     * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache)
@@ -68,9 +75,9 @@ class Status
     }
 
     /**
-     * @param DbInterface $db
+     * @param DbInterface            $db
      * @param JTLCacheInterface|null $cache
-     * @param bool $flushCache
+     * @param bool                   $flushCache
      * @return Status
      */
     public static function getInstance(
@@ -289,6 +296,26 @@ class Status
     }
 
     /**
+     * @return array
+     */
+    public function hasMysqlPhpTimeMismatch(): array
+    {
+        try {
+            $dbTimeString = $this->db->getSingleObject('SELECT NOW() AS time')->time;
+            $dbTime       = new DateTime($dbTimeString);
+            $phpTime      = new DateTime();
+
+            return [
+                'db'   => $dbTime->format('Y-m-d H:i:s'),
+                'php'  => $phpTime->format('Y-m-d H:i:s'),
+                'diff' => \abs($dbTime->getTimestamp() - $phpTime->getTimestamp())
+            ];
+        } catch (Exception $e) {
+            return ['diff' => 0];
+        }
+    }
+
+    /**
      * @return bool
      */
     public function hasDifferentTemplateVersion(): bool
@@ -441,10 +468,10 @@ class Status
      */
     public function hasFullTextIndexError(): bool
     {
-        $conf = Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf = Shop::getSettingValue(\CONF_ARTIKELUEBERSICHT, 'suche_fulltext');
 
-        return isset($conf['suche_fulltext'])
-            && $conf['suche_fulltext'] !== 'N'
+        return $conf !== null
+            && $conf !== 'N'
             && (!$this->db->query(
                 "SHOW INDEX
                     FROM tartikel
@@ -488,7 +515,7 @@ class Status
             'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`'
         );
-        if (!\is_array($data) || 1 > \count($data)) {
+        if (\count($data) === 0) {
             return false; // there are no plugins installed
         }
 
@@ -504,6 +531,35 @@ class Status
         }
 
         return false;
+    }
+
+    /**
+     * @param bool $has
+     * @return bool|Collection
+     */
+    public function getLocalizationProblems(bool $has = true)
+    {
+        if (\SAFE_MODE === true) {
+            return false;
+        }
+        $languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
+        $factory   = new LocalizationCheckFactory($this->db, $languages);
+        $results   = new Collection();
+        foreach ($factory->getAllChecks() as $check) {
+            $result  = new Result();
+            $excess  = $check->getExcessLocalizations();
+            $missing = $check->getItemsWithoutLocalization();
+            $result->setLocation($check->getLocation());
+            $result->setClassName(\get_class($check));
+            $result->setExcessLocalizations($excess);
+            $result->setMissingLocalizations($missing);
+            if ($has === true && ($missing->count() > 0 || $excess->count() > 0)) {
+                return true;
+            }
+            $results->push($result);
+        }
+
+        return $has ? false : $results;
     }
 
     /**

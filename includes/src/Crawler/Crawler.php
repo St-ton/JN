@@ -51,9 +51,9 @@ class Crawler
 
     /**
      * @param array $crawlers
-     * @return object
+     * @return $this
      */
-    public function map(array $crawlers) :object
+    public function map(array $crawlers): self
     {
         foreach ($crawlers as $crawler) {
             $this->setID((int)$crawler->kBesucherBot);
@@ -76,7 +76,6 @@ class Crawler
 
     /**
      * @param int $id
-     * @return void
      */
     public function setID(int $id): void
     {
@@ -93,7 +92,6 @@ class Crawler
 
     /**
      * @param string $description
-     * @return void
      */
     public function setDescription(string $description): void
     {
@@ -101,7 +99,7 @@ class Crawler
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -110,9 +108,8 @@ class Crawler
 
     /**
      * @param string|null $name
-     * @return void
      */
-    public function setName($name): void
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
@@ -127,7 +124,6 @@ class Crawler
 
     /**
      * @param string $useragent
-     * @return void
      */
     public function setUserAgent(string $useragent): void
     {
@@ -135,7 +131,7 @@ class Crawler
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getLink(): ?string
     {
@@ -144,9 +140,8 @@ class Crawler
 
     /**
      * @param string|null $link
-     * @return void
      */
-    public function setLink($link): void
+    public function setLink(?string $link): void
     {
         $this->link = $link;
     }

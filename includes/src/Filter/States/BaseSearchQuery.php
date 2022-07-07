@@ -437,27 +437,27 @@ class BaseSearchQuery extends AbstractFilter
                     AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < NOW()'
         );
         // Suchcache checken, ob bereits vorhanden
-        $searchCache = $this->productFilter->getDB()->getSingleObject(
+        $searchCache = $this->productFilter->getDB()->getSingleInt(
             'SELECT kSuchCache
                 FROM tsuchcache
                 WHERE kSprache = :lang
                     AND cSuche = :search
                     AND (dGueltigBis > NOW() OR dGueltigBis IS NULL)',
+            'kSuchCache',
             [
                 'lang'   => $langID,
                 'search' => $query
             ]
         );
-        if ($searchCache !== null && $searchCache->kSuchCache > 0) {
-            return (int)$searchCache->kSuchCache; // Gib gültigen Suchcache zurück
+        if ($searchCache > 0) {
+            return $searchCache;
         }
         // wenn kein Suchcache vorhanden
         $minChars = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
         if (\mb_strlen($query) < $minChars) {
-            require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-            $this->error = \lang_suche_mindestanzahl($query, $minChars);
+            $this->error = Shop::Lang()->get('searchQueryMinLength', 'messages', $minChars, $query);
 
             return 0;
         }
@@ -1120,7 +1120,7 @@ class BaseSearchQuery extends AbstractFilter
         $max     = 0;
         $current = '';
         $prefix  = 'tartikel.';
-        $conf    = $conf['artikeluebersicht'] ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
+        $conf    = $conf['artikeluebersicht'] ?? Shop::getSettingSection(\CONF_ARTIKELUEBERSICHT);
         if (!LanguageHelper::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }

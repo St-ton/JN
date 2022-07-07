@@ -112,7 +112,7 @@
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 {if $invisibleBoxes|count > 0}
                     <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
-                    <form action="boxen.php" method="post" class="block">
+                    <form action="{$adminURL}/boxen.php" method="post" class="block">
                         {$jtl_token}
                         <div class="card editorInner">
                             <div class="card-header">
@@ -174,14 +174,14 @@
                         </div>
                     </form>
                 {/if}
-                {if !is_array($oBoxenContainer) || $oBoxenContainer|@count == 0}
+                {if !is_array($oBoxenContainer) || $oBoxenContainer|count == 0}
                     <div class="alert alert-danger">{__('noTemplateConfig')}</div>
                 {elseif !$oBoxenContainer.left && !$oBoxenContainer.right && !$oBoxenContainer.top && !$oBoxenContainer.bottom}
                     <div class="alert alert-danger">{__('noBoxActivated')}</div>
                 {else}
                     {if isset($oEditBox) && $oEditBox}
                         <div id="editor" class="editor">
-                            <form action="boxen.php" method="post">
+                            <form action="{$adminURL}/boxen.php" method="post">
                                 {$jtl_token}
                                 <div class="card editorInner">
                                     <div class="card-header">
@@ -280,7 +280,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-body">
-                                <form name="boxen" method="post" action="boxen.php">
+                                <form name="boxen" method="post" action="{$adminURL}/boxen.php">
                                     {$jtl_token}
                                     <div class="input-group left">
                                         <span class="input-group-addon">
@@ -306,7 +306,6 @@
             </div>
             <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
-                    config=$oConfig_arr
                     name='einstellen'
                     a='saveSettings'
                     action='boxen.php'

@@ -44,6 +44,9 @@ msgstr "Status emails"
 msgid "licensecheck"
 msgstr "License check"
 
+msgid "topsellerupdate"
+msgstr "Topseller update"
+
 msgid "dataprotection"
 msgstr "Anonymisation of customer data"
 

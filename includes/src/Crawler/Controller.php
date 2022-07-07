@@ -2,13 +2,13 @@
 
 namespace JTL\Crawler;
 
-use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 use stdClass;
 
 /**
@@ -134,17 +134,16 @@ class Controller
     }
 
     /**
-     * @return object|mixed
+     * @return Crawler|bool
      */
     public function checkRequest()
     {
-        $crawler = false;
         if (Form::validateToken() === false
             && (Request::postInt('save_crawler') || Request::postInt('delete_crawler'))
         ) {
-            $this->alertService->addAlert(Alert::TYPE_ERROR, \__('errorCSRF'), 'errorCSRF');
+            $this->alertService->addError(\__('errorCSRF'), 'errorCSRF');
 
-            return $crawler;
+            return false;
         }
         if (Request::postInt('delete_crawler') === 1) {
             $selectedCrawler = Request::postVar('selectedCrawler');
@@ -158,18 +157,15 @@ class Controller
                 $item->cBeschreibung = Text::filterXSS(Request::postVar('description'));
                 $result              = $this->saveCrawler($item);
                 if ($result === -1) {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_ERROR,
-                        \__('missingCrawlerFields'),
-                        'missingCrawlerFields'
-                    );
+                    $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
                 } else {
-                    \header('Location: statistik.php?s=3&tab=settings');
+                    \header('Location: ' . Shop::getAdminURL() . '/statistik.php?s=3&tab=settings');
                 }
             } else {
-                $this->alertService->addAlert(Alert::TYPE_ERROR, \__('missingCrawlerFields'), 'missingCrawlerFields');
+                $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
             }
         }
+        $crawler = false;
         if (Request::verifyGPCDataInt('edit') === 1 || Request::verifyGPCDataInt('new') === 1) {
             $crawlerId = Request::verifyGPCDataInt('id');
             $crawler   = new Crawler();

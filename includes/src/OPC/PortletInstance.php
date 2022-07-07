@@ -607,7 +607,7 @@ class PortletInstance implements \JsonSerializable
         return [
             'srcset'     => $srcset,
             'srcsizes'   => $srcsizes,
-            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_LG)),
+            'src'        => \str_replace(' ', '%20', $this->getImage(Image::SIZE_XL)),
             'alt'        => $alt,
             'title'      => $title,
             'realWidth'  => $realWidth,
@@ -688,7 +688,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerializeShort()
+    public function jsonSerializeShort(): array
     {
         return [
             'id'              => $this->portlet->getId(),
@@ -702,7 +702,7 @@ class PortletInstance implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $result             = $this->jsonSerializeShort();
         $result['subareas'] = $this->subareaList->jsonSerialize();

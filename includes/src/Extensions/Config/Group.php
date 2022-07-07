@@ -48,7 +48,7 @@ class Group implements JsonSerializable
     public $cKommentar;
 
     /**
-     * @var object
+     * @var GroupLocalization|null
      */
     public $oSprache;
 
@@ -89,7 +89,7 @@ class Group implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         if ($this->oSprache === null) {
             $this->oSprache = new GroupLocalization($this->kKonfiggruppe);
@@ -145,36 +145,6 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
      * @param int $id
      * @return $this
      */
@@ -191,7 +161,7 @@ class Group implements JsonSerializable
      */
     public function setBildPfad($cBildPfad): self
     {
-        $this->cBildPfad = Shop::Container()->getDB()->escape($cBildPfad);
+        $this->cBildPfad = $cBildPfad;
 
         return $this;
     }
@@ -274,9 +244,9 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return object|null
+     * @return GroupLocalization|null
      */
-    public function getSprache()
+    public function getSprache(): ?GroupLocalization
     {
         return $this->oSprache;
     }

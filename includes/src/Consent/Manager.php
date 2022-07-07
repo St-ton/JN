@@ -16,12 +16,12 @@ class Manager implements ManagerInterface
     /**
      * @var array
      */
-    private $activeItems = [];
+    private array $activeItems = [];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Manager constructor.

@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
+use SimpleXMLElement;
 
 /**
  * Class DeliveryNotes
@@ -16,7 +17,7 @@ final class DeliveryNotes extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             if ($fileName === 'lief.xml') {
@@ -30,9 +31,9 @@ final class DeliveryNotes extends AbstractSync
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleInserts($xml): void
+    private function handleInserts(SimpleXMLElement $xml): void
     {
         foreach ($xml->tlieferschein as $item) {
             $deliveryNote = $this->mapper->map($item, 'mLieferschein');
@@ -67,9 +68,9 @@ final class DeliveryNotes extends AbstractSync
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleDeletes($xml): void
+    private function handleDeletes(SimpleXMLElement $xml): void
     {
         $items = $xml->kLieferschein;
         if (!\is_array($items)) {

@@ -64,7 +64,7 @@ class ReviewReminder
      */
     public function __construct()
     {
-        $this->settings       = Shop::getSettings([\CONF_BEWERTUNG])['bewertung'];
+        $this->settings       = Shop::getSettingSection(\CONF_BEWERTUNG);
         $this->customerGroups = $this->settings['bewertungserinnerung_kundengruppen'];
     }
 
@@ -110,7 +110,7 @@ class ReviewReminder
                 if ($item->kArtikel <= 0) {
                     continue;
                 }
-                $productVisible = (new Artikel())->fuelleArtikel(
+                $productVisible = (new Artikel($db))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
                     (int)$customer->kKundengruppe

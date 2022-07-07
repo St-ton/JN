@@ -43,7 +43,7 @@ class Manufacturer
             ($lagerfilter !== '' ? \md5($lagerfilter) : '');
         self::$langID  = Shop::getLanguageID();
         if (self::$langID <= 0) {
-            self::$langID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
+            self::$langID = LanguageHelper::getDefaultLanguage()->getId();
         }
         $this->manufacturers = $this->getManufacturers();
         self::$instance      = $this;
@@ -111,7 +111,6 @@ class Manufacturer
                 }
                 $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
                 $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->cURLFull       = $shopURL . $manufacturer->cSeo;
                 $instance                     = new Hersteller();
                 $manufacturer                 = $instance->loadFromObject($manufacturer);
             }

@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -14,8 +13,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
 $db          = Shop::Container()->getDB();
@@ -63,11 +60,7 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             Shop::Container()->getLogService()->error($e->getMessage());
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-            'newsletterWrongemail'
-        );
+        $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
     }
     $smarty->assign('cPost_arr', $post);
 } elseif ($valid && Request::verifyGPCDataInt('abmelden') === 1) {
@@ -78,18 +71,10 @@ if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
                 ->setAction(Optin::DELETE_CODE)
                 ->handleOptin();
         } catch (Exception $e) {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('newsletterNoexists', 'errorMessages'),
-                'newsletterNoexists'
-            );
+            $alertHelper->addError(Shop::Lang()->get('newsletterNoexists', 'errorMessages'), 'newsletterNoexists');
         }
     } else {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-            'newsletterWrongemail'
-        );
+        $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (Request::getInt('show') > 0) {

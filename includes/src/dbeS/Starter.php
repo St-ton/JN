@@ -55,7 +55,7 @@ class Starter
     /**
      * @var array
      */
-    private static $pullMapping = [
+    private static array $pullMapping = [
         'Artikel_xml'      => Products::class,
         'Bestellungen_xml' => Orders::class,
         'Bilder_xml'       => Images::class,
@@ -79,7 +79,7 @@ class Starter
     /**
      * @var array
      */
-    private static $pushMapping = [
+    private static array $pushMapping = [
         'GetBestellungen_xml'  => PushOrders::class,
         'GetData_xml'          => PushData::class,
         'GetKunden_xml'        => Customers::class,
@@ -92,7 +92,7 @@ class Starter
     /**
      * @var array
      */
-    private static $netSyncMapping = [
+    private static array $netSyncMapping = [
         'Cronjob_xml'           => SyncCronjob::class,
         'GetDownloadStruct_xml' => ProductDownloads::class,
         'Upload_xml'            => Uploader::class
@@ -101,52 +101,52 @@ class Starter
     /**
      * @var Synclogin
      */
-    private $auth;
+    private Synclogin $auth;
 
     /**
-     * @var array|null
+     * @var mixed|null
      */
     private $data;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $postData;
+    private ?array $postData = null;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $files;
+    private ?array $files = null;
 
     /**
      * @var string
      */
-    private $unzipPath;
+    private string $unzipPath;
 
     /**
      * @var FileHandler
      */
-    private $fileHandler;
+    private FileHandler $fileHandler;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var string
      */
-    private $wawiVersion = 'unknown';
+    private string $wawiVersion = 'unknown';
 
     /**
      * Starter constructor.
@@ -389,7 +389,6 @@ class Starter
         if (!$this->checkAuth($post)) {
             return self::ERROR_NOT_AUTHORIZED;
         }
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'mailTools.php';
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
         $this->setPostData($post);
         $this->setData($files['data']['tmp_name'] ?? null);

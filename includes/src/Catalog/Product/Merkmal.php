@@ -113,7 +113,7 @@ class Merkmal
     public function loadFromDB(int $id, bool $getValues = false, int $languageID = 0): self
     {
         $languageID     = $languageID === 0 ? Shop::getLanguageID() : $languageID;
-        $cacheID        = 'mm_' . $id . '_' . $this->kSprache;
+        $cacheID        = 'mm_' . $id . '_' . $languageID;
         $this->kSprache = $languageID;
         if ($getValues === false && Shop::has($cacheID)) {
             foreach (\get_object_vars(Shop::get($cacheID)) as $k => $v) {
@@ -122,7 +122,7 @@ class Merkmal
 
             return $this;
         }
-        $defaultLanguageID = LanguageHelper::getDefaultLanguage()->kSprache;
+        $defaultLanguageID = LanguageHelper::getDefaultLanguage()->getId();
         if ($languageID !== $defaultLanguageID) {
             $selectSQL = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $joinSQL   = 'INNER JOIN tmerkmalsprache AS standardSprache 

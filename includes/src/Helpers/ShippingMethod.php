@@ -1369,16 +1369,18 @@ class ShippingMethod
      */
     public static function getFreeShippingMinimum(int $customerGroupID, string $country = '')
     {
+        $cache           = Shop::Container()->getCache();
+        $db              = Shop::Container()->getDB();
         $shippingClasses = self::getShippingClasses(Frontend::getCart());
         $defaultShipping = self::normalerArtikelversand($country);
         $cacheID         = 'vkfrei_' . $customerGroupID . '_'
             . $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
-        if (($shippingMethod = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($shippingMethod = $cache->get($cacheID)) === false) {
             $iso = 'DE';
             if (\mb_strlen($country) > 0) {
                 $iso = $country;
             } else {
-                $company = new Firma();
+                $company = new Firma(true, $db, $cache);
                 if ($company->country !== null) {
                     $iso = $company->country->getISO();
                 }
@@ -1396,7 +1398,7 @@ class ShippingMethod
             }
 
             $productSpecificCondition = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
-            $shippingMethod           = Shop::Container()->getDB()->getSingleObject(
+            $shippingMethod           = $db->getSingleObject(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                     FROM tversandart
                     LEFT JOIN tversandartsprache
@@ -1425,7 +1427,7 @@ class ShippingMethod
                 $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
                 $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             }
-            Shop::Container()->getCache()->set($cacheID, $shippingMethod, [\CACHING_GROUP_OPTION]);
+            $cache->set($cacheID, $shippingMethod, [\CACHING_GROUP_OPTION]);
         }
 
         return $shippingMethod !== null && $shippingMethod->fVersandkostenfreiAbX > 0

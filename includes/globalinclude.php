@@ -9,6 +9,7 @@ use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\JTLSmarty;
 
 $nStartzeit = microtime(true);
 
@@ -76,10 +77,10 @@ if (!defined('CLI_BATCHRUN')) {
         $session        = (defined('JTLCRON') && JTLCRON === true)
             ? Frontend::getInstance(true, true, 'JTLCRON')
             : Frontend::getInstance();
-        Shop::bootstrap();
+        Shop::bootstrap(true, $db, $cache);
         executeHook(HOOK_GLOBALINCLUDE_INC);
         $session->deferredUpdate();
-        require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-        $debugbar->addCollector(new Smarty(Shop::Smarty()));
+        $smarty = JTLSmarty::getInstance();
+        $debugbar->addCollector(new Smarty($smarty));
     }
 }

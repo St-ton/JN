@@ -187,7 +187,7 @@ class XML
      */
     private function checkError(): void
     {
-        $errCode = \xml_get_error_code($this->parser);
+        $errCode              = \xml_get_error_code($this->parser);
         self::$lastParseError = '';
         if ($errCode !== \XML_ERROR_NONE) {
             $lineNumber           = \xml_get_current_line_number($this->parser);

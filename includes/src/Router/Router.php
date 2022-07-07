@@ -28,6 +28,7 @@ use JTL\Router\Middleware\CurrencyCheckMiddleware;
 use JTL\Router\Middleware\LocaleCheckMiddleware;
 use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
+use JTL\Router\Middleware\OptinMiddleware;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
 use JTL\Router\Middleware\SSLRedirectMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
@@ -161,6 +162,7 @@ class Router
         $this->router->middleware(new CartcheckMiddleware());
         $this->router->middleware(new LocaleCheckMiddleware());
         $this->router->middleware(new CurrencyCheckMiddleware());
+        $this->router->middleware(new OptinMiddleware());
         $visibilityMiddleware = new VisibilityMiddleware();
         $currencies           = \array_map(static function (Currency $e) {
             return $e->getCode();
@@ -235,7 +237,7 @@ class Router
 
                 $this->router->get($dyn . '/news/{id:\d+}', [$news, 'getResponse'])
                     ->setName('ROUTE_NEWS_BY_ID' . $dynName);
-                $this->router->get($dyn . '/news/{' . $name . '}', [$news, 'getResponse'])
+                $this->router->get($dyn . '/news[/{' . $name . '}]', [$news, 'getResponse'])
                     ->setName('ROUTE_NEWS_BY_NAME' . $dynName);
                 $this->router->post($dyn . '/news/{id:\d+}', [$news, 'getResponse'])
                     ->setName('ROUTE_NEWS_BY_ID' . $dynName . 'POST');
@@ -329,20 +331,23 @@ class Router
     public function getPathByType(string $type, ?array $replacements = null, bool $byName = true): string
     {
         $name = match ($type) {
-            self::TYPE_CATEGORY => 'ROUTE_CATEGORY_BY_',
+            self::TYPE_CATEGORY             => 'ROUTE_CATEGORY_BY_',
             self::TYPE_CHARACTERISTIC_VALUE => 'ROUTE_CHARACTERISTIC_BY_',
-            self::TYPE_MANUFACTURERS => 'ROUTE_MANUFACTURER_BY_',
-            self::TYPE_NEWS => 'ROUTE_NEWS_BY_',
-            self::TYPE_PAGE => 'ROUTE_PAGE_BY_',
-            self::TYPE_PRODUCT => 'ROUTE_PRODUCT_BY_',
-            self::TYPE_SEARCH_SPECIAL => 'ROUTE_SEARCHSPECIAL_BY_',
-            self::TYPE_SEARCH_QUERY => 'ROUTE_SEARCHQUERY_BY_',
-            default => 'ROUTE_XXX_BY_'
+            self::TYPE_MANUFACTURERS        => 'ROUTE_MANUFACTURER_BY_',
+            self::TYPE_NEWS                 => 'ROUTE_NEWS_BY_',
+            self::TYPE_PAGE                 => 'ROUTE_PAGE_BY_',
+            self::TYPE_PRODUCT              => 'ROUTE_PRODUCT_BY_',
+            self::TYPE_SEARCH_SPECIAL       => 'ROUTE_SEARCHSPECIAL_BY_',
+            self::TYPE_SEARCH_QUERY         => 'ROUTE_SEARCHQUERY_BY_',
+            default                         => 'ROUTE_XXX_BY_'
         };
         $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
             && ($this->ignoreDefaultLocale === false || ($replacements['lang'] ?? '') !== $this->defaultLocale)
         ) {
+            if (empty($replacements['lang'])) {
+                $replacements['lang'] = $this->defaultLocale;
+            }
             $name .= '_LOCALIZED';
         }
         if ($this->isMulticrncy === true && isset($replacements['currency'])) {

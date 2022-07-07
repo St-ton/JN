@@ -213,9 +213,9 @@ final class Link extends AbstractLink implements RoutableInterface
      */
     public function __construct(DbInterface $db)
     {
-        $this->routeType  = Router::TYPE_PAGE;
         $this->db         = $db;
         $this->childLinks = new Collection();
+        $this->setRouteType(Router::TYPE_PAGE);
         $this->initLanguageID();
     }
 

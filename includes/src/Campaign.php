@@ -4,6 +4,7 @@ namespace JTL;
 
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Customer\Visitor;
 use stdClass;
 
 /**

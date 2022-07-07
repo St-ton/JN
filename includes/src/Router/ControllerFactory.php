@@ -11,14 +11,18 @@ use JTL\Helpers\Product as ProductHelper;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Media\Media;
 use JTL\Optin\Optin;
+use JTL\Redirect;
 use JTL\Router\Controller\AccountController;
 use JTL\Router\Controller\CartController;
+use JTL\Router\Controller\CategoryController;
+use JTL\Router\Controller\CharacteristicValueController;
 use JTL\Router\Controller\CheckoutController;
 use JTL\Router\Controller\ComparelistController;
 use JTL\Router\Controller\ContactController;
 use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\ForgotPasswordController;
 use JTL\Router\Controller\MaintenanceController;
+use JTL\Router\Controller\ManufacturerController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\NewsletterController;
 use JTL\Router\Controller\OrderCompleteController;
@@ -28,10 +32,12 @@ use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\ProductListController;
 use JTL\Router\Controller\RegistrationController;
 use JTL\Router\Controller\ReviewController;
+use JTL\Router\Controller\SearchQueryController;
 use JTL\Router\Controller\WishlistController;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class ControllerFactory
@@ -46,17 +52,19 @@ class ControllerFactory
      * @param JTLSmarty         $smarty
      */
     public function __construct(
-        private State $state,
-        private DbInterface $db,
+        private State             $state,
+        private DbInterface       $db,
         private JTLCacheInterface $cache,
-        private JTLSmarty $smarty
+        private JTLSmarty         $smarty
     ) {
     }
 
     /**
+     * @param ServerRequestInterface $request
+     * @param array                  $args
      * @return ControllerInterface
      */
-    public function getEntryPoint(): ControllerInterface
+    public function getEntryPoint(ServerRequestInterface $request, array $args): ControllerInterface
     {
         $state           = $this->state;
         $fileName        = $this->state->fileName;
@@ -96,7 +104,7 @@ class ControllerFactory
                 $state->is404    = true;
                 $state->pageType = \PAGE_404;
 
-                return $this->fail();
+                return $this->fail($request);
             }
             if ($parentID > 0) {
                 $productID = $parentID;
@@ -116,23 +124,28 @@ class ControllerFactory
             }
             $controller      = $this->createController(ProductController::class);
             $state->pageType = \PAGE_ARTIKEL;
-        } elseif ($state->characteristicNotFound === false
-            && $state->categoryFilterNotFound === false
-            && $state->manufacturerFilterNotFound === false
-            && (($state->manufacturerID > 0
-                    || $state->searchQueryID > 0
-                    || $state->characteristicID > 0
-                    || $state->categoryID > 0
-                    || $state->ratingFilterID > 0
+        } elseif ($state->categoryFilterNotFound === false
+            && (($state->ratingFilterID > 0
                     || $state->manufacturerFilterID > 0
                     || $state->categoryFilterID > 0
                     || $state->searchSpecialID > 0
                     || $state->searchFilterID > 0)
                 || $state->priceRangeFilter !== '')
-//            && (Shop::getProductFilter()->getFilterCount() === 0)
         ) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(ProductListController::class);
+        } elseif ($state->categoryID > 0 && $state->manufacturerFilterNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(CategoryController::class);
+        } elseif ($state->manufacturerID > 0 && $state->manufacturerFilterNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(ManufacturerController::class);
+        } elseif ($state->searchQueryID > 0) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(SearchQueryController::class);
+        } elseif ($state->characteristicID > 0 && $state->characteristicNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(CharacteristicValueController::class);
         } elseif ($state->wishlistID > 0) {
             $state->pageType = \PAGE_WUNSCHLISTE;
             $state->linkType = \LINKTYP_WUNSCHLISTE;
@@ -150,7 +163,8 @@ class ControllerFactory
             $controller      = $this->createController(ProductListController::class);
         } elseif (!$state->linkID) {
             //check path
-            $path        = Shop::getRequestUri(true);
+            $shopPath    = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
+            $path        = \str_replace($shopPath, '', $request->getUri()->getPath());
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
@@ -168,28 +182,42 @@ class ControllerFactory
                 $this->setLinkTypeByFileName($fileName);
                 $controller = $this->getPageControllerByLinkType($this->state->linkType);
             } else {
-                return $this->fail();
+                return $this->fail($request);
             }
         } elseif (!empty($state->linkID) || $fileName === null) {
             $controller = $this->getPageController();
         }
         if ($controller !== null && !$controller->init()) {
-            return $this->fail();
+            return $this->fail($request);
         }
 
-        return $controller ?? $this->fail();
+        return $controller ?? $this->fail($request);
     }
 
     /**
+     * @param ServerRequestInterface $request
      * @return ControllerInterface
      */
-    private function fail(): ControllerInterface
+    private function fail(ServerRequestInterface $request): ControllerInterface
     {
         $this->state->is404 = true;
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
         }
-        Shop::check404();
+        $shopPath = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
+        $path     = \str_replace($shopPath, '', $request->getUri()->getPath());
+        \executeHook(\HOOK_INDEX_SEO_404, ['seo' => $path]);
+        if (!$this->state->linkID) {
+            $hookInfos = Redirect::urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => $this->state->linkID
+            ]);
+            $linkID    = $hookInfos['value'];
+            if (!$linkID) {
+                $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+                Shop::$kLink         = $this->state->linkID;
+            }
+        }
 
         return $this->createController(PageController::class);
     }

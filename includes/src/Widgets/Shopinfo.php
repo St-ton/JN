@@ -16,7 +16,7 @@ class Shopinfo extends AbstractWidget
     public function init()
     {
         $strTplVersion   = Shop::Container()->getTemplateService()->getActiveTemplate()->getVersion();
-        $strFileVersion  = Shop::getApplicationVersion();
+        $strFileVersion  = \APPLICATION_VERSION;
         $strDBVersion    = Shop::getShopDatabaseVersion();
         $strUpdated      = \date_format(\date_create($this->getLastMigrationDate()), 'd.m.Y, H:i:m');
         $strMinorVersion = \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';

@@ -61,8 +61,8 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function __construct(ProductFilter $productFilter)
     {
-        $this->routeType = Router::TYPE_SEARCH_QUERY;
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_QUERY);
         $this->setIsCustom(false)
             ->setUrlParam('suche')
             ->setUrlParamSEO(null);

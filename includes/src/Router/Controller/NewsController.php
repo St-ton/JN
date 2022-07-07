@@ -55,7 +55,7 @@ class NewsController extends AbstractController
     /**
      * @var string
      */
-    protected string $tseoSelector = 'kHersteller';
+    protected string $tseoSelector = 'kNews';
 
     /**
      * @inheritdoc
@@ -531,11 +531,11 @@ class NewsController extends AbstractController
         $sql->cDatumSQL   = '';
         $sql->cNewsKatSQL = '';
         $sql->cSortSQL    = match ((int)$_SESSION['NewsNaviFilter']->nSort) {
-            2 => ' ORDER BY tnews.dGueltigVon',
-            3 => ' ORDER BY tnewssprache.title',
-            4 => ' ORDER BY tnewssprache.title DESC',
-            5 => ' ORDER BY nNewsKommentarAnzahl DESC',
-            6 => ' ORDER BY nNewsKommentarAnzahl',
+            2       => ' ORDER BY tnews.dGueltigVon',
+            3       => ' ORDER BY tnewssprache.title',
+            4       => ' ORDER BY tnewssprache.title DESC',
+            5       => ' ORDER BY nNewsKommentarAnzahl DESC',
+            6       => ' ORDER BY nNewsKommentarAnzahl',
             default => ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC',
         };
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \mb_strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {

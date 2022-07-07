@@ -69,8 +69,8 @@ class CookieConfig
      */
     private function mergeWithConfig(array $config): void
     {
-        $this->secure   = $this->secure || $config['global_cookie_secure'] === 'Y';
-        $this->httpOnly = $this->httpOnly || $config['global_cookie_httponly'] === 'Y';
+        $this->secure   = $this->secure || ($config['global_cookie_secure'] ?? 'N') === 'Y';
+        $this->httpOnly = $this->httpOnly || ($config['global_cookie_httponly'] ?? 'N') === 'Y';
         if (($config['global_cookie_samesite'] ?? '') !== 'S') {
             $this->sameSite = $config['global_cookie_samesite'] ?? 'S';
             if ($this->sameSite === 'N') {
@@ -80,7 +80,7 @@ class CookieConfig
         if (($config['global_cookie_domain'] ?? '') !== '') {
             $this->domain = $this->experimentalMultiLangDomain($config['global_cookie_domain']);
         }
-        if (\is_numeric($config['global_cookie_lifetime']) && (int)$config['global_cookie_lifetime'] > 0) {
+        if (\is_numeric($config['global_cookie_lifetime'] ?? '') && (int)$config['global_cookie_lifetime'] > 0) {
             $this->lifetime = (int)$config['global_cookie_lifetime'];
         }
         if (!empty($config['global_cookie_path'])) {

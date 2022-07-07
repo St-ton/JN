@@ -129,8 +129,7 @@ class Tax
                     Shop::Lang()->get('missingTaxZoneForDeliveryCountry', 'errorMessages', $country),
                     'missingTaxZoneForDeliveryCountry'
                 );
-                Shop::Smarty()
-                    ->assign('Link', $link)
+                Shop::Smarty()->assign('Link', $link)
                     ->display('layout/index.tpl');
                 exit;
             }

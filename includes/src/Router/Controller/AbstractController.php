@@ -11,6 +11,7 @@ use JTL\Catalog\Navigation;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Customer\Visitor;
 use JTL\DB\DbInterface;
 use JTL\ExtensionPoint;
 use JTL\Filter\Items\Availability;
@@ -27,6 +28,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Minify\MinifyService;
 use JTL\Router\DefaultParser;
 use JTL\Router\State;
@@ -35,7 +37,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use JTL\Visitor;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -375,7 +376,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('Einstellungen', $this->config)
             ->assign('deletedPositions', Cart::$deletedPositions)
             ->assign('updatedPositions', Cart::$updatedPositions)
-            ->assign('Firma', new Firma(true, $this->db))
+            ->assign('Firma', new Firma(true, $this->db, $this->cache))
             ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
             ->assign('AktuelleKategorie', $this->currentCategory)
             ->assign('Suchergebnisse', $this->searchResults)
@@ -390,7 +391,8 @@ abstract class AbstractController implements ControllerInterface
         $this->assignTemplateData();
         $this->assignMetaData($link);
 
-        Visitor::generateData();
+        $visitor = new Visitor($this->db, $this->cache);
+        $visitor->generateData();
         Campaign::checkCampaignParameters();
         Shop::Lang()->generateLanguageAndCurrencyLinks();
         $ep = new ExtensionPoint($pageType, Shop::getParameters(), $this->languageID, $this->customerGroupID);
@@ -463,14 +465,54 @@ abstract class AbstractController implements ControllerInterface
             ->assign('currentThemeDir', $paths->getRealRelThemeDir())
             ->assign('currentThemeDirFull', $paths->getRealThemeURL())
             ->assign('isFluidTemplate', ($this->config['template']['theme']['pagelayout'] ?? '') === 'fluid')
-            ->assign('shopFaviconURL', Shop::getFaviconURL())
+            ->assign('shopFaviconURL', $this->getFaviconURL($shopURL))
             ->assign('ShopLogoURL', Shop::getLogo(true))
             ->assign('lang', Shop::getLanguageCode())
-            ->assign('ShopHomeURL', Shop::getHomeURL())
+            ->assign('ShopHomeURL', $this->getHomeURL($shopURL))
             ->assign('ShopURLSSL', Shop::getURL(true))
             ->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('isAjax', Request::isAjaxRequest());
         $tplService->save();
+    }
+
+    /**
+     * @param string $baseURL
+     * @return string
+     */
+    public function getHomeURL(string $baseURL): string
+    {
+        $homeURL = $baseURL . '/';
+        try {
+            if (!LanguageHelper::isDefaultLanguageActive()) {
+                $homeURL = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)?->getURL();
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        }
+
+        return $homeURL;
+    }
+
+    /**
+     * @param string $baseURL
+     * @return string
+     */
+    protected function getFaviconURL(string $baseURL): string
+    {
+        $templateDir      = $this->smarty->getTemplateDir($this->smarty->context);
+        $shopTemplatePath = $this->smarty->getTemplateUrlPath();
+        $faviconUrl       = $baseURL . '/';
+        if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
+        } elseif (\file_exists($templateDir . 'favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'favicon.ico';
+        } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
+            $faviconUrl .= 'favicon.ico';
+        } else {
+            $faviconUrl .= 'favicon-default.ico';
+        }
+
+        return $faviconUrl;
     }
 
     /**

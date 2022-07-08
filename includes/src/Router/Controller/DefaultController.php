@@ -77,7 +77,7 @@ class DefaultController extends AbstractController
         if ($check === false) {
             return $controller->notFoundResponse($request, $args, $smarty);
         }
-        if (\REDIR_OLD_ROUTES === true) {
+        if (\REDIR_OLD_ROUTES === true && \get_class($controller) !== SearchController::class) {
             $langID = $this->state->languageID ?: Shop::getLanguageID();
             $locale = null;
             foreach (LanguageHelper::getAllLanguages() as $language) {

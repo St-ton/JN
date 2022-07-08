@@ -73,7 +73,7 @@ class NetSyncHandler
             $response->cToken = \session_id();
             $response->oData  = $data;
         }
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         exit;
     }
 

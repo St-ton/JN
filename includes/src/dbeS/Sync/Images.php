@@ -236,11 +236,11 @@ final class Images extends AbstractSync
                 $this->db->update(
                     'tmerkmalwert',
                     'kMerkmalWert',
-                    (int)$image->kMerkmalWert,
+                    $image->kMerkmalWert,
                     (object)['cBildpfad' => $image->cPfad]
                 );
                 $charValImage               = new stdClass();
-                $charValImage->kMerkmalWert = (int)$image->kMerkmalWert;
+                $charValImage->kMerkmalWert = $image->kMerkmalWert;
                 $charValImage->cBildpfad    = $image->cPfad;
 
                 $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Upload;
 
@@ -13,39 +13,44 @@ use stdClass;
 class File
 {
     /**
-     * @var int
+     * @var int|null
      */
-    public $kUpload;
+    public ?int $kUpload = null;
 
     /**
      * @var int
      */
-    public $kCustomID;
+    public int $kCustomID = 0;
 
     /**
      * @var int
      */
-    public $nTyp;
+    public int $nTyp = 0;
 
     /**
-     * @var string
+     * @var int
      */
-    public $cName;
+    public int $nBytes = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPfad;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dErstellt;
+    public ?string $cPfad = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dErstellt = null;
 
     /**
      * @var bool
      */
-    private $licenseOK;
+    private bool $licenseOK;
 
     /**
      * File constructor.
@@ -74,8 +79,14 @@ class File
     public function loadFromDB(int $id): bool
     {
         $upload = Shop::Container()->getDB()->select('tuploaddatei', 'kUpload', $id);
-        if ($this->licenseOK && isset($upload->kUpload) && (int)$upload->kUpload > 0) {
-            self::copyMembers($upload, $this);
+        if ($this->licenseOK && $upload !== null && $upload->kUpload > 0) {
+            $this->kUpload   = (int)$upload->kUpload;
+            $this->kCustomID = (int)$upload->kCustomID;
+            $this->nTyp      = (int)$upload->nTyp;
+            $this->nBytes    = (int)$upload->nBytes;
+            $this->cName     = $upload->cName;
+            $this->cPfad     = $upload->cPfad;
+            $this->dErstellt = $upload->dErstellt;
 
             return true;
         }
@@ -102,7 +113,7 @@ class File
     /**
      * @param int $customID
      * @param int $type
-     * @return array
+     * @return stdClass[]
      */
     public static function fetchAll(int $customID, int $type): array
     {

@@ -13,29 +13,29 @@ use stdClass;
 class History
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kDownloadHistory;
+    protected ?int $kDownloadHistory = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kDownload;
+    protected ?int $kDownload = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKunde;
+    protected ?int $kKunde = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kBestellung;
+    protected ?int $kBestellung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $dErstellt;
+    protected ?string $dErstellt = null;
 
     /**
      * History constructor.
@@ -66,17 +66,12 @@ class History
             'kDownloadHistory',
             $id
         );
-        if ($history !== null && (int)$history->kDownloadHistory > 0) {
-            $members = \array_keys(\get_object_vars($history));
-            if (\is_array($members) && \count($members) > 0) {
-                foreach ($members as $member) {
-                    $this->$member = $history->$member;
-                }
-                $this->kDownload        = (int)$this->kDownload;
-                $this->kDownloadHistory = (int)$this->kDownloadHistory;
-                $this->kKunde           = (int)$this->kKunde;
-                $this->kBestellung      = (int)$this->kBestellung;
-            }
+        if ($history !== null && $history->kDownloadHistory > 0) {
+            $this->kDownload        = (int)$history->kDownload;
+            $this->kDownloadHistory = (int)$history->kDownloadHistory;
+            $this->kKunde           = (int)$history->kKunde;
+            $this->kBestellung      = (int)$history->kBestellung;
+            $this->dErstellt        = $history->dErstellt;
         }
     }
 
@@ -118,6 +113,7 @@ class History
                      ORDER BY dErstellt DESC'
             );
             foreach ($data as $item) {
+                $item->kDownload = (int)$item->kDownload;
                 if (!isset($history[$item->kDownload]) || !\is_array($history[$item->kDownload])) {
                     $history[$item->kDownload] = [];
                 }
@@ -159,7 +155,7 @@ class History
         return Shop::Container()->getDB()->update(
             'tdownloadhistory',
             'kDownloadHistory',
-            (int)$this->kDownloadHistory,
+            $this->kDownloadHistory,
             $upd
         );
     }
@@ -264,12 +260,9 @@ class History
      */
     private function kopiereMembers(): stdClass
     {
-        $obj     = new stdClass();
-        $members = \array_keys(\get_object_vars($this));
-        if (\is_array($members) && \count($members) > 0) {
-            foreach ($members as $member) {
-                $obj->$member = $this->$member;
-            }
+        $obj = new stdClass();
+        foreach (\array_keys(\get_object_vars($this)) as $member) {
+            $obj->$member = $this->$member;
         }
 
         return $obj;

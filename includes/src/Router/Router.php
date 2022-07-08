@@ -21,6 +21,7 @@ use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\RootController;
+use JTL\Router\Controller\SearchController;
 use JTL\Router\Controller\SearchQueryController;
 use JTL\Router\Controller\SearchSpecialController;
 use JTL\Router\Middleware\CartcheckMiddleware;
@@ -130,6 +131,7 @@ class Router
         $manufacturers   = new ManufacturerController($db, $cache, $state, $conf, $alert);
         $news            = new NewsController($db, $cache, $state, $conf, $alert);
         $pages           = new PageController($db, $cache, $state, $conf, $alert);
+        $search          = new SearchController($db, $cache, $state, $conf, $alert);
         $default         = new DefaultController($db, $cache, $state, $conf, $alert);
         $root            = new RootController($db, $cache, $state, $conf, $alert);
         $consent         = new ConsentController();
@@ -252,6 +254,11 @@ class Router
                     ->setName('ROUTE_PAGE_BY_ID' . $dynName . 'POST');
                 $this->router->post($dyn . '/pages/{' . $name . '}', [$pages, 'getResponse'])
                     ->setName('ROUTE_PAGE_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/search/{query:.+}', [$search, 'getResponse'])
+                    ->setName('ROUTE_SEARCH' . $dynName);
+                $this->router->post($dyn . '/search/{query:.+}', [$search, 'getResponse'])
+                    ->setName('ROUTE_SEARCH' . $dynName . 'POST');
             }
         }
         $this->router->post('/_updateconsent', [$consent, 'getResponse'])

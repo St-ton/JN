@@ -259,7 +259,7 @@
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                         {link class="btn btn-outline-secondary configurepos btn-block btn-sm"
-                                        href="{get_static_route id='index.php'}?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
+                                        href="{$ShopURL}/?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <i class="fa fa-cogs icon-mr-2"></i>{lang key='configure'}
                                         {/link}
                                     </div>

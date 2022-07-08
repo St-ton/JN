@@ -16,7 +16,7 @@
             {form id="suche2" action=$ShopURL method="get" slide=true}
                 <fieldset>
                     {formgroup label-for="searchkey" label="{lang key='searchText'}"}
-                            {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
+                        {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
                     {/formgroup}
                     {button variant="primary" type="submit" value="1"}{lang key='searchAgain' section='productOverview'}{/button}
                 </fieldset>

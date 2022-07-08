@@ -2,17 +2,17 @@
     {block name='layout-header-nav-search-search'}
         <li class="nav-item" id="search">
             <div class="search-wrapper">
-                {form action="{get_static_route id='index.php'}" method='get'}
+                <form action="{$ShopURL}/search/" method="get">
                     <div class="form-icon">
                         {inputgroup}
                             {input id="search-header" name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
                             {inputgroupaddon append=true}
-                                {button type="submit" name='search' variant="secondary" aria=["label"=>{lang key='search'}]}<span class="fas fa-search"></span>{/button}
+                                {button type="submit" variant="secondary" aria=["label"=>{lang key='search'}]}<span class="fas fa-search"></span>{/button}
                             {/inputgroupaddon}
                             <span class="form-clear d-none"><i class="fas fa-times"></i></span>
                         {/inputgroup}
                     </div>
-                {/form}
+                </form>
             </div>
         </li>
     {/block}

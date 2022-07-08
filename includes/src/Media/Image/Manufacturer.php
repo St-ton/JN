@@ -111,7 +111,7 @@ class Manufacturer extends AbstractImage
         $images = $this->db->getPDOStatement(
             'SELECT kHersteller AS id, cName, cSeo AS seoPath, cBildpfad AS path
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
+                WHERE cBildpfad != \'\'' . self::getLimitStatement($offset, $limit)
         );
         while (($image = $images->fetch(PDO::FETCH_OBJ)) !== false) {
             yield MediaImageRequest::create([
@@ -134,7 +134,7 @@ class Manufacturer extends AbstractImage
         return (int)$this->db->getSingleObject(
             'SELECT COUNT(kHersteller) AS cnt
                 FROM thersteller
-                WHERE cBildpfad IS NOT NULL AND cBildpfad != \'\''
+                WHERE cBildpfad != \'\''
         )->cnt;
     }
 

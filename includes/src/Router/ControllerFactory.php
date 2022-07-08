@@ -30,6 +30,7 @@ use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\ProductListController;
 use JTL\Router\Controller\RegistrationController;
 use JTL\Router\Controller\ReviewController;
+use JTL\Router\Controller\SearchController;
 use JTL\Router\Controller\SearchQueryController;
 use JTL\Router\Controller\WishlistController;
 use JTL\Shop;
@@ -129,7 +130,7 @@ class ControllerFactory
             $controller      = $this->createController(NewsController::class);
         } elseif (!empty($state->searchQuery)) {
             $state->pageType = \PAGE_ARTIKELLISTE;
-            $controller      = $this->createController(ProductListController::class);
+            $controller      = $this->createController(SearchController::class);
         } elseif (!$state->linkID) {
             //check path
             $shopPath    = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';

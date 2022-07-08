@@ -303,33 +303,27 @@ class Navigation
                 break;
 
             case \PAGE_WARENKORB:
-                $url     = $this->linkService->getStaticRoute('warenkorb.php', false);
-                $urlFull = $this->linkService->getStaticRoute('warenkorb.php');
                 $ele->setName($this->language->get('basket', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('warenkorb.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('warenkorb.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_PASSWORTVERGESSEN:
-                $url     = $this->linkService->getStaticRoute('pass.php', false);
-                $urlFull = $this->linkService->getStaticRoute('pass.php');
                 $ele->setName($this->language->get('forgotpassword', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('pass.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('pass.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_LOGIN:
             case \PAGE_MEINKONTO:
-                $name    = Frontend::getCustomer()->getID() > 0
+                $name = Frontend::getCustomer()->getID() > 0
                     ? $this->language->get('account', 'breadcrumb')
                     : $this->language->get('login', 'breadcrumb');
-                $url     = $this->linkService->getStaticRoute('jtl.php', false);
-                $urlFull = $this->linkService->getStaticRoute('jtl.php');
                 $ele->setName($name);
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('jtl.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('jtl.php'));
                 $breadCrumb[] = $ele;
 
                 if (Request::verifyGPCDataInt('accountPage') !== 1) {
@@ -377,38 +371,30 @@ class Navigation
                 break;
 
             case \PAGE_BESTELLVORGANG:
-                $url     = $this->linkService->getStaticRoute('jtl.php', false);
-                $urlFull = $this->linkService->getStaticRoute('jtl.php');
                 $ele->setName($this->language->get('checkout', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('jtl.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('jtl.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_REGISTRIERUNG:
-                $url     = $this->linkService->getStaticRoute('registrieren.php', false);
-                $urlFull = $this->linkService->getStaticRoute('registrieren.php');
                 $ele->setName($this->language->get('register', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('registrieren.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('registrieren.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_KONTAKT:
-                $url     = $this->linkService->getStaticRoute('kontakt.php', false);
-                $urlFull = $this->linkService->getStaticRoute('kontakt.php');
                 $ele->setName($this->language->get('contact', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('kontakt.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('kontakt.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_WARTUNG:
-                $url     = $this->linkService->getStaticRoute('wartung.php', false);
-                $urlFull = $this->linkService->getStaticRoute('wartung.php');
                 $ele->setName($this->language->get('maintainance', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('wartung.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('wartung.php'));
                 $breadCrumb[] = $ele;
                 break;
 
@@ -423,47 +409,37 @@ class Navigation
 
             case \PAGE_NEWSDETAIL:
             case \PAGE_NEWS:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('news', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_NEWSKATEGORIE:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newskat', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_NEWSMONAT:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
                 $ele->setName($this->language->get('newsmonat', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('news.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('news.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_VERGLEICHSLISTE:
-                $url     = $this->linkService->getStaticRoute('vergleichsliste.php', false);
-                $urlFull = $this->linkService->getStaticRoute('vergleichsliste.php');
                 $ele->setName($this->language->get('compare'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('vergleichsliste.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('vergleichsliste.php'));
                 $breadCrumb[] = $ele;
                 break;
 
             case \PAGE_WUNSCHLISTE:
-                $url     = $this->linkService->getStaticRoute('wunschliste.php', false);
-                $urlFull = $this->linkService->getStaticRoute('wunschliste.php');
                 $ele->setName($this->language->get('wishlist'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
+                $ele->setURL($this->linkService->getStaticRoute('wunschliste.php', false));
+                $ele->setURLFull($this->linkService->getStaticRoute('wunschliste.php'));
                 $breadCrumb[] = $ele;
                 break;
 

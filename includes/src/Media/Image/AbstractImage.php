@@ -301,7 +301,7 @@ abstract class AbstractImage implements IMedia
      */
     public function getUncachedImageCount(): int
     {
-        return \count(select($this->getAllImages(), function (MediaImageRequest $e) {
+        return \count(select($this->getAllImages(), function (MediaImageRequest $e): bool {
             return !$this->isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
@@ -363,7 +363,7 @@ abstract class AbstractImage implements IMedia
             map($ids, static function ($e) use ($baseDir) {
                 return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
             }),
-            static function ($e) use ($baseDir) {
+            static function ($e) use ($baseDir): bool {
                 return $e !== false && \str_starts_with($e, $baseDir);
             }
         );
@@ -426,7 +426,7 @@ abstract class AbstractImage implements IMedia
      */
     protected function isCached(MediaImageRequest $req): bool
     {
-        return every(Image::getAllSizes(), static function ($e) use ($req) {
+        return every(Image::getAllSizes(), static function ($e) use ($req): bool {
             return \file_exists($req->getThumb($e, true));
         });
     }

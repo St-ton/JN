@@ -93,7 +93,7 @@ class MediaImageSize
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return \sprintf('%s', $this->getSize());
     }

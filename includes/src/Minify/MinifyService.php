@@ -86,7 +86,7 @@ class MinifyService
     {
         $time = $this->getCacheTime(false);
 
-        return $time ? $this->removeTree($this->baseDir . $time) : false;
+        return $time && $this->removeTree($this->baseDir . $time);
     }
 
     /**

@@ -125,7 +125,7 @@ final class LinkAdmin
             )) {
                 continue;
             }
-            $hit = $all->first(static function ($val, $key) use ($specialPage) {
+            $hit = $all->first(static function ($val, $key) use ($specialPage): bool {
                 return $val->nLinkart === $specialPage->nLinkart;
             });
             if ($hit === null) {
@@ -196,7 +196,7 @@ final class LinkAdmin
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
         $type            = $link->nLinkart;
-        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type) {
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type): bool {
             return $value->nLinkart === $type;
         });
 

@@ -1224,7 +1224,7 @@ final class Link extends AbstractLink implements RoutableInterface
         if ($group === null) {
             return false;
         }
-        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
+        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link): bool {
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
                 && $this->getReference() === 0

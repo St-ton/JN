@@ -345,7 +345,7 @@ class Category implements CategoryInterface
             });
         }
         if ($languageID > 0) {
-            $this->items = $this->items->filter(static function (Item $i) use ($languageID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($languageID): bool {
                 return $i->getTitle($languageID) !== '';
             });
         }

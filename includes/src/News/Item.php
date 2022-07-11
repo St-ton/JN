@@ -357,7 +357,7 @@ class Item extends AbstractItem implements RoutableInterface
                 }
             }
 
-            \usort($images, static function ($a, $b) {
+            \usort($images, static function ($a, $b): int {
                 return \strcmp($a->cName, $b->cName);
             });
         }

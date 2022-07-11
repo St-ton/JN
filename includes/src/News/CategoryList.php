@@ -71,7 +71,7 @@ final class CategoryList implements ItemListInterface
      */
     private function findParentCategory(Collection $tree, int $id): ?Category
     {
-        $found = $tree->first(static function (Category $e) use ($id) {
+        $found = $tree->first(static function (Category $e) use ($id): bool {
             return $e->getID() === $id;
         });
         if ($found !== null) {

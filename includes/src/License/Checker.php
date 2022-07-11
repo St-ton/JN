@@ -131,7 +131,7 @@ class Checker
      */
     private function handleExpiredPluginTestLicenses(Collection $collection): void
     {
-        $expired = $collection->getDedupedExpiredBoundTests()->filter(static function (ExsLicense $e) {
+        $expired = $collection->getDedupedExpiredBoundTests()->filter(static function (ExsLicense $e): bool {
             return $e->getType() === ExsLicense::TYPE_PLUGIN;
         });
         if ($expired->count() === 0) {

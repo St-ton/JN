@@ -1103,7 +1103,7 @@ class Artikel implements RoutableInterface
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
         });
     }
@@ -4077,7 +4077,7 @@ class Artikel implements RoutableInterface
                 $this->kVaterArtikel,
                 'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
             );
-            $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item) {
+            $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item): bool {
                 return $carry
                     || $item->fLagerbestand > 0
                     || $item->cLagerBeachten === 'N'
@@ -5023,7 +5023,7 @@ class Artikel implements RoutableInterface
      */
     public function getPurchaseQuantityFromCart()
     {
-        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item) {
+        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item): bool {
             return $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && (int)$item->Artikel->kArtikel === $this->kArtikel;
         }), static function ($value, $index, $collection, $reduction) {
             return $reduction + $value->nAnzahl;
@@ -5499,7 +5499,7 @@ class Artikel implements RoutableInterface
         if (empty($shippingFreeCountries)) {
             return $asString ? '' : [];
         }
-        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
+        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e): string {
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $this->kSprache;

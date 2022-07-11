@@ -124,7 +124,7 @@ class ComparisonList
      */
     public function productExists(int $productID): bool
     {
-        return some($this->oArtikel_arr, static function ($e) use ($productID) {
+        return some($this->oArtikel_arr, static function ($e) use ($productID): bool {
             return (int)$e->kArtikel === $productID;
         });
     }
@@ -194,7 +194,7 @@ class ComparisonList
      */
     public function containsCharacteristic(array $characteristics, int $id): bool
     {
-        return some($characteristics, static function (Merkmal $e) use ($id) {
+        return some($characteristics, static function (Merkmal $e) use ($id): bool {
             return $e->getID() === $id;
         });
     }
@@ -208,7 +208,7 @@ class ComparisonList
      */
     public function containsVariation(array $variations, string $name): bool
     {
-        return some($variations, static function ($e) use ($name) {
+        return some($variations, static function ($e) use ($name): bool {
             return $e->cName === $name;
         });
     }

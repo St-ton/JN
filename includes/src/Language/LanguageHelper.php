@@ -611,12 +611,9 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return \array_filter(
-            LanguageModel::loadAll($this->db, [], [])->toArray(),
-            function (LanguageModel $l): bool {
-                return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model) {
+            return $model->getActive() === 1 && $this->mappekISO($model->getIso()) > 0;
+        })->toArray();
     }
 
     /**

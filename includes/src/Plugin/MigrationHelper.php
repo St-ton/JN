@@ -90,7 +90,7 @@ final class MigrationHelper
      * @param string $fileName File Name
      * @return bool|int
      */
-    public function isValidMigrationFileName(string $fileName)
+    public function isValidMigrationFileName(string $fileName): int|bool
     {
         $matches = [];
 

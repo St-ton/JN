@@ -41,6 +41,9 @@ class ReviewController extends PageController
     {
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_BEWERTUNG);
+        if (!isset($_POST['bfh']) && !isset($_POST['bhjn']) && Request::verifyGPCDataInt('bfa') !== 1) {
+            return new RedirectResponse(Shop::getURL() . '/', 303);
+        }
         if ($this->handleRequest() === true) {
             $this->preRender();
 
@@ -49,9 +52,9 @@ class ReviewController extends PageController
         try {
             $product = (new Artikel($this->db))->fuelleArtikel($this->state->productID);
 
-            return new RedirectResponse($product !== null ? $product->cURLFull : Shop::getURL());
+            return new RedirectResponse($product !== null ? $product->cURLFull : Shop::getURL() . '/');
         } catch (Exception) {
-            return new RedirectResponse(Shop::getURL());
+            return new RedirectResponse(Shop::getURL() . '/');
         }
     }
 
@@ -69,7 +72,6 @@ class ReviewController extends PageController
 
             return false;
         }
-        $this->checkRedirect();
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();
         if (Request::postInt('bfh') === 1) {
@@ -94,17 +96,6 @@ class ReviewController extends PageController
         }
         if (Request::verifyGPCDataInt('bfa') === 1) {
             return $this->reviewPreCheck($customer, $params);
-        }
-    }
-
-    /**
-     *
-     */
-    private function checkRedirect(): void
-    {
-        if (!isset($_POST['bfh']) && !isset($_POST['bhjn']) && Request::verifyGPCDataInt('bfa') !== 1) {
-            \header('Location: ' . Shop::getURL() . '/', true, 303);
-            exit;
         }
     }
 
@@ -200,13 +191,13 @@ class ReviewController extends PageController
         if (!$customer->isLoggedIn()) {
             $helper = Shop::Container()->getLinkService();
             \header(
-                'Location: ' . $helper->getStaticRoute('jtl.php') .
-                '?a=' . Request::verifyGPCDataInt('a') .
-                '&bfa=1&r=' . \R_LOGIN_BEWERTUNG,
+                'Location: ' . $helper->getStaticRoute('jtl.php')
+                . '?a=' . Request::verifyGPCDataInt('a')
+                . '&bfa=1&r=' . \R_LOGIN_BEWERTUNG,
                 true,
                 303
             );
-            exit();
+            exit;
         }
         $product = new Artikel($this->db);
         $product->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());

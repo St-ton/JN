@@ -227,7 +227,7 @@ class Admin
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             if ($e->getResponse()->getStatusCode() === 400) {
-                $body = \json_decode((string)$e->getResponse()->getBody(), false);
+                $body = \json_decode((string)$e->getResponse()->getBody(), false, 512, \JSON_THROW_ON_ERROR);
                 if (isset($body->code, $body->message) && $body->code === 422) {
                     $response->error = $body->message;
                 }
@@ -409,7 +409,7 @@ class Admin
     {
         \ob_clean();
         \ob_start();
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         echo \ob_get_clean();
         exit;
     }

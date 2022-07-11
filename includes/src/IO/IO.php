@@ -17,14 +17,14 @@ use ReflectionMethod;
 class IO
 {
     /**
-     * @var static
+     * @var static|null
      */
     protected static $instance;
 
     /**
      * @var array
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
      * IO constructor.
@@ -80,7 +80,7 @@ class IO
      */
     public function handleRequest(string $reqString)
     {
-        $request = \json_decode($reqString, true);
+        $request = \json_decode($reqString, true, 512, \JSON_THROW_ON_ERROR);
 
         if (($errno = \json_last_error()) !== \JSON_ERROR_NONE) {
             return new IOError('Error ' . $errno . ' while decoding data');

@@ -230,7 +230,7 @@ define('ADMIN_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);
 // excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-        $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+        $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'wb');
         \fwrite($file, $config);
         \fclose($file);
 
@@ -291,12 +291,8 @@ ini_set('display_errors', 0);" . "\n";
         }
 
         if (!$this->db->insertRow('tadminlogin', $adminLogin)) {
-            $error                   = $this->db->getError();
             $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
-            if (!\is_array($error)) {
-                $this->responseMessage[] = $error;
-            }
-            $this->responseStatus = false;
+            $this->responseStatus    = false;
         }
 
         $syncLogin        = new stdClass();
@@ -305,12 +301,8 @@ ini_set('display_errors', 0);" . "\n";
         $syncLogin->cPass = \password_hash($this->post['wawi']['pass'], \PASSWORD_DEFAULT);
 
         if (!$this->db->insertRow('tsynclogin', $syncLogin)) {
-            $error                   = $this->db->getError();
             $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
-            if (!\is_array($error)) {
-                $this->responseMessage[] = $error;
-            }
-            $this->responseStatus = false;
+            $this->responseStatus    = false;
         }
 
         return $this;

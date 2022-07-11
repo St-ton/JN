@@ -151,7 +151,7 @@ final class Model extends DataModel
         if ($this->languageID > 0) {
             try {
                 $this->language = Shop::Lang()->getLanguageByID($this->languageID);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $this->setHasError(1);
                 $this->language   = Shop::Lang()->getDefaultLanguage();
                 $this->languageID = 0;

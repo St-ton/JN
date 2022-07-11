@@ -38,6 +38,7 @@ class FormatExporter extends AbstractExporter
     {
         $this->smarty = new ExportSmarty($this->db);
         $this->smarty->assign('URL_SHOP', Shop::getURL())
+            ->assign('ShopURL', Shop::getURL())
             ->assign('Waehrung', Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
 
@@ -130,7 +131,7 @@ class FormatExporter extends AbstractExporter
         $output       = '';
         $errorMessage = '';
 
-        if ((int)$this->queue->tasksExecuted === 0) {
+        if ($this->queue->tasksExecuted === 0) {
             $this->writer->deleteOldTempFile();
         }
         try {
@@ -160,7 +161,7 @@ class FormatExporter extends AbstractExporter
                 ? 'enabled'
                 : 'disabled')
             . ' - ' . $queueEntry->tasksExecuted . '/' . $max . ' products exported');
-        if ((int)$this->queue->tasksExecuted === 0) {
+        if ($this->queue->tasksExecuted === 0) {
             $this->writer->writeHeader();
         }
         $fallback     = \str_contains($this->model->getContent(), '->oKategorie_arr');
@@ -224,7 +225,7 @@ class FormatExporter extends AbstractExporter
         }
 
         if ($isCron !== false) {
-            $this->finishCronRun($started, (int)$queueEntry->foreignKeyID, $cacheHits, $cacheMisses);
+            $this->finishCronRun($started, $queueEntry->foreignKeyID, $cacheHits, $cacheMisses);
         } else {
             require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
             $cb = new AsyncCallback();
@@ -234,7 +235,7 @@ class FormatExporter extends AbstractExporter
                 ->setProductCount($max)
                 ->setLastProductID($this->queue->lastProductID)
                 ->setIsFinished(false)
-                ->setIsFirst(((int)$this->queue->tasksExecuted === 0))
+                ->setIsFirst($this->queue->tasksExecuted === 0)
                 ->setCacheHits($cacheHits)
                 ->setCacheMisses($cacheMisses)
                 ->setError($errorMessage);
@@ -268,7 +269,7 @@ class FormatExporter extends AbstractExporter
                 WHERE kExportformat = :eid',
             ['eid' => $this->model->getId()]
         );
-        $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
+        $this->db->delete('texportqueue', 'kExportqueue', $this->queue->foreignKeyID);
 
         $this->writer->writeFooter();
         if ($this->writer->finish()) {
@@ -315,7 +316,7 @@ class FormatExporter extends AbstractExporter
             [
                 'nLimitM'        => $this->queue->taskLimit,
                 'nLastArticleID' => $this->queue->lastProductID,
-                'kExportqueue'   => (int)$this->queue->jobQueueID,
+                'kExportqueue'   => $this->queue->jobQueueID,
             ]
         );
         if ($isAsync) {

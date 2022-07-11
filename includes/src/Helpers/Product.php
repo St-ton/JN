@@ -1452,7 +1452,7 @@ class Product
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
-                \collect($collection);
+                $collection = \collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
             $prevID = 0;

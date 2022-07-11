@@ -576,14 +576,14 @@ abstract class AbstractSync
     protected function mapSalutation(string $salutation): string
     {
         $salutation = \strtolower($salutation);
-        if ($salutation === 'w' || $salutation === 'm') {
-            return $salutation;
+        if ($salutation === 'm' || $salutation === 'herr' || $salutation === 'mr' || $salutation === 'mr.') {
+            return 'm';
         }
-        if ($salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
+        if ($salutation === 'w' || $salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
             return 'w';
         }
 
-        return 'm';
+        return '';
     }
 
     /**

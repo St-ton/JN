@@ -256,7 +256,8 @@ class IOMethods
             'WarenkorbVersandkostenfreiHinweis',
             ShippingMethod::getShippingFreeString(
                 ShippingMethod::getFreeShippingMinimum($customerGroupID),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true)
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true),
+                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true)
             )
         )
             ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
@@ -604,7 +605,8 @@ class IOMethods
                 }
 
                 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);
-                $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $country);
 
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
@@ -617,7 +619,11 @@ class IOMethods
                     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
                     ->assign('FavourableShipping', $cart->getFavourableShipping(
                         $shippingFreeMin !== 0
-                        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                        && ShippingMethod::getShippingFreeDifference(
+                            $shippingFreeMin,
+                            $cartValueGros,
+                            $cartValueNet
+                        ) <= 0
                             ? (int)$shippingFreeMin->kVersandart
                             : null
                     ))

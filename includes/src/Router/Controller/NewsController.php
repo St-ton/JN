@@ -441,7 +441,7 @@ class NewsController extends AbstractController
             return false;
         }
         $checks    = self::checkComment($data, $id, $this->config);
-        $checkedOK = every($checks, static function ($e) {
+        $checkedOK = every($checks, static function ($e): bool {
             return $e === 0;
         });
 

@@ -107,7 +107,7 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $iso): ?Country
     {
-        return $this->getCountryList()->first(static function (Country $country) use ($iso) {
+        return $this->getCountryList()->first(static function (Country $country) use ($iso): bool {
             return $country->getISO() === \strtoupper($iso);
         });
     }
@@ -124,7 +124,7 @@ class CountryService implements CountryServiceInterface
         }
         $filterItems = \array_map('\strtoupper', $ISOToFilter);
 
-        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems): bool {
             return \in_array($country->getISO(), $filterItems, true);
         });
     }
@@ -136,7 +136,7 @@ class CountryService implements CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string
     {
         $name  = \strtolower($countryName);
-        $match = $this->getCountryList()->first(static function (Country $country) use ($name) {
+        $match = $this->getCountryList()->first(static function (Country $country) use ($name): bool {
             foreach ($country->getNames() as $tmpName) {
                 if (\strtolower($tmpName) === $name || $name === \strtolower($country->getNameDE())) {
                     return true;

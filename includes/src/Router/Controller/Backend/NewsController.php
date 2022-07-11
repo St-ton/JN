@@ -1086,7 +1086,7 @@ class NewsController extends AbstractBackendController
 
             $images[] = $image;
         }
-        \usort($images, static function ($a, $b) {
+        \usort($images, static function ($a, $b): int {
             return \strcmp($a->cName, $b->cName);
         });
 
@@ -1264,7 +1264,7 @@ class NewsController extends AbstractBackendController
 
             \closedir($handle);
         }
-        \usort($images, static function ($a, $b) {
+        \usort($images, static function ($a, $b): int {
             return \strcmp($a, $b);
         });
         $baseURL = Shop::getImageBaseURL();

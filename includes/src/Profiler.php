@@ -525,7 +525,7 @@ class Profiler
         }
         if (\defined('FILTER_SQL_QUERIES') && \FILTER_SQL_QUERIES === true) {
             $hashes           = [];
-            self::$sqlProfile = \array_filter(self::$sqlProfile, static function ($e) use (&$hashes) {
+            self::$sqlProfile = \array_filter(self::$sqlProfile, static function ($e) use (&$hashes): bool {
                 if (!\in_array($e->hash, $hashes, true)) {
                     $hashes[] = $e->hash;
 

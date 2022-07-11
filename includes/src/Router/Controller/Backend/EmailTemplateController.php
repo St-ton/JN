@@ -202,7 +202,7 @@ class EmailTemplateController extends AbstractBackendController
 
         if ($step === 'uebersicht') {
             $templates = $this->getAllTemplates();
-            $smarty->assign('mailTemplates', filter($templates, static function (Model $e) {
+            $smarty->assign('mailTemplates', filter($templates, static function (Model $e): bool {
                 return $e->getPluginID() === 0;
             }))
                 ->assign('pluginMailTemplates', filter($templates, static function (Model $e) {

@@ -166,7 +166,7 @@ class SearchController extends AbstractBackendController
         $pluginValidator = new PluginValidator($this->db, $parser);
         $listing         = new Listing($this->db, $this->cache, $legacyValidator, $pluginValidator);
 
-        return $listing->getInstalled()->filter(function (ListingItem $e) use ($query) {
+        return $listing->getInstalled()->filter(function (ListingItem $e) use ($query): bool {
             if (\stripos($e->getName(), $query) !== false) {
                 $e->setName($this->highlightSearchTerm($e->getName(), $query));
 

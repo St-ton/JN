@@ -337,7 +337,7 @@ class ProductController extends AbstractController
         if ((int)($this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
             $ratings = \array_filter(
                 $this->currentProduct->Bewertungen->oBewertung_arr,
-                function ($rating) {
+                function ($rating): bool {
                     return (int)$this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                         !== (int)$rating->kBewertung;
                 }

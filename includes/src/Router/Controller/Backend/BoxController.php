@@ -250,7 +250,7 @@ class BoxController extends AbstractBackendController
             $revisionData[$lang->cISO] = $lang;
         }
         $links = Shop::Container()->getLinkService()->getAllLinkGroups()->filter(
-            static function (LinkGroupInterface $e) {
+            static function (LinkGroupInterface $e): bool {
                 return $e->isSpecial() === false;
             }
         );
@@ -816,7 +816,7 @@ class BoxController extends AbstractBackendController
     public function getInvisibleBoxes(): array
     {
         $model         = Shop::Container()->getTemplateService()->getActiveTemplate();
-        $unavailabe    = filter($model->getBoxLayout(), static function ($e) {
+        $unavailabe    = filter($model->getBoxLayout(), static function ($e): bool {
             return $e === false;
         });
         $wherePosition = '';

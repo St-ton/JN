@@ -195,7 +195,7 @@ abstract class GenericModelController extends AbstractBackendController
             } catch (Exception) {
                 return false;
             }
-        }), function (bool $e) {
+        }), function (bool $e): bool {
             return $e === true;
         });
     }
@@ -256,7 +256,7 @@ abstract class GenericModelController extends AbstractBackendController
             }
 
             return $model->delete();
-        }), static function (bool $e) {
+        }), static function (bool $e): bool {
             return $e === true;
         });
     }

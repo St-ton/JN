@@ -54,7 +54,7 @@ class CouponsController extends AbstractBackendController
         if (Form::validateToken()) {
             if ($importer !== '') {
                 $import = new Import($this->db);
-                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2): bool {
                     $couponNames = [];
                     $cols        = $this->db->getCollection(
                         'SELECT `column_name` AS name

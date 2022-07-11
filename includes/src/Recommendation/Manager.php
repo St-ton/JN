@@ -76,7 +76,7 @@ class Manager
      */
     public function getRecommendationById(string $id, bool $showAlert = true): ?Recommendation
     {
-        $recommendation = $this->recommendations->first(static function (Recommendation $e) use ($id) {
+        $recommendation = $this->recommendations->first(static function (Recommendation $e) use ($id): bool {
             return $e->getId() === $id;
         });
 

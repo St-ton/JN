@@ -13,17 +13,17 @@ class Alert
     /**
      * @var string
      */
-    private $message;
+    private string $message;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var bool
@@ -46,29 +46,29 @@ class Alert
     private bool $saveInSession = false;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $linkHref;
+    private ?string $linkHref = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $linkText;
+    private ?string $linkText = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $icon;
+    private ?string $icon = null;
 
     /**
      * @var array|null
      */
-    private $options;
+    private ?array $options = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $id;
+    private ?string $id = null;
 
     public const TYPE_PRIMARY   = 'primary';
     public const TYPE_SECONDARY = 'secondary';
@@ -436,8 +436,8 @@ class Alert
     {
         return match ($this->getType()) {
             self::TYPE_ERROR => self::TYPE_DANGER,
-            self::TYPE_NOTE => self::TYPE_INFO,
-            default => $this->getType(),
+            self::TYPE_NOTE  => self::TYPE_INFO,
+            default          => $this->getType(),
         };
     }
 }

@@ -316,7 +316,7 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags): bool {
             $content = $this->db->getCollection(
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
@@ -613,7 +613,7 @@ class LanguageHelper
     {
         return \array_filter(
             LanguageModel::loadAll($this->db, [], [])->toArray(),
-            function (LanguageModel $l) {
+            function (LanguageModel $l): bool {
                 return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
             }
         );

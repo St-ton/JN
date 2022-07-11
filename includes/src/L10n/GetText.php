@@ -28,7 +28,7 @@ class GetText
     /**
      * @var Translations[]
      */
-    private array $translations;
+    private array $translations = [];
 
     /**
      * @var Translator
@@ -41,7 +41,6 @@ class GetText
     public function __construct()
     {
         $this->langTag      = $this->getDefaultLanguage();
-        $this->translations = [];
         $this->translator   = new Translator();
         TranslatorFunctions::register($this->translator);
         $this->setLanguage()->loadAdminLocale('base');

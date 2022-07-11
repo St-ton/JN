@@ -778,7 +778,7 @@ class Exportformat
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = Shop::Lang()->gibInstallierteSprachen();
-        $langISO   = first($languages, function (LanguageModel $l) {
+        $langISO   = first($languages, function (LanguageModel $l): bool {
             return $l->getId() === $this->getSprache();
         });
 
@@ -1692,7 +1692,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function checkSyntax()
+    public function checkSyntax(): bool
     {
         return false;
     }
@@ -1701,7 +1701,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function doCheckSyntax()
+    public function doCheckSyntax(): bool
     {
         return false;
     }

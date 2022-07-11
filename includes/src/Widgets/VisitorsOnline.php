@@ -101,7 +101,7 @@ class VisitorsOnline extends AbstractWidget
         $visitors = $this->getVisitors();
 
         return $this->oSmarty->assign('oVisitors_arr', $visitors)
-                             ->assign('oVisitorsInfo', $this->getVisitorsInfo($visitors))
-                             ->fetch('tpl_inc/widgets/visitors_online.tpl');
+            ->assign('oVisitorsInfo', $this->getVisitorsInfo($visitors))
+            ->fetch('tpl_inc/widgets/visitors_online.tpl');
     }
 }

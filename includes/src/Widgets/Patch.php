@@ -30,8 +30,6 @@ class Patch extends AbstractWidget
      */
     private function getDBVersion(): string
     {
-        $versionData = $this->getDB()->getSingleObject('SELECT nVersion FROM tversion');
-
-        return $versionData->nVersion ?? '0.0.0';
+        return $this->getDB()->getSingleObject('SELECT nVersion FROM tversion')->nVersion ?? '0.0.0';
     }
 }

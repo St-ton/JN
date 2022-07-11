@@ -29,20 +29,21 @@ class SortingType
     public function mapSortTypeToClassName(int $type): ?string
     {
         return match ($type) {
-            \SEARCH_SORT_NONE => None::class,
-            \SEARCH_SORT_STANDARD, \SEARCH_SORT_AVAILABILITY => SortDefault::class,
-            \SEARCH_SORT_NAME_ASC => NameASC::class,
-            \SEARCH_SORT_NAME_DESC => NameDESC::class,
-            \SEARCH_SORT_PRICE_ASC => PriceASC::class,
-            \SEARCH_SORT_PRICE_DESC => PriceDESC::class,
-            \SEARCH_SORT_EAN => EAN::class,
+            \SEARCH_SORT_NONE         => None::class,
+            \SEARCH_SORT_STANDARD,
+            \SEARCH_SORT_AVAILABILITY => SortDefault::class,
+            \SEARCH_SORT_NAME_ASC     => NameASC::class,
+            \SEARCH_SORT_NAME_DESC    => NameDESC::class,
+            \SEARCH_SORT_PRICE_ASC    => PriceASC::class,
+            \SEARCH_SORT_PRICE_DESC   => PriceDESC::class,
+            \SEARCH_SORT_EAN          => EAN::class,
             \SEARCH_SORT_NEWEST_FIRST => DateCreated::class,
-            \SEARCH_SORT_PRODUCTNO => ProductNumber::class,
-            \SEARCH_SORT_WEIGHT => Weight::class,
-            \SEARCH_SORT_DATEOFISSUE => DateOfIssue::class,
-            \SEARCH_SORT_BESTSELLER => Bestseller::class,
-            \SEARCH_SORT_RATING => RatingDESC::class,
-            default => null,
+            \SEARCH_SORT_PRODUCTNO    => ProductNumber::class,
+            \SEARCH_SORT_WEIGHT       => Weight::class,
+            \SEARCH_SORT_DATEOFISSUE  => DateOfIssue::class,
+            \SEARCH_SORT_BESTSELLER   => Bestseller::class,
+            \SEARCH_SORT_RATING       => RatingDESC::class,
+            default                   => null,
         };
     }
 
@@ -57,18 +58,20 @@ class SortingType
         }
         // Usersortierung ist ein String aus einem Kategorieattribut
         return match (\mb_convert_case($sort, \MB_CASE_LOWER)) {
-            \SEARCH_SORT_CRITERION_NAME, \SEARCH_SORT_CRITERION_NAME_ASC => \SEARCH_SORT_NAME_ASC,
-            \SEARCH_SORT_CRITERION_NAME_DESC => \SEARCH_SORT_NAME_DESC,
-            \SEARCH_SORT_CRITERION_PRODUCTNO => \SEARCH_SORT_PRODUCTNO,
-            \SEARCH_SORT_CRITERION_WEIGHT => \SEARCH_SORT_WEIGHT,
-            \SEARCH_SORT_CRITERION_PRICE_ASC, \SEARCH_SORT_CRITERION_PRICE => \SEARCH_SORT_PRICE_ASC,
-            \SEARCH_SORT_CRITERION_PRICE_DESC => \SEARCH_SORT_PRICE_DESC,
-            \SEARCH_SORT_CRITERION_EAN => \SEARCH_SORT_EAN,
+            \SEARCH_SORT_CRITERION_NAME,
+            \SEARCH_SORT_CRITERION_NAME_ASC     => \SEARCH_SORT_NAME_ASC,
+            \SEARCH_SORT_CRITERION_NAME_DESC    => \SEARCH_SORT_NAME_DESC,
+            \SEARCH_SORT_CRITERION_PRODUCTNO    => \SEARCH_SORT_PRODUCTNO,
+            \SEARCH_SORT_CRITERION_WEIGHT       => \SEARCH_SORT_WEIGHT,
+            \SEARCH_SORT_CRITERION_PRICE_ASC,
+            \SEARCH_SORT_CRITERION_PRICE        => \SEARCH_SORT_PRICE_ASC,
+            \SEARCH_SORT_CRITERION_PRICE_DESC   => \SEARCH_SORT_PRICE_DESC,
+            \SEARCH_SORT_CRITERION_EAN          => \SEARCH_SORT_EAN,
             \SEARCH_SORT_CRITERION_NEWEST_FIRST => \SEARCH_SORT_NEWEST_FIRST,
-            \SEARCH_SORT_CRITERION_DATEOFISSUE => \SEARCH_SORT_DATEOFISSUE,
-            \SEARCH_SORT_CRITERION_BESTSELLER => \SEARCH_SORT_BESTSELLER,
-            \SEARCH_SORT_CRITERION_RATING => \SEARCH_SORT_RATING,
-            default => \SEARCH_SORT_STANDARD,
+            \SEARCH_SORT_CRITERION_DATEOFISSUE  => \SEARCH_SORT_DATEOFISSUE,
+            \SEARCH_SORT_CRITERION_BESTSELLER   => \SEARCH_SORT_BESTSELLER,
+            \SEARCH_SORT_CRITERION_RATING       => \SEARCH_SORT_RATING,
+            default                             => \SEARCH_SORT_STANDARD,
         };
     }
 }

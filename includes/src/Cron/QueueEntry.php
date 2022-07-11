@@ -44,7 +44,7 @@ class QueueEntry
     /**
      * @var int
      */
-    public int $isRunning;
+    public int $isRunning = 0;
 
     /**
      * @var string
@@ -104,7 +104,6 @@ class QueueEntry
         $this->tasksExecuted = (int)$data->tasksExecuted;
         $this->nLimitM       = (int)$data->taskLimit;
         $this->lastProductID = (int)$data->lastProductID;
-        $this->isRunning     = 0;
         $this->jobType       = $data->jobType;
         $this->tableName     = $data->tableName;
         $this->foreignKey    = $data->foreignKey;

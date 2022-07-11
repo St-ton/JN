@@ -40,7 +40,7 @@ class JobQueue
     /**
      * @var int
      */
-    public $nLastArticleID;
+    public $nLastArticleID = 0;
 
     /**
      * @var int
@@ -328,7 +328,6 @@ class JobQueue
         $this->kKey             = $kKey;
         $this->nLimitN          = $nLimitN;
         $this->nLimitM          = $nLimitM;
-        $this->nLastArticleID   = 0;
         $this->nInArbeit        = $nInArbeit;
         $this->cJobArt          = $cJobArt;
         $this->cTabelle         = $cTabelle;

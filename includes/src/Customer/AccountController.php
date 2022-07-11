@@ -985,7 +985,7 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, static function ($dl) use ($order) {
+            $order->bDownload   = some($downloads, static function ($dl) use ($order): bool {
                 return $dl->kBestellung === $order->kBestellung;
             });
             $order->kBestellung = (int)$order->kBestellung;

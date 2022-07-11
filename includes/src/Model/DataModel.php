@@ -391,7 +391,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             case 'object':
                 return $value;
             case 'yesno':
-                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                if (\in_array($value, ['Y', 'N'], true)) {
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
@@ -930,9 +930,8 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
-        $instance = static::newInstance($this->db);
 
-        return $instance->init((array)$members);
+        return static::newInstance($this->db)->init((array)$members);
     }
 
     /**

@@ -356,7 +356,7 @@ class JSONAPI
 
     /**
      * @param array|mixed $items
-     * @return false|string
+     * @return string
      * @throws \JsonException
      */
     public function itemsToJson($items): string

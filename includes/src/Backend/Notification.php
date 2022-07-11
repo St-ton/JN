@@ -305,7 +305,7 @@ class Notification implements IteratorAggregate, Countable
                     $adminURL . Route::USERS
                 );
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 \__('needPasswordRehash2FACatchTitle'),

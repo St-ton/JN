@@ -209,7 +209,7 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if ($admin === null || !\is_object($admin)) {
+        if (!\is_object($admin)) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $login);
         }
         $admin->kAdminlogin       = (int)$admin->kAdminlogin;

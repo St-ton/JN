@@ -16,12 +16,12 @@ class DeprecatedVariable
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $version;
+    private string $version;
 
     /**
      * @var bool

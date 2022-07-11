@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -163,11 +163,6 @@ class VATCheckVatParser
     ];
 
     /**
-     * @var string
-     */
-    private string $vatID;
-
-    /**
      * @var array
      */
     private array $idParts = [];
@@ -191,9 +186,8 @@ class VATCheckVatParser
      * VATCheckVatParser constructor.
      * @param string $vatID
      */
-    public function __construct(string $vatID)
+    public function __construct(private string $vatID)
     {
-        $this->vatID = $vatID;
     }
 
     /**

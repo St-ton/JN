@@ -913,13 +913,9 @@ class CartHelper
                         if ((float)$attrValue->fPackeinheit === 0) {
                             $attrValue->fPackeinheit = 1;
                         }
-                        if ($attrValue->fPackeinheit *
-                            ($qty +
-                                $cart->gibAnzahlEinerVariation(
-                                    $productID,
-                                    $attrValue->kEigenschaftWert
-                                )
-                            ) > $attrValue->fLagerbestand
+                        if ($attrValue->fPackeinheit
+                            * ($qty + $cart->gibAnzahlEinerVariation($productID, $attrValue->kEigenschaftWert))
+                            > $attrValue->fLagerbestand
                         ) {
                             $redirectParam[] = \R_LAGERVAR;
                         }

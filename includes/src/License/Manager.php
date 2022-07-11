@@ -94,7 +94,7 @@ class Manager
         }
         try {
             $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return '';
         }
         $res = $this->client->request(

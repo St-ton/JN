@@ -258,7 +258,7 @@ class JSONAPI
             $tableRows[$table] = $rows;
         }
 
-        return \collect($columns)->every(static function ($e) use ($rows) {
+        return \collect($columns)->every(static function ($e) use ($rows): bool {
             return \in_array($e, $rows, true);
         });
     }
@@ -359,7 +359,7 @@ class JSONAPI
      * @return false|string
      * @throws \JsonException
      */
-    public function itemsToJson($items)
+    public function itemsToJson($items): string
     {
         return \json_encode($items, \JSON_THROW_ON_ERROR);
     }

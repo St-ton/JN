@@ -346,7 +346,7 @@ class Status
 
         return some(
             LanguageHelper::getInstance()->getInstalled(),
-            static function (LanguageModel $lang) use ($defaultID) {
+            static function (LanguageModel $lang) use ($defaultID): bool {
                 return $lang->getId() === $defaultID;
             }
         );

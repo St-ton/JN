@@ -143,7 +143,7 @@ class AdminAccountManager
      * @param array $attribs
      * @return array|bool
      */
-    public function validateAccount(array &$attribs)
+    public function validateAccount(array &$attribs): bool
     {
         return false;
     }
@@ -153,7 +153,7 @@ class AdminAccountManager
      * @param string $attribName
      * @return bool|string
      */
-    public function uploadAvatarImage(array $tmpFile, string $attribName)
+    public function uploadAvatarImage(array $tmpFile, string $attribName): bool
     {
         return false;
     }

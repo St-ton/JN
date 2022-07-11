@@ -30,8 +30,8 @@ class AdapterFactory
     public function getAdapter(): FilesystemAdapter
     {
         return match ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
-            'ftp' => new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig())),
-            'sftp' => new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/'),
+            'ftp'   => new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig())),
+            'sftp'  => new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/'),
             default => new LocalFilesystemAdapter(\PFAD_ROOT),
         };
     }

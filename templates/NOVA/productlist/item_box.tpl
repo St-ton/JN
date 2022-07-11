@@ -9,7 +9,7 @@
             assign='hasOnlyListableVariations'}
     {/if}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-column productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
+         class="productbox productbox-column {if $Einstellungen.template.productlist.variation_productlist_gallery === 'Y'}productbox-show-variations {/if}{if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
         {block name='productlist-item-box-include-productlist-actions'}
             <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                 {include file='productlist/productlist_actions.tpl'}

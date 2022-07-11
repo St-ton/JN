@@ -45,7 +45,7 @@
 .productbox-quick-actions { position: absolute; right: map-get($spacers, 2); top: map-get($spacers, 2); display: flex; z-index: 1; justify-content: flex-end;
 	.btn { margin: map-get($spacers, 1); }
 }
-.productbox:hover .productbox-quick-actions{
+.productbox-show-variations.productbox-hover:hover .productbox-quick-actions{
 	right:  map-get($spacers, 4); top: map-get($spacers, 4);
 }
 .productbox-ribbon.ribbon { position: absolute; z-index: 1; top: $spacer; left: -(map-get($spacers, 2)); transition: $transition-base;

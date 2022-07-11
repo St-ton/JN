@@ -289,7 +289,7 @@ class URL
      * @param string $string
      * @return mixed
      */
-    public function urlDecodeUnreservedChars(string $string)
+    public function urlDecodeUnreservedChars(string $string): ?string
     {
         $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
@@ -312,7 +312,7 @@ class URL
                 return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
-        ), static function ($matches) {
+        ), static function ($matches): string {
             $match = \str_starts_with($matches[0], '%') ? \mb_substr($matches[0], 1) : $matches[0];
             // php7.4+ expects strings like "7E" instead of "%7E"
             return \chr(\hexdec($match));

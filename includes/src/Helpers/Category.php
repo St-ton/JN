@@ -824,7 +824,7 @@ class Category
             return $e->getID();
         }, $nodes);
 
-        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids) {
+        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids): bool {
             if ($e->getParentID() === 0) {
                 return false;
             }

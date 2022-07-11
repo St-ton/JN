@@ -79,7 +79,7 @@ class ShippingMethod
 
         return \array_filter(
             $this->shippingMethods,
-            static function ($s) use ($freeFromX) {
+            static function ($s) use ($freeFromX): bool {
                 return $s->fVersandkostenfreiAbX !== '0.00'
                     && (float)$s->fVersandkostenfreiAbX > 0
                     && (float)$s->fVersandkostenfreiAbX <= $freeFromX;
@@ -132,7 +132,7 @@ class ShippingMethod
      */
     public static function normalerArtikelversand(string $country): bool
     {
-        return some(Frontend::getCart()->PositionenArr, static function ($item) use ($country) {
+        return some(Frontend::getCart()->PositionenArr, static function ($item) use ($country): bool {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && !self::gibArtikelabhaengigeVersandkosten($country, $item->Artikel, $item->nAnzahl);
         });
@@ -312,7 +312,7 @@ class ShippingMethod
         // auf anzeige filtern
         $possibleMethods = \array_filter(
             \array_merge($methods),
-            static function ($p) use ($minSum) {
+            static function ($p) use ($minSum): bool {
                 return $p->valid
                     && ($p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minSum));
             }
@@ -932,7 +932,7 @@ class ShippingMethod
         bool $checkDelivery = true
     ): array {
         $shippingItems = [];
-        $items         = \array_filter($items, static function ($item) {
+        $items         = \array_filter($items, static function ($item): bool {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($item->Artikel);
         });
         foreach ($items as $item) {

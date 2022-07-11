@@ -76,7 +76,7 @@ final class ConsentModel extends DataModel
                         $this->getDB(),
                         ConsentLocalizationModel::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
                 $existing = $res->first(static function ($e) use ($loc): bool {

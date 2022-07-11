@@ -620,7 +620,8 @@ class IOMethods
                     ))
                     ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                         $shippingFreeMin,
-                        $cartValue
+                        $cartValueGros,
+                        $cartValueNet
                     ))
                     ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
                     ->assign('favourableShippingString', $cart->favourableShippingString);

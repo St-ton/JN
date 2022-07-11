@@ -136,7 +136,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items = $this->items->sortBy(static function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item): string {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

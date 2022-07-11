@@ -211,7 +211,7 @@ final class Export
      */
     private function isURLBlocked(string $url): bool
     {
-        return some($this->blockedURLs, static function ($e) use ($url) {
+        return some($this->blockedURLs, static function ($e) use ($url): bool {
             return \str_contains($url, $e);
         });
     }

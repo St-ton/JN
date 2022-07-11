@@ -26,7 +26,7 @@ class LicensedItemUpdates extends AbstractWidget
         $token         = AuthToken::getInstance($this->getDB());
         $data          = $manager->getLicenseData();
         $collection    = $mapper->getCollection();
-        $testLicenses  = $collection->filter(static function (ExsLicense  $exsLicense) {
+        $testLicenses  = $collection->filter(static function (ExsLicense  $exsLicense): bool {
             return $exsLicense->getLicense()->getType() === License::TYPE_TEST;
         });
         $lastPurchases = $collection->sort(static function (ExsLicense $a, ExsLicense $b) {

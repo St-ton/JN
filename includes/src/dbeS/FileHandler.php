@@ -88,7 +88,7 @@ class FileHandler
      * @param string $targetPath
      * @return array|bool
      */
-    private function unzipSyncFiles(string $zipFile, string $targetPath)
+    private function unzipSyncFiles(string $zipFile, string $targetPath): bool|array
     {
         $archive = new ZipArchive();
         if (($open = $archive->open($zipFile)) !== true) {
@@ -106,9 +106,9 @@ class FileHandler
             }
             $archive->close();
 
-            return \array_filter(\array_map(static function ($e) {
-                return \file_exists($e)
-                    ? $e
+            return \array_filter(\array_map(static function (string $file) {
+                return \file_exists($file)
+                    ? $file
                     : null;
             }, $filenames));
         }
@@ -123,14 +123,14 @@ class FileHandler
     private function getErrorMessage(int $code): string
     {
         return match ($code) {
-            \UPLOAD_ERR_INI_SIZE => 'Dateigröße > upload_max_filesize directive in php.ini [1]',
-            \UPLOAD_ERR_FORM_SIZE => 'Dateigröße > MAX_FILE_SIZE [2]',
-            \UPLOAD_ERR_PARTIAL => 'Datei wurde nur zum Teil hochgeladen [3]',
-            \UPLOAD_ERR_NO_FILE => 'Es wurde keine Datei hochgeladen [4]',
+            \UPLOAD_ERR_INI_SIZE   => 'Dateigröße > upload_max_filesize directive in php.ini [1]',
+            \UPLOAD_ERR_FORM_SIZE  => 'Dateigröße > MAX_FILE_SIZE [2]',
+            \UPLOAD_ERR_PARTIAL    => 'Datei wurde nur zum Teil hochgeladen [3]',
+            \UPLOAD_ERR_NO_FILE    => 'Es wurde keine Datei hochgeladen [4]',
             \UPLOAD_ERR_NO_TMP_DIR => 'Es fehlt ein TMP-Verzeichnis für HTTP Datei-Uploads! Bitte an Hoster wenden! [6]',
             \UPLOAD_ERR_CANT_WRITE => 'Datei konnte nicht auf Datenträger gespeichert werden! [7]',
-            \UPLOAD_ERR_EXTENSION => 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]',
-            default => 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!',
+            \UPLOAD_ERR_EXTENSION  => 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]',
+            default                => 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!',
         };
     }
 
@@ -147,8 +147,8 @@ class FileHandler
         }
         if (!empty($files['data']['error']) || (isset($files['data']['size']) && $files['data']['size'] === 0)) {
             $this->logger->error(
-                'ERROR: incoming: ' . $files['data']['name'] . ' size:' . $files['data']['size'] .
-                ' err:' . $files['data']['error']
+                'ERROR: incoming: ' . $files['data']['name'] . ' size:' . $files['data']['size']
+                . ' err:' . $files['data']['error']
             );
             $error = $this->getErrorMessage($files['data']['error'] ?? 0);
             \syncException($error . "\n" . \print_r($files, true), \FREIDEFINIERBARER_FEHLER);

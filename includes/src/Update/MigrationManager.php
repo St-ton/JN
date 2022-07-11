@@ -286,7 +286,7 @@ class MigrationManager
         if ($force || $pending === null) {
             $executed   = $this->getExecutedMigrations();
             $migrations = \array_keys($this->getMigrations());
-            $pending    = \array_udiff($migrations, $executed, static function ($a, $b) {
+            $pending    = \array_udiff($migrations, $executed, static function ($a, $b): int {
                 return \strcmp((string)$a, (string)$b);
             });
         }

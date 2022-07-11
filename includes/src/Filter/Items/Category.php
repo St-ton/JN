@@ -263,7 +263,7 @@ class Category extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            \usort($options, static function ($a, $b) {
+            \usort($options, static function ($a, $b): int {
                 /** @var Option $a */
                 /** @var Option $b */
                 return \strcmp($a->getName(), $b->getName());

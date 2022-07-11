@@ -906,7 +906,7 @@ class ProductFilter
      */
     public function getFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        return first($this->filters, static function (FilterInterface $filter) use ($filterClassName) {
+        return first($this->filters, static function (FilterInterface $filter) use ($filterClassName): bool {
             return $filter->getClassName() === $filterClassName;
         });
     }
@@ -917,7 +917,7 @@ class ProductFilter
      */
     public function getActiveFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        return first($this->activeFilters, static function (FilterInterface $filter) use ($filterClassName) {
+        return first($this->activeFilters, static function (FilterInterface $filter) use ($filterClassName): bool {
             return $filter->getClassName() === $filterClassName;
         });
     }
@@ -968,7 +968,7 @@ class ProductFilter
 
         return \array_filter(
             $this->filters,
-            static function (FilterInterface $f) use ($templateSettings) {
+            static function (FilterInterface $f) use ($templateSettings): bool {
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
@@ -1723,7 +1723,7 @@ class ProductFilter
      */
     public function getActiveFilters(bool $byType = false, string $ignore = null): array
     {
-        $activeFilters = select($this->activeFilters, static function (FilterInterface $f) use ($ignore) {
+        $activeFilters = select($this->activeFilters, static function (FilterInterface $f) use ($ignore): bool {
             return $ignore === null || $f->getClassName() !== $ignore;
         });
         if ($byType === false) {
@@ -1749,7 +1749,7 @@ class ProductFilter
             'bf'     => [],
             'custom' => [],
             'misc'   => []
-        ], map($grouped, static function ($e) {
+        ], map($grouped, static function ($e): array {
             return \array_values($e);
         }));
     }
@@ -1777,7 +1777,7 @@ class ProductFilter
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
             /** @var FilterInterface[] $active */
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
-                $orFilters = select($active, static function (FilterInterface $f) {
+                $orFilters = select($active, static function (FilterInterface $f): bool {
                     return $f->getType() === Type::OR;
                 });
                 foreach ($active as $filter) {

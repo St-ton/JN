@@ -95,7 +95,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         ]);
         // merge Query-Conditions
         $filterQueryIndices = [];
-        $filterQueries      = \array_filter($conditions, static function ($f) {
+        $filterQueries      = \array_filter($conditions, static function ($f): bool {
             return \is_object($f) && \get_class($f) === Query::class;
         });
         foreach ($filterQueries as $idx => $condition) {

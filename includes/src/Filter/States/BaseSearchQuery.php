@@ -1109,7 +1109,7 @@ class BaseSearchQuery extends AbstractFilter
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
 
-        return filter($searchRows, static function ($r) {
+        return filter($searchRows, static function ($r): bool {
             return $r !== '';
         });
     }

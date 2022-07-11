@@ -280,7 +280,7 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
+        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags): bool {
             $globalTmp = Shop::Container()->getDB()->getObjects(
                 'SELECT cName, kSprache, cWertName 
                     FROM tglobalemetaangaben
@@ -393,7 +393,7 @@ class Metadata implements MetadataInterface
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->getID(), $category->getLeft(), $category->getRight());
                 if ($sub !== null && $sub->hasChildren()) {
-                    $catNames       = map($sub->getChildren(), static function (MenuItem $e) {
+                    $catNames       = map($sub->getChildren(), static function (MenuItem $e): string {
                         return \strip_tags($e->getName());
                     });
                     $catDescription = \implode(', ', \array_filter($catNames));
@@ -566,7 +566,7 @@ class Metadata implements MetadataInterface
             ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(static function ($name) {
+            ->reject(static function ($name): bool {
                 return $name === null;
             })
         );
@@ -606,7 +606,7 @@ class Metadata implements MetadataInterface
             ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(static function ($name) {
+            ->reject(static function ($name): bool {
                 return $name === null;
             })
         );
@@ -818,7 +818,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         if (\property_exists($this, $name)) {
             return true;

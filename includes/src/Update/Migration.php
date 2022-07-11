@@ -50,7 +50,7 @@ class Migration implements JsonSerializable
     public function __construct(DbInterface $db, $info = null, DateTime $executed = null)
     {
         $this->setDB($db);
-        $this->info     = \ucfirst(\strtolower($info));
+        $this->info     = \ucfirst(\strtolower($info ?? ''));
         $this->executed = $executed;
     }
 

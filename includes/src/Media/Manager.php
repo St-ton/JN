@@ -31,18 +31,12 @@ use stdClass;
 class Manager
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/bilderverwaltung');
     }
 

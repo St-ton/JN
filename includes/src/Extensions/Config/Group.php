@@ -18,11 +18,6 @@ class Group implements JsonSerializable
     use MultiSizeImage;
 
     /**
-     * @var int
-     */
-    protected int $kKonfiggruppe;
-
-    /**
      * @var string|null
      */
     protected ?string $cBildPfad = null;
@@ -64,13 +59,12 @@ class Group implements JsonSerializable
 
     /**
      * Group constructor.
-     * @param int $id
+     * @param int $kKonfiggruppe
      * @param int $languageID
      */
-    public function __construct(int $id = 0, int $languageID = 0)
+    public function __construct(protected int $kKonfiggruppe = 0, int $languageID = 0)
     {
         $this->setImageType(Image::TYPE_CONFIGGROUP);
-        $this->kKonfiggruppe = $id;
         if ($this->kKonfiggruppe > 0) {
             $this->loadFromDB($this->kKonfiggruppe, $languageID);
         }

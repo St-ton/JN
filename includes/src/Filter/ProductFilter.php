@@ -217,21 +217,6 @@ class ProductFilter
     private FilterInterface $limits;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var ConfigInterface
-     */
-    private ConfigInterface $filterConfig;
-
-    /**
      * @var array
      */
     public static array $mapping = [
@@ -257,15 +242,15 @@ class ProductFilter
 
     /**
      * ProductFilter constructor.
-     * @param ConfigInterface   $config
+     * @param ConfigInterface   $filterConfig
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(ConfigInterface $config, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->filterConfig      = $config;
-        $this->db                = $db;
-        $this->cache             = $cache;
+    public function __construct(
+        private ConfigInterface $filterConfig,
+        private DbInterface $db,
+        private JTLCacheInterface $cache
+    ) {
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
             ? \SHOW_CHILD_PRODUCTS
             : 0;

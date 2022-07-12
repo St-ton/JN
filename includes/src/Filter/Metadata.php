@@ -26,11 +26,6 @@ class Metadata implements MetadataInterface
     use MagicCompatibilityTrait;
 
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * @var array
      */
     private array $conf;
@@ -97,12 +92,11 @@ class Metadata implements MetadataInterface
 
     /**
      * Metadata constructor.
-     * @param ProductFilter $navigationsfilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $navigationsfilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $navigationsfilter;
-        $this->conf          = $navigationsfilter->getFilterConfig()->getConfig();
+        $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**

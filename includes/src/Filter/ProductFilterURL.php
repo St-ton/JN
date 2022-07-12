@@ -23,17 +23,11 @@ use function Functional\first;
 class ProductFilterURL
 {
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * ProductFilterURL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
     }
 
     /**

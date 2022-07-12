@@ -13,17 +13,11 @@ use JTL\Smarty\JTLSmarty;
 class Smarty extends DataCollector implements Renderable
 {
     /**
-     * @var JTLSmarty
-     */
-    protected JTLSmarty $smarty;
-
-    /**
      * Smarty constructor.
      * @param JTLSmarty $smarty
      */
-    public function __construct(JTLSmarty $smarty)
+    public function __construct(protected JTLSmarty $smarty)
     {
-        $this->smarty = $smarty;
     }
 
     /**

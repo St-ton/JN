@@ -16,16 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 class Admin
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    private JTLSmarty $smarty;
-
-    /**
      * @var string
      */
     private string $step = 'overview';
@@ -36,10 +26,8 @@ class Admin
      * @param AlertServiceInterface $alertService
      * @param JTLSmarty             $smarty
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService, JTLSmarty $smarty)
+    public function __construct(private DbInterface $db, AlertServiceInterface $alertService, private JTLSmarty $smarty)
     {
-        $this->db     = $db;
-        $this->smarty = $smarty;
     }
 
     public function getAction(): void

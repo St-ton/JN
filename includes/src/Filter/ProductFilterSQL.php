@@ -11,11 +11,6 @@ use function Functional\reduce_left;
 class ProductFilterSQL implements ProductFilterSQLInterface
 {
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * @var array
      */
     private array $conf;
@@ -24,10 +19,9 @@ class ProductFilterSQL implements ProductFilterSQLInterface
      * ProductFilterSQL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
-        $this->conf          = $productFilter->getFilterConfig()->getConfig();
+        $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**

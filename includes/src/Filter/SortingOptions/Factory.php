@@ -15,11 +15,6 @@ use JTL\Plugin\PluginInterface;
 class Factory
 {
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * @var array
      */
     private static array $defaultSortingOptions = [
@@ -51,10 +46,8 @@ class Factory
      * Factory constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
-
         \executeHook(\HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,
             'productFilter' => $this->productFilter

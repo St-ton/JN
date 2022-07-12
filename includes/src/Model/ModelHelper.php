@@ -52,7 +52,7 @@ final class ModelHelper
         if (\is_string($value)) {
             try {
                 return new DateTime(\str_replace('now()', 'now', $value));
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return self::fromStrToDateTime($default);
             }
         }

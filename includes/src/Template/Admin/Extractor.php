@@ -95,13 +95,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                     $this->manager->delete('tpl://' . $target);
                     $this->manager->move($source, 'tpl://' . $target);

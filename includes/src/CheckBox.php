@@ -221,7 +221,7 @@ class CheckBox
             $this->oLink = new Link($this->db);
             try {
                 $this->oLink->load($this->kLink);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $logger = Shop::Container()->getLogService();
                 $logger->error('Checkbox cannot link to link ID ' . $this->kLink);
             }

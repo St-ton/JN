@@ -19,7 +19,7 @@ final class Manufacturer extends AbstractItem
         if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_HERSTELLERBILDER . $this->data->image);
+        $this->setImage($this->baseImageURL . \JTL\Media\Image\Manufacturer::getStoragePath() . $this->data->image);
     }
 
     /**

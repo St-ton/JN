@@ -39,11 +39,6 @@ class Base implements SectionInterface
     protected JTLSmarty $smarty;
 
     /**
-     * @var int
-     */
-    protected int $id;
-
-    /**
      * @var string
      */
     protected string $name = '';
@@ -77,11 +72,6 @@ class Base implements SectionInterface
      * @var array
      */
     protected array $configData;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
 
     /**
      * @var GetText
@@ -127,13 +117,11 @@ class Base implements SectionInterface
     /**
      * @inheritdoc
      */
-    public function __construct(Manager $manager, int $sectionID)
+    public function __construct(protected Manager $manager, protected int $id)
     {
-        $this->manager = $manager;
         $this->db      = $manager->getDB();
         $this->smarty  = $manager->getSmarty();
         $this->getText = $manager->getGetText();
-        $this->id      = $sectionID;
         $this->initBaseData();
     }
 

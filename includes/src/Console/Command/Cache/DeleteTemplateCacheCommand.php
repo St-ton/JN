@@ -38,12 +38,12 @@ class DeleteTemplateCacheCommand extends Command
             if ($item->isDir()) {
                 try {
                     $filesystem->deleteDirectory($item->path());
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             } else {
                 try {
                     $filesystem->delete($item->path());
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             }
         }

@@ -47,7 +47,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">
+                                            <a href="{$shopURL}{$page->cPageUrl}" target="_blank">
                                                 <span class="icon-hover">
                                                     <span class="far fa-link"></span><span class="fas fa-link"></span>
                                                 </span>
@@ -74,7 +74,7 @@
                                                     </span>
                                                 </a>
                                                 <button class="btn btn-link px-2" title="{__('preview')}"
-                                                        data-src="{$URL_SHOP}{$page->cPageUrl}"
+                                                        data-src="{$shopURL}{$page->cPageUrl}"
                                                         data-toggle="modal"
                                                         data-target="#previewModal">
                                                     <span class="icon-hover">
@@ -139,7 +139,7 @@
                                                                     </span>
                                                                 </a>
                                                                 <a class="btn btn-link px-2" title="{__('edit')}" target="_blank"
-                                                                   href="{strip}{$adminURL}{JTL\Router\BackendRouter::ROUTE_OPC}?
+                                                                   href="{strip}{$adminURL}{JTL\Router\Route::OPC}?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
                                                                         action=edit{/strip}"

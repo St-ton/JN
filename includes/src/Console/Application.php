@@ -58,12 +58,12 @@ class Application extends BaseApplication
     /**
      * @var bool
      */
-    protected $devMode = false;
+    protected bool $devMode = false;
 
     /**
      * @var bool
      */
-    protected $isInstalled = false;
+    protected bool $isInstalled = false;
 
     /**
      * Application constructor.

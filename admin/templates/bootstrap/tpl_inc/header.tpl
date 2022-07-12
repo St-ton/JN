@@ -10,26 +10,27 @@
     {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
     <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon">
     {$admin_css}
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css{$urlPostfix}">
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css{$urlPostfix}">
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css{$urlPostfix}">
-    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css{$urlPostfix}">
+    {$cm = $shopURL|cat:'/'|cat:$smarty.const.PFAD_CODEMIRROR}
+    <link type="text/css" rel="stylesheet" href="{$cm}lib/codemirror.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$cm}addon/hint/show-hint.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$cm}addon/display/fullscreen.css{$urlPostfix}">
+    <link type="text/css" rel="stylesheet" href="{$cm}addon/scroll/simplescrollbars.css{$urlPostfix}">
     {$admin_js}
-    <script src="{$PFAD_CKEDITOR}ckeditor.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}lib/codemirror.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/css/css.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/xml/xml.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/php/php.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/sass/sass.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
-    <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
+    <script src="{$shopURL}/{$smarty.const.PFAD_CKEDITOR}/ckeditor.js{$urlPostfix}"></script>
+    <script src="{$cm}lib/codemirror.js{$urlPostfix}"></script>
+    <script src="{$cm}addon/hint/show-hint.js{$urlPostfix}"></script>
+    <script src="{$cm}addon/hint/sql-hint.js{$urlPostfix}"></script>
+    <script src="{$cm}addon/scroll/simplescrollbars.js{$urlPostfix}"></script>
+    <script src="{$cm}addon/display/fullscreen.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/css/css.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/javascript/javascript.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/xml/xml.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/php/php.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/htmlmixed/htmlmixed.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/sass/sass.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/smarty/smarty.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
+    <script src="{$cm}mode/sql/sql.js{$urlPostfix}"></script>
     <script src="{$templateBaseURL}js/codemirror_init.js{$urlPostfix}"></script>
     <script>
         var bootstrapButton = $.fn.button.noConflict();
@@ -129,7 +130,7 @@
                             <img src="{getAvatar account=$account}" class="img-circle">
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item link-shop" href="{$URL_SHOP}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
+                            <a class="dropdown-item link-shop" href="{$shopURL}?fromAdmin=yes" title="{__('goShop')}" target="_blank">
                                 <i class="fa fa-shopping-cart"></i> {__('goShop')}
                             </a>
                             <a class="dropdown-item link-logout" href="{$adminURL}/logout?token={$smarty.session.jtl_token}"

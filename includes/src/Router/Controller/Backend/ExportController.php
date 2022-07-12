@@ -16,8 +16,7 @@ use JTL\Export\SyntaxChecker;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Router\BackendRouter;
-use JTL\Shop;
+use JTL\Router\Route;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -327,8 +326,8 @@ class ExportController extends AbstractBackendController
 
         $queueID = $this->db->insert('texportqueue', $queue);
 
-        $redir = Shop::getAdminURL() . '/'
-            . BackendRouter::ROUTE_EXPORT_START
+        $redir = $this->baseURL . '/'
+            . Route::EXPORT_START
             . '?&back=admin&token=' . $_SESSION['jtl_token']
             . '&e=' . $queueID;
         if ($async) {

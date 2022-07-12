@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -19,7 +19,7 @@ class VATCheckEU extends AbstractVATCheck
     /**
      * @var string
      */
-    private $viesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    private string $viesWSDL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"

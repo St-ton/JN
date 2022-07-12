@@ -108,8 +108,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @inheritdoc
      */
     public function setValue($value): FilterInterface
     {
@@ -119,7 +118,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return int|string|null
+     * @inheritdoc
      */
     public function getValue()
     {
@@ -173,7 +172,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getPrimaryKeyRow(): string
     {
@@ -181,7 +180,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getTableName(): string
     {

@@ -12,6 +12,7 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
+use Laminas\Diactoros\Response\TextResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -47,11 +48,11 @@ class DBCheckController extends AbstractBackendController
                 . $this->db->getConfig()['database'] . '_'
                 . \date('YmdHis') . '.sql';
 
-            \header('Content-Type: text/plain');
-            \header('Content-Disposition: attachment; filename="' . $scriptName . '"');
-            echo $this->doEngineUpdateScript($scriptName, \array_keys($dbFileStruct));
-
-            exit;
+            return new TextResponse(
+                $this->doEngineUpdateScript($scriptName, \array_keys($dbFileStruct)),
+                200,
+                ['Content-Disposition' => 'attachment; filename="' . $scriptName . '"']
+            );
         }
 
         $dbStruct = $this->getDBStruct(true, true);
@@ -59,7 +60,7 @@ class DBCheckController extends AbstractBackendController
         if (empty($dbFileStruct)) {
             $errorMsg = \__('errorReadStructureFile');
         } elseif ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
-            $ok                = every($_POST['check'], function ($elem) use ($dbFileStruct) {
+            $ok                = every($_POST['check'], function ($elem) use ($dbFileStruct): bool {
                 return \array_key_exists($elem, $dbFileStruct);
             });
             $maintenanceResult = $ok ? $this->doDBMaintenance($_POST['action'], $_POST['check']) : false;
@@ -86,7 +87,6 @@ class DBCheckController extends AbstractBackendController
             ->assign('maintenanceResult', $maintenanceResult)
             ->assign('scriptGenerationAvailable', ADMIN_MIGRATION)
             ->assign('tab', isset($_REQUEST['tab']) ? Text::filterXSS($_REQUEST['tab']) : '')
-            ->assign('Einstellungen', $conf)
             ->assign('DB_Version', DBMigrationHelper::getMySQLVersion())
             ->assign('FulltextIndizes', $fulltextIndizes)
             ->assign('engineUpdate', $engineUpdate)

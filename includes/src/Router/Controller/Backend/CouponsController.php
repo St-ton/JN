@@ -54,7 +54,7 @@ class CouponsController extends AbstractBackendController
         if (Form::validateToken()) {
             if ($importer !== '') {
                 $import = new Import($this->db);
-                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2): bool {
                     $couponNames = [];
                     $cols        = $this->db->getCollection(
                         'SELECT `column_name` AS name
@@ -145,22 +145,16 @@ class CouponsController extends AbstractBackendController
 
         if ($action === 'bearbeiten') {
             $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
-            if ($couponID > 0) {
-                $coupon = $this->getCoupon($couponID);
-            } else {
-                $coupon = $this->createNewCoupon($_REQUEST['cKuponTyp']);
-            }
+            $coupon   = $couponID > 0 ? $this->getCoupon($couponID) : $this->createNewCoupon($_REQUEST['cKuponTyp']);
         } elseif ($action === 'speichern') {
             $coupon       = $this->createCouponFromInput();
             $couponErrors = $coupon->validate();
             if (\count($couponErrors) > 0) {
                 // Es gab Fehler bei der Validierung => weiter bearbeiten
                 $errorMessage = \__('errorCheckInput') . ':<ul>';
-
                 foreach ($couponErrors as $couponError) {
                     $errorMessage .= '<li>' . $couponError . '</li>';
                 }
-
                 $errorMessage .= '</ul>';
                 $action        = 'bearbeiten';
                 $this->alertService->addError($errorMessage, 'errorCheckInput');
@@ -287,7 +281,7 @@ class CouponsController extends AbstractBackendController
                         [],
                         ['kKupon']
                     );
-                } elseif ($exportID === Kupon::TYPE_STANDARD) {
+                } elseif ($exportID === Kupon::TYPE_SHIPPING) {
                     $export->export(
                         $exportID,
                         $exportID . '.csv',
@@ -414,7 +408,7 @@ class CouponsController extends AbstractBackendController
     private function getManufacturers(?string $selectedManufacturers = ''): array
     {
         $selected = Text::parseSSKint($selectedManufacturers);
-        $items    = $this->db->getObjects('SELECT kHersteller, cName FROM thersteller');
+        $items    = $this->db->getObjects('SELECT kHersteller FROM thersteller WHERE nAktiv = 1');
         $langID   = Shop::getLanguageID();
         foreach ($items as $item) {
             $item->kHersteller = (int)$item->kHersteller;
@@ -888,9 +882,9 @@ class CouponsController extends AbstractBackendController
     {
         $this->db->query(
             "UPDATE tkupon
-            SET cAktiv = 'N'
-            WHERE dGueltigBis > 0
-            AND dGueltigBis <= NOW()"
+                SET cAktiv = 'N'
+                WHERE dGueltigBis > 0
+                AND dGueltigBis <= NOW()"
         );
     }
 
@@ -901,9 +895,9 @@ class CouponsController extends AbstractBackendController
     {
         $this->db->query(
             "UPDATE tkupon
-            SET cAktiv = 'N'
-            WHERE nVerwendungen > 0
-            AND nVerwendungenBisher >= nVerwendungen"
+                SET cAktiv = 'N'
+                WHERE nVerwendungen > 0
+                AND nVerwendungenBisher >= nVerwendungen"
         );
     }
 }

@@ -3,7 +3,6 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Helpers\Form;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -25,6 +24,6 @@ class LogoutController extends AbstractBackendController
             $this->account->logout();
         }
 
-        return new RedirectResponse(Shop::getAdminURL());
+        return new RedirectResponse($this->baseURL . '/');
     }
 }

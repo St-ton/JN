@@ -112,7 +112,7 @@ final class CommentList implements ItemListInterface
      */
     public function filter(bool $active): Collection
     {
-        return $this->items->filter(static function (Comment $e) use ($active) {
+        return $this->items->filter(static function (Comment $e) use ($active): bool {
             return $e->isActive() === $active;
         });
     }

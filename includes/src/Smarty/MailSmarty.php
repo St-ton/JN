@@ -11,19 +11,13 @@ use JTL\DB\DbInterface;
 class MailSmarty extends JTLSmarty
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * MailSmarty constructor.
      * @param DbInterface $db
      * @param string      $context
      * @throws \SmartyException
      */
-    public function __construct(DbInterface $db, string $context = ContextType::MAIL)
+    public function __construct(protected DbInterface $db, string $context = ContextType::MAIL)
     {
-        $this->db = $db;
         parent::__construct(true, $context);
         $this->registerResource('db', new SmartyResourceNiceDB($db, $context))
              ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])

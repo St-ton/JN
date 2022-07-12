@@ -121,7 +121,7 @@ class TemplateValidator implements ValidatorInterface
             Version::parse($node['Version'] ?? '0');
             Version::parse($minShopversion);
             Version::parse($node['MaxShopVersion'] ?? '0.0.0');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return self::RES_INVALID_VERSION;
         }
 

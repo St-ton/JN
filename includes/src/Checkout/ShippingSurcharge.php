@@ -18,7 +18,7 @@ class ShippingSurcharge
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kVersandzuschlag' => 'ID',
         'cISO'             => 'ISO',
         'cName'            => 'Title',

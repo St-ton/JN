@@ -52,7 +52,7 @@ class DefaultParser
         if (\mb_substr($slug, \mb_strlen($slug) - 1, 1) === '?') {
             $slug = \mb_substr($slug, 0, -1);
         }
-        $match = \preg_match('/[^_](' . \SEP_SEITE . '([0-9]+))/', $slug, $matches, \PREG_OFFSET_CAPTURE);
+        $match = \preg_match('/[^_](' . \SEP_SEITE . '(\d+))/', $slug, $matches, \PREG_OFFSET_CAPTURE);
         if ($match === 1) {
             $page = (int)$matches[2][0];
             $slug = \mb_substr($slug, 0, $matches[1][1]);

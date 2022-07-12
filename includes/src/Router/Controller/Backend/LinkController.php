@@ -10,15 +10,20 @@ use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Link\Link;
 use JTL\Link\LinkGroup;
+use JTL\Link\LinkGroupCollection;
+use JTL\Link\LinkGroupInterface;
 use JTL\Link\LinkGroupList;
 use JTL\Link\LinkInterface;
 use JTL\Media\Image;
 use JTL\PlausiCMS;
+use JTL\Services\JTL\LinkService;
+use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class LinkController
@@ -26,6 +31,12 @@ use stdClass;
  */
 class LinkController extends AbstractBackendController
 {
+    public const ERROR_LINK_ALREADY_EXISTS = 1;
+
+    public const ERROR_LINK_NOT_FOUND = 2;
+
+    public const ERROR_LINK_GROUP_NOT_FOUND = 3;
+
     /**
      * @var string
      */
@@ -62,7 +73,7 @@ class LinkController extends AbstractBackendController
 
         if ($this->step === 'loesch_linkgruppe' && $linkGroupID > 0) {
             $this->step = 'uebersicht';
-            if ($this->linkAdmin->deleteLinkGroup($linkGroupID) > 0) {
+            if ($this->deleteLinkGroup($linkGroupID) > 0) {
                 $this->alertService->addSuccess(\__('successLinkGroupDelete'), 'successLinkGroupDelete');
                 $this->clearCache = true;
                 $this->step       = 'uebersicht';
@@ -107,7 +118,7 @@ class LinkController extends AbstractBackendController
             $this->smarty->assign('Link', $link);
         }
         if ($this->clearCache === true) {
-            $this->linkAdmin->clearCache();
+            $this->clearCache();
         }
         if ($this->step === 'uebersicht') {
             foreach ($this->linkAdmin->getDuplicateSpecialLinks()->groupBy(static function (LinkInterface $l) {
@@ -124,9 +135,9 @@ class LinkController extends AbstractBackendController
                     'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
                 );
             }
-            $this->smarty->assign('linkGroupCountByLinkID', $this->linkAdmin->getLinkGroupCountForLinkIDs())
+            $this->smarty->assign('linkGroupCountByLinkID', $this->getLinkGroupCountForLinkIDs())
                 ->assign('missingSystemPages', $this->linkAdmin->getMissingSystemPages())
-                ->assign('linkgruppen', $this->linkAdmin->getLinkGroups());
+                ->assign('linkgruppen', $this->getLinkGroups());
         }
         if ($this->step === 'neuer Link') {
             $cgroups = $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
@@ -143,6 +154,12 @@ class LinkController extends AbstractBackendController
             ->getResponse('links.tpl');
     }
 
+    /**
+     * @param string $action
+     * @param int    $linkGroupID
+     * @param int    $linkID
+     * @return void
+     */
     private function handleAction(string $action, int $linkGroupID, int $linkID): void
     {
         switch ($action) {
@@ -154,7 +171,7 @@ class LinkController extends AbstractBackendController
                 $this->smarty->assign('Link', $link);
                 break;
             case 'remove-link-from-linkgroup':
-                $res = $this->linkAdmin->removeLinkFromLinkGroup($linkID, $linkGroupID);
+                $res = $this->removeLinkFromLinkGroup($linkID, $linkGroupID);
                 if ($res > 0) {
                     $this->alertService->addSuccess(
                         \__('successLinkFromLinkGroupDelete'),
@@ -171,7 +188,7 @@ class LinkController extends AbstractBackendController
                 $this->clearCache = true;
                 break;
             case 'delete-link':
-                if ($this->linkAdmin->deleteLink($linkID) > 0) {
+                if ($this->deleteLink($linkID) > 0) {
                     $this->alertService->addSuccess(\__('successLinkDelete'), 'successLinkDelete');
                 } else {
                     $this->alertService->addError(\__('errorLinkDelete'), 'errorLinkDelete');
@@ -192,7 +209,7 @@ class LinkController extends AbstractBackendController
                 $this->step = 'linkgruppe_loeschen_confirm';
                 $group      = new LinkGroup($this->db);
                 $this->smarty->assign('linkGroup', $group->load($linkGroupID))
-                    ->assign('affectedLinkNames', $this->linkAdmin->getPreDeletionLinks($linkGroupID));
+                    ->assign('affectedLinkNames', $this->getPreDeletionLinks($linkGroupID));
                 break;
             case 'edit-linkgroup':
             case 'create-linkgroup':
@@ -232,13 +249,13 @@ class LinkController extends AbstractBackendController
                             ->assign('linkGroup', $linkGroup);
                     } else {
                         if ($linkGroupID === 0) {
-                            $this->linkAdmin->createOrUpdateLinkGroup(0, $_POST);
+                            $this->createOrUpdateLinkGroup(0, $_POST);
                             $this->alertService->addSuccess(
                                 \__('successLinkGroupCreate'),
                                 'successLinkGroupCreate'
                             );
                         } else {
-                            $linkgruppe = $this->linkAdmin->createOrUpdateLinkGroup($linkGroupID, $_POST);
+                            $linkgruppe = $this->createOrUpdateLinkGroup($linkGroupID, $_POST);
                             $this->alertService->addSuccess(
                                 \sprintf(\__('successLinkGroupEdit'), $linkgruppe->cName),
                                 'successLinkGroupEdit'
@@ -256,7 +273,7 @@ class LinkController extends AbstractBackendController
                 }
                 break;
             case 'move-to-linkgroup':
-                $res = $this->linkAdmin->updateLinkGroup(
+                $res = $this->updateLinkGroup(
                     $linkID,
                     Request::postInt('kLinkgruppeAlt'),
                     $linkGroupID
@@ -279,7 +296,7 @@ class LinkController extends AbstractBackendController
                 $this->step = 'uebersicht';
                 break;
             case 'copy-to-linkgroup':
-                $res = $this->linkAdmin->createReference($linkID, $linkGroupID);
+                $res = $this->createReference($linkID, $linkGroupID);
                 if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
                     $this->alertService->addError(\__('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
                 } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
@@ -299,7 +316,7 @@ class LinkController extends AbstractBackendController
                 break;
             case 'change-parent':
                 $parentID = (int)($_POST['kVaterLink'] ?? 0);
-                if ($parentID >= 0 && ($link = $this->linkAdmin->updateParentID($linkID, $parentID)) !== false) {
+                if ($parentID >= 0 && ($link = $this->updateParentID($linkID, $parentID)) !== false) {
                     $this->alertService->addSuccess(
                         \sprintf(\__('successLinkMove'), $link->cName),
                         'successLinkMove'
@@ -342,11 +359,14 @@ class LinkController extends AbstractBackendController
                         $_POST['kLink'] = $kLink;
                     }
                     // Bilder hochladen
-                    if (!\is_dir($this->uploadDir . $kLink)) {
-                        \mkdir($this->uploadDir . $kLink);
+                    if (!\is_dir($this->uploadDir . $kLink)
+                        && !\mkdir($concurrentDirectory = $this->uploadDir . $kLink)
+                        && !\is_dir($concurrentDirectory)
+                    ) {
+                        throw new \RuntimeException(\sprintf('Directory "%s" was not created', $concurrentDirectory));
                     }
                     if (\is_array($_FILES['Bilder']['name']) && \count($_FILES['Bilder']['name']) > 0) {
-                        $lastImage = $this->linkAdmin->getLastImageNumber($kLink);
+                        $lastImage = $this->getLastImageNumber($kLink);
                         $counter   = 0;
                         if ($lastImage > 0) {
                             $counter = $lastImage;
@@ -417,5 +437,395 @@ class LinkController extends AbstractBackendController
             default:
                 break;
         }
+    }
+
+    /**
+     * @return LinkGroupCollection
+     */
+    public function getLinkGroups(): LinkGroupCollection
+    {
+        $ls  = new LinkService($this->db, $this->cache);
+        $lgl = new LinkGroupList($this->db, $this->cache);
+        $lgl->loadAll();
+        $linkGroups = $lgl->getLinkGroups()->filter(static function (LinkGroupInterface $e): bool {
+            return $e->isSpecial() === false || $e->getTemplate() === 'unassigned';
+        });
+        foreach ($linkGroups as $linkGroup) {
+            /** @var LinkGroupInterface $linkGroup */
+            $filtered = $this->buildNavigation($linkGroup, $ls);
+            $linkGroup->setLinks($filtered);
+        }
+
+        return $linkGroups;
+    }
+
+    /**
+     * @param LinkGroupInterface   $linkGroup
+     * @param LinkServiceInterface $service
+     * @param int                  $parentID
+     * @return Collection
+     * @former build_navigation_subs_admin()
+     */
+    private function buildNavigation(
+        LinkGroupInterface $linkGroup,
+        LinkServiceInterface $service,
+        int $parentID = 0
+    ): Collection {
+        $news = new Collection();
+        foreach ($linkGroup->getLinks() as $link) {
+            $link->setLevel(\count($service->getParentIDs($link->getID())));
+            /** @var LinkInterface $link */
+            if ($link->getParent() !== $parentID) {
+                continue;
+            }
+            $link->setChildLinks($this->buildNavigation($linkGroup, $service, $link->getID()));
+            $news->push($link);
+        }
+
+        return $news;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLinkGroupCountForLinkIDs(): array
+    {
+        $assocCount             = $this->db->getObjects(
+            'SELECT tlink.kLink, COUNT(*) AS cnt 
+                FROM tlink 
+                JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlink.kLink
+                GROUP BY tlink.kLink
+                HAVING COUNT(*) > 1'
+        );
+        $linkGroupCountByLinkID = [];
+        foreach ($assocCount as $item) {
+            $linkGroupCountByLinkID[(int)$item->kLink] = (int)$item->cnt;
+        }
+
+        return $linkGroupCountByLinkID;
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $linkGroupID
+     * @return int
+     */
+    public function removeLinkFromLinkGroup(int $linkID, int $linkGroupID): int
+    {
+        $link = (new Link($this->db))->load($linkID);
+        foreach ($link->getChildLinks() as $childLink) {
+            $this->removeLinkFromLinkGroup($childLink->getID(), $linkGroupID);
+        }
+
+        return $this->db->delete(
+            'tlinkgroupassociations',
+            ['linkGroupID', 'linkID'],
+            [$linkGroupID, $linkID]
+        );
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $parentLinkID
+     * @return bool|stdClass
+     */
+    public function updateParentID(int $linkID, int $parentLinkID): bool|stdClass
+    {
+        $link       = $this->db->select('tlink', 'kLink', $linkID);
+        $parentLink = $this->db->select('tlink', 'kLink', $parentLinkID);
+
+        if (isset($link->kLink)
+            && $link->kLink > 0
+            && ((isset($parentLink->kLink) && $parentLink->kLink > 0) || $parentLinkID === 0)
+        ) {
+            $this->db->update('tlink', 'kLink', $linkID, (object)['kVaterLink' => $parentLinkID]);
+
+            return $link;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $linkID
+     * @return int
+     */
+    public function deleteLink(int $linkID): int
+    {
+        return $this->db->getAffectedRows(
+            "DELETE tlink, tlinksprache, tseo, tlinkgroupassociations
+                FROM tlink
+                LEFT JOIN tlinkgroupassociations
+                    ON tlinkgroupassociations.linkID = tlink.kLink
+                LEFT JOIN tlinksprache
+                    ON tlink.kLink = tlinksprache.kLink
+                LEFT JOIN tseo
+                    ON tseo.cKey = 'kLink'
+                    AND tseo.kKey = :lid
+                WHERE tlink.kLink = :lid
+                    OR tlink.reference = :lid",
+            ['lid' => $linkID]
+        );
+    }
+
+    /**
+     * @param int  $linkGroupID
+     * @param bool $names
+     * @return array
+     */
+    public function getPreDeletionLinks(int $linkGroupID, bool $names = true): array
+    {
+        $links = $this->db->getObjects(
+            'SELECT tlink.cName
+                FROM tlink
+                JOIN tlinkgroupassociations A
+                    ON tlink.kLink = A.linkID
+                JOIN tlinkgroupassociations B
+                    ON A.linkID = B.linkID
+                WHERE A.linkGroupID = :lgid
+                GROUP BY A.linkID
+                HAVING COUNT(A.linkID) > 1',
+            ['lgid' => $linkGroupID]
+        );
+
+        return $names === true
+            ? map($links, static function ($l) {
+                return $l->cName;
+            })
+            : $links;
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $targetLinkGroupID
+     * @return int|Link
+     */
+    public function createReference(int $linkID, int $targetLinkGroupID): Link|int
+    {
+        $link = new Link($this->db);
+        $link->load($linkID);
+        if ($link->getID() === 0) {
+            return self::ERROR_LINK_NOT_FOUND;
+        }
+        if ($link->getReference() > 0) {
+            $linkID = $link->getReference();
+        }
+        $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
+        if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
+            return self::ERROR_LINK_GROUP_NOT_FOUND;
+        }
+        $exists = $this->db->select(
+            'tlinkgroupassociations',
+            ['linkID', 'linkGroupID'],
+            [$linkID, $targetLinkGroupID]
+        );
+        if (!empty($exists)) {
+            return self::ERROR_LINK_ALREADY_EXISTS;
+        }
+        $ref            = new stdClass();
+        $ref->kPlugin   = $link->getPluginID();
+        $ref->nLinkart  = \LINKTYP_REFERENZ;
+        $ref->reference = $linkID;
+        $ref->cName     = \__('Referenz') . ' ' . $linkID;
+        $linkID         = $this->db->insert('tlink', $ref);
+
+        $ins              = new stdClass();
+        $ins->linkID      = $linkID;
+        $ins->linkGroupID = $targetLinkGroupID;
+        $this->db->insert('tlinkgroupassociations', $ins);
+        $this->copyChildLinksToLinkGroup($link, $targetLinkGroupID);
+
+        return $link;
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $oldLinkGroupID
+     * @param int $newLinkGroupID
+     * @return int|Link
+     */
+    public function updateLinkGroup(int $linkID, int $oldLinkGroupID, int $newLinkGroupID): Link|int
+    {
+        $link = new Link($this->db);
+        $link->load($linkID);
+        if ($link->getID() === 0) {
+            return self::ERROR_LINK_NOT_FOUND;
+        }
+        $linkgruppe = $this->db->select('tlinkgruppe', 'kLinkgruppe', $newLinkGroupID);
+        if (!isset($linkgruppe->kLinkgruppe) || $linkgruppe->kLinkgruppe <= 0) {
+            return self::ERROR_LINK_GROUP_NOT_FOUND;
+        }
+        $exists = $this->db->select(
+            'tlinkgroupassociations',
+            ['linkGroupID', 'linkID'],
+            [$newLinkGroupID, $link->getID()]
+        );
+        if (!empty($exists)) {
+            return self::ERROR_LINK_ALREADY_EXISTS;
+        }
+        $upd              = new stdClass();
+        $upd->linkGroupID = $newLinkGroupID;
+        $rows             = $this->db->update(
+            'tlinkgroupassociations',
+            ['linkGroupID', 'linkID'],
+            [$oldLinkGroupID, $link->getID()],
+            $upd
+        );
+        if ($rows === 0) {
+            // previously unassigned link
+            $upd              = new stdClass();
+            $upd->linkGroupID = $newLinkGroupID;
+            $upd->linkID      = $link->getID();
+            $this->db->insert('tlinkgroupassociations', $upd);
+        }
+        unset($upd->linkID);
+        $this->updateChildLinkGroups($link, $oldLinkGroupID, $newLinkGroupID);
+
+        return $link;
+    }
+
+    /**
+     * @param LinkInterface $link
+     * @param int           $old
+     * @param int           $new
+     */
+    private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
+    {
+        $upd              = new stdClass();
+        $upd->linkGroupID = $new;
+        foreach ($link->getChildLinks() as $childLink) {
+            if ($old < 0) {
+                // previously unassigned
+                $ins              = new stdClass();
+                $ins->linkGroupID = $new;
+                $ins->linkID      = $childLink->getID();
+                $this->db->insert('tlinkgroupassociations', $ins);
+            } else {
+                $this->db->update(
+                    'tlinkgroupassociations',
+                    ['linkGroupID', 'linkID'],
+                    [$old, $childLink->getID()],
+                    $upd
+                );
+            }
+            $this->updateChildLinkGroups($childLink, $old, $new);
+        }
+    }
+
+    /**
+     * @param LinkInterface $link
+     * @param int           $linkGroupID
+     */
+    public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
+    {
+        $link->buildChildLinks();
+        $ins              = new stdClass();
+        $ins->linkGroupID = $linkGroupID;
+        foreach ($link->getChildLinks() as $childLink) {
+            $ins->linkID = $childLink->getID();
+            $this->db->insert(
+                'tlinkgroupassociations',
+                $ins
+            );
+            $this->copyChildLinksToLinkGroup($childLink, $linkGroupID);
+        }
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return int
+     */
+    public function deleteLinkGroup(int $linkGroupID): int
+    {
+        $this->db->delete('tlinkgroupassociations', 'linkGroupID', $linkGroupID);
+        $res = $this->db->delete('tlinkgruppe', 'kLinkgruppe', $linkGroupID);
+        $this->db->delete('tlinkgruppesprache', 'kLinkgruppe', $linkGroupID);
+
+        return $res;
+    }
+
+    /**
+     * @return bool
+     */
+    public function clearCache(): bool
+    {
+        $this->cache->flushTags([\CACHING_GROUP_CORE]);
+        $this->db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
+
+        return true;
+    }
+
+    /**
+     * @param int   $id
+     * @param array $post
+     * @return stdClass
+     */
+    public function createOrUpdateLinkGroup(int $id, array $post): stdClass
+    {
+        $linkGroup                = new stdClass();
+        $linkGroup->kLinkgruppe   = (int)$post['kLinkgruppe'];
+        $linkGroup->cName         = $this->specialChars($post['cName']);
+        $linkGroup->cTemplatename = $this->specialChars($post['cTemplatename']);
+        if ($id === 0) {
+            $groupID = $this->db->insert('tlinkgruppe', $linkGroup);
+        } else {
+            $groupID = (int)$post['kLinkgruppe'];
+            $this->db->update('tlinkgruppe', 'kLinkgruppe', $groupID, $linkGroup);
+        }
+        $localized              = new stdClass();
+        $localized->kLinkgruppe = $groupID;
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
+            $localized->cISOSprache = $language->getIso();
+            $localized->cName       = $linkGroup->cName;
+            $idx                    = 'cName_' . $language->getIso();
+            if (isset($post[$idx])) {
+                $localized->cName = $this->specialChars($post[$idx]);
+            }
+            $this->db->delete(
+                'tlinkgruppesprache',
+                ['kLinkgruppe', 'cISOSprache'],
+                [$groupID, $language->getIso()]
+            );
+            $this->db->insert('tlinkgruppesprache', $localized);
+        }
+
+        return $linkGroup;
+    }
+
+    /**
+     * @param int $linkID
+     * @return int
+     */
+    public function getLastImageNumber(int $linkID): int
+    {
+        $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_LINKBILDER;
+        $images    = [];
+        if (\is_dir($uploadDir . $linkID)) {
+            $handle = \opendir($uploadDir . $linkID);
+            while (($file = \readdir($handle)) !== false) {
+                if ($file !== '.' && $file !== '..') {
+                    $images[] = $file;
+                }
+            }
+        }
+        $max = 0;
+        foreach ($images as $image) {
+            $num = \mb_substr($image, 4, (\mb_strlen($image) - \mb_strpos($image, '.')) - 3);
+            if ($num > $max) {
+                $max = $num;
+            }
+        }
+
+        return (int)$max;
+    }
+
+    /**
+     * @param string $text
+     * @return string
+     */
+    private function specialChars(string $text): string
+    {
+        return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET, false);
     }
 }

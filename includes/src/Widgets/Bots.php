@@ -14,7 +14,7 @@ class Bots extends AbstractWidget
     /**
      * @var array
      */
-    public $bots;
+    public array $bots;
 
     /**
      *

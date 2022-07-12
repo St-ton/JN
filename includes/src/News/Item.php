@@ -123,7 +123,7 @@ class Item extends AbstractItem implements RoutableInterface
     /**
      * @var int
      */
-    protected $commentChildCount = 0;
+    protected int $commentChildCount = 0;
 
     /**
      * @var stdClass|null
@@ -148,12 +148,12 @@ class Item extends AbstractItem implements RoutableInterface
     public function __construct(DbInterface $db, ?JTLCacheInterface $cache = null)
     {
         $this->db            = $db;
-        $this->routeType     = Router::TYPE_NEWS;
         $this->date          = \date_create();
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
         $this->comments      = new CommentList($this->db);
         $this->cache         = $cache ?? Shop::Container()->getCache();
+        $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWS);
     }
 
@@ -357,7 +357,7 @@ class Item extends AbstractItem implements RoutableInterface
                 }
             }
 
-            \usort($images, static function ($a, $b) {
+            \usort($images, static function ($a, $b): int {
                 return \strcmp($a->cName, $b->cName);
             });
         }

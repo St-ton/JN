@@ -56,7 +56,7 @@ class DBUpdateController extends AbstractBackendController
         return $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
             ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($this->db) : null)
             ->assign('isPluginManager', false)
-            ->assign('migrationURL', Shop::getAdminURL() . $this->route)
+            ->assign('migrationURL', $this->baseURL . $this->route)
             ->assign('currentFileVersion', $fileVersion)
             ->assign('currentDatabaseVersion', $updater->getCurrentDatabaseVersion())
             ->assign('hasDifferentVersions', !Version::parse($fileVersion)->equals(Version::parse($fileVersion)))

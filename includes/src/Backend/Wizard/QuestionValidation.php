@@ -14,11 +14,6 @@ use JTL\VerificationVAT\VATCheckInterface;
 class QuestionValidation
 {
     /**
-     * @var QuestionInterface
-     */
-    private QuestionInterface $question;
-
-    /**
      * @var int|null
      */
     private ?int $validationError = null;
@@ -28,10 +23,8 @@ class QuestionValidation
      * @param QuestionInterface $question
      * @param bool              $defaultValidation
      */
-    public function __construct(QuestionInterface $question, bool $defaultValidation = true)
+    public function __construct(private QuestionInterface $question, bool $defaultValidation = true)
     {
-        $this->question = $question;
-
         if ($defaultValidation) {
             $this->defaultValidation();
         }

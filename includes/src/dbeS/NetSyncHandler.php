@@ -73,7 +73,7 @@ class NetSyncHandler
             $response->cToken = \session_id();
             $response->oData  = $data;
         }
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         exit;
     }
 
@@ -144,9 +144,9 @@ class NetSyncHandler
     private function getBrowser(string $userAgent): string
     {
         $browser = 'other';
-        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        if (\preg_match('/^Opera(\/| )(\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'opera';
-        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        } elseif (\preg_match('/^MSIE (\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'ie';
         }
 

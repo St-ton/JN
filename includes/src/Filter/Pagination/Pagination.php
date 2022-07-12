@@ -11,16 +11,6 @@ use JTL\Filter\ProductFilter;
 class Pagination
 {
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
-     * @var ItemFactory
-     */
-    private ItemFactory$factory;
-
-    /**
      * @var array
      */
     private array $pages = [];
@@ -48,12 +38,10 @@ class Pagination
      * @param ProductFilter $productFilter
      * @param ItemFactory   $factory
      */
-    public function __construct(ProductFilter $productFilter, ItemFactory $factory)
+    public function __construct(private ProductFilter $productFilter, private ItemFactory $factory)
     {
-        $this->productFilter = $productFilter;
-        $this->factory       = $factory;
-        $this->prev          = $this->factory->create();
-        $this->next          = $this->factory->create();
+        $this->prev = $this->factory->create();
+        $this->next = $this->factory->create();
     }
 
     /**

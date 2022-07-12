@@ -10,6 +10,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Campaign;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
+use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -33,6 +34,7 @@ abstract class AbstractBackendController implements ControllerInterface
      * @var JTLSmarty|null
      */
     protected ?JTLSmarty $smarty = null;
+
     /**
      * @var string
      */
@@ -42,6 +44,21 @@ abstract class AbstractBackendController implements ControllerInterface
      * @var string
      */
     protected string $route = '';
+
+    /**
+     * @var string
+     */
+    protected string $baseURL;
+
+    /**
+     * @var int
+     */
+    protected int $currentLanguageID = 0;
+
+    /**
+     * @var string
+     */
+    protected string $currentLanguageCode;
 
     /**
      * @param DbInterface           $db
@@ -57,15 +74,28 @@ abstract class AbstractBackendController implements ControllerInterface
         protected AdminAccount $account,
         protected GetText $getText
     ) {
+        $this->baseURL = Shop::getAdminURL(true);
+        $this->setLanguage();
     }
 
     /**
      * @param string $permissions
      * @return void
+     * @throws PermissionException
      */
     protected function checkPermissions(string $permissions): void
     {
-        $this->account->permission($permissions, true, true);
+        // grant full access to admin
+        $account = $this->account->account();
+        if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+            return;
+        }
+        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
+            && \in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
+        if (!$hasAccess) {
+            throw new PermissionException('No permissions to access page');
+        }
     }
 
     /**
@@ -112,6 +142,8 @@ abstract class AbstractBackendController implements ControllerInterface
         }
 
         if (!isset($_SESSION['editLanguageID'])) {
+            $_SESSION['editLanguageID']   = 1;
+            $_SESSION['editLanguageCode'] = 'ger';
             // Wähle Standardsprache als aktuelle Sprache
             $language = $this->db->select('tsprache', 'cShopStandard', 'Y');
             if ((int)$language->kSprache > 0) {
@@ -121,11 +153,13 @@ abstract class AbstractBackendController implements ControllerInterface
         }
         if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
             // Fehlendes cISO ergänzen
-            $language = $this->db->select('tsprache', 'kSprache', (int)$_SESSION['editLanguageID']);
+            $language = $this->db->select('tsprache', 'kSprache', $_SESSION['editLanguageID']);
             if ((int)$language->kSprache > 0) {
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
         }
+        $this->currentLanguageID   = $_SESSION['editLanguageID'];
+        $this->currentLanguageCode = $_SESSION['editLanguageCode'];
     }
 
     /**
@@ -163,10 +197,11 @@ abstract class AbstractBackendController implements ControllerInterface
             return \__('errorConfigSave');
         }
         foreach ($confData as $config) {
-            $val                        = new stdClass();
-            $val->cWert                 = $post[$config->cWertName] ?? null;
-            $val->cName                 = $config->cWertName;
-            $val->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
+            $val = (object)[
+                'cWert'                 => $post[$config->cWertName] ?? null,
+                'cName'                 => $config->cWertName,
+                'kEinstellungenSektion' => (int)$config->kEinstellungenSektion
+            ];
             switch ($config->cInputTyp) {
                 case 'kommazahl':
                     $val->cWert = (float)$val->cWert;
@@ -176,7 +211,7 @@ abstract class AbstractBackendController implements ControllerInterface
                     $val->cWert = (int)$val->cWert;
                     break;
                 case 'text':
-                    $val->cWert = Text::filterXSS(mb_substr($val->cWert, 0, 255));
+                    $val->cWert = Text::filterXSS(\mb_substr($val->cWert, 0, 255));
                     break;
                 case 'listbox':
                     $this->updateListBox($val->cWert, $val->cName, $val->kEinstellungenSektion, $manager);
@@ -208,7 +243,7 @@ abstract class AbstractBackendController implements ControllerInterface
      * @return void
      * @former bearbeiteListBox()
      */
-    private function updateListBox($listBoxes, string $valueName, int $configSectionID, Manager $manager): void
+    private function updateListBox(mixed $listBoxes, string $valueName, int $configSectionID, Manager $manager): void
     {
         if (\is_array($listBoxes) && \count($listBoxes) > 0) {
             $manager->addLogListbox($valueName, $listBoxes);
@@ -288,10 +323,10 @@ abstract class AbstractBackendController implements ControllerInterface
 
     /**
      * @param int|int[] $configSectionID
-     * @param bool $byName
+     * @param bool      $byName
      * @return stdClass[]
      */
-    public function getAdminSectionSettings($configSectionID, bool $byName = false): array
+    public function getAdminSectionSettings(array|int $configSectionID, bool $byName = false): array
     {
         $sections       = [];
         $filterNames    = [];
@@ -379,18 +414,18 @@ abstract class AbstractBackendController implements ControllerInterface
     }
 
     /**
-     * @param string $size
+     * @param string|int $size
      * @return float|int|string
      * @former getMaxFileSize()
      * @since 5.2.0
      */
-    public static function getMaxFileSize($size): float|int|string
+    public static function getMaxFileSize(string|int $size): float|int|string
     {
-        return match (mb_substr($size, -1)) {
+        return match (\mb_substr((string)$size, -1)) {
             'M', 'm' => (int)$size * 1048576,
             'K', 'k' => (int)$size * 1024,
             'G', 'g' => (int)$size * 1073741824,
-            default => $size,
+            default  => $size,
         };
     }
 

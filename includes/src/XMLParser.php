@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
@@ -13,10 +13,14 @@ class XMLParser
     /**
      * @param string $fileName
      * @return array
+     * @throws \RuntimeException
      */
     public function parse(string $fileName): array
     {
         $xml = \file_get_contents($fileName);
+        if ($xml === false) {
+            throw new \RuntimeException('Could not read file ' . $fileName);
+        }
 
         return $this->getArrangedArray($this->unserializeXML($xml)) ?? [];
     }
@@ -80,10 +84,7 @@ class XMLParser
         }
         \reset($data);
         if ($level === 0) {
-            $str = \ob_get_contents();
-            \ob_end_clean();
-
-            return $str;
+            return \ob_get_clean();
         }
     }
 

@@ -24,24 +24,24 @@ use function Functional\some;
 class ShippingMethod
 {
     /**
-     * @var ShippingMethod
+     * @var ShippingMethod|null
      */
     private static $instance;
 
     /**
      * @var string
      */
-    public $cacheID;
+    public string $cacheID;
 
     /**
      * @var stdClass[]
      */
-    public $shippingMethods;
+    public array $shippingMethods;
 
     /**
      * @var array
      */
-    public $countries = [];
+    public array $countries = [];
 
     /**
      * ShippingMethod constructor.
@@ -79,7 +79,7 @@ class ShippingMethod
 
         return \array_filter(
             $this->shippingMethods,
-            static function ($s) use ($freeFromX) {
+            static function ($s) use ($freeFromX): bool {
                 return $s->fVersandkostenfreiAbX !== '0.00'
                     && (float)$s->fVersandkostenfreiAbX > 0
                     && (float)$s->fVersandkostenfreiAbX <= $freeFromX;
@@ -132,7 +132,7 @@ class ShippingMethod
      */
     public static function normalerArtikelversand(string $country): bool
     {
-        return some(Frontend::getCart()->PositionenArr, static function ($item) use ($country) {
+        return some(Frontend::getCart()->PositionenArr, static function ($item) use ($country): bool {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
                 && !self::gibArtikelabhaengigeVersandkosten($country, $item->Artikel, $item->nAnzahl);
         });
@@ -312,7 +312,7 @@ class ShippingMethod
         // auf anzeige filtern
         $possibleMethods = \array_filter(
             \array_merge($methods),
-            static function ($p) use ($minSum) {
+            static function ($p) use ($minSum): bool {
                 return $p->valid
                     && ($p->cAnzeigen === 'immer' || ($p->cAnzeigen === 'guenstigste' && $p->fEndpreis <= $minSum));
             }
@@ -932,7 +932,7 @@ class ShippingMethod
         bool $checkDelivery = true
     ): array {
         $shippingItems = [];
-        $items         = \array_filter($items, static function ($item) {
+        $items         = \array_filter($items, static function ($item): bool {
             return (int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && \is_object($item->Artikel);
         });
         foreach ($items as $item) {
@@ -1266,11 +1266,12 @@ class ShippingMethod
 
     /**
      * @param Versandart|object $method
-     * @param float             $cartSum
+     * @param float             $cartSumGros
+     * @param float             $cartSumNet
      * @return string
      * @former baueVersandkostenfreiString()
      */
-    public static function getShippingFreeString($method, $cartSum): string
+    public static function getShippingFreeString($method, $cartSumGros, $cartSumNet = 0): string
     {
         if (isset($_SESSION['oVersandfreiKupon'])) {
             return '';
@@ -1296,7 +1297,7 @@ class ShippingMethod
                 ? $localized->cName
                 : $method->cName;
         }
-        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSum);
+        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSumGros, $cartSumNet);
         if ($shippingFreeDifference <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
@@ -1314,27 +1315,21 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|stdClass $method
-     * @param float|int           $cartSum
+     * @param Versandart $method
+     * @param float|int  $cartSumGros
+     * @param float|int  $cartSumNet
      * @return float
      */
-    public static function getShippingFreeDifference($method, $cartSum): float
+    public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
     {
-        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
-        // check if vkfreiabx is calculated net or gross
-        if ($method->eSteuer !== 'netto') {
-            return $shippingFreeDifference;
+        if ($cartSumNet === 0) {
+            $cartSumNet = $cartSumGros;
         }
-        $db = Shop::Container()->getDB();
-        // calculate net with default tax class
-        $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-        if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-            $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', (int)$defaultTaxClass->kSteuerklasse);
-            if ($defaultTax !== null) {
-                $defaultTaxValue        = $defaultTax->fSteuersatz;
-                $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
-                    Tax::getNet((float)$cartSum, $defaultTaxValue);
-            }
+        // check if vkfreiabx is calculated net or gros
+        if ($method->eSteuer === 'netto') {
+            $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumNet;
+        } else {
+            $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumGros;
         }
 
         return $shippingFreeDifference;
@@ -1374,16 +1369,18 @@ class ShippingMethod
      */
     public static function getFreeShippingMinimum(int $customerGroupID, string $country = '')
     {
+        $cache           = Shop::Container()->getCache();
+        $db              = Shop::Container()->getDB();
         $shippingClasses = self::getShippingClasses(Frontend::getCart());
         $defaultShipping = self::normalerArtikelversand($country);
         $cacheID         = 'vkfrei_' . $customerGroupID . '_'
             . $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
-        if (($shippingMethod = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($shippingMethod = $cache->get($cacheID)) === false) {
             $iso = 'DE';
             if (\mb_strlen($country) > 0) {
                 $iso = $country;
             } else {
-                $company = new Firma();
+                $company = new Firma(true, $db, $cache);
                 if ($company->country !== null) {
                     $iso = $company->country->getISO();
                 }
@@ -1401,7 +1398,7 @@ class ShippingMethod
             }
 
             $productSpecificCondition = empty($defaultShipping) ? '' : " AND cNurAbhaengigeVersandart = 'N' ";
-            $shippingMethod           = Shop::Container()->getDB()->getSingleObject(
+            $shippingMethod           = $db->getSingleObject(
                 "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized
                     FROM tversandart
                     LEFT JOIN tversandartsprache
@@ -1410,7 +1407,7 @@ class ShippingMethod
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
                             OR cVersandklassen RLIKE :cShippingClass)
-                        AND tversandart.kVersandart IN (" . \implode(', ', $shippingMethods) . ") 
+                        AND tversandart.kVersandart IN (" . \implode(', ', $shippingMethods) . ")
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                             AND cLaender LIKE :ccode " . $productSpecificCondition . '
@@ -1430,7 +1427,7 @@ class ShippingMethod
                 $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
                 $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             }
-            Shop::Container()->getCache()->set($cacheID, $shippingMethod, [\CACHING_GROUP_OPTION]);
+            $cache->set($cacheID, $shippingMethod, [\CACHING_GROUP_OPTION]);
         }
 
         return $shippingMethod !== null && $shippingMethod->fVersandkostenfreiAbX > 0

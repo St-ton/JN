@@ -164,7 +164,7 @@ final class Shopsetting implements ArrayAccess
         if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->getTemplateConfig(Shop::Container()->getDB());
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
@@ -179,7 +179,7 @@ final class Shopsetting implements ArrayAccess
         } elseif ($section === \CONF_BRANDING) {
             return Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->getBrandingConfig(Shop::Container()->getDB());
                     $tags    = [\CACHING_GROUP_OPTION];
 
@@ -189,7 +189,7 @@ final class Shopsetting implements ArrayAccess
         } else {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) use ($section) {
+                function ($cache, $id, &$content, &$tags) use ($section): bool {
                     $content = $this->getSectionData($section);
                     $tags    = [\CACHING_GROUP_OPTION];
 
@@ -416,7 +416,7 @@ final class Shopsetting implements ArrayAccess
         $cacheID           = 'settings_all_preload';
         $result            = Shop::Container()->getCache()->get(
             $cacheID,
-            function ($cache, $id, &$content, &$tags) {
+            function ($cache, $id, &$content, &$tags): bool {
                 $content = $this->getAll();
                 $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION, \CACHING_GROUP_CORE];
 

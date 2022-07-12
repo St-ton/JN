@@ -67,9 +67,7 @@ class CartHelper
      */
     protected function calculateCredit(stdClass $cartInfo): void
     {
-        if (isset($_SESSION['Bestellung'], $_SESSION['Bestellung']->GuthabenNutzen)
-            && $_SESSION['Bestellung']->GuthabenNutzen === 1
-        ) {
+        if (($_SESSION['Bestellung']->GuthabenNutzen ?? 0) === 1) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
 
             $cartInfo->discount[self::NET]   += $amountGross;
@@ -93,9 +91,7 @@ class CartHelper
             'SELECT cZahlungsanbieter, fBetrag
                 FROM tzahlungseingang
                 WHERE kBestellung = :orderId',
-            [
-                'orderId' => $orderId
-            ],
+            ['orderId' => $orderId],
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (!$payments) {
@@ -861,14 +857,12 @@ class CartHelper
         // Preis auf Anfrage
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist
-        /** @noinspection MissingIssetImplementationInspection */
         if ($product->bHasKonfig === false
             && !empty($product->isKonfigItem)
             && $product->inWarenkorbLegbar === \INWKNICHTLEGBAR_PREISAUFANFRAGE
         ) {
             $product->inWarenkorbLegbar = 1;
         }
-        /** @noinspection MissingIssetImplementationInspection */
         if (($product->bHasKonfig === false && empty($product->isKonfigItem))
             && (!isset($product->Preise->fVKNetto) || (float)$product->Preise->fVKNetto === 0.0)
             && $conf['global_preis0'] === 'N'
@@ -913,13 +907,9 @@ class CartHelper
                         if ((float)$attrValue->fPackeinheit === 0) {
                             $attrValue->fPackeinheit = 1;
                         }
-                        if ($attrValue->fPackeinheit *
-                            ($qty +
-                                $cart->gibAnzahlEinerVariation(
-                                    $productID,
-                                    $attrValue->kEigenschaftWert
-                                )
-                            ) > $attrValue->fLagerbestand
+                        if ($attrValue->fPackeinheit
+                            * ($qty + $cart->gibAnzahlEinerVariation($productID, $attrValue->kEigenschaftWert))
+                            > $attrValue->fLagerbestand
                         ) {
                             $redirectParam[] = \R_LAGERVAR;
                         }
@@ -1304,7 +1294,7 @@ class CartHelper
                         'kEigenschaftWert' => $properties[$a],
                     ];
                 }, $variKombi->kEigenschaft_arr);
-            } elseif (\preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && \count($hits) === 3) {
+            } elseif (\preg_match('/([\d:]+)?_([\d:]+)/', $key, $hits) && \count($hits) === 3) {
                 if (empty($hits[1])) {
                     // 1-dimensional matrix - key is combination of property id and property value
                     unset($hits[1]);
@@ -1873,7 +1863,7 @@ class CartHelper
         if (isset($productData->kArtikel) && $productData->kArtikel > 0) {
             $product = (new Artikel($db))->fuelleArtikel($productData->kArtikel, Artikel::getDefaultOptions());
             if ($product !== null
-                && (int)$product->kArtikel > 0
+                && $product->kArtikel > 0
                 && self::addProductIDToCart(
                     $productData->kArtikel,
                     1,

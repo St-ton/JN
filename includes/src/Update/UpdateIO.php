@@ -9,11 +9,11 @@ use JTL\IO\IOFile;
 use JTL\L10n\GetText;
 use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTLShop\SemVer\Version;
 use JTL\Smarty\JTLSmarty;
+use JTLShop\SemVer\Version;
 use SmartyException;
 
 /**
@@ -23,18 +23,12 @@ use SmartyException;
 class UpdateIO
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * UpdateIO constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/dbupdater');
     }
 
@@ -112,7 +106,7 @@ class UpdateIO
      */
     public function download($file)
     {
-        if (!\preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
+        if (!\preg_match('/^([\d_a-z]+).sql.gz$/', $file, $m)) {
             return new IOError('Wrong download request');
         }
         $filePath = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . $file;
@@ -152,7 +146,7 @@ class UpdateIO
                 $updatesAvailable = \count($manager->getPendingMigrations()) > 0;
                 $smarty->assign(
                     'migrationURL',
-                    Shop::getAdminURL() . '/' . BackendRouter::ROUTE_PLUGIN . '/' . $pluginID
+                    Shop::getAdminURL() . '/' . Route::PLUGIN . '/' . $pluginID
                 )->assign('pluginID', $pluginID);
             } else {
                 $manager = new MigrationManager($this->db);

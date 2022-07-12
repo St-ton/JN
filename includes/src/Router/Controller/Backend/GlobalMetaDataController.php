@@ -26,7 +26,6 @@ class GlobalMetaDataController extends AbstractBackendController
         $this->checkPermissions(Permissions::SETTINGS_GLOBAL_META_VIEW);
         $this->getText->loadAdminLocale('pages/globalemetaangaben');
         $this->setLanguage();
-        $languageID = (int)$_SESSION['editLanguageID'];
         if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
             $this->actionSaveConfig(Text::filterXSS($_POST));
         }
@@ -34,7 +33,7 @@ class GlobalMetaDataController extends AbstractBackendController
         $meta     = $this->db->selectAll(
             'tglobalemetaangaben',
             ['kSprache', 'kEinstellungenSektion'],
-            [$languageID, \CONF_METAANGABEN]
+            [$this->currentLanguageID, \CONF_METAANGABEN]
         );
         $metaData = [];
         foreach ($meta as $item) {
@@ -54,30 +53,29 @@ class GlobalMetaDataController extends AbstractBackendController
     private function actionSaveConfig(array $postData): void
     {
         $this->saveAdminSectionSettings(\CONF_METAANGABEN, $_POST);
-        $languageID = (int)$_SESSION['editLanguageID'];
-        $title      = $postData['Title'];
-        $desc       = $postData['Meta_Description'];
-        $metaDescr  = $postData['Meta_Description_Praefix'];
+        $title     = $postData['Title'];
+        $desc      = $postData['Meta_Description'];
+        $metaDescr = $postData['Meta_Description_Praefix'];
         $this->db->delete(
             'tglobalemetaangaben',
             ['kSprache', 'kEinstellungenSektion'],
-            [$languageID, \CONF_METAANGABEN]
+            [$this->currentLanguageID, \CONF_METAANGABEN]
         );
         $globalMetaData                        = new stdClass();
         $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $languageID;
+        $globalMetaData->kSprache              = $this->currentLanguageID;
         $globalMetaData->cName                 = 'Title';
         $globalMetaData->cWertName             = $title;
         $this->db->insert('tglobalemetaangaben', $globalMetaData);
         $globalMetaData                        = new stdClass();
         $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $languageID;
+        $globalMetaData->kSprache              = $this->currentLanguageID;
         $globalMetaData->cName                 = 'Meta_Description';
         $globalMetaData->cWertName             = $desc;
         $this->db->insert('tglobalemetaangaben', $globalMetaData);
         $globalMetaData                        = new stdClass();
         $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $languageID;
+        $globalMetaData->kSprache              = $this->currentLanguageID;
         $globalMetaData->cName                 = 'Meta_Description_Praefix';
         $globalMetaData->cWertName             = $metaDescr;
         $this->db->insert('tglobalemetaangaben', $globalMetaData);

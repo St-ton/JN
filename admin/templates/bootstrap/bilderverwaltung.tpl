@@ -67,13 +67,11 @@
             </div>
         </div>
     </div>
-
-    {foreach $corruptedPicsTypes as $corruptedPicsType}
-        {if $corruptedPicsType > 0}
+    {foreach $corruptedImagesByType as $corruptedPicsType}
+        {if count($corruptedPicsType) > 0}
             {$corruptedPics = true}
         {/if}
     {/foreach}
-
     {if $corruptedPics}
         <div class="content-header">
             <h1 class="content-header-headline top40">

@@ -35,7 +35,7 @@ final class LinkGroupCollection extends Collection
      */
     public function getLinkgroupByTemplate(string $name): ?LinkGroupInterface
     {
-        return $this->filter(static function (LinkGroupInterface $e) use ($name) {
+        return $this->filter(static function (LinkGroupInterface $e) use ($name): bool {
             return $e->getTemplate() === $name;
         })->first();
     }
@@ -46,7 +46,7 @@ final class LinkGroupCollection extends Collection
      */
     public function getLinkgroupByID(int $id): ?LinkGroupInterface
     {
-        return $this->filter(static function (LinkGroupInterface $e) use ($id) {
+        return $this->filter(static function (LinkGroupInterface $e) use ($id): bool {
             return $e->getID() === $id;
         })->first();
     }
@@ -73,7 +73,7 @@ final class LinkGroupCollection extends Collection
      * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return \property_exists($this, $name) || $this->getLinkgroupByTemplate($name) !== null;
     }

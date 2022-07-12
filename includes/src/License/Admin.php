@@ -3,9 +3,9 @@
 namespace JTL\License;
 
 use Exception;
-use JsonException;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -16,7 +16,7 @@ use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -57,26 +57,6 @@ class Admin
     public const STATE_FAILED = 'failed';
 
     /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var Checker
-     */
-    private Checker $checker;
-
-    /**
      * @var AuthToken
      */
     private AuthToken $auth;
@@ -105,13 +85,13 @@ class Admin
      * @param JTLCacheInterface $cache
      * @param Checker           $checker
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache, Checker $checker)
-    {
-        $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
-        $this->checker = $checker;
-        $this->auth    = AuthToken::getInstance($this->db);
+    public function __construct(
+        private Manager $manager,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private Checker $checker
+    ) {
+        $this->auth = AuthToken::getInstance($this->db);
     }
 
     public function handleAuth(): void
@@ -145,7 +125,7 @@ class Admin
             if ($action === self::ACTION_RECHECK) {
                 $this->getLicenses(true);
                 $this->getList($smarty);
-                \header('Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE, true, 303);
+                \header('Location: ' . Shop::getAdminURL() . '/' . Route::LICENSE, true, 303);
                 exit();
             }
             if ($action === self::ACTION_REVOKE) {
@@ -164,7 +144,7 @@ class Admin
         if ($action === self::ACTION_REDIRECT) {
             $this->auth->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_CODE . '/license'
+                Shop::getAdminURL(true) . '/' . Route::CODE . '/license'
             );
         }
         if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {
@@ -247,7 +227,7 @@ class Admin
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             if ($e->getResponse()->getStatusCode() === 400) {
-                $body = \json_decode((string)$e->getResponse()->getBody());
+                $body = \json_decode((string)$e->getResponse()->getBody(), false, 512, \JSON_THROW_ON_ERROR);
                 if (isset($body->code, $body->message) && $body->code === 422) {
                     $response->error = $body->message;
                 }
@@ -429,7 +409,7 @@ class Admin
     {
         \ob_clean();
         \ob_start();
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         echo \ob_get_clean();
         exit;
     }

@@ -77,9 +77,9 @@ class Controller
                     $widget->plugin = $plugins[$widget->cPluginID];
                 } else {
                     if ($widget->bExtension === 1) {
-                        $widget->plugin = $loaderExt->init((int)$widget->kPlugin);
+                        $widget->plugin = $loaderExt->init($widget->kPlugin);
                     } else {
-                        $widget->plugin = $loaderLegacy->init((int)$widget->kPlugin);
+                        $widget->plugin = $loaderLegacy->init($widget->kPlugin);
                     }
 
                     $plugins[$widget->cPluginID] = $widget->plugin;

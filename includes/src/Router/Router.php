@@ -4,11 +4,14 @@ namespace JTL\Router;
 
 use Exception;
 use FastRoute\BadRouteException;
+use JTL\Cache\JTLCacheInterface;
+use JTL\Catalog\Currency;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
 use JTL\Language\LanguageHelper;
 use JTL\Router\Controller\CategoryController;
+use JTL\Router\Controller\CharacteristicValueController;
 use JTL\Router\Controller\ConsentController;
 use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\DefaultController;
@@ -18,27 +21,37 @@ use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\RootController;
+use JTL\Router\Controller\SearchController;
+use JTL\Router\Controller\SearchQueryController;
+use JTL\Router\Controller\SearchSpecialController;
 use JTL\Router\Middleware\CartcheckMiddleware;
+use JTL\Router\Middleware\CurrencyCheckMiddleware;
+use JTL\Router\Middleware\LocaleCheckMiddleware;
 use JTL\Router\Middleware\LocaleRedirectMiddleware;
 use JTL\Router\Middleware\MaintenanceModeMiddleware;
+use JTL\Router\Middleware\OptinMiddleware;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
+use JTL\Router\Middleware\SSLRedirectMiddleware;
 use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\Middleware\WishlistCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\Exception\EmitterException;
+use League\Route\Http\Exception\NotFoundException;
+use League\Route\Route;
 use League\Route\Router as BaseRouter;
 use League\Route\Strategy\JsonStrategy;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Class Router
  * @package JTL\Router
+ * @since 5.2.0
  */
 class Router
 {
@@ -58,9 +71,19 @@ class Router
     private bool $isMultilang = false;
 
     /**
-     * @var array|string[]
+     * @var bool
      */
-    private array $groups = [''];
+    private bool $isMulticrncy = false;
+
+    /**
+     * @var string[]
+     */
+    private array $langGroups = [''];
+
+    /**
+     * @var string[]
+     */
+    private array $crncyGroups = [''];
 
     /**
      * @var string
@@ -72,11 +95,14 @@ class Router
      */
     private bool $ignoreDefaultLocale = false;
 
-    public const TYPE_CATEGORY      = 'categories';
-    public const TYPE_PRODUCT       = 'products';
-    public const TYPE_PAGE          = 'pages';
-    public const TYPE_NEWS          = 'news';
-    public const TYPE_MANUFACTURERS = 'manufacturers';
+    public const TYPE_CATEGORY             = 'categories';
+    public const TYPE_CHARACTERISTIC_VALUE = 'characteristics';
+    public const TYPE_MANUFACTURERS        = 'manufacturers';
+    public const TYPE_NEWS                 = 'news';
+    public const TYPE_PAGE                 = 'pages';
+    public const TYPE_PRODUCT              = 'products';
+    public const TYPE_SEARCH_SPECIAL       = 'searchspecials';
+    public const TYPE_SEARCH_QUERY         = 'searchqueries';
 
     /**
      * @var ControllerInterface
@@ -84,33 +110,36 @@ class Router
     private ControllerInterface $defaultController;
 
     /**
-     * @param DbInterface $db
-     * @param             $cache
-     * @param State       $state
+     * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
+     * @param State                 $state
+     * @param AlertServiceInterface $alert
+     * @param array                 $conf
      */
     public function __construct(
-        protected DbInterface $db,
-        protected $cache,
-        protected State $state,
-        AlertServiceInterface $alert,
-        array $conf
+        protected DbInterface       $db,
+        protected JTLCacheInterface $cache,
+        protected State             $state,
+        AlertServiceInterface       $alert,
+        array                       $conf
     ) {
-        $cgid       = Frontend::getCustomer()->getGroupID();
-        $codes      = [];
-        $currencies = [];
-
-        $productController      = new ProductController($db, $cache, $state, $cgid, $conf, $alert);
-        $categoryController     = new CategoryController($db, $cache, $state, $cgid, $conf, $alert);
-        $manufacturerController = new ManufacturerController($db, $cache, $state, $cgid, $conf, $alert);
-        $newsController         = new NewsController($db, $cache, $state, $cgid, $conf, $alert);
-        $pageController         = new PageController($db, $cache, $state, $cgid, $conf, $alert);
-        $defaultController      = new DefaultController($db, $cache, $state, $cgid, $conf, $alert);
-        $rootController         = new RootController($db, $cache, $state, $cgid, $conf, $alert);
-        $consentController      = new ConsentController();
-        $ioController           = new IOController($this->db, $cache, $state, $cgid, $conf, $alert);
+        $products        = new ProductController($db, $cache, $state, $conf, $alert);
+        $specials        = new SearchSpecialController($db, $cache, $state, $conf, $alert);
+        $queries         = new SearchQueryController($db, $cache, $state, $conf, $alert);
+        $characteristics = new CharacteristicValueController($db, $cache, $state, $conf, $alert);
+        $categories      = new CategoryController($db, $cache, $state, $conf, $alert);
+        $manufacturers   = new ManufacturerController($db, $cache, $state, $conf, $alert);
+        $news            = new NewsController($db, $cache, $state, $conf, $alert);
+        $pages           = new PageController($db, $cache, $state, $conf, $alert);
+        $search          = new SearchController($db, $cache, $state, $conf, $alert);
+        $default         = new DefaultController($db, $cache, $state, $conf, $alert);
+        $root            = new RootController($db, $cache, $state, $conf, $alert);
+        $consent         = new ConsentController();
+        $io              = new IOController($this->db, $cache, $state, $conf, $alert);
 
         $this->router = new BaseRouter();
 
+        $codes = [];
         foreach (LanguageHelper::getAllLanguages() as $language) {
             if (!\defined('URL_SHOP_' . \mb_convert_case($language->getIso(), \MB_CASE_UPPER))) {
                 $codes[] = $language->getIso639();
@@ -122,101 +151,163 @@ class Router
         if ($conf['global']['routing_scheme'] !== 'F') {
             $this->ignoreDefaultLocale = $conf['global']['routing_default_language'] === 'F';
             if (\count($codes) > 1) {
-                $this->isMultilang = true;
-                $this->groups[]    = '/{lang:(?:' . \implode('|', $codes) . ')}';
+                $this->isMultilang  = true;
+                $this->langGroups[] = '/{lang:(?:' . \implode('|', $codes) . ')}';
             }
             if ($this->ignoreDefaultLocale === true) {
                 $this->router->middleware(new LocaleRedirectMiddleware($this->defaultLocale));
             }
         }
-        foreach (Frontend::getCurrencies() as $currency) {
-            $currencies[] = $currency->getCode();
-        }
-        $currencyPath = \count($currencies) > 1
-            ? '[/{currency:(?:' . \implode('|', $currencies) . ')}]'
-            : '';
-
-        $this->router->middleware(new MaintenanceModeMiddleware());
+        $this->router->middleware(new MaintenanceModeMiddleware($conf['global']));
+        $this->router->middleware(new SSLRedirectMiddleware($conf['global']));
         $this->router->middleware(new WishlistCheckMiddleware());
         $this->router->middleware(new CartcheckMiddleware());
+        $this->router->middleware(new LocaleCheckMiddleware());
+        $this->router->middleware(new CurrencyCheckMiddleware());
+        $this->router->middleware(new OptinMiddleware());
         $visibilityMiddleware = new VisibilityMiddleware();
-
-        foreach ($this->groups as $localized) {
-            $this->router->get($localized . '/products/{id:\d+}' . $currencyPath, [$productController, 'getResponse'])
-                ->setName('ROUTE_PRODUCT_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''))
-                ->middleware($visibilityMiddleware);
-            $this->router->get($localized . '/products/{name}' . $currencyPath, [$productController, 'getResponse'])
-                ->setName('ROUTE_PRODUCT_BY_NAME' . ($localized !== '' ? '_LOCALIZED' : ''))
-                ->middleware($visibilityMiddleware);
-            $this->router->post($localized . '/products/{id:\d+}', [$productController, 'getResponse'])
-                ->middleware($visibilityMiddleware);
-            $this->router->post($localized . '/products/{name}', [$productController, 'getResponse'])
-                ->middleware($visibilityMiddleware);
-
-            $this->router->get($localized . '/categories/{id:\d+}', [$categoryController, 'getResponse'])
-                ->setName('ROUTE_CATEGORY_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->get($localized . '/categories/{name}', [$categoryController, 'getResponse'])
-                ->setName('ROUTE_CATEGORY_BY_NAME' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->post($localized . '/categories/{id:\d+}', [$categoryController, 'getResponse']);
-            $this->router->post($localized . '/categories/{name}', [$categoryController, 'getResponse']);
-
-            $this->router->get($localized . '/manufacturers/{id:\d+}', [$manufacturerController, 'getResponse'])
-                ->setName('ROUTE_MANUFACTURER_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->get($localized . '/manufacturers/{name}', [$manufacturerController, 'getResponse'])
-                ->setName('ROUTE_MANUFACTURER_BY_NAME' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->post($localized . '/manufacturers/{id:\d+}', [$manufacturerController, 'getResponse']);
-            $this->router->post($localized . '/manufacturers/{name}', [$manufacturerController, 'getResponse']);
-
-            $this->router->get($localized . '/news/{id:\d+}', [$newsController, 'getResponse'])
-                ->setName('ROUTE_NEWS_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->get($localized . '/news/{name}', [$newsController, 'getResponse'])
-                ->setName('ROUTE_NEWS_BY_NAME' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->post($localized . '/news/{id:\d+}', [$newsController, 'getResponse']);
-            $this->router->post($localized . '/news/{name}', [$newsController, 'getResponse']);
-
-            $this->router->get($localized . '/pages/{id:\d+}', [$pageController, 'getResponse'])
-                ->setName('ROUTE_PAGE_BY_ID' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->get($localized . '/pages/{name}', [$pageController, 'getResponse'])
-                ->setName('ROUTE_PAGE_BY_NAME' . ($localized !== '' ? '_LOCALIZED' : ''));
-            $this->router->post($localized . '/pages/{id:\d+}', [$pageController, 'getResponse']);
-            $this->router->post($localized . '/pages/{name}', [$pageController, 'getResponse']);
+        $currencies           = \array_map(static function (Currency $e) {
+            return $e->getCode();
+        }, Currency::loadAll());
+        if (\count($currencies) > 1) {
+            $this->crncyGroups[] = '/{currency:(?:' . \implode('|', $currencies) . ')}';
+            $this->isMulticrncy  = true;
         }
-        $this->router->post('/_updateconsent', [$consentController, 'getResponse'])
+        $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+
+        foreach ($this->langGroups as $loc) {
+            foreach ($this->crncyGroups as $crncy) {
+                $dyn     = $loc . $crncy;
+                $dynName = ($loc === '' ? '' : '_LOCALIZED') . ($crncy === '' ? '' : '_CRNCY');
+                $this->router->get($dyn . '/products/{id:\d+}', [$products, 'getResponse'])
+                    ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
+                    ->middleware($visibilityMiddleware);
+                $this->router->get($dyn . '/products/{' . $name . '}', [$products, 'getResponse'])
+                    ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
+                    ->middleware($visibilityMiddleware);
+                $this->router->post($dyn . '/products/{id:\d+}', [$products, 'getResponse'])
+                    ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
+                    ->middleware($visibilityMiddleware);
+                $this->router->post($dyn . '/products/{' . $name . '}', [$products, 'getResponse'])
+                    ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
+                    ->middleware($visibilityMiddleware);
+
+                $this->router->get($dyn . '/characteristics/{id:\d+}', [$characteristics, 'getResponse'])
+                    ->setName('ROUTE_CHARACTERISTIC_BY_ID' . $dynName);
+                $this->router->get($dyn . '/characteristics/{' . $name . '}', [$characteristics, 'getResponse'])
+                    ->setName('ROUTE_CHARACTERISTIC_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/characteristics/{id:\d+}', [$characteristics, 'getResponse'])
+                    ->setName('ROUTE_CHARACTERISTIC_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/characteristics/{' . $name . '}', [$characteristics, 'getResponse'])
+                    ->setName('ROUTE_CHARACTERISTIC_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/categories/{id:\d+}', [$categories, 'getResponse'])
+                    ->setName('ROUTE_CATEGORY_BY_ID' . $dynName);
+                $this->router->get($dyn . '/categories/{' . $name . '}', [$categories, 'getResponse'])
+                    ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/categories/{id:\d+}', [$categories, 'getResponse'])
+                    ->setName('ROUTE_CATEGORY_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/categories/{' . $name . '}', [$categories, 'getResponse'])
+                    ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/searchspecials/{id:\d+}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName);
+                $this->router->get($dyn . '/searchspecials/{' . $name . '}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/searchspecials/{id:\d+}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/searchspecials/{' . $name . '}', [$specials, 'getResponse'])
+                    ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/searchqueries/{id:\d+}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName);
+                $this->router->get($dyn . '/searchqueries/{' . $name . '}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/searchqueries/{id:\d+}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/searchqueries/{' . $name . '}', [$queries, 'getResponse'])
+                    ->setName('ROUTE_SEARCHQUERY_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/manufacturers/{id:\d+}', [$manufacturers, 'getResponse'])
+                    ->setName('ROUTE_MANUFACTURER_BY_ID' . $dynName);
+                $this->router->get($dyn . '/manufacturers/{' . $name . '}', [$manufacturers, 'getResponse'])
+                    ->setName('ROUTE_MANUFACTURER_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/manufacturers/{id:\d+}', [$manufacturers, 'getResponse'])
+                    ->setName('ROUTE_MANUFACTURER_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/manufacturers/{' . $name . '}', [$manufacturers, 'getResponse'])
+                    ->setName('ROUTE_MANUFACTURER_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/news/{id:\d+}', [$news, 'getResponse'])
+                    ->setName('ROUTE_NEWS_BY_ID' . $dynName);
+                $this->router->get($dyn . '/news[/{' . $name . '}]', [$news, 'getResponse'])
+                    ->setName('ROUTE_NEWS_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/news/{id:\d+}', [$news, 'getResponse'])
+                    ->setName('ROUTE_NEWS_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/news/{' . $name . '}', [$news, 'getResponse'])
+                    ->setName('ROUTE_NEWS_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/pages/{id:\d+}', [$pages, 'getResponse'])
+                    ->setName('ROUTE_PAGE_BY_ID' . $dynName);
+                $this->router->get($dyn . '/pages/{' . $name . '}', [$pages, 'getResponse'])
+                    ->setName('ROUTE_PAGE_BY_NAME' . $dynName);
+                $this->router->post($dyn . '/pages/{id:\d+}', [$pages, 'getResponse'])
+                    ->setName('ROUTE_PAGE_BY_ID' . $dynName . 'POST');
+                $this->router->post($dyn . '/pages/{' . $name . '}', [$pages, 'getResponse'])
+                    ->setName('ROUTE_PAGE_BY_NAME' . $dynName . 'POST');
+
+                $this->router->get($dyn . '/search/{query:.+}', [$search, 'getResponse'])
+                    ->setName('ROUTE_SEARCH' . $dynName);
+                $this->router->post($dyn . '/search/{query:.+}', [$search, 'getResponse'])
+                    ->setName('ROUTE_SEARCH' . $dynName . 'POST');
+            }
+        }
+        $this->router->post('/_updateconsent', [$consent, 'getResponse'])
+            ->setName('ROUTE_UPDATE_CONSENTPOST')
             ->setStrategy(new JsonStrategy(new ResponseFactory()));
 
-        $this->router->get('/io', [$ioController, 'getResponse']);
-        $this->router->post('/io', [$ioController, 'getResponse']);
+        $this->router->get('/io', [$io, 'getResponse'])->setName('ROUTE_IO');
+        $this->router->post('/io', [$io, 'getResponse'])->setName('ROUTE_IOPOST');
 
-        $this->router->get('/', [$rootController, 'getResponse']);
-        $this->router->post('/', [$rootController, 'getResponse']);
+        $this->router->get('/', [$root, 'getResponse'])->setName('ROUTE_ROOT');
+        $this->router->post('/', [$root, 'getResponse'])->setName('ROUTE_ROOTPOST');
 
-//        $this->router->get('/{any:.*}', [$defaultController, 'getResponse']);
-//        $this->router->post('/{any:.*}', [$defaultController, 'getResponse']);
-
-        $this->defaultController = $defaultController;
+        $this->defaultController = $default;
     }
 
     /**
-     * @param string      $route
-     * @param callable    $cb
-     * @param array       $methods
-     * @param string|null $name
-     * @return void
+     * @param string                   $slug
+     * @param callable                 $cb
+     * @param array                    $methods
+     * @param string|null              $name
+     * @param MiddlewareInterface|null $middleware
+     * @return Route[]
      */
-    public function addRoute(string $route, callable $cb, array $methods = ['GET'], string $name = null): void
-    {
-        if (!\str_starts_with($route, '/')) {
-            $route = '/' . $route;
+    public function addRoute(
+        string               $slug,
+        callable             $cb,
+        array                $methods = ['GET'],
+        string               $name = null,
+        ?MiddlewareInterface $middleware = null
+    ): array {
+        if (!\str_starts_with($slug, '/')) {
+            $slug = '/' . $slug;
         }
+        $routes  = [];
         $methods = \array_map('\mb_strtoupper', $methods);
-        foreach ($this->groups as $group) {
+        foreach ($this->langGroups as $group) {
             foreach ($methods as $method) {
-                $item = $this->router->map($method, $group . $route, $cb);
+                $route = $this->router->map($method, $group . $slug, $cb);
                 if ($name !== null) {
-                    $item->setName($name . $method);
+                    $route->setName($name . $method);
                 }
+                if ($middleware !== null) {
+                    $route->middleware($middleware);
+                }
+                $routes[] = $route;
             }
         }
+
+        return $routes;
     }
 
     /**
@@ -247,42 +338,29 @@ class Router
     public function getPathByType(string $type, ?array $replacements = null, bool $byName = true): string
     {
         $name = match ($type) {
-            self::TYPE_CATEGORY => 'ROUTE_CATEGORY_BY_',
-            self::TYPE_PRODUCT => 'ROUTE_PRODUCT_BY_',
-            self::TYPE_MANUFACTURERS => 'ROUTE_MANUFACTURER_BY_',
-            self::TYPE_NEWS => 'ROUTE_NEWS_BY_',
-            self::TYPE_PAGE => 'ROUTE_PAGE_BY_',
-            default => 'ROUTE_XXX_BY_'
+            self::TYPE_CATEGORY             => 'ROUTE_CATEGORY_BY_',
+            self::TYPE_CHARACTERISTIC_VALUE => 'ROUTE_CHARACTERISTIC_BY_',
+            self::TYPE_MANUFACTURERS        => 'ROUTE_MANUFACTURER_BY_',
+            self::TYPE_NEWS                 => 'ROUTE_NEWS_BY_',
+            self::TYPE_PAGE                 => 'ROUTE_PAGE_BY_',
+            self::TYPE_PRODUCT              => 'ROUTE_PRODUCT_BY_',
+            self::TYPE_SEARCH_SPECIAL       => 'ROUTE_SEARCHSPECIAL_BY_',
+            self::TYPE_SEARCH_QUERY         => 'ROUTE_SEARCHQUERY_BY_',
+            default                         => 'ROUTE_XXX_BY_'
         };
         $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
-            && ($this->ignoreDefaultLocale === false
-                || ($replacements['lang'] ?? '') !== $this->defaultLocale
-            )
+            && ($this->ignoreDefaultLocale === false || ($replacements['lang'] ?? '') !== $this->defaultLocale)
         ) {
+            if (empty($replacements['lang'])) {
+                $replacements['lang'] = $this->defaultLocale;
+            }
             $name .= '_LOCALIZED';
         }
+        if ($this->isMulticrncy === true && isset($replacements['currency'])) {
+            $name .= '_CRNCY';
+        }
         //@todo???: fallback to index.php?k=123&lang=fre
-
-        return $this->getNamedPath($name, $replacements);
-    }
-
-    /**
-     * @param int        $linkType
-     * @param array|null $replacements
-     * @param bool       $byName
-     * @return string
-     */
-    public function getPathByLinkType(int $linkType, ?array $replacements = null, bool $byName = true): string
-    {
-        $name = match ($linkType) {
-//            \LINKTYP_NEWS => 'ROUTE_NEWS_BY_',
-//            \LINKTYP_WARENKORB => 'ROUTE_CART_BY_',
-//            \LINKTYP_BESTELLVORGANG => 'ROUTE_CHECKOUT_BY_',
-            default => 'ROUTE_PAGE_BY_'
-        };
-        $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
-        $name .= ($this->isMultilang === true ? '_LOCALIZED' : '');
 
         return $this->getNamedPath($name, $replacements);
     }
@@ -401,12 +479,18 @@ class Router
         $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
         // this is added after HOOK_ROUTER_PRE_DISPATCH since plugins could register static routes
         // which would otherwise be shadowed by this
-        $this->router->get('/{slug}', [$this->defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
-        $this->router->post('/{slug}', [$this->defaultController, 'getResponse'])->middleware($phpFileCheckMiddleware);
+        $this->router->get('/{slug:.+}', [$this->defaultController, 'getResponse'])
+            ->setName('catchall')
+            ->middleware($phpFileCheckMiddleware);
+        $this->router->post('/{slug:.+}', [$this->defaultController, 'getResponse'])
+            ->setName('catchallPOST')
+            ->middleware($phpFileCheckMiddleware);
         try {
             $response = $this->router->dispatch($request);
         } catch (BadRouteException $e) {
             throw $e;
+        } catch (NotFoundException) {
+            $response = $this->defaultController->getResponse($request, [], $smarty);
         } catch (Exception $e) {
             Shop::Container()->getLogService()->error('Routing error: ' . $e->getMessage());
             $response = $this->defaultController->getResponse($request, [], $smarty);
@@ -478,16 +562,16 @@ class Router
     /**
      * @return array|string[]
      */
-    public function getGroups(): array
+    public function getLangGroups(): array
     {
-        return $this->groups;
+        return $this->langGroups;
     }
 
     /**
-     * @param array|string[] $groups
+     * @param array|string[] $langGroups
      */
-    public function setGroups(array $groups): void
+    public function setLangGroups(array $langGroups): void
     {
-        $this->groups = $groups;
+        $this->langGroups = $langGroups;
     }
 }

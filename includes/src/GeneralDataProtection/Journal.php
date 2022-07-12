@@ -24,9 +24,9 @@ class Journal
     /**
      * object-wide date at the point of instantiating
      *
-     * @var object DateTime
+     * @var DateTime
      */
-    protected $now;
+    protected DateTime $now;
 
     public const ISSUER_TYPE_CUSTOMER = 'CUSTOMER';
 

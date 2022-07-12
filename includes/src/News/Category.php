@@ -8,6 +8,8 @@ use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 use stdClass;
 
@@ -17,8 +19,9 @@ use stdClass;
  */
 class Category implements CategoryInterface
 {
-    use MagicCompatibilityTrait,
-        MultiSizeImage;
+    use MagicCompatibilityTrait;
+    use MultiSizeImage;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -104,11 +107,6 @@ class Category implements CategoryInterface
     protected array $previewImages = [];
 
     /**
-     * @var string[]
-     */
-    protected array $urls = [];
-
-    /**
      * @var int
      */
     protected int $sort = 0;
@@ -134,20 +132,15 @@ class Category implements CategoryInterface
     protected $items;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Category constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db               = $db;
         $this->items            = new Collection();
         $this->children         = new Collection();
         $this->dateLastModified = \date_create();
+        $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWSCATEGORY);
     }
 
@@ -204,11 +197,12 @@ class Category implements CategoryInterface
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
             $this->seo[$langID]              = $groupLanguage->cSeo;
-            $this->urls[$langID]             = Shop::getURL() . '/' . $groupLanguage->cSeo;
+            $this->slugs[$langID]            = $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
         }
+        $this->createBySlug($this->id);
         $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
@@ -351,7 +345,7 @@ class Category implements CategoryInterface
             });
         }
         if ($languageID > 0) {
-            $this->items = $this->items->filter(static function (Item $i) use ($languageID) {
+            $this->items = $this->items->filter(static function (Item $i) use ($languageID): bool {
                 return $i->getTitle($languageID) !== '';
             });
         }

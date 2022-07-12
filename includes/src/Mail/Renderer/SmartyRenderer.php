@@ -16,17 +16,11 @@ use JTL\Smarty\MailSmarty;
 class SmartyRenderer implements RendererInterface
 {
     /**
-     * @var MailSmarty|JTLSmarty
-     */
-    private $smarty;
-
-    /**
      * SmartyRenderer constructor.
      * @param MailSmarty|JTLSmarty $smarty
      */
-    public function __construct($smarty)
+    public function __construct(private $smarty)
     {
-        $this->smarty = $smarty;
     }
 
     /**

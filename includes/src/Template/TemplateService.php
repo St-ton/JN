@@ -186,7 +186,7 @@ class TemplateService implements TemplateServiceInterface
         }
         try {
             $template = Model::loadByAttributes($attributes, $this->db);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $template = new Model($this->db);
             $template->setTemplate('no-template');
         }

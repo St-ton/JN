@@ -31,7 +31,7 @@ class LanguageVariables extends AbstractItem
         foreach ($this->getNode() as $t => $langVar) {
             $nonPluginLanguages = $languages;
             $t                  = (string)$t;
-            \preg_match('/[\d]+/', $t, $hits1);
+            \preg_match('/\d+/', $t, $hits1);
             if (\mb_strlen($hits1[0]) !== \mb_strlen($t)) {
                 continue;
             }
@@ -75,7 +75,7 @@ class LanguageVariables extends AbstractItem
             } elseif (GeneralObject::hasCount('VariableLocalized', $langVar)) {
                 foreach ($langVar['VariableLocalized'] as $i => $loc) {
                     $i = (string)$i;
-                    \preg_match('/[\d]+\sattr/', $i, $hits1);
+                    \preg_match('/\d+\sattr/', $i, $hits1);
 
                     if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                         $iso                              = $loc['iso'];

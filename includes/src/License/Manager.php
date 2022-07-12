@@ -11,7 +11,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\License\Exception\AuthException;
 use JTL\License\Struct\ExsLicense;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -37,16 +37,6 @@ class Manager
     private string $domain;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var Client
      */
     private Client $client;
@@ -61,10 +51,8 @@ class Manager
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db     = $db;
-        $this->cache  = $cache;
         $this->client = new Client();
         $this->domain = \parse_url(\URL_SHOP)['host'];
         $this->token  = AuthToken::getInstance($this->db)->get();
@@ -87,7 +75,7 @@ class Manager
         return [
             'Accept'        => 'application/json',
             'Content-Type'  => 'application/json',
-            'User-Agent'    => 'JTL-Shop/' . Shop::getApplicationVersion() . '-' . $this->domain,
+            'User-Agent'    => 'JTL-Shop/' . \APPLICATION_VERSION . '-' . $this->domain,
             'Authorization' => 'Bearer ' . $this->token
         ];
     }
@@ -106,7 +94,7 @@ class Manager
         }
         try {
             $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return '';
         }
         $res = $this->client->request(
@@ -136,7 +124,7 @@ class Manager
         }
         try {
             $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return '';
         }
         $res = $this->client->request(
@@ -166,7 +154,7 @@ class Manager
         }
         try {
             $body = \json_encode((object)['domain' => $this->domain], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return '';
         }
         $res = $this->client->request(
@@ -204,11 +192,11 @@ class Manager
                     'domain'  => $this->domain
                 ],
                 'redirect_urls' => (object)[
-                    'return_url' => Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE . '?extend=success',
-                    'cancel_url' => Shop::getAdminURL() . '/' . BackendRouter::ROUTE_LICENSE . '?extend=fail'
+                    'return_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=success',
+                    'cancel_url' => Shop::getAdminURL() . '/' . Route::LICENSE . '?extend=fail'
                 ],
             ], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return '';
         }
         $res = $this->client->request(
@@ -244,7 +232,7 @@ class Manager
                 'domain'  => $this->domain,
                 'version' => \APPLICATION_VERSION,
             ], 'extensions'                      => $installedExtensions], \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return 0;
         }
         $res = $this->client->request(
@@ -264,7 +252,7 @@ class Manager
             $data        = \json_decode((string)$res->getBody(), false, 512, \JSON_THROW_ON_ERROR);
             $data->owner = isset($owner->given_name, $owner->family_name) ? $owner : null;
             $data        = \json_encode($data, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             $data = '';
         }
 
@@ -291,7 +279,7 @@ class Manager
 
         try {
             return \json_decode($res->getBody()->getContents(), false, 512, \JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return new stdClass();
         }
     }
@@ -314,7 +302,7 @@ class Manager
             $obj             = \json_decode($data->data ?? '', false, 512, \JSON_THROW_ON_ERROR);
             $obj->timestamp  = $data->timestamp;
             $obj->returnCode = $data->returnCode;
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             $obj = null;
         }
 

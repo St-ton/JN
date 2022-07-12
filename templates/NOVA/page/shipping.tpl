@@ -8,7 +8,7 @@
                 {if JTL\Session\Frontend::getCart()->PositionenArr|count > 0}
                     {block name='page-shipping-form'}
                         {form method="post"
-                            action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}{get_static_route id='index.php'}{/if}{if $bExclusive}?exclusive_content=1{/if}"
+                            action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}{$ShopURL}/{/if}{if $bExclusive}?exclusive_content=1{/if}"
                             class="jtl-validate shipping-calculator-form"
                             id="shipping-calculator-form"
                             slide=true}

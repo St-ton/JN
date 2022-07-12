@@ -462,9 +462,9 @@ final class Orders extends AbstractSync
         $test   = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         $tpl    = $test->getTemplate();
         if ($tpl !== null
+            && (!isset($order->cSendeEMail) || $order->cSendeEMail === 'Y')
             && $tpl->getModel() !== null
             && $tpl->getModel()->getActive() === true
-            && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
         ) {
             if ($module) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);

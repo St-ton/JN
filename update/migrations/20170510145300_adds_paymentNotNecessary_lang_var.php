@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170510145300 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds paymentNotNecessary language variable';
+    protected $description = 'Add paymentNotNecessary language variable';
 
     /**
      * @inheritDoc

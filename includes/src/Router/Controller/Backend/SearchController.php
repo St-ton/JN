@@ -158,7 +158,7 @@ class SearchController extends AbstractBackendController
      */
     private function getPlugins(string $query): Collection
     {
-        if (mb_strlen($query) <= 2) {
+        if (\mb_strlen($query) <= 2) {
             return new Collection();
         }
         $parser          = new XMLParser();
@@ -166,7 +166,7 @@ class SearchController extends AbstractBackendController
         $pluginValidator = new PluginValidator($this->db, $parser);
         $listing         = new Listing($this->db, $this->cache, $legacyValidator, $pluginValidator);
 
-        return $listing->getInstalled()->filter(function (ListingItem $e) use ($query) {
+        return $listing->getInstalled()->filter(function (ListingItem $e) use ($query): bool {
             if (\stripos($e->getName(), $query) !== false) {
                 $e->setName($this->highlightSearchTerm($e->getName(), $query));
 
@@ -187,7 +187,7 @@ class SearchController extends AbstractBackendController
         $results = [];
         foreach (\explode(',', $query) as $search) {
             $search = \trim($search);
-            if (mb_strlen($search) > 2) {
+            if (\mb_strlen($search) > 2) {
                 $hits = $this->db->getObjects(
                     'SELECT va.kVersandart, va.cName
                         FROM tversandart AS va
@@ -219,7 +219,7 @@ class SearchController extends AbstractBackendController
             // Leerzeichen löschen
             $string = \trim($string);
             // Nur Eingaben mit mehr als 2 Zeichen
-            if (mb_strlen($string) > 2) {
+            if (\mb_strlen($string) > 2) {
                 $data = $this->db->getObjects(
                     'SELECT za.kZahlungsart, za.cName
                         FROM tzahlungsart AS za

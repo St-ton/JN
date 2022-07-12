@@ -13,7 +13,7 @@ use JTL\Update\Migration;
 class Migration_20190403161800 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'removes vcard';
+    protected $description = 'Remove vcard';
 
     /**
      * @inheritDoc

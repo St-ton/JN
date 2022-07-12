@@ -21,6 +21,7 @@ use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -55,7 +56,7 @@ class RegistrationController extends PageController
         Shop::setPageType(\PAGE_REGISTRIERUNG);
         $linkHelper = Shop::Container()->getLinkService();
         if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
-            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
+            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 301);
         }
 
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';

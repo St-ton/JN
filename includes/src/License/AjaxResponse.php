@@ -13,47 +13,47 @@ class AjaxResponse implements JsonSerializable
     /**
      * @var string
      */
-    public $html = '';
+    public string $html = '';
 
     /**
      * @var string
      */
-    public $notification = '';
+    public string $notification = '';
 
     /**
      * @var string
      */
-    public $id = '';
+    public string $id = '';
 
     /**
      * @var string
      */
-    public $status = 'OK';
+    public string $status = 'OK';
 
     /**
      * @var string|null
      */
-    public $redirect;
+    public ?string $redirect = null;
 
     /**
      * @var string
      */
-    public $action = '';
+    public string $action = '';
 
     /**
      * @var string
      */
-    public $error = '';
+    public string $error = '';
 
     /**
      * @var mixed
      */
-    public $additional;
+    public mixed $additional = null;
 
     /**
      * @var array
      */
-    public $replaceWith = [];
+    public array $replaceWith = [];
 
     /**
      * @return array

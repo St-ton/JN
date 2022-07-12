@@ -217,9 +217,8 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => $image->cPfad]
             );
             $charValImage               = new stdClass();
-            $charValImage->kMerkmalWert = (int)$image->kMerkmalWert;
+            $charValImage->kMerkmalWert = $image->kMerkmalWert;
             $charValImage->cBildpfad    = $image->cPfad;
-
             $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
             \unlink($original);
         }
@@ -590,7 +589,7 @@ final class Images extends AbstractSync
     {
         $str = \str_replace(['/', ' '], '-', $str);
 
-        return \preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $str);
+        return \preg_replace('/[^a-zA-Z\d\.\-_]/', '', $str);
     }
 
     /**

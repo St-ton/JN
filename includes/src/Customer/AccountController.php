@@ -43,33 +43,14 @@ use function Functional\some;
 /**
  * Class AccountController
  * @package JTL\Customer
+ * @todo!!! move to router
  */
 class AccountController
 {
     /**
      * @var array
      */
-    private $config;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
-
-    /**
-     * @var LinkServiceInterface
-     */
-    private LinkServiceInterface $linkService;
-
-    /**
-     * @var JTLSmarty
-     */
-    private JTLSmarty $smarty;
+    private array $config;
 
     /**
      * AccountController constructor.
@@ -79,16 +60,12 @@ class AccountController
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        DbInterface $db,
-        AlertServiceInterface $alertService,
-        LinkServiceInterface $linkService,
-        JTLSmarty $smarty
+        private DbInterface           $db,
+        private AlertServiceInterface $alertService,
+        private LinkServiceInterface  $linkService,
+        private JTLSmarty             $smarty
     ) {
-        $this->db           = $db;
-        $this->alertService = $alertService;
-        $this->linkService  = $linkService;
-        $this->smarty       = $smarty;
-        $this->config       = Shopsetting::getInstance()->getAll();
+        $this->config = Shopsetting::getInstance()->getAll();
     }
 
     /**
@@ -984,7 +961,7 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, static function ($dl) use ($order) {
+            $order->bDownload   = some($downloads, static function ($dl) use ($order): bool {
                 return $dl->kBestellung === $order->kBestellung;
             });
             $order->kBestellung = (int)$order->kBestellung;

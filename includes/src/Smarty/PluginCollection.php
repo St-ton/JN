@@ -11,25 +11,13 @@ use JTL\Language\LanguageHelper;
 class PluginCollection
 {
     /**
-     * @var array
-     */
-    private array $config;
-
-    /**
-     * @var LanguageHelper
-     */
-    private LanguageHelper $lang;
-
-    /**
      * PluginCollection constructor.
      *
      * @param array          $config
      * @param LanguageHelper $lang
      */
-    public function __construct(array $config, LanguageHelper $lang)
+    public function __construct(private array $config, private LanguageHelper $lang)
     {
-        $this->config = $config;
-        $this->lang   = $lang;
     }
 
     /**

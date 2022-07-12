@@ -338,7 +338,7 @@ interface FilterInterface
     public function setUnsetFilterURL($url): FilterInterface;
 
     /**
-     * @param string|null $idx
+     * @param string|array|null $idx
      * @return string|null
      */
     public function getUnsetFilterURL($idx = null): ?string;
@@ -433,4 +433,11 @@ interface FilterInterface
      * @return string
      */
     public function getCacheID(string $query): string;
+
+    /**
+     * allows building URLs (for base states) with dynamic route parameters
+     * @param array $additional
+     * @return string|null
+     */
+    public function getRoute(array $additional): ?string;
 }

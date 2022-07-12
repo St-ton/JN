@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170718114900 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds cIgnoreShippingProposal to tversandart';
+    protected $description = 'Add cIgnoreShippingProposal to tversandart';
 
     /**
      * @inheritDoc

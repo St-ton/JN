@@ -36,24 +36,12 @@ final class LinkService implements LinkServiceInterface
     private LinkGroupListInterface $linkGroupList;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * LinkService constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db            = $db;
-        $this->cache         = $cache;
         self::$instance      = $this;
         $this->linkGroupList = new LinkGroupList($db, $cache);
         $this->initLinkGroups();
@@ -115,7 +103,7 @@ final class LinkService implements LinkServiceInterface
         }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id): bool {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -136,7 +124,7 @@ final class LinkService implements LinkServiceInterface
         }
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id) {
+            $first = first($linkGroup->getLinks(), static function (LinkInterface $link) use ($id): bool {
                 return $link->getID() === $id;
             });
             if ($first !== null) {
@@ -233,7 +221,7 @@ final class LinkService implements LinkServiceInterface
     {
         $lg = $this->getLinkGroupByName('specialpages');
 
-        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType) {
+        if ($lg === null || ($lt = $lg->getLinks()->first(static function (LinkInterface $l) use ($linkType): bool {
             return $l->getLinkType() === $linkType;
         })) === null) {
             throw new SpecialPageNotFoundException($linkType);
@@ -297,7 +285,7 @@ final class LinkService implements LinkServiceInterface
         $idx = null;
         $lg  = $this->getLinkGroupByName('staticroutes');
         if ($lg !== null) {
-            $filterd = $lg->getLinks()->first(static function (LinkInterface $link) use ($id) {
+            $filterd = $lg->getLinks()->first(static function (LinkInterface $link) use ($id): bool {
                 return $link->getFileName() === $id;
             });
             if ($filterd !== null) {
@@ -413,7 +401,7 @@ final class LinkService implements LinkServiceInterface
         $meta->cKeywords = '';
         foreach ($this->linkGroupList->getLinkGroups() as $linkGroup) {
             /** @var LinkGroupInterface $linkGroup */
-            $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type) {
+            $first = $linkGroup->getLinks()->first(static function (LinkInterface $link) use ($type): bool {
                 return $link->getLinkType() === $type;
             });
             if ($first !== null) {
@@ -463,7 +451,7 @@ final class LinkService implements LinkServiceInterface
                         if ($linkID === Shop::$kLink) {
                             $link->setIsActive(true);
                             $parent = $this->getRootLink($linkID);
-                            $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent) {
+                            $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent): bool {
                                 return $l->getID() === $parent;
                             })->map(static function (LinkInterface $l) {
                                 $l->setIsActive(true);

@@ -401,7 +401,7 @@ class Versandart
      */
     public function getShippingSurchargesForCountry(string $iso): Collection
     {
-        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso) {
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso): bool {
             return $surcharge->getISO() === $iso;
         });
     }

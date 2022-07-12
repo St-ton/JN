@@ -254,9 +254,7 @@ class Category extends BaseCategory
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->kKategorie)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($category->cName)
@@ -265,7 +263,7 @@ class Category extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            \usort($options, static function ($a, $b) {
+            \usort($options, static function ($a, $b): int {
                 /** @var Option $a */
                 /** @var Option $b */
                 return \strcmp($a->getName(), $b->getName());

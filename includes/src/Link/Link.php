@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
-use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
 use JTL\Router\RoutableTrait;
@@ -216,6 +215,7 @@ final class Link extends AbstractLink implements RoutableInterface
     {
         $this->db         = $db;
         $this->childLinks = new Collection();
+        $this->setRouteType(Router::TYPE_PAGE);
         $this->initLanguageID();
     }
 
@@ -339,7 +339,7 @@ final class Link extends AbstractLink implements RoutableInterface
             $this->setPluginID($link->kPlugin);
             $this->setPluginEnabled($link->enabled);
             $this->setLinkGroups(\array_unique(\array_map('\intval', \explode(',', $link->linkGroups))));
-            $this->setLinkGroupID((int)$this->linkGroups[0]);
+            $this->setLinkGroupID($this->linkGroups[0]);
             $this->setLinkType($link->nLinkart);
             $this->setNoFollow($link->cNoFollow === 'Y');
             $this->setCustomerGroups(self::parseSSKAdvanced($link->cKundengruppen));
@@ -367,28 +367,20 @@ final class Link extends AbstractLink implements RoutableInterface
                 $this->setURL($link->linkURL, $link->languageID);
             } else {
                 $this->setSEO($link->localizedUrl ?? '', $link->languageID);
+                $this->setSlug($link->localizedUrl ?? '', $link->languageID);
                 if ($this->getLinkType() === \LINKTYP_STARTSEITE && \EXPERIMENTAL_MULTILANG_SHOP === true) {
                     // @todo!!!
                     $this->setURL(Shop::getURL(true, $link->languageID) . '/', $link->languageID);
-                } else {
-                    $localeCode = Text::convertISO2ISO639($link->cISOSprache);
-                    $route      = Shop::getRouter()->getPathByLinkType(
-                        $this->getLinkType(),
-                        ['lang' => $localeCode, 'name' => $link->localizedUrl ?? '', 'id' => $link->kLink]
-                    );
-                    $this->setSlug($route, $link->languageID);
-                    $this->setURL(Shop::getURL() . $route, $link->languageID);
-//                    $this->setURL(
-//                        Shop::getURL(true, $link->languageID) . '/' . $link->localizedUrl,
-//                        $link->languageID
-//                    );
                 }
             }
             $this->setHandler($link->handler ?? '');
             $this->setTemplate($link->template ?? $link->fullscreenTemplate ?? '');
-            if (($this->id === null || $this->id === 0) && isset($link->kLink)) {
+            if ($this->id === 0 && isset($link->kLink)) {
                 $this->setID((int)$link->kLink);
             }
+        }
+        if ($this->getLinkType() !== \LINKTYP_EXTERNE_URL) {
+            $this->createBySlug();
         }
         $this->setChildLinks($this->buildChildLinks());
         \executeHook(\HOOK_LINK_MAPPED, ['link' => $this]);
@@ -1232,7 +1224,7 @@ final class Link extends AbstractLink implements RoutableInterface
         if ($group === null) {
             return false;
         }
-        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link) {
+        $duplicateLinks = $group->getLinks()->filter(function (LinkInterface $link): bool {
             return ($link->getPluginID() === 0
                 && $link->getLinkType() === $this->getLinkType()
                 && $this->getReference() === 0

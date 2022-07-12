@@ -4,8 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\AuthToken;
 use JTL\Helpers\Request;
-use JTL\Router\BackendRouter;
-use JTL\Shop;
+use JTL\Router\Route;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -31,7 +30,7 @@ class CodeController extends AbstractBackendController
             $auth->responseToken();
         }
 
-        return new RedirectResponse(Shop::getAdminURL() . '/' . $this->getRedirectURL($args['redir']));
+        return new RedirectResponse($this->baseURL . '/' . $this->getRedirectURL($args['redir']));
     }
 
     /**
@@ -41,9 +40,9 @@ class CodeController extends AbstractBackendController
     private function getRedirectURL(string $redir): string
     {
         return match ($redir) {
-            'wizard' => BackendRouter::ROUTE_WIZARD,
-            'premiumplugin' => BackendRouter::ROUTE_PREMIUM_PLUGIN,
-            default => BackendRouter::ROUTE_LICENSE,
+            'wizard'        => Route::WIZARD,
+            'premiumplugin' => Route::PREMIUM_PLUGIN,
+            default         => Route::LICENSE,
         };
     }
 }

@@ -268,10 +268,20 @@ class OptinRefData
     }
 
     /**
-     * @return false|mixed|string
+     * @return string
      */
     public function __toString()
     {
-        return $this->serialize();
+        return \serialize([
+            $this->optinClass,
+            $this->languageID,
+            $this->customerID,
+            $this->salutation,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->realIP,
+            $this->productID
+        ]);
     }
 }

@@ -17,7 +17,7 @@ class UnitsOfMeasure
      *
      * @var array
      */
-    public static $UCUMcodeToPrint = [
+    public static array $UCUMcodeToPrint = [
         'm'      => 'm',
         'mm'     => 'mm',
         'cm'     => 'cm',
@@ -42,7 +42,7 @@ class UnitsOfMeasure
     /**
      * @var array
      */
-    public static $conversionTable = [
+    public static array $conversionTable = [
         'mm'  => null,
         'cm'  => [10 => 'mm'],
         'dm'  => [10 => 'cm'],
@@ -86,7 +86,8 @@ class UnitsOfMeasure
                     WHERE cCode IN ('" . \implode("', '", \array_keys(self::$UCUMcodeToPrint)) . "')"
             );
             foreach ($units_tmp as $unit) {
-                $units[(int)$unit->kMassEinheit] = $unit;
+                $unit->kMassEinheit         = (int)$unit->kMassEinheit;
+                $units[$unit->kMassEinheit] = $unit;
             }
         }
 
@@ -115,7 +116,6 @@ class UnitsOfMeasure
         if (isset(self::$conversionTable[$unitFrom])) {
             $result = \key(self::$conversionTable[$unitFrom]);
             $nextTo = \current(self::$conversionTable[$unitFrom]);
-
             if ($nextTo !== $unitTo) {
                 $factor = self::iGetConversionFaktor($nextTo, $unitTo);
                 $result = $factor === null ? null : $result * $factor;

@@ -14,17 +14,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class InArrayStrict implements RuleInterface
 {
     /**
-     * @var array|mixed[]
-     */
-    protected $whitelist;
-
-    /**
      * WhitelistStrict constructor.
      * @param mixed[] $whitelist
      */
-    public function __construct(array $whitelist)
+    public function __construct(protected array $whitelist)
     {
-        $this->whitelist = $whitelist;
     }
 
     /**

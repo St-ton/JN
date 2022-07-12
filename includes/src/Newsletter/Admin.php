@@ -25,24 +25,12 @@ use stdClass;
 final class Admin
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
-
-    /**
      * Admin constructor.
      * @param DbInterface $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(private DbInterface $db, private AlertServiceInterface $alertService)
     {
-        $this->db           = $db;
-        $this->alertService = $alertService;
     }
 
     /**

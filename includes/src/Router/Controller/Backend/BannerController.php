@@ -5,7 +5,6 @@ namespace JTL\Router\Controller\Backend;
 use DateTime;
 use Exception;
 use JTL\Backend\Permissions;
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -49,19 +48,15 @@ class BannerController extends AbstractBackendController
             case 'area':
                 $this->actionArea(Request::postInt('id'));
                 break;
-
             case 'edit':
                 $this->actionEdit((int)($postData['id'] ?? $postData['kImageMap']));
                 break;
-
             case 'new':
                 $this->actionNew($imageMap ?? null);
                 break;
-
             case 'delete':
                 $this->actionDelete(Request::postInt('id'));
                 break;
-
             default:
                 break;
         }
@@ -71,7 +66,7 @@ class BannerController extends AbstractBackendController
             ->assemble();
 
         return $smarty->assign('action', $this->action)
-            ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
+            ->assign('validPageTypes', BoxController::getMappedValidPageTypes())
             ->assign('pagination', $pagination)
             ->assign('route', $this->route)
             ->assign('banners', $pagination->getPageItems())
@@ -342,13 +337,14 @@ class BannerController extends AbstractBackendController
     /**
      * @param mixed $data
      * @return IOResponse
+     * @throws \JsonException
      * @former saveBannerAreasIO()
      */
     public static function saveAreasIO(mixed $data): IOResponse
     {
         $banner   = new ImageMap(Shop::Container()->getDB());
         $response = new IOResponse();
-        $data     = \json_decode($data);
+        $data     = \json_decode($data, false, 512, \JSON_THROW_ON_ERROR);
         foreach ($data->oArea_arr as $area) {
             $area->kArtikel      = (int)$area->kArtikel;
             $area->kImageMap     = (int)$area->kImageMap;

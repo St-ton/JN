@@ -257,7 +257,7 @@ class Text
     public static function htmlentitiesSubstr(string $input, int $length): string
     {
         if ($length > 0 && \mb_strlen($input) > $length) {
-            $regex = '/(&#x?[0-9a-f]+;)|(&\w{2,8};)|(\e)/i';
+            $regex = '/(&#x?[\da-f]+;)|(&\w{2,8};)|(\e)/i';
             if (\preg_match_all($regex, $input, $hits)) {
                 // set escape-sequence as placeholder for html entities
                 $input = \preg_replace($regex, \chr(27), $input);
@@ -283,16 +283,16 @@ class Text
         }
         // replace numeric entities
         $input = \preg_replace_callback(
-            '~&#x([0-9a-fA-F]+);~i',
-            static function ($x) {
+            '~&#x([\da-fA-F]+);~i',
+            static function ($x): string {
                 return \mb_chr(\hexdec($x[1]));
             },
             $input
         );
 
         return self::htmlentitydecode(\preg_replace_callback(
-            '~&#([0-9]+);~',
-            static function ($x) {
+            '~&#(\d+);~',
+            static function ($x): string {
                 return \mb_chr((int)$x[1]);
             },
             $input
@@ -408,7 +408,7 @@ class Text
         // Fix &entity\n;
         $data = \str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
         $data = \preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
-        $data = \preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
+        $data = \preg_replace('/(&#x*[\dA-F]+);*/iu', '$1;', $data);
         $data = \html_entity_decode($data, \ENT_COMPAT, 'UTF-8');
         // Remove any attribute starting with "on" or xmlns
         $data = \preg_replace('#(<[^>]+?[\x00-\x20"\'])(?:on|xmlns)[^>]*+>#iu', '$1>', $data);
@@ -570,7 +570,7 @@ class Text
         return \is_string($ssk)
             ? \array_map(static function ($e) {
                 return (int)\trim($e);
-            }, \array_filter(\explode(';', $ssk), static function ($e) {
+            }, \array_filter(\explode(';', $ssk), static function ($e): bool {
                 return $e !== '' && $e !== null;
             }))
             : [];
@@ -668,7 +668,7 @@ class Text
 
             return 0;
         }
-        if (!\preg_match('/^[0-9\-\(\)\/\+\s]{1,}$/', $number)) {
+        if (!\preg_match('/^[\d\-\(\)\/\+\s]+$/', $number)) {
             return 2;
         }
 

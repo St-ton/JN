@@ -545,7 +545,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO): bool {
                 return $l->getCode() === $langISO;
             });
             if ($lang === null) {
@@ -577,25 +577,43 @@ class Frontend extends AbstractSession
 
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
-            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
-                return $c->getCode() === $currencyCode;
-            });
-            if ($currency !== null) {
-                $_SESSION['Waehrung']      = $currency;
-                $_SESSION['cWaehrungName'] = $currency->getName();
-                if (isset($_SESSION['Wunschliste'])) {
-                    self::getWishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    self::getCompareList()->umgebungsWechsel();
-                }
-                $cart = self::getCart();
-                if (\count($cart->PositionenArr) > 0) {
-                    $cart->setzePositionsPreise();
-                }
-            }
+            self::updateCurrency($currencyCode);
         }
         LanguageHelper::getInstance()->autoload();
+    }
+
+    /**
+     * @param string $currencyCode
+     * @return void
+     */
+    public static function updateCurrency(string $currencyCode): void
+    {
+        $currentCurrency = $_SESSION['Waehrung'] ?? null;
+        if ($currentCurrency instanceof Currency && $currentCurrency->getCode() === $currencyCode) {
+            return;
+        }
+        $currencies = self::getCurrencies();
+        if (\count($currencies) === 0) {
+            $currencies = Currency::loadAll();
+        }
+        $currency = first($currencies, static function (Currency $c) use ($currencyCode): bool {
+            return $c->getCode() === $currencyCode;
+        });
+        if ($currency === null) {
+            return;
+        }
+        $_SESSION['Waehrung']      = $currency;
+        $_SESSION['cWaehrungName'] = $currency->getName();
+        if (isset($_SESSION['Wunschliste'])) {
+            self::getWishList()->umgebungsWechsel();
+        }
+        if (isset($_SESSION['Vergleichsliste'])) {
+            self::getCompareList()->umgebungsWechsel();
+        }
+        $cart = self::getCart();
+        if (\count($cart->PositionenArr) > 0) {
+            $cart->setzePositionsPreise();
+        }
     }
 
     /**

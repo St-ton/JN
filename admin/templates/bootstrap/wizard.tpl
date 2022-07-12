@@ -1,5 +1,4 @@
 {include file='tpl_inc/header.tpl'}
-{config_load file="$lang.conf" section='shopsitemap'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('setupAssistant') cBeschreibung=__('setupAssistantDesc') cDokuURL=__('setupAssistantURL')}
 <script type="text/javascript">
     $(window).on('load',function(){

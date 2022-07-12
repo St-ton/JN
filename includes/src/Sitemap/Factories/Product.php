@@ -29,7 +29,7 @@ final class Product extends AbstractFactory
         $andWhere                = '';
         $filterConf              = (int)$this->config['global']['artikel_artikelanzeigefilter'];
 
-        $languageIDs = map($languages, static function (LanguageModel $e) {
+        $languageIDs = map($languages, static function (LanguageModel $e): int {
             return $e->getId();
         });
         if ($this->config['sitemap']['sitemap_varkombi_children_export'] !== 'Y') {

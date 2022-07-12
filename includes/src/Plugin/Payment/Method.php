@@ -147,7 +147,7 @@ class Method implements MethodInterface
         if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
         ) {
-            return Shop::getURL() . '/bestellvorgang.php';
+            return Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php');
         }
         if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_abschlussseite') === 'A') {
             // Abschlussseite
@@ -158,7 +158,8 @@ class Method implements MethodInterface
                 ['oid' => (int)$order->kBestellung]
             );
             if ($paymentID !== null) {
-                return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
+                return Shop::Container()->getLinkService()->getStaticRoute('bestellabschluss.php')
+                    . '?i=' . $paymentID->cId;
             }
         }
 

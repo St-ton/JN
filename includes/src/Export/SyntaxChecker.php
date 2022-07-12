@@ -29,16 +29,6 @@ class SyntaxChecker
     private ExportSmarty $smarty;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var int
-     */
-    private int $id;
-
-    /**
      * @var int
      */
     public int $errorCode = self::SYNTAX_NOT_CHECKED;
@@ -48,10 +38,8 @@ class SyntaxChecker
      * @param int         $id
      * @param DbInterface $db
      */
-    public function __construct(int $id, DbInterface $db)
+    public function __construct(private int $id, private DbInterface $db)
     {
-        $this->id = $id;
-        $this->db = $db;
     }
 
     /**
@@ -144,7 +132,7 @@ class SyntaxChecker
         try {
             return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
                 ->fetch('snippets/exportformat_state.tpl');
-        } catch (Exception $e) {
+        } catch (Exception) {
             return '';
         }
     }
@@ -295,7 +283,7 @@ class SyntaxChecker
         $db = Shop::Container()->getDB();
         try {
             $model = Model::load(['id' => $exportID], $db, Model::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
         $smarty  = new ExportSmarty($db);

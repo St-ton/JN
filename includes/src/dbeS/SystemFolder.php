@@ -9,29 +9,14 @@ namespace JTL\dbeS;
 class SystemFolder
 {
     /**
-     * @var string
+     * @param string $cBaseName
+     * @param string $cBasePath
+     * @param array  $oSubFolders
      */
-    public string $cBaseName;
-
-    /**
-     * @var string
-     */
-    public string $cBasePath;
-
-    /**
-     * @var array
-     */
-    public array $oSubFolders;
-
-    /**
-     * @param string $baseName
-     * @param string $basePath
-     * @param array  $subFolders
-     */
-    public function __construct(string $baseName = '', string $basePath = '', array $subFolders = [])
-    {
-        $this->cBaseName   = $baseName;
-        $this->cBasePath   = $basePath;
-        $this->oSubFolders = $subFolders;
+    public function __construct(
+        public string $cBaseName = '',
+        public string $cBasePath = '',
+        public array  $oSubFolders = []
+    ) {
     }
 }

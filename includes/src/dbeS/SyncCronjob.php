@@ -108,7 +108,7 @@ class SyncCronjob extends NetSyncHandler
             $exporter->init($export->kExportformat);
             try {
                 $export->Sprache = Shop::Lang()->getLanguageByID($export->kSprache);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $export->Sprache = LanguageHelper::getDefaultLanguage();
                 $export->Sprache->setLocalizedName('???');
                 $export->Sprache->setId(0);

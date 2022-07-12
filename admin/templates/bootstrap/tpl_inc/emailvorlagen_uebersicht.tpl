@@ -3,8 +3,8 @@
     <div class="alert alert-info">
         {__('testmailsGoToEmail')}
         <strong>
-            {if $Einstellungen.emails.email_master_absender}
-                {$Einstellungen.emails.email_master_absender}
+            {if $config.emails.email_master_absender}
+                {$config.emails.email_master_absender}
             {else}
                 {__('noMasterEmailSpecified')}
             {/if}

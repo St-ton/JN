@@ -17,6 +17,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -70,14 +71,14 @@ class OrderCompleteController extends CheckoutController
                 $_SESSION['kommentar'] = '';
             }
             if (SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
-                \header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php')
-                    . '?mailBlocked=1', true, 303);
-                exit;
+                return new RedirectResponse($linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', 303);
             }
             if (!$this->isOrderComplete()) {
-                \header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php')
-                    . '?fillOut=' . $this->getErorCode(), true, 303);
-                exit;
+                return new RedirectResponse(
+                    $linkHelper->getStaticRoute('bestellvorgang.php')
+                    . '?fillOut=' . $this->getErorCode(),
+                    303
+                );
             }
             if ($cart->removeParentItems() > 0) {
                 $this->alertService->addWarning(
@@ -85,14 +86,14 @@ class OrderCompleteController extends CheckoutController
                     'warningCartContainedParentItems',
                     ['saveInSession' => true]
                 );
-                \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
-                exit;
+
+                return new RedirectResponse($linkHelper->getStaticRoute('warenkorb.php'), 303);
             }
             $cart->pruefeLagerbestaende();
             if ($cart->checkIfCouponIsStillValid() === false) {
                 $_SESSION['checkCouponResult']['ungueltig'] = 3;
-                \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
-                exit;
+
+                return new RedirectResponse($linkHelper->getStaticRoute('warenkorb.php'), 303);
             }
             if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
                 $cart->loescheDeaktiviertePositionen();
@@ -104,8 +105,8 @@ class OrderCompleteController extends CheckoutController
                         CartHelper::deleteAllSpecialItems();
                     }
                     $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
-                    \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
-                    exit;
+
+                    return new RedirectResponse($linkHelper->getStaticRoute('warenkorb.php'), 303);
                 }
                 $order = $handler->finalizeOrder();
                 if ($order->Lieferadresse === null && !empty($_SESSION['Lieferadresse']->cVorname)) {
@@ -171,8 +172,7 @@ class OrderCompleteController extends CheckoutController
             && $order->oKunde->nRegistriert === 1
             && $order->kKunde !== Frontend::getCustomer()->getID()
         ) {
-            \header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
-            exit;
+            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 303);
         }
 
         $bestellid = $this->db->select('tbestellid', 'kBestellung', $order->kBestellung);
@@ -223,8 +223,8 @@ class OrderCompleteController extends CheckoutController
                         $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
                         $successPaymentURL = $orderCompleteURL . '?i=' . $bestellid->cId;
                     }
-                    \header('Location: ' . $successPaymentURL, true, 303);
-                    exit();
+
+                    return new RedirectResponse($successPaymentURL, 303);
                 }
             } else {
                 $this->smarty->assign('ZahlungsInfo', $this->getPaymentInfo());

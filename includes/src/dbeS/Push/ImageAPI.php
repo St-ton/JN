@@ -33,7 +33,7 @@ final class ImageAPI extends AbstractPush
     {
         try {
             $this->getImageType();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return;
         }
         $class = Media::getClass($this->imageType);

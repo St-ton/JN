@@ -11,6 +11,8 @@ use JTL\Filter\StateSQL;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -23,6 +25,7 @@ use function Functional\filter;
 class BaseSearchQuery extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -59,6 +62,7 @@ class BaseSearchQuery extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_QUERY);
         $this->setIsCustom(false)
             ->setUrlParam('suche')
             ->setUrlParamSEO(null);
@@ -88,7 +92,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = (int)$value;
+        $this->value = $value;
 
         return $this;
     }
@@ -109,9 +113,8 @@ class BaseSearchQuery extends AbstractFilter
                 $hits
             );
             if (\count($hits) === 0) {
-                $this->error = Shop::Lang()->get('expressionHasTo') . ' ' .
-                    $minChars . ' ' .
-                    Shop::Lang()->get('lettersDigits');
+                $this->error = Shop::Lang()->get('expressionHasTo')
+                    . ' ' . $minChars . ' ' . Shop::Lang()->get('lettersDigits');
             }
         }
 
@@ -194,8 +197,12 @@ class BaseSearchQuery extends AbstractFilter
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
-                $this->cSeo[$language->kSprache] = $seo->cSeo;
+                $this->setSlug($seo->cSeo, $language->kSprache);
             }
+        }
+        $this->createBySlug($this->getID());
+        foreach ($this->getURLPaths() as $langID => $slug) {
+            $this->cSeo[$langID] = \ltrim($slug, '/');
         }
         if ($seo !== null & !empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
@@ -854,9 +861,7 @@ class BaseSearchQuery extends AbstractFilter
                 }
             }
 
-            for ($i = 0; $i < ($brackets - 1); ++$i) {
-                $sql .= ')';
-            }
+            $sql .= \str_repeat(')', ($brackets - 1));
 
             if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $prep['lid'] = $this->getLanguageID();
@@ -1104,7 +1109,7 @@ class BaseSearchQuery extends AbstractFilter
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
 
-        return filter($searchRows, static function ($r) {
+        return filter($searchRows, static function ($r): bool {
             return $r !== '';
         });
     }

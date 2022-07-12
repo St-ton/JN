@@ -133,7 +133,7 @@ class Helper
 
             try {
                 return $loader->init((int)$plugin->kPlugin, false, $langID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
         }

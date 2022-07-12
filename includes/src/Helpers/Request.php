@@ -219,7 +219,7 @@ class Request
      * @param int      $maxredirect
      * @return bool|mixed
      */
-    public static function curl_exec_follow($ch, int $maxredirect = 5)
+    public static function curl_exec_follow($ch, int $maxredirect = 5): bool|string
     {
         $mr = $maxredirect <= 0 ? 5 : $maxredirect;
         if (\ini_get('open_basedir') === '') {

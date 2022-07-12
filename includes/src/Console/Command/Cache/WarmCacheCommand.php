@@ -186,7 +186,7 @@ class WarmCacheCommand extends Command
                     $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false);
                     ++$generated;
                     $this->debug('Category ' . $cid
-                        . ($category->kKategorie > 0 ? ' successfully' : ' could not be')
+                        . ($category->getID() > 0 ? ' successfully' : ' could not be')
                         . ' loaded in language ' . $language->getId()
                         . ' with customer group ' . $customerGroup->getID());
                 }

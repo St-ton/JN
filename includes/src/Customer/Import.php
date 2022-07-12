@@ -23,11 +23,6 @@ class Import
     private array $format;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var int
      */
     private int $customerGroupID = 1;
@@ -67,9 +62,8 @@ class Import
      * @param DbInterface $db
      * @param array|null  $format
      */
-    public function __construct(DbInterface $db, array $format = null)
+    public function __construct(private DbInterface $db, array $format = null)
     {
-        $this->db              = $db;
         $this->format          = $format ?? [
                 'cKundenNr',
                 'cPasswort',

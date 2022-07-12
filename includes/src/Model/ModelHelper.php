@@ -17,7 +17,7 @@ final class ModelHelper
      * @param string          $format
      * @return string|null
      */
-    private static function formatDateTime($value, $format = 'Y-m-d H:i:s'): ?string
+    private static function formatDateTime($value, string $format = 'Y-m-d H:i:s'): ?string
     {
         if (\is_a($value, DateTime::class)) {
             return $value->format($format);
@@ -52,7 +52,7 @@ final class ModelHelper
         if (\is_string($value)) {
             try {
                 return new DateTime(\str_replace('now()', 'now', $value));
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return self::fromStrToDateTime($default);
             }
         }

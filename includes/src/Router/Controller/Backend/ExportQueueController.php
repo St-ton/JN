@@ -91,7 +91,6 @@ class ExportQueueController extends AbstractBackendController
                 AND tcron.foreignKeyID = texportformat.kExportformat
             ORDER BY tcron.startDate DESC"
         );
-
         $factory = new ExporterFactory($this->db, Shop::Container()->getLogService(), $this->cache);
         foreach ($exports as $export) {
             $export->kExportformat      = (int)$export->kExportformat;
@@ -132,8 +131,8 @@ class ExportQueueController extends AbstractBackendController
             );
             $export->oJobQueue    = $this->db->getSingleObject(
                 "SELECT *, DATE_FORMAT(lastStart, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
-                FROM tjobqueue 
-                WHERE cronID = :id",
+                    FROM tjobqueue 
+                    WHERE cronID = :id",
                 ['id' => $export->cronID]
             );
             $export->productCount = $exporter->getExportProductCount();
@@ -145,13 +144,14 @@ class ExportQueueController extends AbstractBackendController
     /**
      * @param int $cronID
      * @return int|stdClass
+     * @former holeCron()
      */
-    private function holeCron(int $cronID)
+    private function getCron(int $cronID): int|stdClass
     {
         $cron = $this->db->getSingleObject(
             "SELECT *, DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de
-            FROM tcron
-            WHERE cronID = :cid",
+                FROM tcron
+                WHERE cronID = :cid",
             ['cid' => $cronID]
         );
         if ($cron !== null && $cron->cronID > 0) {
@@ -170,32 +170,32 @@ class ExportQueueController extends AbstractBackendController
      * @return bool|string
      * @former rechneUmAlleXStunden()
      */
-    private function getFrequency(int $hours)
+    private function getFrequency(int $hours): bool|string
     {
         if ($hours <= 0) {
             return false;
         }
         if ($hours > 24) {
-            $hours = \round($hours / 24);
-            if ($hours >= 365) {
-                $hours /= 365;
-                if ($hours == 1) {
-                    $hours .= \__('year');
+            $res = \round($hours / 24);
+            if ($res >= 365) {
+                $res /= 365;
+                if ($res === 1.0) {
+                    $res .= \__('year');
                 } else {
-                    $hours .= \__('years');
+                    $res .= \__('years');
                 }
-            } elseif ($hours == 1) {
-                $hours .= \__('day');
+            } elseif ($res === 1.0) {
+                $res .= \__('day');
             } else {
-                $hours .= \__('days');
+                $res .= \__('days');
             }
         } elseif ($hours > 1) {
-            $hours .= \__('hours');
+            $res = $hours . \__('hours');
         } else {
-            $hours .= \__('hour');
+            $res = $hours . \__('hour');
         }
 
-        return $hours;
+        return $res;
     }
 
     /**
@@ -301,12 +301,9 @@ class ExportQueueController extends AbstractBackendController
      * @return bool
      * @former dStartPruefen()
      */
-    private function checkStartTime($start): bool
+    private function checkStartTime(string $start): bool
     {
-        if (\preg_match(
-            '/^([0-3]{1}[0-9]{1}[.]{1}[0-1]{1}[0-9]{1}[.]{1}[0-9]{4}[ ]{1}[0-2]{1}[0-9]{1}[:]{1}[0-6]{1}[0-9]{1})/',
-            $start
-        )) {
+        if (\preg_match('/^([0-3]\d[.][0-1]\d[.]\d{4} [0-2]\d:[0-6]\d)/', $start)) {
             return true;
         }
 
@@ -318,7 +315,7 @@ class ExportQueueController extends AbstractBackendController
      * @param bool   $asTime
      * @return string
      */
-    private function formatDate(string$dateStart, bool $asTime = false): string
+    private function formatDate(string $dateStart, bool $asTime = false): string
     {
         [$date, $time]        = \explode(' ', $dateStart);
         [$day, $month, $year] = \explode('.', $date);
@@ -408,7 +405,7 @@ class ExportQueueController extends AbstractBackendController
     private function stepEdit(JTLSmarty $smarty, array &$messages): string
     {
         $id   = Request::verifyGPCDataInt('kCron');
-        $cron = $id > 0 ? $this->holeCron($id) : 0;
+        $cron = $id > 0 ? $this->getCron($id) : 0;
         if (\is_object($cron) && $cron->cronID > 0) {
             $step = 'erstellen';
             $smarty->assign('oCron', $cron)
@@ -495,7 +492,7 @@ class ExportQueueController extends AbstractBackendController
     private function stepCreateInsert(JTLSmarty $smarty, array &$messages): string
     {
         $id                    = Request::postInt('kExportformat');
-        $start                 = $_POST['dStart'];
+        $start                 = $_POST['dStart'] ?? '';
         $freq                  = !empty($_POST['nAlleXStundenCustom'])
             ? (int)$_POST['nAlleXStundenCustom']
             : (int)$_POST['nAlleXStunden'];
@@ -560,7 +557,7 @@ class ExportQueueController extends AbstractBackendController
         }
 
         return new RedirectResponse(
-            Shop::getAdminURL() . $this->route
+            $this->baseURL . $this->route
             . (\is_array($urlParams) ? '?' . \http_build_query($urlParams, '', '&') : '')
         );
     }

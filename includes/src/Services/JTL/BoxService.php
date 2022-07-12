@@ -3,7 +3,6 @@
 namespace JTL\Services\JTL;
 
 use InvalidArgumentException;
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\Extension;
@@ -17,6 +16,7 @@ use JTL\Filter\Visibility;
 use JTL\Plugin\LegacyPluginLoader;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Router\Controller\Backend\BoxController;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -38,11 +38,6 @@ class BoxService implements BoxServiceInterface
     public array $boxes = [];
 
     /**
-     * @var array
-     */
-    public array $config = [];
-
-    /**
      * unrendered box template file name + data
      *
      * @var array
@@ -55,34 +50,9 @@ class BoxService implements BoxServiceInterface
     public ?array $visibilities = null;
 
     /**
-     * @var FactoryInterface
+     * @var BoxService|null
      */
-    private FactoryInterface $factory;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var JTLSmarty
-     */
-    private JTLSmarty $smarty;
-
-    /**
-     * @var RendererInterface
-     */
-    private RendererInterface $renderer;
-
-    /**
-     * @var BoxServiceInterface|null
-     */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @inheritdoc
@@ -104,19 +74,13 @@ class BoxService implements BoxServiceInterface
      * @inheritDoc
      */
     public function __construct(
-        array $config,
-        FactoryInterface $factory,
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        JTLSmarty $smarty,
-        RendererInterface $renderer
+        private array $config,
+        private FactoryInterface $factory,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private JTLSmarty $smarty,
+        private RendererInterface $renderer
     ) {
-        $this->config   = $config;
-        $this->factory  = $factory;
-        $this->db       = $db;
-        $this->cache    = $cache;
-        $this->smarty   = $smarty;
-        $this->renderer = $renderer;
         self::$instance = $this;
     }
 
@@ -337,8 +301,7 @@ class BoxService implements BoxServiceInterface
         if ($activeOnly === true && \count($visiblePositions) === 0) {
             return [];
         }
-        $boxAdmin   = new BoxAdmin($this->db);
-        $validPages = \implode(',', $boxAdmin->getValidPageTypes());
+        $validPages = \implode(',', BoxController::getValidPageTypes());
         $cacheID    = 'bx_' . $pageType . '_' . (int)$activeOnly . '_' . Shop::getLanguageID();
         $activeSQL  = $activeOnly
             ? ' AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0  
@@ -453,7 +416,7 @@ class BoxService implements BoxServiceInterface
                 $loader = new LegacyPluginLoader($this->db, $this->cache);
                 try {
                     $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException $e) {
+                } catch (InvalidArgumentException) {
                     continue;
                 }
                 $box->setTemplateFile(
@@ -466,7 +429,7 @@ class BoxService implements BoxServiceInterface
                 $loader = new PluginLoader($this->db, $this->cache);
                 try {
                     $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException $e) {
+                } catch (InvalidArgumentException) {
                     continue;
                 }
                 $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());

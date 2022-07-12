@@ -21,21 +21,6 @@ use stdClass;
 class StockUpdater
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var Customer
-     */
-    private Customer $customer;
-
-    /**
-     * @var Cart
-     */
-    private Cart $cart;
-
-    /**
      * @var int
      */
     private int $languageID;
@@ -45,11 +30,8 @@ class StockUpdater
      * @param Customer    $customer
      * @param Cart        $cart
      */
-    public function __construct(DbInterface $db, Customer $customer, Cart $cart)
+    public function __construct(private DbInterface $db, private Customer $customer, private Cart $cart)
     {
-        $this->db         = $db;
-        $this->customer   = $customer;
-        $this->cart       = $cart;
         $this->languageID = Shop::getLanguageID();
     }
 

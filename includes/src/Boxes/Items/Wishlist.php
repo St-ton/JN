@@ -16,7 +16,7 @@ final class Wishlist extends AbstractBox
     /**
      * @var int
      */
-    private $wishListID = 0;
+    private int $wishListID = 0;
 
     /**
      * Wishlist constructor.

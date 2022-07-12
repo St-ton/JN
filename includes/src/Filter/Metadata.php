@@ -26,11 +26,6 @@ class Metadata implements MetadataInterface
     use MagicCompatibilityTrait;
 
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * @var array
      */
     private array $conf;
@@ -97,12 +92,11 @@ class Metadata implements MetadataInterface
 
     /**
      * Metadata constructor.
-     * @param ProductFilter $navigationsfilter
+     * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $navigationsfilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $navigationsfilter;
-        $this->conf          = $navigationsfilter->getFilterConfig()->getConfig();
+        $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**
@@ -280,7 +274,7 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags) {
+        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags): bool {
             $globalTmp = Shop::Container()->getDB()->getObjects(
                 'SELECT cName, kSprache, cWertName 
                     FROM tglobalemetaangaben
@@ -306,6 +300,7 @@ class Metadata implements MetadataInterface
      */
     public function getNavigationInfo(Kategorie $category = null, KategorieListe $list = null): MetadataInterface
     {
+        $languageID = $this->productFilter->getFilterConfig()->getLanguageID();
         if ($category !== null && $this->productFilter->hasCategory()) {
             $this->category = $category;
             $this->setName($this->category->getName() ?? '');
@@ -313,23 +308,26 @@ class Metadata implements MetadataInterface
         } elseif ($this->productFilter->hasManufacturer()) {
             $this->manufacturer = new Hersteller(
                 $this->productFilter->getManufacturer()->getValue(),
-                $this->productFilter->getFilterConfig()->getLanguageID()
+                $languageID
             );
             if ($this->manufacturer->getID() > 0) {
                 $this->setName($this->manufacturer->getName() ?? '')
                     ->setImageURL($this->manufacturer->getImage())
-                    ->setMetaTitle($this->manufacturer->getMetaTitle())
-                    ->setMetaDescription($this->manufacturer->getMetaDescription())
-                    ->setMetaKeywords($this->manufacturer->getMetaKeywords());
+                    ->setMetaTitle($this->manufacturer->getMetaTitle($languageID))
+                    ->setMetaDescription($this->manufacturer->getMetaDescription($languageID))
+                    ->setMetaKeywords($this->manufacturer->getMetaKeywords($languageID));
             }
         } elseif ($this->productFilter->hasCharacteristicValue()) {
-            $this->characteristicValue = new MerkmalWert($this->productFilter->getCharacteristicValue()->getValue());
-            if ($this->characteristicValue->kMerkmalWert > 0) {
-                $this->setName($this->characteristicValue->cWert)
+            $this->characteristicValue = new MerkmalWert(
+                $this->productFilter->getCharacteristicValue()->getValue(),
+                $languageID
+            );
+            if ($this->characteristicValue->getID() > 0) {
+                $this->setName($this->characteristicValue->getValue($languageID))
                     ->setImageURL($this->characteristicValue->getImage())
-                    ->setMetaTitle($this->characteristicValue->cMetaTitle)
-                    ->setMetaDescription($this->characteristicValue->cMetaDescription)
-                    ->setMetaKeywords($this->characteristicValue->cMetaKeywords);
+                    ->setMetaTitle($this->characteristicValue->getMetaTitle($languageID))
+                    ->setMetaDescription($this->characteristicValue->getMetaDescription($languageID))
+                    ->setMetaKeywords($this->characteristicValue->getMetaKeywords($languageID));
             }
         }
 
@@ -389,7 +387,7 @@ class Metadata implements MetadataInterface
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->getID(), $category->getLeft(), $category->getRight());
                 if ($sub !== null && $sub->hasChildren()) {
-                    $catNames       = map($sub->getChildren(), static function (MenuItem $e) {
+                    $catNames       = map($sub->getChildren(), static function (MenuItem $e): string {
                         return \strip_tags($e->getName());
                     });
                     $catDescription = \implode(', ', \array_filter($catNames));
@@ -562,7 +560,7 @@ class Metadata implements MetadataInterface
             ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(static function ($name) {
+            ->reject(static function ($name): bool {
                 return $name === null;
             })
         );
@@ -602,7 +600,7 @@ class Metadata implements MetadataInterface
             ->map(static function (FilterInterface $filter) {
                 return $filter->getName();
             })
-            ->reject(static function ($name) {
+            ->reject(static function ($name): bool {
                 return $name === null;
             })
         );
@@ -814,7 +812,7 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         if (\property_exists($this, $name)) {
             return true;

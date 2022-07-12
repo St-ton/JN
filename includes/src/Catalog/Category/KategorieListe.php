@@ -16,7 +16,7 @@ class KategorieListe
     /**
      * @var Kategorie[]
      */
-    public $elemente;
+    public array $elemente = [];
 
     /**
      * @var bool
@@ -53,14 +53,14 @@ class KategorieListe
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
-            $category->Unterkategorien = [];
+            $category->bAktiv = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
+            $category->setSubCategories([]);
             if ($showLevel2 === 'Y') {
-                $category->Unterkategorien = $this->getChildCategories(
+                $category->setSubCategories($this->getChildCategories(
                     $category->getID(),
                     $customerGroupID,
                     $languageID
-                );
+                ));
             }
             $this->elemente[] = $category;
         }
@@ -131,8 +131,9 @@ class KategorieListe
         $languageID       = $languageID ?: Shop::getLanguageID();
         $allCategories    = static::getCategoryList($customerGroupID, $languageID);
         while ($currentParent > 0) {
-            $category         = $allCategories['oKategorie_arr'][$currentParent]
+            $category = $allCategories['oKategorie_arr'][$currentParent]
                 ?? new Kategorie($currentParent, $languageID, $customerGroupID);
+            $category->setCurrentLanguageID($languageID);
             $this->elemente[] = $category;
             $currentParent    = $category->getParentID();
         }
@@ -160,6 +161,7 @@ class KategorieListe
             foreach ($subCategories as $subCatID) {
                 $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
                     ?? new Kategorie($subCatID, $languageID, $customerGroupID);
+                $categories[$subCatID]->setCurrentLanguageID($languageID);
             }
 
             return $categories;

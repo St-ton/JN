@@ -20,31 +20,13 @@ use JTL\License\Struct\ExsLicense;
 class Helper
 {
     /**
-     * @var Manager
-     */
-    private Manager $manager;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Helper constructor.
      * @param Manager           $manager
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private Manager $manager, private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
     }
 
     /**

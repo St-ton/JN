@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -47,30 +47,24 @@ class VATCheckVatParserNonEU
     /**
      * @var string
      */
-    public $vatID = '';
-
-    /**
-     * @var string
-     */
-    private $errorInfo = '';
+    private string $errorInfo = '';
 
     /**
      * @var int
      */
-    private $errorCode = 0;
+    private int $errorCode = 0;
 
     /**
      * @var int
      */
-    private $errorPos = 0;
+    private int $errorPos = 0;
 
     /**
      * VATCheckVatParserNonEU constructor.
      * @param string $vatID
      */
-    public function __construct(string $vatID)
+    public function __construct(private string $vatID)
     {
-        $this->vatID = $vatID;
     }
 
     /**

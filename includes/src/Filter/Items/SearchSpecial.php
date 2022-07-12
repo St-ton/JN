@@ -223,6 +223,7 @@ class SearchSpecial extends AbstractFilter
 
     /**
      * @inheritdoc
+     * @return Join[]
      */
     public function getSQLJoin()
     {

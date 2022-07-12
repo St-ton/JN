@@ -16,8 +16,8 @@ use stdClass;
  */
 abstract class AbstractQuestion implements JsonSerializable, QuestionInterface
 {
-    use MigrationTrait,
-        MigrationTableTrait;
+    use MigrationTableTrait;
+    use MigrationTrait;
 
     /**
      * @var int

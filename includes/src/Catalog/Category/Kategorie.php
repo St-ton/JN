@@ -27,7 +27,7 @@ class Kategorie
     use RoutableTrait;
 
     /**
-     * @var array
+     * @var string[]
      */
     public static array $mapping = [
         'kSprache'                   => 'CurrentLanguageID',
@@ -230,6 +230,7 @@ class Kategorie
             foreach (\get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
+            $this->currentLanguageID = $languageID;
             \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
                 'oKategorie' => &$this,
                 'cacheTags'  => [],
@@ -272,7 +273,7 @@ class Kategorie
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
             ['kid' => $id, 'cgid' => $customerGroupID]
         );
-        if (false && $items === null) {
+        if (false && $items === null) { // @todo!!!
             if (!$recall && !$defaultLangActive) {
                 if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
@@ -755,7 +756,7 @@ class Kategorie
      */
     public function getCategoryFunctionAttributes(int $idx = null): array
     {
-        return $this->categoryAttributes[$idx ?? $this->currentLanguageID];
+        return $this->categoryFunctionAttributes[$idx ?? $this->currentLanguageID];
     }
 
     /**

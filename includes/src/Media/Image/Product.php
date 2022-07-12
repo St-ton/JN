@@ -174,9 +174,7 @@ class Product extends AbstractImage
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {

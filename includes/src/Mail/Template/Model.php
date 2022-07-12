@@ -126,11 +126,6 @@ final class Model
     private $data;
 
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var array
      */
     private static array $mapping = [
@@ -167,9 +162,8 @@ final class Model
      * Model constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

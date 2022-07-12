@@ -13,7 +13,6 @@ use JTL\Helpers\Request;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Session\Backend;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Widgets\AbstractWidget;
 use Laminas\Diactoros\Response\RedirectResponse;
@@ -213,7 +212,7 @@ class DashboardController extends AbstractBackendController
      */
     public function redirectToURI(string $uri): ResponseInterface
     {
-        return new RedirectResponse(Shop::getAdminURL(true) . '/' . \base64_decode($uri));
+        return new RedirectResponse($this->baseURL . '/' . \base64_decode($uri));
     }
 
     /**
@@ -232,7 +231,7 @@ class DashboardController extends AbstractBackendController
             return $this->redirectToURI($uri);
         }
 
-        return new RedirectResponse(Shop::getAdminURL(true) . '/' . $safeMode);
+        return new RedirectResponse($this->baseURL . '/' . $safeMode);
     }
 
     /**

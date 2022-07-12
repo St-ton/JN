@@ -13,12 +13,12 @@ final class Attachment
     /**
      * @var string
      */
-    private $mime = 'application/octet-stream';
+    private string $mime = 'application/octet-stream';
 
     /**
      * @var string
      */
-    private $dir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
+    private string $dir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS;
 
     /**
      * @var string
@@ -33,7 +33,7 @@ final class Attachment
     /**
      * @var string
      */
-    private $encoding = PHPMailer::ENCODING_BASE64;
+    private string $encoding = PHPMailer::ENCODING_BASE64;
 
     /**
      * @return string

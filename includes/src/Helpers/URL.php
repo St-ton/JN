@@ -4,6 +4,7 @@ namespace JTL\Helpers;
 
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\MerkmalWert;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
 use JTL\News\Item;
@@ -64,7 +65,7 @@ class URL
     /**
      * @var array
      */
-    private $defaultPorts = ['http' => '80', 'https' => '443'];
+    private array $defaultPorts = ['http' => '80', 'https' => '443'];
 
     /**
      * @param string|null $url
@@ -233,7 +234,7 @@ class URL
         if ($this->path) {
             // case normalization
             $this->path = \preg_replace_callback(
-                '/(%([0-9abcdef][0-9abcdef]))/x',
+                '/(%([\dabcdef][\dabcdef]))/x',
                 static function ($x) {
                     return '%' . \mb_convert_case($x[2], \MB_CASE_UPPER);
                 },
@@ -288,7 +289,7 @@ class URL
      * @param string $string
      * @return mixed
      */
-    public function urlDecodeUnreservedChars(string $string)
+    public function urlDecodeUnreservedChars(string $string): ?string
     {
         $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
@@ -311,7 +312,7 @@ class URL
                 return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
-        ), static function ($matches) {
+        ), static function ($matches): string {
             $match = \str_starts_with($matches[0], '%') ? \mb_substr($matches[0], 1) : $matches[0];
             // php7.4+ expects strings like "7E" instead of "%7E"
             return \chr(\hexdec($match));
@@ -380,13 +381,13 @@ class URL
      */
     public static function unparseURL(array $parts): string
     {
-        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
-            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
-            ($parts['host'] ?? '') .
-            (isset($parts['port']) ? ':' . $parts['port'] : '') .
-            ($parts['path'] ?? '') .
-            (isset($parts['query']) ? '?' . $parts['query'] : '') .
-            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '')
+            . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '')
+            . ($parts['host'] ?? '')
+            . (isset($parts['port']) ? ':' . $parts['port'] : '')
+            . ($parts['path'] ?? '')
+            . (isset($parts['query']) ? '?' . $parts['query'] : '')
+            . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 
     /**
@@ -394,9 +395,9 @@ class URL
      */
     private static function getLocalizedFallback(): string
     {
-        return !LanguageHelper::isDefaultLanguageActive(true)
-            ? ('&lang=' . Shop::getLanguageCode())
-            : '';
+        return LanguageHelper::isDefaultLanguageActive(true)
+            ? ''
+            : ('&lang=' . Shop::getLanguageCode());
     }
 
     /**
@@ -443,6 +444,7 @@ class URL
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
                     : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
+
             case \URLART_SEITE:
                 $route = null;
                 if (!empty($obj->cSeo)) {
@@ -460,14 +462,14 @@ class URL
                     return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                 }
                 // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                $oSpezialseite = Shop::Container()->getDB()->select(
+                $specialPage = Shop::Container()->getDB()->select(
                     'tspezialseite',
                     'nLinkart',
                     (int)$obj->nLinkart
                 );
 
-                return !empty($oSpezialseite->cDateiname)
-                    ? $prefix . $oSpezialseite->cDateiname
+                return !empty($specialPage->cDateiname)
+                    ? $prefix . $specialPage->cDateiname
                     : $prefix . '?s=' . $obj->kLink . self::getLocalizedFallback();
 
             case \URLART_HERSTELLER:
@@ -484,6 +486,9 @@ class URL
                     : $prefix . '?l=' . $obj->kSuchanfrage . self::getLocalizedFallback();
 
             case \URLART_MERKMAL:
+                if ($obj instanceof MerkmalWert) {
+                    return $obj->getURL();
+                }
                 return !empty($obj->cSeo)
                     ? $prefix . $obj->cSeo
                     : $prefix . '?m=' . $obj->kMerkmalWert . self::getLocalizedFallback();
@@ -495,10 +500,20 @@ class URL
                         ? $obj->getURL()
                         : $prefix . '?n=' . $obj->getID() . self::getLocalizedFallback();
                 }
+                if (!empty($obj->cSeo)) {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNews, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                    );
+                } else {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNews, 'lang' => $localeCode],
+                        false
+                    );
+                }
 
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?n=' . $obj->kNews . self::getLocalizedFallback();
+                return \rtrim($prefix, '/') . $url;
 
             case \URLART_NEWSMONAT:
                 return !empty($obj->cSeo)
@@ -506,14 +521,36 @@ class URL
                     : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . self::getLocalizedFallback();
 
             case \URLART_NEWSKATEGORIE:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?nk=' . $obj->kNewsKategorie . self::getLocalizedFallback();
+                if (!empty($obj->cSeo)) {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                    );
+                } else {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsKategorie, 'lang' => $localeCode],
+                        false
+                    );
+                }
+
+                return \rtrim($prefix, '/') . $url;
 
             case \URLART_SEARCHSPECIALS:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?q=' . $obj->kSuchspecial . self::getLocalizedFallback();
+                if (!empty($obj->cSeo)) {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                    );
+                } else {
+                    $url = Shop::getRouter()->getPathByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'lang' => $localeCode],
+                        false
+                    );
+                }
+
+                return \rtrim($prefix, '/') .  $url;
             default:
                 return '';
         }

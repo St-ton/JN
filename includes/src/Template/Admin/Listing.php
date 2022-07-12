@@ -79,16 +79,13 @@ final class Listing
         $preview = null;
         try {
             $active = $this->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $active = new Model($this->db);
             $active->setTemplate('no-template');
         }
         try {
-            $tpl = $this->getPreviewTemplate();
-            if ($tpl !== null) {
-                $preview = $tpl->getTemplate();
-            }
-        } catch (Exception $e) {
+            $preview = $this->getPreviewTemplate()?->getTemplate();
+        } catch (Exception) {
         }
         $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($templateDir) as $fileinfo) {
@@ -139,7 +136,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items = $this->items->sortBy(static function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item): string {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

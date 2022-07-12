@@ -72,7 +72,7 @@ final class GlobalSetting
         if ($this->settings === null || $this->settings->isEmpty()) {
             $this->settings = $this->cache->get(
                 self::CACHE_ID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->loadSettings();
                     $tags    = [\CACHING_GROUP_OPTION];
 

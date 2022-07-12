@@ -90,122 +90,122 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var int
      */
-    protected $itemCount = 0;
+    protected int $itemCount = 0;
 
     /**
      * @var bool
      */
-    protected $show;
+    protected bool $show = false;
 
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var string
      */
-    protected $url = '';
+    protected string $url = '';
 
     /**
      * @var string
      */
-    protected $type = '';
+    protected string $type = '';
 
     /**
      * @var string
      */
-    protected $templateFile = '';
+    protected string $templateFile = '';
 
     /**
      * @var PluginInterface|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * @var PluginInterface|null
      */
-    protected $extension;
+    protected ?PluginInterface $extension = null;
 
     /**
      * @var int
      */
-    protected $containerID = 0;
+    protected int $containerID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $position;
+    protected ?string $position = null;
 
     /**
-     * @var string|array
+     * @var string|array|null
      */
     protected $title;
 
     /**
-     * @var string|array
+     * @var string|array|null
      */
     protected $content;
 
     /**
      * @var int
      */
-    protected $id = 0;
+    protected int $id = 0;
 
     /**
      * @var int
      */
-    protected $baseType = 0;
+    protected int $baseType = 0;
 
     /**
      * @var int
      */
-    protected $customID = 0;
+    protected int $customID = 0;
 
     /**
      * @var int
      */
-    protected $sort = 0;
+    protected int $sort = 0;
 
     /**
      * @var bool
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
-     * @var ArtikelListe|Artikel[]
+     * @var ArtikelListe|Artikel[]|null
      */
     protected $products;
 
     /**
-     * @var array
+     * @var array|mixed
      */
     protected $items = [];
 
     /**
      * @var string|null
      */
-    protected $json;
+    protected ?string $json = null;
 
     /**
      * @var array
      */
-    protected $children = [];
+    protected array $children = [];
 
     /**
      * @var string
      */
-    protected $html = '';
+    protected string $html = '';
 
     /**
      * @var string
      */
-    protected $renderedContent = '';
+    protected string $renderedContent = '';
 
     /**
      * @var bool
      */
-    protected $supportsRevisions = false;
+    protected bool $supportsRevisions = false;
 
     /**
      * @var array
@@ -215,24 +215,18 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    protected $config;
-
-    /**
-     * @var array
-     */
-    protected $sortByPageID = [];
+    protected array $sortByPageID = [];
 
     /**
      * @var int
      */
-    protected $availableForPage = 0;
+    protected int $availableForPage = 0;
 
     /**
      * @inheritdoc
      */
-    public function __construct(array $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**

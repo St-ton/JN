@@ -100,12 +100,10 @@ class Location
                 if ($backend) {
                     unset($_SESSION['oKategorie_arr_new']);
                 }
-                $category = new Kategorie(
-                    $this->kKey,
-                    $this->getLanguage($this->kAuswahlAssistentGruppe)
-                );
+                $langID   = $this->getLanguage($this->kAuswahlAssistentGruppe);
+                $category = new Kategorie($this->kKey, $langID);
 
-                $this->cOrt = $category->cName . ' (' . \__('category') . ')';
+                $this->cOrt = $category->getName($langID) . ' (' . \__('category') . ')';
                 break;
 
             case \AUSWAHLASSISTENT_ORT_LINK:

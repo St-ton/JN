@@ -16,6 +16,7 @@ use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -35,13 +36,15 @@ class ProductListController extends AbstractController
         if ($this->state->is404) {
             return false;
         }
-        $this->currentCategory = new Kategorie();
-        $this->productFilter   = Shop::getProductFilter();
+        $this->productFilter = Shop::getProductFilter();
         if (!$this->productFilter->hasCategory()) {
+            $this->currentCategory = new Kategorie();
+
             return true;
         }
         $categoryID                  = $this->productFilter->getCategory()->getValue();
         $_SESSION['LetzteKategorie'] = $categoryID;
+        $this->currentCategory       = new Kategorie($categoryID, $this->languageID, $this->customerGroupID);
         if ($this->currentCategory->getID() === null) {
             // temp. workaround: do not return 404 when non-localized existing category is loaded
             if (Category::categoryExists($categoryID)) {
@@ -59,9 +62,9 @@ class ProductListController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->init();
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_ARTIKELLISTE);
-
         if ($this->productFilter->hasCategory()) {
             $this->expandedCategories->getOpenCategories($this->currentCategory);
         }
@@ -75,7 +78,9 @@ class ProductListController extends AbstractController
                 ['showInAlertListTemplate' => false]
             );
         }
-        $this->checkProductRedirect();
+        if (($response = $this->checkProductRedirect()) !== null) {
+            return $response;
+        }
         $this->assignPagination();
         $this->assignBestsellers();
         if (!isset($_SESSION['ArtikelProSeite'])
@@ -83,7 +88,7 @@ class ProductListController extends AbstractController
         ) {
             $_SESSION['ArtikelProSeite'] = \min(
                 (int)$this->config['artikeluebersicht']['artikeluebersicht_artikelproseite'],
-                ARTICLES_PER_PAGE_HARD_LIMIT
+                \ARTICLES_PER_PAGE_HARD_LIMIT
             );
         }
         $this->searchResults->getProducts()->transform(function ($product) {
@@ -166,15 +171,15 @@ class ProductListController extends AbstractController
     }
 
     /**
-     * @return void
+     * @return null|ResponseInterface
      */
-    protected function checkProductRedirect(): void
+    protected function checkProductRedirect(): ?ResponseInterface
     {
         if ($this->config['navigationsfilter']['allgemein_weiterleitung'] !== 'Y'
             || $this->searchResults->getVisibleProductCount() !== 1
             || Request::isAjaxRequest()
         ) {
-            return;
+            return null;
         }
         $hasSubCategories = ($categoryID = $this->productFilter->getCategory()->getValue()) > 0
             && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))->existierenUnterkategorien();
@@ -182,10 +187,10 @@ class ProductListController extends AbstractController
             || $this->productFilter->getRealSearch() !== null
             || ($this->productFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
         ) {
-            \http_response_code(301);
-            \header('Location: ' . $this->searchResults->getProducts()->pop()->cURLFull);
-            exit;
+            return new RedirectResponse($this->searchResults->getProducts()->pop()->cURLFull, 301);
         }
+
+        return null;
     }
 
     /**

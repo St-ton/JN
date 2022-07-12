@@ -17,14 +17,14 @@ use ReflectionMethod;
 class IO
 {
     /**
-     * @var static
+     * @var static|null
      */
     protected static $instance;
 
     /**
      * @var array
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
      * IO constructor.
@@ -80,7 +80,7 @@ class IO
      */
     public function handleRequest(string $reqString)
     {
-        $request = \json_decode($reqString, true);
+        $request = \json_decode($reqString, true, 512, \JSON_THROW_ON_ERROR);
 
         if (($errno = \json_last_error()) !== \JSON_ERROR_NONE) {
             return new IOError('Error ' . $errno . ' while decoding data');
@@ -209,9 +209,9 @@ class IO
     {
         $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browserAgent = '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'ie';
         }
 

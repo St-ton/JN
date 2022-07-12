@@ -113,7 +113,7 @@ class Config
      */
     public function getOption(string $name): ?stdClass
     {
-        return $this->options->first(static function (stdClass $item) use ($name) {
+        return $this->options->first(static function (stdClass $item) use ($name): bool {
             return $item->valueID === $name;
         });
     }
@@ -124,7 +124,7 @@ class Config
      */
     public function getValue(string $name)
     {
-        $item = $this->options->first(static function (stdClass $item) use ($name) {
+        $item = $this->options->first(static function (stdClass $item) use ($name): bool {
             return $item->valueID === $name;
         });
 

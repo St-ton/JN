@@ -21,7 +21,6 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class ProductController
@@ -29,6 +28,11 @@ use stdClass;
  */
 class ProductController extends AbstractController
 {
+    /**
+     * @var string
+     */
+    protected string $tseoSelector = 'kArtikel';
+
     /**
      * @inheritdoc
      */
@@ -60,60 +64,22 @@ class ProductController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getStateFromSlug(array $args): State
+    protected function handleSeoError(int $id, int $languageID): State
     {
-        $productID   = (int)($args['id'] ?? 0);
-        $productName = $args['name'] ?? null;
-        if ($productID < 1 && $productName === null) {
-            return $this->state;
-        }
-        $languageID = $this->parseLanguageFromArgs($args, $this->languageID ?? Shop::getLanguageID());
-
-        $seo = $productID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kArtikel', 'kid' => $productID, 'lid' => $languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kArtikel', 'seo' => $productName]
-            );
-        if ($seo === null) {
-            return $this->handleSeoError($productID, $languageID);
-        }
-        $slug          = $seo->cSeo;
-        $seo->kKey     = (int)$seo->kKey;
-        $seo->kSprache = (int)$seo->kSprache;
-
-        return $this->updateState($seo, $slug);
-    }
-
-    /**
-     * @param int $productID
-     * @param int $languageID
-     * @return State
-     */
-    private function handleSeoError(int $productID, int $languageID): State
-    {
-        if ($productID > 0) {
+        if ($id > 0) {
             $exists = $this->db->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel
                     WHERE kArtikel = :pid',
-                ['pid' => $productID]
+                ['pid' => $id]
             );
             if ($exists !== null) {
-                $seo           = new stdClass();
-                $seo->cSeo     = '';
-                $seo->cKey     = 'kArtikel';
-                $seo->kKey     = $productID;
-                $seo->kSprache = $languageID;
+                $seo = (object)[
+                    'cSeo'     => '',
+                    'cKey'     => $this->tseoSelector,
+                    'kKey'     => $id,
+                    'kSprache' => $languageID
+                ];
 
                 return $this->updateState($seo, $seo->cSeo);
             }
@@ -371,7 +337,7 @@ class ProductController extends AbstractController
         if ((int)($this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
             $ratings = \array_filter(
                 $this->currentProduct->Bewertungen->oBewertung_arr,
-                function ($rating) {
+                function ($rating): bool {
                     return (int)$this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                         !== (int)$rating->kBewertung;
                 }

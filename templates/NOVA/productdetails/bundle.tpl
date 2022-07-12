@@ -1,7 +1,7 @@
 {block name='productdetails-bundle'}
     {if !empty($Products)}
         {block name='productdetails-bundle-form'}
-            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}{get_static_route id='index.php'}{/if}" method="post" id="form_bundles" class="bundle-form jtl-validate"}
+            {form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}{$ShopURL}/{/if}" method="post" id="form_bundles" class="bundle-form jtl-validate"}
             {block name='productdetails-bundle-hidden-inputs'}
                 {input type="hidden" name="a" value=$ProductMain->kArtikel}
                 {input type="hidden" name="addproductbundle" value="1"}

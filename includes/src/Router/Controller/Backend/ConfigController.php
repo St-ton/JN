@@ -11,7 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Mail\SmtpTest;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -55,7 +55,7 @@ class ConfigController extends AbstractBackendController
             case \CONF_ARTIKELUEBERSICHT:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW);
                 // Sucheinstellungen haben eigene Logik
-                return new RedirectResponse(Shop::getAdminURL(true) . '/' . BackendRouter::ROUTE_SEARCHCONFIG);
+                return new RedirectResponse($this->baseURL . '/' . Route::SEARCHCONFIG);
             case \CONF_ARTIKELDETAILS:
                 $this->checkPermissions(Permissions::SETTINGS_ARTICLEDETAILS_VIEW);
                 break;
@@ -68,9 +68,10 @@ class ConfigController extends AbstractBackendController
             case \CONF_BILDER:
                 $this->checkPermissions(Permissions::SETTINGS_IMAGES_VIEW);
                 break;
-            default:
-                $this->account->redirectOnFailure();
+            case 0:
                 break;
+            default:
+                return $this->notFoundResponse($request, $args, $smarty);
         }
         $postData        = Text::filterXSS($_POST);
         $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
@@ -90,7 +91,7 @@ class ConfigController extends AbstractBackendController
         }
         if (Request::postVar('resetSetting') !== null) {
             $settingManager->resetSetting(Request::postVar('resetSetting'));
-        } elseif (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
+        } elseif ($sectionID > 0 && Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
             // Einstellungssuche
             $step = 'einstellungen bearbeiten';
             if ($isSearch) {

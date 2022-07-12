@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -28,18 +28,12 @@ class Updater
     protected static bool $isVerified = false;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * Updater constructor.
      * @param DbInterface $db
      * @throws Exception
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->verify();
     }
 
@@ -221,10 +215,8 @@ class Updater
     }
 
     /**
-     * getPreviousVersion
-     *
      * @param int $version
-     * @return int|mixed
+     * @return int
      */
     public function getPreviousVersion(int $version)
     {

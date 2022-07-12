@@ -261,7 +261,7 @@ class Option extends AbstractFilter
      * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return \property_exists($this, $name) || self::getMapping($name) !== null || isset($this->data[$name]);
     }

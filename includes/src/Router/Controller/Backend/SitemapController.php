@@ -8,7 +8,6 @@ use JTL\Helpers\GeneralObject;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class SitemapController
@@ -30,10 +29,10 @@ class SitemapController extends AbstractBackendController
                 $this->db->query('TRUNCATE TABLE tpreisspannenfilter');
                 for ($i = 0; $i < 10; $i++) {
                     if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
-                        $filter       = new stdClass();
-                        $filter->nVon = (int)$_POST['nVon'][$i];
-                        $filter->nBis = (int)$_POST['nBis'][$i];
-
+                        $filter = (object)[
+                            'nVon' => (int)$_POST['nVon'][$i],
+                            'nBis' => (int)$_POST['nBis'][$i]
+                        ];
                         $this->db->insert('tpreisspannenfilter', $filter);
                     }
                 }

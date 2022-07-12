@@ -14,9 +14,9 @@
         <div class="alert alert-warning">
             <div class="card-title">{__('warningOldDBVersion')}</div>
             {{__('warningOldDBVersionLong')}|sprintf:{$DB_Version->server}}
-            {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
+            {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
                 <ul>
-                    {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N')}
+                    {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N')}
                     <li>{__('fullTextDeactivate')}</li>
                     {/if}
                     {if $FulltextIndizes !== false}
@@ -86,7 +86,7 @@
                                 <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
                                 <label class="custom-control-label" for="update_auto_backup">{__('yesBackup')}</label>
                             </div>
-                            {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
+                            {if $config.global.wartungsmodus_aktiviert === 'Y'}
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="badge alert-success">{__('maintenanceActive')}</span></span>
                                 <input id="update_auto_wartungsmodus" type="hidden" name="update_auto_wartungsmodus" value="1" >

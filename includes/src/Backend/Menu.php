@@ -6,7 +6,7 @@ use JTL\DB\DbInterface;
 use JTL\L10n\GetText;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -36,36 +36,36 @@ class Menu
         $curScriptFileNameWithRequest = $request->getUri()->getPath();
         $requestedPath                = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
         $mainGroups                   = [];
-        $configLink                   = $adminURL . BackendRouter::ROUTE_CONFIG;
+        $configLink                   = $adminURL . Route::CONFIG;
         $adminMenu                    = [
             \__('Marketing')      => (object)[
                 'icon'  => 'marketing',
                 'items' => [
                     \__('Orders')     => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_ORDERS,
+                        'link'        => $adminURL . Route::ORDERS,
                         'permissions' => Permissions::ORDER_VIEW,
                     ],
                     \__('Promotions') => [
                         \__('Newsletter') => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_NEWSLETTER,
+                            'link'           => $adminURL . Route::NEWSLETTER,
                             'permissions'    => 'MODULE_NEWSLETTER_VIEW',
                             'section'        => \CONF_NEWSLETTER,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Blog posts') => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_NEWS,
+                            'link'           => $adminURL . Route::NEWS,
                             'permissions'    => Permissions::CONTENT_NEWS_SYSTEM_VIEW,
                             'section'        => \CONF_NEWS,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Coupons')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_COUPONS,
+                            'link'        => $adminURL . Route::COUPONS,
                             'permissions' => Permissions::ORDER_COUPON_VIEW,
                         ],
                         \__('Free gifts') => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_GIFTS,
+                            'link'           => $adminURL . Route::GIFTS,
                             'permissions'    => Permissions::MODULE_GIFT_VIEW,
                             'section'        => \CONF_SONSTIGES,
                             'specialSetting' => true,
@@ -74,44 +74,44 @@ class Menu
                     ],
                     \__('Statistics') => [
                         \__('Sales')             => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/4',
+                            'link'        => $adminURL . Route::STATS . '/4',
                             'permissions' => Permissions::STATS_EXCHANGE_VIEW,
                         ],
                         \__('Campaigns')         => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_CAMPAIGN . '#globalestats',
+                            'link'        => $adminURL . Route::CAMPAIGN . '#globalestats',
                             'permissions' => Permissions::STATS_CAMPAIGN_VIEW,
                         ],
                         \__('Baskets')           => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_PERSISTENT_CART,
+                            'link'        => $adminURL . Route::PERSISTENT_CART,
                             'permissions' => Permissions::MODULE_SAVED_BASKETS_VIEW,
                         ],
                         \__('Coupon statistics') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_COUPON_STATS,
+                            'link'        => $adminURL . Route::COUPON_STATS,
                             'permissions' => Permissions::STATS_COUPON_VIEW,
                         ],
                         \__('Visitors')          => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/1',
+                            'link'        => $adminURL . Route::STATS . '/1',
                             'permissions' => Permissions::STATS_VISITOR_VIEW,
                         ],
                         \__('Referrer pages')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/2',
+                            'link'        => $adminURL . Route::STATS . '/2',
                             'permissions' => Permissions::STATS_VISITOR_LOCATION_VIEW,
                         ],
                         \__('Entry pages')       => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/5',
+                            'link'        => $adminURL . Route::STATS . '/5',
                             'permissions' => Permissions::STATS_LANDINGPAGES_VIEW,
                         ],
                         \__('Search engines')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATS . '/3',
+                            'link'        => $adminURL . Route::STATS . '/3',
                             'permissions' => Permissions::STATS_CRAWLER_VIEW,
                         ],
                         \__('Search queries')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_LIVESEARCH,
+                            'link'        => $adminURL . Route::LIVESEARCH,
                             'permissions' => Permissions::MODULE_LIVESEARCH_VIEW,
                         ],
                     ],
                     \__('Reports')    => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_STATUSMAIL,
+                        'link'        => $adminURL . Route::STATUSMAIL,
                         'permissions' => Permissions::EMAIL_REPORTS_VIEW,
                     ],
                 ]
@@ -120,7 +120,7 @@ class Menu
                 'icon'  => 'styling',
                 'items' => [
                     \__('OnPage Composer')  => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_OPCCC,
+                        'link'        => $adminURL . Route::OPCCC,
                         'permissions' => Permissions::OPC_VIEW,
                     ],
                     \__('Default views')    => [
@@ -130,7 +130,7 @@ class Menu
                             'section'     => \CONF_STARTSEITE,
                         ],
                         \__('Item overview')    => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_NAVFILTER,
+                            'link'           => $adminURL . Route::NAVFILTER,
                             'permissions'    => Permissions::SETTINGS_NAVIGATION_FILTER_VIEW,
                             'section'        => \CONF_NAVIGATIONSFILTER,
                             'specialSetting' => true,
@@ -146,18 +146,18 @@ class Menu
                             'section'     => \CONF_KAUFABWICKLUNG,
                         ],
                         \__('Comparison list')  => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_COMPARELIST,
+                            'link'           => $adminURL . Route::COMPARELIST,
                             'permissions'    => Permissions::MODULE_COMPARELIST_VIEW,
                             'section'        => \CONF_VERGLEICHSLISTE,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Wish list')        => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_WISHLIST,
+                            'link'        => $adminURL . Route::WISHLIST,
                             'permissions' => Permissions::MODULE_WISHLIST_VIEW,
                         ],
                         \__('Contact form')     => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_CONTACT_FORMS,
+                            'link'           => $adminURL . Route::CONTACT_FORMS,
                             'permissions'    => Permissions::SETTINGS_CONTACTFORM_VIEW,
                             'section'        => \CONF_KONTAKTFORMULAR,
                             'specialSetting' => true,
@@ -171,17 +171,17 @@ class Menu
                     ],
                     \__('Default elements') => [
                         \__('Shop logo')                  => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_LOGO,
+                            'link'        => $adminURL . Route::LOGO,
                             'permissions' => Permissions::DISPLAY_OWN_LOGO_VIEW,
                         ],
                         \__('Search')                     => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_SEARCHCONFIG,
+                            'link'           => $adminURL . Route::SEARCHCONFIG,
                             'permissions'    => Permissions::SETTINGS_ARTICLEOVERVIEW_VIEW,
                             'section'        => \CONF_ARTIKELUEBERSICHT,
                             'specialSetting' => true,
                         ],
                         \__('Price history')              => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_PRICEHISTORY,
+                            'link'           => $adminURL . Route::PRICEHISTORY,
                             'permissions'    => Permissions::MODULE_PRICECHART_VIEW,
                             'section'        => \CONF_PREISVERLAUF,
                             'specialSetting' => true,
@@ -203,33 +203,33 @@ class Menu
                             'group'                 => 'configgroup_5_product_available',
                         ],
                         \__('Item badges')                => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SEARCHSPECIALOVERLAYS,
+                            'link'        => $adminURL . Route::SEARCHSPECIALOVERLAYS,
                             'permissions' => Permissions::DISPLAY_ARTICLEOVERLAYS_VIEW,
                         ],
                         \__('Footer / Boxes')             => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_BOXES,
+                            'link'        => $adminURL . Route::BOXES,
                             'permissions' => Permissions::BOXES_VIEW,
                         ],
                         \__('Selection wizard')           => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_SELECTION_WIZARD,
+                            'link'           => $adminURL . Route::SELECTION_WIZARD,
                             'permissions'    => Permissions::EXTENSION_SELECTIONWIZARD_VIEW,
                             'section'        => \CONF_AUSWAHLASSISTENT,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Warehouse display')          => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_WAREHOUSES,
+                            'link'        => $adminURL . Route::WAREHOUSES,
                             'permissions' => Permissions::WAREHOUSE_VIEW,
                         ],
                         \__('Reviews')                    => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_REVIEWS,
+                            'link'           => $adminURL . Route::REVIEWS,
                             'permissions'    => Permissions::MODULE_VOTESYSTEM_VIEW,
                             'section'        => \CONF_BEWERTUNG,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Consent manager')            => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_CONSENT,
+                            'link'           => $adminURL . Route::CONSENT,
                             'permissions'    => Permissions::CONSENT_MANAGER,
                             'section'        => \CONF_CONSENTMANAGER,
                             'specialSetting' => true,
@@ -238,30 +238,30 @@ class Menu
                     ],
                     \__('Custom contents')  => [
                         \__('Pages')                  => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_LINKS,
+                            'link'        => $adminURL . Route::LINKS,
                             'permissions' => Permissions::CONTENT_PAGE_VIEW,
                         ],
                         \__('Terms / Withdrawal')     => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_TAC,
+                            'link'        => $adminURL . Route::TAC,
                             'permissions' => Permissions::ORDER_AGB_WRB_VIEW,
                         ],
                         \__('Extended customer data') => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_CUSTOMERFIELDS,
+                            'link'           => $adminURL . Route::CUSTOMERFIELDS,
                             'permissions'    => Permissions::ORDER_CUSTOMERFIELDS_VIEW,
                             'section'        => \CONF_KUNDENFELD,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Check boxes')            => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_CHECKBOX,
+                            'link'        => $adminURL . Route::CHECKBOX,
                             'permissions' => Permissions::CHECKBOXES_VIEW,
                         ],
                         \__('Banners')                => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_BANNER,
+                            'link'        => $adminURL . Route::BANNER,
                             'permissions' => Permissions::DISPLAY_BANNER_VIEW,
                         ],
                         \__('Sliders')                => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SLIDERS,
+                            'link'        => $adminURL . Route::SLIDERS,
                             'permissions' => Permissions::SLIDER_VIEW,
                         ],
                     ],
@@ -272,21 +272,21 @@ class Menu
                             'section'     => \CONF_GLOBAL,
                         ],
                         \__('Templates')      => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_TEMPLATE,
+                            'link'        => $adminURL . Route::TEMPLATE,
                             'permissions' => Permissions::DISPLAY_TEMPLATE_VIEW,
                         ],
                         \__('Images')         => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_IMAGES,
+                            'link'           => $adminURL . Route::IMAGES,
                             'permissions'    => Permissions::SETTINGS_IMAGES_VIEW,
                             'section'        => \CONF_BILDER,
                             'specialSetting' => true,
                         ],
                         \__('Watermark')      => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_BRANDING,
+                            'link'        => $adminURL . Route::BRANDING,
                             'permissions' => Permissions::DISPLAY_BRANDING_VIEW,
                         ],
                         \__('Number formats') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SEPARATOR,
+                            'link'        => $adminURL . Route::SEPARATOR,
                             'permissions' => Permissions::SETTINGS_SEPARATOR_VIEW,
                         ],
                     ]
@@ -296,7 +296,7 @@ class Menu
                 'icon'  => 'plugins',
                 'items' => [
                     \__('Plug-in manager')     => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_PLUGIN_MANAGER,
+                        'link'        => $adminURL . Route::PLUGIN_MANAGER,
                         'permissions' => Permissions::PLUGIN_ADMIN_VIEW,
                     ],
                     \__('JTL-Extension Store') => (object)[
@@ -305,7 +305,7 @@ class Menu
                         'permissions' => Permissions::LICENSE_MANAGER
                     ],
                     \__('My purchases')        => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_LICENSE,
+                        'link'        => $adminURL . Route::LICENSE,
                         'permissions' => Permissions::LICENSE_MANAGER,
                     ],
                     \__('Installed plug-ins')  => 'DYNAMIC_PLUGINS',
@@ -315,61 +315,61 @@ class Menu
                 'icon'  => 'administration',
                 'items' => [
                     \__('Approvals')       => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_ACTIVATE,
+                        'link'        => $adminURL . Route::ACTIVATE,
                         'permissions' => Permissions::UNLOCK_CENTRAL_VIEW,
                     ],
                     \__('Import')          => [
                         \__('Newsletters')  => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_NEWSLETTER_IMPORT,
+                            'link'        => $adminURL . Route::NEWSLETTER_IMPORT,
                             'permissions' => Permissions::IMPORT_NEWSLETTER_RECEIVER_VIEW,
                         ],
                         \__('Customers')    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_CUSTOMER_IMPORT,
+                            'link'        => $adminURL . Route::CUSTOMER_IMPORT,
                             'permissions' => Permissions::IMPORT_CUSTOMER_VIEW,
                         ],
                         \__('Postal codes') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_ZIP_IMPORT,
+                            'link'        => $adminURL . Route::ZIP_IMPORT,
                             'permissions' => Permissions::PLZ_ORT_IMPORT_VIEW,
                         ],
                     ],
                     \__('Export')          => [
                         \__('Site map')       => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_SITEMAP_EXPORT,
+                            'link'           => $adminURL . Route::SITEMAP_EXPORT,
                             'permissions'    => Permissions::EXPORT_SITEMAP_VIEW,
                             'section'        => \CONF_SITEMAP,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('RSS feed')       => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_RSS,
+                            'link'           => $adminURL . Route::RSS,
                             'permissions'    => Permissions::EXPORT_RSSFEED_VIEW,
                             'section'        => \CONF_RSS,
                             'specialSetting' => true,
                         ],
                         \__('Other formats')  => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_EXPORT,
+                            'link'        => $adminURL . Route::EXPORT,
                             'permissions' => Permissions::EXPORT_FORMATS_VIEW,
                         ],
                         \__('Export manager') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_EXPORT_QUEUE,
+                            'link'        => $adminURL . Route::EXPORT_QUEUE,
                             'permissions' => Permissions::EXPORT_SCHEDULE_VIEW,
                         ],
                     ],
                     \__('Payment methods') => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_PAYMENT_METHODS,
+                        'link'        => $adminURL . Route::PAYMENT_METHODS,
                         'permissions' => Permissions::ORDER_PAYMENT_VIEW,
                     ],
                     \__('Shipments')       => [
                         \__('Shipping methods')     => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SHIPPING_METHODS,
+                            'link'        => $adminURL . Route::SHIPPING_METHODS,
                             'permissions' => Permissions::ORDER_SHIPMENT_VIEW,
                         ],
                         \__('Additional packaging') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_PACKAGINGS,
+                            'link'        => $adminURL . Route::PACKAGINGS,
                             'permissions' => Permissions::ORDER_PACKAGE_VIEW,
                         ],
                         \__('Country manager')      => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_COUNTRIES,
+                            'link'        => $adminURL . Route::COUNTRIES,
                             'permissions' => Permissions::COUNTRY_VIEW,
                         ],
                     ],
@@ -380,38 +380,38 @@ class Menu
                             'section'     => \CONF_EMAILS,
                         ],
                         \__('Email templates') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_EMAILTEMPLATES,
+                            'link'        => $adminURL . Route::EMAILTEMPLATES,
                             'permissions' => Permissions::CONTENT_EMAIL_TEMPLATE_VIEW,
                         ],
                         \__('Blacklist')       => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_EMAILBLOCKLIST,
+                            'link'           => $adminURL . Route::EMAILBLOCKLIST,
                             'permissions'    => Permissions::SETTINGS_EMAIL_BLACKLIST_VIEW,
                             'section'        => \CONF_EMAILBLACKLIST,
                             'specialSetting' => true,
                         ],
                         \__('Log')             => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_EMAILHISTORY,
+                            'link'        => $adminURL . Route::EMAILHISTORY,
                             'permissions' => Permissions::EMAILHISTORY_VIEW,
                         ],
                     ],
                     \__('SEO')             => [
                         \__('Meta data')  => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_META,
+                            'link'           => $adminURL . Route::META,
                             'permissions'    => Permissions::SETTINGS_GLOBAL_META_VIEW,
                             'section'        => \CONF_METAANGABEN,
                             'specialSetting' => true,
                             'settingsAnchor' => '#einstellungen',
                         ],
                         \__('Forwarding') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_REDIRECT,
+                            'link'        => $adminURL . Route::REDIRECT,
                             'permissions' => Permissions::REDIRECT_VIEW,
                         ],
                         \__('Site map')   => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SITEMAP,
+                            'link'        => $adminURL . Route::SITEMAP,
                             'permissions' => Permissions::SETTINGS_SITEMAP_VIEW,
                         ],
                         \__('SEO path')   => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_SEARCHSPECIAL,
+                            'link'           => $adminURL . Route::SEARCHSPECIAL,
                             'permissions'    => Permissions::SETTINGS_SPECIALPRODUCTS_VIEW,
                             'section'        => \CONF_SUCHSPECIAL,
                             'specialSetting' => true,
@@ -419,69 +419,69 @@ class Menu
                         ],
                     ],
                     \__('Languages')       => (object)[
-                        'link'        => $adminURL . BackendRouter::ROUTE_LANGUAGE,
+                        'link'        => $adminURL . Route::LANGUAGE,
                         'permissions' => Permissions::LANGUAGE_VIEW
                     ],
                     \__('Accounts')        => [
                         \__('Users')                    => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_USERS,
+                            'link'        => $adminURL . Route::USERS,
                             'permissions' => Permissions::ACCOUNT_VIEW,
                         ],
                         \__('JTL-Wawi synchronisation') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SYNC,
+                            'link'        => $adminURL . Route::SYNC,
                             'permissions' => Permissions::WAWI_SYNC_VIEW,
                         ],
                     ],
                     \__('Troubleshooting') => [
                         \__('System diagnostics') => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_STATUS,
+                            'link'        => $adminURL . Route::STATUS,
                             'permissions' => Permissions::DIAGNOSTIC_VIEW,
                         ],
                         \__('Log')                => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_SYSTEMLOG,
+                            'link'        => $adminURL . Route::SYSTEMLOG,
                             'permissions' => Permissions::SYSTEMLOG_VIEW,
                         ],
                         \__('Item images')        => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_IMAGE_MANAGEMENT,
+                            'link'        => $adminURL . Route::IMAGE_MANAGEMENT,
                             'permissions' => Permissions::DISPLAY_IMAGES_VIEW,
                         ],
                         \__('Plug-in profiler')   => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_PROFILER,
+                            'link'        => $adminURL . Route::PROFILER,
                             'permissions' => Permissions::PROFILER_VIEW,
                         ],
 
                     ],
                     \__('System')          => [
                         \__('Cache')      => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_CACHE,
+                            'link'           => $adminURL . Route::CACHE,
                             'permissions'    => Permissions::OBJECTCACHE_VIEW,
                             'section'        => \CONF_CACHING,
                             'specialSetting' => true,
                             'settingsAnchor' => '#settings',
                         ],
                         \__('Cron')       => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_CRON,
+                            'link'           => $adminURL . Route::CRON,
                             'permissions'    => Permissions::CRON_VIEW,
                             'section'        => \CONF_CRON,
                             'specialSetting' => true,
                             'settingsAnchor' => '#config',
                         ],
                         \__('Filesystem') => (object)[
-                            'link'           => $adminURL . BackendRouter::ROUTE_FILESYSTEM,
+                            'link'           => $adminURL . Route::FILESYSTEM,
                             'permissions'    => Permissions::FILESYSTEM_VIEW,
                             'section'        => \CONF_FS,
                             'specialSetting' => true,
                         ],
                         \__('Update')     => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_DBUPDATER,
+                            'link'        => $adminURL . Route::DBUPDATER,
                             'permissions' => Permissions::SHOP_UPDATE_VIEW,
                         ],
                         \__('Reset')      => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_RESET,
+                            'link'        => $adminURL . Route::RESET,
                             'permissions' => Permissions::RESET_SHOP_VIEW,
                         ],
                         \__('Set up')     => (object)[
-                            'link'        => $adminURL . BackendRouter::ROUTE_WIZARD,
+                            'link'        => $adminURL . Route::WIZARD,
                             'permissions' => Permissions::WIZARD_VIEW,
                         ],
                     ],
@@ -557,14 +557,14 @@ class Menu
 
                         $link = (object)[
                             'cLinkname' => \__($pluginLink->cName),
-                            'cURL'      => $adminURL . BackendRouter::ROUTE_PLUGIN . '/' . $pluginID,
+                            'cURL'      => $adminURL . Route::PLUGIN . '/' . $pluginID,
                             'cRecht'    => 'PLUGIN_ADMIN_VIEW',
                             'key'       => $rootKey . $secondKey . $pluginID,
                             'active'    => false
                         ];
 
                         $linkGruppe->oLink_arr[] = $link;
-                        if (\str_ends_with($requestedPath, BackendRouter::ROUTE_PLUGIN . '/' . $pluginID)) {
+                        if (\str_ends_with($requestedPath, Route::PLUGIN . '/' . $pluginID)) {
                             $mainGroup->active  = true;
                             $linkGruppe->active = true;
                             $link->active       = true;

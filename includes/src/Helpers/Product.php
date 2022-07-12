@@ -1348,7 +1348,7 @@ class Product
                         ->getOptinInstance()
                         ->createOptin($refData)
                         ->sendActivationMail();
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                 }
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');
@@ -1453,7 +1453,7 @@ class Product
         ) {
             $collection = $_SESSION['oArtikelUebersichtKey_arr'];
             if (!($collection instanceof Collection)) {
-                \collect($collection);
+                $collection = \collect($collection);
             }
             // Such die Position des aktuellen Artikels im Array der Artikelübersicht
             $prevID = 0;
@@ -1774,7 +1774,7 @@ class Product
     /**
      * @param Artikel $parent
      * @param Artikel $child
-     * @return mixed
+     * @return Artikel
      * @former fasseVariVaterUndKindZusammen()
      * @since 5.0.0
      */

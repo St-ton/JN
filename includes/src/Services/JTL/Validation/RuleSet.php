@@ -18,17 +18,11 @@ use JTL\Services\JTL\Validation\Rules;
 class RuleSet
 {
     /**
-     * @var array|RuleInterface[]
-     */
-    protected $rules = [];
-
-    /**
      * RuleSet constructor.
      * @param RuleInterface[] $rules
      */
-    public function __construct($rules = [])
+    public function __construct(protected $rules = [])
     {
-        $this->rules = $rules;
     }
 
     /**

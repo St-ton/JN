@@ -7,6 +7,8 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -17,6 +19,7 @@ use JTL\Shop;
 class BaseSearchSpecial extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -33,6 +36,7 @@ class BaseSearchSpecial extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_SPECIAL);
         $this->setIsCustom(false)
              ->setUrlParam('q')
              ->setUrlParamSEO(null);
@@ -62,13 +66,18 @@ class BaseSearchSpecial extends AbstractFilter
             'kSprache'
         );
         foreach ($languages as $language) {
-            $this->cSeo[$language->kSprache] = '';
+            $langID              = $language->kSprache;
+            $this->cSeo[$langID] = '';
             foreach ($seoData as $seo) {
                 $seo->kSprache = (int)$seo->kSprache;
-                if ($language->kSprache === $seo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $seo->cSeo;
+                if ($langID === $seo->kSprache) {
+                    $this->slugs[$langID] = $seo->cSeo;
                 }
             }
+        }
+        $this->createBySlug();
+        foreach ($this->getURLPaths() as $langID => $slug) {
+            $this->cSeo[$langID] = \ltrim($slug, '/');
         }
         switch ($this->getValue()) {
             case \SEARCHSPECIALS_BESTSELLER:
@@ -99,6 +108,16 @@ class BaseSearchSpecial extends AbstractFilter
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        $this->createBySlug(null, $additional);
+
+        return \ltrim($this->getURLPath($this->getLanguageID()), '/');
     }
 
     /**

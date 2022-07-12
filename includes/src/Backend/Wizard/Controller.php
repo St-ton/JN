@@ -23,29 +23,20 @@ final class Controller
     private Collection $steps;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Controller constructor.
      * @param DefaultFactory $factory
      * @param DbInterface $db
      * @param JTLCacheInterface $cache
      * @param GetText $getText
      */
-    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache, GetText $getText)
-    {
+    public function __construct(
+        DefaultFactory $factory,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        GetText $getText
+    ) {
         $getText->loadAdminLocale('pages/pluginverwaltung');
-
         $this->steps = $factory->getSteps();
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**

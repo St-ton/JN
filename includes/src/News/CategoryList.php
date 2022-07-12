@@ -14,22 +14,16 @@ use function Functional\map;
 final class CategoryList implements ItemListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var Collection
      */
     private Collection $items;
 
     /**
-     * LinkList constructor.
+     * CategoryList constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db    = $db;
         $this->items = new Collection();
     }
 
@@ -77,7 +71,7 @@ final class CategoryList implements ItemListInterface
      */
     private function findParentCategory(Collection $tree, int $id): ?Category
     {
-        $found = $tree->first(static function (Category $e) use ($id) {
+        $found = $tree->first(static function (Category $e) use ($id): bool {
             return $e->getID() === $id;
         });
         if ($found !== null) {

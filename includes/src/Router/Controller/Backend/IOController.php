@@ -554,7 +554,7 @@ class IOController extends AbstractBackendController
         }
 
         $zipMatchSurcharge = $shippingMethod->getShippingSurchargesForCountry($surcharge->getISO())
-            ->first(static function (ShippingSurcharge $surchargeTMP) use ($surchargeZip) {
+            ->first(static function (ShippingSurcharge $surchargeTMP) use ($surchargeZip): bool {
                 return ($surchargeTMP->hasZIPCode($surchargeZip->cPLZ)
                     || $surchargeTMP->hasZIPCode($surchargeZip->cPLZAb)
                     || $surchargeTMP->hasZIPCode($surchargeZip->cPLZBis)

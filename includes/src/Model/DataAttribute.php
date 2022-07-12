@@ -209,6 +209,7 @@ class DataAttribute
     public function setForeignKeyChild(?string $foreignKeyChild): DataAttribute
     {
         $this->foreignKeyChild = $foreignKeyChild;
+
         return $this;
     }
 

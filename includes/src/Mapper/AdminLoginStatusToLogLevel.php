@@ -18,9 +18,9 @@ class AdminLoginStatusToLogLevel
     public function map(int $code): int
     {
         return match ($code) {
-            AdminLoginStatus::LOGIN_OK => Logger::INFO,
+            AdminLoginStatus::LOGIN_OK                      => Logger::INFO,
             AdminLoginStatus::ERROR_INVALID_PASSWORD_LOCKED => Logger::ALERT,
-            default => Logger::WARNING,
+            default                                         => Logger::WARNING,
         };
     }
 
@@ -32,7 +32,7 @@ class AdminLoginStatusToLogLevel
     {
         return match ($code) {
             AdminLoginStatus::LOGIN_OK, Logger::INFO => \JTLLOG_LEVEL_NOTICE,
-            default => \JTLLOG_LEVEL_ERROR,
+            default                                  => \JTLLOG_LEVEL_ERROR,
         };
     }
 }

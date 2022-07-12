@@ -13,7 +13,7 @@ use JTL\IO\IOResponse;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Admin\LinkAdmin;
 use JTL\Mail\Template\Model;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -31,11 +31,6 @@ class Notification implements IteratorAggregate, Countable
     private array $array = [];
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * @var Notification|null
      */
     private static ?Notification $instance = null;
@@ -44,9 +39,8 @@ class Notification implements IteratorAggregate, Countable
      * Notification constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db       = $db;
         self::$instance = $this;
     }
 
@@ -153,7 +147,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('hasPendingUpdatesTitle'),
                 \__('hasPendingUpdatesMessage'),
-                $adminURL . BackendRouter::ROUTE_DBUPDATER
+                $adminURL . Route::DBUPDATER
             );
             return $this;
         }
@@ -164,7 +158,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('validFolderPermissionsTitle'),
                 \__('validFolderPermissionsMessage'),
-                $adminURL . BackendRouter::ROUTE_PERMISSIONCHECK,
+                $adminURL . Route::PERMISSIONCHECK,
                 $hash
             );
         }
@@ -190,7 +184,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('validDatabaseStructTitle'),
                 \__('validDatabaseStructMessage'),
-                $adminURL . BackendRouter::ROUTE_DBCHECK
+                $adminURL . Route::DBCHECK
             );
         }
 
@@ -200,7 +194,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('validModifiedFileStructTitle'),
                 \__('validModifiedFileStructMessage'),
-                $adminURL . BackendRouter::ROUTE_FILECHECK,
+                $adminURL . Route::FILECHECK,
                 $hash
             );
         }
@@ -210,7 +204,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_INFO,
                 \__('hasMobileTemplateIssueTitle'),
                 \__('hasMobileTemplateIssueMessage'),
-                $adminURL . BackendRouter::ROUTE_TEMPLATE
+                $adminURL . Route::TEMPLATE
             );
         }
 
@@ -219,7 +213,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('hasStandardTemplateIssueTitle'),
                 \__('hasStandardTemplateIssueMessage'),
-                $adminURL . BackendRouter::ROUTE_TEMPLATE
+                $adminURL . Route::TEMPLATE
             );
         }
 
@@ -236,7 +230,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('hasNewPluginVersionsTitle'),
                 \__('hasNewPluginVersionsMessage'),
-                $adminURL . BackendRouter::ROUTE_PLUGIN_MANAGER
+                $adminURL . Route::PLUGIN_MANAGER
             );
         }
 
@@ -246,7 +240,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('hasLicenseExpirationsTitle'),
                 \__('hasLicenseExpirationsMessage'),
-                $adminURL . BackendRouter::ROUTE_LICENSE,
+                $adminURL . Route::LICENSE,
                 $hash
             );
         }
@@ -278,7 +272,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('hasFullTextIndexErrorTitle'),
                 \__('hasFullTextIndexErrorMessage'),
-                $adminURL . BackendRouter::ROUTE_SEARCHCONFIG
+                $adminURL . Route::SEARCHCONFIG
             );
         }
 
@@ -287,7 +281,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('hasInvalidPasswordResetMailTemplateTitle'),
                 \__('hasInvalidPasswordResetMailTemplateMessage'),
-                $adminURL . BackendRouter::ROUTE_EMAILTEMPLATES
+                $adminURL . Route::EMAILTEMPLATES
             );
         }
 
@@ -297,7 +291,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('hasInsecureMailConfigTitle'),
                 \__('hasInsecureMailConfigMessage'),
-                $adminURL . BackendRouter::ROUTE_CONFIG . '?kSektion=3',
+                $adminURL . Route::CONFIG . '?kSektion=3',
                 $hash
             );
         }
@@ -308,15 +302,15 @@ class Notification implements IteratorAggregate, Countable
                     NotificationEntry::TYPE_DANGER,
                     \__('needPasswordRehash2FATryTitle'),
                     \__('needPasswordRehash2FATryMessage'),
-                    $adminURL . BackendRouter::ROUTE_USERS
+                    $adminURL . Route::USERS
                 );
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->add(
                 NotificationEntry::TYPE_DANGER,
                 \__('needPasswordRehash2FACatchTitle'),
                 \__('needPasswordRehash2FACatchMessage'),
-                $adminURL . BackendRouter::ROUTE_DBUPDATER
+                $adminURL . Route::DBUPDATER
             );
         }
 
@@ -328,7 +322,7 @@ class Notification implements IteratorAggregate, Countable
                     \__('getDuplicateLinkGroupTemplateNamesMessage'),
                     \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName'))
                 ),
-                $adminURL . BackendRouter::ROUTE_LINKS
+                $adminURL . Route::LINKS
             );
         }
 
@@ -337,7 +331,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('duplicateSpecialLinkTitle'),
                 \__('duplicateSpecialLinkDesc'),
-                $adminURL . BackendRouter::ROUTE_LINKS
+                $adminURL . Route::LINKS
             );
         }
 
@@ -346,7 +340,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('Missing translations'),
                 \sprintf(\__('%d pages are not translated in all available languages.'), $missingTranslations),
-                $adminURL . BackendRouter::ROUTE_LINKS
+                $adminURL . Route::LINKS
             );
         }
 
@@ -355,7 +349,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('Missing special pages'),
                 \sprintf(\__('%d special pages are missing.'), $missingSystemPages),
-                $adminURL . BackendRouter::ROUTE_LINKS
+                $adminURL . Route::LINKS
             );
         }
 
@@ -364,7 +358,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('getExportFormatErrorCountTitle'),
                 \sprintf(\__('getExportFormatErrorCountMessage'), $expSyntaxErrorCount),
-                $adminURL . BackendRouter::ROUTE_EXPORT
+                $adminURL . Route::EXPORT
             );
         }
 
@@ -374,7 +368,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('getExportFormatUncheckedCountTitle'),
                 \sprintf(\__('getExportFormatUncheckedCountMessage'), $expSyntaxErrorCount),
-                $adminURL . BackendRouter::ROUTE_EXPORT,
+                $adminURL . Route::EXPORT,
                 $hash
             );
         }
@@ -384,7 +378,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_DANGER,
                 \__('getEmailTemplateSyntaxErrorCountTitle'),
                 \sprintf(\__('getEmailTemplateSyntaxErrorCountMessage'), $emailSyntaxErrCount),
-                $adminURL . BackendRouter::ROUTE_EMAILTEMPLATES
+                $adminURL . Route::EMAILTEMPLATES
             );
         }
 
@@ -394,7 +388,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_WARNING,
                 \__('getEmailTemplateSyntaxUncheckedCountTitle'),
                 \sprintf(\__('getEmailTemplateSyntaxUncheckedCountMessage'), $emailSyntaxErrCount),
-                $adminURL . BackendRouter::ROUTE_EMAILTEMPLATES,
+                $adminURL . Route::EMAILTEMPLATES,
                 $hash
             );
         }
@@ -404,7 +398,7 @@ class Notification implements IteratorAggregate, Countable
                 NotificationEntry::TYPE_INFO,
                 \__('ustIdMiasCheckTitle'),
                 \__('ustIdMiasCheckMessage'),
-                $adminURL . BackendRouter::ROUTE_CONFIG . '?kSektion=6'
+                $adminURL . Route::CONFIG . '?kSektion=6'
             );
         }
 

@@ -80,7 +80,7 @@ class CMS
         $limit   = '';
         $cgID    = Frontend::getCustomerGroup()->getID();
         $langID  = Shop::getLanguageID();
-        $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID . '_' . $cgID);
+        $cacheID = 'news_' . \md5(\json_encode($conf['news'], \JSON_THROW_ON_ERROR) . '_' . $langID . '_' . $cgID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];

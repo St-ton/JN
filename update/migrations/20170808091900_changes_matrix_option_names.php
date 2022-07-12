@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170808091900 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'changes matrix option names in configuration';
+    protected $description = 'Change matrix option names in configuration';
 
     /**
      * @inheritDoc

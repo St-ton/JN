@@ -136,7 +136,7 @@ class PluginManagerController extends AbstractBackendController
 
         if ($this->reload === true) {
             $_SESSION['plugin_msg'] = $this->notice;
-            return new RedirectResponse(Shop::getAdminURL() . $this->route, 303);
+            return new RedirectResponse($this->baseURL . $this->route, 303);
         }
 
         if (\SAFE_MODE) {
@@ -176,7 +176,7 @@ class PluginManagerController extends AbstractBackendController
                 $item->setAvailable(false);
                 $item->setState(State::EXS_LICENSE_EXPIRED);
             }
-        })->filter(static function (ListingItem $e) {
+        })->filter(static function (ListingItem $e): bool {
             return $e->getState() === State::DISABLED;
         });
         $this->pluginsProblematic = $listing->getProblematic();
@@ -196,7 +196,7 @@ class PluginManagerController extends AbstractBackendController
                 $item->setErrorMessage(\__('Subscription abgelaufen'));
                 $item->setAvailable(false);
             }
-        })->filter(static function (ListingItem $item) {
+        })->filter(static function (ListingItem $item): bool {
             return $item->isAvailable() === true && $item->isInstalled() === false;
         });
         $this->pluginsErroneous   = $listing->getErroneous();
@@ -254,7 +254,7 @@ class PluginManagerController extends AbstractBackendController
             $this->enterKeyStep($pluginID);
         } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
             $this->enterKey(Request::postInt('kPlugin'));
-        } elseif (\is_array($_POST['kPlugin'] ?? false) && \count($_POST['kPlugin']) > 0) {
+        } elseif (\is_array($_POST['kPlugin'] ?? null) && \count($_POST['kPlugin']) > 0) {
             $this->massAction();
         } elseif (Request::verifyGPCDataInt('updaten') === 1) {
             $this->update();
@@ -363,7 +363,7 @@ class PluginManagerController extends AbstractBackendController
                 $match                             = first(
                     select(
                         $original[$kPluginSprachvariable],
-                        static function ($e) use ($customLang) {
+                        static function ($e) use ($customLang): bool {
                             return $e->cISO === $customLang->cISO;
                         }
                     )
@@ -450,7 +450,7 @@ class PluginManagerController extends AbstractBackendController
         $updatable = $this->pluginsInstalled->concat($this->pluginsDisabled)
             ->concat($this->pluginsErroneous)
             ->concat($this->pluginsProblematic);
-        $toInstall = $updatable->first(static function ($e) use ($pluginID) {
+        $toInstall = $updatable->first(static function ($e) use ($pluginID): bool {
             /** @var ListingItem $e */
             return $e->getID() === $pluginID;
         });

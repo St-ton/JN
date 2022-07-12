@@ -3,16 +3,15 @@
 namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Shop;
 use JTL\Slide;
 use JTL\Slider;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -32,40 +31,40 @@ class SliderController extends AbstractBackendController
         $this->checkPermissions(Permissions::SLIDER_VIEW);
         $this->getText->loadAdminLocale('pages/slider');
 
-        $_kSlider    = 0;
-        $redirectUrl = Shop::getURL() . $this->route;
-        $action      = isset($_REQUEST['action']) && Form::validateToken()
+        $tmpID    = 0;
+        $action   = isset($_REQUEST['action']) && Form::validateToken()
             ? $_REQUEST['action']
             : 'view';
-        $kSlider     = (int)($_REQUEST['id'] ?? 0);
+        $sliderID = (int)($_REQUEST['id'] ?? 0);
         if ($action === 'slide_set') {
-            $this->actionSlideSet($kSlider);
+            $this->actionSlideSet($sliderID);
         } else {
             $smarty->assign('disabled', '');
             if ($action !== 'view' && !empty($_POST) && Form::validateToken()) {
-                $_kSlider = Request::postInt('kSlider');
-                $this->actionView($kSlider);
+                $tmpID = Request::postInt('kSlider');
+                if (($response = $this->actionView($sliderID)) !== null) {
+                    return $response;
+                }
             }
         }
         switch ($action) {
             case 'slides':
                 $slider = new Slider($this->db);
-                $slider->load($kSlider, false);
+                $slider->load($sliderID, false);
                 $smarty->assign('oSlider', $slider);
                 if (!\is_object($slider)) {
                     $this->alertService->addError(\__('errorSliderNotFound'), 'errorSliderNotFound');
                     $action = 'view';
                 }
                 break;
-
             case 'edit':
-                if ($kSlider === 0 && $_kSlider > 0) {
-                    $kSlider = $_kSlider;
+                if ($sliderID === 0 && $tmpID > 0) {
+                    $sliderID = $tmpID;
                 }
                 $slider = new Slider($this->db);
-                $slider->load($kSlider, false);
+                $slider->load($sliderID, false);
                 $smarty->assign('customerGroups', CustomerGroup::getGroups())
-                    ->assign('oExtension', $this->holeExtension($kSlider));
+                    ->assign('oExtension', $this->getExtension($sliderID));
 
                 if ($slider->getEffects() !== 'random') {
                     $effects = \explode(';', $slider->getEffects());
@@ -86,37 +85,33 @@ class SliderController extends AbstractBackendController
                     break;
                 }
                 break;
-
             case 'new':
                 $smarty->assign('checked', 'checked="checked"')
                     ->assign('customerGroups', CustomerGroup::getGroups())
                     ->assign('oSlider', new Slider($this->db));
                 break;
-
             case 'delete':
                 $slider = new Slider($this->db);
-                $slider->load($kSlider, false);
+                $slider->load($sliderID, false);
                 if ($slider->delete() === true) {
                     $this->cache->flushTags([\CACHING_GROUP_CORE]);
-                    \header('Location: ' . $redirectUrl);
-                    exit;
+
+                    return new RedirectResponse($this->baseURL . $this->route);
                 }
                 $this->alertService->addError(\__('errorSliderRemove'), 'errorSliderRemove');
                 break;
-
             default:
                 break;
         }
 
-        $sliders    = $this->db->getObjects('SELECT * FROM tslider');
         $pagination = (new Pagination('sliders'))
             ->setRange(4)
-            ->setItemArray($sliders)
+            ->setItemArray($this->db->getObjects('SELECT * FROM tslider'))
             ->assemble();
 
         return $smarty->assign('action', $action)
-            ->assign('kSlider', $kSlider)
-            ->assign('validPageTypes', (new BoxAdmin($this->db))->getMappedValidPageTypes())
+            ->assign('kSlider', $sliderID)
+            ->assign('validPageTypes', BoxController::getMappedValidPageTypes())
             ->assign('pagination', $pagination)
             ->assign('route', $this->route)
             ->assign('oSlider_arr', $pagination->getPageItems())
@@ -128,7 +123,7 @@ class SliderController extends AbstractBackendController
      * @return stdClass|null
      * @former holeExtension()
      */
-    private function holeExtension(int $sliderID): ?stdClass
+    private function getExtension(int $sliderID): ?stdClass
     {
         $data = $this->db->select('textensionpoint', 'cClass', 'slider', 'kInitial', $sliderID);
         if ($data !== null) {
@@ -155,7 +150,6 @@ class SliderController extends AbstractBackendController
             if (!\str_contains((string)$item, 'neu')) {
                 $slide->setID((int)$item);
             }
-
             $slide->setSliderID($sliderID);
             $slide->setTitle(\htmlspecialchars($aSlide['cTitel'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET));
             $slide->setImage($aSlide['cBild']);
@@ -174,13 +168,12 @@ class SliderController extends AbstractBackendController
 
     /**
      * @param int $sliderID
-     * @return void
+     * @return ResponseInterface|null
      */
-    private function actionView(int $sliderID): void
+    private function actionView(int $sliderID): ?ResponseInterface
     {
         $filtered = Text::filterXSS($_POST);
         $slider   = new Slider($this->db);
-
         $slider->load($sliderID, false);
         $slider->set((object)$filtered);
         // extensionpoint
@@ -195,13 +188,12 @@ class SliderController extends AbstractBackendController
             $cKeyValue = 'article_key';
             $cValue    = $filtered[$cKeyValue];
         } elseif ($pageType === \PAGE_ARTIKELLISTE) {
-            $filter = [
+            $filter    = [
                 'kMerkmalWert' => 'attribute_key',
                 'kKategorie'   => 'categories_key',
                 'kHersteller'  => 'manufacturer_key',
                 'cSuche'       => 'keycSuche'
             ];
-
             $cKeyValue = $filter[$cKey];
             $cValue    = $filtered[$cKeyValue];
         } elseif ($pageType === \PAGE_EIGENE) {
@@ -211,36 +203,38 @@ class SliderController extends AbstractBackendController
         }
         if (!empty($cKeyValue) && empty($cValue)) {
             $this->alertService->addError(\sprintf(\__('errorKeyMissing'), $cKey), 'errorKeyMissing');
-        } else {
-            if (empty($slider->getEffects())) {
-                $slider->setEffects('random');
-            }
-            if ($slider->save() === true) {
-                $this->db->delete(
-                    'textensionpoint',
-                    ['cClass', 'kInitial'],
-                    ['slider', $slider->getID()]
-                );
-                $extension                = new stdClass();
-                $extension->kSprache      = $languageID;
-                $extension->kKundengruppe = $customerGroupID;
-                $extension->nSeite        = $pageType;
-                $extension->cKey          = $cKey;
-                $extension->cValue        = $cValue;
-                $extension->cClass        = 'slider';
-                $extension->kInitial      = $slider->getID();
-                $this->db->insert('textensionpoint', $extension);
 
-                $this->alertService->addSuccess(
-                    \__('successSliderSave'),
-                    'successSliderSave',
-                    ['saveInSession' => true]
-                );
-                $this->cache->flushTags([\CACHING_GROUP_CORE]);
-                \header('Location: ' . Shop::getURL() . $this->route);
-                exit;
-            }
-            $this->alertService->addError(\__('errorSliderSave'), 'errorSliderSave');
+            return null;
         }
+        if (empty($slider->getEffects())) {
+            $slider->setEffects('random');
+        }
+        if ($slider->save() === true) {
+            $this->db->delete(
+                'textensionpoint',
+                ['cClass', 'kInitial'],
+                ['slider', $slider->getID()]
+            );
+            $extension                = new stdClass();
+            $extension->kSprache      = $languageID;
+            $extension->kKundengruppe = $customerGroupID;
+            $extension->nSeite        = $pageType;
+            $extension->cKey          = $cKey;
+            $extension->cValue        = $cValue;
+            $extension->cClass        = 'slider';
+            $extension->kInitial      = $slider->getID();
+            $this->db->insert('textensionpoint', $extension);
+            $this->alertService->addSuccess(
+                \__('successSliderSave'),
+                'successSliderSave',
+                ['saveInSession' => true]
+            );
+            $this->cache->flushTags([\CACHING_GROUP_CORE]);
+
+            return new RedirectResponse($this->baseURL . $this->route);
+        }
+        $this->alertService->addError(\__('errorSliderSave'), 'errorSliderSave');
+
+        return null;
     }
 }

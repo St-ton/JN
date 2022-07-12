@@ -2,6 +2,8 @@
 
 namespace JTL\Filter;
 
+use JTL\Shop;
+
 /**
  * Class AbstractFilter
  * @package JTL\Filter
@@ -31,7 +33,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var int
      */
-    protected int $type;
+    protected int $type = Type::AND;
 
     /**
      * @var string
@@ -44,9 +46,9 @@ abstract class AbstractFilter implements FilterInterface
     protected ?string $urlParamSEO = '';
 
     /**
-     * @var int|string|array
+     * @var int|string|array|null
      */
-    protected $value;
+    protected mixed $value = null;
 
     /**
      * @var int
@@ -76,7 +78,7 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var int
      */
-    protected int $inputType;
+    protected int $inputType = InputType::SELECT;
 
     /**
      * @var Option[]|null
@@ -102,12 +104,12 @@ abstract class AbstractFilter implements FilterInterface
     /**
      * @var string|array
      */
-    private $unsetFilterURL = '';
+    private string|array $unsetFilterURL = '';
 
     /**
      * @var int
      */
-    private $visibility;
+    private int $visibility = Visibility::SHOW_ALWAYS;
 
     /**
      * @var int
@@ -129,37 +131,37 @@ abstract class AbstractFilter implements FilterInterface
      *
      * @var array
      */
-    private $filterCollection = [];
+    private array $filterCollection = [];
 
     /**
-     * @var ProductFilter
+     * @var ProductFilter|null
      */
-    protected $productFilter;
+    protected ?ProductFilter $productFilter = null;
 
     /**
-     * @var mixed
+     * @var mixed|null
      */
-    protected $options;
+    protected mixed $options = null;
 
     /**
      * @var string
      */
-    protected $tableName = '';
+    protected string $tableName = '';
 
     /**
      * @var bool
      */
-    protected $isActive = false;
+    protected bool $isActive = false;
 
     /**
      * @var bool
      */
-    protected $paramExclusive = false;
+    protected bool $paramExclusive = false;
 
     /**
      * @var string|null - localized name of the characteristic itself
      */
-    protected $filterName;
+    protected ?string $filterName = null;
 
     /**
      * AbstractFilter constructor.
@@ -167,9 +169,6 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __construct(ProductFilter $productFilter = null)
     {
-        $this->type       = Type::AND;
-        $this->visibility = Visibility::SHOW_ALWAYS;
-        $this->inputType  = InputType::SELECT;
         if ($productFilter !== null) {
             $this->setBaseData($productFilter)->setClassName(\get_class($this));
         }
@@ -268,7 +267,7 @@ abstract class AbstractFilter implements FilterInterface
             ? $this->filterCollection
             : \array_filter(
                 $this->filterCollection,
-                static function (FilterInterface $f) {
+                static function (FilterInterface $f): bool {
                     return $f->getVisibility() !== Visibility::SHOW_NEVER;
                 }
             );
@@ -522,7 +521,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getFilterConfig()->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID() ?: Shop::getLanguageID();
     }
 
     /**
@@ -812,7 +811,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isParamExclusive(): bool
     {
@@ -820,7 +819,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setParamExclusive(bool $paramExclusive): FilterInterface
     {
@@ -830,7 +829,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilterName(): ?string
     {
@@ -838,7 +837,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFilterName(?string $characteristic): FilterInterface
     {
@@ -860,17 +859,28 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @param string $query
-     * @return string
+     * @inheritdoc
      */
     public function getCacheID(string $query): string
     {
-        $value     = $this->getValue();
-        $valuePart = $value === null ? '' : \json_encode($value);
+        $value = $this->getValue();
+        try {
+            $valuePart = $value === null ? '' : \json_encode($value, \JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $valuePart = '';
+        }
 
         return 'fltr_' . \str_replace('\\', '', static::class)
             . '_' . $this->getLanguageID()
             . '_' . \md5($query)
             . $valuePart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        return null;
     }
 }

@@ -217,21 +217,6 @@ class ProductFilter
     private FilterInterface $limits;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var ConfigInterface
-     */
-    private ConfigInterface $filterConfig;
-
-    /**
      * @var array
      */
     public static array $mapping = [
@@ -257,15 +242,15 @@ class ProductFilter
 
     /**
      * ProductFilter constructor.
-     * @param ConfigInterface   $config
+     * @param ConfigInterface   $filterConfig
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(ConfigInterface $config, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->filterConfig      = $config;
-        $this->db                = $db;
-        $this->cache             = $cache;
+    public function __construct(
+        private ConfigInterface $filterConfig,
+        private DbInterface $db,
+        private JTLCacheInterface $cache
+    ) {
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
             ? \SHOW_CHILD_PRODUCTS
             : 0;
@@ -679,19 +664,21 @@ class ProductFilter
         }
         // @todo: how to handle \mb_strlen($params['cSuche']) === 0?
         if ($params['kSuchanfrage'] > 0) {
-            $oSuchanfrage = $this->db->select(
+            $queryData = $this->db->select(
                 'tsuchanfrage',
                 'kSuchanfrage',
                 $params['kSuchanfrage']
             );
-            if (isset($oSuchanfrage->cSuche) && \mb_strlen($oSuchanfrage->cSuche) > 0) {
-                $this->search->setName($oSuchanfrage->cSuche);
+            if (isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
+                $this->search->setName($queryData->cSuche);
             }
             // Suchcache beachten / erstellen
             $searchName = $this->search->getName();
             if (!empty($searchName)) {
+                $this->searchQuery->setName($searchName);
                 $this->search->setSearchCacheID($this->searchQuery->editSearchCache());
-                $this->searchQuery->init($oSuchanfrage->kSuchanfrage);
+                $this->searchQuery->setID((int)$queryData->kSuchanfrage);
+                $this->searchQuery->init($queryData->cSuche);
                 $this->searchQuery->setSearchCacheID($this->search->getSearchCacheID())
                     ->setName($this->search->getName());
                 if (!$this->baseState->isInitialized()) {
@@ -702,7 +689,7 @@ class ProductFilter
             $params['cSuche'] = Text::filterXSS($params['cSuche']);
             $this->search->setName($params['cSuche']);
             $this->searchQuery->setName($params['cSuche']);
-            $oSuchanfrage = $this->db->select(
+            $queryData = $this->db->select(
                 'tsuchanfrage',
                 'cSuche',
                 $params['cSuche'],
@@ -713,13 +700,13 @@ class ProductFilter
                 false,
                 'kSuchanfrage'
             );
-            $kSuchCache   = $this->searchQuery->editSearchCache();
-            $kSuchAnfrage = isset($oSuchanfrage->kSuchanfrage)
-                ? (int)$oSuchanfrage->kSuchanfrage
+            $cacheID   = $this->searchQuery->editSearchCache();
+            $queryID   = isset($queryData->kSuchanfrage)
+                ? (int)$queryData->kSuchanfrage
                 : $params['kSuchanfrage'];
-            $this->search->setSearchCacheID($kSuchCache);
-            $this->searchQuery->setSearchCacheID($kSuchCache)
-                ->init($kSuchAnfrage)
+            $this->search->setSearchCacheID($cacheID);
+            $this->searchQuery->setSearchCacheID($cacheID)
+                ->init($queryID)
                 ->setName($params['cSuche']);
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
@@ -904,7 +891,7 @@ class ProductFilter
      */
     public function getFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        return first($this->filters, static function (FilterInterface $filter) use ($filterClassName) {
+        return first($this->filters, static function (FilterInterface $filter) use ($filterClassName): bool {
             return $filter->getClassName() === $filterClassName;
         });
     }
@@ -915,7 +902,7 @@ class ProductFilter
      */
     public function getActiveFilterByClassName(string $filterClassName): ?FilterInterface
     {
-        return first($this->activeFilters, static function (FilterInterface $filter) use ($filterClassName) {
+        return first($this->activeFilters, static function (FilterInterface $filter) use ($filterClassName): bool {
             return $filter->getClassName() === $filterClassName;
         });
     }
@@ -966,7 +953,7 @@ class ProductFilter
 
         return \array_filter(
             $this->filters,
-            static function (FilterInterface $f) use ($templateSettings) {
+            static function (FilterInterface $f) use ($templateSettings): bool {
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
@@ -1721,7 +1708,7 @@ class ProductFilter
      */
     public function getActiveFilters(bool $byType = false, string $ignore = null): array
     {
-        $activeFilters = select($this->activeFilters, static function (FilterInterface $f) use ($ignore) {
+        $activeFilters = select($this->activeFilters, static function (FilterInterface $f) use ($ignore): bool {
             return $ignore === null || $f->getClassName() !== $ignore;
         });
         if ($byType === false) {
@@ -1747,7 +1734,7 @@ class ProductFilter
             'bf'     => [],
             'custom' => [],
             'misc'   => []
-        ], map($grouped, static function ($e) {
+        ], map($grouped, static function ($e): array {
             return \array_values($e);
         }));
     }
@@ -1775,7 +1762,7 @@ class ProductFilter
         foreach ($this->getActiveFilters(true, $ignore) as $type => $active) {
             /** @var FilterInterface[] $active */
             if ($type !== 'misc' && $type !== 'custom' && \count($active) > 1) {
-                $orFilters = select($active, static function (FilterInterface $f) {
+                $orFilters = select($active, static function (FilterInterface $f): bool {
                     return $f->getType() === Type::OR;
                 });
                 foreach ($active as $filter) {

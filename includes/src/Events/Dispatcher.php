@@ -63,6 +63,7 @@ final class Dispatcher
      * @param callable $listener
      * @param int      $priority
      * @return void
+     * @since 5.2.0
      */
     public function hookInto(int $hookID, callable $listener, int $priority = 5): void
     {

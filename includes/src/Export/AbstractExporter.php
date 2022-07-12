@@ -5,7 +5,7 @@ namespace JTL\Export;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
 use Psr\Log\LoggerInterface;
@@ -37,26 +37,6 @@ abstract class AbstractExporter implements ExporterInterface
     protected ?Model $model;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var ExportWriterInterface|null
-     */
-    protected ?ExportWriterInterface $writer;
-
-    /**
      * @var float
      */
     protected float $startedAt;
@@ -69,15 +49,11 @@ abstract class AbstractExporter implements ExporterInterface
      * @param ExportWriterInterface|null $writer
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JTLCacheInterface $cache,
-        ?ExportWriterInterface $writer = null
+        protected DbInterface $db,
+        protected LoggerInterface $logger,
+        protected JTLCacheInterface $cache,
+        protected ?ExportWriterInterface $writer = null
     ) {
-        $this->db     = $db;
-        $this->logger = $logger;
-        $this->cache  = $cache;
-        $this->writer = $writer;
     }
 
     /**
@@ -94,7 +70,7 @@ abstract class AbstractExporter implements ExporterInterface
     public function syncReturn(AsyncCallback $cb): void
     {
         \header(
-            'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
+            'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT
             . '?action=exported&token=' . $_SESSION['jtl_token']
             . '&kExportformat=' . $this->getModel()->getId()
             . '&max=' . $cb->getProductCount()
@@ -108,7 +84,7 @@ abstract class AbstractExporter implements ExporterInterface
     public function syncContinue(AsyncCallback $cb): void
     {
         \header(
-            'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT_START
+            'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT_START
             . '?e=' . (int)$this->getQueue()->jobQueueID
             . '&back=admin&token=' . $_SESSION['jtl_token']
             . '&max=' . $cb->getProductCount()

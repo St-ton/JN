@@ -4,6 +4,9 @@ namespace JTL;
 
 use JTL\Events\Dispatcher;
 use JTL\Filter\FilterInterface;
+use JTL\Language\LanguageHelper;
+use JTL\Link\SpecialPageNotFoundException;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class ShopBC
@@ -313,5 +316,113 @@ class ShopBC
     {
         //\trigger_error(__METHOD__ . ' is deprecated - use JTL\Shop::Container() instead.', \E_USER_DEPRECATED);
         return Shop::Container();
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.2.0
+     */
+    public static function getApplicationVersion(): string
+    {
+        //\trigger_error(__METHOD__ . ' is deprecated - use APPLICATION_VERSION constant instead.', \E_USER_DEPRECATED);
+        return \APPLICATION_VERSION;
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.2.0
+     */
+    public static function getFaviconURL(): string
+    {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
+        $smarty           = JTLSmarty::getInstance();
+        $templateDir      = $smarty->getTemplateDir($smarty->context);
+        $shopTemplatePath = $smarty->getTemplateUrlPath();
+        $faviconUrl       = Shop::getURL() . '/';
+        if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
+        } elseif (\file_exists($templateDir . 'favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'favicon.ico';
+        } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
+            $faviconUrl .= 'favicon.ico';
+        } else {
+            $faviconUrl .= 'favicon-default.ico';
+        }
+
+        return $faviconUrl;
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.2.0
+     */
+    public static function getHomeURL(): string
+    {
+        $homeURL = Shop::getURL() . '/';
+        try {
+            if (!LanguageHelper::isDefaultLanguageActive()) {
+                $homeURL = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)?->getURL();
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        }
+
+        return $homeURL;
+    }
+
+    /**
+     * @return bool
+     * @deprecated since 5.2.0
+     */
+    public static function check404(): bool
+    {
+        $state = Shop::getState();
+        if ($state->is404 !== true) {
+            return false;
+        }
+        \executeHook(\HOOK_INDEX_SEO_404, ['seo' => self::getRequestUri()]);
+        if (!$state->linkID) {
+            $hookInfos = Redirect::urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => $state->linkID
+            ]);
+            $linkID    = $hookInfos['value'];
+            if (!$linkID) {
+                $state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+                self::$kLink   = $state->linkID;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param bool $decoded - true to decode %-sequences in the URI, false to leave them unchanged
+     * @return string
+     * @deprecated since 5.2.0
+     */
+    public static function getRequestUri(bool $decoded = false): string
+    {
+        $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '';
+        $basePath = \parse_url(self::getRequestURL(), \PHP_URL_PATH);
+        $uri      = $basePath !== null
+            ? \mb_substr($basePath, \mb_strlen($shopPath) + 1)
+            : '';
+        $uri      = '/' . $uri;
+        if ($decoded) {
+            $uri = \rawurldecode($uri);
+        }
+
+        return $uri;
+    }
+
+    /**
+     * @return string
+     * @deprecated since 5.2.0
+     */
+    public static function getRequestURL(): string
+    {
+        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
+            . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
     }
 }

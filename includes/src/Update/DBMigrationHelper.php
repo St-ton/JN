@@ -57,7 +57,7 @@ class DBMigrationHelper
             $innodbSize = 0;
             $paths      = \explode(';', $innodbPath->path);
             foreach ($paths as $path) {
-                if (\preg_match('/:([\d]+)([MGTKmgtk]+)/', $path, $hits)) {
+                if (\preg_match('/:(\d+)([MGTKmgtk]+)/', $path, $hits)) {
                     $innodbSize += match (\mb_convert_case($hits[2], \MB_CASE_UPPER)) {
                         'T' => $hits[1] * 1024 * 1024 * 1024 * 1024,
                         'G' => $hits[1] * 1024 * 1024 * 1024,

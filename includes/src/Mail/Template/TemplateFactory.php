@@ -11,21 +11,15 @@ use JTL\DB\DbInterface;
 final class TemplateFactory
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * TemplateFactory constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
-     * @param int      $id
+     * @param int $id
      * @return TemplateInterface|null
      */
     public function getTemplateByID(int $id): ?TemplateInterface

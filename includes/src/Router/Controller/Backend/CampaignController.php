@@ -1367,8 +1367,8 @@ class CampaignController extends AbstractBackendController
         }
 
         $interval = match ($view) {
-            1 => 'month',
-            2 => 'week',
+            1       => 'month',
+            2       => 'week',
             default => 'day',
         };
         $now     = \date_create();
@@ -1560,12 +1560,12 @@ class CampaignController extends AbstractBackendController
         $spanParts = \explode(' - ', $span);
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';
+
+        [$startDay, $startMonth, $startYear] = \explode('.', $dateStart);
         if (\mb_strlen($dateEnd) === 0) {
-            [$startDay, $startMonth, $startYear] = \explode('.', $dateStart);
-            [$endDay, $endMonth, $endYear]       = \explode('.', $dateStart);
+            [$endDay, $endMonth, $endYear] = \explode('.', $dateStart);
         } else {
-            [$startDay, $startMonth, $startYear] = \explode('.', $dateStart);
-            [$endDay, $endMonth, $endYear]       = \explode('.', $dateEnd);
+            [$endDay, $endMonth, $endYear] = \explode('.', $dateEnd);
         }
         $_SESSION['Kampagne']->cToDate_arr['nJahr']    = (int)$endYear;
         $_SESSION['Kampagne']->cToDate_arr['nMonat']   = (int)$endMonth;

@@ -8,7 +8,6 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
-use JTL\Shop;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use function Functional\every;
@@ -104,7 +103,7 @@ abstract class GenericModelController extends AbstractBackendController
         return $this->smarty->assign('step', $this->step)
             ->assign('item', $this->item)
             ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
-            ->assign('action', Shop::getAdminURL() . '/' . $this->adminBaseFile)
+            ->assign('action', $this->baseURL . '/' . $this->adminBaseFile)
             ->assign('pagination', $pagination)
             ->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
@@ -196,7 +195,7 @@ abstract class GenericModelController extends AbstractBackendController
             } catch (Exception) {
                 return false;
             }
-        }), function (bool $e) {
+        }), function (bool $e): bool {
             return $e === true;
         });
     }
@@ -207,7 +206,7 @@ abstract class GenericModelController extends AbstractBackendController
      */
     public function modelPRG(int $status = 303): ResponseInterface
     {
-        return new RedirectResponse(Shop::getAdminURL() . $this->route, $status);
+        return new RedirectResponse($this->baseURL . $this->route, $status);
     }
 
     /**
@@ -257,7 +256,7 @@ abstract class GenericModelController extends AbstractBackendController
             }
 
             return $model->delete();
-        }), static function (bool $e) {
+        }), static function (bool $e): bool {
             return $e === true;
         });
     }

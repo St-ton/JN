@@ -2,7 +2,6 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;
@@ -10,7 +9,6 @@ use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class PasswordController
@@ -24,7 +22,6 @@ class PasswordController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions(Permissions::WAWI_SYNC_VIEW);
         $this->getText->loadAdminLocale('pages/pass');
 
         $step = 'prepare';
@@ -37,10 +34,8 @@ class PasswordController extends AbstractBackendController
             if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
                 $verified = $this->account->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
                 if ($verified === true) {
-                    $upd        = new stdClass();
-                    $upd->cPass = Shop::Container()->getPasswordService()->hash($_POST['pw_new']);
-                    $update     = $this->db->update('tadminlogin', 'cMail', $_POST['fpm'], $upd);
-                    if ($update > 0) {
+                    $upd = (object)['cPass' => Shop::Container()->getPasswordService()->hash($_POST['pw_new'])];
+                    if ($this->db->update('tadminlogin', 'cMail', $_POST['fpm'], $upd) > 0) {
                         return $this->redirectSuccess();
                     }
                     $this->alertService->addError(\__('errorPasswordChange'), 'errorPasswordChange');
@@ -74,6 +69,6 @@ class PasswordController extends AbstractBackendController
             'successPasswordChange',
             ['saveInSession' => true]
         );
-        return new RedirectResponse(Shop::getAdminURL() . '/?pw_updated=true');
+        return new RedirectResponse($this->baseURL . '/?pw_updated=true');
     }
 }

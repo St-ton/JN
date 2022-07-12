@@ -22,17 +22,11 @@ use stdClass;
 class Order extends CartHelper
 {
     /**
-     * @var Bestellung
-     */
-    protected Bestellung $order;
-
-    /**
      * Order constructor.
      * @param Bestellung $order
      */
-    public function __construct(Bestellung $order)
+    public function __construct(protected Bestellung $order)
     {
-        $this->order = $order;
     }
 
     /**

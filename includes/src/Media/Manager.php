@@ -31,18 +31,12 @@ use stdClass;
 class Manager
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Manager constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/bilderverwaltung');
     }
 
@@ -255,14 +249,12 @@ class Manager
                 break;
             }
             $cachedImage = $instance->cacheImage($image);
-
-            foreach ($cachedImage as $size => $sizeImg) {
+            foreach ($cachedImage as $sizeImg) {
                 if ($sizeImg->success === false) {
                     $result->lastRenderError = $sizeImg->error;
                     break;
                 }
             }
-
             $result->images[] = $cachedImage;
             ++$index;
             ++$_SESSION['renderedImages'];
@@ -283,6 +275,7 @@ class Manager
      * @param int    $limit
      * @return array
      * @throws Exception
+     * @todo: make this work for all image types
      */
     public function getCorruptedImages(string $type, int $limit): array
     {

@@ -9,31 +9,13 @@ namespace JTL\Services\JTL\Validation;
 class RuleResult implements RuleResultInterface
 {
     /**
-     * @var bool
-     */
-    protected $isValid;
-
-    /**
-     * @var string
-     */
-    protected $messageId;
-
-    /**
-     * @var mixed|null
-     */
-    protected $transformedValue;
-
-    /**
      * ValidationResult constructor.
      * @param bool   $isValid
      * @param string $messageId
      * @param mixed  $transformedValue
      */
-    public function __construct($isValid, $messageId, $transformedValue = null)
+    public function __construct(protected $isValid, protected $messageId, protected $transformedValue = null)
     {
-        $this->isValid          = $isValid;
-        $this->messageId        = $messageId;
-        $this->transformedValue = $transformedValue;
     }
 
     /**

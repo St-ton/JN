@@ -215,7 +215,7 @@ class SitemapExportController extends AbstractBackendController
         );
 
         if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
-            return new RedirectResponse(Shop::getAdminURL() . $this->route . '?update=1');
+            return new RedirectResponse($this->baseURL . $this->route . '?update=1');
         }
         $response = (new Response())->withStatus(200)
             ->withAddedHeader('Cache-Control', 'no-cache, must-revalidate')

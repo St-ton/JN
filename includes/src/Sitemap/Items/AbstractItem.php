@@ -205,7 +205,7 @@ abstract class AbstractItem implements ItemInterface
      */
     public function setLanguageData(array $languages, int $currentLangID): void
     {
-        $lang = first($languages, static function (LanguageModel $e) use ($currentLangID) {
+        $lang = first($languages, static function (LanguageModel $e) use ($currentLangID): bool {
             return $e->getId() === $currentLangID;
         });
         /** @var LanguageModel $lang */

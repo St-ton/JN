@@ -2,19 +2,8 @@
 
 namespace JTL\News;
 
-use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
-use JTL\Helpers\CMS;
-use JTL\Helpers\Request;
-use JTL\Helpers\Text;
-use JTL\Helpers\URL;
-use JTL\Pagination\Pagination;
-use JTL\Session\Frontend;
-use JTL\Shop;
-use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use stdClass;
-use function Functional\every;
 
 /**
  * Class Controller

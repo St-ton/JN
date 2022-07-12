@@ -11,15 +11,12 @@ use JTL\Services\JTL\Validation\RuleResult;
  */
 class LessThanEquals implements RuleInterface
 {
-    protected $value;
-
     /**
      * LessThan constructor.
      * @param mixed $value
      */
-    public function __construct($value)
+    public function __construct(protected $value)
     {
-        $this->value = $value;
     }
 
     /**

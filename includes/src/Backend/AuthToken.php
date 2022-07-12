@@ -50,17 +50,11 @@ class AuthToken
     private ?string $verified;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * AuthToken constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
         $this->load();
         self::$instance = $this;
     }

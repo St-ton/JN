@@ -17,24 +17,24 @@ class Manufacturer
     use RoutableTrait;
 
     /**
-     * @var Manufacturer
+     * @var Manufacturer|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @var string
      */
-    public $cacheID;
+    public string $cacheID;
 
     /**
-     * @var array
+     * @var array|null
      */
-    public $manufacturers;
+    public ?array $manufacturers = null;
 
     /**
      * @var int
      */
-    private static $langID;
+    private static int $langID;
 
     /**
      * Manufacturer constructor.

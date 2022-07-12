@@ -79,7 +79,7 @@ final class Controller
         $mapper = new JobTypeToJob();
         try {
             $class = $mapper->map($post['type']);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return -1;
         }
         if ($class === Statusmail::class) {

@@ -21,21 +21,6 @@ class PageService
     protected $adminName = '';
 
     /**
-     * @var null|Service
-     */
-    protected $opc;
-
-    /**
-     * @var null|PageDB
-     */
-    protected $pageDB;
-
-    /**
-     * @var null|Locker
-     */
-    protected $locker;
-
-    /**
      * @var null|Page
      */
     protected $curPage;
@@ -47,12 +32,8 @@ class PageService
      * @param Locker  $locker
      * @throws \SmartyException
      */
-    public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
+    public function __construct(protected Service $opc, protected PageDB $pageDB, protected Locker $locker)
     {
-        $this->opc    = $opc;
-        $this->pageDB = $pageDB;
-        $this->locker = $locker;
-
         Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
     }
 
@@ -283,7 +264,7 @@ class PageService
                 $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
             }
         }
-        return \json_encode($pageIdObj, \JSON_INVALID_UTF8_SUBSTITUTE);
+        return \json_encode($pageIdObj, \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -468,10 +449,11 @@ class PageService
 
     /**
      * @return array
+     * @throws \JsonException
      */
     public function getPreviewPageData()
     {
-        return \json_decode(Request::verifyGPDataString('pageData'), true);
+        return \json_decode(Request::verifyGPDataString('pageData'), true, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**

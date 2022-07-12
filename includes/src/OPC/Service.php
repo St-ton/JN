@@ -35,11 +35,6 @@ class Service
     protected $adminName = '';
 
     /**
-     * @var DB
-     */
-    protected $db;
-
-    /**
      * @var null|Page
      */
     protected $curPage;
@@ -49,9 +44,8 @@ class Service
      * @param DB $db
      * @throws Exception
      */
-    public function __construct(DB $db)
+    public function __construct(protected DB $db)
     {
-        $this->db = $db;
         Shop::Container()->getGetText()
             ->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');

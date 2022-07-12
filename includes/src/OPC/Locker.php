@@ -9,17 +9,11 @@ namespace JTL\OPC;
 class Locker
 {
     /**
-     * @var PageDB
-     */
-    protected $pageDB;
-
-    /**
      * Locker constructor.
      * @param PageDB $pageDB
      */
-    public function __construct(PageDB $pageDB)
+    public function __construct(protected PageDB $pageDB)
     {
-        $this->pageDB = $pageDB;
     }
 
     /**

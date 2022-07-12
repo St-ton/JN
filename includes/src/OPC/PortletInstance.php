@@ -17,11 +17,6 @@ class PortletInstance implements \JsonSerializable
     use MultiSizeImage;
 
     /**
-     * @var Portlet
-     */
-    protected Portlet $portlet;
-
-    /**
      * @var array
      */
     protected array $properties = [];
@@ -65,10 +60,9 @@ class PortletInstance implements \JsonSerializable
      * PortletInstance constructor.
      * @param Portlet $portlet
      */
-    public function __construct(Portlet $portlet)
+    public function __construct(protected Portlet $portlet)
     {
         $this->setImageType(Image::TYPE_OPC);
-        $this->portlet     = $portlet;
         $this->properties  = $portlet->getDefaultProps();
         $this->subareaList = new AreaList();
         $this->uid         = 'uid_' . \uniqid('', false);

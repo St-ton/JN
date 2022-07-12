@@ -16,17 +16,11 @@ use stdClass;
 class PageDB
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $shopDB;
-
-    /**
      * PageDB constructor.
      * @param DbInterface $shopDB
      */
-    public function __construct(DbInterface $shopDB)
+    public function __construct(protected DbInterface $shopDB)
     {
-        $this->shopDB = $shopDB;
     }
 
     /**
@@ -94,6 +88,7 @@ class PageDB
      * @param int $id
      * @return object
      * @throws Exception
+     * @throws \JsonException
      */
     public function getRevisionRow(int $id)
     {
@@ -103,7 +98,7 @@ class PageDB
             throw new Exception('The OPC page revision could not be found in the database.');
         }
 
-        return \json_decode($revisionRow->content);
+        return \json_decode($revisionRow->content, false, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -199,34 +194,35 @@ class PageDB
     /**
      * @param string $pageID
      * @return string|null
+     * @todo!! generate better URLs
      */
     public function getPageSeo(string $pageID): ?string
     {
-        $pageIdObj = \json_decode($pageID);
+        $pageIdObj = \json_decode($pageID, false, 512, \JSON_THROW_ON_ERROR);
 
         if (empty($pageIdObj)) {
             return null;
         }
 
-        $cKey = match ($pageIdObj->type) {
-            'product' => 'kArtikel',
-            'category' => 'kKategorie',
+        $key = match ($pageIdObj->type) {
+            'product'      => 'kArtikel',
+            'category'     => 'kKategorie',
             'manufacturer' => 'kHersteller',
-            'link' => 'kLink',
-            'attrib' => 'kMerkmalWert',
-            'special' => 'suchspecial',
-            'news' => 'kNews',
-            'newscat' => 'kNewsKategorie',
-            default => null,
+            'link'         => 'kLink',
+            'attrib'       => 'kMerkmalWert',
+            'special'      => 'suchspecial',
+            'news'         => 'kNews',
+            'newscat'      => 'kNewsKategorie',
+            default        => null,
         };
 
-        if (empty($cKey)) {
+        if (empty($key)) {
             return null;
         }
 
         $seo = $this->shopDB->getSingleObject(
             'SELECT cSeo FROM tseo WHERE cKey = :ckey AND kKey = :key AND kSprache = :lang',
-            ['ckey' => $cKey, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
+            ['ckey' => $key, 'key' => $pageIdObj->id, 'lang' => $pageIdObj->lang]
         );
         if ($seo === null) {
             return null;
@@ -234,9 +230,11 @@ class PageDB
 
         if (!empty($pageIdObj->attribs)) {
             $attribSeos = $this->shopDB->getObjects(
-                "SELECT cSeo FROM tseo WHERE cKey = 'kMerkmalWert'
-                     AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
-                     AND kSprache = :lang',
+                "SELECT cSeo 
+                    FROM tseo 
+                    WHERE cKey = 'kMerkmalWert'
+                        AND kKey IN (" . \implode(',', $pageIdObj->attribs) . ')
+                        AND kSprache = :lang',
                 ['lang' => $pageIdObj->lang]
             );
             if (\count($attribSeos) !== \count($pageIdObj->attribs)) {

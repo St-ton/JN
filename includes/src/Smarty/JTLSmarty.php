@@ -39,11 +39,6 @@ class JTLSmarty extends BC
     private static array $instance = [];
 
     /**
-     * @var string
-     */
-    public string $context;
-
-    /**
      * @var bool
      */
     public static bool $isChildTemplate = false;
@@ -64,7 +59,7 @@ class JTLSmarty extends BC
      * @param bool   $fast - set to true when init from backend to avoid setting session data
      * @param string $context
      */
-    public function __construct(bool $fast = false, string $context = ContextType::FRONTEND)
+    public function __construct(bool $fast = false, public string $context = ContextType::FRONTEND)
     {
         parent::__construct();
         self::$_CHARSET = \JTL_CHARSET;
@@ -72,10 +67,8 @@ class JTLSmarty extends BC
             ->setForceCompile(\SMARTY_FORCE_COMPILE)
             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
             ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
-        $this->context = $context;
-        $this->config  = Shopsetting::getInstance()->getAll();
-
-        $parent = $this->initTemplate();
+        $this->config = Shopsetting::getInstance()->getAll();
+        $parent       = $this->initTemplate();
         if ($fast === false) {
             $this->init($parent);
         }
@@ -272,7 +265,7 @@ class JTLSmarty extends BC
         }
         try {
             $res = (new \Minify_HTML($html, $options))->process();
-        } catch (UnterminatedStringException $e) {
+        } catch (UnterminatedStringException) {
             $res = $html;
         }
 

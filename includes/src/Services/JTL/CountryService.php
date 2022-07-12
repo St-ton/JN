@@ -24,16 +24,6 @@ class CountryService implements CountryServiceInterface
      */
     private Collection $countryList;
 
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
     public const CACHE_ID = 'serviceCountryList';
 
     /**
@@ -41,11 +31,9 @@ class CountryService implements CountryServiceInterface
      * @param DbInterface $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
         $this->countryList = new Collection();
-        $this->db          = $db;
-        $this->cache       = $cache;
         $this->init();
     }
 

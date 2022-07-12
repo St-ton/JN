@@ -124,7 +124,7 @@ class HookManager
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
             try {
                 $plugin = $loader->init($id);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {

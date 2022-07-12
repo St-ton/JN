@@ -215,7 +215,7 @@ final class MigrationHelper
         $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new Exception('Migrations path doesn\'t exist and could not be created!');
         }
 

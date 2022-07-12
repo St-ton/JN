@@ -47,7 +47,7 @@ trait MigrationTableTrait
     {
         try {
             $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
     }
 

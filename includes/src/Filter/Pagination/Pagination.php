@@ -40,8 +40,8 @@ class Pagination
      */
     public function __construct(private ProductFilter $productFilter, private ItemFactory $factory)
     {
-        $this->prev          = $this->factory->create();
-        $this->next          = $this->factory->create();
+        $this->prev = $this->factory->create();
+        $this->next = $this->factory->create();
     }
 
     /**

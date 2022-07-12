@@ -48,7 +48,7 @@ class InPath implements RuleInterface
         }
         try {
             $path = $path->toAbsolute();
-        } catch (InvalidPathStateException $ex) {
+        } catch (InvalidPathStateException) {
             return new RuleResult(false, 'invalid path state', $value);
         }
 

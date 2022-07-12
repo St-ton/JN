@@ -16,17 +16,11 @@ class SetValidationResult implements SetValidationResultInterface
     protected $fieldResults = [];
 
     /**
-     * @var array|object
-     */
-    protected $set;
-
-    /**
      * ObjectValidationResult constructor.
      * @param object|array $set
      */
-    public function __construct($set)
+    public function __construct(protected $set)
     {
-        $this->set = $set;
     }
 
     /**

@@ -13,24 +13,12 @@ use Smarty_Resource_Custom;
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
     /**
-     * @var string
-     */
-    private string $type;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * SmartyResourceNiceDB constructor.
      * @param DbInterface $db
      * @param string      $type
      */
-    public function __construct(DbInterface $db, string $type = ContextType::EXPORT)
+    public function __construct(private DbInterface $db, private string $type = ContextType::EXPORT)
     {
-        $this->db   = $db;
-        $this->type = $type;
     }
 
     /**

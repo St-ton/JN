@@ -12,17 +12,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class EqualsLax implements RuleInterface
 {
     /**
-     * @var mixed
-     */
-    protected $expected;
-
-    /**
      * Equals constructor.
      * @param mixed $expected
      */
-    public function __construct($expected)
+    public function __construct(protected $expected)
     {
-        $this->expected = $expected;
     }
 
     /**

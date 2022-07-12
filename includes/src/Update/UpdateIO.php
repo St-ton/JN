@@ -23,18 +23,12 @@ use SmartyException;
 class UpdateIO
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * UpdateIO constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/dbupdater');
     }
 

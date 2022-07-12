@@ -9,21 +9,6 @@ namespace JTL\Smarty;
 class DeprecatedVariable
 {
     /**
-     * @var mixed
-     */
-    private $value;
-
-    /**
-     * @var string
-     */
-    private string $name;
-
-    /**
-     * @var string
-     */
-    private string $version;
-
-    /**
      * @var bool
      */
     public $nocache = false;
@@ -34,11 +19,8 @@ class DeprecatedVariable
      * @param string $name
      * @param string $version
      */
-    public function __construct($value, string $name, string $version)
+    public function __construct(private $value, private string $name, private string $version)
     {
-        $this->value   = $value;
-        $this->name    = $name;
-        $this->version = $version;
     }
 
     /**

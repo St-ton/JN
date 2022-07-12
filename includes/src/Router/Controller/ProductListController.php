@@ -264,11 +264,11 @@ class ProductListController extends AbstractController
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel = new ArtikelListe($this->db, $this->cache);
             $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel = new ArtikelListe($this->db, $this->cache);
             $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
                 $categoryContent->Unterkategorien,
                 $categoryContent->TopArtikel ?? null

@@ -31,9 +31,11 @@ final class UpcomingProducts extends AbstractBox
         $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
         $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
         $cacheID        = 'box_ucp_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
-        if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+        $cache          = Shop::Container()->getCache();
+        $db             = Shop::Container()->getDB();
+        if (($productIDs = $cache->get($cacheID)) === false) {
             $cached     = false;
-            $productIDs = Shop::Container()->getDB()->getInts(
+            $productIDs = $db->getInts(
                 'SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -47,16 +49,16 @@ final class UpcomingProducts extends AbstractBox
                 'kArtikel',
                 ['cid' => $customerGroupID, 'lmt' => $limit]
             );
-            Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+            $cache->set($cacheID, $productIDs, $cacheTags);
         }
         \shuffle($productIDs);
         $res = \array_slice($productIDs, 0, $config['boxen']['box_erscheinende_anzahl_anzeige']);
         if (\count($res) > 0) {
             $this->setShow(true);
-            $products = new ArtikelListe();
+            $products = new ArtikelListe($db, $cache);
             $products->getArtikelByKeys($res, 0, \count($res));
             $this->setProducts($products);
-            $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
+            $this->setURL((new SearchSpecial($db, $cache))->getURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
             \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,

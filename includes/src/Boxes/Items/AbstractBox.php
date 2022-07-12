@@ -215,11 +215,6 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @var array
      */
-    protected array $config;
-
-    /**
-     * @var array
-     */
     protected array $sortByPageID = [];
 
     /**
@@ -230,9 +225,8 @@ abstract class AbstractBox implements BoxInterface
     /**
      * @inheritdoc
      */
-    public function __construct(array $config)
+    public function __construct(protected array $config)
     {
-        $this->config = $config;
     }
 
     /**

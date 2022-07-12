@@ -1348,7 +1348,7 @@ class Product
                         ->getOptinInstance()
                         ->createOptin($refData)
                         ->sendActivationMail();
-                } catch (\Exception $e) {
+                } catch (\Exception) {
                 }
             } else {
                 $notices[] = Shop::Lang()->get('notificationNotPossible', 'messages');

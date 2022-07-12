@@ -1497,7 +1497,7 @@ class Cart
             }
             try {
                 $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             CartItem::setEstimatedDelivery(

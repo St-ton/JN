@@ -262,7 +262,7 @@ class Wishlist
                 $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
                 $item->setProduct($product);
                 $this->CWunschlistePos_arr[] = $item;
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
         $this->setProductCount(\count($this->CWunschlistePos_arr));
@@ -461,7 +461,7 @@ class Wishlist
             $product = new Artikel($db);
             try {
                 $product->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             $item->setProduct($product);
@@ -725,7 +725,7 @@ class Wishlist
                 $product = new Artikel($db);
                 try {
                     $product->fuelleArtikel($item->getProductID(), $defaultOptions);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
                 $item->setProduct($product);
@@ -1079,7 +1079,7 @@ class Wishlist
         try {
             $product = new Artikel($db);
             $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($product->kArtikel > 0) {
@@ -1206,7 +1206,7 @@ class Wishlist
 
             try {
                 $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $langID);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             if ($product === null || $product->aufLagerSichtbarkeit() === false) {

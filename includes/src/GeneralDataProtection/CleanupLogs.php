@@ -137,8 +137,8 @@ class CleanupLogs extends Method implements MethodInterface
     {
         $this->db->queryPrepared(
             'DELETE FROM tverfuegbarkeitsbenachrichtigung
-                WHERE dErstellt <= :dateLimit
-                ORDER BY dErstellt ASC
+                WHERE dBenachrichtigtAm <= :dateLimit
+                ORDER BY dBenachrichtigtAm ASC
                 LIMIT :workLimit',
             [
                 'dateLimit' => $this->dateLimit,

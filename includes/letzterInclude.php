@@ -91,7 +91,9 @@ $linkHelper->activate($pageType);
 $origin = Frontend::getCustomer()->cLand ?? '';
 (new MinifyService())->buildURIs($smarty, $template, $paths->getThemeDirName());
 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $origin);
-$cartValue       = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+$cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+$cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
+
 $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('NaviFilter', $NaviFilter)
     ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -131,7 +133,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
     ->assign(
         'WarenkorbVersandkostenfreiHinweis',
-        ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValue)
+        ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValueGros, $cartValueNet)
     )
     ->assign('meta_title', $cMetaTitle ?? '')
     ->assign('meta_description', $cMetaDescription ?? '')
@@ -151,7 +153,7 @@ $smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
     ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
     ->assign('FavourableShipping', $cart->getFavourableShipping(
         $shippingFreeMin !== 0
-        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValueGros, $cartValueNet) <= 0
             ? (int)$shippingFreeMin->kVersandart
             : null
     ))

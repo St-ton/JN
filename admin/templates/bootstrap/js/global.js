@@ -299,13 +299,7 @@ $(document).ready(function () {
     $('.collapse').removeClass('in');
 
     $('.accordion-toggle').on('click', function () {
-        var self = this;
-        $(self).find('i').toggleClass('fa-minus fa-plus');
-        $('.accordion-toggle').each(function () {
-            if (this !== self) {
-                $(this).find('i').toggleClass('fa-minus', false).toggleClass('fa-plus', true);
-            }
-        });
+        $(this).find('i').toggleClass('fa-minus fa-plus');
     });
 
     $('.help').each(function () {

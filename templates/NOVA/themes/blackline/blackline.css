@@ -17028,7 +17028,7 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .dropdown-toggle, [data-toggle="collapse"]:not(.navbar-toggler), [data-toggle=collapse]:not(.navbar-toggler) {
   white-space: initial;
 }
-.sidepanel-left .dropdown-menu, .productlist-filter-wrapper .dropdown-menu {
+.box .dropdown-menu, .productlist-filter-wrapper .dropdown-menu {
   max-height: 50vh;
   overflow-y: auto;
 }

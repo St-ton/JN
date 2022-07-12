@@ -465,7 +465,7 @@ class LanguageHelper
                 if ($res !== false) { // php < 8.0
                     $value = $res;
                 }
-            } catch (\ValueError $e) {
+            } catch (\ValueError) {
             }
         }
 
@@ -611,7 +611,7 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model) {
+        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model): bool {
             return $model->getActive() === 1 && $this->mappekISO($model->getIso()) > 0;
         })->toArray();
     }

@@ -101,7 +101,7 @@ class Adresse
     /**
      * @var int
      */
-    public $nIstStandardLieferadresse;
+    public $nIstStandardLieferadresse = 0;
 
     /**
      * @var array

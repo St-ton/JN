@@ -1,16 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Checkout;
 
 use JTL\Customer\Customer;
+use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
 /**
- * Class Lieferadresse
+ * Class DeliveryAddressTemplate
  * @package JTL\Checkout
  */
-class Lieferadressevorlage extends Adresse
+class DeliveryAddressTemplate extends Adresse
 {
     /**
      * @var int
@@ -33,26 +34,25 @@ class Lieferadressevorlage extends Adresse
     public $angezeigtesLand;
 
     /**
-     * Lieferadresse constructor.
-     * @param int $id
+     * @param DbInterface $db
+     * @param int         $id
      */
-    public function __construct(int $id = 0)
+    public function __construct(private DbInterface $db, int $id = 0)
     {
         if ($id > 0) {
-            $this->loadFromDB($id);
+            $this->load($id);
         }
     }
 
     /**
-     * @param int $kLieferadresse
-     * @return Lieferadresse|int
+     * @param int $id
+     * @return $this|null
      */
-    public function loadFromDB(int $kLieferadresse)
+    public function load(int $id): ?self
     {
-        $obj = Shop::Container()->getDB()->select('tlieferadressevorlage', 'kLieferadresse', $kLieferadresse);
-
+        $obj = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
         if ($obj === null || $obj->kLieferadresse < 1) {
-            return 0;
+            return null;
         }
         $this->fromObject($obj);
         if ($this->kKunde > 0) {
@@ -69,7 +69,7 @@ class Lieferadressevorlage extends Adresse
             $this->decrypt();
         }
 
-        \executeHook(\HOOK_LIEFERADRESSE_CLASS_LOADFROMDB);
+        \executeHook(\HOOK_LIEFERADRESSE_CLASS_LOADFROMDB, ['address' => $this]);
 
         return $this;
     }
@@ -77,7 +77,7 @@ class Lieferadressevorlage extends Adresse
     /**
      * @return int
      */
-    public function insertInDB(): int
+    public function persist(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
@@ -86,9 +86,8 @@ class Lieferadressevorlage extends Adresse
 
         unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
 
-        $this->kLieferadresse = Shop::Container()->getDB()->insert('tlieferadressevorlage', $obj);
+        $this->kLieferadresse = $this->db->insert('tlieferadressevorlage', $obj);
         $this->decrypt();
-        // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
         return $this->kLieferadresse;
@@ -97,16 +96,14 @@ class Lieferadressevorlage extends Adresse
     /**
      * @return int
      */
-    public function updateInDB(): int
+    public function update(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
 
         $obj->cLand = self::checkISOCountryCode($obj->cLand);
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
-        $res = Shop::Container()
-            ->getDB()
-            ->update('tlieferadressevorlage', 'kLieferadresse', $obj->kLieferadresse, $obj);
+        $res = $this->db->update('tlieferadressevorlage', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -116,13 +113,16 @@ class Lieferadressevorlage extends Adresse
     /**
      * @return int
      */
-    public function deleteInDB(): int
+    public function delete(): int
     {
         $this->encrypt();
         $obj = $this->toObject();
 
-        $res = Shop::Container()->getDB()->delete('tlieferadressevorlage', array('kLieferadresse' , 'kKunde'), array($obj->kLieferadresse, $obj->kKunde));
-        return $res;
+        return $this->db->delete(
+            'tlieferadressevorlage',
+            ['kLieferadresse', 'kKunde'],
+            [$obj->kLieferadresse, $obj->kKunde]
+        );
     }
 
     /**
@@ -135,5 +135,61 @@ class Lieferadressevorlage extends Adresse
         return $this->kLieferadresse > 0
             ? $this->toArray()
             : [];
+    }
+
+    /**
+     * @return DeliveryAddressTemplate
+     */
+    public static function createFromObject($data): DeliveryAddressTemplate
+    {
+        $address                = new self(Shop::Container()->getDB());
+        $address->cVorname      = $data->cVorname;
+        $address->cNachname     = $data->cNachname;
+        $address->cFirma        = $data->cFirma ?? null;
+        $address->cZusatz       = $data->cZusatz ?? null;
+        $address->kKunde        = $data->kKunde;
+        $address->cAnrede       = $data->cAnrede ?? null;
+        $address->cTitel        = $data->cTitel;
+        $address->cStrasse      = $data->cStrasse;
+        $address->cHausnummer   = $data->cHausnummer;
+        $address->cAdressZusatz = $data->cAdressZusatz ?? null;
+        $address->cPLZ          = $data->cPLZ;
+        $address->cOrt          = $data->cOrt;
+        $address->cLand         = $data->cLand;
+        $address->cBundesland   = $data->cBundesland ?? null;
+        $address->cTel          = $data->cTel ?? null;
+        $address->cMobil        = $data->cMobil ?? null;
+        $address->cFax          = $data->cFax ?? null;
+        $address->cMail         = $data->cMail ?? null;
+
+        return $address;
+    }
+
+    /**
+     * @return Lieferadresse
+     */
+    public function getDeliveryAddress(): Lieferadresse
+    {
+        $address                = new Lieferadresse();
+        $address->cVorname      = $this->cVorname;
+        $address->cNachname     = $this->cNachname;
+        $address->cFirma        = $this->cFirma ?? null;
+        $address->cZusatz       = $this->cZusatz ?? null;
+        $address->kKunde        = $this->kKunde;
+        $address->cAnrede       = $this->cAnrede ?? null;
+        $address->cTitel        = $this->cTitel;
+        $address->cStrasse      = $this->cStrasse;
+        $address->cHausnummer   = $this->cHausnummer;
+        $address->cAdressZusatz = $this->cAdressZusatz ?? null;
+        $address->cPLZ          = $this->cPLZ;
+        $address->cOrt          = $this->cOrt;
+        $address->cLand         = $this->cLand;
+        $address->cBundesland   = $this->cBundesland ?? null;
+        $address->cTel          = $this->cTel ?? null;
+        $address->cMobil        = $this->cMobil ?? null;
+        $address->cFax          = $this->cFax ?? null;
+        $address->cMail         = $this->cMail ?? null;
+
+        return $address;
     }
 }

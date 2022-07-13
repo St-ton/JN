@@ -16,7 +16,7 @@ use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
-use JTL\Checkout\Lieferadressevorlage;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\DB\DbInterface;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
@@ -257,7 +257,7 @@ class AccountController
             );
             foreach ($addressData as $item) {
                 if ($item->kLieferadresse > 0) {
-                    $deliveryAddresses[] = new Lieferadressevorlage((int)$item->kLieferadresse);
+                    $deliveryAddresses[] = new DeliveryAddressTemplate($this->db, (int)$item->kLieferadresse);
                 }
             }
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
@@ -1052,28 +1052,28 @@ class AccountController
      */
     private function getLieferadressen(): void
     {
-        $customer = $_SESSION['Kunde'];
-        if ($customer->kKunde > 0) {
-            $addresses = [];
-
-            $data = $this->db->selectAll(
-                'tlieferadressevorlage',
-                'kKunde',
-                $customer->kKunde,
-                '*',
-                'nIstStandardLieferadresse DESC'
-            );
-
-            foreach ($data as $item) {
-                if ($item->kLieferadresse > 0) {
-                    $addresses[] = new Lieferadressevorlage((int)$item->kLieferadresse);
-                }
-            }
-
-            $this->smarty
-                ->assign('Lieferadressen', $addresses)
-                ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
+        $customer   = Frontend::getCustomer();
+        $customerID = $customer->getID();
+        if ($customerID < 1) {
+            return;
         }
+        $addresses = [];
+        $data      = $this->db->selectAll(
+            'tlieferadressevorlage',
+            'kKunde',
+            $customerID,
+            '*',
+            'nIstStandardLieferadresse DESC'
+        );
+
+        foreach ($data as $item) {
+            if ($item->kLieferadresse > 0) {
+                $addresses[] = new DeliveryAddressTemplate($this->db, (int)$item->kLieferadresse);
+            }
+        }
+
+        $this->smarty->assign('Lieferadressen', $addresses)
+            ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
     }
 
     /**
@@ -1081,28 +1081,25 @@ class AccountController
      */
     private function loadShippingAddress(): void
     {
-        $customer = $_SESSION['Kunde'];
+        $customer = Frontend::getCustomer();
         $getData  = Text::filterXSS($_GET);
-
-        $data = $this->db->selectSingleRow(
+        $data     = $this->db->selectSingleRow(
             'tlieferadressevorlage',
             'kLieferadresse',
             (int)$getData['editAddress'],
             'kKunde',
-            $customer->kKunde
+            $customer->getID()
         );
 
         if ($data === null) {
-            header('Location: ' . Shop::Container()
-                    ->getLinkService()
-                    ->getStaticRoute('jtl.php').'?editLieferadresse=1');
-            die;
+            \header('Location: '
+                . Shop::Container()->getLinkService()->getStaticRoute('jtl.php').'?editLieferadresse=1');
+            exit;
         }
 
-        $lieferAdresse = new Lieferadressevorlage((int)$data->kLieferadresse);
+        $lieferAdresse = new DeliveryAddressTemplate($this->db, (int)$data->kLieferadresse);
 
-        $this->smarty
-            ->assign('Lieferadresse', $lieferAdresse)
+        $this->smarty->assign('Lieferadresse', $lieferAdresse)
             ->assign('laender', ShippingMethod::getPossibleShippingCountries(
                 $customer->getGroupID(),
                 false,
@@ -1118,7 +1115,7 @@ class AccountController
         $customer                            = $_SESSION['Kunde'];
         $postData                            = Text::filterXSS($_POST);
         $shipping_address                    = $postData['register']['shipping_address'];
-        $updateLieferAdresse                 = new Lieferadressevorlage();
+        $updateLieferAdresse                 = new DeliveryAddressTemplate($this->db);
         $updateLieferAdresse->kLieferadresse = (int)$postData['updateAddress'];
         $updateLieferAdresse->kKunde         = $customer->kKunde;
         $updateLieferAdresse->cAnrede        = $shipping_address['anrede'];
@@ -1134,11 +1131,11 @@ class AccountController
         $updateLieferAdresse->cBundesland    = $shipping_address['bundesland'];
         $updateLieferAdresse->cPLZ           = $shipping_address['plz'];
         $updateLieferAdresse->cOrt           = $shipping_address['ort'];
-        if (isset($postData['isDefault']) && $postData['isDefault'] == 1) {
+        if (isset($postData['isDefault']) && (int)$postData['isDefault'] === 1) {
             $updateLieferAdresse->nIstStandardLieferadresse = 1;
         }
 
-        $updateStatus = $updateLieferAdresse->updateInDB();
+        $updateStatus = $updateLieferAdresse->update();
         if ($updateStatus) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -1148,15 +1145,16 @@ class AccountController
         }
 
         if (isset($postData['backToCheckout'])) {
-            header('Location: ' . Shop::Container()
-                    ->getLinkService()
-                    ->getStaticRoute('bestellvorgang.php').'?editRechnungsadresse=1');
-            die;
+            \header('Location: '
+                . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1'
+            );
+            exit;
         }
-        header('Location: ' . Shop::Container()
-                ->getLinkService()
-                ->getStaticRoute('jtl.php').'?editLieferadresse=1&editAddress='.(int)$postData['updateAddress']);
-        die;
+        \header('Location: '
+            . Shop::Container()->getLinkService()->getStaticRoute('jtl.php')
+            . '?editLieferadresse=1&editAddress=' . (int)$postData['updateAddress']
+        );
+        exit;
     }
 
     /**
@@ -1167,7 +1165,7 @@ class AccountController
         $customer                         = $_SESSION['Kunde'];
         $postData                         = Text::filterXSS($_POST);
         $shipping_address                 = $postData['register']['shipping_address'];
-        $saveLieferAdresse                = new Lieferadressevorlage();
+        $saveLieferAdresse                = new DeliveryAddressTemplate($this->db);
         $saveLieferAdresse->kKunde        = $customer->kKunde;
         $saveLieferAdresse->cTitel        = $shipping_address['titel'];
         $saveLieferAdresse->cVorname      = $shipping_address['vorname'];
@@ -1181,7 +1179,7 @@ class AccountController
         $saveLieferAdresse->cBundesland   = $shipping_address['bundesland'];
         $saveLieferAdresse->cPLZ          = $shipping_address['plz'];
         $saveLieferAdresse->cOrt          = $shipping_address['ort'];
-        $saveStatus                       = $saveLieferAdresse->insertInDB();
+        $saveStatus                       = $saveLieferAdresse->persist();
         if ($saveStatus) {
             $this->alertService->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -1189,10 +1187,8 @@ class AccountController
                 'saveAddressSuccessful'
             );
         }
-        header('Location: ' . Shop::Container()
-                ->getLinkService()
-                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
-        die;
+        \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editLieferadresse=1');
+        exit;
     }
 
     /**
@@ -1200,12 +1196,12 @@ class AccountController
      */
     private function deleteShippingAddress(): void
     {
-        $customer                      = $_SESSION['Kunde'];
-        $getData                       = Text::filterXSS($_GET);
-        $lieferAdresse                 = new Lieferadressevorlage();
-        $lieferAdresse->kLieferadresse = (int)$getData['deleteAddress'];
-        $lieferAdresse->kKunde         = $customer->kKunde;
-        $deleteStatus                  = $lieferAdresse->deleteInDB();
+        $customer                = $_SESSION['Kunde'];
+        $getData                 = Text::filterXSS($_GET);
+        $address                 = new DeliveryAddressTemplate($this->db);
+        $address->kLieferadresse = (int)$getData['deleteAddress'];
+        $address->kKunde         = $customer->kKunde;
+        $deleteStatus            = $address->delete();
         if ($deleteStatus) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -1213,10 +1209,8 @@ class AccountController
                 'deleteAddressSuccessful'
             );
         }
-        header('Location: ' . Shop::Container()
-                ->getLinkService()
-                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
-        die;
+        \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editLieferadresse=1');
+        exit;
     }
 
     /**
@@ -1239,10 +1233,8 @@ class AccountController
             $resetAllDefault
         );
 
-        header('Location: ' . Shop::Container()
-                ->getLinkService()
-                ->getStaticRoute('jtl.php').'?editLieferadresse=1');
-        die;
+        \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editLieferadresse=1');
+        exit;
     }
 
     /**

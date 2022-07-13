@@ -10,6 +10,7 @@ use JTL\Cart\PersistentCart;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\CouponValidator;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Zahlungsart;
@@ -1330,14 +1331,16 @@ class CheckoutController extends RegistrationController
 
         if ($this->customer->getID() > 0) {
             $addresses = [];
-            $data      = $this->db->getObjects(
-                'SELECT DISTINCT(kLieferadresse)
-                    FROM tlieferadresse
-                    WHERE kKunde = :cid',
+            $data      = $this->db->getInts(
+                'SELECT DISTINCT(kLieferadresse) AS id
+                    FROM tlieferadressevorlage
+                    WHERE kKunde = :cid
+                    ORDER BY nIstStandardLieferadresse DESC',
+                'id',
                 ['cid' => $this->customer->getID()]
             );
-            foreach ($data as $item) {
-                $addresses[] = new Lieferadresse((int)$item->kLieferadresse);
+            foreach ($data as $id) {
+                $addresses[] = new DeliveryAddressTemplate($this->db, $id);
             }
             $this->smarty->assign('Lieferadressen', $addresses);
         }
@@ -1384,6 +1387,9 @@ class CheckoutController extends RegistrationController
     public function getStepShipping(): void
     {
         CartHelper::applyShippingFreeCoupon();
+        if (!isset($_SESSION['Lieferadresse'])) {
+            Lieferadresse::createFromShippingAddress();
+        }
         $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$deliveryCountry) {
             $deliveryCountry = $this->customer->cLand;

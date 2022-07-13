@@ -119,7 +119,7 @@ class PluginManagerController extends AbstractBackendController
     /**
      * @var string
      */
-    private string $notice       = '';
+    private string $notice = '';
 
     /**
      * @var bool

@@ -18,7 +18,7 @@ class Migration_20220413114737 extends Migration implements IMigration
     protected $description = 'add data struchture for shipping adresses';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,12 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'shippingAddress', 'Lieferadressen verwalten');
         $this->setLocalization('eng', 'account data', 'shippingAddress', 'Manage shipping addresses');
 
-        $this->setLocalization('ger', 'account data', 'useAsDefaultShippingAddress', 'Als Standard Lieferadresse verwenden');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'useAsDefaultShippingAddress',
+            'Als Standardlieferadresse verwenden'
+        );
         $this->setLocalization('eng', 'account data', 'useAsDefaultShippingAddress', 'Use as default shipping address');
 
         $this->setLocalization('ger', 'account data', 'editAddress', 'Adresse bearbeiten');
@@ -42,36 +47,66 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'updateAddress', 'Lieferadresse aktualisieren');
         $this->setLocalization('eng', 'account data', 'updateAddress', 'Update shipping address');
 
-        $this->setLocalization('ger', 'account data', 'updateAddressBackToCheckout', 'Lieferadresse aktualisieren und zurück zum Checkout');
-        $this->setLocalization('eng', 'account data', 'updateAddressBackToCheckout', 'Update shipping address and back to checkout');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'updateAddressBackToCheckout',
+            'Lieferadresse aktualisieren und zurück zum Bestellvorgang'
+        );
+        $this->setLocalization(
+            'eng',
+            'account data',
+            'updateAddressBackToCheckout',
+            'Update shipping address and back to checkout'
+        );
 
-        $this->setLocalization('ger', 'account data', 'editShippingAddress', 'Lieferadressen ändern');
+        $this->setLocalization('ger', 'account data', 'editShippingAddress', 'Lieferadresse ändern');
         $this->setLocalization('eng', 'account data', 'editShippingAddress', 'Edit shipping address');
 
         $this->setLocalization('ger', 'account data', 'myShippingAddresses', 'Meine Lieferadressen');
-        $this->setLocalization('eng', 'account data', 'myShippingAddresses', 'My shipping address');
+        $this->setLocalization('eng', 'account data', 'myShippingAddresses', 'My shipping addresses');
 
         $this->setLocalization('ger', 'account data', 'deleteAddressSuccessful', 'Lieferadresse wurde gelöscht');
-        $this->setLocalization('eng', 'account data', 'deleteAddressSuccessful', 'Shipping address deleted');
+        $this->setLocalization('eng', 'account data', 'deleteAddressSuccessful', 'Shipping address has been deleted');
 
         $this->setLocalization('ger', 'account data', 'updateAddressSuccessful', 'Lieferadresse wurde aktualisiert');
         $this->setLocalization('eng', 'account data', 'updateAddressSuccessful', 'Shipping address has been updated');
 
         $this->setLocalization('ger', 'account data', 'saveAddressSuccessful', 'Lieferadresse wurde gespeichert');
-        $this->setLocalization('eng', 'account data', 'saveAddressSuccessful', 'Shipping address has been deleted');
+        $this->setLocalization('eng', 'account data', 'saveAddressSuccessful', 'Shipping address has been saved');
 
-        $this->setLocalization('ger', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Diese Lieferadresse zu meine Vorlagen hinzufügen');
-        $this->setLocalization('eng', 'account data', 'checkoutSaveAsNewShippingAddressPreset', 'Add this shipping address to my templates');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'checkoutSaveAsNewShippingAddressPreset',
+            'Diese Lieferadresse zu meinen Vorlagen hinzufügen'
+        );
+        $this->setLocalization(
+            'eng',
+            'account data',
+            'checkoutSaveAsNewShippingAddressPreset',
+            'Add this shipping address to my templates'
+        );
 
-        $this->setLocalization('ger', 'account data', 'defaultShippingAddresses', 'Standard Lieferadresse');
+        $this->setLocalization('ger', 'account data', 'defaultShippingAddresses', 'Standardlieferadresse');
         $this->setLocalization('eng', 'account data', 'defaultShippingAddresses', 'Default shipping address');
 
-        $this->setLocalization('ger', 'account data', 'modalShippingAddressDeletionConfirmation', 'Möchten Sie diese Lieferadresse wirklich löschen?');
-        $this->setLocalization('eng', 'account data', 'modalShippingAddressDeletionConfirmation', 'Do you really want to delete this shipping address?');
+        $this->setLocalization(
+            'ger',
+            'account data',
+            'modalShippingAddressDeletionConfirmation',
+            'Möchten Sie diese Lieferadresse wirklich löschen?'
+        );
+        $this->setLocalization(
+            'eng',
+            'account data',
+            'modalShippingAddressDeletionConfirmation',
+            'Do you really want to delete this shipping address?'
+        );
 
 
         $this->setLocalization('ger', 'global', 'myShippingAddresses', 'Meine Lieferadressen');
-        $this->setLocalization('eng', 'global', 'myShippingAddresses', 'My shipping address');
+        $this->setLocalization('eng', 'global', 'myShippingAddresses', 'My shipping addresses');
 
 
         $this->setLocalization('ger', 'datatables', 'lengthMenu', '_MENU_ Zeilen anzeigen');
@@ -137,13 +172,11 @@ class Migration_20220413114737 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {
-        $this->execute(
-            "DROP TABLE tlieferadressevorlage;"
-        );
+        $this->execute('DROP TABLE IF EXISTS tlieferadressevorlage');
 
         $this->removeLocalization('shippingAddress', 'account data');
         $this->removeLocalization('useAsDefaultShippingAddress', 'account data');
@@ -159,9 +192,7 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->removeLocalization('saveAddressSuccessful', 'account data');
         $this->removeLocalization('checkoutSaveAsNewShippingAddressPreset', 'account data');
         $this->removeLocalization('defaultShippingAddresses', 'account data');
-
         $this->removeLocalization('myShippingAddresses', 'global');
-
         $this->removeLocalization('lengthMenu', 'datatables');
         $this->removeLocalization('info', 'datatables');
         $this->removeLocalization('infoEmpty', 'datatables');

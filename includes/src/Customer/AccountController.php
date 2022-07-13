@@ -1146,14 +1146,12 @@ class AccountController
 
         if (isset($postData['backToCheckout'])) {
             \header('Location: '
-                . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1'
-            );
+                . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1');
             exit;
         }
         \header('Location: '
             . Shop::Container()->getLinkService()->getStaticRoute('jtl.php')
-            . '?editLieferadresse=1&editAddress=' . (int)$postData['updateAddress']
-        );
+            . '?editLieferadresse=1&editAddress=' . (int)$postData['updateAddress']);
         exit;
     }
 

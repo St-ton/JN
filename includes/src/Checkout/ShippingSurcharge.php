@@ -168,10 +168,10 @@ class ShippingSurcharge
      */
     public function hasZIPCode(?string $zip): bool
     {
-        $zip = \str_replace(' ', '', $zip);
         if ($zip === null) {
             return false;
         }
+        $zip = \str_replace(' ', '', $zip);
         foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
             if ($zip === $zipTMP) {
                 return true;

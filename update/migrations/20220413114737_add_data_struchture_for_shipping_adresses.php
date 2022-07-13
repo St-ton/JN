@@ -121,8 +121,8 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'datatables', 'infoFiltered', '(gefiltert von _MAX_ Einträgen)');
         $this->setLocalization('eng', 'datatables', 'infoFiltered', '(filtered from _MAX_ total entries)');
 
-        $this->setLocalization('ger', 'datatables', 'search', 'Suche:');
-        $this->setLocalization('eng', 'datatables', 'search', 'Search:');
+        $this->setLocalization('ger', 'datatables', 'search', 'Suche');
+        $this->setLocalization('eng', 'datatables', 'search', 'Search');
 
         $this->setLocalization('ger', 'datatables', 'zeroRecords', 'Keine passenden Einträge gefunden');
         $this->setLocalization('eng', 'datatables', 'zeroRecords', 'No matching records found');

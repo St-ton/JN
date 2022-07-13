@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20210312142136 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'correcting toptin quotemeta';
+    protected $description = 'Fix toptin quotemeta';
 
     /**
      * @param string $instr
@@ -26,7 +26,7 @@ class Migration_20210312142136 extends Migration implements IMigration
         $pattern      = ['\.', '\\\\', '\+', '\*', '\?', '\[', '\^', '\]', '\(', '\$', '\)'];
         $replacements = ['.', '\\', '+', '*', '?', '[', '^', ']', '(', '$', ')'];
 
-        return \str_replace($pattern, $replacements, $instr);
+        return str_replace($pattern, $replacements, $instr);
     }
 
     /**

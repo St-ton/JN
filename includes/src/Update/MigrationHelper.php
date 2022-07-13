@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -126,7 +126,7 @@ class MigrationHelper
      * @param string $fileName File Name
      * @return bool|int
      */
-    public static function isValidMigrationFileName(string $fileName)
+    public static function isValidMigrationFileName(string $fileName): int|bool
     {
         $matches = [];
 
@@ -234,7 +234,7 @@ class MigrationHelper
     {
         $datetime      = new DateTime('NOW');
         $timestamp     = $datetime->format('YmdHis');
-        $asFilePath    = static function ($text) {
+        $asFilePath    = static function ($text): string {
             $text = \preg_replace('/\W/', '_', $text);
             $text = \preg_replace('/_+/', '_', $text);
 
@@ -249,7 +249,7 @@ class MigrationHelper
         $fileSystem    = Shop::Container()->get(LocalFilesystem::class);
         try {
             $fileSystem->createDirectory($relPath);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw new Exception('Cannot create migrations path!');
         }
 

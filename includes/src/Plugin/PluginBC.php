@@ -16,7 +16,7 @@ abstract class PluginBC extends AbstractPlugin
     /**
      * @var array
      */
-    public static array$mapping = [
+    public static array $mapping = [
         'kPlugin'                         => 'ID',
         'nStatus'                         => 'State',
         'nVersion'                        => ['getMeta', 'Version'],

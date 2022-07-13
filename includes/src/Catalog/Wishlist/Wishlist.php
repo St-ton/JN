@@ -29,7 +29,7 @@ class Wishlist
     /**
      * @var string[]
      */
-    private static $mapping = [
+    protected static array $mapping = [
         'kWunschliste'        => 'ID',
         'kKunde'              => 'CustomerID',
         'nStandard'           => 'isDefault',
@@ -110,7 +110,7 @@ class Wishlist
      */
     public function __sleep(): array
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'oKunde';
         });
     }
@@ -262,7 +262,7 @@ class Wishlist
                 $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
                 $item->setProduct($product);
                 $this->CWunschlistePos_arr[] = $item;
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
         $this->setProductCount(\count($this->CWunschlistePos_arr));
@@ -335,7 +335,7 @@ class Wishlist
     public static function pruefeArtikelnachBestellungLoeschen(int $wishlistID, array $items)
     {
         if ($wishlistID < 1
-            || Shop::getConfigValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
+            || Shop::getSettingValue(\CONF_GLOBAL, 'global_wunschliste_artikel_loeschen_nach_kauf') !== 'Y'
         ) {
             return false;
         }
@@ -461,7 +461,7 @@ class Wishlist
             $product = new Artikel($db);
             try {
                 $product->fuelleArtikel($result->kArtikel, Artikel::getDefaultOptions());
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             $item->setProduct($product);
@@ -725,7 +725,7 @@ class Wishlist
                 $product = new Artikel($db);
                 try {
                     $product->fuelleArtikel($item->getProductID(), $defaultOptions);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
                 $item->setProduct($product);
@@ -1008,12 +1008,12 @@ class Wishlist
         if (\count($recipients) > $maxRecipients) {
             $max  = \count($recipients) - $maxRecipients;
             $msg .= '<br />';
-            if (\mb_strpos($msg, Shop::Lang()->get('novalidEmail', 'messages')) === false) {
+            if (!\str_contains($msg, Shop::Lang()->get('novalidEmail', 'messages'))) {
                 $msg = Shop::Lang()->get('novalidEmail', 'messages');
             }
 
             for ($i = 0; $i < $max; $i++) {
-                if (\mb_strpos($msg, $recipients[(\count($recipients) - 1) - $i]) === false) {
+                if (!\str_contains($msg, $recipients[(\count($recipients) - 1) - $i])) {
                     if ($i > 0) {
                         $msg .= ', ' . $recipients[(\count($recipients) - 1) - $i];
                     } else {
@@ -1079,7 +1079,7 @@ class Wishlist
         try {
             $product = new Artikel($db);
             $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($product->kArtikel > 0) {
@@ -1128,12 +1128,13 @@ class Wishlist
             return $wishList;
         }
         $currency = Frontend::getCurrency();
+        $merchant = Frontend::getCustomerGroup()->isMerchant();
         foreach ($wishList->getItems() as $item) {
             $product = $item->getProduct();
             if ($product === null) {
                 continue;
             }
-            if (Frontend::getCustomerGroup()->isMerchant()) {
+            if ($merchant) {
                 $price = isset($product->Preise->fVKNetto)
                     ? (int)$item->getQty() * $product->Preise->fVKNetto
                     : 0;
@@ -1155,14 +1156,11 @@ class Wishlist
      */
     public static function mapMessage(int $code): string
     {
-        switch ($code) {
-            case 1:
-                return Shop::Lang()->get('basketAdded', 'messages');
-            case 2:
-                return Shop::Lang()->get('basketAllAdded', 'messages');
-            default:
-                return '';
-        }
+        return match ($code) {
+            1 => Shop::Lang()->get('basketAdded', 'messages'),
+            2 => Shop::Lang()->get('basketAllAdded', 'messages'),
+            default => '',
+        };
     }
 
     /**
@@ -1208,7 +1206,7 @@ class Wishlist
 
             try {
                 $product = (new Artikel($db))->fuelleArtikel($item->kArtikel, $defaultOptions, 0, $langID);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             if ($product === null || $product->aufLagerSichtbarkeit() === false) {
@@ -1306,13 +1304,12 @@ class Wishlist
             $this->nOeffentlich = 1;
             $this->cURLID       = $urlID;
             $upd                = (object)['nOeffentlich' => 1, 'cURLID' => $urlID];
-            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         } else {
             $this->nOeffentlich = 0;
             $this->cURLID       = '';
             $upd                = (object)['nOeffentlich' => 0, 'cURLID' => ''];
-            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         }
+        Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $this->kWunschliste, $upd);
         self::updateInSesssion($this->kWunschliste);
     }
 

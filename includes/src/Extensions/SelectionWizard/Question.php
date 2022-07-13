@@ -70,6 +70,7 @@ class Question
 
     /**
      * @var object|null - used by old AWA
+     * @deprecated since 5.0.0
      */
     public ?object $oMerkmal = null;
 
@@ -187,7 +188,7 @@ class Question
         $this->db->update(
             'tauswahlassistentfrage',
             'kAuswahlAssistentFrage',
-            (int)$this->kAuswahlAssistentFrage,
+            $this->kAuswahlAssistentFrage,
             $upd
         );
 

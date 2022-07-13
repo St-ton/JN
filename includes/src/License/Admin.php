@@ -5,6 +5,7 @@ namespace JTL\License;
 use Exception;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
+use JsonException;
 use JTL\Backend\AuthToken;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -15,6 +16,7 @@ use JTL\License\Installer\Helper;
 use JTL\License\Struct\ExsLicense;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
+use JTL\Router\Route;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -55,34 +57,14 @@ class Admin
     public const STATE_FAILED = 'failed';
 
     /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var Checker
-     */
-    private $checker;
-
-    /**
      * @var AuthToken
      */
-    private $auth;
+    private AuthToken $auth;
 
     /**
      * @var string[]
      */
-    private $validActions = [
+    private array $validActions = [
         self::ACTION_EXTEND,
         self::ACTION_UPGRADE,
         self::ACTION_SET_BINDING,
@@ -103,13 +85,13 @@ class Admin
      * @param JTLCacheInterface $cache
      * @param Checker           $checker
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache, Checker $checker)
-    {
-        $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
-        $this->checker = $checker;
-        $this->auth    = AuthToken::getInstance($this->db);
+    public function __construct(
+        private Manager $manager,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private Checker $checker
+    ) {
+        $this->auth = AuthToken::getInstance($this->db);
     }
 
     public function handleAuth(): void
@@ -143,7 +125,7 @@ class Admin
             if ($action === self::ACTION_RECHECK) {
                 $this->getLicenses(true);
                 $this->getList($smarty);
-                \header('Location: ' . Shop::getAdminURL() . '/licenses.php', true, 303);
+                \header('Location: ' . Shop::getAdminURL() . '/' . Route::LICENSE, true, 303);
                 exit();
             }
             if ($action === self::ACTION_REVOKE) {
@@ -154,7 +136,7 @@ class Admin
                 $this->extendUpgrade($smarty, $action);
             }
         }
-        if ($action === null || !\in_array($action, $this->validActions, true) || !$valid) {
+        if ($action === null || !$valid || !\in_array($action, $this->validActions, true)) {
             $this->getLicenses();
             $this->getList($smarty);
             return;
@@ -162,7 +144,7 @@ class Admin
         if ($action === self::ACTION_REDIRECT) {
             $this->auth->requestToken(
                 Backend::get('jtl_token'),
-                Shop::getAdminURL(true) . '/licenses.php?action=code'
+                Shop::getAdminURL(true) . '/' . Route::CODE . '/license'
             );
         }
         if ($action === self::ACTION_UPDATE || $action === self::ACTION_INSTALL) {
@@ -211,7 +193,7 @@ class Admin
         } catch (Exception $e) {
             $response->status = 'FAILED';
             $msg              = $e->getMessage();
-            if (\strpos($msg, 'response:') !== false) {
+            if (\str_contains($msg, 'response:')) {
                 $msg = \substr($msg, 0, \strpos($msg, 'response:'));
             }
             $smarty->assign('licenseErrorMessage', $msg);
@@ -245,7 +227,7 @@ class Admin
         } catch (ClientException | GuzzleException $e) {
             $response->error = $e->getMessage();
             if ($e->getResponse()->getStatusCode() === 400) {
-                $body = \json_decode((string)$e->getResponse()->getBody());
+                $body = \json_decode((string)$e->getResponse()->getBody(), false, 512, \JSON_THROW_ON_ERROR);
                 if (isset($body->code, $body->message) && $body->code === 422) {
                     $response->error = $body->message;
                 }
@@ -279,8 +261,8 @@ class Admin
                 Request::postVar('exsid'),
                 Request::postVar('key')
             );
-            $responseData = \json_decode($apiResponse);
-        } catch (ClientException | GuzzleException | AuthException $e) {
+            $responseData = \json_decode($apiResponse, false, 512, \JSON_THROW_ON_ERROR);
+        } catch (ClientException | GuzzleException | AuthException | JsonException $e) {
             $response->error = $e->getMessage();
             $smarty->assign('extendErrorMessage', $e->getMessage());
         }
@@ -427,7 +409,7 @@ class Admin
     {
         \ob_clean();
         \ob_start();
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         echo \ob_get_clean();
         exit;
     }

@@ -23,7 +23,7 @@
     function selectSubmit(currentSelect) {ldelim}
         var $kKampagne = currentSelect.options[currentSelect.selectedIndex].value;
         if ($kKampagne > 0) {ldelim}
-            window.location.href = 'kampagne.php?detail=1&token={$smarty.session.jtl_token}&kKampagne=' + $kKampagne;
+            window.location.href = '{$adminURL}{$route}?detail=1&token={$smarty.session.jtl_token}&kKampagne=' + $kKampagne;
         {rdelim}
     {rdelim}
 </script>
@@ -33,7 +33,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="{$adminURL}/kampagne.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="detail" value="1" />
                 <input type="hidden" name="zeitraum" value="1" />
@@ -193,7 +193,7 @@
                                             {foreach $oKampagneStatDef_arr as $kKampagneDef => $oKampagneStatDef_arrItem}
                                                 {if $kKampagneDef !== 'cDatum'}
                                                     <td>
-                                                        <a href="{$adminURL}/kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
+                                                        <a href="{$adminURL}{$route}?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                             {$oKampagneStat_arr[$kKey][$kKampagneDef]}
                                                         </a>
                                                     </td>
@@ -246,7 +246,7 @@
     <div class="save-wrapper card-footer">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto text-left">
-                <a href="{$adminURL}/kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
+                <a href="{$adminURL}{$route}?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
             </div>
         </div>
     </div>

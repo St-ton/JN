@@ -19,29 +19,14 @@ use JTL\Smarty\JTLSmarty;
 class Sitemap
 {
     /**
-     * @var DbInterface
+     * @var int
      */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $conf;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private int $langID;
 
     /**
      * @var int
      */
-    private $langID;
-
-    /**
-     * @var int
-     */
-    private $customerGroupID;
+    private int $customerGroupID;
 
     /**
      * Sitemap constructor.
@@ -49,11 +34,8 @@ class Sitemap
      * @param JTLCacheInterface $cache
      * @param array             $conf
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, array $conf)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache, private array $conf)
     {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->conf            = $conf;
         $this->langID          = Shop::getLanguageID();
         $this->customerGroupID = Frontend::getCustomerGroup()->getID();
     }
@@ -254,7 +236,7 @@ class Sitemap
     public function getManufacturers(): array
     {
         return $this->conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y'
-            ? Hersteller::getAll()
+            ? Hersteller::getAll(true, $this->langID, $this->customerGroupID)
             : [];
     }
 }

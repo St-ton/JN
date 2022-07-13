@@ -20,7 +20,7 @@
             {/navitem}
         {/block}
         {block name='snippets-categories-offcanvas-include-categories-recursive'}
-            {include file='snippets/categories_recursive.tpl' i=0 categoryId=$result->current->kKategorie limit=2 caret='right'}
+            {include file='snippets/categories_recursive.tpl' i=0 categoryId=$result->current->getID() limit=2 caret='right'}
         {/block}
     {/nav}
 {/block}

@@ -51,12 +51,12 @@ class License
     /**
      * @var bool
      */
-    private $expired = false;
+    private bool $expired = false;
 
     /**
      * @var bool
      */
-    private $isBound = false;
+    private bool $isBound = false;
 
     /**
      * License constructor.

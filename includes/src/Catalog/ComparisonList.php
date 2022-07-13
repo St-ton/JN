@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -20,9 +20,9 @@ use function Functional\sort;
 class ComparisonList
 {
     /**
-     * @var array
+     * @var Artikel[]
      */
-    public $oArtikel_arr = [];
+    public array $oArtikel_arr = [];
 
     /**
      * ComparisonList constructor.
@@ -76,13 +76,13 @@ class ComparisonList
         $defaultOptions = Artikel::getDefaultOptions();
         $db             = Shop::Container()->getDB();
         foreach ($compareList->oArtikel_arr as $i => $item) {
-            $product    = new stdClass();
             $tmpProduct = new Artikel($db);
             try {
                 $tmpProduct->fuelleArtikel($item->kArtikel, $defaultOptions);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
+            $product                       = new stdClass();
             $product->kArtikel             = $item->kArtikel;
             $product->cName                = $tmpProduct->cName ?? '';
             $product->cURLFull             = $tmpProduct->cURLFull ?? '';
@@ -103,9 +103,9 @@ class ComparisonList
         $product           = new stdClass();
         $tmpProduct        = (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
         $product->kArtikel = $productID;
-        $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
-        $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
-        $product->image    = $tmpProduct !== null ? $tmpProduct->Bilder[0] : '';
+        $product->cName    = $tmpProduct->cName ?? '';
+        $product->cURLFull = $tmpProduct->cURLFull ?? '';
+        $product->image    = $tmpProduct->Bilder[0] ?? '';
         if (\is_array($variations) && \count($variations) > 0) {
             $product->Variationen = $variations;
         }
@@ -124,7 +124,7 @@ class ComparisonList
      */
     public function productExists(int $productID): bool
     {
-        return some($this->oArtikel_arr, static function ($e) use ($productID) {
+        return some($this->oArtikel_arr, static function ($e) use ($productID): bool {
             return (int)$e->kArtikel === $productID;
         });
     }
@@ -136,28 +136,27 @@ class ComparisonList
      */
     public function buildAttributeAndVariation(): array
     {
-        $attributes = [];
-        $variations = [];
+        $characteristics = [];
+        $variations      = [];
         foreach ($this->oArtikel_arr as $product) {
-            /** @var Artikel $product */
             if (\count($product->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
-                if (\count($attributes) > 0) {
-                    foreach ($product->oMerkmale_arr as $oMerkmale) {
-                        if (!$this->containsAttribute($attributes, $oMerkmale->kMerkmal)) {
-                            $attributes[] = $oMerkmale;
+                if (\count($characteristics) > 0) {
+                    foreach ($product->oMerkmale_arr as $characteristic) {
+                        if (!$this->containsCharacteristic($characteristics, $characteristic->getID())) {
+                            $characteristics[] = $characteristic;
                         }
                     }
                 } else {
-                    $attributes = $product->oMerkmale_arr;
+                    $characteristics = $product->oMerkmale_arr;
                 }
             }
             // Falls ein Artikel min. eine Variation enthält
             if (\count($product->Variationen) > 0) {
                 if (\count($variations) > 0) {
-                    foreach ($product->Variationen as $oVariationen) {
-                        if (!$this->containsVariation($variations, $oVariationen->cName)) {
-                            $variations[] = $oVariationen;
+                    foreach ($product->Variationen as $variation) {
+                        if (!$this->containsVariation($variations, $variation->cName)) {
+                            $variations[] = $variation;
                         }
                     }
                 } else {
@@ -165,13 +164,11 @@ class ComparisonList
                 }
             }
         }
-        if (\count($attributes) > 0) {
-            \uasort($attributes, static function (Merkmal $a, Merkmal $b) {
-                return $a->nSort <=> $b->nSort;
-            });
-        }
+        \uasort($characteristics, static function (Merkmal $a, Merkmal $b) {
+            return $a->getSort() <=> $b->getSort();
+        });
 
-        return [$attributes, $variations];
+        return [$characteristics, $variations];
     }
 
     /**
@@ -180,11 +177,25 @@ class ComparisonList
      * @return bool
      * @former istMerkmalEnthalten()
      * @since 5.0.0
+     * @deprecated since 5.2.0
      */
     public function containsAttribute(array $attributes, int $id): bool
     {
-        return some($attributes, static function ($e) use ($id) {
-            return (int)$e->kMerkmal === $id;
+        \trigger_error(__METHOD__ . ' is deprecated. Use containsCharacteristic() instead.', \E_USER_DEPRECATED);
+        return $this->containsCharacteristic($attributes, $id);
+    }
+
+    /**
+     * @param array $characteristics
+     * @param int   $id
+     * @return bool
+     * @former istMerkmalEnthalten()
+     * @since 5.2.0
+     */
+    public function containsCharacteristic(array $characteristics, int $id): bool
+    {
+        return some($characteristics, static function (Merkmal $e) use ($id): bool {
+            return $e->getID() === $id;
         });
     }
 
@@ -197,7 +208,7 @@ class ComparisonList
      */
     public function containsVariation(array $variations, string $name): bool
     {
-        return some($variations, static function ($e) use ($name) {
+        return some($variations, static function ($e) use ($name): bool {
             return $e->cName === $name;
         });
     }
@@ -294,74 +305,63 @@ class ComparisonList
      */
     private function getMappedRowNames(string $confName, array $conf): array
     {
-        switch ($confName) {
-            case 'vergleichsliste_artikelnummer':
-                return [
-                    'key'      => 'cArtNr',
-                    'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_hersteller':
-                return [
-                    'key'      => 'cHersteller',
-                    'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_beschreibung':
-                return [
-                    'key'      => 'cBeschreibung',
-                    'name'     => Shop::Lang()->get('description', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_kurzbeschreibung':
-                return [
-                    'key'      => 'cKurzBeschreibung',
-                    'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_artikelgewicht':
-                return [
-                    'key'      => 'fArtikelgewicht',
-                    'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_versandgewicht':
-                return [
-                    'key'      => 'fGewicht',
-                    'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_merkmale':
-                return [
-                    'key'      => 'Merkmale',
-                    'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_variationen':
-                return [
-                    'key'      => 'Variationen',
-                    'name'     => Shop::Lang()->get('variations', 'comparelist'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_verfuegbarkeit':
-                return [
-                    'key'      => 'verfuegbarkeit',
-                    'name'     => Shop::Lang()->get('availability', 'productOverview'),
-                    'priority' => $conf[$confName]
-                ];
-            case 'vergleichsliste_lieferzeit':
-                return [
-                    'key'      => 'lieferzeit',
-                    'name'     => Shop::Lang()->get('shippingTime'),
-                    'priority' => $conf[$confName]
-                ];
-            default:
-                return [
-                    'key'      => '',
-                    'name'     => '',
-                    'priority' => 0
-                ];
-        }
+        return match ($confName) {
+            'vergleichsliste_artikelnummer' => [
+                'key'      => 'cArtNr',
+                'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_hersteller' => [
+                'key'      => 'cHersteller',
+                'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_beschreibung' => [
+                'key'      => 'cBeschreibung',
+                'name'     => Shop::Lang()->get('description', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_kurzbeschreibung' => [
+                'key'      => 'cKurzBeschreibung',
+                'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_artikelgewicht' => [
+                'key'      => 'fArtikelgewicht',
+                'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_versandgewicht' => [
+                'key'      => 'fGewicht',
+                'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_merkmale' => [
+                'key'      => 'Merkmale',
+                'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_variationen' => [
+                'key'      => 'Variationen',
+                'name'     => Shop::Lang()->get('variations', 'comparelist'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_verfuegbarkeit' => [
+                'key'      => 'verfuegbarkeit',
+                'name'     => Shop::Lang()->get('availability', 'productOverview'),
+                'priority' => $conf[$confName]
+            ],
+            'vergleichsliste_lieferzeit' => [
+                'key'      => 'lieferzeit',
+                'name'     => Shop::Lang()->get('shippingTime'),
+                'priority' => $conf[$confName]
+            ],
+            default => [
+                'key'      => '',
+                'name'     => '',
+                'priority' => 0
+            ],
+        };
     }
 
     /**

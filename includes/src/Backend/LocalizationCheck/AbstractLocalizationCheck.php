@@ -7,21 +7,11 @@ use JTL\DB\DbInterface;
 use JTL\Language\LanguageModel;
 
 /**
- * class AbstractLocalizationCheck
+ * Class AbstractLocalizationCheck
  * @package JTL\Backend\LocalizationCheck
  */
 abstract class AbstractLocalizationCheck implements LocalizationCheckInterface
 {
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var Collection
-     */
-    protected Collection $activeLanguages;
-
     /**
      * @var Collection
      */
@@ -41,10 +31,8 @@ abstract class AbstractLocalizationCheck implements LocalizationCheckInterface
      * @param DbInterface $db
      * @param Collection  $activeLanguages
      */
-    public function __construct(DbInterface $db, Collection $activeLanguages)
+    public function __construct(protected DbInterface $db, protected Collection $activeLanguages)
     {
-        $this->db                  = $db;
-        $this->activeLanguages     = $activeLanguages;
         $this->activeLanguageIDs   = $activeLanguages->map(static function (LanguageModel $model) {
             return $model->getId();
         });

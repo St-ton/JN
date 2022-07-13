@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\DB\Services;
 
@@ -11,14 +11,9 @@ use JTL\DB\DbInterface;
 class GcService implements GcServiceInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * @var array
      */
-    protected $definition = [
+    protected array $definition = [
         'tbesucherarchiv'                  => [
             'cDate'     => 'dZeit',
             'cSubTable' => [
@@ -85,9 +80,8 @@ class GcService implements GcServiceInterface
      * GcService constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

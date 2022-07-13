@@ -11,7 +11,7 @@ final class JobHydrator
     /**
      * @var string[]
      */
-    private static $mapping = [
+    private static array $mapping = [
         'cronID'        => 'CronID',
         'jobType'       => 'Type',
         'taskLimit'     => 'Limit',

@@ -16,12 +16,12 @@ class KategorieListe
     /**
      * @var Kategorie[]
      */
-    public $elemente;
+    public array $elemente = [];
 
     /**
      * @var bool
      */
-    public static $wasModified = false;
+    public static bool $wasModified = false;
 
     /**
      * temporary array to store list of all categories
@@ -30,7 +30,7 @@ class KategorieListe
      *
      * @var array
      */
-    private static $allCats = [];
+    private static array $allCats = [];
 
     /**
      * Holt UnterKategorien für die spezifizierte kKategorie, jeweils nach nSort, Name sortiert
@@ -53,14 +53,14 @@ class KategorieListe
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && $category->kKategorie === Shop::$kKategorie);
-            $category->Unterkategorien = [];
+            $category->bAktiv = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
+            $category->setSubCategories([]);
             if ($showLevel2 === 'Y') {
-                $category->Unterkategorien = $this->getChildCategories(
-                    $category->kKategorie,
+                $category->setSubCategories($this->getChildCategories(
+                    $category->getID(),
                     $customerGroupID,
                     $languageID
-                );
+                ));
             }
             $this->elemente[] = $category;
         }
@@ -122,19 +122,20 @@ class KategorieListe
     public function getOpenCategories(Kategorie $currentCategory, int $customerGroupID = 0, int $languageID = 0): array
     {
         $this->elemente = [];
-        if (empty($currentCategory->kKategorie) || !Frontend::getCustomerGroup()->mayViewCategories()) {
+        if (empty($currentCategory->getID()) || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         $this->elemente[] = $currentCategory;
-        $currentParent    = $currentCategory->kOberKategorie;
+        $currentParent    = $currentCategory->getParentID();
         $customerGroupID  = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID       = $languageID ?: Shop::getLanguageID();
         $allCategories    = static::getCategoryList($customerGroupID, $languageID);
         while ($currentParent > 0) {
-            $category         = $allCategories['oKategorie_arr'][$currentParent]
+            $category = $allCategories['oKategorie_arr'][$currentParent]
                 ?? new Kategorie($currentParent, $languageID, $customerGroupID);
+            $category->setCurrentLanguageID($languageID);
             $this->elemente[] = $category;
-            $currentParent    = $category->kOberKategorie;
+            $currentParent    = $category->getParentID();
         }
 
         return $this->elemente;
@@ -156,10 +157,11 @@ class KategorieListe
         $languageID      = $languageID ?: Shop::getLanguageID();
         $categoryList    = self::getCategoryList($customerGroupID, $languageID);
         $subCategories   = $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] ?? null;
-        if ($subCategories !== null && \is_array($subCategories)) {
+        if (\is_array($subCategories)) {
             foreach ($subCategories as $subCatID) {
                 $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
                     ?? new Kategorie($subCatID, $languageID, $customerGroupID);
+                $categories[$subCatID]->setCurrentLanguageID($languageID);
             }
 
             return $categories;
@@ -171,7 +173,9 @@ class KategorieListe
         // ist nicht im cache, muss holen
         $db                                                            = Shop::Container()->getDB();
         $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
-        $orderByName                                                   = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
+        $orderByName                                                   = $defaultLanguageActive
+            ? ''
+            : 'tkategoriesprache.cName, ';
         $categories                                                    = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
@@ -189,15 +193,15 @@ class KategorieListe
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
             $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);
-            if (!$this->nichtLeer($category->kKategorie, $customerGroupID)) {
-                $categoryList['ks'][$category->kKategorie] = 2;
+            if (!$this->nichtLeer($category->getID(), $customerGroupID)) {
+                $categoryList['ks'][$category->getID()] = 2;
                 unset($categories[$i]);
                 continue;
             }
             // ks = ist kategorie leer 1 = nein, 2 = ja
-            $categoryList['ks'][$category->kKategorie]                       = 1;
-            $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID][] = $category->kKategorie;
-            $categoryList['oKategorie_arr'][$category->kKategorie]           = $category;
+            $categoryList['ks'][$category->getID()]                          = 1;
+            $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID][] = $category->getID();
+            $categoryList['oKategorie_arr'][$category->getID()]              = $category;
         }
         unset($category);
         $categories = \array_merge($categories);

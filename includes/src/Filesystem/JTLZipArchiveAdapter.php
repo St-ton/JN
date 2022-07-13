@@ -47,26 +47,20 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
     private VisibilityConverter $visibility;
 
     /**
-     * @var ZipArchiveProvider
-     */
-    private ZipArchiveProvider $zipArchiveProvider;
-
-    /**
      * @param ZipArchiveProvider       $zipArchiveProvider
      * @param string                   $root
      * @param MimeTypeDetector|null    $mimeTypeDetector
      * @param VisibilityConverter|null $visibility
      */
     public function __construct(
-        ZipArchiveProvider $zipArchiveProvider,
+        private ZipArchiveProvider $zipArchiveProvider,
         string $root = '',
         ?MimeTypeDetector $mimeTypeDetector = null,
         ?VisibilityConverter $visibility = null
     ) {
-        $this->pathPrefixer       = new PathPrefixer($root);
-        $this->mimeTypeDetector   = $mimeTypeDetector ?? new FinfoMimeTypeDetector();
-        $this->visibility         = $visibility ?? new PortableVisibilityConverter();
-        $this->zipArchiveProvider = $zipArchiveProvider;
+        $this->pathPrefixer     = new PathPrefixer($root);
+        $this->mimeTypeDetector = $mimeTypeDetector ?? new FinfoMimeTypeDetector();
+        $this->visibility       = $visibility ?? new PortableVisibilityConverter();
     }
 
     /**
@@ -77,6 +71,17 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
         $archive = $this->zipArchiveProvider->createZipArchive();
 
         return $archive->locateName($this->pathPrefixer->prefixPath($path)) !== false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function directoryExists(string $path): bool
+    {
+        $archive  = $this->zipArchiveProvider->createZipArchive();
+        $location = $this->pathPrefixer->prefixDirectoryPath($path);
+
+        return $archive->statName($location) !== false;
     }
 
     /**
@@ -155,9 +160,8 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
         $prefixedPath = $this->pathPrefixer->prefixPath($path);
         $zipArchive   = $this->zipArchiveProvider->createZipArchive();
         $success      = $zipArchive->locateName($prefixedPath) === false || $zipArchive->deleteName($prefixedPath);
-        $statusString = $zipArchive->getStatusString();
         if (!$success) {
-            throw UnableToDeleteFile::atLocation($path, $statusString);
+            throw UnableToDeleteFile::atLocation($path, $zipArchive->getStatusString());
         }
     }
 
@@ -173,7 +177,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
                 continue;
             }
             $itemPath = $stats['name'];
-            if ($prefixedPath === $itemPath || \strpos($itemPath, $prefixedPath) !== 0) {
+            if ($prefixedPath === $itemPath || !\str_starts_with($itemPath, $prefixedPath)) {
                 continue;
             }
             if (!$archive->deleteIndex($i)) {
@@ -218,8 +222,8 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
      */
     public function visibility(string $path): FileAttributes
     {
-        $opsys   = null;
-        $attr    = null;
+        $opsys   = 0;
+        $attr    = 0;
         $archive = $this->zipArchiveProvider->createZipArchive();
         $archive->getExternalAttributesName(
             $this->pathPrefixer->prefixPath($path),
@@ -304,7 +308,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
             }
             $itemPath = $stats['name'];
             if ($location === $itemPath
-                || ($deep && $location !== '' && \strpos($itemPath, $location) !== 0)
+                || ($deep && $location !== '' && !\str_starts_with($itemPath, $location))
                 || ($deep === false && !$this->isAtRootDirectory($location, $itemPath))
             ) {
                 continue;
@@ -420,7 +424,7 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
      */
     private function isDirectoryPath(string $path): bool
     {
-        return \substr($path, -1) === '/';
+        return \str_ends_with($path, '/');
     }
 
     /**

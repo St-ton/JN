@@ -2,12 +2,12 @@
 
 namespace JTL\Filter\States;
 
+use JTL\Catalog\Category\Kategorie;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 
 /**
  * Class BaseCategory
@@ -20,7 +20,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kKategorie' => 'ValueCompat',
         'cName'      => 'Name'
     ];
@@ -28,7 +28,7 @@ class BaseCategory extends AbstractFilter
     /**
      * @var bool
      */
-    private $includeSubCategories = false;
+    private bool $includeSubCategories = false;
 
     /**
      * BaseCategory constructor.
@@ -78,50 +78,46 @@ class BaseCategory extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        if ($this->getValue() > 0) {
-            $items = [];
-            $prep  = [];
-            $i     = 0;
-            foreach ((array)$this->getValue() as $item) {
-                $idx        = 'i' . $i++;
-                $items[]    = ':' . $idx;
-                $prep[$idx] = $item;
+        if ($this->getValue() <= 0) {
+            return $this;
+        }
+        $seoData           = [];
+        $currentLanguageID = $this->getLanguageID();
+        foreach ((array)$this->getValue() as $id) {
+            $seoData[] = new Kategorie($id, $currentLanguageID);
+        }
+        foreach ($languages as $language) {
+            $id              = $language->getId();
+            $this->cSeo[$id] = '';
+            foreach ($seoData as $seo) {
+                $this->cSeo[$id] = \ltrim($seo->getURLPath($id), '/');
             }
-
-            $seoData = $this->productFilter->getDB()->getObjects(
-                "SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
-                    FROM tseo
-                        LEFT JOIN tkategorie
-                            ON tkategorie.kKategorie = tseo.kKey
-                        LEFT JOIN tkategoriesprache
-                            ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                            AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' 
-                        AND kKey IN(" . \implode(',', $items) . ')
-                    ORDER BY tseo.kSprache',
-                $prep
-            );
-            foreach ($languages as $language) {
-                $this->cSeo[$language->kSprache] = '';
-                foreach ($seoData as $seo) {
-                    if ($language->kSprache === (int)$seo->kSprache) {
-                        $this->cSeo[$language->kSprache] = $seo->cSeo;
-                    }
-                }
-            }
-            foreach ($seoData as $item) {
-                if ((int)$item->kSprache === Shop::getLanguageID()) {
-                    if (!empty($item->cName)) {
-                        $this->setName($item->cName);
-                    } elseif (!empty($item->cKatName)) {
-                        $this->setName($item->cKatName);
-                    }
-                    break;
-                }
-            }
+        }
+        foreach ($seoData as $item) {
+            $this->setName($item->getName($currentLanguageID));
+            break;
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        if ($this->getValue() <= 0) {
+            return null;
+        }
+        $currentLanguageID = $this->getLanguageID();
+        foreach ((array)$this->getValue() as $id) {
+            $category = new Kategorie($id, $currentLanguageID);
+            $category->createBySlug($id, $additional);
+
+            return \ltrim($category->getURLPath($currentLanguageID), '/');
+        }
+
+        return null;
     }
 
     /**

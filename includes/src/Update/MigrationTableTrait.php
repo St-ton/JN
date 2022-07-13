@@ -47,7 +47,7 @@ trait MigrationTableTrait
     {
         try {
             $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
     }
 
@@ -132,11 +132,11 @@ trait MigrationTableTrait
     /**
      * @param string $table
      * @param string $column
-     * @return mixed
+     * @return int
      */
     private function getLastId($table, $column)
     {
-        $result = $this->fetchOne(" SELECT `$column` as last_id FROM `$table` ORDER BY `$column` DESC LIMIT 1");
+        $result = $this->fetchOne(" SELECT `$column` AS last_id FROM `$table` ORDER BY `$column` DESC LIMIT 1");
 
         return ++$result->last_id;
     }

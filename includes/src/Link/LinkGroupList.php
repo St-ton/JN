@@ -15,34 +15,22 @@ use function Functional\group;
 final class LinkGroupList implements LinkGroupListInterface
 {
     /**
-     * @var DbInterface
+     * @var LinkGroupCollection
      */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private LinkGroupCollection $linkGroups;
 
     /**
      * @var LinkGroupCollection
      */
-    private $linkGroups;
-
-    /**
-     * @var LinkGroupCollection
-     */
-    private $visibleLinkGroups;
+    private LinkGroupCollection $visibleLinkGroups;
 
     /**
      * LinkGroupList constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db                = $db;
-        $this->cache             = $cache;
         $this->linkGroups        = new LinkGroupCollection();
         $this->visibleLinkGroups = new LinkGroupCollection();
     }
@@ -71,7 +59,7 @@ final class LinkGroupList implements LinkGroupListInterface
      * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return $this->__get($name) !== null;
     }
@@ -85,7 +73,7 @@ final class LinkGroupList implements LinkGroupListInterface
             return $this;
         }
         $cached = true;
-        if (($this->linkGroups = $this->cache->get('linkgroups')) === false) {
+        if (($data = $this->cache->get('linkgroups')) === false) {
             $cached           = false;
             $this->linkGroups = new LinkGroupCollection();
             foreach ($this->loadDefaultGroups() as $group) {
@@ -97,6 +85,8 @@ final class LinkGroupList implements LinkGroupListInterface
 
             \executeHook(\HOOK_LINKGROUPS_LOADED_PRE_CACHE, ['list' => $this]);
             $this->cache->set('linkgroups', $this->linkGroups, [\CACHING_GROUP_CORE]);
+        } else {
+            $this->linkGroups = $data;
         }
         $this->applyVisibilityFilter(Frontend::getCustomerGroup()->getID(), Frontend::getCustomer()->getID());
         \executeHook(\HOOK_LINKGROUPS_LOADED, ['list' => $this, 'cached' => $cached]);

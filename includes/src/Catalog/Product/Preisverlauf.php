@@ -79,11 +79,12 @@ class Preisverlauf
             );
             $currency = Frontend::getCurrency();
             $dt       = new DateTime();
+            $merchant = Frontend::getCustomerGroup()->isMerchant();
             foreach ($data as $pv) {
                 if (isset($pv->timestamp)) {
                     $dt->setTimestamp((int)$pv->timestamp);
                     $pv->date     = $dt->format('d.m.Y');
-                    $pv->fPreis   = Frontend::getCustomerGroup()->isMerchant()
+                    $pv->fPreis   = $merchant
                         ? \round($pv->fVKNetto * $currency->getConversionFactor(), 2)
                         : Tax::getGross($pv->fVKNetto * $currency->getConversionFactor(), $pv->fMwst);
                     $pv->currency = $currency->getCode();

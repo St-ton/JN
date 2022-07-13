@@ -26,7 +26,7 @@ class AnonymizeIps extends Method implements MethodInterface
     /**
      * @var array
      */
-    private $tablesToUpdate = [
+    private array $tablesToUpdate = [
         'tbestellung'                      => [
             'ColKey'     => 'kBestellung',
             'ColIp'      => 'cIP',

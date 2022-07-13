@@ -2,6 +2,7 @@
 
 namespace JTL\Customer;
 
+use JTL\Customer\Registration\Form as CustomerForm;
 use Exception;
 use JTL\Alert\Alert;
 use JTL\Campaign;
@@ -43,33 +44,14 @@ use function Functional\some;
 /**
  * Class AccountController
  * @package JTL\Customer
+ * @todo!!! move to router
  */
 class AccountController
 {
     /**
      * @var array
      */
-    private $config;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private $alertService;
-
-    /**
-     * @var LinkServiceInterface
-     */
-    private $linkService;
-
-    /**
-     * @var JTLSmarty
-     */
-    private $smarty;
+    private array $config;
 
     /**
      * AccountController constructor.
@@ -79,16 +61,12 @@ class AccountController
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        DbInterface $db,
-        AlertServiceInterface $alertService,
-        LinkServiceInterface $linkService,
-        JTLSmarty $smarty
+        private DbInterface           $db,
+        private AlertServiceInterface $alertService,
+        private LinkServiceInterface  $linkService,
+        private JTLSmarty             $smarty
     ) {
-        $this->db           = $db;
-        $this->alertService = $alertService;
-        $this->linkService  = $linkService;
-        $this->smarty       = $smarty;
-        $this->config       = Shopsetting::getInstance()->getAll();
+        $this->config = Shopsetting::getInstance()->getAll();
     }
 
     /**
@@ -440,7 +418,7 @@ class AccountController
     {
         $url = Text::filterXSS(Request::verifyGPDataString('cURL'));
         if (\mb_strlen($url) > 0) {
-            if (\mb_strpos($url, 'http') !== 0) {
+            if (!\str_starts_with($url, 'http')) {
                 $url = Shop::getURL() . '/' . \ltrim($url, '/');
             }
             \header('Location: ' . $url, true, 301);
@@ -493,7 +471,7 @@ class AccountController
                 continue;
             }
             $error      = $coupon->check();
-            $returnCode = \angabenKorrekt($error);
+            $returnCode = Form::hasNoMissingData($error);
             \executeHook(\HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
                 'error'        => &$error,
                 'nReturnValue' => &$returnCode
@@ -793,8 +771,8 @@ class AccountController
                 $tmp->Wert               = 1;
                 $redir->oParameter_arr[] = $tmp;
                 $redir->nRedirect        = \R_LOGIN_BEWERTUNG;
-                $redir->cURL             = 'bewertung.php?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' .
-                    $_SESSION['jtl_token'];
+                $redir->cURL             = $this->linkService->getStaticRoute('bewertung.php')
+                    . '?a=' . Request::verifyGPCDataInt('a') . '&bfa=1&token=' . $_SESSION['jtl_token'];
                 $redir->cName            = Shop::Lang()->get('review', 'redirect');
                 break;
             case \R_LOGIN_TAG:
@@ -1006,7 +984,7 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, static function ($dl) use ($order) {
+            $order->bDownload   = some($downloads, static function ($dl) use ($order): bool {
                 return $dl->kBestellung === $order->kBestellung;
             });
             $order->kBestellung = (int)$order->kBestellung;
@@ -1274,8 +1252,9 @@ class AccountController
     {
         $customer = $_SESSION['Kunde'];
         if (Request::postInt('edit') === 1) {
-            $customer           = \getKundendaten($_POST, 0, 0);
-            $customerAttributes = \getKundenattribute($_POST);
+            $form               = new CustomerForm();
+            $customer           = $form->getCustomerData($_POST, false, false);
+            $customerAttributes = $form->getCustomerAttributes($_POST);
         } else {
             $customerAttributes = $customer->getCustomerAttributes();
         }
@@ -1329,17 +1308,17 @@ class AccountController
     {
         $postData = Text::filterXSS($_POST);
         $this->smarty->assign('cPost_arr', $postData);
-
-        $missingData        = \checkKundenFormularArray($postData, 1, 0);
+        $form               = new CustomerForm();
+        $missingData        = $form->checkKundenFormularArray($postData, true, false);
         $customerGroupID    = Frontend::getCustomerGroup()->getID();
         $checkBox           = new CheckBox();
         $missingData        = \array_merge(
             $missingData,
             $checkBox->validateCheckBox(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true)
         );
-        $customerData       = \getKundendaten($postData, 0, 0);
-        $customerAttributes = \getKundenattribute($postData);
-        $returnCode         = \angabenKorrekt($missingData);
+        $customerData       = $form->getCustomerData($postData, false, false);
+        $customerAttributes = $form->getCustomerAttributes($postData);
+        $returnCode         = Form::hasNoMissingData($missingData);
 
         \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
 

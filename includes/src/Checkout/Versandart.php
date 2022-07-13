@@ -134,7 +134,7 @@ class Versandart
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cCountryCode' => 'CountryCode'
     ];
 
@@ -145,7 +145,25 @@ class Versandart
     public function __construct(int $id = 0)
     {
         if ($id > 0) {
+            $this->load($id);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    private function load(int $id): void
+    {
+        $cache   = Shop::Container()->getCache();
+        $cacheID = 'shippingmethod_' . $id;
+        if (($method = $cache->get($cacheID)) === false) {
             $this->loadFromDB($id);
+            $cache->set($cacheID, $this, [\CACHING_GROUP_OPTION]);
+        } else {
+            foreach (\get_object_vars($method) as $idx => $value) {
+                $this->$idx = $value;
+            }
         }
     }
 
@@ -160,16 +178,26 @@ class Versandart
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
-        $members = \array_keys(\get_object_vars($obj));
-        foreach ($members as $member) {
-            $this->$member = $obj->$member;
-        }
-        $this->kVersandart        = (int)$this->kVersandart;
-        $this->nSort              = (int)$this->nSort;
-        $this->kVersandberechnung = (int)$this->kVersandberechnung;
-        $this->nMinLiefertage     = (int)$this->nMinLiefertage;
-        $this->nMaxLiefertage     = (int)$this->nMaxLiefertage;
-        $localized                = $db->selectAll(
+        $this->kVersandart              = (int)$obj->kVersandart;
+        $this->nSort                    = (int)$obj->nSort;
+        $this->kVersandberechnung       = (int)$obj->kVersandberechnung;
+        $this->nMinLiefertage           = (int)$obj->nMinLiefertage;
+        $this->nMaxLiefertage           = (int)$obj->nMaxLiefertage;
+        $this->cVersandklassen          = $obj->cVersandklassen;
+        $this->cName                    = $obj->cName;
+        $this->cLaender                 = $obj->cLaender;
+        $this->cAnzeigen                = $obj->cAnzeigen;
+        $this->cKundengruppen           = $obj->cKundengruppen;
+        $this->cBild                    = $obj->cBild;
+        $this->eSteuer                  = $obj->eSteuer;
+        $this->fPreis                   = $obj->fPreis;
+        $this->fVersandkostenfreiAbX    = $obj->fVersandkostenfreiAbX;
+        $this->fDeckelung               = $obj->fDeckelung;
+        $this->cNurAbhaengigeVersandart = $obj->cNurAbhaengigeVersandart;
+        $this->cSendConfirmationMail    = $obj->cSendConfirmationMail;
+        $this->cIgnoreShippingProposal  = $obj->cIgnoreShippingProposal;
+
+        $localized = $db->selectAll(
             'tversandartsprache',
             'kVersandart',
             $this->kVersandart
@@ -274,7 +302,6 @@ class Versandart
         if (isset($method->kVersandart) && $method->kVersandart > 0) {
             unset($method->kVersandart);
             $kVersandartNew = Shop::Container()->getDB()->insert('tversandart', $method);
-
             if ($kVersandartNew > 0) {
                 foreach ($sections as $name => $key) {
                     $items = self::getShippingSection($name, 'kVersandart', $id);
@@ -297,11 +324,7 @@ class Versandart
     private static function getShippingSection(string $table, string $key, int $value): array
     {
         if ($value > 0 && \mb_strlen($table) > 0 && \mb_strlen($key) > 0) {
-            $Objs = Shop::Container()->getDB()->selectAll($table, $key, $value);
-
-            if (\is_array($Objs)) {
-                return $Objs;
-            }
+            return Shop::Container()->getDB()->selectAll($table, $key, $value);
         }
 
         return [];
@@ -361,14 +384,6 @@ class Versandart
      */
     public function loadShippingSurcharges(): void
     {
-        $cache   = Shop::Container()->getCache();
-        $cacheID = 'surchargeFullShippingMethod' . $this->kVersandart;
-        if (($surcharges = $cache->get($cacheID)) !== false) {
-            $this->setShippingSurcharges($surcharges);
-
-            return;
-        }
-
         $this->setShippingSurcharges(Shop::Container()->getDB()->getCollection(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
@@ -378,8 +393,6 @@ class Versandart
         )->map(static function ($surcharge) {
             return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
-
-        $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);
     }
 
     /**
@@ -388,7 +401,7 @@ class Versandart
      */
     public function getShippingSurchargesForCountry(string $iso): Collection
     {
-        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso) {
+        return $this->getShippingSurcharges()->filter(static function (ShippingSurcharge $surcharge) use ($iso): bool {
             return $surcharge->getISO() === $iso;
         });
     }

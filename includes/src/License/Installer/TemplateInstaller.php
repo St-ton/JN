@@ -11,30 +11,18 @@ use JTL\Shop;
 use JTL\XMLParser;
 
 /**
- * Class PluginInstaller
+ * Class TemplateInstaller
  * @package JTL\License\Installer
  */
 class TemplateInstaller implements InstallerInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * TemplateInstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**

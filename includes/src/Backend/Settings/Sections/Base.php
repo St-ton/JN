@@ -10,7 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Smarty\JTLSmarty;
-use Shop;
+use JTL\Shop;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -37,11 +37,6 @@ class Base implements SectionInterface
      * @var JTLSmarty
      */
     protected JTLSmarty $smarty;
-
-    /**
-     * @var int
-     */
-    protected int $id;
 
     /**
      * @var string
@@ -77,11 +72,6 @@ class Base implements SectionInterface
      * @var array
      */
     protected array $configData;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
 
     /**
      * @var GetText
@@ -127,13 +117,11 @@ class Base implements SectionInterface
     /**
      * @inheritdoc
      */
-    public function __construct(Manager $manager, int $sectionID)
+    public function __construct(protected Manager $manager, protected int $id)
     {
-        $this->manager = $manager;
         $this->db      = $manager->getDB();
         $this->smarty  = $manager->getSmarty();
         $this->getText = $manager->getGetText();
-        $this->id      = $sectionID;
         $this->initBaseData();
     }
 
@@ -289,14 +277,11 @@ class Base implements SectionInterface
      */
     public function validate(Item $conf, $confValue): bool
     {
-        switch ($conf->getValueName()) {
-            case 'bilder_jpg_quali':
-                return $this->validateNumberRange(0, 100, $conf, $confValue);
-            case 'cron_freq':
-                return $this->validateNumberRange(10, 999999, $conf, $confValue);
-            default:
-                return true;
-        }
+        return match ($conf->getValueName()) {
+            'bilder_jpg_quali' => $this->validateNumberRange(0, 100, $conf, $confValue),
+            'cron_freq' => $this->validateNumberRange(10, 999999, $conf, $confValue),
+            default => true,
+        };
     }
 
     /**
@@ -438,7 +423,7 @@ class Base implements SectionInterface
             $keysToFilter = flatten($keys);
         }
 
-        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter) {
+        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter): bool {
             return !\in_array($e->getValueName(), $keysToFilter, true);
         });
         foreach ($this->getSubsections() as $subsection) {

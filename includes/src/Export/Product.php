@@ -158,9 +158,7 @@ class Product extends Artikel
             \str_replace(
                 $findTwo,
                 $replaceTwo,
-                Text::unhtmlentities(
-                    \strip_tags(\str_replace($find, $replace, $this->cKurzBeschreibung))
-                )
+                Text::unhtmlentities(\strip_tags(\str_replace($find, $replace, $this->cKurzBeschreibung)))
             )
         );
         $this->fUst                  = Tax::getSalesTax($this->kSteuerklasse);
@@ -181,9 +179,8 @@ class Product extends Artikel
                 $this->Versandkosten = $price;
             }
         }
-        // Kampagne URL
         if ($model !== null && !empty($model->getCampaignParameter())) {
-            $sep         = (\mb_strpos($this->cURL, '.php') !== false) ? '&' : '?';
+            $sep         = (\str_contains($this->cURL, '.php')) ? '&' : '?';
             $this->cURL .= $sep . $model->getCampaignParameter() . '=' . $model->getCampaignValue();
         }
         $this->Lieferbar    = $this->fLagerbestand <= 0 ? 'N' : 'Y';

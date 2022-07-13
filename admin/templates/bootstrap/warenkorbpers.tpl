@@ -5,7 +5,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="search-toolbar mb-3">
-                    <form name="suche" method="post" action="{$adminURL}/warenkorbpers.php">
+                    <form name="suche" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="Suche" value="1" />
                         <input type="hidden" name="tab" value="warenkorbpers" />
@@ -55,7 +55,7 @@
                                 <td class="text-center">{$oKunde->Datum}</td>
                                 <td class="text-center">
                                     <div class="btn-group">
-                                        <a href="{$adminURL}/warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2 delete-confirm"
                                            data-modal-body="{__('confirmDeleteBasket')|sprintf:$oKunde->cNachname:$oKunde->Datum}"
                                            data-toggle="tooltip"
@@ -65,7 +65,7 @@
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </a>
-                                        <a href="{$adminURL}/warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2"
                                            data-toggle="tooltip"
                                            title="{__('preview')}">
@@ -110,7 +110,7 @@
                         {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
                             <tr>
                                 <td class="text-left">
-                                    <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
+                                    <a href="{$shopURL}/?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
                                 </td>
                                 <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
                                 <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
@@ -124,7 +124,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/warenkorbpers.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                             {__('goBack')}
                         </a>
                     </div>

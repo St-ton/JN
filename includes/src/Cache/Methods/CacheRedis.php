@@ -320,7 +320,7 @@ class CacheRedis implements ICachingMethod
         if (isset($stats[$idx])) {
             $dbStats = \explode(',', $stats[$idx]);
             foreach ($dbStats as $stat) {
-                if (\mb_strpos($stat, 'keys=') !== false) {
+                if (\str_contains($stat, 'keys=')) {
                     $numEntries = \str_replace('keys=', '', $stat);
                 }
             }

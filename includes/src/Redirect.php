@@ -17,34 +17,34 @@ use stdClass;
 class Redirect
 {
     /**
+     * @var int|null
+     */
+    public ?int $kRedirect = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cFromUrl = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cToUrl = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cAvailable = null;
+
+    /**
      * @var int
      */
-    public $kRedirect;
-
-    /**
-     * @var string
-     */
-    public $cFromUrl;
-
-    /**
-     * @var string
-     */
-    public $cToUrl;
-
-    /**
-     * @var string
-     */
-    public $cAvailable;
-
-    /**
-     * @var int
-     */
-    public $nCount = 0;
+    public int $nCount = 0;
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * @param int $id
@@ -52,7 +52,6 @@ class Redirect
     public function __construct(int $id = 0)
     {
         $this->db = Shop::Container()->getDB();
-
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -66,10 +65,11 @@ class Redirect
     {
         $obj = $this->db->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
-            $members = \array_keys(\get_object_vars($obj));
-            foreach ($members as $member) {
-                $this->$member = $obj->$member;
-            }
+            $this->kRedirect  = (int)$obj->kRedirect;
+            $this->nCount     = (int)$obj->nCount;
+            $this->cFromUrl   = $obj->cFromUrl;
+            $this->cToUrl     = $obj->cToUrl;
+            $this->cAvailable = $obj->cAvailable;
         }
 
         return $this;
@@ -106,8 +106,8 @@ class Redirect
      */
     public function isDeadlock(string $source, string $destination): bool
     {
-        $parsed      = \parse_url(Shop::getURL());
-        $destination = isset($parsed['path']) ? $parsed['path'] . '/' . $destination : $destination;
+        $path        = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+        $destination = $path !== null ? ($path . '/' . $destination) : $destination;
         $redirect    = $this->db->select('tredirect', 'cFromUrl', $destination, 'cToUrl', $source);
 
         return $redirect !== null && (int)$redirect->kRedirect > 0;
@@ -135,7 +135,6 @@ class Redirect
             'SELECT * FROM tredirect WHERE cToUrl = :source',
             ['source' => $source]
         );
-
         foreach ($oldRedirects as $oldRedirect) {
             $oldRedirect->cToUrl = $destination;
             if ($oldRedirect->cFromUrl === $destination) {
@@ -151,7 +150,7 @@ class Redirect
                 && \mb_strlen($destination) > 1)
         ) {
             if ($this->isDeadlock($source, $destination)) {
-                Shop::Container()->getDB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$source, $destination]);
+                $this->db->delete('tredirect', ['cToUrl', 'cFromUrl'], [$source, $destination]);
             }
             $target = $this->getRedirectByTarget($source);
             if ($target !== null) {
@@ -159,7 +158,7 @@ class Redirect
                 $ins             = new stdClass();
                 $ins->cToUrl     = Text::convertUTF8($destination);
                 $ins->cAvailable = 'y';
-                Shop::Container()->getDB()->update('tredirect', 'cToUrl', $source, $ins);
+                $this->db->update('tredirect', 'cToUrl', $source, $ins);
             }
 
             $redirect = $this->find($source);
@@ -169,13 +168,13 @@ class Redirect
                 $ins->cToUrl     = Text::convertUTF8($destination);
                 $ins->cAvailable = 'y';
 
-                $kRedirect = Shop::Container()->getDB()->insert('tredirect', $ins);
+                $kRedirect = $this->db->insert('tredirect', $ins);
                 if ($kRedirect > 0) {
                     return true;
                 }
-            } elseif ($this->normalize($redirect->cFromUrl) === $source
-                && empty($redirect->cToUrl)
-                && Shop::Container()->getDB()->update(
+            } elseif (empty($redirect->cToUrl)
+                && $this->normalize($redirect->cFromUrl) === $source
+                && $this->db->update(
                     'tredirect',
                     'cFromUrl',
                     $source,
@@ -194,71 +193,72 @@ class Redirect
      * @param string $url
      * @return bool|string
      */
-    public function test(string $url)
+    public function test(string $url): bool|string
     {
+        $url = $this->normalize($url);
+        if (\mb_strlen($url) === 0 || !$this->isValid($url)) {
+            return false;
+        }
         $redirectUrl = false;
-        $url         = $this->normalize($url);
-        if (\is_string($url) && \mb_strlen($url) > 0 && $this->isValid($url)) {
-            $parsedUrl   = \parse_url($url);
-            $queryString = null;
-            if (isset($parsedUrl['query'], $parsedUrl['path'])) {
-                $url         = $parsedUrl['path'];
-                $queryString = $parsedUrl['query'];
+        $parsedUrl   = \parse_url($url);
+        $queryString = null;
+        if (isset($parsedUrl['query'], $parsedUrl['path'])) {
+            $url         = $parsedUrl['path'];
+            $queryString = $parsedUrl['query'];
+        }
+        $foundRedirectWithQuery = false;
+        if (!empty($queryString)) {
+            $item = $this->find($url . '?' . $queryString);
+            if ($item !== null) {
+                $url                   .= '?' . $queryString;
+                $foundRedirectWithQuery = true;
             }
-            $foundRedirectWithQuery = false;
-            if (!empty($queryString)) {
-                $item = $this->find($url . '?' . $queryString);
-                if ($item !== null) {
-                    $url                   .= '?' . $queryString;
-                    $foundRedirectWithQuery = true;
-                }
-            } else {
-                $item = $this->find($url);
+        } else {
+            $item = $this->find($url);
+        }
+        if ($item === null) {
+            if (!isset($_GET['notrack']) && Shop::getSettingValue(\CONF_GLOBAL, 'redirect_save_404') === 'Y') {
+                $item           = new self();
+                $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
+                $item->cToUrl   = '';
+                unset($item->kRedirect);
+                $item->kRedirect = $this->db->insert('tredirect', $item);
             }
-            if ($item === null) {
-                if (!isset($_GET['notrack']) && Shop::getSettingValue(\CONF_GLOBAL, 'redirect_save_404') === 'Y') {
-                    $item           = new self();
-                    $item->cFromUrl = $url . (!empty($queryString) ? '?' . $queryString : '');
-                    $item->cToUrl   = '';
-                    unset($item->kRedirect);
-                    $item->kRedirect = Shop::Container()->getDB()->insert('tredirect', $item);
-                }
-            } elseif (\mb_strlen($item->cToUrl) > 0) {
-                $redirectUrl  = $item->cToUrl;
-                $redirectUrl .= $queryString !== null && !$foundRedirectWithQuery
-                    ? '?' . $queryString
-                    : '';
-            }
-            $referer = $_SERVER['HTTP_REFERER'] ?? '';
-            if (\mb_strlen($referer) > 0) {
-                $referer = $this->normalize($referer);
-            }
-            $ip = Request::getRealIP();
-            // Eintrag für diese IP bereits vorhanden?
-            $entry = Shop::Container()->getDB()->getSingleObject(
-                'SELECT *
-                    FROM tredirectreferer tr
-                    LEFT JOIN tredirect t
-                        ON t.kRedirect = tr.kRedirect
-                    WHERE tr.cIP = :ip
-                    AND t.cFromUrl = :frm LIMIT 1',
-                ['ip' => $ip, 'frm' => $url]
-            );
-            if ($entry === null || (\is_object($entry) && (int)$entry->nCount === 0)) {
-                $ins               = new stdClass();
-                $ins->kRedirect    = $item !== null ? $item->kRedirect : 0;
-                $ins->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
-                    ? (int)$_SESSION['oBesucher']->kBesucherBot
-                    : 0;
-                $ins->cRefererUrl  = \is_string($referer) ? $referer : '';
-                $ins->cIP          = $ip;
-                $ins->dDate        = \time();
-                Shop::Container()->getDB()->insert('tredirectreferer', $ins);
-                // this counts only how many different referrers are hitting that url
-                if ($item !== null) {
-                    ++$item->nCount;
-                    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $item->kRedirect, $item);
-                }
+        } elseif (\mb_strlen($item->cToUrl) > 0) {
+            $redirectUrl  = $item->cToUrl;
+            $redirectUrl .= $queryString !== null && !$foundRedirectWithQuery
+                ? '?' . $queryString
+                : '';
+        }
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if (\mb_strlen($referer) > 0) {
+            $referer = $this->normalize($referer);
+        }
+        $ip = Request::getRealIP();
+        // Eintrag für diese IP bereits vorhanden?
+        $entry = $this->db->getSingleObject(
+            'SELECT *
+                FROM tredirectreferer tr
+                LEFT JOIN tredirect t
+                    ON t.kRedirect = tr.kRedirect
+                WHERE tr.cIP = :ip
+                AND t.cFromUrl = :frm LIMIT 1',
+            ['ip' => $ip, 'frm' => $url]
+        );
+        if ($entry === null || (\is_object($entry) && (int)$entry->nCount === 0)) {
+            $ins               = new stdClass();
+            $ins->kRedirect    = $item !== null ? $item->kRedirect : 0;
+            $ins->kBesucherBot = isset($_SESSION['oBesucher']->kBesucherBot)
+                ? (int)$_SESSION['oBesucher']->kBesucherBot
+                : 0;
+            $ins->cRefererUrl  = \is_string($referer) ? $referer : '';
+            $ins->cIP          = $ip;
+            $ins->dDate        = \time();
+            $this->db->insert('tredirectreferer', $ins);
+            // this counts only how many different referrers are hitting that url
+            if ($item !== null) {
+                ++$item->nCount;
+                $this->db->update('tredirect', 'kRedirect', $item->kRedirect, $item);
             }
         }
 
@@ -347,10 +347,10 @@ class Redirect
 
     /**
      * @param int $kRedirect
-     * @param int $nLimit
+     * @param int $limit
      * @return stdClass[]
      */
-    public static function getReferers(int $kRedirect, int $nLimit = 100): array
+    public static function getReferers(int $kRedirect, int $limit = 100): array
     {
         return Shop::Container()->getDB()->getObjects(
             'SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName,
@@ -361,7 +361,7 @@ class Redirect
                     WHERE kRedirect = :kr
                 ORDER BY dDate ASC
                 LIMIT :lmt',
-            ['kr' => $kRedirect, 'lmt' => $nLimit]
+            ['kr' => $kRedirect, 'lmt' => $limit]
         );
     }
 
@@ -388,11 +388,9 @@ class Redirect
         if (empty($url)) {
             return false;
         }
-
         $parsedUrl     = \parse_url($url);
         $parsedShopUrl = \parse_url(Shop::getURL() . '/');
         $fullUrlParts  = $parsedUrl;
-
         if (!isset($parsedUrl['host'])) {
             $fullUrlParts['scheme'] = $parsedShopUrl['scheme'];
             $fullUrlParts['host']   = $parsedShopUrl['host'];
@@ -402,7 +400,7 @@ class Redirect
 
         if (!isset($parsedUrl['path'])) {
             $fullUrlParts['path'] = $parsedShopUrl['path'];
-        } elseif (\mb_strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
+        } elseif (!\str_starts_with($parsedUrl['path'], $parsedShopUrl['path'])) {
             if (isset($parsedUrl['host'])) {
                 return false;
             }
@@ -462,7 +460,7 @@ class Redirect
         $redirectUrl = $redirect->test($url);
         if ($redirectUrl !== false && $redirectUrl !== $url && '/' . $redirectUrl !== $url) {
             if (!\array_key_exists('scheme', \parse_url($redirectUrl))) {
-                $redirectUrl = \mb_strpos($redirectUrl, '/') === 0
+                $redirectUrl = \str_starts_with($redirectUrl, '/')
                     ? Shop::getURL() . $redirectUrl
                     : Shop::getURL() . '/' . $redirectUrl;
             }
@@ -563,6 +561,6 @@ class Redirect
             $prep = ['search' => '%' . $query . '%'];
         }
 
-        return (int)Shop::Container()->getDB()->getSingleObject($qry, $prep)->nCount;
+        return (int)$this->db->getSingleObject($qry, $prep)->nCount;
     }
 }

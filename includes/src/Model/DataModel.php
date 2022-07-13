@@ -22,35 +22,35 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @var array
      * Stores the property values
      */
-    protected $members = [];
+    protected array $members = [];
 
     /**
      * @var callable[]
      * List of setting handlers
      */
-    protected $setters = [];
+    protected array $setters = [];
 
     /**
      * @var callable[]
      * List of getting handlers
      */
-    protected $getters = [];
+    protected array $getters = [];
 
     /**
      * @var array
      */
-    protected static $nameMapping = [];
+    protected static array $nameMapping = [];
 
     /**
      * true when loaded from database
      * @var bool
      */
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
      * @inheritDoc
@@ -107,7 +107,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
         });
     }
@@ -126,10 +126,10 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attribute = \lcfirst(\substr($name, 3));
         if (\array_key_exists($attribute, $this->members)) {
-            if (\strpos($name, 'get') === 0) {
+            if (\str_starts_with($name, 'get')) {
                 return $this->$attribute;
             }
-            if (\strpos($name, 'set') === 0) {
+            if (\str_starts_with($name, 'set')) {
                 $this->$attribute = $arguments[0];
 
                 return null;
@@ -213,7 +213,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return $this
      * @throws Exception
      */
-    protected function createNew($option = self::NONE): self
+    protected function createNew(int $option = self::NONE): self
     {
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
         if (!empty($pkValue)) {
@@ -391,7 +391,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             case 'object':
                 return $value;
             case 'yesno':
-                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                if (\in_array($value, ['Y', 'N'], true)) {
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
@@ -930,9 +930,8 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
-        $instance = static::newInstance($this->db);
 
-        return $instance->init((array)$members);
+        return static::newInstance($this->db)->init((array)$members);
     }
 
     /**

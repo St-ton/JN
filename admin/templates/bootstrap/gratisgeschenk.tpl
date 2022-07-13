@@ -127,7 +127,7 @@
                 {/if}
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' name='einstellen' action=$adminURL|cat:'/gratisgeschenk.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' name='einstellen' action=$adminURL|cat:$route buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
             </div>
         </div>
     </div>

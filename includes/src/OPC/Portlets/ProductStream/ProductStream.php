@@ -51,11 +51,11 @@ class ProductStream extends Portlet
             ],
             'source' => [
                 'type'     => InputType::SELECT,
-                'label'    => __('productSource'),
+                'label'    => \__('productSource'),
                 'width'    => 33,
                 'options'  => [
-                    'filter'    => __('productSourceFiltering'),
-                    'explicit'  => __('productSourceExplicit'),
+                    'filter'    => \__('productSourceFiltering'),
+                    'explicit'  => \__('productSourceExplicit'),
                 ],
                 'childrenFor' => [
                     'filter' => [
@@ -109,8 +109,7 @@ class ProductStream extends Portlet
      */
     public function getExplicitProductIds(PortletInstance $instance)
     {
-        $productIds = $instance->getProperty('productIds');
-        return Text::parseSSKint($productIds);
+        return Text::parseSSKint($instance->getProperty('productIds'));
     }
 
     /**

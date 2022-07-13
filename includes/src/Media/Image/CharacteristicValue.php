@@ -9,7 +9,7 @@ use PDO;
 use stdClass;
 
 /**
- * Class CharacteristicValueImage
+ * Class CharacteristicValue
  * @package JTL\Media
  */
 class CharacteristicValue extends AbstractImage

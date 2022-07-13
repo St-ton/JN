@@ -7,6 +7,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -35,30 +36,12 @@ class Search
     public string $title = '';
 
     /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
-
-    /**
      * @param DbInterface $db
-     * @param GetText     $gettext
+     * @param GetText     $getText
      * @param Manager     $manager
      */
-    public function __construct(DbInterface $db, GetText $gettext, Manager $manager)
+    public function __construct(protected DbInterface $db, protected GetText $getText, protected Manager $manager)
     {
-        $this->db      = $db;
-        $this->getText = $gettext;
-        $this->manager = $manager;
     }
 
     /**
@@ -71,7 +54,7 @@ class Search
         $where    = "(ec.cModulId IS NULL OR ec.cModulId = '')
             AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
         $idList   = \explode(',', $query);
-        $isIdList = count($idList) > 1;
+        $isIdList = \count($idList) > 1;
         if ($isIdList) {
             foreach ($idList as $i => $item) {
                 $idList[$i] = (int)$item;
@@ -88,7 +71,7 @@ class Search
             $this->title = \sprintf(\__('searchForID'), \implode(', ', $idList));
         } else {
             $rangeList = \explode('-', $query);
-            $isIdRange = count($rangeList) === 2;
+            $isIdRange = \count($rangeList) === 2;
             if ($isIdRange) {
                 $rangeList[0] = (int)$rangeList[0];
                 $rangeList[1] = (int)$rangeList[1];
@@ -115,8 +98,8 @@ class Search
                 foreach ($configTranslations->getIterator() as $translation) {
                     $orig  = $translation->getOriginal();
                     $trans = $translation->getTranslation();
-                    if ((mb_stripos($trans, $query) !== false || mb_stripos($trans, $queryEnt) !== false)
-                        && mb_substr($orig, -5) === '_name'
+                    if ((\mb_stripos($trans, $query) !== false || \mb_stripos($trans, $queryEnt) !== false)
+                        && \mb_substr($orig, -5) === '_name'
                     ) {
                         $valueName    = \preg_replace('/(_name|_desc)$/', '', $orig);
                         $valueNames[] = "'" . $valueName . "'";
@@ -149,7 +132,7 @@ class Search
         $configIDs  = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenConf')->toArray()));
         $factory    = new SectionFactory();
         $sections   = [];
-        $urlPrefix  = Shop::getAdminURL() . '/einstellungen.php?einstellungen_suchen=1&cSuche=';
+        $urlPrefix  = Shop::getAdminURL() . '/' . Route::CONFIG . '?einstellungen_suchen=1&cSuche=';
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();

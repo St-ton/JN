@@ -72,10 +72,10 @@ msgid "warningCreateCountryInWawi"
 msgstr "Legen Sie unbedingt zusätzlich auch das gleiche Land in JTL-Wawi an und setzen Sie die entsprechende Steuerzone: <a href=\"https://guide.jtl-software.de/jtl-wawi/global/laender-verwalten/\" target=\"_blank\">Länder verwalten</a>"
 
 msgid "infoRegistrationCountriesActivated"
-msgstr "Die Länder <strong>%s</strong> wurden zu den auswählbaren Rechnungsländern hinzugefügt. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>."
+msgstr "Die Länder <strong>%s</strong> wurden zu den auswählbaren Rechnungsländern hinzugefügt. Siehe <a href=\"countries\" target=\"_blank\">Länderverwaltung</a>."
 
 msgid "warningRegistrationCountriesDeactivated"
-msgstr "Die Länder <strong>%s</strong> wurden aus den auswählbaren Rechnungsländern entfernt. Siehe <a href=\"countrymanager.php\" target=\"_blank\">Länderverwaltung</a>"
+msgstr "Die Länder <strong>%s</strong> wurden aus den auswählbaren Rechnungsländern entfernt. Siehe <a href=\"%s/countries\" target=\"_blank\">Länderverwaltung</a>"
 
 msgid "warningShippingAvailable"
 msgstr "Das Land ist in mindestens einer Versandart als Lieferland aktiviert. Wir empfehlen daher, das Land auch als auswählbares Rechnungsland anzubieten."

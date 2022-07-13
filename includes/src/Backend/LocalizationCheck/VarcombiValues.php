@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class VarcombiValues
+ * Class VarcombiValues
  * @package JTL\Backend\LocalizationCheck
  */
 class VarcombiValues extends AbstractLocalizationCheck
@@ -67,6 +67,6 @@ class VarcombiValues extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationVarcombiValues');
+        return \__('locationVarcombiValues');
     }
 }

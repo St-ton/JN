@@ -51,15 +51,14 @@
         </div>
     </div>
 </div>{* /backend-wrapper *}
-
+{$finderURL = $adminURL|cat:'/'|cat:JTL\Router\Route::ELFINDER}
 <script>
     if(typeof CKEDITOR !== 'undefined') {
         CKEDITOR.editorConfig = function(config) {
             config.language = '{$language}';
             config.removeDialogTabs = 'link:upload;image:Upload';
             config.defaultLanguage = 'en';
-            config.startupMode = '{if isset($Einstellungen.global.admin_ckeditor_mode)
-                && $Einstellungen.global.admin_ckeditor_mode === 'Q'}source{else}wysiwyg{/if}';
+            config.startupMode = '{if ($config.global.admin_ckeditor_mode|default:'') === 'Q'}source{else}wysiwyg{/if}';
             config.htmlEncodeOutput = false;
             config.basicEntities = false;
             config.htmlEncodeOutput = false;
@@ -69,12 +68,12 @@
             config.entities_latin = false;
             config.entities_greek = false;
             config.ignoreEmptyParagraph = false;
-            config.filebrowserBrowseUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
-            config.filebrowserImageBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
-            config.filebrowserFlashBrowseUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
-            config.filebrowserUploadUrl      = 'elfinder.php?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
-            config.filebrowserImageUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
-            config.filebrowserFlashUploadUrl = 'elfinder.php?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
+            config.filebrowserBrowseUrl      = '{$finderURL}?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+            config.filebrowserImageBrowseUrl = '{$finderURL}?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+            config.filebrowserFlashBrowseUrl = '{$finderURL}?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
+            config.filebrowserUploadUrl      = '{$finderURL}?ckeditor=1&mediafilesType=misc&token={$smarty.session.jtl_token}';
+            config.filebrowserImageUploadUrl = '{$finderURL}?ckeditor=1&mediafilesType=image&token={$smarty.session.jtl_token}';
+            config.filebrowserFlashUploadUrl = '{$finderURL}?ckeditor=1&mediafilesType=video&token={$smarty.session.jtl_token}';
             config.extraPlugins = 'codemirror';
             config.fillEmptyBlocks = false;
             config.autoParagraph = false;

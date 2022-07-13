@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\dbeS\FileHandler;
 use JTL\dbeS\Starter;
@@ -13,7 +13,6 @@ const FREIDEFINIERBARER_FEHLER = 8;
 require_once DEFINES_PFAD . 'config.JTL-Shop.ini.php';
 require_once DEFINES_PFAD . 'defines.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
@@ -92,7 +91,7 @@ $logger      = Shop::Container()->getLogService()->withName('dbeS');
 $pluginHooks = Helper::getHookList();
 $language    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
-Shop::bootstrap();
+Shop::bootstrap(true, $db, $cache);
 ob_start('handleError');
 $starter = new Starter(new Synclogin($db, $logger), new FileHandler($logger), $db, $cache, $logger);
 $starter->start($fileID, $_POST, $_FILES);

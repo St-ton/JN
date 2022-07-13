@@ -18,31 +18,16 @@ use stdClass;
 class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
      * Crawler constructor.
      * @param DbInterface                $db
      * @param JTLCacheInterface          $cache
      * @param AlertServiceInterface|null $alertService
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, AlertServiceInterface $alertService = null)
-    {
-        $this->db           = $db;
-        $this->cache        = $cache;
-        $this->alertService = $alertService;
+    public function __construct(
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        protected ?AlertServiceInterface $alertService = null
+    ) {
     }
 
     /**
@@ -87,7 +72,7 @@ class Controller
             return false;
         }
         $crawlers = $this->getAllCrawlers();
-        $result   = \array_filter($crawlers, static function ($item) use ($userAgent) {
+        $result   = \array_filter($crawlers, static function ($item) use ($userAgent): bool {
             return $item->cUserAgent !== '' && \mb_stripos($userAgent, $item->cUserAgent) !== false;
         });
         $result   = \array_values($result);

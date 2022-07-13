@@ -26,7 +26,7 @@ class BaseManufacturer extends AbstractFilter
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kHersteller' => 'ValueCompat',
         'cName'       => 'Name'
     ];
@@ -85,12 +85,26 @@ class BaseManufacturer extends AbstractFilter
                 $this->setName($seoData[0]->cName);
             } else {
                 // invalid manufacturer ID
-                Shop::$kHersteller = 0;
-                Shop::$is404       = true;
+                Shop::getState()->manufacturerID = 0;
+                Shop::getState()->is404          = true;
+                Shop::$kHersteller               = 0;
+                Shop::$is404                     = true;
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        $currentLanguageID = $this->getLanguageID();
+        $manufacturer      = new Hersteller($this->getValue(), $currentLanguageID);
+        $manufacturer->createBySlug($this->getValue(), $additional);
+
+        return \ltrim($manufacturer->getURLPath($currentLanguageID), '/');
     }
 
     /**

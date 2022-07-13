@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -25,21 +25,15 @@ class Updater
     /**
      * @var bool
      */
-    protected static $isVerified = false;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    protected static bool $isVerified = false;
 
     /**
      * Updater constructor.
      * @param DbInterface $db
      * @throws Exception
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->verify();
     }
 
@@ -221,10 +215,8 @@ class Updater
     }
 
     /**
-     * getPreviousVersion
-     *
      * @param int $version
-     * @return int|mixed
+     * @return int
      */
     public function getPreviousVersion(int $version)
     {
@@ -273,7 +265,7 @@ class Updater
         $lines = \file($sqlFile);
         foreach ($lines as $i => $line) {
             $line = \trim($line);
-            if (\mb_strpos($line, '--') === 0 || \mb_strpos($line, '#') === 0) {
+            if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
                 unset($lines[$i]);
             }
         }

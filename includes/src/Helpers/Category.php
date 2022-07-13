@@ -17,59 +17,59 @@ use stdClass;
 class Category
 {
     /**
-     * @var Category
+     * @var Category|null
      */
     private static $instance;
 
     /**
      * @var int
      */
-    private static $languageID;
+    private static int $languageID;
 
     /**
      * @var int
      */
-    private static $customerGroupID;
+    private static int $customerGroupID;
 
     /**
      * @var int
      */
-    private static $depth;
+    private static int $depth;
 
     /**
      * @var string
      */
-    private static $cacheID;
+    private static string $cacheID;
 
     /**
      * @var array
      */
-    private static $config;
+    private static array $config;
 
     /**
      * @var array|null
      */
-    private static $fullCategories;
+    private static ?array $fullCategories = null;
 
     /**
-     * @var int[]|null
+     * @var int[]|null|bool
      */
     private static $lostCategories;
 
     /**
      * @var bool
      */
-    private static $limitReached = false;
+    private static bool $limitReached = false;
 
     /**
      * @var DbInterface
      */
-    private static $db;
+    private static DbInterface $db;
 
     /**
      * @var array|null
      */
-    private static $prodCatAssociations;
+    private static ?array $prodCatAssociations = null;
 
     /**
      * Category constructor.
@@ -568,11 +568,14 @@ class Category
             if ((self::$lostCategories = $cache->get($cacheID)) === false) {
                 self::$lostCategories = Shop::Container()->getDB()->getCollection(
                     'SELECT child.kKategorie
-                    FROM tkategorie
-                    LEFT JOIN tkategorie parent ON tkategorie.kOberKategorie = parent.kKategorie
-                    LEFT JOIN tkategorie child ON tkategorie.lft <= child.lft AND tkategorie.rght >= child.rght
-                    WHERE tkategorie.kOberKategorie > 0
-                        AND parent.kKategorie IS NULL'
+                        FROM tkategorie
+                        LEFT JOIN tkategorie parent
+                            ON tkategorie.kOberKategorie = parent.kKategorie
+                        LEFT JOIN tkategorie child
+                            ON tkategorie.lft <= child.lft
+                            AND tkategorie.rght >= child.rght
+                        WHERE tkategorie.kOberKategorie > 0
+                            AND parent.kKategorie IS NULL'
                 )->map(static function ($item) {
                     return (int)$item->kKategorie;
                 })->toArray();
@@ -600,7 +603,7 @@ class Category
             // we have an incomplete category tree (because of high category count)
             // or did not find the desired category (because it is a lost category)
             $fallback = $this->getFallBackFlatTree($id);
-            if (count($fallback) === 0) {
+            if (\count($fallback) === 0) {
                 // this category does not exists
                 return null;
             }
@@ -763,20 +766,17 @@ class Category
      */
     public function getPath(Kategorie $category, bool $asString = true)
     {
-        if (empty($category->cKategoriePfad_arr)
-            || empty($category->kSprache)
-            || (int)$category->kSprache !== self::$languageID
-        ) {
-            if (empty($category->kKategorie)) {
+        if (empty($category->getCategoryPath()) || $category->getLanguageID() !== self::$languageID) {
+            if (empty($category->getID())) {
                 return $asString ? '' : [];
             }
-            $tree  = $this->getFlatTree($category->kKategorie);
+            $tree  = $this->getFlatTree($category->getID());
             $names = [];
             foreach ($tree as $item) {
                 $names[] = $item->getName();
             }
         } else {
-            $names = $category->cKategoriePfad_arr;
+            $names = $category->getCategoryPath();
         }
 
         return $asString ? \implode(' > ', $names) : $names;
@@ -824,7 +824,7 @@ class Category
             return $e->getID();
         }, $nodes);
 
-        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids) {
+        $orphanedCategories = \array_filter($nodes, static function ($e) use ($ids): bool {
             if ($e->getParentID() === 0) {
                 return false;
             }

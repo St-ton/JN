@@ -9,17 +9,11 @@ namespace JTL\Services\JTL;
 class CaptchaService implements CaptchaServiceInterface
 {
     /**
-     * @var CaptchaServiceInterface
-     */
-    private $fallbackCaptcha;
-
-    /**
      * CaptchaService constructor.
      * @param CaptchaServiceInterface $fallbackCaptcha
      */
-    public function __construct(CaptchaServiceInterface $fallbackCaptcha)
+    public function __construct(private CaptchaServiceInterface $fallbackCaptcha)
     {
-        $this->fallbackCaptcha = $fallbackCaptcha;
     }
 
     /**

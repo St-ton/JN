@@ -30,29 +30,29 @@ class Characteristic extends BaseCharacteristic
     use MagicCompatibilityTrait;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $characteristicValueID;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
     /**
      * @var bool
      */
-    private $isMultiSelect = false;
+    private bool $isMultiSelect = false;
 
     /**
      * @var array
      */
-    private $batchCharacteristicData;
+    private array $batchCharacteristicData = [];
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name',
@@ -248,7 +248,7 @@ class Characteristic extends BaseCharacteristic
     {
         return \array_reduce(
             $this->productFilter->getCharacteristicFilter(),
-            static function ($a, $b) use ($characteristicValueID) {
+            static function ($a, $b) use ($characteristicValueID): bool {
                 /** @var Characteristic $b */
                 return $a || $b->getValue() === $characteristicValueID;
             },
@@ -409,12 +409,12 @@ class Characteristic extends BaseCharacteristic
         $state->addSelect('tmerkmal.nMehrfachauswahl');
         $state->addSelect('tmerkmal.cBildPfad AS cMMBildPfad');
         if ($category !== null
-            && !empty($category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER])
+            && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER))
             && $this->productFilter->hasCategory()
         ) {
             $catAttributeFilters = \explode(
                 ';',
-                $category->categoryFunctionAttributes[\KAT_ATTRIBUT_MERKMALFILTER]
+                $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER)
             );
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
@@ -599,7 +599,7 @@ class Characteristic extends BaseCharacteristic
      */
     protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), static function (Option $item) {
+        return every($option->getOptions(), static function (Option $item): bool {
             return \is_numeric($item->getValue());
         });
     }

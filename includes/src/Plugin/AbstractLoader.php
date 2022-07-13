@@ -19,6 +19,7 @@ use JTL\Plugin\Data\Meta;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\PaymentMethods;
 use JTL\Plugin\Data\Widget;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -175,9 +176,10 @@ abstract class AbstractLoader implements LoaderInterface
 
     /**
      * @param string $pluginDir
+     * @param int    $id
      * @return Paths
      */
-    protected function loadPaths(string $pluginDir): Paths
+    protected function loadPaths(string $pluginDir, int $id): Paths
     {
         $shopURL  = Shop::getURL(true) . '/';
         $basePath = \PFAD_ROOT . \PLUGIN_DIR . $pluginDir . '/';
@@ -193,6 +195,7 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setFrontendURL($baseURL . \PFAD_PLUGIN_FRONTEND);
         $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
+        $paths->setBackendURL(Shop::getAdminURL() . '/' . Route::PLUGIN . '/' . $id);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
         $paths->setPortletsPath($basePath . \PFAD_PLUGIN_PORTLETS);
@@ -209,7 +212,7 @@ abstract class AbstractLoader implements LoaderInterface
     protected function loadLicense(stdClass $data): License
     {
         $license = new License();
-        if (\strlen($data->cLizenzKlasse) > 0 && \strpos($data->cLizenzKlasse, 'Plugin\\') !== 0) {
+        if (\strlen($data->cLizenzKlasse) > 0 && !\str_starts_with($data->cLizenzKlasse, 'Plugin\\')) {
             $namespace           = $data->cPluginID . '\\' . \trim(\PFAD_PLUGIN_LICENCE, '\\/');
             $data->cLizenzKlasse = \sprintf('Plugin\\%s\\%s', $namespace, $data->cLizenzKlasse);
         }

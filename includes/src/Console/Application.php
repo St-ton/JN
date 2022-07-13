@@ -27,7 +27,10 @@ use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
 use RuntimeException;
@@ -55,12 +58,12 @@ class Application extends BaseApplication
     /**
      * @var bool
      */
-    protected $devMode = false;
+    protected bool $devMode = false;
 
     /**
      * @var bool
      */
-    protected $isInstalled = false;
+    protected bool $isInstalled = false;
 
     /**
      * Application constructor.
@@ -92,7 +95,14 @@ class Application extends BaseApplication
         if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
-        $cache           = Shop::Container()->getCache();
+        $cache = Shop::Container()->getCache();
+        Shop::setRouter(new Router(
+            $db,
+            $cache,
+            new State(),
+            Shop::Container()->getAlertService(),
+            Shopsetting::getInstance()->getAll()
+        ));
         $parser          = new XMLParser();
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);

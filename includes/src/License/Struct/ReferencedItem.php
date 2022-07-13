@@ -18,7 +18,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var bool
      */
-    private $installed = false;
+    private bool $installed = false;
 
     /**
      * @var Version|null
@@ -33,27 +33,27 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var bool
      */
-    private $hasUpdate = false;
+    private bool $hasUpdate = false;
 
     /**
      * @var bool
      */
-    private $canBeUpdated = true;
+    private bool $canBeUpdated = true;
 
     /**
      * @var bool
      */
-    private $active = false;
+    private bool $active = false;
 
     /**
      * @var int
      */
-    private $internalID = 0;
+    private int $internalID = 0;
 
     /**
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * @var string|null

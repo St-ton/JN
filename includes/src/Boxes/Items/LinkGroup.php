@@ -14,12 +14,12 @@ final class LinkGroup extends AbstractBox
     /**
      * @var LinkGroupInterface|null
      */
-    private $linkGroup;
+    private ?LinkGroupInterface $linkGroup = null;
 
     /**
      * @var string|null
      */
-    public $linkGroupTemplate;
+    public ?string $linkGroupTemplate = null;
 
     /**
      * LinkGroup constructor.
@@ -43,8 +43,6 @@ final class LinkGroup extends AbstractBox
         if ($this->linkGroup !== null) {
             $this->setShow($this->linkGroup->getLinks()->count() > 0);
             $this->setLinkGroupTemplate($this->linkGroup->getTemplate());
-//        } else {
-//            throw new \InvalidArgumentException('Cannot find link group id ' . $this->getCustomID());
         }
     }
 

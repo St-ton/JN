@@ -75,8 +75,6 @@ class Frontend extends AbstractSession
         self::$instance = $this;
         $this->setStandardSessionVars();
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
-
-        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
     }
 
     /**
@@ -86,6 +84,7 @@ class Frontend extends AbstractSession
      */
     public function deferredUpdate(): void
     {
+        \executeHook(\HOOK_CORE_SESSION_CONSTRUCTOR);
         if ($this->mustUpdate !== true) {
             return;
         }
@@ -286,7 +285,7 @@ class Frontend extends AbstractSession
         foreach ($_SESSION['Sprachen'] as $lang) {
             if (isset($_SERVER['HTTP_HOST']) && \defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
                 $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));
-                if (\mb_strpos($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' ')) !== false) {
+                if (\str_contains($shopLangURL, ($_SERVER['HTTP_HOST'] ?? ' '))) {
                     $_SESSION['kSprache']    = $lang->kSprache;
                     $_SESSION['cISOSprache'] = \trim($lang->cISO);
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
@@ -365,7 +364,7 @@ class Frontend extends AbstractSession
                 // Positionen Array in der Wunschliste neu nummerieren
                 $_SESSION['Vergleichsliste']->oArtikel_arr = \array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
             }
-            if (!isset($_SERVER['REQUEST_URI']) || \mb_strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+            if (!isset($_SERVER['REQUEST_URI']) || \str_contains($_SERVER['REQUEST_URI'], 'index.php')) {
                 \http_response_code(301);
                 \header('Location: ' . Shop::getURL() . '/');
                 exit;
@@ -595,7 +594,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO): bool {
                 return $l->getCode() === $langISO;
             });
             if ($lang === null) {
@@ -627,25 +626,43 @@ class Frontend extends AbstractSession
 
         $currencyCode = Request::verifyGPDataString('curr');
         if ($currencyCode) {
-            $currency = first(self::getCurrencies(), static function (Currency $c) use ($currencyCode) {
-                return $c->getCode() === $currencyCode;
-            });
-            if ($currency !== null) {
-                $_SESSION['Waehrung']      = $currency;
-                $_SESSION['cWaehrungName'] = $currency->getName();
-                if (isset($_SESSION['Wunschliste'])) {
-                    self::getWishList()->umgebungsWechsel();
-                }
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    self::getCompareList()->umgebungsWechsel();
-                }
-                $cart = self::getCart();
-                if (\count($cart->PositionenArr) > 0) {
-                    $cart->setzePositionsPreise();
-                }
-            }
+            self::updateCurrency($currencyCode);
         }
         LanguageHelper::getInstance()->autoload();
+    }
+
+    /**
+     * @param string $currencyCode
+     * @return void
+     */
+    public static function updateCurrency(string $currencyCode): void
+    {
+        $currentCurrency = $_SESSION['Waehrung'] ?? null;
+        if ($currentCurrency instanceof Currency && $currentCurrency->getCode() === $currencyCode) {
+            return;
+        }
+        $currencies = self::getCurrencies();
+        if (\count($currencies) === 0) {
+            $currencies = Currency::loadAll();
+        }
+        $currency = first($currencies, static function (Currency $c) use ($currencyCode): bool {
+            return $c->getCode() === $currencyCode;
+        });
+        if ($currency === null) {
+            return;
+        }
+        $_SESSION['Waehrung']      = $currency;
+        $_SESSION['cWaehrungName'] = $currency->getName();
+        if (isset($_SESSION['Wunschliste'])) {
+            self::getWishList()->umgebungsWechsel();
+        }
+        if (isset($_SESSION['Vergleichsliste'])) {
+            self::getCompareList()->umgebungsWechsel();
+        }
+        $cart = self::getCart();
+        if (\count($cart->PositionenArr) > 0) {
+            $cart->setzePositionsPreise();
+        }
     }
 
     /**

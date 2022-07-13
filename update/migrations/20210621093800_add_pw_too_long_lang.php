@@ -12,8 +12,7 @@ class Migration_20210621093800 extends Migration implements IMigration
     protected $description = 'Add pw too long lang';
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function up()
     {
@@ -22,8 +21,7 @@ class Migration_20210621093800 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function down()
     {

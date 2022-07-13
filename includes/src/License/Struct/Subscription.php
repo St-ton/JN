@@ -21,12 +21,12 @@ class Subscription
     /**
      * @var bool
      */
-    private $expired = false;
+    private bool $expired = false;
 
     /**
      * @var bool
      */
-    private $canBeUsed = true;
+    private bool $canBeUsed = true;
 
     /**
      * Subscription constructor.

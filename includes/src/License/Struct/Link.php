@@ -23,7 +23,7 @@ class Link
     /**
      * @var string
      */
-    private $method = 'GET';
+    private string $method = 'GET';
 
     /**
      * Link constructor.

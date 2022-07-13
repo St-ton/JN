@@ -11,7 +11,7 @@ class CleanupService extends Method implements MethodInterface
     /**
      * @var array
      */
-    protected $definition = [
+    protected array $definition = [
         'tbesucherarchiv'              => [
             'cDate'     => 'dZeit',
             'cDateType' => 'DATETIME',

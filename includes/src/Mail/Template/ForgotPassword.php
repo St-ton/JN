@@ -22,6 +22,6 @@ class ForgotPassword extends AbstractTemplate
             return;
         }
         $smarty->assign('passwordResetLink', $data->passwordResetLink)
-               ->assign('Neues_Passwort', $data->neues_passwort);
+            ->assign('Neues_Passwort', $data->neues_passwort);
     }
 }

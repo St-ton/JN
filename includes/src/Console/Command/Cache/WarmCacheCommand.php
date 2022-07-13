@@ -122,7 +122,7 @@ class WarmCacheCommand extends Command
                     $_SESSION['cISOSprache'] = $language->getCode();
                     Shop::setLanguage($languageID, $language->getCode());
                     if ($this->details === true) {
-                        $product = (new Artikel($this->db))->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $detailOpt,
                             $customerGroup->getID(),
@@ -137,7 +137,7 @@ class WarmCacheCommand extends Command
                                 : ' could not be loaded'));
                     }
                     if ($this->list === true) {
-                        $product = (new Artikel($this->db))->fuelleArtikel(
+                        $product = (new Artikel($this->db, $customerGroup))->fuelleArtikel(
                             $pid,
                             $listOpt,
                             $customerGroup->getID(),
@@ -186,7 +186,7 @@ class WarmCacheCommand extends Command
                     $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false);
                     ++$generated;
                     $this->debug('Category ' . $cid
-                        . ($category->kKategorie > 0 ? ' successfully' : ' could not be')
+                        . ($category->getID() > 0 ? ' successfully' : ' could not be')
                         . ' loaded in language ' . $language->getId()
                         . ' with customer group ' . $customerGroup->getID());
                 }
@@ -275,7 +275,7 @@ class WarmCacheCommand extends Command
         if ($this->preFlush === true) {
             $cache->flushAll();
         }
-        if (\strpos(\URL_SHOP, 'https://') === 0
+        if (\str_starts_with(\URL_SHOP, 'https://')
             || Shop::getSettingValue(\CONF_GLOBAL, 'kaufabwicklung_ssl_nutzen') === 'P'
         ) {
             $_SERVER['HTTPS'] = 'on';

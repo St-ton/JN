@@ -181,7 +181,6 @@ class Request
         return $codes[$status] ?? '';
     }
 
-
     /**
      * Prueft ob SSL aktiviert ist und auch durch Einstellung genutzt werden soll
      * -1 = SSL nicht aktiv und nicht erlaubt
@@ -220,7 +219,7 @@ class Request
      * @param int      $maxredirect
      * @return bool|mixed
      */
-    public static function curl_exec_follow($ch, int $maxredirect = 5)
+    public static function curl_exec_follow($ch, int $maxredirect = 5): bool|string
     {
         $mr = $maxredirect <= 0 ? 5 : $maxredirect;
         if (\ini_get('open_basedir') === '') {

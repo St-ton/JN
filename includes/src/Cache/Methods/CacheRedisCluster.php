@@ -33,7 +33,7 @@ class CacheRedisCluster implements ICachingMethod
     /**
      * @var array
      */
-    private $masters = [];
+    private array $masters = [];
 
     /**
      * @param array $options
@@ -307,7 +307,7 @@ class CacheRedisCluster implements ICachingMethod
             if (isset($stat[$idx])) {
                 $dbStats = \explode(',', $stat[$idx]);
                 foreach ($dbStats as $dbStat) {
-                    if (\mb_strpos($dbStat, 'keys=') !== false) {
+                    if (\str_contains($dbStat, 'keys=')) {
                         $numEntries[] = \str_replace('keys=', '', $dbStat);
                     }
                 }

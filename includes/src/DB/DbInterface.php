@@ -10,7 +10,7 @@ use stdClass;
  * Interface DbInterface
  * @package JTL\DB
  */
-interface DbInterface extends \Serializable
+interface DbInterface
 {
     /**
      * Database configuration

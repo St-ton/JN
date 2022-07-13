@@ -48,9 +48,7 @@ class CacheMemcache implements ICachingMethod
      */
     private function setMemcache(string $host, int $port): ICachingMethod
     {
-        if ($this->memcache !== null) {
-            $this->memcache->close();
-        }
+        $this->memcache?->close();
         $this->memcache = new \Memcache();
         $this->memcache->addServer($host, $port);
 

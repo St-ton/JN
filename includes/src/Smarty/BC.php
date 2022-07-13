@@ -364,8 +364,8 @@ class BC extends Smarty
     }
 
     /**
-     * @param string  $error_msg
-     * @param integer $error_type
+     * @param string $error_msg
+     * @param int    $error_type
      */
     public function trigger_error($error_msg, $error_type = \E_USER_WARNING): void
     {

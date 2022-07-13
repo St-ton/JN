@@ -13,10 +13,13 @@ use Locale;
  * Class LanguageModel
  *
  * @package JTL\Language
- * @property int    $kSprache
- * @property int    $id
+ * @property int $kSprache
+ * @property int $id
  * @method int getId()
  * @method void setId(int $id)
+ * @property int    $active
+ * @method int getActive()
+ * @method void setActive(int $active)
  * @property string $cNameEnglisch
  * @property string $nameEN
  * @method string getNameEN()

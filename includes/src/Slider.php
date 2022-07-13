@@ -100,14 +100,9 @@ class Slider implements IExtensionPoint
     private $useKB = true;
 
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'bAktiv'          => 'IsActive',
         'kSlider'         => 'ID',
         'cName'           => 'Name',
@@ -138,9 +133,8 @@ class Slider implements IExtensionPoint
      * Slider constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

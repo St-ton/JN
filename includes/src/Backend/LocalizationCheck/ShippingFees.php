@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class ShippingFees
+ * Class ShippingFees
  * @package JTL\Backend\LocalizationCheck
  */
 class ShippingFees extends AbstractLocalizationCheck
@@ -72,6 +72,6 @@ class ShippingFees extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationShippingFees');
+        return \__('locationShippingFees');
     }
 }

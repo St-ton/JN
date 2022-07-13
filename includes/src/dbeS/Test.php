@@ -13,17 +13,11 @@ use JTL\Shop;
 class Test
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
      * Test constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

@@ -66,7 +66,7 @@ class Slide
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'kSlide'            => 'ID',
         'kSlider'           => 'SliderID',
         'cTitel'            => 'Title',

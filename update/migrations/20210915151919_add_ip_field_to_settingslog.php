@@ -9,10 +9,10 @@ use JTL\Update\Migration;
 class Migration_20210915151919 extends Migration implements IMigration
 {
     protected $author = 'cr';
-    protected $description = 'add_ip_field_to_settingslog';
+    protected $description = 'Add ip field to settingslog';
 
     /**
-     * @inheritDoc
+     * @inheridoc
      */
     public function up()
     {
@@ -22,7 +22,7 @@ class Migration_20210915151919 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDor
+     * @inheridoc
      */
     public function down()
     {

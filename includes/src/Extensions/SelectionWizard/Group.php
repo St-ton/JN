@@ -123,7 +123,7 @@ class Group
             'SELECT cNameDeutsch 
                 FROM tsprache 
                 WHERE kSprache = :langID',
-            ['langID' => (int)$this->kSprache]
+            ['langID' => $this->kSprache]
         );
         $this->cSprache = $language->cNameDeutsch ?? '';
     }

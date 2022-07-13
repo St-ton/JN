@@ -17,7 +17,6 @@ namespace JTL\GeneralDataProtection;
  */
 class CleanupForgottenOptins extends Method implements MethodInterface
 {
-
     public function execute(): void
     {
         $this->cleanupOptins();

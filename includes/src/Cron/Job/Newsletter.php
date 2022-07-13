@@ -37,7 +37,7 @@ final class Newsletter extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $configuredDelay = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
+        $configuredDelay = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
         $lastSending     = $this->db->select(
             'tnewsletter',
             'kNewsletter',

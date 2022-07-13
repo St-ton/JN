@@ -47,7 +47,7 @@ class News extends AbstractImage
      */
     public function getImageNames(MediaImageRequest $req): array
     {
-        if (\mb_strpos($req->getName(), '_preview') === false && $req->getID() > 0) {
+        if (!\str_contains($req->getName(), '_preview') && $req->getID() > 0) {
             $base     = \PFAD_ROOT . \PFAD_NEWSBILDER;
             $realPath = $req->getID() . '/' . $req->getName() . '.' . $req->getExt();
             if (\file_exists($base . $realPath)) {
@@ -76,7 +76,7 @@ class News extends AbstractImage
      */
     public static function getThumb(string $type, $id, $mixed, $size, int $number = 1, string $source = null): string
     {
-        if ($source !== null && $id === null && \mb_strpos($source, '/') !== false) {
+        if ($source !== null && $id === null && \str_contains($source, '/')) {
             // we have a path like <newsid>/<some-image.ext>
             $exp = \explode('/', $source);
             if (isset($exp[0]) && \is_numeric($exp[0])) {
@@ -99,7 +99,7 @@ class News extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (\is_string($mixed)) {
-            if (\strpos($mixed, '/') !== false) {
+            if (\str_contains($mixed, '/')) {
                 $result = \explode('/', $mixed)[1];
             } else {
                 $result = $mixed;

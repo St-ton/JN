@@ -49,7 +49,7 @@ class JTLSmartyTemplateHints extends JTLSmartyTemplateClass
         $content_func = null
     ) {
         $tplID   = null;
-        $tplName = \mb_strpos($template, ':') !== false
+        $tplName = \str_contains($template, ':')
             ? \mb_substr($template, \mb_strpos($template, ':') + 1)
             : $template;
         if (\SHOW_TEMPLATE_HINTS === 1) {

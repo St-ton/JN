@@ -414,6 +414,14 @@ class Frontend extends AbstractSession
     }
 
     /**
+     * @param Lieferadresse $address
+     */
+    public static function setDeliveryAddress(Lieferadresse $address): void
+    {
+        $_SESSION['Lieferadresse'] = $address;
+    }
+
+    /**
      * @param Customer $customer
      * @return $this
      */

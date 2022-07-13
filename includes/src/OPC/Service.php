@@ -32,12 +32,7 @@ class Service
     /**
      * @var string
      */
-    protected $adminName = '';
-
-    /**
-     * @var null|Page
-     */
-    protected $curPage;
+    protected string $adminName = '';
 
     /**
      * Service constructor.
@@ -94,14 +89,12 @@ class Service
             'notScheduled',
             'now',
         ];
-
         foreach ([13, 14, 7] as $i => $stepcount) {
             for ($j = 0; $j < $stepcount; $j++) {
                 $messageNames[] = 'tutStepTitle_' . $i . '_' . $j;
                 $messageNames[] = 'tutStepText_' . $i . '_' . $j;
             }
         }
-
         foreach ($messageNames as $name) {
             $messages[$name] = \__($name);
         }
@@ -116,13 +109,10 @@ class Service
     public function registerAdminIOFunctions(AdminIO $io): void
     {
         $adminAccount = $io->getAccount();
-
         if ($adminAccount === null) {
             throw new Exception('Admin account was not set on AdminIO.');
         }
-
         $this->adminName = $adminAccount->account()->cLogin;
-
         foreach ($this->getIOFunctionNames() as $functionName) {
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'OPC_VIEW');
@@ -216,7 +206,7 @@ class Service
         $instance = $this->getBlueprint($id)->getInstance();
 
         Dispatcher::getInstance()->fire('shop.OPC.Service.getBlueprintInstance', [
-            'id' => $id,
+            'id'       => $id,
             'instance' => &$instance
         ]);
 
@@ -240,8 +230,7 @@ class Service
      */
     public function saveBlueprint(string $name, array $data): void
     {
-        $blueprint = (new Blueprint())->deserialize(['name' => $name, 'content' => $data]);
-        $this->db->saveBlueprint($blueprint);
+        $this->db->saveBlueprint((new Blueprint())->deserialize(['name' => $name, 'content' => $data]));
     }
 
     /**
@@ -249,8 +238,7 @@ class Service
      */
     public function deleteBlueprint(int $id): void
     {
-        $blueprint = (new Blueprint())->setId($id);
-        $this->db->deleteBlueprint($blueprint);
+        $this->db->deleteBlueprint((new Blueprint())->setId($id));
     }
 
     /**
@@ -360,10 +348,8 @@ class Service
      */
     public function getFilterList(string $propname, array $enabledFilters = []): string
     {
-        $filters = $this->getFilterOptions($enabledFilters);
-
         return Shop::Smarty()->assign('propname', $propname)
-            ->assign('filters', $filters)
+            ->assign('filters', $this->getFilterOptions($enabledFilters))
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
     }
 

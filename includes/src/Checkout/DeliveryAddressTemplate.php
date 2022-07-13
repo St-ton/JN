@@ -6,6 +6,7 @@ use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class DeliveryAddressTemplate
@@ -61,7 +62,8 @@ class DeliveryAddressTemplate extends Adresse
         if ($this->kLieferadresse > 0) {
             $this->kLieferadresse = (int)$this->kLieferadresse;
         }
-        $this->cAnredeLocalized = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->nIstStandardLieferadresse = (int)$this->nIstStandardLieferadresse;
+        $this->cAnredeLocalized          = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
@@ -80,13 +82,28 @@ class DeliveryAddressTemplate extends Adresse
     public function persist(): int
     {
         $this->encrypt();
-        $obj = $this->toObject();
+        $ins                            = new stdClass();
+        $ins->kKunde                    = $this->kKunde;
+        $ins->cAnrede                   = $this->cAnrede;
+        $ins->cVorname                  = $this->cVorname;
+        $ins->cNachname                 = $this->cNachname;
+        $ins->cTitel                    = $this->cTitel;
+        $ins->cFirma                    = $this->cFirma;
+        $ins->cZusatz                   = $this->cZusatz;
+        $ins->cStrasse                  = $this->cStrasse;
+        $ins->cHausnummer               = $this->cHausnummer;
+        $ins->cAdressZusatz             = $this->cAdressZusatz;
+        $ins->cPLZ                      = $this->cPLZ;
+        $ins->cOrt                      = $this->cOrt;
+        $ins->cBundesland               = $this->cBundesland;
+        $ins->cLand                     = self::checkISOCountryCode($this->cLand);
+        $ins->cTel                      = $this->cTel;
+        $ins->cMobil                    = $this->cMobil;
+        $ins->cFax                      = $this->cFax;
+        $ins->cMail                     = $this->cMail;
+        $ins->nIstStandardLieferadresse = $this->nIstStandardLieferadresse;
 
-        $obj->cLand = self::checkISOCountryCode($obj->cLand);
-
-        unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
-
-        $this->kLieferadresse = $this->db->insert('tlieferadressevorlage', $obj);
+        $this->kLieferadresse = $this->db->insert('tlieferadressevorlage', $ins);
         $this->decrypt();
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -99,11 +116,29 @@ class DeliveryAddressTemplate extends Adresse
     public function update(): int
     {
         $this->encrypt();
-        $obj = $this->toObject();
+        $upd                            = new stdClass();
+        $upd->kLieferadresse            = $this->kLieferadresse;
+        $upd->kKunde                    = $this->kKunde;
+        $upd->cAnrede                   = $this->cAnrede;
+        $upd->cVorname                  = $this->cVorname;
+        $upd->cNachname                 = $this->cNachname;
+        $upd->cTitel                    = $this->cTitel;
+        $upd->cFirma                    = $this->cFirma;
+        $upd->cZusatz                   = $this->cZusatz;
+        $upd->cStrasse                  = $this->cStrasse;
+        $upd->cHausnummer               = $this->cHausnummer;
+        $upd->cAdressZusatz             = $this->cAdressZusatz;
+        $upd->cPLZ                      = $this->cPLZ;
+        $upd->cOrt                      = $this->cOrt;
+        $upd->cBundesland               = $this->cBundesland;
+        $upd->cLand                     = self::checkISOCountryCode($this->cLand);
+        $upd->cTel                      = $this->cTel;
+        $upd->cMobil                    = $this->cMobil;
+        $upd->cFax                      = $this->cFax;
+        $upd->cMail                     = $this->cMail;
+        $upd->nIstStandardLieferadresse = $this->nIstStandardLieferadresse;
 
-        $obj->cLand = self::checkISOCountryCode($obj->cLand);
-        unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
-        $res = $this->db->update('tlieferadressevorlage', 'kLieferadresse', $obj->kLieferadresse, $obj);
+        $res = $this->db->update('tlieferadressevorlage', 'kLieferadresse', $upd->kLieferadresse, $upd);
         $this->decrypt();
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
@@ -116,12 +151,11 @@ class DeliveryAddressTemplate extends Adresse
     public function delete(): int
     {
         $this->encrypt();
-        $obj = $this->toObject();
 
         return $this->db->delete(
             'tlieferadressevorlage',
             ['kLieferadresse', 'kKunde'],
-            [$obj->kLieferadresse, $obj->kKunde]
+            [$this->kLieferadresse, $this->kKunde]
         );
     }
 
@@ -138,6 +172,7 @@ class DeliveryAddressTemplate extends Adresse
     }
 
     /**
+     * @param object $data
      * @return DeliveryAddressTemplate
      */
     public static function createFromObject($data): DeliveryAddressTemplate

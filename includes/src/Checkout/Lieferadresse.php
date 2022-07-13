@@ -9,6 +9,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Staat;
+use stdClass;
 
 /**
  * Class Lieferadresse
@@ -84,13 +85,27 @@ class Lieferadresse extends Adresse
     public function insertInDB(): int
     {
         $this->encrypt();
-        $obj = $this->toObject();
+        $ins                = new stdClass();
+        $ins->kKunde        = $this->kKunde;
+        $ins->cAnrede       = $this->cAnrede;
+        $ins->cVorname      = $this->cVorname;
+        $ins->cNachname     = $this->cNachname;
+        $ins->cTitel        = $this->cTitel;
+        $ins->cFirma        = $this->cFirma;
+        $ins->cZusatz       = $this->cZusatz;
+        $ins->cStrasse      = $this->cStrasse;
+        $ins->cHausnummer   = $this->cHausnummer;
+        $ins->cAdressZusatz = $this->cAdressZusatz;
+        $ins->cPLZ          = $this->cPLZ;
+        $ins->cOrt          = $this->cOrt;
+        $ins->cBundesland   = $this->cBundesland;
+        $ins->cLand         = self::checkISOCountryCode($this->cLand);
+        $ins->cTel          = $this->cTel;
+        $ins->cMobil        = $this->cMobil;
+        $ins->cFax          = $this->cFax;
+        $ins->cMail         = $this->cMail;
 
-        $obj->cLand = self::checkISOCountryCode($obj->cLand);
-
-        unset($obj->kLieferadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
-
-        $this->kLieferadresse = Shop::Container()->getDB()->insert('tlieferadresse', $obj);
+        $this->kLieferadresse = Shop::Container()->getDB()->insert('tlieferadresse', $ins);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

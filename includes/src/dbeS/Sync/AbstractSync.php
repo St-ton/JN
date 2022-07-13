@@ -218,9 +218,11 @@ abstract class AbstractSync
             $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
+        $mailer = Shop::Container()->get(Mailer::class);
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
-                ->setProduct($product)
+            /** @var OptinAvailAgain $availAgainOptin */
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
+            $availAgainOptin->setProduct($product)
                 ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
@@ -237,9 +239,7 @@ abstract class AbstractSync
                 : $msg->cMail;
             $tplData->mail                             = $tplMail;
 
-            $mailer = Shop::Container()->get(Mailer::class);
-            $mail   = new Mail();
-
+            $mail = new Mail();
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(

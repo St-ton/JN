@@ -148,7 +148,7 @@ class Router
                 $this->defaultLocale = $language->getIso639();
             }
         }
-        if ($conf['global']['routing_scheme'] !== 'F') {
+        if (($conf['global']['routing_scheme'] ?? 'F') !== 'F') {
             $this->ignoreDefaultLocale = $conf['global']['routing_default_language'] === 'F';
             if (\count($codes) > 1) {
                 $this->isMultilang  = true;

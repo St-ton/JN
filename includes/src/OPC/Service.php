@@ -5,6 +5,7 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Items\Category;
@@ -205,7 +206,7 @@ class Service
     {
         $instance = $this->getBlueprint($id)->getInstance();
 
-        Dispatcher::getInstance()->fire('shop.OPC.Service.getBlueprintInstance', [
+        Dispatcher::getInstance()->fire(Event::OPC_SERVICE_GETBLUEPRINTINSTANCE, [
             'id'       => $id,
             'instance' => &$instance
         ]);

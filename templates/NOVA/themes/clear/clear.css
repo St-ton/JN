@@ -20746,7 +20746,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-top: 0;
   margin-bottom: 1rem;
 }
-#cfg-container .nav.nav-pills {
+#cfg-modal-tabs {
   margin-bottom: -1rem;
 }
 #cfg-container-tab-panes {
@@ -20758,6 +20758,17 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 @media (max-width: 767.98px) {
   #cfg-container-tab-panes {
     height: calc((var(--vh, 1vh) * 87) - 5rem);
+  }
+}
+.cfg-options {
+  height: calc((var(--vh, 1vh) * 78) - 4rem);
+  position: relative;
+  overflow: auto;
+  overflow-x: hidden;
+}
+@media (max-width: 767.98px) {
+  .cfg-options {
+    height: calc((var(--vh, 1vh) * 87) - 6rem);
   }
 }
 .cfg-group .cfg-group-info {

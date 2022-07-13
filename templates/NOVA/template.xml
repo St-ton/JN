@@ -186,6 +186,10 @@
         </Section>
         <Section Name="Artikeldetailseite" Key="productdetails">
             <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
+            <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="popup">
+                <Option Value="popup">als Popup anzeigen</Option>
+                <Option Value="details">in den Artikeldetails anzeigen</Option>
+            </Setting>
         </Section>
         <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>

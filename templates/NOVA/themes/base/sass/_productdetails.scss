@@ -392,7 +392,7 @@
 	margin-bottom: 1rem;
 }
 
-#cfg-container .nav.nav-pills {
+#cfg-modal-tabs {
 	margin-bottom: -1rem;
 }
 
@@ -403,6 +403,16 @@
 	border-bottom: 2px solid $border-color;
 	@include media-breakpoint-down(sm) {
 		height: calc((var(--vh, 1vh) * 87) - 5rem);
+	}
+}
+
+.cfg-options {
+	height: calc((var(--vh, 1vh) * 78) - 4rem);
+	position:relative;
+	overflow:auto;
+	overflow-x:hidden;
+	@include media-breakpoint-down(sm) {
+		height: calc((var(--vh, 1vh) * 87) - 6rem);
 	}
 }
 

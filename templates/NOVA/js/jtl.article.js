@@ -1110,27 +1110,27 @@
                     $('.js-start-configuration').prop('disabled', !(data.response.variationsSelected && data.response.inStock));
                     $('.js-choose-variations-wrapper').toggleClass('d-none', data.response.variationsSelected);
                     $('.js-cfg-group').each(function (i, item) {
-                        let iconChecked     = $(this).find('.js-group-checked'),
+                        let iconChecked     = $('a[href="#'+this.id+'"] .js-group-checked'),
                             badgeInfoDanger = 'alert-info';
                         if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
                             iconChecked.addClass('d-none');
-                            iconChecked.next().removeClass('d-none');
-                            if ($(this).find('.js-cfg-group-collapse').hasClass('visited')) {
+                            // iconChecked.next().removeClass('d-none');
+                            if ($(this).find('.js-cfg-group').hasClass('visited')) {
                                 badgeInfoDanger = 'alert-danger';
                             }
                             $(this).find('.js-group-badge-checked')
                                 .removeClass('alert-success alert-info')
                                 .addClass(badgeInfoDanger);
-                            $(this).find('.js-cfg-next').prop('disabled', true);
+                            // $(this).find('.js-cfg-next').prop('disabled', true);
                         } else {
-                            if ($(this).hasClass('visited')) {
+                            // if ($(this).hasClass('visited')) {
                                 iconChecked.removeClass('d-none');
-                                iconChecked.next().addClass('d-none');
-                            }
+                                // iconChecked.next().addClass('d-none');
+                            // }
                             $(this).find('.js-group-badge-checked')
                                 .addClass('alert-success')
                                 .removeClass('alert-danger alert-info');
-                            $(this).find('.js-cfg-next').prop('disabled', false);
+                            // $(this).find('.js-cfg-next').prop('disabled', false);
                         }
                     });
                     $('.js-cfg-group-error').addClass('d-none').html('');
@@ -1181,20 +1181,20 @@
                     }, 500);
                 }, 200);
             });
-            $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-                if (!$(this).find('select').is(":focus")) {
-                    $(this).prev()[0].scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-            $('.js-cfg-next').on('click', function () {
-                $('button[data-target="' +  $(this).data('target') + '"]')
-                    .prop('disabled', false)
-                    .closest('.js-cfg-group').addClass('visited').tooltip('disable');
-                that.configurator();
-            });
+            // $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
+            //     if (!$(this).find('select').is(":focus")) {
+            //         $(this).prev()[0].scrollIntoView({
+            //             behavior: 'smooth',
+            //             block: 'start'
+            //         });
+            //     }
+            // });
+            // $('.js-cfg-next').on('click', function () {
+            //     $('button[data-target="' +  $(this).data('target') + '"]')
+            //         .prop('disabled', false)
+            //         .closest('.js-cfg-group').addClass('visited').tooltip('disable');
+            //     that.configurator();
+            // });
             $('#cfg-tab-summary-finish').on('click', function () {
                 if (!$(this).hasClass('disabled')) {
                     $('#cfg-modal-tabs').find('.nav-link').removeClass('active');

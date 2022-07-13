@@ -18,12 +18,12 @@ class PageService
     /**
      * @var string
      */
-    protected $adminName = '';
+    protected string $adminName = '';
 
     /**
      * @var null|Page
      */
-    protected $curPage;
+    protected ?Page $curPage = null;
 
     /**
      * PageService constructor.

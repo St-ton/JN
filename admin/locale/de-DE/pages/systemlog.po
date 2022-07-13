@@ -72,4 +72,4 @@ msgid "nameValueNameId"
 msgstr "Name | cWertName | Id"
 
 msgid "configLog"
-msgstr "Einstellungen-Log"
+msgstr "Einstellungenslog"

@@ -11,7 +11,7 @@ class AreaList implements \JsonSerializable
     /**
      * @var Area[]
      */
-    protected $areas = [];
+    protected array $areas = [];
 
     /**
      * @return $this

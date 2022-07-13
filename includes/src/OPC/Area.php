@@ -16,12 +16,12 @@ class Area implements \JsonSerializable
     /**
      * @var string
      */
-    protected $id = '';
+    protected string $id = '';
 
     /**
      * @var PortletInstance[]
      */
-    protected $content = [];
+    protected array $content = [];
 
     /**
      * @return string

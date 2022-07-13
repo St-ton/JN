@@ -294,7 +294,7 @@ class PageDB
             'dPublishTo'    => $page->getPublishTo() ?? '_DBNULL_',
             'cName'         => $page->getName(),
             'cPageUrl'      => $page->getUrl(),
-            'cAreasJson'    => \json_encode($page->getAreaList()),
+            'cAreasJson'    => \json_encode($page->getAreaList(), \JSON_THROW_ON_ERROR),
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',

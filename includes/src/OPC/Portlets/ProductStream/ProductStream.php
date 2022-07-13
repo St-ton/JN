@@ -109,8 +109,7 @@ class ProductStream extends Portlet
      */
     public function getExplicitProductIds(PortletInstance $instance)
     {
-        $productIds = $instance->getProperty('productIds');
-        return Text::parseSSKint($productIds);
+        return Text::parseSSKint($instance->getProperty('productIds'));
     }
 
     /**

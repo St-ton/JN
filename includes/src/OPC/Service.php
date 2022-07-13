@@ -21,6 +21,7 @@ use JTL\Filter\States\DummyState;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\L10n\GetText;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Shop;
 
@@ -37,13 +38,13 @@ class Service
 
     /**
      * Service constructor.
-     * @param DB $db
+     * @param DB      $db
+     * @param GetText $getText
      * @throws Exception
      */
-    public function __construct(protected DB $db)
+    public function __construct(protected DB $db, private GetText $getText)
     {
-        Shop::Container()->getGetText()
-            ->setLanguage(Shop::getCurAdminLangTag())
+        $this->getText->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');
     }
 

@@ -51,18 +51,29 @@ class DeliveryAddressTemplate extends Adresse
      */
     public function load(int $id): ?self
     {
-        $obj = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
-        if ($obj === null || $obj->kLieferadresse < 1) {
+        $data = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
+        if ($data === null || $data->kLieferadresse < 1) {
             return null;
         }
-        $this->fromObject($obj);
-        if ($this->kKunde > 0) {
-            $this->kKunde = (int)$this->kKunde;
-        }
-        if ($this->kLieferadresse > 0) {
-            $this->kLieferadresse = (int)$this->kLieferadresse;
-        }
-        $this->nIstStandardLieferadresse = (int)$this->nIstStandardLieferadresse;
+        $this->kKunde                    = (int)$data->kKunde;
+        $this->cAnrede                   = $data->cAnrede;
+        $this->cVorname                  = $data->cVorname;
+        $this->cNachname                 = $data->cNachname;
+        $this->cTitel                    = $data->cTitel;
+        $this->cFirma                    = $data->cFirma;
+        $this->cZusatz                   = $data->cZusatz;
+        $this->cStrasse                  = $data->cStrasse;
+        $this->cHausnummer               = $data->cHausnummer;
+        $this->cAdressZusatz             = $data->cAdressZusatz;
+        $this->cPLZ                      = $data->cPLZ;
+        $this->cOrt                      = $data->cOrt;
+        $this->cBundesland               = $data->cBundesland;
+        $this->cLand                     = $data->cLand;
+        $this->cTel                      = $data->cTel;
+        $this->cMobil                    = $data->cMobil;
+        $this->cFax                      = $data->cFax;
+        $this->cMail                     = $data->cMail;
+        $this->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse;
         $this->cAnredeLocalized          = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);

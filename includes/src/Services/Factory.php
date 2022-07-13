@@ -128,6 +128,7 @@ class Factory
             return new JTLApi($_SESSION, Nice::getInstance());
         });
         $container->singleton(GcServiceInterface::class, GcService::class);
+        $container->singleton(GetText::class);
         $container->singleton(OPCService::class);
         $container->singleton(PageService::class);
         $container->singleton(DB::class);
@@ -153,7 +154,6 @@ class Factory
                 !(Frontend::get('bAnti_spam_already_checked', false) || Frontend::getCustomer()->isLoggedIn())
             ));
         });
-        $container->singleton(GetText::class);
         $container->singleton(AdminAccount::class, static function (Container $container) {
             return new AdminAccount(
                 $container->getDB(),

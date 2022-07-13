@@ -32,7 +32,7 @@ class Packagings extends AbstractLocalizationCheck
         if ($this->getActiveLanguageCodes()->count() === 0) {
             return 0;
         }
-        $codes = $this->getActiveLanguageCodes()->map(static function ($e) {
+        $codes = $this->getActiveLanguageCodes()->map(static function ($e): string {
             return "'" . $e . "'";
         })->implode(',');
 

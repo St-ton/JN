@@ -135,7 +135,7 @@ class BaseManufacturer extends AbstractFilter
 
         return $this->getType() === Type::OR
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
-            : \implode(' AND ', \array_map(function ($e) {
+            : \implode(' AND ', \array_map(function ($e): string {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }

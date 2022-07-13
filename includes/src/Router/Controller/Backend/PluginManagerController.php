@@ -51,23 +51,79 @@ use function Functional\select;
  */
 class PluginManagerController extends AbstractBackendController
 {
+    /**
+     * @var LegacyPluginValidator
+     */
     private LegacyPluginValidator $legacyValidator;
+
+    /**
+     * @var PluginValidator
+     */
     private PluginValidator $validator;
+
+    /**
+     * @var StateChanger
+     */
     private StateChanger $stateChanger;
+
+    /**
+     * @var Uninstaller
+     */
     private Uninstaller $uninstaller;
+
+    /**
+     * @var Installer
+     */
     private Installer $installer;
+
+    /**
+     * @var MinifyService
+     */
     private MinifyService $minify;
 
+    /**
+     * @var Collection
+     */
     private Collection $pluginsInstalled;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsProblematic;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsAvailable;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsDisabled;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsErroneous;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsAll;
 
+    /**
+     * @var string
+     */
     private string $errorMessage = '';
+
+    /**
+     * @var string
+     */
     private string $notice       = '';
 
+    /**
+     * @var bool
+     */
     private bool $reload = false;
 
     /**
@@ -161,7 +217,7 @@ class PluginManagerController extends AbstractBackendController
         $licenses                 = $mapper->getCollection();
         $listing                  = new Listing($this->db, $this->cache, $this->legacyValidator, $this->validator);
         $this->pluginsAll         = $listing->getAll();
-        $this->pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses) {
+        $this->pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses): void {
             $exsID = $item->getExsID();
             if ($exsID === null) {
                 return;
@@ -181,7 +237,7 @@ class PluginManagerController extends AbstractBackendController
         });
         $this->pluginsProblematic = $listing->getProblematic();
         $this->pluginsInstalled   = $listing->getEnabled();
-        $this->pluginsAvailable   = $listing->getAvailable()->each(function (ListingItem $item) use ($licenses) {
+        $this->pluginsAvailable   = $listing->getAvailable()->each(function (ListingItem $item) use ($licenses): void {
             $exsID = $item->getExsID();
             if ($exsID === null) {
                 return;

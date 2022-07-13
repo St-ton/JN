@@ -343,7 +343,7 @@ class Newsletter
             return \mb_strlen($e) > 0;
         });
         if ($asProductNo) {
-            $res = \array_map(static function ($e) {
+            $res = \array_map(static function ($e): string {
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {

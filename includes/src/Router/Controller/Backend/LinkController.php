@@ -128,7 +128,7 @@ class LinkController extends AbstractBackendController
                 $this->alertService->addError(
                     \sprintf(
                         \__('hasDuplicateSpecialLink'),
-                        ' ' . $specialLinks->map(static function (LinkInterface $l) {
+                        ' ' . $specialLinks->map(static function (LinkInterface $l): string {
                             return $l->getName();
                         })->implode('/')
                     ),

@@ -1654,7 +1654,7 @@ class Exportformat
         \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
 
         Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
-        \register_shutdown_function(static function () use ($id) {
+        \register_shutdown_function(static function () use ($id): void {
             $err = \error_get_last();
             if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
                 $out = \ob_get_clean();

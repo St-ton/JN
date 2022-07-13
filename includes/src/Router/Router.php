@@ -166,7 +166,7 @@ class Router
         $this->router->middleware(new CurrencyCheckMiddleware());
         $this->router->middleware(new OptinMiddleware());
         $visibilityMiddleware = new VisibilityMiddleware();
-        $currencies           = \array_map(static function (Currency $e) {
+        $currencies           = \array_map(static function (Currency $e): string {
             return $e->getCode();
         }, Currency::loadAll());
         if (\count($currencies) > 1) {

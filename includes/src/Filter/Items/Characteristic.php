@@ -650,7 +650,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row): int {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(

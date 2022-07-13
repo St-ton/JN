@@ -254,10 +254,10 @@ class Overlay
             return false;
         }
         return match ($extension) {
-            '.jpg' => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
-            '.png' => \function_exists('imagepng') && \imagepng($im, $path),
-            '.gif' => \function_exists('imagegif') && \imagegif($im, $path),
-            '.bmp' => \function_exists('imagewbmp') && \imagewbmp($im, $path),
+            '.jpg'  => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
+            '.png'  => \function_exists('imagepng') && \imagepng($im, $path),
+            '.gif'  => \function_exists('imagegif') && \imagegif($im, $path),
+            '.bmp'  => \function_exists('imagewbmp') && \imagewbmp($im, $path),
             default => false,
         };
     }
@@ -270,10 +270,10 @@ class Overlay
     public function mapFileType(string $type): string
     {
         return match ($type) {
-            'image/gif' => '.gif',
+            'image/gif'                => '.gif',
             'image/png', 'image/x-png' => '.png',
-            'image/bmp' => '.bmp',
-            default => '.jpg',
+            'image/bmp'                => '.bmp',
+            default                    => '.jpg',
         };
     }
 

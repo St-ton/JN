@@ -259,7 +259,7 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            )->each(static function ($item) use ($currency) {
+            )->each(static function ($item) use ($currency): void {
                 $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }

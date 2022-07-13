@@ -47,7 +47,7 @@ class Collection extends \Illuminate\Support\Collection
     {
         $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($itemID): bool {
             return $e->getID() === $itemID;
-        })->sort(static function (ExsLicense $e) {
+        })->sort(static function (ExsLicense $e): int {
             return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
         });
         if ($matches->count() > 1) {
@@ -70,7 +70,7 @@ class Collection extends \Illuminate\Support\Collection
     {
         $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($exsID): bool {
             return $e->getExsID() === $exsID;
-        })->sort(static function (ExsLicense $e) {
+        })->sort(static function (ExsLicense $e): int {
             return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
         });
         if ($matches->count() > 1) {
@@ -137,7 +137,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getLicenseViolations(): self
     {
-        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e) {
+        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e): bool {
             return !$e->canBeUsed();
         });
     }

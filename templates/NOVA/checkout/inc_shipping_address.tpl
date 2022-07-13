@@ -29,7 +29,7 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <table id="example" class="display compact" style="width:100%">
+                        <table id="shipping-address-templates" class="table-striped display compact" style="width:100%">
                             <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -169,20 +169,21 @@
             );
         }
 
-        var table = $('#example').DataTable( {
+        var table = $('#shipping-address-templates').DataTable( {
             language: {
                 //url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
-                "lengthMenu":     "{lang key='lengthMenu' section='datatables'}",
-                "info":           "{lang key='info' section='datatables'}",
-                "infoEmpty":      "{lang key='infoEmpty' section='datatables'}",
-                "infoFiltered":   "{lang key='infoFiltered' section='datatables'}",
-                "search":         "{lang key='search' section='datatables'}",
-                "zeroRecords":    "{lang key='zeroRecords' section='datatables'}",
+                "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
+                "info":              "{lang key='info' section='datatables'}",
+                "infoEmpty":         "{lang key='infoEmpty' section='datatables'}",
+                "infoFiltered":      "{lang key='infoFiltered' section='datatables'}",
+                "search":            "",
+                "searchPlaceholder": "{lang key='search' section='datatables'}",
+                "zeroRecords":       "{lang key='zeroRecords' section='datatables'}",
                 "paginate": {
-                    "first":      "{lang key='paginatefirst' section='datatables'}",
-                    "last":       "{lang key='paginatelast' section='datatables'}",
-                    "next":       "{lang key='paginatenext' section='datatables'}",
-                    "previous":   "{lang key='paginateprevious' section='datatables'}"
+                    "first":    "{lang key='paginatefirst' section='datatables'}",
+                    "last":     "{lang key='paginatelast' section='datatables'}",
+                    "next":     "{lang key='paginatenext' section='datatables'}",
+                    "previous": "{lang key='paginateprevious' section='datatables'}"
                 }
             },
             columns: [
@@ -223,10 +224,9 @@
             order: [6, 'desc']
         } );
 
-        $('#example tbody').on('click', 'td.dt-control', function () {
-            var tr = $(this).closest('tr');
-            var row = table.row(tr);
-
+        $('#shipping-address-templates tbody').on('click', 'td.dt-control', function () {
+            let tr = $(this).closest('tr'),
+                row = table.row(tr);
             if (row.child.isShown()) {
                 // This row is already open - close it
                 row.child.hide();
@@ -235,7 +235,6 @@
                 // Open this row
                 row.child(format(row.data())).show();
                 tr.addClass('shown');
-                console.log(row.child);
             }
         });
     });

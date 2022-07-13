@@ -10,7 +10,7 @@
                         {row class='btn-row'}
                             {col md=8 xl=6 class="checkout-button-row-submit"}
                                 {input type="hidden" name="editLieferadresse" value="1"}
-                                {if isset($Lieferadresse->nIstStandardLieferadresse) && $Lieferadresse->nIstStandardLieferadresse === "1"}
+                                {if isset($Lieferadresse->nIstStandardLieferadresse) && $Lieferadresse->nIstStandardLieferadresse === 1}
                                     {input type="hidden" name="isDefault" value=1}
                                 {/if}
                                 {if isset($Lieferadresse->kLieferadresse) && !isset($smarty.get.fromCheckout)}
@@ -18,12 +18,12 @@
                                     {button type="submit" value="1" block=true variant="primary"}
                                         {lang key='updateAddress' section='account data'}
                                     {/button}
-                                {else if !isset($Lieferadresse->kLieferadresse)}
+                                {elseif !isset($Lieferadresse->kLieferadresse)}
                                     {input type="hidden" name="editAddress" value="neu"}
                                     {button type="submit" value="1" block=true variant="primary"}
                                         {lang key='saveAddress' section='account data'}
                                     {/button}
-                                {else if isset($Lieferadresse->kLieferadresse) && isset($smarty.get.fromCheckout)}
+                                {elseif isset($Lieferadresse->kLieferadresse) && isset($smarty.get.fromCheckout)}
                                     {input type="hidden" name="updateAddress" value=$Lieferadresse->kLieferadresse}
                                     {input type="hidden" name="backToCheckout" value="1"}
                                     {button type="submit" value="1" block=true variant="primary"}
@@ -37,7 +37,7 @@
             {/col}
             {col md=6}
                 {block name='checkout-inc-shipping-address-fieldset-address'}
-                    <table id="lieferadressen-liste" class="display compact" style="width:100%">
+                    <table id="lieferadressen-liste" class="table-striped display compact" style="width:100%">
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -69,7 +69,7 @@
                                     {$adresse->cAdressZusatz}
                                 </td>
                                 <td style="max-width: 40px" class="text-right">
-                                    {if $adresse->nIstStandardLieferadresse !== '1'}
+                                    {if $adresse->nIstStandardLieferadresse !== 1}
                                         <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}'">
                                             <span class="fas fa-star"></span>
                                         </button>
@@ -127,18 +127,18 @@
 
         var table = $('#lieferadressen-liste').DataTable( {
             language: {
-                //url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
-                "lengthMenu":     "{lang key='lengthMenu' section='datatables'}",
-                "info":           "{lang key='info' section='datatables'}",
-                "infoEmpty":      "{lang key='infoEmpty' section='datatables'}",
-                "infoFiltered":   "{lang key='infoFiltered' section='datatables'}",
-                "search":         "{lang key='search' section='datatables'}",
-                "zeroRecords":    "{lang key='zeroRecords' section='datatables'}",
+                "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
+                "info":              "{lang key='info' section='datatables'}",
+                "infoEmpty":         "{lang key='infoEmpty' section='datatables'}",
+                "infoFiltered":      "{lang key='infoFiltered' section='datatables'}",
+                "search":            "",
+                "searchPlaceholder": "{lang key='search' section='datatables'}",
+                "zeroRecords":       "{lang key='zeroRecords' section='datatables'}",
                 "paginate": {
-                    "first":      "{lang key='paginatefirst' section='datatables'}",
-                    "last":       "{lang key='paginatelast' section='datatables'}",
-                    "next":       "{lang key='paginatenext' section='datatables'}",
-                    "previous":   "{lang key='paginateprevious' section='datatables'}"
+                    "first":    "{lang key='paginatefirst' section='datatables'}",
+                    "last":     "{lang key='paginatelast' section='datatables'}",
+                    "next":     "{lang key='paginatenext' section='datatables'}",
+                    "previous": "{lang key='paginateprevious' section='datatables'}"
                 }
             },
             columns: [
@@ -176,8 +176,8 @@
         } );
 
         $('#lieferadressen-liste tbody').on('click', 'td.dt-control', function () {
-            var tr = $(this).closest('tr');
-            var row = table.row(tr);
+            let tr = $(this).closest('tr'),
+                row = table.row(tr);
 
             if (row.child.isShown()) {
                 row.child.hide();
@@ -192,7 +192,7 @@
             let lieferadresse = $(this).data('lieferadresse');
 
             eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
-            var options = {
+            let options = {
                 message: '{lang key='modalShippingAddressDeletionConfirmation' section='account data'}',
                 label: '{lang key='yes' section='global'}',
                 title: '{lang key='deleteAddress' section='account data'}'

@@ -20700,7 +20700,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
   #cfg-container .hr-sect::before, #cfg-container .hr-sect::after {
     content: "";
-    flex-grow: 1;
     background: #ebebeb;
     height: 1px;
     font-size: 0;

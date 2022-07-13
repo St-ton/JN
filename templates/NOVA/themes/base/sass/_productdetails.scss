@@ -340,7 +340,6 @@
 			&::before,
 			&::after {
 				content: "";
-				flex-grow: 1;
 				background: $hr-border-color;
 				height: 1px;
 				font-size: 0;

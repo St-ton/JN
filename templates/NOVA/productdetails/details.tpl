@@ -302,9 +302,9 @@
                     {/col}
                     {block name='productdetails-details-include-config-container-details'}
                         {if $Artikel->bHasKonfig && $Einstellungen.template.productdetails.config_position === 'details'}
-                            {col id="product-configurator"}
+                            <div id="product-configurator">
                                 {include file='productdetails/config_container.tpl'}
-                            {/col}
+                            </div>
                         {/if}
                     {/block}
                 {/row}

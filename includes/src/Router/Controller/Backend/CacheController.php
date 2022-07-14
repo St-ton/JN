@@ -243,6 +243,7 @@ class CacheController extends AbstractBackendController
                 break;
             case 'deactivate':
                 if (GeneralObject::isCountable('cache-types', $postData)) {
+                    $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $this->cache->flushTags([$cacheType]);
                         $currentlyDisabled[] = $cacheType;

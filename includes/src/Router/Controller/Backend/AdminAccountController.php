@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use DateTime;
 use Exception;
+use JTL\Backend\Menu;
 use JTL\Backend\Permissions;
 use JTL\Backend\TwoFA;
 use JTL\Helpers\Form;
@@ -79,14 +80,12 @@ class AdminAccountController extends AbstractBackendController
      */
     public function getAdminDefPermissions(): array
     {
-        global $adminMenu;
-
+        $menu               = new Menu($this->db, $this->account, $this->getText);
         $perms              = reindex($this->db->selectAll('tadminrecht', [], []), static function ($e) {
             return $e->cRecht;
         });
         $permissionsOrdered = [];
-
-        foreach ($adminMenu as $rootName => $rootEntry) {
+        foreach ($menu->getStructure(Shop::getAdminURL() . '/') as $rootName => $rootEntry) {
             $permMainTMP = [];
             foreach ($rootEntry->items as $secondName => $secondEntry) {
                 if ($secondEntry === 'DYNAMIC_PLUGINS' || !empty($secondEntry->excludeFromAccessView)) {
@@ -380,9 +379,7 @@ class AdminAccountController extends AbstractBackendController
     {
         $adminID = Request::postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
-        if (!empty($account->kAdminlogin)
-            && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
-        ) {
+        if ($account !== null && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
             $this->addError(\__('errorSelfLock'));
         } elseif (\is_object($account)) {
             if ((int)$account->kAdminlogingruppe === \ADMINGROUP) {
@@ -498,7 +495,7 @@ class AdminAccountController extends AbstractBackendController
                 $errors['cMail'] = 2;
                 $this->alertService->addDanger(\__('validationErrorIncorrectEmail'), 'validationErrorIncorrectEmail');
             }
-            if (\mb_strlen($tmpAcc->cPass) === 0 && $tmpAcc->kAdminlogin === 0) {
+            if ($tmpAcc->kAdminlogin === 0 && \mb_strlen($tmpAcc->cPass) === 0) {
                 $errors['cPass'] = 1;
             }
             if (\mb_strlen($tmpAcc->cLogin) === 0) {
@@ -536,7 +533,8 @@ class AdminAccountController extends AbstractBackendController
                 }
                 // if we change the current admin-user, we have to update his session-credentials too!
                 if ((int)$tmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
-                    && $tmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
+                    && $tmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin
+                ) {
                     $_SESSION['AdminAccount']->cLogin = $tmpAcc->cLogin;
                 }
                 if (\mb_strlen($tmpAcc->cPass) > 0) {
@@ -962,7 +960,6 @@ class AdminAccountController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
-
         $this->finalize($this->getNextAction());
 
         return $smarty->assign('route', $this->route)

@@ -239,9 +239,8 @@ class Newsletter
             ->assign('Kampagne', $campaign)
             ->assign(
                 'cNewsletterURL',
-                Shop::getURL() .
-                '/newsletter.php?show=' .
-                ($newsletter->kNewsletter ?? '0')
+                Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')
+                    . '?show=' . ($newsletter->kNewsletter ?? '0')
             );
         $net      = 0;
         $bodyHtml = '';

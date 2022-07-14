@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
 use JTL\Pagination\Pagination;
+use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -136,7 +137,8 @@ class NewsletterController extends AbstractBackendController
                     $step = 'vorlage_vorschau_iframe';
                     $smarty->assign(
                         'cURL',
-                        'newsletter.php?vorschau=' . $nlTemplateID . '&token=' . $_SESSION['jtl_token']
+                        $this->baseURL . '/' . Route::NEWSLETTER
+                            . '?vorschau=' . $nlTemplateID . '&token=' . $_SESSION['jtl_token']
                     );
                     $preview = $instance->getPreview($newsletterTPL);
                 } elseif (isset($newsletterTPL->kNewsletterVorlage) && $newsletterTPL->kNewsletterVorlage > 0) {

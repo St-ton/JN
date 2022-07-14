@@ -145,8 +145,7 @@ class BackendRouter
         $this->router = new Router();
         $strategy     = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
         $container    = new Container();
-
-        $controllers = [
+        $controllers  = [
             Route::BANNER                => BannerController::class,
             Route::ORDERS                => OrderController::class,
             Route::IMAGES                => ImagesController::class,
@@ -237,7 +236,6 @@ class BackendRouter
             Route::ELFINDER              => ElfinderController::class,
             Route::CODE                  => CodeController::class,
             Route::LOCALIZATION_CHECK    => LocalizationController::class,
-
         ];
         foreach ($controllers as $route => $controller) {
             $container->add($controller, function () use (
@@ -292,6 +290,9 @@ class BackendRouter
             ->middleware($updateCheckMiddleWare);
     }
 
+    /**
+     * @return void
+     */
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);

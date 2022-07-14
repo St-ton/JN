@@ -36,8 +36,167 @@ class Menu
         $curScriptFileNameWithRequest = $request->getUri()->getPath();
         $requestedPath                = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
         $mainGroups                   = [];
-        $configLink                   = $adminURL . Route::CONFIG;
-        $adminMenu                    = [
+        $adminMenu                    = $this->getStructure($adminURL);
+        $sectionMenuMapping           = [];
+        $rootKey                      = 0;
+        foreach ($adminMenu as $menuName => $menu) {
+            foreach ($menu->items as $subMenuName => $subMenu) {
+                if (!\is_array($subMenu)) {
+                    continue;
+                }
+                foreach ($subMenu as $itemName => $item) {
+                    if (!isset($item->section)) {
+                        continue;
+                    }
+                    if (!isset($sectionMenuMapping[$item->section])) {
+                        $sectionMenuMapping[$item->section] = [];
+                    }
+
+                    $groupName = $item->group ?? 'all';
+
+                    $sectionMenuMapping[$item->section][$groupName] = (object)[
+                        'path'           => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
+                        'url'            => $item->link,
+                        'specialSetting' => $item->specialSetting ?? false,
+                        'settingsAnchor' => $item->settingsAnchor ?? '',
+                    ];
+                }
+            }
+        }
+        foreach ($adminMenu as $rootName => $rootEntry) {
+            $rootKey   = (string)$rootKey;
+            $mainGroup = (object)[
+                'cName'           => $rootName,
+                'icon'            => $rootEntry->icon,
+                'oLink_arr'       => [],
+                'oLinkGruppe_arr' => [],
+                'key'             => $rootKey,
+                'active'          => false
+            ];
+
+            $secondKey = 0;
+            foreach ($rootEntry->items as $secondName => $secondEntry) {
+                $linkGruppe = (object)[
+                    'cName'     => $secondName,
+                    'oLink_arr' => [],
+                    'key'       => $rootKey . $secondKey,
+                    'active'    => false
+                ];
+
+                if ($secondEntry === 'DYNAMIC_PLUGINS') {
+                    if (\SAFE_MODE === true || !$this->account->permission(Permissions::PLUGIN_ADMIN_VIEW)) {
+                        continue;
+                    }
+                    $pluginLinks = $this->db->getObjects(
+                        'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
+                            FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
+                                ON p.kPlugin = pam.kPlugin
+                            WHERE p.nStatus = :state
+                            ORDER BY p.nPrio, p.cName',
+                        ['state' => State::ACTIVATED]
+                    );
+
+                    foreach ($pluginLinks as $pluginLink) {
+                        $pluginID = (int)$pluginLink->kPlugin;
+                        $this->getText->loadPluginLocale(
+                            'base',
+                            PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                        );
+
+                        $link = (object)[
+                            'cLinkname' => \__($pluginLink->cName),
+                            'cURL'      => $adminURL . Route::PLUGIN . '/' . $pluginID,
+                            'cRecht'    => 'PLUGIN_ADMIN_VIEW',
+                            'key'       => $rootKey . $secondKey . $pluginID,
+                            'active'    => false
+                        ];
+
+                        $linkGruppe->oLink_arr[] = $link;
+                        if (\str_ends_with($requestedPath, Route::PLUGIN . '/' . $pluginID)) {
+                            $mainGroup->active  = true;
+                            $linkGruppe->active = true;
+                            $link->active       = true;
+                        }
+                    }
+                } else {
+                    $thirdKey = 0;
+
+                    if (\is_object($secondEntry)) {
+                        if (isset($secondEntry->permissions)
+                            && !$this->account->permission($secondEntry->permissions)
+                        ) {
+                            continue;
+                        }
+                        $linkGruppe->oLink_arr = (object)[
+                            'cLinkname' => $secondName,
+                            'cURL'      => $secondEntry->link,
+                            'cRecht'    => $secondEntry->permissions ?? null,
+                            'target'    => $secondEntry->target ?? null,
+                            'active'    => false
+                        ];
+                        if (str_ends_with($linkGruppe->oLink_arr->cURL, $requestedPath)) {
+                            $mainGroup->active  = true;
+                            $linkGruppe->active = true;
+                        }
+                    } else {
+                        foreach ($secondEntry as $thirdName => $thirdEntry) {
+                            if (\is_object($thirdEntry)) {
+                                $link = (object)[
+                                    'cLinkname' => $thirdName,
+                                    'cURL'      => $thirdEntry->link,
+                                    'cRecht'    => $thirdEntry->permissions,
+                                    'key'       => $rootKey . $secondKey . $thirdKey,
+                                    'active'    => false
+                                ];
+                            } else {
+                                continue;
+                            }
+                            if (!$this->account->permission($link->cRecht)) {
+                                continue;
+                            }
+                            $urlPath = \parse_url($link->cURL, \PHP_URL_PATH) ?? '';
+                            if ($requestedPath === $urlPath) {
+                                $hash = \mb_strpos($link->cURL, '#');
+                                $url  = $link->cURL;
+                                if ($hash !== false) {
+                                    $url = \mb_substr($link->cURL, 0, $hash);
+                                }
+                                $linkPath = \str_replace(Shop::getURL(), '', $url);
+                                if (\str_contains($curScriptFileNameWithRequest, $linkPath)) {
+                                    $mainGroup->active  = true;
+                                    $linkGruppe->active = true;
+                                    $link->active       = true;
+                                }
+                            }
+                            $linkGruppe->oLink_arr[] = $link;
+                            $thirdKey++;
+                        }
+                    }
+                }
+                if (\is_object($linkGruppe->oLink_arr) || \count($linkGruppe->oLink_arr) > 0) {
+                    $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
+                }
+                $secondKey++;
+            }
+
+            if (\count($mainGroup->oLinkGruppe_arr) > 0) {
+                $mainGroups[] = $mainGroup;
+            }
+            $rootKey++;
+        }
+
+        return $mainGroups;
+    }
+
+    /**
+     * @param string $adminURL
+     * @return object[]
+     */
+    public function getStructure(string $adminURL): array
+    {
+        $configLink = $adminURL . Route::CONFIG;
+
+        return [
             \__('Marketing')      => (object)[
                 'icon'  => 'marketing',
                 'items' => [
@@ -488,155 +647,5 @@ class Menu
                 ]
             ],
         ];
-
-        $sectionMenuMapping = [];
-        $rootKey            = 0;
-        foreach ($adminMenu as $menuName => $menu) {
-            foreach ($menu->items as $subMenuName => $subMenu) {
-                if (!\is_array($subMenu)) {
-                    continue;
-                }
-                foreach ($subMenu as $itemName => $item) {
-                    if (!isset($item->section)) {
-                        continue;
-                    }
-                    if (!isset($sectionMenuMapping[$item->section])) {
-                        $sectionMenuMapping[$item->section] = [];
-                    }
-
-                    $groupName = $item->group ?? 'all';
-
-                    $sectionMenuMapping[$item->section][$groupName] = (object)[
-                        'path'           => $menuName . ' -&gt; ' . $subMenuName . ' -&gt; ' . $itemName,
-                        'url'            => $item->link,
-                        'specialSetting' => $item->specialSetting ?? false,
-                        'settingsAnchor' => $item->settingsAnchor ?? '',
-                    ];
-                }
-            }
-        }
-        foreach ($adminMenu as $rootName => $rootEntry) {
-            $rootKey   = (string)$rootKey;
-            $mainGroup = (object)[
-                'cName'           => $rootName,
-                'icon'            => $rootEntry->icon,
-                'oLink_arr'       => [],
-                'oLinkGruppe_arr' => [],
-                'key'             => $rootKey,
-                'active'          => false
-            ];
-
-            $secondKey = 0;
-            foreach ($rootEntry->items as $secondName => $secondEntry) {
-                $linkGruppe = (object)[
-                    'cName'     => $secondName,
-                    'oLink_arr' => [],
-                    'key'       => $rootKey . $secondKey,
-                    'active'    => false
-                ];
-
-                if ($secondEntry === 'DYNAMIC_PLUGINS') {
-                    if (\SAFE_MODE === true || !$this->account->permission(Permissions::PLUGIN_ADMIN_VIEW)) {
-                        continue;
-                    }
-                    $pluginLinks = $this->db->getObjects(
-                        'SELECT DISTINCT p.kPlugin, p.cName, p.nPrio
-                            FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
-                                ON p.kPlugin = pam.kPlugin
-                            WHERE p.nStatus = :state
-                            ORDER BY p.nPrio, p.cName',
-                        ['state' => State::ACTIVATED]
-                    );
-
-                    foreach ($pluginLinks as $pluginLink) {
-                        $pluginID = (int)$pluginLink->kPlugin;
-                        $this->getText->loadPluginLocale(
-                            'base',
-                            PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
-                        );
-
-                        $link = (object)[
-                            'cLinkname' => \__($pluginLink->cName),
-                            'cURL'      => $adminURL . Route::PLUGIN . '/' . $pluginID,
-                            'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                            'key'       => $rootKey . $secondKey . $pluginID,
-                            'active'    => false
-                        ];
-
-                        $linkGruppe->oLink_arr[] = $link;
-                        if (\str_ends_with($requestedPath, Route::PLUGIN . '/' . $pluginID)) {
-                            $mainGroup->active  = true;
-                            $linkGruppe->active = true;
-                            $link->active       = true;
-                        }
-                    }
-                } else {
-                    $thirdKey = 0;
-
-                    if (\is_object($secondEntry)) {
-                        if (isset($secondEntry->permissions)
-                            && !$this->account->permission($secondEntry->permissions)
-                        ) {
-                            continue;
-                        }
-                        $linkGruppe->oLink_arr = (object)[
-                            'cLinkname' => $secondName,
-                            'cURL'      => $secondEntry->link,
-                            'cRecht'    => $secondEntry->permissions ?? null,
-                            'target'    => $secondEntry->target ?? null,
-                            'active'    => false
-                        ];
-                        if (str_ends_with($linkGruppe->oLink_arr->cURL, $requestedPath)) {
-                            $mainGroup->active  = true;
-                            $linkGruppe->active = true;
-                        }
-                    } else {
-                        foreach ($secondEntry as $thirdName => $thirdEntry) {
-                            if (\is_object($thirdEntry)) {
-                                $link = (object)[
-                                    'cLinkname' => $thirdName,
-                                    'cURL'      => $thirdEntry->link,
-                                    'cRecht'    => $thirdEntry->permissions,
-                                    'key'       => $rootKey . $secondKey . $thirdKey,
-                                    'active'    => false
-                                ];
-                            } else {
-                                continue;
-                            }
-                            if (!$this->account->permission($link->cRecht)) {
-                                continue;
-                            }
-                            $urlPath = \parse_url($link->cURL, \PHP_URL_PATH) ?? '';
-                            if ($requestedPath === $urlPath) {
-                                $hash = \mb_strpos($link->cURL, '#');
-                                $url  = $link->cURL;
-                                if ($hash !== false) {
-                                    $url = \mb_substr($link->cURL, 0, $hash);
-                                }
-                                $linkPath = \str_replace(Shop::getURL(), '', $url);
-                                if (\str_contains($curScriptFileNameWithRequest, $linkPath)) {
-                                    $mainGroup->active  = true;
-                                    $linkGruppe->active = true;
-                                    $link->active       = true;
-                                }
-                            }
-                            $linkGruppe->oLink_arr[] = $link;
-                            $thirdKey++;
-                        }
-                    }
-                }
-                if (\is_object($linkGruppe->oLink_arr) || \count($linkGruppe->oLink_arr) > 0) {
-                    $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
-                }
-                $secondKey++;
-            }
-
-            if (\count($mainGroup->oLinkGruppe_arr) > 0) {
-                $mainGroups[] = $mainGroup;
-            }
-            $rootKey++;
-        }
-
-        return $mainGroups;
     }
 }

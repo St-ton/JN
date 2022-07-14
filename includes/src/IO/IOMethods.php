@@ -317,7 +317,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'vergleichsliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('compare')
             ]);
@@ -482,7 +482,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'wunschliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);

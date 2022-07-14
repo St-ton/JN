@@ -80,12 +80,12 @@ class AdminAccountController extends AbstractBackendController
      */
     public function getAdminDefPermissions(): array
     {
+        $permissionsOrdered = [];
         $menu               = new Menu($this->db, $this->account, $this->getText);
         $perms              = reindex($this->db->selectAll('tadminrecht', [], []), static function ($e) {
             return $e->cRecht;
         });
-        $permissionsOrdered = [];
-        foreach ($menu->getStructure(Shop::getAdminURL() . '/') as $rootName => $rootEntry) {
+        foreach ($menu->getStructure() as $rootName => $rootEntry) {
             $permMainTMP = [];
             foreach ($rootEntry->items as $secondName => $secondEntry) {
                 if ($secondEntry === 'DYNAMIC_PLUGINS' || !empty($secondEntry->excludeFromAccessView)) {

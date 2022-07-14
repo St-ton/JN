@@ -32,13 +32,13 @@ class Menu
      */
     public function build(ServerRequestInterface $request): array
     {
-        $adminURL                     = Shop::getAdminURL() . '/';
-        $curScriptFileNameWithRequest = $request->getUri()->getPath();
-        $requestedPath                = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
-        $mainGroups                   = [];
-        $adminMenu                    = $this->getStructure($adminURL);
-        $sectionMenuMapping           = [];
-        $rootKey                      = 0;
+        $adminURL           = Shop::getAdminURL() . '/';
+        $path               = $request->getUri()->getPath();
+        $requestedPath      = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
+        $mainGroups         = [];
+        $adminMenu          = $this->getStructure($adminURL);
+        $sectionMenuMapping = [];
+        $rootKey            = 0;
         foreach ($adminMenu as $menuName => $menu) {
             foreach ($menu->items as $subMenuName => $subMenu) {
                 if (!\is_array($subMenu)) {
@@ -162,7 +162,7 @@ class Menu
                                     $url = \mb_substr($link->cURL, 0, $hash);
                                 }
                                 $linkPath = \str_replace(Shop::getURL(), '', $url);
-                                if (\str_contains($curScriptFileNameWithRequest, $linkPath)) {
+                                if (\str_contains($path, $linkPath)) {
                                     $mainGroup->active  = true;
                                     $linkGruppe->active = true;
                                     $link->active       = true;

@@ -348,9 +348,12 @@ class Router
             self::TYPE_SEARCH_QUERY         => 'ROUTE_SEARCHQUERY_BY_',
             default                         => 'ROUTE_XXX_BY_'
         };
+
+        $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
+
         $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
-            && ($this->ignoreDefaultLocale === false || ($replacements['lang'] ?? '') !== $this->defaultLocale)
+            && ($this->ignoreDefaultLocale === false || !$isDefaultLocale)
         ) {
             if (empty($replacements['lang'])) {
                 $replacements['lang'] = $this->defaultLocale;
@@ -360,7 +363,14 @@ class Router
         if ($this->isMulticrncy === true && isset($replacements['currency'])) {
             $name .= '_CRNCY';
         }
-        //@todo???: fallback to index.php?k=123&lang=fre
+        if ($byName === true) {
+            if ($isDefaultLocale && (($this->config['global']['routing_default_language'] ?? 'F') === 'F')) {
+                return '/' . $replacements['name'];
+            }
+            if (!$isDefaultLocale && (($this->config['global']['routing_scheme'] ?? 'F') === 'F')) {
+                return '/' . $replacements['name'];
+            }
+        }
 
         return $this->getNamedPath($name, $replacements);
     }

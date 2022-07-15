@@ -406,8 +406,6 @@ abstract class AbstractController implements ControllerInterface
         $visitorCount = $this->config['global']['global_zaehler_anzeigen'] === 'Y'
             ? $this->db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
             : 0;
-
-
         $this->smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
             ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())

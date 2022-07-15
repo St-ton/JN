@@ -258,7 +258,7 @@ class BackendRouter
         $this->router->setStrategy($strategy);
         $updateCheckMiddleWare = new UpdateCheckMiddleware($db, $account);
 
-        $basePath = '/' . (\parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '') . \PFAD_ADMIN;
+        $basePath = (\parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '') . '/' . \PFAD_ADMIN;
         $this->router->group(\rtrim($basePath, '/'), function (RouteGroup $route) use ($controllers) {
             $revisionMiddleware = new RevisionMiddleware($this->db);
             foreach ($controllers as $slug => $controller) {

@@ -231,7 +231,8 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories         = $this->productFilter->getDB()->getObjects(
+        $db                 = $this->productFilter->getDB();
+        $categories         = $db->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -249,7 +250,13 @@ class Category extends BaseCategory
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new Kategorie(
+                    $category->kKategorie,
+                    $langID,
+                    $customerGroupID,
+                    false,
+                    $db
+                ));
             }
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))

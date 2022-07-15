@@ -309,8 +309,9 @@ abstract class AbstractController implements ControllerInterface
         $debugbarRenderer         = $debugbar->getJavascriptRenderer();
         $pageType                 = Shop::getPageType();
         $link                     = $this->currentLink ?? new Link($this->db);
+        $categoryID               = Request::verifyGPCDataInt('kategorie');
         $this->currentCategory    = $this->currentCategory
-            ?? new Kategorie(Request::verifyGPCDataInt('kategorie'), $this->languageID, $this->customerGroupID);
+            ?? new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db);
         $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
         // put availability on top
         $filters = $this->productFilter->getAvailableContentFilters();

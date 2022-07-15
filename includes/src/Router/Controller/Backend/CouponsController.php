@@ -827,7 +827,9 @@ class CouponsController extends AbstractBackendController
         }
         foreach ($customerData as $customerID) {
             $customer = new Customer($customerID);
-            $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+            $langID   = $customer->kSprache;
+            $cgID     = $customer->kKundengruppe;
+            $language = Shop::Lang()->getIsoFromLangID($langID);
             if (!$language) {
                 $language = $defaultLang;
             }
@@ -842,7 +844,7 @@ class CouponsController extends AbstractBackendController
                     if ($categoryID <= 0) {
                         continue;
                     }
-                    $categories[] = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
+                    $categories[] = new Kategorie($categoryID, $langID, $cgID, false, $this->db);
                 }
             }
             $products = [];
@@ -851,15 +853,15 @@ class CouponsController extends AbstractBackendController
                 $product->fuelleArtikel(
                     $productID,
                     $defaultOptions,
-                    $customer->kKundengruppe,
-                    $customer->kSprache,
+                    $cgID,
+                    $langID,
                     true
                 );
                 $products[] = $product;
             }
             $manufacturers = [];
             foreach ($manufacturerIDs as $manufacturerID) {
-                $manufacturers[] = new Hersteller($manufacturerID, $customer->kSprache);
+                $manufacturers[] = new Hersteller($manufacturerID, $langID);
             }
             // put all together
             $coupon->Kategorien      = $categories;

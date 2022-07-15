@@ -76,9 +76,9 @@ class Kategorie
     private array $shortNames = [];
 
     /**
-     * @var string
+     * @var array
      */
-    private string $categoryPathString = '';
+    private array $categoryPathString = [];
 
     /**
      * @var array
@@ -181,13 +181,20 @@ class Kategorie
     private ?string $dLetzteAktualisierung = null;
 
     /**
-     * @param int  $id
-     * @param int  $languageID
-     * @param int  $customerGroupID
-     * @param bool $noCache
+     * @param int              $id
+     * @param int              $languageID
+     * @param int              $customerGroupID
+     * @param bool             $noCache
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0, bool $noCache = false)
-    {
+    public function __construct(
+        int $id = 0,
+        int $languageID = 0,
+        int $customerGroupID = 0,
+        bool $noCache = false,
+        private ?DbInterface $db = null
+    ) {
+        $this->db = $db ?? Shop::Container()->getDB();
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setRouteType(Router::TYPE_CATEGORY);
         $languageID = $languageID ?: Shop::getLanguageID();
@@ -239,8 +246,7 @@ class Kategorie
 
             return $this;
         }
-        $db    = Shop::Container()->getDB();
-        $items = $db->getObjects(
+        $items = $this->db->getObjects(
             'SELECT tkategorie.kKategorie, tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategoriepict.cPfad, tkategoriepict.cType,
@@ -287,13 +293,11 @@ class Kategorie
 
             return $this;
         }
-        $this->mapData($items);
+        $this->mapData($items, $customerGroupID);
         $this->createBySlug($id);
-        $this->categoryPath       = Category::getInstance($languageID, $customerGroupID)->getPath($this, false);
-        $this->categoryPathString = \implode(' > ', $this->categoryPath);
         $this->addImage(first($items));
-        $this->addAttributes($db);
-        $this->hasSubcategories = $db->select('tkategorie', 'kOberKategorie', $this->getID()) !== null;
+        $this->addAttributes();
+        $this->hasSubcategories = $this->db->select('tkategorie', 'kOberKategorie', $this->getID()) !== null;
         foreach ($items as $item) {
             $currentLangID = (int)$item->kSprache;
             $this->setShortName(
@@ -332,13 +336,13 @@ class Kategorie
     }
 
     /**
-     * @param DbInterface $db
+     * @return void
      */
-    private function addAttributes(DbInterface $db): void
+    private function addAttributes(): void
     {
         $this->categoryFunctionAttributes = [];
         $this->categoryAttributes         = [];
-        $attributes                       = $db->getCollection(
+        $attributes                       = $this->db->getCollection(
             'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                     COALESCE(tkategorieattributsprache.kSprache, -1) kSprache,
@@ -391,9 +395,10 @@ class Kategorie
 
     /**
      * @param array $data
+     * @param int   $customerGroupID
      * @return $this
      */
-    public function mapData(array $data): self
+    public function mapData(array $data, int $customerGroupID): self
     {
         foreach ($data as $item) {
             $languageID                  = (int)$item->kSprache;
@@ -413,6 +418,17 @@ class Kategorie
             $this->setMetaDescription($item->cMetaDescription, $languageID);
             $this->setMetaKeywords($item->cMetaKeywords, $languageID);
             $this->setMetaTitle($item->cTitleTag, $languageID);
+            $col  = Category::getInstance($languageID, $customerGroupID)->getFlatTree($this->getID());
+            $path = \array_map(static function (MenuItem $e) {
+                return $e->getName();
+            }, $col);
+            $this->setCategoryPath($path, $languageID);
+            $this->setCategoryPathString(\implode(' > ', $path), $languageID);
+            if (\CATEGORIES_SLUG_HIERARCHICALLY !== false) {
+                $this->setSlug(\implode('/', \array_map(static function (MenuItem $e) {
+                    return $e->getSeo();
+                }, $col)), $languageID);
+            }
         }
 
         return $this;
@@ -444,7 +460,7 @@ class Kategorie
         } else {
             $cacheID = 'gkb_' . $this->getID();
             if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $item = Shop::Container()->getDB()->select('tkategoriepict', 'kKategorie', $this->getID());
+                $item = $this->db->select('tkategoriepict', 'kKategorie', $this->getID());
                 $data = (isset($item->cPfad) && $item->cPfad)
                     ? \PFAD_KATEGORIEBILDER . $item->cPfad
                     : \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
@@ -817,35 +833,41 @@ class Kategorie
     }
 
     /**
+     * @param int|null $idx
      * @return string
      */
-    public function getCategoryPathString(): string
+    public function getCategoryPathString(int $idx = null): string
     {
-        return $this->categoryPathString;
+        return $this->categoryPathString[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**
-     * @param string $categoryPath
+     * @param string   $categoryPath
+     * @param int|null $idx
+     * @return void
      */
-    public function setCategoryPathString(string $categoryPath): void
+    public function setCategoryPathString(string $categoryPath, int $idx = null): void
     {
-        $this->categoryPathString = $categoryPath;
+        $this->categoryPathString[$idx ?? $this->currentLanguageID] = $categoryPath;
     }
 
     /**
+     * @param int|null $idx
      * @return array
      */
-    public function getCategoryPath(): array
+    public function getCategoryPath(int $idx = null): array
     {
-        return $this->categoryPath;
+        return $this->categoryPath[$idx ?? $this->currentLanguageID] ?? [];
     }
 
     /**
-     * @param array $categoryPath
+     * @param array    $categoryPath
+     * @param int|null $idx
+     * @return void
      */
-    public function setCategoryPath(array $categoryPath): void
+    public function setCategoryPath(array $categoryPath, int $idx = null): void
     {
-        $this->categoryPath = $categoryPath;
+        $this->categoryPath[$idx ?? $this->currentLanguageID] = $categoryPath;
     }
 
     /**
@@ -887,5 +909,21 @@ class Kategorie
     public function setImagePath(string $imagePath): void
     {
         $this->imagePath = $imagePath;
+    }
+
+    /**
+     * @return DbInterface|null
+     */
+    public function getDB(): ?DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 }

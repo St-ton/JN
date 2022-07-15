@@ -53,6 +53,9 @@ class CategoryController extends ProductListController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($args['name'] ?? '', '/')) {
+            $args['name'] = \last(\explode('/', $args['name']));
+        }
         $this->getStateFromSlug($args);
         if (!$this->init()) {
             return $this->notFoundResponse($request, $args, $smarty);

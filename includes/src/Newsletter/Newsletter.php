@@ -476,7 +476,7 @@ class Newsletter
             if ($id <= 0) {
                 continue;
             }
-            $category = new Kategorie($id);
+            $category = new Kategorie($id, 0, 0, false, $this->db);
             if ($category->getID() <= 0) {
                 continue;
             }

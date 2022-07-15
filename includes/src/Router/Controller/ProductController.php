@@ -201,7 +201,9 @@ class ProductController extends AbstractController
         $this->currentCategory    = new Kategorie(
             $this->currentProduct->gibKategorie($this->customerGroupID),
             $this->languageID,
-            $this->customerGroupID
+            $this->customerGroupID,
+            false,
+            $this->db
         );
         $this->expandedCategories = new KategorieListe();
         $this->expandedCategories->getOpenCategories($this->currentCategory);

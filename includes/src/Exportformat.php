@@ -1313,7 +1313,8 @@ class Exportformat
                         (int)$categoryID,
                         $this->kSprache,
                         $this->kKundengruppe,
-                        !$this->useCache()
+                        !$this->useCache(),
+                        $this->db
                     );
                 }
                 $product->oKategorie_arr = $categories;
@@ -1322,7 +1323,8 @@ class Exportformat
                 $productCategoryID,
                 $this->kSprache,
                 $this->kKundengruppe,
-                !$this->useCache()
+                !$this->useCache(),
+                $this->db
             );
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;

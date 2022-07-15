@@ -1260,10 +1260,10 @@ class IOMethods
         }
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryID);
+        $category   = new Kategorie($categoryID, 0, 0, false, $this->db);
         $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->getParentID());
+            $category   = new Kategorie($category->getParentID(), 0, 0, false, $this->db);
             $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 

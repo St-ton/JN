@@ -183,7 +183,7 @@ class WarmCacheCommand extends Command
         foreach ($this->db->getInts('SELECT kKategorie FROM tkategorie', 'kKategorie') as $cid) {
             foreach ($customerGroups as $customerGroup) {
                 foreach ($languages as $language) {
-                    $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false);
+                    $category = new Kategorie($cid, $language->getId(), $customerGroup->getID(), false, $this->db);
                     ++$generated;
                     $this->debug('Category ' . $cid
                         . ($category->getID() > 0 ? ' successfully' : ' could not be')

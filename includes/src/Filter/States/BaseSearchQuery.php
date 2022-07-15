@@ -956,7 +956,7 @@ class BaseSearchQuery extends AbstractFilter
         if ($searchCache->kSuchCache <= 0) {
             return $searchCache->kSuchCache;
         }
-        $productCols = \array_map(static function ($item) {
+        $productCols = \array_map(static function ($item): string {
             $items = \explode('.', $item, 2);
 
             return 'tartikel.' . $items[1];

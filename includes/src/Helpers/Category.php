@@ -286,7 +286,7 @@ class Category
             $visibilityJoin = '';
         }
 
-        return \array_map(static function (stdClass $item) {
+        return \array_map(static function (stdClass $item): MenuItem {
             $item->bUnterKategorien = false;
             $item->Unterkategorien  = [];
 
@@ -576,7 +576,7 @@ class Category
                             AND tkategorie.rght >= child.rght
                         WHERE tkategorie.kOberKategorie > 0
                             AND parent.kKategorie IS NULL'
-                )->map(static function ($item) {
+                )->map(static function ($item): int {
                     return (int)$item->kKategorie;
                 })->toArray();
 
@@ -820,7 +820,7 @@ class Category
      */
     private function setOrphanedCategories(array $nodes, array $fullCats): array
     {
-        $ids = \array_map(static function ($e) {
+        $ids = \array_map(static function (MenuItem $e): int {
             return $e->getID();
         }, $nodes);
 

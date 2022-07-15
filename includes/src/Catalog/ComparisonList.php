@@ -306,17 +306,17 @@ class ComparisonList
     private function getMappedRowNames(string $confName, array $conf): array
     {
         return match ($confName) {
-            'vergleichsliste_artikelnummer' => [
+            'vergleichsliste_artikelnummer'    => [
                 'key'      => 'cArtNr',
                 'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_hersteller' => [
+            'vergleichsliste_hersteller'       => [
                 'key'      => 'cHersteller',
                 'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_beschreibung' => [
+            'vergleichsliste_beschreibung'     => [
                 'key'      => 'cBeschreibung',
                 'name'     => Shop::Lang()->get('description', 'comparelist'),
                 'priority' => $conf[$confName]
@@ -326,37 +326,37 @@ class ComparisonList
                 'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_artikelgewicht' => [
+            'vergleichsliste_artikelgewicht'   => [
                 'key'      => 'fArtikelgewicht',
                 'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_versandgewicht' => [
+            'vergleichsliste_versandgewicht'   => [
                 'key'      => 'fGewicht',
                 'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_merkmale' => [
+            'vergleichsliste_merkmale'         => [
                 'key'      => 'Merkmale',
                 'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_variationen' => [
+            'vergleichsliste_variationen'      => [
                 'key'      => 'Variationen',
                 'name'     => Shop::Lang()->get('variations', 'comparelist'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_verfuegbarkeit' => [
+            'vergleichsliste_verfuegbarkeit'   => [
                 'key'      => 'verfuegbarkeit',
                 'name'     => Shop::Lang()->get('availability', 'productOverview'),
                 'priority' => $conf[$confName]
             ],
-            'vergleichsliste_lieferzeit' => [
+            'vergleichsliste_lieferzeit'       => [
                 'key'      => 'lieferzeit',
                 'name'     => Shop::Lang()->get('shippingTime'),
                 'priority' => $conf[$confName]
             ],
-            default => [
+            default                            => [
                 'key'      => '',
                 'name'     => '',
                 'priority' => 0

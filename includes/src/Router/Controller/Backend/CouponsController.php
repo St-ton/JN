@@ -62,7 +62,7 @@ class CouponsController extends AbstractBackendController
                             WHERE `table_schema` = :sma
                                 AND `table_name` = :tn',
                         ['sma' => DB_NAME, 'tn' => 'tkupon']
-                    )->map(static function ($e) {
+                    )->map(static function (stdClass $e): stdClass {
                         return $e->name;
                     })->toArray();
 
@@ -815,7 +815,7 @@ class CouponsController extends AbstractBackendController
         $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
         $itemNumbers     = Text::parseSSK($coupon->cArtikel);
         if (\count($itemNumbers) > 0) {
-            $itemNumbers = \array_map(static function ($e) {
+            $itemNumbers = \array_map(static function ($e): string {
                 return '"' . $e . '"';
             }, $itemNumbers);
             $productIDs  = $this->db->getInts(

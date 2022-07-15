@@ -433,7 +433,7 @@ class CustomerGroup
             'SELECT kKundengruppe AS id
                 FROM tkundengruppe
                 WHERE kKundengruppe > 0'
-        )->map(static function ($e) {
+        )->map(static function ($e): self {
             return new self((int)$e->id);
         })->toArray();
     }

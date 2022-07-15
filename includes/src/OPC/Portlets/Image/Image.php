@@ -20,8 +20,8 @@ class Image extends Portlet
     {
         return match ($instance->getProperty('shape')) {
             'rounded' => true,
-            'circle' => 'circle',
-            default => false,
+            'circle'  => 'circle',
+            default   => false,
         };
     }
 

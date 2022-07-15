@@ -34,7 +34,7 @@ class LicensedItemUpdates extends AbstractWidget
         })->slice(0, 3);
         $updates       = $collection->getUpdateableItems();
         $securityFixes = 0;
-        $updates->each(static function (ExsLicense $exsLicense) use (&$securityFixes) {
+        $updates->each(static function (ExsLicense $exsLicense) use (&$securityFixes): void {
             $avail = $exsLicense->getReleases()->getAvailable();
             if ($avail !== null && ($avail->includesSecurityFixes() || $avail->getType() === Release::TYPE_SECURITY)) {
                 ++$securityFixes;

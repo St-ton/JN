@@ -36,7 +36,7 @@ final class EmailSettings extends AbstractStep
         $question->setDescription(\__('email_master_absender_desc'));
         $question->setType(QuestionType::EMAIL);
         $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender'));
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('email_master_absender', $question->getValue());
         });
         $this->addQuestion($question);
@@ -47,7 +47,7 @@ final class EmailSettings extends AbstractStep
         $question->setDescription(\__('email_master_absender_name_desc'));
         $question->setType(QuestionType::TEXT);
         $question->setValue(Shop::getSettingValue(\CONF_EMAILS, 'email_master_absender_name'));
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('email_master_absender_name', $question->getValue());
         });
         $this->addQuestion($question);
@@ -64,7 +64,7 @@ final class EmailSettings extends AbstractStep
         $question->setValue(\implode(';', $template->getCopyTo()));
         $question->setIsFullWidth(true);
         $question->setIsRequired(false);
-        $question->setOnSave(function (QuestionInterface $question) use ($template, $db) {
+        $question->setOnSave(function (QuestionInterface $question) use ($template, $db): void {
             //TODO use Mail classes ( saveEmailSetting() )
             $emailTemplateID = $db->select(
                 'temailvorlage',
@@ -117,7 +117,7 @@ final class EmailSettings extends AbstractStep
             false,
             'cMail'
         )->cMail ?? '');
-        $question->setOnSave(function (QuestionInterface $question) use ($adminAccount, $db) {
+        $question->setOnSave(function (QuestionInterface $question) use ($adminAccount, $db): void {
             $db->update(
                 'tadminlogin',
                 'kAdminlogin',

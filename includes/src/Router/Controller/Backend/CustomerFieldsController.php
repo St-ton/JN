@@ -30,7 +30,8 @@ class CustomerFieldsController extends AbstractBackendController
         $cf         = CustomerFields::getInstance($this->currentLanguageID, $this->db);
         $step       = 'uebersicht';
         $invalidate = false;
-        $smarty->assign('cTab', $step);
+        $smarty->assign('cTab', $step)
+            ->assign('route', $this->route);
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_KUNDENFELD, $_POST);
         } elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {

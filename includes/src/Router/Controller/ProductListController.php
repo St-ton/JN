@@ -200,7 +200,7 @@ class ProductListController extends AbstractController
     {
         $bestsellers = [];
         if ($this->config['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-            $productsIDs = $this->searchResults->getProducts()->map(static function ($product) {
+            $productsIDs = $this->searchResults->getProducts()->map(static function ($product): int {
                 return (int)$product->kArtikel;
             });
             $bestsellers = Bestseller::buildBestsellers(

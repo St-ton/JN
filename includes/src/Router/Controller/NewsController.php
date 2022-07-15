@@ -324,7 +324,7 @@ class NewsController extends AbstractController
     protected function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
-        $comments       = $newsItem->getComments()->getThreadedItems()->filter(static function ($item) {
+        $comments       = $newsItem->getComments()->getThreadedItems()->filter(static function ($item): bool {
             return $item->isActive();
         });
         $itemsPerPage   = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0

@@ -286,11 +286,9 @@ class CheckBox
                     AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $sql . '
                 ORDER BY nSort'
-        )
-            ->map(function ($e) {
-                return new self((int)$e->id, $this->db);
-            })
-            ->all();
+        )->map(function (stdClass $e): self {
+            return new self((int)$e->id, $this->db);
+        })->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$checkboxes,
             'nAnzeigeOrt'   => $location,
@@ -437,10 +435,9 @@ class CheckBox
             'SELECT kCheckBox AS id
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL
-        )
-            ->map(function ($e) {
-                return new self((int)$e->id, $this->db);
-            })->all();
+        )->map(function (stdClass $e): self {
+            return new self((int)$e->id, $this->db);
+        })->all();
     }
 
     /**
@@ -563,7 +560,7 @@ class CheckBox
             'SELECT *
                 FROM tcheckboxfunktion
                 ORDER BY cName'
-        )->each(static function ($e) {
+        )->each(static function (stdClass $e): void {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
             $e->cName             = \__($e->cName);
         })->all();

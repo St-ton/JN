@@ -287,7 +287,7 @@ class WarmCacheCommand extends Command
 
         $generated      = 0;
         $customerGroups = $this->db->getCollection('SELECT kKundengruppe AS id FROM tkundengruppe')
-            ->map(static function ($e) {
+            ->map(static function ($e): CustomerGroup {
                 return new CustomerGroup((int)$e->id);
             })
             ->toArray();

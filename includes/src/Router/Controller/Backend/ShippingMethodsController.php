@@ -499,7 +499,7 @@ class ShippingMethodsController extends AbstractBackendController
                     ORDER BY cName'
             );
         }
-        $shippingTypes->each(static function ($e) {
+        $shippingTypes->each(static function (stdClass $e): void {
             $e->kVersandberechnung = (int)$e->kVersandberechnung;
             $e->cName              = \__('shippingType_' . $e->cModulId);
         });
@@ -641,7 +641,7 @@ class ShippingMethodsController extends AbstractBackendController
                     $method->countries->push($country);
                 }
             }
-            $method->countries               = $method->countries->sortBy(static function (Country $country) {
+            $method->countries               = $method->countries->sortBy(static function (Country $country): string {
                 return $country->getName();
             });
             $method->cKundengruppenName_arr  = [];

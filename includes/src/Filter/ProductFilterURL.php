@@ -189,7 +189,7 @@ class ProductFilterURL
         if ($extraFilter !== null && $extraFilter->isParamExclusive() === true) {
             // some filters (like rating filter) must only have one exclusive param (?bf=1 etc.) - no array of params
             foreach ($urlParams as $param => $value) {
-                if ($param === $extraFilter->getUrlParam() && \is_array($value)) {
+                if (\is_array($value) && $param === $extraFilter->getUrlParam()) {
                     foreach ($value as $index => $val) {
                         if (isset($val->value) && $val->value !== $extraFilter->getValue()) {
                             unset($urlParams[$param][$index]);

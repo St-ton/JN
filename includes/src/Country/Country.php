@@ -201,11 +201,9 @@ class Country
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
         return isset($_SESSION['AdminAccount']->language)
             ? $this->getNameForLangISO($_SESSION['AdminAccount']->language)
-            : $this->names[$idx] ?? '';
+            : $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**

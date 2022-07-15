@@ -289,10 +289,10 @@ class DefaultParser
             $this->params['bHerstellerFilterNotFound'] = true;
             $this->state->manufacturerFilterNotFound   = true;
         } else {
-            $this->params['manufacturerFilterIDs'] = \array_map(static function ($e) {
+            $this->params['manufacturerFilterIDs'] = \array_map(static function ($e): int {
                 return (int)$e->kKey;
             }, $oSeo);
-            $this->state->manufacturerFilterIDs    = \array_map(static function ($e) {
+            $this->state->manufacturerFilterIDs    = \array_map(static function ($e): int {
                 return (int)$e->kKey;
             }, $oSeo);
         }

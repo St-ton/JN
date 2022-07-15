@@ -138,7 +138,7 @@ class Question
                 WHERE kAuswahlAssistentGruppe = :gid' . $activeSQL . '
                 ORDER BY nSort',
             ['gid' => $groupID]
-        )->map(static function ($e) use ($activeOnly) {
+        )->map(static function (stdClass $e) use ($activeOnly): self {
             return new self((int)$e->id, $activeOnly);
         })->all();
     }

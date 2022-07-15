@@ -22,7 +22,7 @@ class PHPSettings
             'M', 'm' => (int)$shorthand * 1048576,
             'K', 'k' => (int)$shorthand * 1024,
             'G', 'g' => (int)$shorthand * 1073741824,
-            default => (int)$shorthand,
+            default  => (int)$shorthand,
         };
     }
 

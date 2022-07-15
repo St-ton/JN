@@ -82,7 +82,7 @@ class Jtllog
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
             ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
-        )->map(static function (stdClass $log) {
+        )->map(static function (stdClass $log): stdClass {
             $log->kLog   = (int)$log->kLog;
             $log->nLevel = (int)$log->nLevel;
             $log->kKey   = (int)$log->kKey;

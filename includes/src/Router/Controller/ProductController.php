@@ -353,7 +353,7 @@ class ProductController extends AbstractController
                 ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
             ])
             ->setDefaultSortByDir((int)$this->config['bewertung']['bewertung_sortierung'])
-            ->setSortFunction(function ($a, $b) use ($pagination) {
+            ->setSortFunction(function ($a, $b) use ($pagination): int {
                 $sortBy  = $pagination->getSortByCol();
                 $sortDir = $pagination->getSortDirSQL() === 0 ? +1 : -1;
                 $valueA  = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;

@@ -57,23 +57,12 @@ class CacheController extends AbstractBackendController
         } catch (Exception $exc) {
             $this->alertService->addError(\__('exception') . ': ' . $exc->getMessage(), 'errorException');
         }
-        // get disabled cache types
-        $deactivated       = $this->db->select(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [\CONF_CACHING, 'caching_types_disabled']
-        );
-        $currentlyDisabled = [];
-        if (\is_object($deactivated) && isset($deactivated->cWert)) {
-            $currentlyDisabled = ($deactivated->cWert !== '')
-                ? \unserialize($deactivated->cWert, ['allowed_classes' => false])
-                : [];
-        }
+
         switch ($action) {
             case 'cacheMassAction':
                 //mass action cache flush
                 $this->tab = 'massaction';
-                $this->actionMassAction($cacheAction, $postData, $currentlyDisabled);
+                $this->actionMassAction($cacheAction, $postData);
                 break;
             case 'flush_object_cache':
                 $this->tab = 'massaction';
@@ -131,7 +120,7 @@ class CacheController extends AbstractBackendController
             ->assign('opcache_stats', $this->getOpcacheStats())
             ->assign('tplcacheStats', $this->getTemplateCacheStats())
             ->assign('advanced_settings', $advancedSettings)
-            ->assign('disabled_caches', $currentlyDisabled)
+            ->assign('disabled_caches', $this->getDisabledTags())
             ->assign('step', 'uebersicht')
             ->assign('tab', $this->tab)
             ->assign('route', $this->route)
@@ -179,12 +168,31 @@ class CacheController extends AbstractBackendController
     }
 
     /**
+     * @return array
+     */
+    private function getDisabledTags(): array
+    {
+        $deactivated       = $this->db->select(
+            'teinstellungen',
+            ['kEinstellungenSektion', 'cName'],
+            [\CONF_CACHING, 'caching_types_disabled']
+        );
+        $currentlyDisabled = [];
+        if (\is_object($deactivated) && isset($deactivated->cWert)) {
+            $currentlyDisabled = ($deactivated->cWert !== '')
+                ? \unserialize($deactivated->cWert, ['allowed_classes' => false])
+                : [];
+        }
+
+        return $currentlyDisabled;
+    }
+
+    /**
      * @param string $cacheAction
      * @param array  $postData
-     * @param array  $currentlyDisabled
      * @return void
      */
-    private function actionMassAction(string $cacheAction, array $postData, array $currentlyDisabled): void
+    private function actionMassAction(string $cacheAction, array $postData): void
     {
         switch ($cacheAction) {
             case 'flush':
@@ -211,6 +219,7 @@ class CacheController extends AbstractBackendController
                 break;
             case 'activate':
                 if (\is_array(Request::postVar('cache-types'))) {
+                    $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $index = \array_search($cacheType, $currentlyDisabled, true);
                         if (\is_int($index)) {
@@ -234,6 +243,7 @@ class CacheController extends AbstractBackendController
                 break;
             case 'deactivate':
                 if (GeneralObject::isCountable('cache-types', $postData)) {
+                    $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $this->cache->flushTags([$cacheType]);
                         $currentlyDisabled[] = $cacheType;

@@ -44,12 +44,12 @@ class Stats
             $stats     = new Statistik($from, $to);
             $intervall = $stats->getAnzeigeIntervall();
             $data      = match ($type) {
-                STATS_ADMIN_TYPE_BESUCHER => $stats->holeBesucherStats(),
-                STATS_ADMIN_TYPE_KUNDENHERKUNFT => $stats->holeKundenherkunftStats(),
-                STATS_ADMIN_TYPE_SUCHMASCHINE => $stats->holeBotStats(),
-                STATS_ADMIN_TYPE_UMSATZ => $stats->holeUmsatzStats(),
+                STATS_ADMIN_TYPE_BESUCHER        => $stats->holeBesucherStats(),
+                STATS_ADMIN_TYPE_KUNDENHERKUNFT  => $stats->holeKundenherkunftStats(),
+                STATS_ADMIN_TYPE_SUCHMASCHINE    => $stats->holeBotStats(),
+                STATS_ADMIN_TYPE_UMSATZ          => $stats->holeUmsatzStats(),
                 STATS_ADMIN_TYPE_EINSTIEGSSEITEN => $stats->holeEinstiegsseiten(),
-                default => [],
+                default                          => [],
             };
         }
 
@@ -68,9 +68,9 @@ class Stats
         $axis->y = 'nCount';
         $axis->x = match ($type) {
             STATS_ADMIN_TYPE_UMSATZ, STATS_ADMIN_TYPE_BESUCHER => 'dZeit',
-            STATS_ADMIN_TYPE_KUNDENHERKUNFT => 'cReferer',
-            STATS_ADMIN_TYPE_SUCHMASCHINE => 'cUserAgent',
-            STATS_ADMIN_TYPE_EINSTIEGSSEITEN => 'cEinstiegsseite',
+            STATS_ADMIN_TYPE_KUNDENHERKUNFT                    => 'cReferer',
+            STATS_ADMIN_TYPE_SUCHMASCHINE                      => 'cUserAgent',
+            STATS_ADMIN_TYPE_EINSTIEGSSEITEN                   => 'cEinstiegsseite',
         };
 
         return $axis;

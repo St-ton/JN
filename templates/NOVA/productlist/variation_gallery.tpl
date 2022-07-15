@@ -127,13 +127,11 @@
                                                                     {if $Variationswert->notExists}
                                                                         title="{lang key='notAvailableInSelection'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                        {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                     {elseif $Variationswert->inStock}
                                                                         data-title="{$Variationswert->cName}"
                                                                     {else}
                                                                         title="{lang key='ampelRot'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                        {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                         data-stock="out-of-stock"
                                                                     {/if}
                                                                     {if isset($Variationswert->oVariationsKombi)}
@@ -192,13 +190,11 @@
                                                                     {if $Variationswert->notExists}
                                                                         title="{lang key='notAvailableInSelection'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                        data-toggle="tooltip"
                                                                     {elseif $Variationswert->inStock}
                                                                         data-title="{$Variationswert->cName}"
                                                                     {else}
                                                                         title="{lang key='ampelRot'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                        data-toggle="tooltip"
                                                                         data-stock="out-of-stock"
                                                                     {/if}
                                                                     {if isset($Variationswert->oVariationsKombi)}

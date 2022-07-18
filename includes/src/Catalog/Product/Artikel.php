@@ -1686,7 +1686,7 @@ class Artikel implements RoutableInterface
         }
         $this->cMerkmalAssoc_arr = [];
         foreach ($this->oMerkmale_arr as $item) {
-            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache));
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache) ?? '');
             if (\mb_strlen($name) > 0) {
                 $values                         = \array_filter(\array_map(static function (MerkmalWert $e) {
                     return $e->getValue();

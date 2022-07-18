@@ -1,6 +1,6 @@
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <li class="nav-item" id="search">
+        <div class="nav-item" id="search">
             <div class="search-wrapper">
                 {form action="{get_static_route id='index.php'}" method='get'}
                     <div class="form-icon">
@@ -14,11 +14,11 @@
                     </div>
                 {/form}
             </div>
-        </li>
+        </div>
     {/block}
     {block name='layout-header-nav-search-search-dropdown'}
         {if $Einstellungen.template.header.mobile_search_type === 'dropdown'}
-            {navitemdropdown class='search-wrapper-dropdown d-block d-lg-none'
+            {navitemdropdown tag='div' class='search-wrapper-dropdown d-block d-lg-none'
                 text='<i id="mobile-search-dropdown" class="fas fa-search"></i>'
                 right=true
                 no-caret=true

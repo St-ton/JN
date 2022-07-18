@@ -1262,6 +1262,7 @@
 
             if (this.isSingleArticle()) {
                 $('#product-offer .price', $wrapper).html(fmtPrice);
+                $('#product-offer meta[itemprop="price"]', $wrapper).attr('content',price);
                 if (priceLabel.length > 0) {
                     $('#product-offer .price_label', $wrapper).html(priceLabel);
                 }

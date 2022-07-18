@@ -1268,11 +1268,12 @@ class ShippingMethod
 
     /**
      * @param Versandart|object $method
-     * @param float             $cartSum
+     * @param float             $cartSumGros
+     * @param float             $cartSumNet
      * @return string
      * @former baueVersandkostenfreiString()
      */
-    public static function getShippingFreeString($method, $cartSum): string
+    public static function getShippingFreeString($method, $cartSumGros, $cartSumNet = 0): string
     {
         if (isset($_SESSION['oVersandfreiKupon'])) {
             return '';
@@ -1298,7 +1299,7 @@ class ShippingMethod
                 ? $localized->cName
                 : $method->cName;
         }
-        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSum);
+        $shippingFreeDifference = self::getShippingFreeDifference($method, $cartSumGros, $cartSumNet);
         if ($shippingFreeDifference <= 0) {
             return \sprintf(
                 Shop::Lang()->get('noShippingCostsReached', 'basket'),
@@ -1316,27 +1317,21 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|stdClass $method
-     * @param float|int           $cartSum
+     * @param Versandart $method
+     * @param float|int  $cartSumGros
+     * @param float|int  $cartSumNet
      * @return float
      */
-    public static function getShippingFreeDifference($method, $cartSum): float
+    public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
     {
-        $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSum;
-        // check if vkfreiabx is calculated net or gross
-        if ($method->eSteuer !== 'netto') {
-            return $shippingFreeDifference;
+        if ($cartSumNet === 0) {
+            $cartSumNet = $cartSumGros;
         }
-        $db = Shop::Container()->getDB();
-        // calculate net with default tax class
-        $defaultTaxClass = $db->select('tsteuerklasse', 'cStandard', 'Y');
-        if ($defaultTaxClass !== null && isset($defaultTaxClass->kSteuerklasse)) {
-            $defaultTax = $db->select('tsteuersatz', 'kSteuerklasse', (int)$defaultTaxClass->kSteuerklasse);
-            if ($defaultTax !== null) {
-                $defaultTaxValue        = $defaultTax->fSteuersatz;
-                $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX -
-                    Tax::getNet((float)$cartSum, $defaultTaxValue);
-            }
+        // check if vkfreiabx is calculated net or gros
+        if ($method->eSteuer === 'netto') {
+            $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumNet;
+        } else {
+            $shippingFreeDifference = (float)$method->fVersandkostenfreiAbX - (float)$cartSumGros;
         }
 
         return $shippingFreeDifference;
@@ -1412,7 +1407,7 @@ class ShippingMethod
                     WHERE fVersandkostenfreiAbX > 0
                         AND (cVersandklassen = '-1'
                             OR cVersandklassen RLIKE :cShippingClass)
-                        AND tversandart.kVersandart IN (" . \implode(', ', $shippingMethods) . ") 
+                        AND tversandart.kVersandart IN (" . \implode(', ', $shippingMethods) . ")
                         AND (cKundengruppen = '-1'
                             OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
                             AND cLaender LIKE :ccode " . $productSpecificCondition . '

@@ -97,6 +97,22 @@
     $(function() {
         ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
     });
+
+    $( document ).scroll(function() {
+        $('#content_wrapper .subheading1').each(function(){
+            if( $(this).isOnScreen() ){
+                $('[name="section"]').val($(this).attr('id'));
+                return false;
+            }
+        });
+    });
+
+    {if $jumpToSection != ''}
+    var section = '{$jumpToSection}';
+    $('html, body').animate({
+        scrollTop: $("#"+section).offset().top - 100
+    }, 1000);
+    {/if}
 </script>
 
 {/if}

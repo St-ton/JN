@@ -32,14 +32,6 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
         }
     } else {
         $alertHelper->addError(__('errorFillRequired'), 'errorFillRequired');
-        $idx = 'nDezimal_' . JTL_SEPARATOR_WEIGHT;
-        if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
-            $alertHelper->addError(__('errorWeightDecimals'), 'errorWeightDecimals');
-        }
-        $idx = 'nDezimal_' . JTL_SEPARATOR_AMOUNT;
-        if (isset($checkItems[$idx]) && $checkItems[$idx] === 2) {
-            $alertHelper->addError(__('errorAmountDecimals'), 'errorAmountDecimals');
-        }
         $smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
             ->assign('xPostVar_arr', $checks->getPostVar());
     }

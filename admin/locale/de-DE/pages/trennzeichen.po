@@ -11,12 +11,6 @@ msgstr "https://jtl-url.de/xiepq"
 msgid "trennzeichenDesc"
 msgstr " "
 
-msgid "errorWeightDecimals"
-msgstr "Das Gewicht darf maximal mit 4 Nachkommastellen angegeben werden."
-
-msgid "errorAmountDecimals"
-msgstr "Die Menge darf maximal mit 2 Nachkommastellen angegeben werden."
-
 msgid "countDecimals"
 msgstr "Anzahl der Nachkommastellen"
 

@@ -18,10 +18,10 @@ abstract class Snippet
     /**
      * @throws \SmartyException
      */
-    public function render(): string
+    public function render(): void
     {
         $this->setHtml();
-        return $this->smarty->fetch($this->html);
+        $this->smarty->display('string:' . $this->html);
     }
 
     abstract protected function setHtml(): void;

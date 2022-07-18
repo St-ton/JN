@@ -153,18 +153,10 @@ class TemplateService implements TemplateServiceInterface
      */
     private function getPreviewTemplateConfig(): array
     {
-        $data     = $this->getDB()->getObjects(
-            "SELECT cSektion AS sec, cWert AS val, cName AS name 
-                FROM ttemplateeinstellungen 
-                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'test')"
-        );
-        $settings = [];
-        foreach ($data as $setting) {
-            if (!isset($settings[$setting->sec])) {
-                $settings[$setting->sec] = [];
-            }
-            $settings[$setting->sec][$setting->name] = $setting->val;
-        }
+        $db              = $this->getDB();
+        $currentTemplate = $db->getSingleObject("SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard'");
+
+        $settings = $currentTemplate === null ? [] : (new Config($currentTemplate->cTemplate, $db))->loadConfigFromDB();
         if (($settings['general']['use_minify'] ?? 'N') === 'static') {
             $settings['general']['use_minify'] = 'Y';
         }

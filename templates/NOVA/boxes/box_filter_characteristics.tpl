@@ -6,7 +6,6 @@
                 {button
                     variant="link"
                     class="btn-filter-box dropdown-toggle"
-                    role="button"
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#cllps-box{$oBox->getID()}-{$characteristic->getID()}"]
                 }

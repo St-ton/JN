@@ -27,4 +27,78 @@ abstract class Button extends Snippet
                 </button>
         ';
     }
+
+    /**
+     * @param string $type
+     *
+     * @return Button
+     */
+    public function setType(string $type): Button
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Button
+     */
+    public function setName(string $name): Button
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return Button
+     */
+    public function setValue(string $value): Button
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return Button
+     */
+    public function setClass(string $class): Button
+    {
+        $this->class = $class;
+
+        return $this;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Button
+     */
+    public function setId(string $id): Button
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return Button
+     */
+    public function setContent(string $content): Button
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+
 }

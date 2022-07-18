@@ -15,6 +15,9 @@ abstract class Snippet
         $this->smarty = Shop::Smarty();
     }
 
+    /**
+     * @throws \SmartyException
+     */
     public function render(): string
     {
         $this->setHtml();
@@ -22,5 +25,4 @@ abstract class Snippet
     }
 
     abstract protected function setHtml(): void;
-
 }

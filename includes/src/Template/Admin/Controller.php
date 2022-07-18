@@ -16,6 +16,7 @@ use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
 use JTL\Template\Compiler;
 use JTL\Template\Config;
+use JTL\Template\Snippets\Buttons\SaveAndContinueButton;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
@@ -98,6 +99,7 @@ class Controller
             $this->displayOverview();
             return;
         }
+
         switch ($action) {
             case 'config':
                 $this->displayTemplateSettings();
@@ -113,6 +115,10 @@ class Controller
             case 'save-config':
                 $this->saveConfig();
                 $this->displayOverview();
+                break;
+            case 'save-config-continue':
+                $this->saveConfig();
+                $this->displayTemplateSettings();
                 break;
             case 'unsetPreview':
                 $this->unsetPreview();
@@ -353,13 +359,15 @@ class Controller
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $templateConfig = $this->config->getConfigXML($reader, $parentFolder);
-        $preview        = $this->getPreview($templateConfig);
+        $templateConfig        = $this->config->getConfigXML($reader, $parentFolder);
+        $preview               = $this->getPreview($templateConfig);
+        $saveAndContinueButton = new SaveAndContinueButton();
 
         $this->smarty->assign('template', $current)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)
+            ->assignByRef('saveAndContinueButton', $saveAndContinueButton)
             ->display('shoptemplate.tpl');
     }
 

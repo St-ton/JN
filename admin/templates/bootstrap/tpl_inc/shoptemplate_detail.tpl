@@ -334,16 +334,16 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
+                    {$saveAndContinueButton->render()}
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     {if isset($smarty.get.activate)}
                         <input type="hidden" name="activate" value="1" />
-                        <input type="hidden" name="action" value="activate" />
-                    {else}
-                        <input type="hidden" name="action" value="save-config" />
                     {/if}
                     <input type="hidden" name="type" value="settings" />
                     <input type="hidden" name="dir" value="{$template->getDir()}" />
                     <input type="hidden" name="admin" value="0" />
-                    <button type="submit" class="btn btn-primary btn-block">
+                    <button type="submit" class="btn btn-primary btn-block" name="action" value="{if isset($smarty.get.activate)}activate{else}save-config{/if}">
                         {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
                     </button>
                 </div>

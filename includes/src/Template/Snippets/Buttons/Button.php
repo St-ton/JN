@@ -99,6 +99,4 @@ abstract class Button extends Snippet
 
         return $this;
     }
-
-
 }

@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog\Category;
 
+use JTL\Contracts\RoutableInterface;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Category;
@@ -20,7 +21,7 @@ use function Functional\first;
  * Class Kategorie
  * @package JTL\Catalog\Category
  */
-class Kategorie
+class Kategorie implements RoutableInterface
 {
     use MultiSizeImage;
     use MagicCompatibilityTrait;
@@ -173,11 +174,6 @@ class Kategorie
     /**
      * @var string|null
      */
-    private ?string $cType = null;
-
-    /**
-     * @var string|null
-     */
     private ?string $dLetzteAktualisierung = null;
 
     /**
@@ -203,7 +199,7 @@ class Kategorie
         }
         $this->setCurrentLanguageID($languageID);
         if ($id > 0) {
-            $this->loadFromDB($id, $languageID, $customerGroupID, false, $noCache);
+            $this->loadFromDB($id, $languageID, $customerGroupID, $noCache);
         }
     }
 
@@ -211,28 +207,16 @@ class Kategorie
      * @param int  $id
      * @param int  $languageID
      * @param int  $customerGroupID
-     * @param bool $recall - used for internal hacking only
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB(
-        int $id,
-        int $languageID = 0,
-        int $customerGroupID = 0,
-        bool $recall = false,
-        bool $noCache = false
-    ): self {
-        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
+    public function loadFromDB(int $id, int $languageID = 0, int $customerGroupID = 0, bool $noCache = false): self
+    {
+        $customerGroupID = $customerGroupID
+            ?: Frontend::getCustomerGroup()->getID()
+            ?: CustomerGroup::getDefaultGroupID();
         $languageID      = $languageID ?: $this->currentLanguageID;
-        if (!$customerGroupID) {
-            $customerGroupID = CustomerGroup::getDefaultGroupID();
-            if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
-                $_SESSION['Kundengruppe']                = new stdClass();
-                $_SESSION['Kundengruppe']->kKundengruppe = $customerGroupID;
-            }
-        }
-
-        $cacheID = \CACHING_GROUP_CATEGORY . '_' . $id . '_cg_' . $customerGroupID;
+        $cacheID         = \CACHING_GROUP_CATEGORY . '_' . $id . '_cg_' . $customerGroupID;
         if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (\get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
@@ -249,7 +233,7 @@ class Kategorie
         $items = $this->db->getObjects(
             'SELECT tkategorie.kKategorie, tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
-                tkategoriepict.cPfad, tkategoriepict.cType,
+                tkategoriepict.cPfad,
                 atr.cWert AS customImgName, tkategorie.lft, tkategorie.rght,
                 COALESCE(tseo.cSeo, tkategoriesprache.cSeo, \'\') cSeo,
                 COALESCE(tkategoriesprache.cName, tkategorie.cName) cName,
@@ -279,20 +263,6 @@ class Kategorie
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
             ['kid' => $id, 'cgid' => $customerGroupID]
         );
-        if (false && $items === null) { // @todo!!!
-            if (!$recall && !$defaultLangActive) {
-                if (\EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
-                    if ($defaultLangID !== $languageID) {
-                        return $this->loadFromDB($id, $defaultLangID, $customerGroupID, true);
-                    }
-                } elseif (Category::categoryExists($id)) {
-                    return $this->loadFromDB($id, $languageID, $customerGroupID, true);
-                }
-            }
-
-            return $this;
-        }
         $this->mapData($items, $customerGroupID);
         $this->createBySlug($id);
         $this->addImage(first($items));
@@ -411,7 +381,6 @@ class Kategorie
             $this->customImgName = $item->customImgName;
             $this->lft           = (int)$item->lft;
             $this->rght          = (int)$item->rght;
-            $this->cType         = $item->cType;
             $this->setSlug($item->cSeo, $languageID);
             $this->setName($item->cName, $languageID);
             $this->setDescription($item->cBeschreibung, $languageID);
@@ -521,11 +490,11 @@ class Kategorie
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getID()
+    public function getID(): int
     {
-        return $this->id;
+        return $this->id ?? 0;
     }
 
     /**

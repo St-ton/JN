@@ -718,9 +718,9 @@ class PriceRange extends AbstractFilter
                 break;
             }
         }
-        $fMax     *= 1000.0;
-        $fMin     *= 1000.0;
-        $value     = $steps[$step] * 1000;
+        $fMax *= 1000.0;
+        $fMin *= 1000.0;
+        $value = $steps[$step] * 1000;
 
         $fmmh  = (int)($fMax * 100);
         $fvmh  = (int)($value * 100);

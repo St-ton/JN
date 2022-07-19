@@ -201,7 +201,9 @@ class ProductController extends AbstractController
         $this->currentCategory    = new Kategorie(
             $this->currentProduct->gibKategorie($this->customerGroupID),
             $this->languageID,
-            $this->customerGroupID
+            $this->customerGroupID,
+            false,
+            $this->db
         );
         $this->expandedCategories = new KategorieListe();
         $this->expandedCategories->getOpenCategories($this->currentCategory);
@@ -353,7 +355,7 @@ class ProductController extends AbstractController
                 ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
             ])
             ->setDefaultSortByDir((int)$this->config['bewertung']['bewertung_sortierung'])
-            ->setSortFunction(function ($a, $b) use ($pagination) {
+            ->setSortFunction(function ($a, $b) use ($pagination): int {
                 $sortBy  = $pagination->getSortByCol();
                 $sortDir = $pagination->getSortDirSQL() === 0 ? +1 : -1;
                 $valueA  = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;

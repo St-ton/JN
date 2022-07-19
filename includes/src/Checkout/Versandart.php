@@ -390,7 +390,7 @@ class Versandart
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
             ['kVersandart' => $this->kVersandart]
-        )->map(static function ($surcharge) {
+        )->map(static function ($surcharge): ShippingSurcharge {
             return new ShippingSurcharge((int)$surcharge->kVersandzuschlag);
         }));
     }
@@ -414,7 +414,7 @@ class Versandart
     public function getShippingSurchargeForZip(string $zip, string $iso): ?ShippingSurcharge
     {
         return $this->getShippingSurchargesForCountry($iso)
-            ->first(static function (ShippingSurcharge $surcharge) use ($zip) {
+            ->first(static function (ShippingSurcharge $surcharge) use ($zip): bool {
                 return $surcharge->hasZIPCode($zip);
             });
     }

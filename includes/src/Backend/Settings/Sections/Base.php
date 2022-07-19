@@ -279,8 +279,8 @@ class Base implements SectionInterface
     {
         return match ($conf->getValueName()) {
             'bilder_jpg_quali' => $this->validateNumberRange(0, 100, $conf, $confValue),
-            'cron_freq' => $this->validateNumberRange(10, 999999, $conf, $confValue),
-            default => true,
+            'cron_freq'        => $this->validateNumberRange(10, 999999, $conf, $confValue),
+            default            => true,
         };
     }
 
@@ -423,7 +423,7 @@ class Base implements SectionInterface
             $keysToFilter = flatten($keys);
         }
 
-        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter) {
+        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter): bool {
             return !\in_array($e->getValueName(), $keysToFilter, true);
         });
         foreach ($this->getSubsections() as $subsection) {

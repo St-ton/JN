@@ -280,11 +280,12 @@ class Manager
     public function getCorruptedImages(string $type, int $limit): array
     {
         $class    = Media::getClass($type);
-        $instance = new $class(Shop::Container()->getDB());
+        $instance = new $class($this->db);
         /** @var IMedia $instance */
         $corruptedImages = [];
         $totalImages     = $instance->getTotalImageCount();
         $offset          = 0;
+        $prefix          = Shop::getURL() . '/';
         do {
             foreach ($instance->getAllImages($offset, \MAX_IMAGES_PER_STEP) as $image) {
                 if (!\file_exists($image->getRaw())) {
@@ -297,7 +298,7 @@ class Manager
                         'kArtikel',
                         $image->getId()
                     );
-                    $data->cURLFull            = URL::buildURL($data, \URLART_ARTIKEL, true);
+                    $data->cURLFull            = URL::buildURL($data, \URLART_ARTIKEL, true, $prefix);
                     $item                      = (object)[
                         'articleNr'      => $data->cArtNr,
                         'articleURLFull' => $data->cURLFull

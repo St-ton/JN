@@ -239,9 +239,8 @@ class Newsletter
             ->assign('Kampagne', $campaign)
             ->assign(
                 'cNewsletterURL',
-                Shop::getURL() .
-                '/newsletter.php?show=' .
-                ($newsletter->kNewsletter ?? '0')
+                Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')
+                    . '?show=' . ($newsletter->kNewsletter ?? '0')
             );
         $net      = 0;
         $bodyHtml = '';
@@ -343,7 +342,7 @@ class Newsletter
             return \mb_strlen($e) > 0;
         });
         if ($asProductNo) {
-            $res = \array_map(static function ($e) {
+            $res = \array_map(static function ($e): string {
                 return "'" . $e . "'";
             }, $res);
             if (\count($res) > 0) {
@@ -477,7 +476,7 @@ class Newsletter
             if ($id <= 0) {
                 continue;
             }
-            $category = new Kategorie($id);
+            $category = new Kategorie($id, 0, 0, false, $this->db);
             if ($category->getID() <= 0) {
                 continue;
             }

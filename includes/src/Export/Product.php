@@ -204,7 +204,9 @@ class Product extends Artikel
                 $categories[] = new Kategorie(
                     (int)$categoryID,
                     $this->kSprache,
-                    $this->kKundengruppe
+                    $this->kKundengruppe,
+                    false,
+                    $this->getDB()
                 );
             }
             $this->oKategorie_arr = $categories;
@@ -212,7 +214,9 @@ class Product extends Artikel
         $this->Kategorie = new Kategorie(
             $productCategoryID,
             $this->kSprache,
-            $this->kKundengruppe
+            $this->kKundengruppe,
+            false,
+            $this->getDB()
         );
     }
 }

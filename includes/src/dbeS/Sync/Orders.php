@@ -588,9 +588,7 @@ final class Orders extends AbstractSync
             $state = \BESTELLUNG_STATUS_VERSANDT;
         }
         $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
-        if ((\count($updatedOrder->oLieferschein_arr) > 0)
-            && (isset($order->nKomplettAusgeliefert) && (int)$order->nKomplettAusgeliefert === 0)
-        ) {
+        if ((int)($order->nKomplettAusgeliefert ?? -1) === 0 && \count($updatedOrder->oLieferschein_arr) > 0) {
             $state = \BESTELLUNG_STATUS_TEILVERSANDT;
         }
 

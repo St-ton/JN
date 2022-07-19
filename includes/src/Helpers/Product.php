@@ -858,8 +858,8 @@ class Product
                 || ($product->fLagerbestand <= 0 && $product->cLagerKleinerNull !== 'Y'))
         ) {
             return match ($config) {
-                'Y' => 1,
-                'P' => 2,
+                'Y'     => 1,
+                'P'     => 2,
                 default => 3,
             };
         }

@@ -5,6 +5,7 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Shop;
@@ -18,12 +19,12 @@ class PageService
     /**
      * @var string
      */
-    protected $adminName = '';
+    protected string $adminName = '';
 
     /**
      * @var null|Page
      */
-    protected $curPage;
+    protected ?Page $curPage = null;
 
     /**
      * PageService constructor.
@@ -97,7 +98,7 @@ class PageService
             $output = $areaList->getArea($id)->getFinalHtml($inContainer);
         }
 
-        Dispatcher::getInstance()->fire('shop.OPC.PageService.renderMountPoint', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGESERVICE_RENDERMOUNTPOINT, [
             'output' => &$output,
             'id'     => $id,
             'title'  => $title,

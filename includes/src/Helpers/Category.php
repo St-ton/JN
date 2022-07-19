@@ -110,14 +110,49 @@ class Category
     }
 
     /**
+     * @param int $left
+     * @return array|null
+     */
+    public function getHierarchicalSlugs(int $left): ?array
+    {
+        $seo = self::$db->getObjects(
+            'SELECT tseo.kSprache, GROUP_CONCAT(
+                COALESCE(tseo.cSeo, tkategoriesprache.cSeo, tkategorie.kKategorie)
+                    ORDER BY tkategorie.lft ASC SEPARATOR \'/\') slug
+                FROM tkategorie
+                JOIN tsprache
+                    ON tsprache.active = 1
+                LEFT JOIN tseo
+                    ON tseo.kKey = tkategorie.kKategorie
+                    AND tseo.cKey = \'kKategorie\'
+                    AND tseo.kSprache = tsprache.kSprache
+                LEFT JOIN tkategoriesprache 
+                    ON tkategoriesprache.kKategorie = tkategorie.kKategorie
+                    AND tkategoriesprache.kSprache = tseo.kSprache
+                    AND tkategoriesprache.kSprache = tsprache.kSprache
+                WHERE :lft BETWEEN tkategorie.lft AND tkategorie.rght
+                GROUP BY tsprache.kSprache',
+            ['lft' => $left]
+        );
+        if (\count($seo) === 0) {
+            return null;
+        }
+        $slugs = [];
+        foreach ($seo as $item) {
+            $slugs[(int)$item->kSprache] = $item->slug;
+        }
+
+        return $slugs;
+    }
+
+    /**
      * @param int $categoryID
      * @return array|null
      */
     private function getCacheTree(int $categoryID): ?array
     {
         $cacheID = self::$cacheID . '_' . $categoryID;
-        $cache   = Shop::Container()->getCache();
-        $item    = $cache->get($cacheID);
+        $item    = Shop::Container()->getCache()->get($cacheID);
         if ($item === false) {
             $item = $_SESSION['oKategorie_arr_new_' . $cacheID] ?? null;
         }
@@ -286,11 +321,19 @@ class Category
             $visibilityJoin = '';
         }
 
-        return \array_map(static function (stdClass $item) {
-            $item->bUnterKategorien = false;
-            $item->Unterkategorien  = [];
+        return \array_map(function (stdClass $data): MenuItem {
+            $data->bUnterKategorien = false;
+            $data->Unterkategorien  = [];
 
-            return new MenuItem($item);
+            $item = new MenuItem($data);
+            if (\CATEGORIES_SLUG_HIERARCHICALLY !== false) {
+                $slugs = $this->getHierarchicalSlugs($item->getLeft());
+                if (($slug = ($slugs[self::$languageID] ?? null)) !== null) {
+                    $item->setURL($slug);
+                }
+            }
+
+            return $item;
         }, self::$db->getObjects(
             'SELECT node.kKategorie, node.lft, node.rght, node.nLevel, node.kOberKategorie, tseo.cSeo'
             . $nameSelect . $descriptionSelect . $imageSelect . $countSelect . '
@@ -576,7 +619,7 @@ class Category
                             AND tkategorie.rght >= child.rght
                         WHERE tkategorie.kOberKategorie > 0
                             AND parent.kKategorie IS NULL'
-                )->map(static function ($item) {
+                )->map(static function ($item): int {
                     return (int)$item->kKategorie;
                 })->toArray();
 
@@ -820,7 +863,7 @@ class Category
      */
     private function setOrphanedCategories(array $nodes, array $fullCats): array
     {
-        $ids = \array_map(static function ($e) {
+        $ids = \array_map(static function (MenuItem $e): int {
             return $e->getID();
         }, $nodes);
 

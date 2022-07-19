@@ -309,8 +309,9 @@ abstract class AbstractController implements ControllerInterface
         $debugbarRenderer         = $debugbar->getJavascriptRenderer();
         $pageType                 = Shop::getPageType();
         $link                     = $this->currentLink ?? new Link($this->db);
+        $categoryID               = Request::verifyGPCDataInt('kategorie');
         $this->currentCategory    = $this->currentCategory
-            ?? new Kategorie(Request::verifyGPCDataInt('kategorie'), $this->languageID, $this->customerGroupID);
+            ?? new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db);
         $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
         // put availability on top
         $filters = $this->productFilter->getAvailableContentFilters();
@@ -406,8 +407,6 @@ abstract class AbstractController implements ControllerInterface
         $visitorCount = $this->config['global']['global_zaehler_anzeigen'] === 'Y'
             ? $this->db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
             : 0;
-        $debugbar->getTimer()->stopMeasure('init');
-
         $this->smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
             ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())
@@ -416,8 +415,9 @@ abstract class AbstractController implements ControllerInterface
             ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems($this->languageID))
             ->assign('nZeitGebraucht', $nStartzeit === null ? 0 : (\microtime(true) - $nStartzeit))
             ->assign('Besucherzaehler', $visitorCount)
-            ->assign('alertList', $this->alertService)
-            ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+            ->assign('alertList', $this->alertService);
+        $debugbar->getTimer()->stopMeasure('init');
+        $this->smarty->assign('dbgBarHead', $debugbarRenderer->renderHead())
             ->assign('dbgBarBody', $debugbarRenderer->render());
     }
 

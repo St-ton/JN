@@ -196,25 +196,25 @@ class SyncCronjob extends NetSyncHandler
             return false;
         }
         if ($hours > 24) {
-            $hours = \round($hours / 24);
-            if ($hours >= 365) {
-                $hours /= 365;
-                if ($hours == 1) {
-                    $hours .= \__('year');
+            $res = \round($hours / 24);
+            if ($res >= 365) {
+                $res /= 365;
+                if ($res === 1.0) {
+                    $res .= \__('year');
                 } else {
-                    $hours .= \__('years');
+                    $res .= \__('years');
                 }
-            } elseif ($hours == 1) {
-                $hours .= \__('day');
+            } elseif ($res === 1.0) {
+                $res .= \__('day');
             } else {
-                $hours .= \__('days');
+                $res .= \__('days');
             }
         } elseif ($hours > 1) {
-            $hours .= \__('hours');
+            $res = $hours . \__('hours');
         } else {
-            $hours .= \__('hour');
+            $res = $hours . \__('hour');
         }
 
-        return $hours;
+        return $res;
     }
 }

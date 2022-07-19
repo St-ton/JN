@@ -917,7 +917,7 @@ class Kupon
                 WHERE cCode = :code
                 LIMIT 1',
             ['code' => $code]
-        )->map(function ($e) {
+        )->map(function (stdClass $e): self {
             return new self((int)$e->id, $this->db);
         })->first() ?? false;
     }

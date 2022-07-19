@@ -7,6 +7,7 @@ use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Router\Route;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use stdClass;
@@ -144,7 +145,8 @@ class Controller
                 if ($result === -1) {
                     $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');
                 } else {
-                    \header('Location: ' . Shop::getAdminURL() . '/statistik.php?s=3&tab=settings');
+                    \header('Location: ' . Shop::getAdminURL() . '/' . Route::STATS . '/3?tab=settings');
+                    exit;
                 }
             } else {
                 $this->alertService->addError(\__('missingCrawlerFields'), 'missingCrawlerFields');

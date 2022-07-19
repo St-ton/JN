@@ -110,7 +110,7 @@ final class ConsentModel extends DataModel
         }
         $all = LanguageHelper::getInstance($this->getDB())->gibInstallierteSprachen();
         if ($loc->count() !== \count($all)) {
-            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e) {
+            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e): int {
                 return $e->getLanguageID();
             });
             $default             = clone $loc->first();

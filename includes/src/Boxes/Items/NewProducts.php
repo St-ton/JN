@@ -36,9 +36,11 @@ final class NewProducts extends AbstractBox
         $cacheID        = 'bx_nwp_' . $customerGroupID
             . '_' . $days . '_'
             . $limit . \md5($stockFilterSQL . $parentSQL);
-        if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+        $cache          = Shop::Container()->getCache();
+        $db             = Shop::Container()->getDB();
+        if (($productIDs = $cache->get($cacheID)) === false) {
             $cached     = false;
-            $productIDs = Shop::Container()->getDB()->getInts(
+            $productIDs = $db->getInts(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit 
@@ -51,17 +53,17 @@ final class NewProducts extends AbstractBox
                 'kArtikel',
                 ['lmt' => $limit, 'dys' => $days, 'cgid' => $customerGroupID]
             );
-            Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+            $cache->set($cacheID, $productIDs, $cacheTags);
         }
         \shuffle($productIDs);
         $res = \array_slice($productIDs, 0, $config['boxen']['box_neuimsortiment_anzahl_anzeige']);
 
         if (\count($res) > 0) {
             $this->setShow(true);
-            $products = new ArtikelListe();
+            $products = new ArtikelListe($db, $cache);
             $products->getArtikelByKeys($res, 0, \count($res));
             $this->setProducts($products);
-            $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_NEWPRODUCTS));
+            $this->setURL((new SearchSpecial($db, $cache))->getURL(\SEARCHSPECIALS_NEWPRODUCTS));
             \executeHook(\HOOK_BOXEN_INC_NEUIMSORTIMENT, [
                 'box'        => &$this,
                 'cache_tags' => &$cacheTags,

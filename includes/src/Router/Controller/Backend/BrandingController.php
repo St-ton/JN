@@ -66,7 +66,7 @@ class BrandingController extends AbstractBackendController
     private function getBrandings(): array
     {
         return $this->db->getCollection('SELECT * FROM tbranding ORDER BY cBildKategorie')
-            ->map(static function (stdClass $item) {
+            ->map(static function (stdClass $item): stdClass {
                 $item->kBranding = (int)$item->kBranding;
 
                 return $item;

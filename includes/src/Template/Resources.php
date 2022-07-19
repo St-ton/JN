@@ -270,12 +270,12 @@ class Resources
             }
             if (++$i === $iterations) {
                 return match ($comparator) {
-                    '==' => $conf == $settingValue,
-                    '===' => $conf === $settingValue,
-                    '>=' => $conf >= $settingValue,
-                    '<=' => $conf <= $settingValue,
-                    '>' => $conf > $settingValue,
-                    '<' => $conf < $settingValue,
+                    '=='    => $conf == $settingValue,
+                    '==='   => $conf === $settingValue,
+                    '>='    => $conf >= $settingValue,
+                    '<='    => $conf <= $settingValue,
+                    '>'     => $conf > $settingValue,
+                    '<'     => $conf < $settingValue,
                     default => false,
                 };
             }

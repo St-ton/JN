@@ -104,6 +104,7 @@ use JTL\Router\Middleware\UpdateCheckMiddleware;
 use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
@@ -145,8 +146,7 @@ class BackendRouter
         $this->router = new Router();
         $strategy     = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
         $container    = new Container();
-
-        $controllers = [
+        $controllers  = [
             Route::BANNER                => BannerController::class,
             Route::ORDERS                => OrderController::class,
             Route::IMAGES                => ImagesController::class,
@@ -237,7 +237,6 @@ class BackendRouter
             Route::ELFINDER              => ElfinderController::class,
             Route::CODE                  => CodeController::class,
             Route::LOCALIZATION_CHECK    => LocalizationController::class,
-
         ];
         foreach ($controllers as $route => $controller) {
             $container->add($controller, function () use (
@@ -259,7 +258,8 @@ class BackendRouter
         $this->router->setStrategy($strategy);
         $updateCheckMiddleWare = new UpdateCheckMiddleware($db, $account);
 
-        $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
+        $basePath = (\parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '') . '/' . \PFAD_ADMIN;
+        $this->router->group(\rtrim($basePath, '/'), function (RouteGroup $route) use ($controllers) {
             $revisionMiddleware = new RevisionMiddleware($this->db);
             foreach ($controllers as $slug => $controller) {
                 if ($slug === Route::PASS || $slug === Route::DASHBOARD || $slug === Route::CODE) {
@@ -273,25 +273,27 @@ class BackendRouter
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
             ->middleware(new WizardCheckMiddleware($this->db));
-
-        $this->router->get('/' . \PFAD_ADMIN . Route::PASS, PasswordController::class . '::getResponse')
+        $this->router->get($basePath . Route::PASS, PasswordController::class . '::getResponse')
             ->setName(Route::PASS);
-        $this->router->post('/' . \PFAD_ADMIN . Route::PASS, PasswordController::class . '::getResponse')
+        $this->router->post($basePath . Route::PASS, PasswordController::class . '::getResponse')
             ->setName('post' . Route::PASS);
 
-        $this->router->get('/' . \PFAD_ADMIN . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+        $this->router->get($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
             ->setName(Route::CODE);
-        $this->router->post('/' . \PFAD_ADMIN . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+        $this->router->post($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
             ->setName('post' . Route::CODE);
 
-        $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
+        $this->router->get($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare);
-        $this->router->post('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
+        $this->router->post($basePath, DashboardController::class . '::getResponse')
             ->setName('post' . Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare);
     }
 
+    /**
+     * @return void
+     */
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);

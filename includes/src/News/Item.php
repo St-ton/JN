@@ -5,7 +5,6 @@ namespace JTL\News;
 use DateTime;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
-use JTL\ContentAuthor;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
@@ -279,8 +278,7 @@ class Item extends AbstractItem implements RoutableInterface
 
     private function setContentAuthor(): void
     {
-        $author = ContentAuthor::getInstance()->getAuthor('NEWS', $this->getID(), true);
-
+        $author = Author::getInstance($this->db)->getAuthor('NEWS', $this->getID(), true);
         if ($author === null || $author->kAdminlogin <= 0) {
             return;
         }

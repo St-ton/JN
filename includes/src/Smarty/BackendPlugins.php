@@ -216,10 +216,9 @@ class BackendPlugins
      */
     public function getAvatar(array $params): string
     {
-        $url = ($params['account']->attributes['useAvatar']->cAttribValue ?? '') === 'U'
+        $url = ($params['account']->attributes['useAvatar']->cAttribValue ?? '') === 'Ux'
             ? $params['account']->attributes['useAvatarUpload']->cAttribValue
-            : 'templates/bootstrap/gfx/avatar-default.svg';
-
+            : Shop::getAdminURL() . '/templates/bootstrap/gfx/avatar-default.svg';
         if (!(new Updater($this->db))->hasPendingUpdates()) {
             \executeHook(\HOOK_BACKEND_FUNCTIONS_GRAVATAR, [
                 'url'          => &$url,

@@ -42,7 +42,7 @@ class Product extends AbstractImage
                     AND B.cName = :atr
                 WHERE A.kArtikel = :pid',
             ['pid' => $req->getID(), 'atr' => 'bildname']
-        )->map(static function ($item) {
+        )->map(static function ($item): string {
             return self::getCustomName($item);
         })->toArray();
     }
@@ -116,11 +116,11 @@ class Product extends AbstractImage
             return Image::getCleanFilename($mixed->customImgName);
         }
         $result = match (Image::getSettings()['naming'][Image::TYPE_PRODUCT]) {
-            0 => (string)$mixed->kArtikel,
-            1 => $mixed->cArtNr,
-            2 => $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName,
-            3 => \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo),
-            4 => $mixed->cBarcode,
+            0       => (string)$mixed->kArtikel,
+            1       => $mixed->cArtNr,
+            2       => $mixed->originalSeo ?? $mixed->cSeo ?? $mixed->cName,
+            3       => \sprintf('%s_%s', $mixed->cArtNr, empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo),
+            4       => $mixed->cBarcode,
             default => 'image',
         };
 

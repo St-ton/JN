@@ -373,16 +373,13 @@ class Status
      */
     public function getMySQLStats(): array
     {
-        $stats = $this->db->getServerStats();
-        $info  = $this->db->getServerInfo();
-        $lines = \explode('  ', $stats);
-        $lines = \array_map(static function ($v) {
+        $lines = \array_map(static function ($v): array {
             [$key, $value] = \explode(':', $v, 2);
 
             return ['key' => \trim($key), 'value' => \trim($value)];
-        }, $lines);
+        }, \explode('  ', $this->db->getServerStats()));
 
-        return \array_merge([['key' => 'Version', 'value' => $info]], $lines);
+        return \array_merge([['key' => 'Version', 'value' => $this->db->getServerInfo()]], $lines);
     }
 
     /**

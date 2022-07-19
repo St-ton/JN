@@ -96,9 +96,9 @@ final class GlobalSetting
         return match (\gettype($default)) {
             'boolean' => (bool)$value,
             'integer' => (int)$value,
-            'double' => (float)$value,
-            'string' => (string)$value,
-            default => $value,
+            'double'  => (float)$value,
+            'string'  => (string)$value,
+            default   => $value,
         };
     }
 }

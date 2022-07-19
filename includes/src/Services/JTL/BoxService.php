@@ -138,7 +138,7 @@ class BoxService implements BoxServiceInterface
         if (($grouped = $this->cache->get($cacheID)) === false) {
             $grouped = \collect($this->db->selectAll('tboxenanzeige', [], []))
                 ->groupBy('nSeite')->transform(static function ($data) {
-                    return \collect($data)->mapWithKeys(static function ($item) {
+                    return \collect($data)->mapWithKeys(static function ($item): array {
                         return [$item->ePosition => (bool)$item->bAnzeigen];
                     });
                 })->toArray();

@@ -81,12 +81,20 @@ class DefaultController extends AbstractController
             && $controller::class !== SearchController::class
             && !isset($_GET['opcEditMode'])
         ) {
-            $langID = $this->state->languageID ?: Shop::getLanguageID();
-            $locale = null;
+            $langID    = $this->state->languageID ?: Shop::getLanguageID();
+            $locale    = null;
+            $isDefault = false;
             foreach (LanguageHelper::getAllLanguages() as $language) {
                 if ($language->getId() === $langID) {
-                    $locale = $language->getIso639();
+                    $locale    = $language->getIso639();
+                    $isDefault = $language->isShopDefault();
                 }
+            }
+            if ($isDefault && ($this->config['global']['routing_default_language'] ?? 'F') === 'F') {
+                return $controller->getResponse($request, $args, $smarty);
+            }
+            if (!$isDefault && (($this->config['global']['routing_scheme'] ?? 'F') !== 'F')) {
+                return $controller->getResponse($request, $args, $smarty);
             }
             $className = $controller instanceof PageController
                 ? PageController::class

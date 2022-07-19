@@ -181,8 +181,8 @@ class LanguageController extends AbstractBackendController
                 \__('errorVarExistsForLang'),
                 \implode(
                     ', ',
-                    \array_map(static function ($oWertDB) {
-                        return $oWertDB->cSpracheName;
+                    \array_map(static function ($item) {
+                        return $item->cSpracheName;
                     }, $data)
                 )
             );

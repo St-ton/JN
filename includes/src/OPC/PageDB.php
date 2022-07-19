@@ -6,6 +6,7 @@ use Exception;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Update\Updater;
 use stdClass;
 
@@ -183,7 +184,7 @@ class PageDB
         $publicRow = $this->getPublicPageRow($id);
         $page      = $publicRow === null ? null : $this->getPageFromRow($publicRow);
 
-        Dispatcher::getInstance()->fire('shop.OPC.PageDB.getPublicPage', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_GETPUBLICPAGE, [
             'id'   => $id,
             'page' => &$page
         ]);
@@ -281,7 +282,7 @@ class PageDB
             throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
 
-        Dispatcher::getInstance()->fire('shop.OPC.PageDB.saveDraft:afterValidate', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_SAVEDRAFT_POSTVALIDATE, [
             'page' => &$page
         ]);
 
@@ -293,7 +294,7 @@ class PageDB
             'dPublishTo'    => $page->getPublishTo() ?? '_DBNULL_',
             'cName'         => $page->getName(),
             'cPageUrl'      => $page->getUrl(),
-            'cAreasJson'    => \json_encode($page->getAreaList()),
+            'cAreasJson'    => \json_encode($page->getAreaList(), \JSON_THROW_ON_ERROR),
             'dLastModified' => $page->getLastModified() ?? '_DBNULL_',
             'cLockedBy'     => $page->getLockedBy(),
             'dLockedAt'     => $page->getLockedAt() ?? '_DBNULL_',
@@ -423,13 +424,13 @@ class PageDB
             ->setLockedBy($row->cLockedBy)
             ->setLockedAt($row->dLockedAt);
 
-        $areaData = \json_decode($row->cAreasJson, true);
+        $areaData = \json_decode($row->cAreasJson, true, 512, \JSON_THROW_ON_ERROR);
 
         if ($areaData !== null) {
             $page->getAreaList()->deserialize($areaData);
         }
 
-        Dispatcher::getInstance()->fire('shop.OPC.PageDB.getPageRow', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGEDB_GETPAGEROW, [
             'row'  => &$row,
             'page' => &$page
         ]);

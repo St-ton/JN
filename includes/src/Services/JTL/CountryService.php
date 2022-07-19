@@ -41,7 +41,7 @@ class CountryService implements CountryServiceInterface
     {
         $languageID = Shop::getLanguageID();
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
+            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID): string {
                 return Text::replaceUmlauts($country->getName($languageID));
             });
 
@@ -74,7 +74,7 @@ class CountryService implements CountryServiceInterface
             $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID): string {
             return Text::replaceUmlauts($country->getName($languageID));
         });
 
@@ -190,16 +190,16 @@ class CountryService implements CountryServiceInterface
     public function getContinentSort(string $continent): int
     {
         return match ($continent) {
-            \__('Europa') => 1,
-            \__('europeanUnion') => 2,
+            \__('Europa')                 => 1,
+            \__('europeanUnion')          => 2,
             \__('notEuropeanUnionEurope') => 3,
-            \__('Asien') => 4,
-            \__('Afrika') => 5,
-            \__('Nordamerika') => 6,
-            \__('Suedamerika') => 7,
-            \__('Ozeanien') => 8,
-            \__('Antarktis') => 9,
-            default => 0,
+            \__('Asien')                  => 4,
+            \__('Afrika')                 => 5,
+            \__('Nordamerika')            => 6,
+            \__('Suedamerika')            => 7,
+            \__('Ozeanien')               => 8,
+            \__('Antarktis')              => 9,
+            default                       => 0,
         };
     }
 

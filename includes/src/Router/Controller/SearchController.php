@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class SearchController extends ProductListController
 {
     /**
-     * @inheridoc
+     * @inheritdoc
      */
     public function getStateFromSlug(array $args): State
     {

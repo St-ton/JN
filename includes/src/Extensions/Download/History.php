@@ -87,7 +87,7 @@ class History
                 WHERE kDownload = :dlid
                 ORDER BY dErstellt DESC',
             ['dlid' => $downloadID]
-        )->map(static function ($e) {
+        )->map(static function (stdClass $e): self {
             return new self((int)$e->id);
         })->toArray();
     }

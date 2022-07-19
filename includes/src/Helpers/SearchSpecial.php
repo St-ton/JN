@@ -104,11 +104,11 @@ class SearchSpecial
 
     /**
      * @param int $key
-     * @return mixed|string
+     * @return string
      * @former baueSuchSpecialURL()
      * @since 5.0.0
      */
-    public static function buildURL(int $key)
+    public static function buildURL(int $key): string
     {
         return (new self(Shop::Container()->getDB(), Shop::Container()->getCache()))->getURL($key);
     }

@@ -73,7 +73,7 @@ class Request
 
             return \is_numeric($val)
                 ? [(int)$val]
-                : \array_map(static function ($e) {
+                : \array_map(static function ($e): int {
                     return (int)$e;
                 }, $val);
         }

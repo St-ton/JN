@@ -88,7 +88,7 @@ class UpdateIO
             $updater->createSqlDump($file);
             $file   = \basename($file);
             $params = \http_build_query(['action' => 'download', 'file' => $file], '', '&');
-            $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
+            $url    = Shop::getAdminURL() . '/' . Route::DBUPDATER . '?' . $params;
 
             return [
                 'url'  => $url,

@@ -73,7 +73,7 @@ class Consent extends AbstractItem
                     }
                 }
             }
-            $missingLanguages = $allLanguages->filter(static function (LanguageModel $e) use ($addedLanguages) {
+            $missingLanguages = $allLanguages->filter(static function (LanguageModel $e) use ($addedLanguages): bool {
                 return !\in_array($e->getId(), $addedLanguages, true);
             });
             $this->addMissingTranslations($missingLanguages->toArray(), $defaultLocalization);

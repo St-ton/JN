@@ -3,6 +3,7 @@
 namespace JTL\OPC;
 
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
@@ -106,7 +107,7 @@ class PortletInstance implements \JsonSerializable
             ';
         }
 
-        Dispatcher::getInstance()->fire('shop.OPC.PortletInstance.getPreviewHtml', [
+        Dispatcher::getInstance()->fire(Event::OPC_PORTLET_RENDERMOUNTPOINT, [
             'portletInstance' => $this,
             'result'          => &$result
         ]);
@@ -123,7 +124,7 @@ class PortletInstance implements \JsonSerializable
     {
         $result = $this->portlet->getFinalHtml($this, $inContainer);
 
-        Dispatcher::getInstance()->fire('shop.OPC.PortletInstance.getFinalHtml', [
+        Dispatcher::getInstance()->fire(Event::OPC_PORTLET_GETFINALHTML, [
             'portletInstance' => $this,
             'result'          => &$result
         ]);
@@ -409,15 +410,14 @@ class PortletInstance implements \JsonSerializable
         $data = [];
 
         foreach ($this->portlet->getAnimationsPropertyDesc() as $propname => $propdesc) {
-            if ($this->hasProperty($propname) && \str_starts_with($propname, 'wow-') &&
-                !empty($this->getProperty($propname))
+            if ($this->hasProperty($propname)
+                && \str_starts_with($propname, 'wow-')
+                && !empty($this->getProperty($propname))
             ) {
                 $value = $this->getProperty($propname);
-
                 if (\is_string($value)) {
                     $value = \htmlspecialchars($value);
                 }
-
                 $data[$propname] = $value;
             }
         }
@@ -431,7 +431,6 @@ class PortletInstance implements \JsonSerializable
     public function getAnimationDataAttributeString(): string
     {
         $res = '';
-
         foreach ($this->getAnimationData() as $key => $val) {
             $res .= ' data-' . $key . '="' . $val . '"';
         }
@@ -445,7 +444,6 @@ class PortletInstance implements \JsonSerializable
     public function updateAttributes(): self
     {
         $this->setAttribute('style', $this->getStyleString());
-
         foreach ($this->getAnimations() as $aniName => $aniValue) {
             if ($aniName === 'animation-style' && !empty($aniValue)) {
                 $this->addClass('wow ' . $aniValue);
@@ -473,7 +471,6 @@ class PortletInstance implements \JsonSerializable
     public function getAttributeString(): string
     {
         $result = '';
-
         foreach ($this->getAttributes() as $name => $value) {
             $result .= ' ' . $name . '="' . $value . '"';
         }
@@ -494,7 +491,7 @@ class PortletInstance implements \JsonSerializable
      */
     public function getDataAttribute(): string
     {
-        return \htmlspecialchars(\json_encode($this->getData()), \ENT_QUOTES);
+        return \htmlspecialchars(\json_encode($this->getData(), \JSON_THROW_ON_ERROR), \ENT_QUOTES);
     }
 
     /**
@@ -663,7 +660,6 @@ class PortletInstance implements \JsonSerializable
                 $this->setProperty($name, $value);
             }
         }
-
         if (GeneralObject::isCountable('subareas', $data)) {
             foreach ($data['subareas'] as $areaData) {
                 $area = new Area();

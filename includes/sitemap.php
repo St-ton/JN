@@ -76,10 +76,9 @@ function sendRequestFile(string $file): void
     $file         = basename($file);
     $absoluteFile = PFAD_ROOT . PFAD_EXPORT . basename($file);
     $extension    = pathinfo($absoluteFile, PATHINFO_EXTENSION);
-
-    $contentType = match (mb_convert_case($extension, MB_CASE_LOWER)) {
-        'xml' => 'application/xml',
-        'txt' => 'text/plain',
+    $contentType  = match (mb_convert_case($extension, MB_CASE_LOWER)) {
+        'xml'   => 'application/xml',
+        'txt'   => 'text/plain',
         default => 'application/octet-stream',
     };
 

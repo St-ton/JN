@@ -159,11 +159,11 @@ abstract class AbstractLoader implements LoaderInterface
 
     /**
      * @param int $id
-     * @return array
+     * @return Hook[]
      */
     protected function loadHooks(int $id): array
     {
-        return \array_map(static function ($data) {
+        return \array_map(static function (stdClass $data): Hook {
             $hook = new Hook();
             $hook->setPriority((int)$data->nPriority);
             $hook->setFile($data->cDateiname);

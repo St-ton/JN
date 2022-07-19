@@ -624,7 +624,7 @@ class LivesearchController extends AbstractBackendController
                 WHERE kSprache = :lid
                 ORDER BY kSuchanfrageBlacklist',
             ['lid' => $languageID]
-        )->each(static function (stdClass $item) {
+        )->each(static function (stdClass $item): stdClass {
             $item->cSuche = \htmlentities($item->cSuche);
 
             return $item;

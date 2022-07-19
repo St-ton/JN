@@ -114,28 +114,28 @@ class Router
      * @param JTLCacheInterface     $cache
      * @param State                 $state
      * @param AlertServiceInterface $alert
-     * @param array                 $conf
+     * @param array                 $config
      */
     public function __construct(
         protected DbInterface       $db,
         protected JTLCacheInterface $cache,
         protected State             $state,
         AlertServiceInterface       $alert,
-        array                       $conf
+        private array               $config
     ) {
-        $products        = new ProductController($db, $cache, $state, $conf, $alert);
-        $specials        = new SearchSpecialController($db, $cache, $state, $conf, $alert);
-        $queries         = new SearchQueryController($db, $cache, $state, $conf, $alert);
-        $characteristics = new CharacteristicValueController($db, $cache, $state, $conf, $alert);
-        $categories      = new CategoryController($db, $cache, $state, $conf, $alert);
-        $manufacturers   = new ManufacturerController($db, $cache, $state, $conf, $alert);
-        $news            = new NewsController($db, $cache, $state, $conf, $alert);
-        $pages           = new PageController($db, $cache, $state, $conf, $alert);
-        $search          = new SearchController($db, $cache, $state, $conf, $alert);
-        $default         = new DefaultController($db, $cache, $state, $conf, $alert);
-        $root            = new RootController($db, $cache, $state, $conf, $alert);
+        $products        = new ProductController($db, $cache, $state, $this->config, $alert);
+        $specials        = new SearchSpecialController($db, $cache, $state, $this->config, $alert);
+        $queries         = new SearchQueryController($db, $cache, $state, $this->config, $alert);
+        $characteristics = new CharacteristicValueController($db, $cache, $state, $this->config, $alert);
+        $categories      = new CategoryController($db, $cache, $state, $this->config, $alert);
+        $manufacturers   = new ManufacturerController($db, $cache, $state, $this->config, $alert);
+        $news            = new NewsController($db, $cache, $state, $this->config, $alert);
+        $pages           = new PageController($db, $cache, $state, $this->config, $alert);
+        $search          = new SearchController($db, $cache, $state, $this->config, $alert);
+        $default         = new DefaultController($db, $cache, $state, $this->config, $alert);
+        $root            = new RootController($db, $cache, $state, $this->config, $alert);
         $consent         = new ConsentController();
-        $io              = new IOController($this->db, $cache, $state, $conf, $alert);
+        $io              = new IOController($this->db, $cache, $state, $this->config, $alert);
 
         $this->router = new BaseRouter();
 
@@ -148,8 +148,8 @@ class Router
                 $this->defaultLocale = $language->getIso639();
             }
         }
-        if ($conf['global']['routing_scheme'] !== 'F') {
-            $this->ignoreDefaultLocale = $conf['global']['routing_default_language'] === 'F';
+        if (($this->config['global']['routing_scheme'] ?? 'F') !== 'F') {
+            $this->ignoreDefaultLocale = $this->config['global']['routing_default_language'] === 'F';
             if (\count($codes) > 1) {
                 $this->isMultilang  = true;
                 $this->langGroups[] = '/{lang:(?:' . \implode('|', $codes) . ')}';
@@ -158,15 +158,15 @@ class Router
                 $this->router->middleware(new LocaleRedirectMiddleware($this->defaultLocale));
             }
         }
-        $this->router->middleware(new MaintenanceModeMiddleware($conf['global']));
-        $this->router->middleware(new SSLRedirectMiddleware($conf['global']));
+        $this->router->middleware(new MaintenanceModeMiddleware($this->config['global']));
+        $this->router->middleware(new SSLRedirectMiddleware($this->config['global']));
         $this->router->middleware(new WishlistCheckMiddleware());
         $this->router->middleware(new CartcheckMiddleware());
         $this->router->middleware(new LocaleCheckMiddleware());
         $this->router->middleware(new CurrencyCheckMiddleware());
         $this->router->middleware(new OptinMiddleware());
         $visibilityMiddleware = new VisibilityMiddleware();
-        $currencies           = \array_map(static function (Currency $e) {
+        $currencies           = \array_map(static function (Currency $e): string {
             return $e->getCode();
         }, Currency::loadAll());
         if (\count($currencies) > 1) {
@@ -348,9 +348,12 @@ class Router
             self::TYPE_SEARCH_QUERY         => 'ROUTE_SEARCHQUERY_BY_',
             default                         => 'ROUTE_XXX_BY_'
         };
+
+        $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
+
         $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
         if ($this->isMultilang === true
-            && ($this->ignoreDefaultLocale === false || ($replacements['lang'] ?? '') !== $this->defaultLocale)
+            && ($this->ignoreDefaultLocale === false || !$isDefaultLocale)
         ) {
             if (empty($replacements['lang'])) {
                 $replacements['lang'] = $this->defaultLocale;
@@ -360,7 +363,14 @@ class Router
         if ($this->isMulticrncy === true && isset($replacements['currency'])) {
             $name .= '_CRNCY';
         }
-        //@todo???: fallback to index.php?k=123&lang=fre
+        if ($byName === true) {
+            if ($isDefaultLocale && (($this->config['global']['routing_default_language'] ?? 'F') === 'F')) {
+                return '/' . $replacements['name'];
+            }
+            if (!$isDefaultLocale && (($this->config['global']['routing_scheme'] ?? 'F') === 'F')) {
+                return '/' . $replacements['name'];
+            }
+        }
 
         return $this->getNamedPath($name, $replacements);
     }

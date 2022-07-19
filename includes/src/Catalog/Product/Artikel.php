@@ -1686,7 +1686,7 @@ class Artikel implements RoutableInterface
         }
         $this->cMerkmalAssoc_arr = [];
         foreach ($this->oMerkmale_arr as $item) {
-            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache));
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache) ?? '');
             if (\mb_strlen($name) > 0) {
                 $values                         = \array_filter(\array_map(static function (MerkmalWert $e) {
                     return $e->getValue();
@@ -5557,14 +5557,14 @@ class Artikel implements RoutableInterface
         // Beachte Vater FunktionsAttribute
         if (isset($childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
             $isCanonical = match ((int)$childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                1 => true,
+                1       => true,
                 default => false,
             };
         }
         // Beachte Kind FunktionsAttribute
         if (isset($childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
             $isCanonical = match ((int)$childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                1 => true,
+                1       => true,
                 default => false,
             };
         }
@@ -6094,7 +6094,7 @@ class Artikel implements RoutableInterface
             Image::SIZE_SM => $from->cURLKlein,
             Image::SIZE_MD => $from->cURLNormal,
             Image::SIZE_LG => $from->cURLGross,
-            default => null,
+            default        => null,
         };
     }
 

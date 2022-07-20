@@ -258,7 +258,7 @@ class BackendRouter
         $this->router->setStrategy($strategy);
         $updateCheckMiddleWare = new UpdateCheckMiddleware($db, $account);
 
-        $basePath = (\parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '') . '/' . \PFAD_ADMIN;
+        $basePath = (\parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '') . '/' . \PFAD_ADMIN;
         $this->router->group(\rtrim($basePath, '/'), function (RouteGroup $route) use ($controllers) {
             $revisionMiddleware = new RevisionMiddleware($this->db);
             foreach ($controllers as $slug => $controller) {
@@ -268,7 +268,7 @@ class BackendRouter
                 $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
                 $route->post('/' . $slug, $controller . '::getResponse')
                     ->middleware($revisionMiddleware)
-                    ->setName('post' . $slug);
+                    ->setName($slug . 'POST');
             }
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
@@ -276,18 +276,18 @@ class BackendRouter
         $this->router->get($basePath . Route::PASS, PasswordController::class . '::getResponse')
             ->setName(Route::PASS);
         $this->router->post($basePath . Route::PASS, PasswordController::class . '::getResponse')
-            ->setName('post' . Route::PASS);
+            ->setName(Route::PASS . 'POST');
 
         $this->router->get($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
             ->setName(Route::CODE);
         $this->router->post($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
-            ->setName('post' . Route::CODE);
+            ->setName(Route::CODE . 'POST');
 
         $this->router->get($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare);
         $this->router->post($basePath, DashboardController::class . '::getResponse')
-            ->setName('post' . Route::DASHBOARD)
+            ->setName(Route::DASHBOARD . 'POST')
             ->middleware($updateCheckMiddleWare);
     }
 

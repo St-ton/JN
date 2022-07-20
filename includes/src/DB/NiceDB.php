@@ -303,7 +303,8 @@ class NiceDB implements DbInterface
      */
     public function close(): bool
     {
-        $this->pdo = null;
+        $this->pdo         = null;
+        $this->isConnected = false;
 
         return true;
     }

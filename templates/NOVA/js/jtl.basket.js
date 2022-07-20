@@ -125,8 +125,7 @@
                 var tpl = data.response.cTemplate;
 
                 $(that.options.selector.cart.container)
-                    .empty()
-                    .append(tpl);
+                    .replaceWith(tpl);
             });
         }
     };

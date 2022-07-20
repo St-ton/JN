@@ -37,7 +37,7 @@
                             {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0) || isset($Artikel->cArtNr)}
                                 {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                                     {block name='productdetails-details-info-rating-wrapper'}
-                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope="true" itemtype="https://schema.org/AggregateRating">
+                                        <div class="rating-wrapper" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
                                             <meta itemprop="ratingValue" content="{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}"/>
                                             <meta itemprop="bestRating" content="5"/>
                                             <meta itemprop="worstRating" content="1"/>
@@ -110,7 +110,7 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li  class="product-manufacturer" itemprop="brand" itemscope="true" itemtype="https://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Organization">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
                                                             <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerURL}{/if}"

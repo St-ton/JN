@@ -190,6 +190,10 @@
                 <Option Value="popup">als Popup anzeigen</Option>
                 <Option Value="details">in den Artikeldetails anzeigen</Option>
             </Setting>
+            <Setting Description="Darstellung der Konfiguratoroptionen" Key="config_layout" Type="select" Value="gallery">
+                <Option Value="list">als kompakte Liste</Option>
+                <Option Value="gallery">als Galerie</Option>
+            </Setting>
         </Section>
         <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>

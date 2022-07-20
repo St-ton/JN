@@ -5,12 +5,12 @@
                 <nav class="nav nav-pills flex-column">
                     {foreach $Artikel->oKonfig_arr as $configGroup}
                         {$configLocalization = $configGroup->getSprache()}
-                        <a id="cfg-nav-{$configGroup@iteration}" class="nav-link" href="#cfg-grp-{$configGroup@iteration}">{$configLocalization->getName()} <span class="d-none js-group-checked"><i class="far fa-check-circle"></i></span></a>
+                        <a id="cfg-nav-{$configGroup@iteration}" class="nav-link" href="#cfg-grp-{$configGroup@iteration}">{$configLocalization->getName()} <span class="d-none js-group-checked"><i class="fas fa-check text-success"></i></span></a>
                     {/foreach}
                 </nav>
             </nav>
         {/col}
-        {col cols=12 md=9 data=["spy"=>"scroll", "target"=>"#cfg-nav", "offset"=>"10"] class="cfg-options"}
+        {col cols=12 md=9 data=["spy"=>"scroll", "target"=>"#cfg-nav", "offset"=>"15"] class="cfg-options"}
 
                 {foreach $Artikel->oKonfig_arr as $configGroup}
                     {if $configGroup->getItemCount() > 0}

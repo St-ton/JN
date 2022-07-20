@@ -5,7 +5,11 @@
             <div class="tab-content" id="cfg-container-tab-panes">
                 <div class="tab-pane fade show active" id="cfg-tab-pane-options" role="tabpanel" aria-labelledby="cfg-tab-options">
                     {block name='productdetails-config-container-options'}
-                        {include file='productdetails/config_options_neu.tpl'}
+                        {if $Einstellungen.template.productdetails.config_layout === 'list'}
+                            {include file='productdetails/config_options_list.tpl'}
+                        {else}
+                            {include file='productdetails/config_options_gallery.tpl'}
+                        {/if}
                     {/block}
                 </div>
                 <div class="tab-pane fade" id="cfg-tab-pane-summary" role="tabpanel" aria-labelledby="cfg-tab-summary">
@@ -47,10 +51,14 @@
     {/block}
     {else}
         {col id="cfg-container"}
-            <div class="tab-content" id="cfg-container-tab-panes">
+            <div class="tab-content{if $Einstellungen.template.productdetails.config_layout === 'list'} cfg-list{else} cfg-gallery{/if}" id="cfg-container-tab-panes">
                 <div class="tab-pane fade show active" id="cfg-tab-pane-options" role="tabpanel" aria-labelledby="cfg-tab-options">
                     {block name='productdetails-config-container-options'}
-                        {include file='productdetails/config_options_neu.tpl'}
+                        {if $Einstellungen.template.productdetails.config_layout === 'list'}
+                            {include file='productdetails/config_options_list.tpl'}
+                        {else}
+                            {include file='productdetails/config_options_gallery.tpl'}
+                        {/if}
                     {/block}
                 </div>
                 <div class="tab-pane fade" id="cfg-tab-pane-summary" role="tabpanel" aria-labelledby="cfg-tab-summary">

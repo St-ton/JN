@@ -396,9 +396,37 @@
 }
 
 #cfg-container-tab-panes {
-	height: calc((var(--vh, 1vh) * 78) - 3rem);
-	overflow-x: auto;
-	padding-right: 17px;
+	&.cfg-gallery {
+		height: calc((var(--vh, 1vh) * 78) - 3rem);
+		overflow-x: auto;
+		padding-right: 17px;
+	}
+
+	&.cfg-list {
+		.cfg-group .config-item {
+			margin: 0;
+			padding: $input-btn-padding-y;
+		}
+		.custom-radio .cfg-item-description {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+			.input-group {
+				width: auto;
+			}
+		}
+		.custom-checkbox .config-item {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: center;
+
+			.input-group {
+				width: auto;
+			}
+		}
+	}
 	border-bottom: 2px solid $border-color;
 	@include media-breakpoint-down(sm) {
 		height: calc((var(--vh, 1vh) * 87) - 5rem);
@@ -412,6 +440,15 @@
 	overflow-x:hidden;
 	@include media-breakpoint-down(sm) {
 		height: calc((var(--vh, 1vh) * 87) - 6rem);
+	}
+}
+
+#cfg-nav {
+	height: calc((var(--vh, 1vh) * 78) - 4rem);
+	z-index: $zindex-sticky - 1;
+	align-content: flex-start;
+	.nav {
+		width: 100%;
 	}
 }
 

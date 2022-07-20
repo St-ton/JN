@@ -20554,10 +20554,34 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: -1rem;
 }
 #cfg-container-tab-panes {
+  border-bottom: 2px solid #212121;
+}
+#cfg-container-tab-panes.cfg-gallery {
   height: calc((var(--vh, 1vh) * 78) - 3rem);
   overflow-x: auto;
   padding-right: 17px;
-  border-bottom: 2px solid #212121;
+}
+#cfg-container-tab-panes.cfg-list .cfg-group .config-item {
+  margin: 0;
+  padding: 0.625rem;
+}
+#cfg-container-tab-panes.cfg-list .custom-radio .cfg-item-description {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+#cfg-container-tab-panes.cfg-list .custom-radio .cfg-item-description .input-group {
+  width: auto;
+}
+#cfg-container-tab-panes.cfg-list .custom-checkbox .config-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+#cfg-container-tab-panes.cfg-list .custom-checkbox .config-item .input-group {
+  width: auto;
 }
 @media (max-width: 767.98px) {
   #cfg-container-tab-panes {
@@ -20574,6 +20598,14 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   .cfg-options {
     height: calc((var(--vh, 1vh) * 87) - 6rem);
   }
+}
+#cfg-nav {
+  height: calc((var(--vh, 1vh) * 78) - 4rem);
+  z-index: 1019;
+  align-content: flex-start;
+}
+#cfg-nav .nav {
+  width: 100%;
 }
 .cfg-group .cfg-group-info {
   text-align: center;

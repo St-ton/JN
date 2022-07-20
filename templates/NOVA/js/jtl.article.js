@@ -300,6 +300,7 @@
                 dropdown = $('#product-configurator')
                     .closest('form')
                     .find('select');
+            let offset = $('#jtl-nav-wrapper').height();
 
             if (dropdown.length > 0) {
                 dropdown.on('change', function () {
@@ -323,6 +324,31 @@
                     that.configurator(true);
                 },0);
             }
+
+            function scroll (selector) {
+                $(selector).bind('click', function(event) {
+                    event.preventDefault();
+                    let anchor = $(this).attr('href');
+                    $('html, body').stop().animate({
+                        scrollTop: $(anchor).offset().top - offset - 15
+                    });
+                });
+            }
+            scroll('a[href="#cfg-container"]');
+
+
+            $('#cfg-nav nav a').on('click', function() {
+                $('html, body').animate({
+                    scrollTop: $('#cfg-container').offset().top - offset - 15
+                });
+                let anchor = $(this).attr('href');
+                //TODO:scrollspy scrollt nicht zur entsprechenden gruppe
+                /*console.log($(anchor));
+                $(anchor)[0].scrollIntoView();*/
+                /*$('#cfg-container .cfg-options').stop().animate({
+                    scrollTop: $(anchor).offset().top
+                });*/
+            });
         },
 
         registerSimpleVariations: function($wrapper) {

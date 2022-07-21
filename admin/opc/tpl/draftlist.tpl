@@ -29,19 +29,19 @@
                 {if $draftStatus === 0}
                     {if $draft->getPublishTo() === null}
                         <span class="opc-public">{__('activeSince')}</span>
-                        {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                        {$draft->getPublishFrom()|date_format:'d.m.Y - H:i'}
                     {else}
                         <span class="opc-public">{__('activeUntil')}</span>
-                        {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                        {$draft->getPublishTo()|date_format:'d.m.Y - H:i'}
                     {/if}
                 {elseif $draftStatus === 1}
                     <span class="opc-planned">{__('scheduledFor')}</span>
-                    {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                    {$draft->getPublishFrom()|date_format:'d.m.Y - H:i'}
                 {elseif $draftStatus === 2}
                     <span class="opc-status-draft">{__('notScheduled')}</span>
                 {elseif $draftStatus === 3}
                     <span class="opc-backdate">{__('expiredOn')}</span>
-                    {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                    {$draft->getPublishTo()|date_format:'d.m.Y - H:i'}
                 {/if}
             </div>
             <div class="opc-draft-actions">

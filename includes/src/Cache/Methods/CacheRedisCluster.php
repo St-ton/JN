@@ -35,7 +35,7 @@ class CacheRedisCluster implements ICachingMethod
      */
     public function __construct(array $options)
     {
-        $res             = false;
+        $res = false;
         $this->setJournalID('redis_journal');
         $this->setOptions($options);
         if (isset($options['rediscluster_hosts']) && $this->isAvailable()) {

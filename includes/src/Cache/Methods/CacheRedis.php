@@ -28,7 +28,7 @@ class CacheRedis implements ICachingMethod
      */
     public function __construct(array $options)
     {
-        $res             = false;
+        $res = false;
         $this->setJournalID('redis_journal');
         $this->setOptions($options);
         if ($this->isAvailable()) {

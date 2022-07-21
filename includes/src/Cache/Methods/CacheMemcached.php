@@ -31,7 +31,7 @@ class CacheMemcached implements ICachingMethod
             $this->setMemcached($options['memcache_host'], (int)$options['memcache_port']);
             $this->memcached->setOption(Memcached::OPT_PREFIX_KEY, $options['prefix']);
             $this->setIsInitialized(true);
-            $test                = $this->test();
+            $test = $this->test();
             $this->setError($test === true ? '' : $this->memcached->getResultMessage());
             $this->setJournalID('memcached_journal');
             // @see http://php.net/manual/de/memcached.expiration.php

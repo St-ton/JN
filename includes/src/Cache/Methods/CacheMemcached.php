@@ -18,14 +18,9 @@ class CacheMemcached implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheMemcached
-     */
-    public static $instance;
-
-    /**
      * @var Memcached
      */
-    private $memcached;
+    private ?Memcached $memcached = null;
 
     /**
      * @param array $options
@@ -35,14 +30,14 @@ class CacheMemcached implements ICachingMethod
         if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
             $this->setMemcached($options['memcache_host'], (int)$options['memcache_port']);
             $this->memcached->setOption(Memcached::OPT_PREFIX_KEY, $options['prefix']);
-            $this->isInitialized = true;
+            $this->setIsInitialized(true);
             $test                = $this->test();
             $this->setError($test === true ? '' : $this->memcached->getResultMessage());
-            $this->journalID = 'memcached_journal';
+            $this->setJournalID('memcached_journal');
             // @see http://php.net/manual/de/memcached.expiration.php
             $options['lifetime'] = \min(60 * 60 * 24 * 30, $options['lifetime']);
-            $this->options       = $options;
-            self::$instance      = $this;
+            $this->setOptions($options);
+            self::$instance = $this;
         }
     }
 
@@ -93,10 +88,6 @@ class CacheMemcached implements ICachingMethod
      */
     public function loadMulti(array $cacheIDs): array
     {
-        if (!\is_array($cacheIDs)) {
-            return [];
-        }
-
         return \array_merge(\array_fill_keys($cacheIDs, false), $this->memcached->getMulti($cacheIDs));
     }
 

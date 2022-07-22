@@ -98,7 +98,7 @@ class Category
             self::$fullCategories = null;
             unset($_SESSION['oKategorie_arr_new']);
         }
-        self::$cacheID         = 'allcategories_' . $customerGroupID .
+        self::$cacheID         = 'allctgrs_' . $customerGroupID .
             '_' . $languageID .
             '_' . $config['global']['kategorien_anzeigefilter'];
         self::$languageID      = $languageID;
@@ -249,7 +249,7 @@ class Category
         $stockFilter        = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $showCategoryImages = self::$config['template']['megamenu']['show_category_images'] ?? 'N';
         $extended           = !empty($stockFilter);
-        $isDefaultLang      = LanguageHelper::isDefaultLanguageActive();
+        $isDefaultLang      = LanguageHelper::isDefaultLanguageActive(false, self::$languageID);
         $categoryCount      = (int)self::$db->getSingleObject('SELECT COUNT(*) AS cnt FROM tkategorie')->cnt;
         self::$limitReached = $categoryCount >= \CATEGORY_FULL_LOAD_LIMIT;
         self::$depth        = self::$limitReached ? \CATEGORY_FULL_LOAD_MAX_LEVEL : -1;

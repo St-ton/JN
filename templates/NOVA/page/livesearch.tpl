@@ -10,7 +10,7 @@
                             {if count($LivesucheTop) > 0}
                                 {foreach $LivesucheTop as $suche}
                                     <li class="my-2">
-                                        {link href=$suche->cURL class="mr-1"}{$suche->cSuche}{/link},
+                                        {link href=$suche->cURLFull class="mr-1"}{$suche->cSuche}{/link},
                                         {lang key='matches'}: <span class="badge-pill badge-primary">{$suche->nAnzahlTreffer}</span>
                                     </li>
                                 {/foreach}

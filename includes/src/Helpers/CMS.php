@@ -202,12 +202,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;
@@ -246,12 +251,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;

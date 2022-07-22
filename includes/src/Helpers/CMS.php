@@ -282,8 +282,9 @@ class CMS
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
+            $item->kNewsletterHistory = (int)$item->kNewsletterHistory;
+            $item->cURL               = URL::buildURL($item, \URLART_NEWSLETTER);
+            $item->cURLFull           = URL::buildURL($item, \URLART_NEWSLETTER, true);
         }
 
         return $history;

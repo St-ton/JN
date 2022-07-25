@@ -389,45 +389,39 @@ class CartHelper
      */
     public static function checkAdditions(): bool
     {
-        $fAnzahl = 0;
+        $qty = 0;
         if (isset($_POST['anzahl'])) {
             $_POST['anzahl'] = \str_replace(',', '.', $_POST['anzahl']);
         }
         if (isset($_POST['anzahl']) && (float)$_POST['anzahl'] > 0) {
-            $fAnzahl = (float)$_POST['anzahl'];
+            $qty = (float)$_POST['anzahl'];
         } elseif (isset($_GET['anzahl']) && (float)$_GET['anzahl'] > 0) {
-            $fAnzahl = (float)$_GET['anzahl'];
+            $qty = (float)$_GET['anzahl'];
         }
         if (isset($_POST['n']) && (float)$_POST['n'] > 0) {
-            $fAnzahl = (float)$_POST['n'];
+            $qty = (float)$_POST['n'];
         } elseif (isset($_GET['n']) && (float)$_GET['n'] > 0) {
-            $fAnzahl = (float)$_GET['n'];
+            $qty = (float)$_GET['n'];
         }
         $productID = isset($_POST['a']) ? (int)$_POST['a'] : Request::verifyGPCDataInt('a');
-        $conf      = Shop::getSettings([\CONF_GLOBAL, \CONF_VERGLEICHSLISTE]);
         \executeHook(\HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, [
             'kArtikel' => $productID,
-            'fAnzahl'  => $fAnzahl
+            'fAnzahl'  => $qty
         ]);
-        if ($productID > 0
-            && (isset($_POST['Wunschliste']) || isset($_GET['Wunschliste']))
+        if ($productID <= 0) {
+            return false;
+        }
+        $conf = Shop::getSettings([\CONF_GLOBAL, \CONF_VERGLEICHSLISTE]);
+        if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste']))
             && $conf['global']['global_wunschliste_anzeigen'] === 'Y'
         ) {
-            return self::checkWishlist(
-                $productID,
-                $fAnzahl,
-                $conf['global']['global_wunschliste_weiterleitung'] === 'Y'
-            );
+            return self::checkWishlist($productID, $qty, $conf['global']['global_wunschliste_weiterleitung'] === 'Y');
         }
-        if (isset($_POST['Vergleichsliste']) && $productID > 0) {
+        if (isset($_POST['Vergleichsliste'])) {
             return self::checkCompareList($productID, (int)$conf['vergleichsliste']['vergleichsliste_anzahl']);
         }
-        if ($productID > 0
-            && !isset($_POST['Vergleichsliste'])
-            && !isset($_POST['Wunschliste'])
-            && Request::postInt('wke') === 1
-        ) { //warenkorbeingang?
-            return self::checkCart($productID, $fAnzahl);
+        if (!isset($_POST['Wunschliste']) && Request::postInt('wke') === 1) { // warenkorbeingang?
+            return self::checkCart($productID, $qty);
         }
 
         return false;

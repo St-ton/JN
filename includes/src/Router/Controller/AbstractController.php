@@ -22,6 +22,7 @@ use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -164,6 +165,10 @@ abstract class AbstractController implements ControllerInterface
             if (isset($mapping[$seo->cKey])) {
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
+        }
+        if ($this->state->productID > 0 && Product::isVariChild($this->state->productID)) {
+            $this->state->childProductID = $this->state->productID;
+            $this->state->productID      = Product::getParent($this->state->productID);
         }
         $this->updateShopParams($slug);
 

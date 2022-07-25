@@ -42,7 +42,7 @@ class BaseManufacturer extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setRouteType(Router::TYPE_MANUFACTURERS);
+        $this->setRouteType(Router::TYPE_MANUFACTURER);
         $this->setIsCustom(false)
              ->setUrlParam('h')
              ->setUrlParamSEO(\SEP_HST);

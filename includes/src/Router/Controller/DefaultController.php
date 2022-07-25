@@ -102,19 +102,19 @@ class DefaultController extends AbstractController
             $type      = match ($className) {
                 CategoryController::class            => Router::TYPE_CATEGORY,
                 CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
-                ManufacturerController::class        => Router::TYPE_MANUFACTURERS,
+                ManufacturerController::class        => Router::TYPE_MANUFACTURER,
                 NewsController::class                => Router::TYPE_NEWS,
                 ProductController::class             => Router::TYPE_PRODUCT,
                 SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
                 SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
                 default                              => Router::TYPE_PAGE
             };
-            $test = Shop::getRouter()->getPathByType($type, [
+            $test = Shop::getRouter()->getURLByType($type, [
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
 
-            return new RedirectResponse(Shop::getURL() . $test, 301);
+            return new RedirectResponse($test, 301);
         }
 
         return $controller->getResponse($request, $args, $smarty);

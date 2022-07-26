@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -30,8 +30,10 @@ class DBManager
      */
     public static function getColumns(string $table): array
     {
+        if (!\in_array($table, self::getTables(), true)) {
+            return [];
+        }
         $list    = [];
-        $table   = Shop::Container()->getDB()->escape($table);
         $columns = Shop::Container()->getDB()->getObjects(
             "SHOW FULL COLUMNS 
                 FROM `{$table}`"
@@ -50,8 +52,10 @@ class DBManager
      */
     public static function getIndexes(string $table): array
     {
+        if (!\in_array($table, self::getTables(), true)) {
+            return [];
+        }
         $list    = [];
-        $table   = Shop::Container()->getDB()->escape($table);
         $indexes = Shop::Container()->getDB()->getObjects(
             "SHOW INDEX 
                 FROM `{$table}`"
@@ -61,23 +65,22 @@ class DBManager
                 'Index_type' => 'INDEX',
                 'Columns'    => []
             ];
-
             if (!isset($list[$index->Key_name])) {
                 $list[$index->Key_name] = $container;
             }
-
             $list[$index->Key_name]->Columns[$index->Column_name] = $index;
         }
         foreach ($list as $item) {
-            if (\count($item->Columns) > 0) {
-                $column = \reset($item->Columns);
-                if ($column->Key_name === 'PRIMARY') {
-                    $item->Index_type = 'PRIMARY';
-                } elseif ($column->Index_type === 'FULLTEXT') {
-                    $item->Index_type = 'FULLTEXT';
-                } elseif ((int)$column->Non_unique === 0) {
-                    $item->Index_type = 'UNIQUE';
-                }
+            if (\count($item->Columns) === 0) {
+                continue;
+            }
+            $column = \reset($item->Columns);
+            if ($column->Key_name === 'PRIMARY') {
+                $item->Index_type = 'PRIMARY';
+            } elseif ($column->Index_type === 'FULLTEXT') {
+                $item->Index_type = 'FULLTEXT';
+            } elseif ((int)$column->Non_unique === 0) {
+                $item->Index_type = 'UNIQUE';
             }
         }
 
@@ -92,7 +95,6 @@ class DBManager
     public static function getStatus(string $database, ?string $table = null)
     {
         $database = Shop::Container()->getDB()->escape($database);
-
         if ($table !== null) {
             return Shop::Container()->getDB()->getSingleObject(
                 "SHOW TABLE STATUS 
@@ -101,7 +103,6 @@ class DBManager
                 ['tbl' => $table]
             );
         }
-
         $list   = [];
         $status = Shop::Container()->getDB()->getObjects(
             "SHOW TABLE STATUS 
@@ -126,11 +127,9 @@ class DBManager
             'Unsigned' => false
         ];
         $types  = \explode(' ', $type);
-
         if (isset($types[1]) && $types[1] === 'unsigned') {
             $result->Unsigned = true;
         }
-
         if (\preg_match('/([a-z]+)(?:\((.*)\))?/', $types[0], $m)) {
             $result->Size = 0;
             $result->Name = $m[1];

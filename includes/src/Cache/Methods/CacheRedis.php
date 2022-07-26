@@ -19,23 +19,18 @@ class CacheRedis implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheRedis
+     * @var Redis|null
      */
-    public static $instance;
-
-    /**
-     * @var Redis
-     */
-    private $redis;
+    private ?Redis $redis = null;
 
     /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $res             = false;
-        $this->journalID = 'redis_journal';
-        $this->options   = $options;
+        $res = false;
+        $this->setJournalID('redis_journal');
+        $this->setOptions($options);
         if ($this->isAvailable()) {
             $res = $this->setRedis(
                 $options['redis_host'],
@@ -46,10 +41,11 @@ class CacheRedis implements ICachingMethod
             );
         }
         if ($res !== false) {
-            $this->isInitialized = true;
+            $this->setIsInitialized(true);
+            self::$instance = $this;
         } else {
-            $this->redis         = null;
-            $this->isInitialized = false;
+            $this->redis = null;
+            $this->setIsInitialized(false);
         }
     }
 

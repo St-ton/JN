@@ -444,7 +444,7 @@ class AccountController
     private function checkCoupons(array $coupons): void
     {
         foreach ($coupons as $coupon) {
-            if (empty($coupon)) {
+            if (!\method_exists($coupon, 'check')) {
                 continue;
             }
             $error      = $coupon->check();

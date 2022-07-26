@@ -40,6 +40,19 @@ class Category extends BaseCategory
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function setValue($value): FilterInterface

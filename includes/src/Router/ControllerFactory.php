@@ -84,12 +84,12 @@ class ControllerFactory
             }
             if ($parentID > 0) {
                 $code = \is_array($_POST) && \count($_POST) > 0 ? 308 : 301;
-                $path = Shop::getRouter()->getPathByType(
+                $url  = Shop::getRouter()->getURLByType(
                     Router::TYPE_PRODUCT,
                     ['id' => $parentID, 'lang' => Text::convertISO2ISO639(Shop::getLanguageCode())]
                 );
                 \http_response_code($code);
-                \header('Location: ' . Shop::getURL() . $path);
+                \header('Location: ' . $url);
                 exit();
             }
             $controller      = $this->createController(ProductController::class);
@@ -104,6 +104,7 @@ class ControllerFactory
         ) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(ProductListController::class);
+            $controller->updateProductFilter();
         } elseif ($state->categoryID > 0 && $state->manufacturerFilterNotFound === false) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(CategoryController::class);

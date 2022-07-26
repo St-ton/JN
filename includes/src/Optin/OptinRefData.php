@@ -56,7 +56,7 @@ class OptinRefData implements \Serializable
     private ?int $productID = null;
 
     /**
-     * @inheridoc
+     * @inheritdoc
      */
     public function serialize()
     {
@@ -74,7 +74,7 @@ class OptinRefData implements \Serializable
     }
 
     /**
-     * @inheridoc
+     * @inheritdoc
      */
     public function unserialize(string $data)
     {

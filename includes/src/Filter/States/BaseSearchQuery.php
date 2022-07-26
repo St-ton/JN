@@ -200,11 +200,14 @@ class BaseSearchQuery extends AbstractFilter
                 $this->setSlug($seo->cSeo, $language->kSprache);
             }
         }
+        if ($seo === null) {
+            return $this;
+        }
         $this->createBySlug($this->getID());
         foreach ($this->getURLPaths() as $langID => $slug) {
             $this->cSeo[$langID] = \ltrim($slug, '/');
         }
-        if ($seo !== null & !empty($seo->cSuche)) {
+        if (!empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 

@@ -412,7 +412,7 @@ final class Orders extends AbstractSync
         $billingAddress->cLand = Adresse::checkISOCountryCode($billingAddress->cLand);
         if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
             \syncException(
-                'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
+                'Error Bestellung Update. Rechnungsadresse enthaelt keinen Nachnamen, Firma und Strasse! XML:' .
                 \print_r($xml, true),
                 \FREIDEFINIERBARER_FEHLER
             );

@@ -22,6 +22,7 @@ use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -165,6 +166,10 @@ abstract class AbstractController implements ControllerInterface
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
         }
+        if ($this->state->productID > 0 && Product::isVariChild($this->state->productID)) {
+            $this->state->childProductID = $this->state->productID;
+            $this->state->productID      = Product::getParent($this->state->productID);
+        }
         $this->updateShopParams($slug);
 
         return $this->updateProductFilter();
@@ -173,7 +178,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @return State
      */
-    protected function updateProductFilter(): State
+    public function updateProductFilter(): State
     {
         Shop::getProductFilter()->initStates($this->state->getAsParams());
         \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);

@@ -106,8 +106,13 @@ class Sitemap
                 ]
             );
             foreach ($newsCategories as $newsCategory) {
-                $newsCategory->cURL     = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
-                $newsCategory->cURLFull = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true, $prefix);
+                $newsCategory->kNewsKategorie = (int)$newsCategory->kNewsKategorie;
+                $newsCategory->kSprache       = (int)$newsCategory->kSprache;
+                $newsCategory->nSort          = (int)$newsCategory->nSort;
+                $newsCategory->nAktiv         = (int)$newsCategory->nAktiv;
+                $newsCategory->nAnzahlNews    = (int)$newsCategory->nAnzahlNews;
+                $newsCategory->cURL           = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE);
+                $newsCategory->cURLFull       = URL::buildURL($newsCategory, \URLART_NEWSKATEGORIE, true, $prefix);
 
                 $items = $this->db->getObjects(
                     "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
@@ -135,10 +140,13 @@ class Sitemap
                     [
                         'lid'  => $this->langID,
                         'cgid' => $this->customerGroupID,
-                        'cid'  => (int)$newsCategory->kNewsKategorie
+                        'cid'  => $newsCategory->kNewsKategorie
                     ]
                 );
                 foreach ($items as $item) {
+                    $item->kNews    = (int)$item->kNews;
+                    $item->kSprache = (int)$item->kSprache;
+                    $item->nAktiv   = (int)$item->nAktiv;
                     $item->cURL     = URL::buildURL($item, \URLART_NEWS);
                     $item->cURLFull = URL::buildURL($item, \URLART_NEWS, true, $prefix);
                 }

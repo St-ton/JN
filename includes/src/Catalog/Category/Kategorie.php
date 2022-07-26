@@ -265,7 +265,9 @@ class Kategorie implements RoutableInterface
         );
         $this->mapData($items, $customerGroupID);
         $this->createBySlug($id);
-        $this->addImage(first($items));
+        if (first($items) !== null) {
+            $this->addImage(first($items));
+        }
         $this->addAttributes();
         $this->hasSubcategories = $this->db->select('tkategorie', 'kOberKategorie', $this->getID()) !== null;
         foreach ($items as $item) {
@@ -512,7 +514,7 @@ class Kategorie implements RoutableInterface
      */
     public function getName(int $idx = null): string
     {
-        return $this->names[$idx ?? $this->currentLanguageID];
+        return $this->names[$idx ?? $this->currentLanguageID] ?? '';
     }
 
     /**

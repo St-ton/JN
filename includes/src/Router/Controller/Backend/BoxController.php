@@ -267,9 +267,9 @@ class BoxController extends AbstractBackendController
     private function actionEdit(int $boxID, int $linkID): void
     {
         $ok    = false;
-        $title = Text::filterXSS($_REQUEST['boxtitle']);
-        $type  = Text::filterXSS($_REQUEST['typ']);
-        if ($type === 'text') {
+        $title = Text::xssClean($_REQUEST['boxtitle']);
+        $type  = $_REQUEST['typ'];
+        if ($type === Type::TEXT) {
             $oldBox = $this->getByID($boxID);
             if ($oldBox->supportsRevisions === true) {
                 $revision = new Revision($this->db);

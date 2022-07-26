@@ -4,6 +4,7 @@ namespace JTL\Update;
 
 use DateTime;
 use Exception;
+use JTL\DB\ReturnType;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -149,24 +150,24 @@ class MigrationHelper
         ) {
             Shop::Container()->getDB()->query(
                 "CREATE TABLE IF NOT EXISTS tmigration 
-            (
-                kMigration bigint(14) NOT NULL, 
-                nVersion int(3) NOT NULL, 
-                dExecuted datetime NOT NULL,
-                PRIMARY KEY (kMigration)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
+                (
+                    kMigration bigint(14) NOT NULL, 
+                    nVersion int(3) NOT NULL, 
+                    dExecuted datetime NOT NULL,
+                    PRIMARY KEY (kMigration)
+                ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
             );
             Shop::Container()->getDB()->query(
                 "CREATE TABLE IF NOT EXISTS tmigrationlog 
-            (
-                kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
-                kMigration bigint(20) NOT NULL, 
-                cDir enum('up','down') NOT NULL, 
-                cState varchar(6) NOT NULL, 
-                cLog text NOT NULL, 
-                dCreated datetime NOT NULL, 
-                PRIMARY KEY (kMigrationlog)
-            ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
+                (
+                    kMigrationlog int(10) NOT NULL AUTO_INCREMENT, 
+                    kMigration bigint(20) NOT NULL, 
+                    cDir enum('up','down') NOT NULL, 
+                    cState varchar(6) NOT NULL, 
+                    cLog text NOT NULL, 
+                    dCreated datetime NOT NULL, 
+                    PRIMARY KEY (kMigrationlog)
+                ) ENGINE=InnoDB CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'"
             );
         }
     }
@@ -191,18 +192,21 @@ class MigrationHelper
      * @param bool        $idxUnique
      * @return bool
      */
-    public static function createIndex(string $idxTable, array $idxColumns, $idxName = null, $idxUnique = false): bool
-    {
+    public static function createIndex(
+        string $idxTable,
+        array $idxColumns,
+        string $idxName = null,
+        bool $idxUnique = false
+    ): bool {
         if (empty($idxName)) {
             $idxName = \implode('_', $idxColumns) . '_' . ($idxUnique ? 'UQ' : 'IDX');
         }
-
         if (\count(self::indexColumns($idxTable, $idxName)) === 0 || self::dropIndex($idxTable, $idxName)) {
             $ddl = 'CREATE' . ($idxUnique ? ' UNIQUE' : '')
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return !Shop::Container()->getDB()->query($ddl) ? false : true;
+            return Shop::Container()->getDB()->query($ddl,ReturnType::SINGLE_OBJECT) !== null;
         }
 
         return false;
@@ -216,9 +220,10 @@ class MigrationHelper
     public static function dropIndex(string $idxTable, string $idxName): bool
     {
         if (\count(self::indexColumns($idxTable, $idxName)) > 0) {
-            return !Shop::Container()->getDB()->query(
-                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` '
-            ) ? false : true;
+            return Shop::Container()->getDB()->query(
+                'DROP INDEX `' . $idxName . '` ON `' . $idxTable . '` ',
+                ReturnType::SINGLE_OBJECT
+            ) !== null;
         }
 
         return true;
@@ -240,10 +245,7 @@ class MigrationHelper
 
             return \strtolower($text);
         };
-        $filePath      = \implode(
-            '_',
-            \array_filter([$timestamp, $asFilePath($description)])
-        );
+        $filePath      = \implode('_', \array_filter([$timestamp, $asFilePath($description)]));
         $relPath       = 'update/migrations';
         $migrationPath = $relPath . '/' . $filePath . '.php';
         $fileSystem    = Shop::Container()->get(LocalFilesystem::class);

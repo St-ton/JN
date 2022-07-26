@@ -19,6 +19,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
+use JTL\News\Author;
 use JTL\News\Category;
 use JTL\News\CategoryInterface;
 use JTL\News\CategoryList;
@@ -82,7 +83,7 @@ class NewsController extends AbstractBackendController
 
         $uploadDir    = \PFAD_ROOT . \PFAD_NEWSBILDER;
         $uploadDirCat = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
-        $author       = ContentAuthor::getInstance();
+        $author       = Author::getInstance($this->db);
         $newsCategory = new Category($this->db);
         $languages    = LanguageHelper::getAllLanguages(0, true, true);
         $adminID      = (int)$_SESSION['AdminAccount']->kAdminlogin;
@@ -398,17 +399,14 @@ class NewsController extends AbstractBackendController
     }
 
     /**
-     * @param array         $post
-     * @param array         $languages
-     * @param ContentAuthor $contentAuthor
+     * @param array  $post
+     * @param array  $languages
+     * @param Author $author
      * @return ResponseInterface|null
      * @throws Exception
      */
-    public function createOrUpdateNewsItem(
-        array $post,
-        array $languages,
-        ContentAuthor $contentAuthor
-    ): ?ResponseInterface {
+    public function createOrUpdateNewsItem(array $post, array $languages, Author $author): ?ResponseInterface
+    {
         $newsItemID      = (int)($post['kNews'] ?? 0);
         $update          = $newsItemID > 0;
         $customerGroups  = $post['kKundengruppe'] ?? null;
@@ -436,9 +434,9 @@ class NewsController extends AbstractBackendController
                 $newsItemID = $this->db->insert('tnews', $newsItem);
             }
             if ($authorID > 0) {
-                $contentAuthor->setAuthor('NEWS', $newsItemID, $authorID);
+                $author->setAuthor('NEWS', $newsItemID, $authorID);
             } else {
-                $contentAuthor->clearAuthor('NEWS', $newsItemID);
+                $author->clearAuthor('NEWS', $newsItemID);
             }
             $this->db->delete('tnewssprache', 'kNews', $newsItemID);
             $flags          = \ENT_COMPAT | \ENT_HTML401;
@@ -569,7 +567,7 @@ class NewsController extends AbstractBackendController
             } else {
                 $this->smarty->assign(
                     'oPossibleAuthors_arr',
-                    $contentAuthor->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW'])
+                    $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW'])
                 );
             }
         }
@@ -628,10 +626,10 @@ class NewsController extends AbstractBackendController
 
 
     /**
-     * @param array         $newsItems
-     * @param ContentAuthor $author
+     * @param array  $newsItems
+     * @param Author $author
      */
-    public function deleteNewsItems(array $newsItems, ContentAuthor $author): void
+    public function deleteNewsItems(array $newsItems, Author $author): void
     {
         foreach ($newsItems as $newsItemID) {
             $newsItemID = (int)$newsItemID;
@@ -819,7 +817,14 @@ class NewsController extends AbstractBackendController
             if (empty($seoData->cSeo)) {
                 continue;
             }
-            if ($update === true) {
+            $exists = $this->db->getSingleObject(
+                'SELECT *
+                    FROM tnewskategoriesprache
+                    WHERE kNewsKategorie = :nid
+                        AND languageID = :lid',
+                ['nid' => $categoryID, 'lid' => $language->getId()]
+            );
+            if ($exists !== null) {
                 unset($loc->kNewsKategorie);
                 $this->db->update(
                     'tnewskategoriesprache',
@@ -1079,7 +1084,7 @@ class NewsController extends AbstractBackendController
 
             $images[] = $image;
         }
-        \usort($images, static function ($a, $b) {
+        \usort($images, static function ($a, $b): int {
             return \strcmp($a->cName, $b->cName);
         });
 
@@ -1257,7 +1262,7 @@ class NewsController extends AbstractBackendController
 
             \closedir($handle);
         }
-        \usort($images, static function ($a, $b) {
+        \usort($images, static function ($a, $b): int {
             return \strcmp($a, $b);
         });
         $baseURL = Shop::getImageBaseURL();

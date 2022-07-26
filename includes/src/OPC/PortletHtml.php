@@ -74,7 +74,6 @@ trait PortletHtml
     final public function getBasePath(): string
     {
         $plugin = $this->getPlugin();
-
         if ($plugin !== null) {
             /** @var Plugin $plugin */
             return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
@@ -89,7 +88,6 @@ trait PortletHtml
     final public function getBaseUrl(): string
     {
         $plugin = $this->getPlugin();
-
         if ($plugin !== null) {
             /** @var Plugin $plugin */
             return $plugin->getPaths()->getPortletsUrl() . $this->getClass() . '/';
@@ -165,7 +163,6 @@ trait PortletHtml
     {
         $desc = $this->getPropertyDesc();
         $tabs = $this->getPropertyTabs();
-
         foreach ($tabs as $tabname => $propnames) {
             if (\is_string($propnames)) {
                 if ($propnames === 'styles') {

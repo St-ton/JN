@@ -21,6 +21,12 @@ class BaseCategory extends AbstractFilter
     /**
      * @var array
      */
+    protected array $slugs = [];
+
+
+    /**
+     * @var array
+     */
     public static array $mapping = [
         'kKategorie' => 'ValueCompat',
         'cName'      => 'Name'
@@ -83,15 +89,16 @@ class BaseCategory extends AbstractFilter
             return $this;
         }
         $seoData           = [];
-        $currentLanguageID = Shop::getLanguageID();
+        $currentLanguageID = $this->getLanguageID();
         foreach ((array)$this->getValue() as $id) {
-            $seoData[] = new Kategorie($id);
+            $seoData[] = new Kategorie($id, $currentLanguageID);
         }
         foreach ($languages as $language) {
             $id              = $language->getId();
             $this->cSeo[$id] = '';
             foreach ($seoData as $seo) {
-                $this->cSeo[$id] = \ltrim($seo->getURLPath($id), '/');
+                $this->cSeo[$id]  = \ltrim($seo->getURLPath($id), '/');
+                $this->slugs[$id] = $seo->getSlug($id);
             }
         }
         foreach ($seoData as $item) {
@@ -100,6 +107,25 @@ class BaseCategory extends AbstractFilter
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        if ($this->getValue() <= 0) {
+            return null;
+        }
+        $currentLanguageID = $this->getLanguageID();
+        foreach ((array)$this->getValue() as $id) {
+            $category = new Kategorie($id, $currentLanguageID);
+            $category->createBySlug($id, $additional);
+
+            return \ltrim($category->getURLPath($currentLanguageID), '/');
+        }
+
+        return null;
     }
 
     /**

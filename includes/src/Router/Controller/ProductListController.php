@@ -36,13 +36,21 @@ class ProductListController extends AbstractController
         if ($this->state->is404) {
             return false;
         }
-        $this->currentCategory = new Kategorie();
-        $this->productFilter   = Shop::getProductFilter();
+        $this->productFilter = Shop::getProductFilter();
         if (!$this->productFilter->hasCategory()) {
+            $this->currentCategory = new Kategorie();
+
             return true;
         }
         $categoryID                  = $this->productFilter->getCategory()->getValue();
         $_SESSION['LetzteKategorie'] = $categoryID;
+        $this->currentCategory       = new Kategorie(
+            $categoryID,
+            $this->languageID,
+            $this->customerGroupID,
+            false,
+            $this->db
+        );
         if ($this->currentCategory->getID() === null) {
             // temp. workaround: do not return 404 when non-localized existing category is loaded
             if (Category::categoryExists($categoryID)) {
@@ -60,9 +68,9 @@ class ProductListController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->init();
         $this->smarty = $smarty;
         Shop::setPageType(\PAGE_ARTIKELLISTE);
-
         if ($this->productFilter->hasCategory()) {
             $this->expandedCategories->getOpenCategories($this->currentCategory);
         }
@@ -86,7 +94,7 @@ class ProductListController extends AbstractController
         ) {
             $_SESSION['ArtikelProSeite'] = \min(
                 (int)$this->config['artikeluebersicht']['artikeluebersicht_artikelproseite'],
-                ARTICLES_PER_PAGE_HARD_LIMIT
+                \ARTICLES_PER_PAGE_HARD_LIMIT
             );
         }
         $this->searchResults->getProducts()->transform(function ($product) {
@@ -180,7 +188,8 @@ class ProductListController extends AbstractController
             return null;
         }
         $hasSubCategories = ($categoryID = $this->productFilter->getCategory()->getValue()) > 0
-            && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))->existierenUnterkategorien();
+            && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db))
+                ->existierenUnterkategorien();
         if ($this->productFilter->getFilterCount() > 0
             || $this->productFilter->getRealSearch() !== null
             || ($this->productFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
@@ -198,7 +207,7 @@ class ProductListController extends AbstractController
     {
         $bestsellers = [];
         if ($this->config['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-            $productsIDs = $this->searchResults->getProducts()->map(static function ($product) {
+            $productsIDs = $this->searchResults->getProducts()->map(static function ($product): int {
                 return (int)$product->kArtikel;
             });
             $bestsellers = Bestseller::buildBestsellers(
@@ -262,11 +271,11 @@ class ProductListController extends AbstractController
             $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
         if ($tb === 'Top' || $tb === 'TopBest') {
-            $categoryContent->TopArtikel = new ArtikelListe();
+            $categoryContent->TopArtikel = new ArtikelListe($this->db, $this->cache);
             $categoryContent->TopArtikel->holeTopArtikel($categoryContent->Unterkategorien);
         }
         if ($tb === 'Bestseller' || $tb === 'TopBest') {
-            $categoryContent->BestsellerArtikel = new ArtikelListe();
+            $categoryContent->BestsellerArtikel = new ArtikelListe($this->db, $this->cache);
             $categoryContent->BestsellerArtikel->holeBestsellerArtikel(
                 $categoryContent->Unterkategorien,
                 $categoryContent->TopArtikel ?? null

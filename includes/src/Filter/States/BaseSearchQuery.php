@@ -11,6 +11,8 @@ use JTL\Filter\StateSQL;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -23,6 +25,7 @@ use function Functional\filter;
 class BaseSearchQuery extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -59,6 +62,7 @@ class BaseSearchQuery extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_SEARCH_QUERY);
         $this->setIsCustom(false)
             ->setUrlParam('suche')
             ->setUrlParamSEO(null);
@@ -88,7 +92,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setValue($value): FilterInterface
     {
-        $this->value = (int)$value;
+        $this->value = $value;
 
         return $this;
     }
@@ -193,10 +197,17 @@ class BaseSearchQuery extends AbstractFilter
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
             if ($seo !== null && $language->kSprache === (int)$seo->kSprache) {
-                $this->cSeo[$language->kSprache] = $seo->cSeo;
+                $this->setSlug($seo->cSeo, $language->kSprache);
             }
         }
-        if ($seo !== null & !empty($seo->cSuche)) {
+        if ($seo === null) {
+            return $this;
+        }
+        $this->createBySlug($this->getID());
+        foreach ($this->getURLPaths() as $langID => $slug) {
+            $this->cSeo[$langID] = \ltrim($slug, '/');
+        }
+        if (!empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -948,7 +959,7 @@ class BaseSearchQuery extends AbstractFilter
         if ($searchCache->kSuchCache <= 0) {
             return $searchCache->kSuchCache;
         }
-        $productCols = \array_map(static function ($item) {
+        $productCols = \array_map(static function ($item): string {
             $items = \explode('.', $item, 2);
 
             return 'tartikel.' . $items[1];
@@ -1101,7 +1112,7 @@ class BaseSearchQuery extends AbstractFilter
             $searchRows[] = self::getPrioritizedRows($searchRows, $config);
         }
 
-        return filter($searchRows, static function ($r) {
+        return filter($searchRows, static function ($r): bool {
             return $r !== '';
         });
     }

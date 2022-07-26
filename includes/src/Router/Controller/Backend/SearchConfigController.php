@@ -9,6 +9,7 @@ use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\SectionFactory;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
@@ -113,7 +114,7 @@ class SearchConfigController extends AbstractBackendController
             Notification::getInstance($this->db)->add(
                 NotificationEntry::TYPE_WARNING,
                 \__('indexCreate'),
-                'sucheinstellungen.php'
+                $this->baseURL . '/' . Route::SEARCHCONFIG
             );
         }
         $this->getAdminSectionSettings(\CONF_ARTIKELUEBERSICHT);

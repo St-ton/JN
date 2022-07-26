@@ -248,7 +248,7 @@ class Characteristic extends BaseCharacteristic
     {
         return \array_reduce(
             $this->productFilter->getCharacteristicFilter(),
-            static function ($a, $b) use ($characteristicValueID) {
+            static function ($a, $b) use ($characteristicValueID): bool {
                 /** @var Characteristic $b */
                 return $a || $b->getValue() === $characteristicValueID;
             },
@@ -599,7 +599,7 @@ class Characteristic extends BaseCharacteristic
      */
     protected function isNumeric(Option $option): bool
     {
-        return every($option->getOptions(), static function (Option $item) {
+        return every($option->getOptions(), static function (Option $item): bool {
             return \is_numeric($item->getValue());
         });
     }
@@ -650,7 +650,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row): int {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(

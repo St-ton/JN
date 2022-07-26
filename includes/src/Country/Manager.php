@@ -17,6 +17,7 @@ use JTL\Smarty\JTLSmarty;
 /**
  * Class Manager
  * @package JTL\Country
+ * @todo: move to controller
  */
 class Manager
 {

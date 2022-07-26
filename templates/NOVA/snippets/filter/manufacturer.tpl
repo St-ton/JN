@@ -6,14 +6,14 @@
         {include file='snippets/filter/search_in_items.tpl' itemCount=count($filter->getOptions()) name=$filter->getFrontendName()}
     {/block}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
-        <ul class="nav nav-filter-has-image">
+        <nav class="nav nav-filter-has-image">
     {/if}
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
         {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
             {block name='snippets-filter-manufacturer-more-top'}
                 <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false" role="button">
-                    <ul class="nav {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als !== 'B'}flex-column{/if}">
+                    <nav class="nav {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als !== 'B'}flex-column{/if}">
                 {$collapseInit = true}
             {/block}
         {/if}
@@ -60,12 +60,11 @@
     {/foreach}
     {if $limit != -1 && $filter->getOptions()|count > $limit}
         {block name='snippets-filter-manufacturer-more-bottom'}
-                </ul>
+                </nav>
             </div>
             <div class="snippets-filter-show-all">
                 {button
                     variant="link"
-                    role="button"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]}
                     {lang key='showAll'}
                 {/button}
@@ -73,7 +72,7 @@
         {/block}
     {/if}
     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'B'}
-        </ul>
+        </nav>
     {/if}
     </div>
 {/block}

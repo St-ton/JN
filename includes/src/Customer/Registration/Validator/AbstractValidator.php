@@ -55,7 +55,7 @@ abstract class AbstractValidator implements ValidatorInterface
             'SELECT DISTINCT cLandISO FROM tplz'
         )
             ->pluck('cLandISO')
-            ->map(static function (string $iso) {
+            ->map(static function (string $iso): string {
                 return mb_convert_case($iso, \MB_CASE_UPPER);
             })
             ->toArray();

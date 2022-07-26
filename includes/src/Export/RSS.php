@@ -35,9 +35,7 @@ class RSS
         }
         $this->logger->debug('RSS wird erstellt');
         if (!\is_writable(\PFAD_ROOT . \FILE_RSS_FEED)) {
-            $this->logger->error(
-                'RSS Verzeichnis ' . \PFAD_ROOT . \FILE_RSS_FEED . 'nicht beschreibbar!'
-            );
+            $this->logger->error('RSS Verzeichnis ' . \PFAD_ROOT . \FILE_RSS_FEED . 'nicht beschreibbar!');
 
             return false;
         }
@@ -88,7 +86,7 @@ class RSS
                         AND cNeu = 'Y' 
                         AND DATE_SUB(now(), INTERVAL :ds DAY) < dErstellt
                     ORDER BY dLetzteAktualisierung DESC",
-                ['lid' => (int)$_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
+                ['lid' => $_SESSION['kSprache'], 'cgid' => $stdKundengruppe->kKundengruppe, 'ds' => $days]
             );
             foreach ($products as $product) {
                 $url  = URL::buildURL($product, \URLART_ARTIKEL, true, $shopURL . '/');
@@ -167,7 +165,7 @@ class RSS
      * @return bool|string
      * @former bauerfc2822datum()
      */
-    public function asRFC2822($dateString): bool|string
+    public function asRFC2822(string $dateString): bool|string
     {
         return \mb_strlen($dateString) > 0
             ? (new DateTime($dateString))->format(\DATE_RSS)

@@ -18,7 +18,7 @@ class FileWriter implements ExportWriterInterface
     private string $tmpFileName;
 
     /**
-     * @var resource
+     * @var resource|bool
      */
     private $currentHandle;
 
@@ -139,7 +139,7 @@ class FileWriter implements ExportWriterInterface
             if (\file_exists($path)) {
                 \unlink($path);
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
     }
 
@@ -157,7 +157,7 @@ class FileWriter implements ExportWriterInterface
     {
         $path = $this->model->getSanitizedFilepath();
         $file = $this->model->getFilename();
-        if ((int)$this->model->getSplitSize() <= 0 || !\file_exists($path)) {
+        if ($this->model->getSplitSize() <= 0 || !\file_exists($path)) {
             return $this;
         }
         $fileCounter = 1;

@@ -5,7 +5,6 @@ namespace JTL\News;
 use DateTime;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
-use JTL\ContentAuthor;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
@@ -148,12 +147,12 @@ class Item extends AbstractItem implements RoutableInterface
     public function __construct(DbInterface $db, ?JTLCacheInterface $cache = null)
     {
         $this->db            = $db;
-        $this->routeType     = Router::TYPE_NEWS;
         $this->date          = \date_create();
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
         $this->comments      = new CommentList($this->db);
         $this->cache         = $cache ?? Shop::Container()->getCache();
+        $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWS);
     }
 
@@ -279,8 +278,7 @@ class Item extends AbstractItem implements RoutableInterface
 
     private function setContentAuthor(): void
     {
-        $author = ContentAuthor::getInstance()->getAuthor('NEWS', $this->getID(), true);
-
+        $author = Author::getInstance($this->db)->getAuthor('NEWS', $this->getID(), true);
         if ($author === null || $author->kAdminlogin <= 0) {
             return;
         }
@@ -357,7 +355,7 @@ class Item extends AbstractItem implements RoutableInterface
                 }
             }
 
-            \usort($images, static function ($a, $b) {
+            \usort($images, static function ($a, $b): int {
                 return \strcmp($a->cName, $b->cName);
             });
         }

@@ -24,19 +24,19 @@ use function Functional\some;
 class Media
 {
     /**
-     * @var Media
+     * @var Media|null
      */
-    private static $instance;
+    private static ?self $instance;
 
     /**
      * @var IMedia[]
      */
-    private $registeredClasses = [];
+    private array $registeredClasses = [];
 
     /**
      * @var array
      */
-    private static $classMapper = [
+    private static array $classMapper = [
         Image::TYPE_CATEGORY             => Category::class,
         Image::TYPE_CHARACTERISTIC       => Characteristic::class,
         Image::TYPE_CHARACTERISTIC_VALUE => CharacteristicValue::class,
@@ -129,6 +129,6 @@ class Media
     {
         return first($this->registeredClasses, static function (IMedia $type) use ($requestUri) {
             return $type::isValid($requestUri);
-        })->handle($requestUri);
+        })?->handle($requestUri);
     }
 }

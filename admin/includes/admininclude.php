@@ -1,7 +1,12 @@
 <?php declare(strict_types=1);
 
-use JTL\Backend\AdminLoginStatus;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\License\Checker;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\Plugin\Admin\StateChanger;
 use JTL\Profiler;
 use JTL\Router\Router;
 use JTL\Router\State;
@@ -10,21 +15,23 @@ use JTL\Services\JTL\SimpleCaptchaService;
 use JTL\Session\Backend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Smarty\BackendSmarty;
 use JTL\Update\Updater;
 
-if (!isset($bExtern) || !$bExtern) {
-    if (isset($_REQUEST['safemode'])) {
-        $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
-    }
-    define('DEFINES_PFAD', __DIR__ . '/../../includes/');
-    require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
-    require DEFINES_PFAD . 'defines.php';
-    require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admindefines.php';
-    defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
-    defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+if (isset($_REQUEST['safemode'])) {
+    $GLOBALS['plgSafeMode'] = in_array(strtolower($_REQUEST['safemode']), ['1', 'on', 'ein', 'true', 'wahr']);
 }
+const DEFINES_PFAD = __DIR__ . '/../../includes/';
+require DEFINES_PFAD . 'config.JTL-Shop.ini.php';
+require DEFINES_PFAD . 'defines.php';
+
+error_reporting(ADMIN_LOG_LEVEL);
+date_default_timezone_set(SHOP_TIMEZONE);
+
+defined('DB_HOST') || die('Kein MySQL-Datenbankhost angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_NAME') || die('Kein MySQL Datenbankname angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_USER') || die('Kein MySQL-Datenbankbenutzer angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
+defined('DB_PASS') || die('Kein MySQL-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -61,32 +68,8 @@ $cache    = Shop::Container()->getCache()->setJtlCacheConfig(
 $session  = Backend::getInstance();
 $lang     = LanguageHelper::getInstance($db, $cache);
 $oAccount = Shop::Container()->getAdminAccount();
-$loggedIn = $oAccount->logged();
-if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
-    if ($GLOBALS['plgSafeMode']) {
-        touch(SAFE_MODE_LOCK);
-    } elseif (file_exists(SAFE_MODE_LOCK)) {
-        unlink(SAFE_MODE_LOCK);
-    }
-}
-
-if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
-    $adminToken   = $_SESSION['jtl_token'];
-    $adminLangTag = $_SESSION['AdminAccount']->language;
-    $eSIdAdm      = session_id();
-    session_write_close();
-    session_name('JTLSHOP');
-    session_id($_COOKIE['JTLSHOP']);
-    session_start();
-    $_SESSION['loggedAsAdmin'] = $loggedIn;
-    $_SESSION['adminToken']    = $adminToken;
-    $_SESSION['adminLangTag']  = $adminLangTag;
-    session_write_close();
-    session_name('eSIdAdm');
-    session_id($eSIdAdm);
-    $session = new Backend();
-    $session::set('frontendUpToDate', true);
-}
+$updates  = collect([]);
+$expired  = collect([]);
 Shop::setRouter(new Router(
     $db,
     $cache,
@@ -94,11 +77,39 @@ Shop::setRouter(new Router(
     Shop::Container()->getAlertService(),
     Shopsetting::getInstance()->getAll()
 ));
-require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
+$smarty = new BackendSmarty($db);
 
 Shop::Container()->singleton(CaptchaServiceInterface::class, static function () {
     return new SimpleCaptchaService(true);
 });
-if ((new Updater($db))->hasPendingUpdates() === false) {
-    Shop::bootstrap(false);
+$hasUpdates = (new Updater($db))->hasPendingUpdates();
+if ($hasUpdates === false) {
+    if (Request::getVar('licensenoticeaccepted') === 'true') {
+        $_SESSION['licensenoticeaccepted'] = 0;
+    }
+    if (Request::postVar('action') === 'disable-expired-plugins' && Form::validateToken()) {
+        $sc = new StateChanger($db, $cache);
+        foreach ($_POST['pluginID'] as $pluginID) {
+            $sc->deactivate((int)$pluginID);
+        }
+    }
+    $mapper         = new Mapper(new Manager($db, $cache));
+    $checker        = new Checker(Shop::Container()->getBackendLogService(), $db, $cache);
+    $updates        = $checker->getUpdates($mapper);
+    $noticeAccepted = (int)($_SESSION['licensenoticeaccepted'] ?? -1);
+    if ($noticeAccepted === -1 && SAFE_MODE === false) {
+        $expired = $checker->getLicenseViolations($mapper);
+    } else {
+        $noticeAccepted++;
+    }
+    if ($noticeAccepted > 5) {
+        $noticeAccepted = -1;
+    }
+    $_SESSION['licensenoticeaccepted'] = $noticeAccepted;
+    Shop::bootstrap(false, $db, $cache);
 }
+$smarty->assign('account', $oAccount->account())
+    ->assign('favorites', $oAccount->favorites())
+    ->assign('licenseItemUpdates', $updates)
+    ->assign('expiredLicenses', $expired)
+    ->assign('hasPendingUpdates', $hasUpdates);

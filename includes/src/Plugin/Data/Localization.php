@@ -89,7 +89,7 @@ class Localization
     {
         $iso = \mb_convert_case($this->currentLanguageCode, \MB_CASE_UPPER);
 
-        return $this->langVars->mapWithKeys(static function ($item) use ($iso) {
+        return $this->langVars->mapWithKeys(static function ($item) use ($iso): array {
             return [$item->name => $item->values[$iso] ?? null];
         })->toArray();
     }

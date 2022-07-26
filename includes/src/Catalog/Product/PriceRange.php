@@ -32,7 +32,7 @@ class PriceRange
     /**
      * @var float|int
      */
-    private $discount;
+    private $discount = 0;
 
     /**
      * @var float
@@ -87,7 +87,6 @@ class PriceRange
         ];
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
-        $this->discount        = 0;
 
         $productData = $db->getSingleObject(
             'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,

@@ -4,6 +4,7 @@ namespace JTL\Widgets;
 
 use DateTime;
 use JTL\Backend\Stats;
+use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
 use JTL\Helpers\Date;
 use JTL\Linechart;
@@ -15,17 +16,11 @@ use JTL\Linechart;
 class SalesVolume extends AbstractWidget
 {
     /**
-     * @var \stdClass
-     */
-    public $oWaehrung;
-
-    /**
      *
      */
     public function init()
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
-        $this->oWaehrung = $this->oDB->select('twaehrung', 'cStandard', 'Y');
         $this->setPermission('STATS_EXCHANGE_VIEW');
     }
 
@@ -36,15 +31,20 @@ class SalesVolume extends AbstractWidget
      */
     public function calcVolumeOfMonth(int $month, int $year): array
     {
-        $interval = 0;
-        $stats    = Stats::getBackendStats(
+        $currency     = null;
+        $interval     = 0;
+        $stats        = Stats::getBackendStats(
             \STATS_ADMIN_TYPE_UMSATZ,
             Date::getFirstDayOfMonth($month, $year),
             Date::getLastDayOfMonth($month, $year),
             $interval
         );
+        $currencyData = $this->oDB->select('twaehrung', 'cStandard', 'Y');
+        if ($currencyData !== null) {
+            $currency = new Currency((int)$currencyData->kWaehrung);
+        }
         foreach ($stats as $stat) {
-            $stat->cLocalized = Preise::getLocalizedPriceString($stat->nCount, $this->oWaehrung);
+            $stat->cLocalized = Preise::getLocalizedPriceString($stat->nCount, $currency);
         }
 
         return $stats;
@@ -80,6 +80,6 @@ class SalesVolume extends AbstractWidget
     public function getContent()
     {
         return $this->oSmarty->assign('linechart', $this->getJSON())
-                             ->fetch('tpl_inc/widgets/sales_volume.tpl');
+            ->fetch('tpl_inc/widgets/sales_volume.tpl');
     }
 }

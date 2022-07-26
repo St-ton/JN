@@ -46,7 +46,7 @@ use function Functional\reindex;
  * @method static string getIsoCodeByCountryName(string $country)
  * @method static string getCountryCodeByCountryName(string $iso)
  * @method static LanguageModel getDefaultLanguage(bool $shop = true)
- * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $forceLoad = false, bool $onlyActive = false)
+ * @method static LanguageModel[] getAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false)
  * @method static bool isShopLanguage(int $languageID, array $languages = [])
  */
 class LanguageHelper
@@ -316,7 +316,7 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags): bool {
             $content = $this->db->getCollection(
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
@@ -328,11 +328,11 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function (stdClass $e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e): stdClass {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
+        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)[
@@ -342,7 +342,7 @@ class LanguageHelper
             ];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -465,7 +465,7 @@ class LanguageHelper
                 if ($res !== false) { // php < 8.0
                     $value = $res;
                 }
-            } catch (\ValueError $e) {
+            } catch (\ValueError) {
             }
         }
 
@@ -611,12 +611,9 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return \array_filter(
-            LanguageModel::loadAll($this->db, [], [])->toArray(),
-            function (LanguageModel $l) {
-                return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model): bool {
+            return $model->getActive() === 1 && $this->mappekISO($model->getIso()) > 0;
+        })->toArray();
     }
 
     /**
@@ -987,17 +984,17 @@ class LanguageHelper
     private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($force || \count($languages) === 0) {
+        if ($force || \count($languages) === 0 || \get_class($languages[0]) === stdClass::class) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
 
         return match ($returnType) {
-            2 => reindex($languages, static function (LanguageModel $e) {
+            2 => reindex($languages, static function (LanguageModel $e): string {
                 return $e->getCode();
             }),
-            1 => reindex($languages, static function (LanguageModel $e) {
+            1 => reindex($languages, static function (LanguageModel $e): int {
                 return $e->getId();
             }),
             default => $languages,
@@ -1146,34 +1143,36 @@ class LanguageHelper
         }
         if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangCode     = Shop::getLanguageCode();
+            $currentLangID       = Shop::getLanguageID();
             foreach ($currencies as $currency) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
-                    $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
-                } elseif ($specialPage !== null) {
-                    $url = $specialPage->getURL();
-                    if (empty($url)) {
-                        if ($pageType === \PAGE_STARTSEITE) {
-                            $url = '';
-                        } elseif ($specialPage->getFileName() !== null) {
-                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false);
-                            // check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) {
-                                // no SEO link - fall back to php file with GET param
-                                $url = $shopURL . $specialPage->getFileName();
-                            } else {
-                                // there is a SEO link - make it a full URL
-                                $url = $linkService->getStaticRoute($specialPage->getFileName());
-                            }
-                        }
-                    }
-                } elseif ($page !== null) {
-                    $url = $page->getURL();
-                } else {
-                    $url = $productFilter->getFilterURL()->getURL();
+                $code       = $currency->getCode();
+                $additional = $currency->getID() === $currentCurrencyCode
+                    ? []
+                    : ['currency' => $code];
+                if (isset($AktuellerArtikel)) {
+                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
+                    $url = $AktuellerArtikel->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
                 }
-                if ($currency->getID() !== $currentCurrencyCode) {
-                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $currency->getCode();
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                $url = $productFilter->getFilterURL()->getURL(null, false, $additional);
+                if ($currency->getID() !== $currentCurrencyCode && !\str_contains($url, '/' . $code . '/')) {
+                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $code;
                 }
                 $currency->setURL($url);
                 $currency->setURLFull(!\str_contains($url, Shop::getURL())

@@ -408,11 +408,9 @@ class DBMigrationHelper
             if ($col->COLUMN_DEFAULT !== null) {
                 $col->COLUMN_DEFAULT = \trim($col->COLUMN_DEFAULT, '\'');
             }
-
             if ($col->DATA_TYPE === 'text') {
                 $col->COLUMN_TYPE = 'MEDIUMTEXT';
             }
-
             if ($col->DATA_TYPE === 'tinyint' && \str_starts_with($col->COLUMN_NAME, 'k')) {
                 $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
                 $characterSet = '';

@@ -34,7 +34,7 @@ class TwoFA
      *
      * @var string
      */
-    private string $shopName;
+    private string $shopName = '';
 
     /**
      * TwoFA constructor.
@@ -47,7 +47,6 @@ class TwoFA
         $this->userTuple->cLogin         = '';
         $this->userTuple->b2FAauth       = false;
         $this->userTuple->c2FAauthSecret = '';
-        $this->shopName                  = '';
     }
 
     /**

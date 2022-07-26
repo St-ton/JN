@@ -433,4 +433,11 @@ interface FilterInterface
      * @return string
      */
     public function getCacheID(string $query): string;
+
+    /**
+     * allows building URLs (for base states) with dynamic route parameters
+     * @param array $additional
+     * @return string|null
+     */
+    public function getRoute(array $additional): ?string;
 }

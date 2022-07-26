@@ -2,10 +2,7 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Router\DefaultParser;
 use JTL\Router\State;
-use JTL\Session\Frontend;
-use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,69 +11,32 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class CategoryController
  * @package JTL\Router\Controller
  */
-class CategoryController extends AbstractController
+class CategoryController extends ProductListController
 {
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function getStateFromSlug(array $args): State
-    {
-        $categoryID   = (int)($args['id'] ?? 0);
-        $categoryName = $args['name'] ?? null;
-        if ($categoryID < 1 && $categoryName === null) {
-            return $this->state;
-        }
-        if ($categoryName !== null) {
-            $parser       = new DefaultParser($this->db, $this->state);
-            $categoryName = $parser->parse($categoryName);
-        }
-
-        $seo = $categoryID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                        AND kKey = :kid
-                        AND kSprache = :lid',
-                ['key' => 'kKategorie', 'kid' => $categoryID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND cSeo = :seo',
-                ['key' => 'kKategorie', 'seo' => $categoryName]
-            );
-        if ($seo === null) {
-            return $this->handleSeoError($categoryID, $this->state->languageID);
-        }
-        $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
-        $seo->kKey     = (int)$seo->kKey;
-        $this->updateState($seo, $slug);
-
-        return $this->state;
-    }
+    protected string $tseoSelector = 'kKategorie';
 
     /**
-     * @param int $categoryID
+     * @param int $id
      * @param int $languageID
      * @return State
      */
-    private function handleSeoError(int $categoryID, int $languageID): State
+    protected function handleSeoError(int $id, int $languageID): State
     {
-        if ($categoryID > 0) {
+        if ($id > 0) {
             $exists = $this->db->getSingleObject(
                 'SELECT kKategorie
                     FROM tkategorie
                     WHERE kKategorie = :cid',
-                ['cid' => $categoryID]
+                ['cid' => $id]
             );
             if ($exists !== null) {
                 $seo = (object)[
                     'cSeo'     => '',
                     'cKey'     => 'kKategorie',
-                    'kKey'     => $categoryID,
+                    'kKey'     => $id,
                     'kSprache' => $languageID
                 ];
 
@@ -93,19 +53,14 @@ class CategoryController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        if (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($args['name'] ?? '', '/')) {
+            $args['name'] = \last(\explode('/', $args['name']));
+        }
         $this->getStateFromSlug($args);
-        $controller = new ProductListController(
-            $this->db,
-            $this->cache,
-            $this->state,
-            Frontend::getCustomer()->getGroupID(),
-            Shopsetting::getInstance()->getAll(),
-            $this->alertService
-        );
-        if (!$controller->init()) {
-            return $controller->notFoundResponse($request, $args, $smarty);
+        if (!$this->init()) {
+            return $this->notFoundResponse($request, $args, $smarty);
         }
 
-        return $controller->getResponse($request, $args, $smarty);
+        return parent::getResponse($request, $args, $smarty);
     }
 }

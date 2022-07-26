@@ -57,23 +57,12 @@ class CacheController extends AbstractBackendController
         } catch (Exception $exc) {
             $this->alertService->addError(\__('exception') . ': ' . $exc->getMessage(), 'errorException');
         }
-        // get disabled cache types
-        $deactivated       = $this->db->select(
-            'teinstellungen',
-            ['kEinstellungenSektion', 'cName'],
-            [\CONF_CACHING, 'caching_types_disabled']
-        );
-        $currentlyDisabled = [];
-        if (\is_object($deactivated) && isset($deactivated->cWert)) {
-            $currentlyDisabled = ($deactivated->cWert !== '')
-                ? \unserialize($deactivated->cWert, ['allowed_classes' => false])
-                : [];
-        }
+
         switch ($action) {
             case 'cacheMassAction':
                 //mass action cache flush
                 $this->tab = 'massaction';
-                $this->actionMassAction($cacheAction, $postData, $currentlyDisabled);
+                $this->actionMassAction($cacheAction, $postData);
                 break;
             case 'flush_object_cache':
                 $this->tab = 'massaction';
@@ -131,7 +120,7 @@ class CacheController extends AbstractBackendController
             ->assign('opcache_stats', $this->getOpcacheStats())
             ->assign('tplcacheStats', $this->getTemplateCacheStats())
             ->assign('advanced_settings', $advancedSettings)
-            ->assign('disabled_caches', $currentlyDisabled)
+            ->assign('disabled_caches', $this->getDisabledTags())
             ->assign('step', 'uebersicht')
             ->assign('tab', $this->tab)
             ->assign('route', $this->route)
@@ -152,6 +141,10 @@ class CacheController extends AbstractBackendController
         return $cachingGroups;
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     private function assignMethods(): void
     {
         $availableMethods     = [];
@@ -169,18 +162,37 @@ class CacheController extends AbstractBackendController
                 $nonAvailableMethods[] = $name;
             }
         }
-        $this->smarty->assign('functional_methods', \json_encode($availableMethods))
-            ->assign('disfunctional_methods', \json_encode($disFunctionalMethods))
-            ->assign('non_available_methods', \json_encode($nonAvailableMethods));
+        $this->smarty->assign('functional_methods', \json_encode($availableMethods, \JSON_THROW_ON_ERROR))
+            ->assign('disfunctional_methods', \json_encode($disFunctionalMethods, \JSON_THROW_ON_ERROR))
+            ->assign('non_available_methods', \json_encode($nonAvailableMethods, \JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * @return array
+     */
+    private function getDisabledTags(): array
+    {
+        $deactivated       = $this->db->select(
+            'teinstellungen',
+            ['kEinstellungenSektion', 'cName'],
+            [\CONF_CACHING, 'caching_types_disabled']
+        );
+        $currentlyDisabled = [];
+        if (\is_object($deactivated) && isset($deactivated->cWert)) {
+            $currentlyDisabled = ($deactivated->cWert !== '')
+                ? \unserialize($deactivated->cWert, ['allowed_classes' => false])
+                : [];
+        }
+
+        return $currentlyDisabled;
     }
 
     /**
      * @param string $cacheAction
      * @param array  $postData
-     * @param array  $currentlyDisabled
      * @return void
      */
-    private function actionMassAction(string $cacheAction, array $postData, array $currentlyDisabled): void
+    private function actionMassAction(string $cacheAction, array $postData): void
     {
         switch ($cacheAction) {
             case 'flush':
@@ -207,6 +219,7 @@ class CacheController extends AbstractBackendController
                 break;
             case 'activate':
                 if (\is_array(Request::postVar('cache-types'))) {
+                    $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $index = \array_search($cacheType, $currentlyDisabled, true);
                         if (\is_int($index)) {
@@ -230,6 +243,7 @@ class CacheController extends AbstractBackendController
                 break;
             case 'deactivate':
                 if (GeneralObject::isCountable('cache-types', $postData)) {
+                    $currentlyDisabled = $this->getDisabledTags();
                     foreach ($postData['cache-types'] as $cacheType) {
                         $this->cache->flushTags([$cacheType]);
                         $currentlyDisabled[] = $cacheType;
@@ -318,33 +332,39 @@ class CacheController extends AbstractBackendController
         $this->tab = 'settings';
     }
 
+    /**
+     * @return void
+     * @throws Exception
+     */
     private function actionFlushTemplateCache(): void
     {
-        $callback     = static function (array $pParameters) {
-            if (\str_starts_with($pParameters['filename'], '.')) {
+        $notice       = '';
+        $error        = '';
+        $callback     = static function (array $params) {
+            if (\str_starts_with($params['filename'], '.')) {
                 return;
             }
-            if (!$pParameters['isdir']) {
-                if (@\unlink($pParameters['path'] . $pParameters['filename'])) {
-                    $pParameters['count']++;
+            if (!$params['isdir']) {
+                if (@\unlink($params['path'] . $params['filename'])) {
+                    $params['count']++;
                 } else {
-                    $pParameters['error'] .= \sprintf(
+                    $params['error'] .= \sprintf(
                         \__('errorFileDelete'),
-                        '<strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong>'
+                        '<strong>' . $params['path'] . $params['filename'] . '</strong>'
                     ) . '<br/>';
                 }
-            } elseif (!@\rmdir($pParameters['path'] . $pParameters['filename'])) {
-                $pParameters['error'] .= \sprintf(
+            } elseif (!@\rmdir($params['path'] . $params['filename'])) {
+                $params['error'] .= \sprintf(
                     \__('errorDirDelete'),
-                    '<strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong>'
+                    '<strong>' . $params['path'] . $params['filename'] . '</strong>'
                 ) . '<br/>';
             }
         };
         $deleteCount  = 0;
         $cbParameters = [
-            'count' => &$deleteCount,
+            'count'  => &$deleteCount,
             'notice' => &$notice,
-            'error' => &$error
+            'error'  => &$error
         ];
         $template     = Shop::Container()->getTemplateService()->getActiveTemplate();
         $dirMan       = new DirManager();
@@ -431,27 +451,26 @@ class CacheController extends AbstractBackendController
         if (!\function_exists('opcache_get_status')) {
             return null;
         }
-        $data                       = \opcache_get_status();
-        $opcacheStats               = new stdClass();
-        $opcacheStats->enabled      = isset($data['opcache_enabled'])
-            && $data['opcache_enabled'] === true;
-        $opcacheStats->memoryFree   = isset($data['memory_usage']['free_memory'])
+        $data                = \opcache_get_status();
+        $stats               = new stdClass();
+        $stats->enabled      = ($data['opcache_enabled'] ?? false) === true;
+        $stats->memoryFree   = isset($data['memory_usage']['free_memory'])
             ? \round($data['memory_usage']['free_memory'] / 1024 / 1024, 2)
             : -1;
-        $opcacheStats->memoryUsed   = isset($data['memory_usage']['used_memory'])
+        $stats->memoryUsed   = isset($data['memory_usage']['used_memory'])
             ? \round($data['memory_usage']['used_memory'] / 1024 / 1024, 2)
             : -1;
-        $opcacheStats->numberScrips = $data['opcache_statistics']['num_cached_scripts'] ?? -1;
-        $opcacheStats->numberKeys   = $data['opcache_statistics']['num_cached_keys'] ?? -1;
-        $opcacheStats->hits         = $data['opcache_statistics']['hits'] ?? -1;
-        $opcacheStats->misses       = $data['opcache_statistics']['misses'] ?? -1;
-        $opcacheStats->hitRate      = isset($data['opcache_statistics']['opcache_hit_rate'])
+        $stats->numberScrips = $data['opcache_statistics']['num_cached_scripts'] ?? -1;
+        $stats->numberKeys   = $data['opcache_statistics']['num_cached_keys'] ?? -1;
+        $stats->hits         = $data['opcache_statistics']['hits'] ?? -1;
+        $stats->misses       = $data['opcache_statistics']['misses'] ?? -1;
+        $stats->hitRate      = isset($data['opcache_statistics']['opcache_hit_rate'])
             ? \round($data['opcache_statistics']['opcache_hit_rate'], 2)
             : -1;
-        $opcacheStats->scripts      = GeneralObject::isCountable('scripts', $data)
+        $stats->scripts      = GeneralObject::isCountable('scripts', $data)
             ? $data['scripts']
             : [];
 
-        return $opcacheStats;
+        return $stats;
     }
 }

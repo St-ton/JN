@@ -12,37 +12,17 @@ use stdClass;
 class ExtensionPoint
 {
     /**
-     * @var int
+     * @param int   $nSeitenTyp
+     * @param array $cParam_arr
+     * @param int   $kSprache
+     * @param int   $kKundengruppe
      */
-    protected $nSeitenTyp;
-
-    /**
-     * @var array
-     */
-    protected $cParam_arr;
-
-    /**
-     * @var int
-     */
-    protected $kSprache;
-
-    /**
-     * @var int
-     */
-    protected $kKundengruppe;
-
-    /**
-     * @param int   $pageType
-     * @param array $params
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     */
-    public function __construct(int $pageType, array $params, int $languageID, int $customerGroupID)
-    {
-        $this->nSeitenTyp    = $pageType;
-        $this->cParam_arr    = $params;
-        $this->kSprache      = $languageID;
-        $this->kKundengruppe = $customerGroupID;
+    public function __construct(
+        protected int $nSeitenTyp,
+        protected array $cParam_arr,
+        protected int $kSprache,
+        protected int $kKundengruppe
+    ) {
     }
 
     /**

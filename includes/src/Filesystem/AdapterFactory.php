@@ -6,8 +6,8 @@ use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\PhpseclibV2\SftpAdapter;
-use League\Flysystem\PhpseclibV2\SftpConnectionProvider;
+use League\Flysystem\PhpseclibV3\SftpAdapter;
+use League\Flysystem\PhpseclibV3\SftpConnectionProvider;
 
 /**
  * Class AdapterFactory
@@ -30,8 +30,8 @@ class AdapterFactory
     public function getAdapter(): FilesystemAdapter
     {
         return match ($this->config['fs_adapter'] ?? $this->config['fs']['fs_adapter']) {
-            'ftp' => new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig())),
-            'sftp' => new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/'),
+            'ftp'   => new FtpAdapter(FtpConnectionOptions::fromArray($this->getFtpConfig())),
+            'sftp'  => new SftpAdapter($this->getSftpConfig(), \rtrim($this->config['sftp_path'], '/') . '/'),
             default => new LocalFilesystemAdapter(\PFAD_ROOT),
         };
     }

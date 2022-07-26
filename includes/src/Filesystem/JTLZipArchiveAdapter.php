@@ -47,26 +47,20 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
     private VisibilityConverter $visibility;
 
     /**
-     * @var ZipArchiveProvider
-     */
-    private ZipArchiveProvider $zipArchiveProvider;
-
-    /**
      * @param ZipArchiveProvider       $zipArchiveProvider
      * @param string                   $root
      * @param MimeTypeDetector|null    $mimeTypeDetector
      * @param VisibilityConverter|null $visibility
      */
     public function __construct(
-        ZipArchiveProvider $zipArchiveProvider,
+        private ZipArchiveProvider $zipArchiveProvider,
         string $root = '',
         ?MimeTypeDetector $mimeTypeDetector = null,
         ?VisibilityConverter $visibility = null
     ) {
-        $this->pathPrefixer       = new PathPrefixer($root);
-        $this->mimeTypeDetector   = $mimeTypeDetector ?? new FinfoMimeTypeDetector();
-        $this->visibility         = $visibility ?? new PortableVisibilityConverter();
-        $this->zipArchiveProvider = $zipArchiveProvider;
+        $this->pathPrefixer     = new PathPrefixer($root);
+        $this->mimeTypeDetector = $mimeTypeDetector ?? new FinfoMimeTypeDetector();
+        $this->visibility       = $visibility ?? new PortableVisibilityConverter();
     }
 
     /**

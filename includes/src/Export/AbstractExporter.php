@@ -5,7 +5,7 @@ namespace JTL\Export;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
 use Psr\Log\LoggerInterface;
@@ -70,7 +70,7 @@ abstract class AbstractExporter implements ExporterInterface
     public function syncReturn(AsyncCallback $cb): void
     {
         \header(
-            'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
+            'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT
             . '?action=exported&token=' . $_SESSION['jtl_token']
             . '&kExportformat=' . $this->getModel()->getId()
             . '&max=' . $cb->getProductCount()
@@ -84,7 +84,7 @@ abstract class AbstractExporter implements ExporterInterface
     public function syncContinue(AsyncCallback $cb): void
     {
         \header(
-            'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT_START
+            'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT_START
             . '?e=' . (int)$this->getQueue()->jobQueueID
             . '&back=admin&token=' . $_SESSION['jtl_token']
             . '&max=' . $cb->getProductCount()
@@ -100,8 +100,8 @@ abstract class AbstractExporter implements ExporterInterface
         $join  = '';
         $limit = '';
         $where = match ($this->getModel()->getVarcombOption()) {
-            2 => ' AND kVaterArtikel = 0',
-            3 => ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)',
+            2       => ' AND kVaterArtikel = 0',
+            3       => ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)',
             default => '',
         };
         if ($this->config['exportformate_lager_ueber_null'] === 'Y') {

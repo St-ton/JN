@@ -301,7 +301,7 @@ final class Characteristics extends AbstractSync
                         $seo           = new stdClass();
                         $seo->cSeo     = $slug;
                         $seo->cKey     = 'kMerkmalWert';
-                        $seo->kKey     = (int)$characteristicValue->kMerkmalWert;
+                        $seo->kKey     = $characteristicValue->kMerkmalWert;
                         $seo->kSprache = $languageID;
                         $this->db->insert('tseo', $seo);
                         $localized                   = new stdClass();

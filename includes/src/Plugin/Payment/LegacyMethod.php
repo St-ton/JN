@@ -333,9 +333,9 @@ class LegacyMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = [])
+    public function isValidIntern($args_arr = []): bool
     {
-        return $this->methodInstance->isValidIntern($args_arr);
+        return $this->methodInstance !== null && $this->methodInstance->isValidIntern($args_arr);
     }
 
     /**
@@ -392,10 +392,11 @@ class LegacyMethod
     /**
      * @param null|string $key
      * @return mixed
+     * @throws \JsonException
      */
     public function getCache($key = null)
     {
-        return \json_decode($this->methodInstance->getCache($key), false);
+        return \json_decode($this->methodInstance->getCache($key), false, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -89,7 +89,7 @@ class HookManager
                         $smarty?->clearAssign('oPlugin_' . $plugin->getPluginID());
                         $oPlugin = $prevPlugin;
                     },
-                    $pluginData->nPriority
+                    $pluginData->nPriority ?? 5
                 );
             }
         }
@@ -124,7 +124,7 @@ class HookManager
             $loader = Helper::getLoaderByPluginID($id, $this->db, $this->cache);
             try {
                 $plugin = $loader->init($id);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
             if (!Helper::licenseCheck($plugin)) {

@@ -2,6 +2,8 @@
 
 namespace JTL\Backend;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
 use JTL\Shop;
 
 /**
@@ -13,13 +15,15 @@ class JSONAPI
     /**
      * @var JSONAPI|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
-     * JSONAPI constructor.
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    private function __construct()
+    private function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
+        self::$instance = $this;
     }
 
     /**
@@ -30,20 +34,22 @@ class JSONAPI
     }
 
     /**
-     * @return JSONAPI
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
+     * @return static
      */
-    public static function getInstance(): self
+    public static function getInstance(?DbInterface $db = null, ?JTLCacheInterface $cache = null): self
     {
-        return self::$instance ?? self::$instance = new self();
+        return self::$instance ?? new self($db ?? Shop::Container()->getDB(), $cache ?? Shop::Container()->getCache());
     }
 
     /**
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getSeos($search = null, $limit = 0, string $keyName = 'cSeo')
+    public function getSeos($search = null, $limit = 0, string $keyName = 'cSeo'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -60,9 +66,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getPages($search = null, $limit = 0, string $keyName = 'kLink')
+    public function getPages($search = null, $limit = 0, string $keyName = 'kLink'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -78,9 +84,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getCategories($search = null, $limit = 0, string $keyName = 'kKategorie')
+    public function getCategories($search = null, $limit = 0, string $keyName = 'kKategorie'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -103,9 +109,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getProducts($search = null, $limit = 0, string $keyName = 'kArtikel')
+    public function getProducts($search = null, $limit = 0, string $keyName = 'kArtikel'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -130,9 +136,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getManufacturers($search = null, $limit = 0, string $keyName = 'kHersteller')
+    public function getManufacturers($search = null, $limit = 0, string $keyName = 'kHersteller'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -155,9 +161,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getCustomers($search = null, $limit = 0, string $keyName = 'kKunde')
+    public function getCustomers($search = null, $limit = 0, string $keyName = 'kKunde'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -187,9 +193,9 @@ class JSONAPI
      * @param string|array|null $search
      * @param int|string        $limit
      * @param string            $keyName
-     * @return string|bool
+     * @return string
      */
-    public function getAttributes($search = null, $limit = 0, string $keyName = 'kMerkmalWert')
+    public function getAttributes($search = null, $limit = 0, string $keyName = 'kMerkmalWert'): string
     {
         $searchIn = null;
         if (\is_string($search)) {
@@ -214,7 +220,7 @@ class JSONAPI
      */
     private function validateTableName(string $table): bool
     {
-        $res = Shop::Container()->getDB()->getSingleObject(
+        $res = $this->db->getSingleObject(
             'SELECT `TABLE_NAME` AS table_name
                 FROM information_schema.TABLES
                 WHERE `TABLE_SCHEMA` = :sma
@@ -239,7 +245,7 @@ class JSONAPI
         if (isset($tableRows[$table])) {
             $rows = $tableRows[$table];
         } else {
-            $res  = Shop::Container()->getDB()->getObjects(
+            $res  = $this->db->getObjects(
                 'SELECT `COLUMN_NAME` AS column_name
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :sma
@@ -258,7 +264,7 @@ class JSONAPI
             $tableRows[$table] = $rows;
         }
 
-        return \collect($columns)->every(static function ($e) use ($rows) {
+        return \collect($columns)->every(static function ($e) use ($rows): bool {
             return \in_array($e, $rows, true);
         });
     }
@@ -271,6 +277,7 @@ class JSONAPI
      * @param string|string[]|null $searchFor
      * @param int                  $limit
      * @return array
+     * @todo: add URL hints for new URL scheme (like cSeo:/de/products/myproduct instead of cSeo:myproduct)
      */
     public function getItems(
         string $table,
@@ -283,24 +290,19 @@ class JSONAPI
         if ($this->validateTableName($table) === false || $this->validateColumnNames($table, $columns) === false) {
             return [];
         }
-        $db        = Shop::Container()->getDB();
         $cacheId   = 'jsonapi_' . $table . '_' . $limit . '_';
         $cacheId  .= \md5(\serialize($columns) . \serialize($searchIn) . \serialize($searchFor));
         $cacheTags = [\CACHING_GROUP_CORE];
-
         if ($addCacheTag !== null) {
             $cacheTags[] = $addCacheTag;
         }
-
-        if (($data = Shop::Container()->getCache()->get($cacheId)) !== false) {
+        if (($data = $this->cache->get($cacheId)) !== false) {
             return $data;
         }
-
         if (\is_array($searchIn) && \is_string($searchFor)) {
             // full text search
             $conditions  = [];
             $colsToCheck = [];
-
             foreach ($searchIn as $column) {
                 $colsToCheck[] = $column;
                 $conditions[]  = $column . ' LIKE :val';
@@ -319,7 +321,7 @@ class JSONAPI
             }
 
             $result = $this->validateColumnNames($table, $colsToCheck)
-                ? $db->getObjects($qry, ['val' => '%' . $searchFor . '%'])
+                ? $this->db->getObjects($qry, ['val' => '%' . $searchFor . '%'])
                 : [];
         } elseif (\is_string($searchIn) && \is_array($searchFor)) {
             // key array select
@@ -334,11 +336,11 @@ class JSONAPI
                     WHERE ' . $searchIn . ' IN (' . \implode(',', \array_fill(0, $count - 1, '?')) . ')
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : '');
             $result = $this->validateColumnNames($table, [$searchIn])
-                ? $db->getObjects($qry, $bindValues)
+                ? $this->db->getObjects($qry, $bindValues)
                 : [];
         } elseif ($searchIn === null && $searchFor === null) {
             // select all
-            $result = $db->getObjects(
+            $result = $this->db->getObjects(
                 'SELECT ' . \implode(',', $columns) . '
                     FROM ' . $table . '
                     ' . ($limit > 0 ? 'LIMIT ' . $limit : '')
@@ -348,21 +350,18 @@ class JSONAPI
             $result = [];
         }
 
-        if (!\is_array($result)) {
-            $result = [];
-        }
-
-        Shop::Container()->getCache()->set($cacheId, $result, $cacheTags);
+        $this->cache->set($cacheId, $result, $cacheTags);
 
         return $result;
     }
 
     /**
      * @param array|mixed $items
-     * @return string|bool
+     * @return string
+     * @throws \JsonException
      */
-    public function itemsToJson($items)
+    public function itemsToJson($items): string
     {
-        return \json_encode($items);
+        return \json_encode($items, \JSON_THROW_ON_ERROR);
     }
 }

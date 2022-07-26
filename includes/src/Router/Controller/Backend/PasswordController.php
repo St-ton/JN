@@ -2,7 +2,6 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Shop;

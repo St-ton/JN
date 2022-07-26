@@ -79,7 +79,7 @@ class Date
                 $parts['cStunde']  = $date->format('H');
                 $parts['cMinute']  = $date->format('i');
                 $parts['cSekunde'] = $date->format('s');
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
 
@@ -181,7 +181,7 @@ class Date
      * @since 5.2.0
      * @former firstDayOfMonth()
      */
-    public static function getFirstDayOfMonth(int $month = -1, int $year = -1)
+    public static function getFirstDayOfMonth(int $month = -1, int $year = -1): int|bool
     {
         return \mktime(
             0,
@@ -199,7 +199,7 @@ class Date
      * @since 5.2.0
      * @former lastDayOfMonth()
      */
-    public static function getLastDayOfMonth(int $month = -1, int $year = -1)
+    public static function getLastDayOfMonth(int $month = -1, int $year = -1): int|bool
     {
         return \mktime(
             23,

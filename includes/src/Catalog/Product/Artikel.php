@@ -466,7 +466,7 @@ class Artikel implements RoutableInterface
     public $bHasKonfig;
 
     /**
-     * @var array
+     * @var Merkmal[]
      */
     public $oMerkmale_arr;
 
@@ -1103,7 +1103,7 @@ class Artikel implements RoutableInterface
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'conf' && $e !== 'db' && $e !== 'oFavourableShipping';
         });
     }
@@ -1660,7 +1660,8 @@ class Artikel implements RoutableInterface
     public function holeMerkmale(): self
     {
         $this->oMerkmale_arr = [];
-        $characteristics     = $this->getDB()->getObjects(
+        $db                  = $this->getDB();
+        $characteristics     = $db->getObjects(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
@@ -1677,21 +1678,19 @@ class Artikel implements RoutableInterface
         foreach ($characteristics as $item) {
             $item->kMerkmal     = (int)$item->kMerkmal;
             $item->kMerkmalWert = (int)$item->kMerkmalWert;
-            $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache);
-            $characteristic     = new Merkmal($item->kMerkmal, false, $this->kSprache);
-            if (!isset($this->oMerkmale_arr[$characteristic->kMerkmal])) {
-                $this->oMerkmale_arr[$characteristic->kMerkmal]                   = $characteristic;
-                $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr = [];
+            $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache, $db);
+            if (!isset($this->oMerkmale_arr[$item->kMerkmal])) {
+                $this->oMerkmale_arr[$item->kMerkmal] = new Merkmal($item->kMerkmal, false, $this->kSprache, $db);
             }
-            $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr[] = $charValue;
+            $this->oMerkmale_arr[$item->kMerkmal]->addCharacteristicValue($charValue);
         }
         $this->cMerkmalAssoc_arr = [];
         foreach ($this->oMerkmale_arr as $item) {
-            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->cName);
-            if (\mb_strlen($item->cName) > 0) {
-                $values                         = \array_filter(\array_map(static function ($e) {
-                    return $e->cWert ?? null;
-                }, $item->oMerkmalWert_arr));
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d\.\-_]/u', '', $item->getName($this->kSprache) ?? '');
+            if (\mb_strlen($name) > 0) {
+                $values                         = \array_filter(\array_map(static function (MerkmalWert $e) {
+                    return $e->getValue();
+                }, $item->getCharacteristicValues()));
                 $this->cMerkmalAssoc_arr[$name] = \implode(', ', $values);
             }
         }
@@ -4078,7 +4077,7 @@ class Artikel implements RoutableInterface
                 $this->kVaterArtikel,
                 'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
             );
-            $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item) {
+            $bLieferbar   = \array_reduce($variChildren, static function ($carry, $item): bool {
                 return $carry
                     || $item->fLagerbestand > 0
                     || $item->cLagerBeachten === 'N'
@@ -5024,7 +5023,7 @@ class Artikel implements RoutableInterface
      */
     public function getPurchaseQuantityFromCart()
     {
-        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item) {
+        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item): bool {
             return $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && (int)$item->Artikel->kArtikel === $this->kArtikel;
         }), static function ($value, $index, $collection, $reduction) {
             return $reduction + $value->nAnzahl;
@@ -5500,7 +5499,7 @@ class Artikel implements RoutableInterface
         if (empty($shippingFreeCountries)) {
             return $asString ? '' : [];
         }
-        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e) {
+        $codes   = \array_filter(map(\explode(',', $shippingFreeCountries), static function ($e): string {
             return \trim($e);
         }));
         $cacheID = 'jtl_ola_' . \md5($shippingFreeCountries) . '_' . $this->kSprache;
@@ -5558,14 +5557,14 @@ class Artikel implements RoutableInterface
         // Beachte Vater FunktionsAttribute
         if (isset($childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
             $isCanonical = match ((int)$childProduct->VaterFunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                1 => true,
+                1       => true,
                 default => false,
             };
         }
         // Beachte Kind FunktionsAttribute
         if (isset($childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI])) {
             $isCanonical = match ((int)$childProduct->FunktionsAttribute[\FKT_ATTRIBUT_CANONICALURL_VARKOMBI]) {
-                1 => true,
+                1       => true,
                 default => false,
             };
         }
@@ -6095,7 +6094,7 @@ class Artikel implements RoutableInterface
             Image::SIZE_SM => $from->cURLKlein,
             Image::SIZE_MD => $from->cURLNormal,
             Image::SIZE_LG => $from->cURLGross,
-            default => null,
+            default        => null,
         };
     }
 

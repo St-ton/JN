@@ -76,7 +76,7 @@ class Manager
      */
     public function getRecommendationById(string $id, bool $showAlert = true): ?Recommendation
     {
-        $recommendation = $this->recommendations->first(static function (Recommendation $e) use ($id) {
+        $recommendation = $this->recommendations->first(static function (Recommendation $e) use ($id): bool {
             return $e->getId() === $id;
         });
 
@@ -113,7 +113,7 @@ class Manager
             Shop::Container()->getLogService()->error($e->getMessage());
         }
 
-        return empty($res) ? [] : \json_decode((string)$res->getBody(), false)->extensions;
+        return empty($res) ? [] : \json_decode((string)$res->getBody(), false, 512, \JSON_THROW_ON_ERROR)->extensions;
     }
 
     /**

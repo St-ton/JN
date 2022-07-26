@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -29,17 +29,11 @@ class MigrationManager
     protected ?array $executedMigrations = null;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * MigrationManager constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -266,12 +260,7 @@ class MigrationManager
      */
     public function getExecutedMigrations(): array
     {
-        $migrations = $this->_getExecutedMigrations();
-        if (!\is_array($migrations)) {
-            $migrations = [];
-        }
-
-        return \array_keys($migrations);
+        return \array_keys($this->_getExecutedMigrations() ?? []);
     }
 
     /**
@@ -286,7 +275,7 @@ class MigrationManager
         if ($force || $pending === null) {
             $executed   = $this->getExecutedMigrations();
             $migrations = \array_keys($this->getMigrations());
-            $pending    = \array_udiff($migrations, $executed, static function ($a, $b) {
+            $pending    = \array_udiff($migrations, $executed, static function ($a, $b): int {
                 return \strcmp((string)$a, (string)$b);
             });
         }
@@ -295,10 +284,10 @@ class MigrationManager
     }
 
     /**
-     * @return array|int
+     * @return array|null
      * @throws Exception
      */
-    protected function _getExecutedMigrations()
+    protected function _getExecutedMigrations(): ?array
     {
         if ($this->executedMigrations === null) {
             $migrations = $this->db->getObjects(
@@ -306,6 +295,10 @@ class MigrationManager
                     FROM tmigration 
                     ORDER BY kMigration ASC'
             );
+            if (\count($migrations) === 0) {
+                return null;
+            }
+            $this->executedMigrations = [];
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }

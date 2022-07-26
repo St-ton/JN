@@ -54,7 +54,7 @@ class CouponsController extends AbstractBackendController
         if (Form::validateToken()) {
             if ($importer !== '') {
                 $import = new Import($this->db);
-                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+                $import->import('kupon', function ($obj, &$importDeleteDone, $importType = 2): bool {
                     $couponNames = [];
                     $cols        = $this->db->getCollection(
                         'SELECT `column_name` AS name
@@ -62,7 +62,7 @@ class CouponsController extends AbstractBackendController
                             WHERE `table_schema` = :sma
                                 AND `table_name` = :tn',
                         ['sma' => DB_NAME, 'tn' => 'tkupon']
-                    )->map(static function ($e) {
+                    )->map(static function (stdClass $e): stdClass {
                         return $e->name;
                     })->toArray();
 
@@ -408,7 +408,7 @@ class CouponsController extends AbstractBackendController
     private function getManufacturers(?string $selectedManufacturers = ''): array
     {
         $selected = Text::parseSSKint($selectedManufacturers);
-        $items    = $this->db->getObjects('SELECT kHersteller, cName FROM thersteller');
+        $items    = $this->db->getObjects('SELECT kHersteller FROM thersteller WHERE nAktiv = 1');
         $langID   = Shop::getLanguageID();
         foreach ($items as $item) {
             $item->kHersteller = (int)$item->kHersteller;
@@ -815,7 +815,7 @@ class CouponsController extends AbstractBackendController
         $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
         $itemNumbers     = Text::parseSSK($coupon->cArtikel);
         if (\count($itemNumbers) > 0) {
-            $itemNumbers = \array_map(static function ($e) {
+            $itemNumbers = \array_map(static function ($e): string {
                 return '"' . $e . '"';
             }, $itemNumbers);
             $productIDs  = $this->db->getInts(
@@ -827,7 +827,9 @@ class CouponsController extends AbstractBackendController
         }
         foreach ($customerData as $customerID) {
             $customer = new Customer($customerID);
-            $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+            $langID   = $customer->kSprache;
+            $cgID     = $customer->kKundengruppe;
+            $language = Shop::Lang()->getIsoFromLangID($langID);
             if (!$language) {
                 $language = $defaultLang;
             }
@@ -842,7 +844,7 @@ class CouponsController extends AbstractBackendController
                     if ($categoryID <= 0) {
                         continue;
                     }
-                    $categories[] = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
+                    $categories[] = new Kategorie($categoryID, $langID, $cgID, false, $this->db);
                 }
             }
             $products = [];
@@ -851,15 +853,15 @@ class CouponsController extends AbstractBackendController
                 $product->fuelleArtikel(
                     $productID,
                     $defaultOptions,
-                    $customer->kKundengruppe,
-                    $customer->kSprache,
+                    $cgID,
+                    $langID,
                     true
                 );
                 $products[] = $product;
             }
             $manufacturers = [];
             foreach ($manufacturerIDs as $manufacturerID) {
-                $manufacturers[] = new Hersteller($manufacturerID, $customer->kSprache);
+                $manufacturers[] = new Hersteller($manufacturerID, $langID);
             }
             // put all together
             $coupon->Kategorien      = $categories;

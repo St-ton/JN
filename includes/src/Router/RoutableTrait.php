@@ -96,11 +96,11 @@ trait RoutableTrait
 
     /**
      * @param int|null $fallbackID
+     * @param array    $additional
      * @return void
      */
-    public function createBySlug(?int $fallbackID = null): void
+    public function createBySlug(?int $fallbackID = null, array $additional = []): void
     {
-        $base      = Shop::getURL();
         $router    = Shop::getRouter();
         $languages = LanguageHelper::getAllLanguages();
         foreach ($this->getSlugs() as $langID => $slug) {
@@ -109,10 +109,14 @@ trait RoutableTrait
                     $locale = $languageModel->getIso639();
                     $route  = $router->getPathByType(
                         $this->getRouteType(),
-                        ['lang' => $locale, 'name' => $slug, 'id' => $fallbackID]
+                        \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
                     );
                     $this->setURLPath($route, $langID);
-                    $this->setURL($base . $route, $langID);
+                    $url = $router->getURLByType(
+                        $this->getRouteType(),
+                        \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
+                    );
+                    $this->setURL($url, $langID);
                     break;
                 }
             }
@@ -123,11 +127,16 @@ trait RoutableTrait
                 if (!\array_key_exists($langID, $this->slugs)) {
                     $route = $router->getPathByType(
                         $this->getRouteType(),
-                        ['lang' => $languageModel->getIso639(), 'id' => $fallbackID],
+                        \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
                         false
                     );
                     $this->setURLPath($route, $langID);
-                    $this->setURL($base . $route, $langID);
+                    $url = $router->getURLByType(
+                        $this->getRouteType(),
+                        \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
+                        false
+                    );
+                    $this->setURL($url, $langID);
                 }
             }
         }

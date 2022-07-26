@@ -356,7 +356,7 @@ class Currency
      * @param stdClass $obs
      * @return $this
      */
-    private function extract(stdClass $obs): self
+    public function extract(stdClass $obs): self
     {
         foreach (\get_object_vars($obs) as $var => $value) {
             if (($mapped = self::getMapping($var)) !== null) {
@@ -468,18 +468,29 @@ class Currency
     }
 
     /**
+     * @return self[]
+     */
+    public static function loadAll(): array
+    {
+        $currencies = [];
+        foreach (Shop::Container()->getDB()->selectAll('twaehrung', [], []) as $item) {
+            $item->kWaehrung = (int)$item->kWaehrung;
+            $currency        = new self();
+            $currency->extract($item);
+            $currencies[] = $currency;
+        }
+
+        return $currencies;
+    }
+
+    /**
      * @param bool $update
      * @return void
      */
     public static function setCurrencies(bool $update = false): void
     {
         if ($update || \count(Frontend::getCurrencies()) === 0) {
-            $currencies    = [];
-            $allCurrencies = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
-            foreach ($allCurrencies as $currency) {
-                $currencies[] = new self((int)$currency->kWaehrung);
-            }
-            $_SESSION['Waehrungen'] = $currencies;
+            $_SESSION['Waehrungen'] = self::loadAll();
         }
     }
 }

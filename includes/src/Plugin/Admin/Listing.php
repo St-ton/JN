@@ -129,7 +129,7 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        return $this->items->filter(static function (ListingItem $item) {
+        return $this->items->filter(static function (ListingItem $item): bool {
             return $item->isInstalled();
         });
     }
@@ -154,7 +154,7 @@ final class Listing
      */
     private function checkLegacyToModernUpdates(): void
     {
-        $modernPlugins = $this->items->filter(static function (ListingItem $e) {
+        $modernPlugins = $this->items->filter(static function (ListingItem $e): bool {
             return $e->isLegacy() === false;
         });
         /** @var ListingItem $item */
@@ -164,7 +164,7 @@ final class Listing
             }
             /** @var ListingItem $hit */
             $pid = $item->getPluginID();
-            $hit = $modernPlugins->filter(static function (ListingItem $e) use ($pid) {
+            $hit = $modernPlugins->filter(static function (ListingItem $e) use ($pid): bool {
                 return $e->getPluginID() === $pid;
             })->first();
             if ($hit === null) {
@@ -175,7 +175,7 @@ final class Listing
                 $item->setUpdateFromDir($hit->getPath());
                 $item->setIsShop5Compatible($hit->isShop5Compatible());
                 $item->setMinShopVersion($hit->getMinShopVersion());
-                $this->items = $this->items->reject(static function (ListingItem $e) use ($pid) {
+                $this->items = $this->items->reject(static function (ListingItem $e) use ($pid): bool {
                     return $e->isLegacy() === false && $e->getPluginID() === $pid;
                 });
             }
@@ -243,7 +243,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items = $this->items->sortBy(static function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item): string {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }
@@ -253,7 +253,7 @@ final class Listing
      */
     public function getEnabled(): Collection
     {
-        return $this->items->filter(static function (ListingItem $e) {
+        return $this->items->filter(static function (ListingItem $e): bool {
             return $e->getState() === State::ACTIVATED;
         });
     }
@@ -263,7 +263,7 @@ final class Listing
      */
     public function getDisabled(): Collection
     {
-        return $this->items->filter(static function (ListingItem $e) {
+        return $this->items->filter(static function (ListingItem $e): bool {
             return $e->getState() === State::DISABLED;
         });
     }
@@ -274,16 +274,16 @@ final class Listing
     public function getAvailable(): Collection
     {
         // filter out old legacy version of the same plugin
-        $modern = $this->items->filter(static function (ListingItem $e) {
+        $modern = $this->items->filter(static function (ListingItem $e): bool {
             return $e->isLegacy() === false;
         });
         foreach ($modern as $item) {
-            $this->items = $this->items->reject(static function (ListingItem $e) use ($item) {
+            $this->items = $this->items->reject(static function (ListingItem $e) use ($item): bool {
                 return $e->getPluginID() === $item->getPluginID() && $e->isLegacy() === true;
             });
         }
 
-        return $this->items->filter(static function (ListingItem $item) {
+        return $this->items->filter(static function (ListingItem $item): bool {
             return $item->isAvailable() === true && $item->isInstalled() === false;
         });
     }
@@ -293,7 +293,7 @@ final class Listing
      */
     public function getProblematic(): Collection
     {
-        return $this->items->filter(static function (ListingItem $e) {
+        return $this->items->filter(static function (ListingItem $e): bool {
             return \in_array(
                 $e->getState(),
                 [State::ERRONEOUS, State::UPDATE_FAILED, State::LICENSE_KEY_MISSING,
@@ -308,7 +308,7 @@ final class Listing
      */
     public function getErroneous(): Collection
     {
-        return  $this->items->filter(static function (ListingItem $item) {
+        return  $this->items->filter(static function (ListingItem $item): bool {
             return $item->isHasError() === true && $item->isInstalled() === false;
         });
     }

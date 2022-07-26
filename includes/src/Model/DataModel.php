@@ -107,7 +107,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
         });
     }
@@ -391,7 +391,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             case 'object':
                 return $value;
             case 'yesno':
-                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                if (\in_array($value, ['Y', 'N'], true)) {
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
@@ -854,7 +854,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
-                    $value = $value->map(static function (DataModelInterface $e) {
+                    $value = $value->map(static function (DataModelInterface $e): array {
                         return $e->rawArray(true);
                     })->toArray();
                 } elseif ($value instanceof DataModelInterface) {
@@ -930,9 +930,8 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
-        $instance = static::newInstance($this->db);
 
-        return $instance->init((array)$members);
+        return static::newInstance($this->db)->init((array)$members);
     }
 
     /**
@@ -944,7 +943,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (!\is_a($childModel, Collection::class)) {
                 continue;
             }
-            $childModel->each(function (DataModelInterface $model) {
+            $childModel->each(function (DataModelInterface $model): void {
                 $class = \get_class($model);
                 foreach ($this->getKeyUpdates($class) as $k => $v) {
                     $model->$k = $v;
@@ -983,7 +982,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         foreach ($this->getChildModels() as $childModel) {
             if (\is_a($childModel, Collection::class)) {
-                $childModel->each(function (DataModelInterface $model) {
+                $childModel->each(function (DataModelInterface $model): void {
                     $model->setDB($this->db);
                     $model->delete();
                 });

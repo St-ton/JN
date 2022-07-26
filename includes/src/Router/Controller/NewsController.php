@@ -16,6 +16,7 @@ use JTL\News\CategoryList;
 use JTL\News\Item;
 use JTL\News\ViewType;
 use JTL\Pagination\Pagination;
+use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -54,47 +55,57 @@ class NewsController extends AbstractController
     private string $noticeMsg = '';
 
     /**
+     * @var string
+     */
+    protected string $tseoSelector = 'kNews';
+
+    /**
      * @inheritdoc
      */
     public function init(): bool
     {
         parent::init();
+
         return true;
     }
+
     /**
-     * @inheritdoc
+     * @param array $args
+     * @return State
      */
     public function getStateFromSlug(array $args): State
     {
-        $newsID  = (int)($args['id'] ?? 0);
-        $newItem = $args['name'] ?? null;
-        if ($newsID < 1 && $newItem === null) {
+        $id   = (int)($args['id'] ?? 0);
+        $name = $args['name'] ?? null;
+        if ($id < 1 && $name === null) {
             return $this->state;
         }
-
-        $seo = $newsID > 0
+        if ($name !== null) {
+            $parser = new DefaultParser($this->db, $this->state);
+            $name   = $parser->parse($name);
+        }
+        $seo = $id > 0
             ? $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cKey = :key 
+                    WHERE cKey = :key
                       AND kKey = :kid
                       AND kSprache = :lid',
-                ['key' => 'kNews', 'kid' => $newsID, 'lid' => $this->state->languageID]
+                ['key' => $this->tseoSelector, 'kid' => $id, 'lid' => $this->state->languageID]
             )
             : $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kNews', 'seo' => $newItem]
+                    WHERE cKey IN (\'kNews\', \'kNewsKategorie\', \'kNewsMonatsUebersicht\')
+                        AND cSeo = :seo',
+                ['seo' => $name]
             );
         if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->updateProductFilter();
+            return $this->handleSeoError($id, $this->state->languageID);
         }
         $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
         $seo->kKey     = (int)$seo->kKey;
+        $seo->kSprache = (int)$seo->kSprache;
 
         return $this->updateState($seo, $slug);
     }
@@ -104,11 +115,12 @@ class NewsController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        if (isset($args['id']) || isset($args['name'])) {
-            $this->getStateFromSlug($args);
-            if (!$this->init()) {
-                return $this->notFoundResponse($request, $args, $smarty);
-            }
+        if (!isset($args['name'])) {
+            $args['name'] = '';
+        }
+        $this->getStateFromSlug($args);
+        if (!$this->init()) {
+            return $this->notFoundResponse($request, $args, $smarty);
         }
         $this->smarty          = $smarty;
         $pagination            = new Pagination();
@@ -312,18 +324,13 @@ class NewsController extends AbstractController
     protected function displayItem(Item $newsItem, Pagination $pagination): void
     {
         $newsCategories = $this->getNewsCategories($newsItem->getID());
-        $prefix         = Shop::getURL() . '/';
-        foreach ($newsCategories as $category) {
-            $category->cURL     = URL::buildURL($category, \URLART_NEWSKATEGORIE);
-            $category->cURLFull = URL::buildURL($category, \URLART_NEWSKATEGORIE, true, $prefix);
-        }
-        $comments            = $newsItem->getComments()->getThreadedItems()->filter(static function ($item) {
+        $comments       = $newsItem->getComments()->getThreadedItems()->filter(static function ($item): bool {
             return $item->isActive();
         });
-        $itemsPerPageOptions = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
+        $itemsPerPage   = ($perPage = (int)$this->config['news']['news_kommentare_anzahlproseite']) > 0
             ? [$perPage, $perPage * 2, $perPage * 5]
             : [10, 20, 50];
-        $pagination->setItemsPerPageOptions($itemsPerPageOptions)
+        $pagination->setItemsPerPageOptions($itemsPerPage)
             ->setItemCount($comments->count())
             ->assemble();
         if ($pagination->getItemsPerPage() > 0) {
@@ -434,7 +441,7 @@ class NewsController extends AbstractController
             return false;
         }
         $checks    = self::checkComment($data, $id, $this->config);
-        $checkedOK = every($checks, static function ($e) {
+        $checkedOK = every($checks, static function ($e): bool {
             return $e === 0;
         });
 
@@ -564,11 +571,11 @@ class NewsController extends AbstractController
         $sql->cDatumSQL   = '';
         $sql->cNewsKatSQL = '';
         $sql->cSortSQL    = match ((int)$_SESSION['NewsNaviFilter']->nSort) {
-            2 => ' ORDER BY tnews.dGueltigVon',
-            3 => ' ORDER BY tnewssprache.title',
-            4 => ' ORDER BY tnewssprache.title DESC',
-            5 => ' ORDER BY nNewsKommentarAnzahl DESC',
-            6 => ' ORDER BY nNewsKommentarAnzahl',
+            2       => ' ORDER BY tnews.dGueltigVon',
+            3       => ' ORDER BY tnewssprache.title',
+            4       => ' ORDER BY tnewssprache.title DESC',
+            5       => ' ORDER BY nNewsKommentarAnzahl DESC',
+            6       => ' ORDER BY nNewsKommentarAnzahl',
             default => ' ORDER BY tnews.dGueltigVon DESC, tnews.dErstellt DESC',
         };
         if ($_SESSION['NewsNaviFilter']->cDatum !== -1 && \mb_strlen($_SESSION['NewsNaviFilter']->cDatum) > 0) {
@@ -676,42 +683,23 @@ class NewsController extends AbstractController
 
     /**
      * @param int $newsItemID
-     * @return stdClass[]
+     * @return Category[]
      */
     public function getNewsCategories(int $newsItemID): array
     {
-        $newsCategories = $this->db->getInts(
+        $categoryIDs = $this->db->getInts(
             'SELECT kNewsKategorie
                 FROM tnewskategorienews
                 WHERE kNews = :nid',
             'kNewsKategorie',
             ['nid' => $newsItemID]
         );
+        $items       = [];
+        foreach ($categoryIDs as $categoryID) {
+            $items[] = (new Category($this->db))->load($categoryID);
+        }
 
-        return \count($newsCategories) > 0
-            ? $this->db->getObjects(
-                'SELECT tnewskategorie.kNewsKategorie, t.languageID AS kSprache, t.name AS cName,
-                t.description AS cBeschreibung, t.metaTitle AS cMetaTitle, t.metaDescription AS cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
-                tnewskategorie.cPreviewImage, tseo.cSeo,
-                DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, \'%d.%m.%Y %H:%i\') AS dLetzteAktualisierung_de
-                    FROM tnewskategorie
-                    JOIN tnewskategoriesprache t
-                        ON tnewskategorie.kNewsKategorie = t.kNewsKategorie
-                    LEFT JOIN tnewskategorienews
-                        ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    LEFT JOIN tseo
-                        ON tseo.cKey = \'kNewsKategorie\'
-                        AND tseo.kKey = tnewskategorie.kNewsKategorie
-                        AND tseo.kSprache = :lid
-                    WHERE t.languageID = :lid
-                        AND tnewskategorienews.kNewsKategorie IN (' . \implode(',', $newsCategories) . ')
-                        AND tnewskategorie.nAktiv = 1
-                    GROUP BY tnewskategorie.kNewsKategorie
-                    ORDER BY tnewskategorie.nSort DESC',
-                ['lid' => $this->languageID]
-            )
-            : [];
+        return $items;
     }
 
     /**

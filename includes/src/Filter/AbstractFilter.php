@@ -2,6 +2,8 @@
 
 namespace JTL\Filter;
 
+use JTL\Shop;
+
 /**
  * Class AbstractFilter
  * @package JTL\Filter
@@ -265,7 +267,7 @@ abstract class AbstractFilter implements FilterInterface
             ? $this->filterCollection
             : \array_filter(
                 $this->filterCollection,
-                static function (FilterInterface $f) {
+                static function (FilterInterface $f): bool {
                     return $f->getVisibility() !== Visibility::SHOW_NEVER;
                 }
             );
@@ -519,7 +521,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getLanguageID(): int
     {
-        return $this->productFilter->getFilterConfig()->getLanguageID();
+        return $this->productFilter->getFilterConfig()->getLanguageID() ?: Shop::getLanguageID();
     }
 
     /**
@@ -809,7 +811,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isParamExclusive(): bool
     {
@@ -817,7 +819,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setParamExclusive(bool $paramExclusive): FilterInterface
     {
@@ -827,7 +829,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilterName(): ?string
     {
@@ -835,7 +837,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFilterName(?string $characteristic): FilterInterface
     {
@@ -857,8 +859,7 @@ abstract class AbstractFilter implements FilterInterface
     }
 
     /**
-     * @param string $query
-     * @return string
+     * @inheritdoc
      */
     public function getCacheID(string $query): string
     {
@@ -873,5 +874,13 @@ abstract class AbstractFilter implements FilterInterface
             . '_' . $this->getLanguageID()
             . '_' . \md5($query)
             . $valuePart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        return null;
     }
 }

@@ -29,6 +29,11 @@ use Psr\Http\Message\ServerRequestInterface;
 class ProductController extends AbstractController
 {
     /**
+     * @var string
+     */
+    protected string $tseoSelector = 'kArtikel';
+
+    /**
      * @inheritdoc
      */
     public function init(): bool
@@ -59,57 +64,20 @@ class ProductController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getStateFromSlug(array $args): State
+    protected function handleSeoError(int $id, int $languageID): State
     {
-        $productID   = (int)($args['id'] ?? 0);
-        $productName = $args['name'] ?? null;
-        if ($productID < 1 && $productName === null) {
-            return $this->state;
-        }
-        $seo = $productID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kArtikel', 'kid' => $productID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kArtikel', 'seo' => $productName]
-            );
-        if ($seo === null) {
-            return $this->handleSeoError($productID, $this->state->languageID);
-        }
-        $slug          = $seo->cSeo;
-        $seo->kKey     = (int)$seo->kKey;
-        $seo->kSprache = (int)$seo->kSprache;
-
-        return $this->updateState($seo, $slug);
-    }
-
-    /**
-     * @param int $productID
-     * @param int $languageID
-     * @return State
-     */
-    private function handleSeoError(int $productID, int $languageID): State
-    {
-        if ($productID > 0) {
+        if ($id > 0) {
             $exists = $this->db->getSingleObject(
                 'SELECT kArtikel
                     FROM tartikel
                     WHERE kArtikel = :pid',
-                ['pid' => $productID]
+                ['pid' => $id]
             );
             if ($exists !== null) {
                 $seo = (object)[
                     'cSeo'     => '',
-                    'cKey'     => 'kArtikel',
-                    'kKey'     => $productID,
+                    'cKey'     => $this->tseoSelector,
+                    'kKey'     => $id,
                     'kSprache' => $languageID
                 ];
 
@@ -233,7 +201,9 @@ class ProductController extends AbstractController
         $this->currentCategory    = new Kategorie(
             $this->currentProduct->gibKategorie($this->customerGroupID),
             $this->languageID,
-            $this->customerGroupID
+            $this->customerGroupID,
+            false,
+            $this->db
         );
         $this->expandedCategories = new KategorieListe();
         $this->expandedCategories->getOpenCategories($this->currentCategory);
@@ -369,7 +339,7 @@ class ProductController extends AbstractController
         if ((int)($this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich ?? 0) > 0) {
             $ratings = \array_filter(
                 $this->currentProduct->Bewertungen->oBewertung_arr,
-                function ($rating) {
+                function ($rating): bool {
                     return (int)$this->currentProduct->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung
                         !== (int)$rating->kBewertung;
                 }
@@ -385,7 +355,7 @@ class ProductController extends AbstractController
                 ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
             ])
             ->setDefaultSortByDir((int)$this->config['bewertung']['bewertung_sortierung'])
-            ->setSortFunction(function ($a, $b) use ($pagination) {
+            ->setSortFunction(function ($a, $b) use ($pagination): int {
                 $sortBy  = $pagination->getSortByCol();
                 $sortDir = $pagination->getSortDirSQL() === 0 ? +1 : -1;
                 $valueA  = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;

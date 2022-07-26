@@ -121,97 +121,6 @@ use League\Route\Router;
  */
 class BackendRouter
 {
-    public const ROUTE_TAC                   = 'tac';
-    public const ROUTE_FAVS                  = 'favs';
-    public const ROUTE_PAYMENT_METHODS       = 'paymentmethods';
-    public const ROUTE_SELECTION_WIZARD      = 'selectionwizard';
-    public const ROUTE_BANNER                = 'banner';
-    public const ROUTE_ORDERS                = 'orders';
-    public const ROUTE_IMAGES                = 'images';
-    public const ROUTE_PACKAGINGS            = 'packagings';
-    public const ROUTE_CONTACT_FORMS         = 'contactforms';
-    public const ROUTE_SYNC                  = 'sync';
-    public const ROUTE_SHIPPING_METHODS      = 'shippingmethods';
-    public const ROUTE_COMPARELIST           = 'comparelist';
-    public const ROUTE_SYSTEMLOG             = 'systemlog';
-    public const ROUTE_SYSTEMCHECK           = 'systemcheck';
-    public const ROUTE_STATUSMAIL            = 'statusmail';
-    public const ROUTE_SEARCHSPECIAL         = 'searchspecials';
-    public const ROUTE_SEARCHSPECIALOVERLAYS = 'searchspecialoverlays';
-    public const ROUTE_STATUS                = 'status';
-    public const ROUTE_STATS                 = 'stats';
-    public const ROUTE_LANGUAGE              = 'language';
-    public const ROUTE_RESET                 = 'reset';
-    public const ROUTE_SITEMAP               = 'sitemap';
-    public const ROUTE_LOGO                  = 'logo';
-    public const ROUTE_RSS                   = 'rss';
-    public const ROUTE_META                  = 'meta';
-    public const ROUTE_PROFILER              = 'profiler';
-    public const ROUTE_PRICEHISTORY          = 'pricehistory';
-    public const ROUTE_PERMISSIONCHECK       = 'permissioncheck';
-    public const ROUTE_SLIDERS               = 'sliders';
-    public const ROUTE_CUSTOMERFIELDS        = 'customerfields';
-    public const ROUTE_COUPONS               = 'coupons';
-    public const ROUTE_FILESYSTEM            = 'filesystem';
-    public const ROUTE_DBCHECK               = 'dbcheck';
-    public const ROUTE_CATEGORYCHECK         = 'categorycheck';
-    public const ROUTE_USERS                 = 'users';
-    public const ROUTE_REVIEWS               = 'reviews';
-    public const ROUTE_IMAGE_MANAGEMENT      = 'imagemanagement';
-    public const ROUTE_BOXES                 = 'boxes';
-    public const ROUTE_BRANDING              = 'branding';
-    public const ROUTE_CACHE                 = 'cache';
-    public const ROUTE_COUNTRIES             = 'countries';
-    public const ROUTE_DBMANAGER             = 'dbmanager';
-    public const ROUTE_DBUPDATER             = 'dbupdater';
-    public const ROUTE_EMAILBLOCKLIST        = 'emailblocklist';
-    public const ROUTE_ACTIVATE              = 'activate';
-    public const ROUTE_LINKS                 = 'links';
-    public const ROUTE_EMAILHISTORY          = 'emailhistory';
-    public const ROUTE_EMAILTEMPLATES        = 'emailtemplates';
-    public const ROUTE_CRON                  = 'cron';
-    public const ROUTE_CHECKBOX              = 'checkbox';
-    public const ROUTE_NEWS                  = 'news';
-    public const ROUTE_REDIRECT              = 'redirect';
-    public const ROUTE_WAREHOUSES            = 'warehouses';
-    public const ROUTE_PASS                  = 'pass';
-    public const ROUTE_DASHBOARD             = 'dashboard';
-    public const ROUTE_SEPARATOR             = 'separator';
-    public const ROUTE_CONSENT               = 'consent';
-    public const ROUTE_EXPORT                = 'export';
-    public const ROUTE_EXPORT_START          = 'startexport';
-    public const ROUTE_FILECHECK             = 'filecheck';
-    public const ROUTE_GIFTS                 = 'gifts';
-    public const ROUTE_CAMPAIGN              = 'campaign';
-    public const ROUTE_CUSTOMER_IMPORT       = 'customerimport';
-    public const ROUTE_COUPON_STATS          = 'couponstats';
-    public const ROUTE_LICENSE               = 'licenses';
-    public const ROUTE_LOGOUT                = 'logout';
-    public const ROUTE_NAVFILTER             = 'navfilter';
-    public const ROUTE_NEWSLETTER            = 'newsletter';
-    public const ROUTE_NEWSLETTER_IMPORT     = 'newsletterimport';
-    public const ROUTE_OPC                   = 'onpagecomposer';
-    public const ROUTE_OPCCC                 = 'onpagecomposercc';
-    public const ROUTE_ZIP_IMPORT            = 'zipimport';
-    public const ROUTE_TEMPLATE              = 'template';
-    public const ROUTE_SITEMAP_EXPORT        = 'sitemapexport';
-    public const ROUTE_PERSISTENT_CART       = 'persistentcart';
-    public const ROUTE_WIZARD                = 'wizard';
-    public const ROUTE_WISHLIST              = 'wishlist';
-    public const ROUTE_LIVESEARCH            = 'livesearch';
-    public const ROUTE_PLUGIN_MANAGER        = 'pluginmanager';
-    public const ROUTE_CONFIG                = 'config';
-    public const ROUTE_MARKDOWN              = 'markdown';
-    public const ROUTE_EXPORT_QUEUE          = 'exportqueue';
-    public const ROUTE_PLUGIN                = 'plugin';
-    public const ROUTE_PREMIUM_PLUGIN        = 'premiumplugin';
-    public const ROUTE_SEARCHCONFIG          = 'searchconfig';
-    public const ROUTE_IO                    = 'io';
-    public const ROUTE_SEARCHRESULTS         = 'searchresults';
-    public const ROUTE_ELFINDER              = 'elfinder';
-    public const ROUTE_CODE                  = 'code';
-    public const ROUTE_LOCALIZATION_CHECK    = 'localizationcheck';
-
     /**
      * @var Router
      */
@@ -226,109 +135,107 @@ class BackendRouter
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
-        protected AdminAccount $account,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
+        protected AdminAccount          $account,
         protected AlertServiceInterface $alertService,
-        protected GetText $getText,
-        protected JTLSmarty $smarty
+        protected GetText               $getText,
+        protected JTLSmarty             $smarty
     ) {
         $this->router = new Router();
         $strategy     = new SmartyStrategy(new ResponseFactory(), $smarty, new State());
         $container    = new Container();
-
-        $controllers = [
-            self::ROUTE_BANNER                => BannerController::class,
-            self::ROUTE_ORDERS                => OrderController::class,
-            self::ROUTE_IMAGES                => ImagesController::class,
-            self::ROUTE_PACKAGINGS            => PackagingsController::class,
-            self::ROUTE_CONTACT_FORMS         => ContactFormsController::class,
-            self::ROUTE_SYNC                  => SyncController::class,
-            self::ROUTE_SHIPPING_METHODS      => ShippingMethodsController::class,
-            self::ROUTE_COMPARELIST           => ComparelistController::class,
-            self::ROUTE_SYSTEMLOG             => SystemLogController::class,
-            self::ROUTE_SYSTEMCHECK           => SystemCheckController::class,
-            self::ROUTE_STATUSMAIL            => StatusMailController::class,
-            self::ROUTE_SEARCHSPECIAL         => SearchSpecialController::class,
-            self::ROUTE_SEARCHSPECIALOVERLAYS => SearchSpecialOverlayController::class,
-            self::ROUTE_STATUS                => StatusController::class,
-            self::ROUTE_STATS . '[/{id}]'     => StatsController::class,
-            self::ROUTE_LANGUAGE              => LanguageController::class,
-            self::ROUTE_SITEMAP               => SitemapController::class,
-            self::ROUTE_LOGO                  => LogoController::class,
-            self::ROUTE_RSS                   => RSSController::class,
-            self::ROUTE_META                  => GlobalMetaDataController::class,
-            self::ROUTE_PROFILER              => ProfilerController::class,
-            self::ROUTE_PRICEHISTORY          => PriceHistoryController::class,
-            self::ROUTE_PERMISSIONCHECK       => PermissionCheckController::class,
-            self::ROUTE_PASS                  => PasswordController::class,
-            self::ROUTE_CUSTOMERFIELDS        => CustomerFieldsController::class,
-            self::ROUTE_COUPONS               => CouponsController::class,
-            self::ROUTE_FILESYSTEM            => FilesystemController::class,
-            self::ROUTE_DBCHECK               => DBCheckController::class,
-            self::ROUTE_CATEGORYCHECK         => CategoryCheckController::class,
-            self::ROUTE_USERS                 => AdminAccountController::class,
-            self::ROUTE_REVIEWS               => ReviewController::class,
-            self::ROUTE_SLIDERS               => SliderController::class,
-            self::ROUTE_IMAGE_MANAGEMENT      => ImageManagementController::class,
-            self::ROUTE_BOXES                 => BoxController::class,
-            self::ROUTE_BRANDING              => BrandingController::class,
-            self::ROUTE_CACHE                 => CacheController::class,
-            self::ROUTE_CHECKBOX              => CheckboxController::class,
-            self::ROUTE_COUNTRIES             => CountryController::class,
-            self::ROUTE_DBMANAGER             => DBManagerController::class,
-            self::ROUTE_DBUPDATER             => DBUpdateController::class,
-            self::ROUTE_EMAILBLOCKLIST        => EmailBlocklistController::class,
-            self::ROUTE_ACTIVATE              => ActivationController::class,
-            self::ROUTE_LINKS                 => LinkController::class,
-            self::ROUTE_EMAILHISTORY          => EmailHistoryController::class,
-            self::ROUTE_EMAILTEMPLATES        => EmailTemplateController::class,
-            self::ROUTE_CRON                  => CronController::class,
-            self::ROUTE_NEWS                  => NewsController::class,
-            self::ROUTE_PAYMENT_METHODS       => PaymentMethodsController::class,
-            self::ROUTE_REDIRECT              => RedirectController::class,
-            self::ROUTE_FAVS                  => FavsController::class,
-            self::ROUTE_WAREHOUSES            => WarehousesController::class,
-            self::ROUTE_DASHBOARD             => DashboardController::class,
-            self::ROUTE_SELECTION_WIZARD      => SelectionWizardController::class,
-            self::ROUTE_TAC                   => TaCController::class,
-            self::ROUTE_RESET                 => ResetController::class,
-            self::ROUTE_SEPARATOR             => SeparatorController::class,
-            self::ROUTE_CONSENT               => ConsentController::class,
-            self::ROUTE_EXPORT                => ExportController::class,
-            self::ROUTE_EXPORT_START          => ExportStarterController::class,
-            self::ROUTE_FILECHECK             => FileCheckController::class,
-            self::ROUTE_GIFTS                 => GiftsController::class,
-            self::ROUTE_CAMPAIGN              => CampaignController::class,
-            self::ROUTE_CUSTOMER_IMPORT       => CustomerImportController::class,
-            self::ROUTE_COUPON_STATS          => CouponStatsController::class,
-            self::ROUTE_LICENSE               => LicenseController::class,
-            self::ROUTE_LOGOUT                => LogoutController::class,
-            self::ROUTE_NAVFILTER             => NavFilterController::class,
-            self::ROUTE_NEWSLETTER            => NewsletterController::class,
-            self::ROUTE_NEWSLETTER_IMPORT     => NewsletterImportController::class,
-            self::ROUTE_OPC                   => OPCController::class,
-            self::ROUTE_OPCCC                 => OPCCCController::class,
-            self::ROUTE_ZIP_IMPORT            => ZipImportController::class,
-            self::ROUTE_TEMPLATE              => TemplateController::class,
-            self::ROUTE_SITEMAP_EXPORT        => SitemapExportController::class,
-            self::ROUTE_PERSISTENT_CART       => PersistentCartController::class,
-            self::ROUTE_WIZARD                => WizardController::class,
-            self::ROUTE_WISHLIST              => WishlistController::class,
-            self::ROUTE_LIVESEARCH            => LivesearchController::class,
-            self::ROUTE_PLUGIN_MANAGER        => PluginManagerController::class,
-            self::ROUTE_CONFIG . '[/{id}]'    => ConfigController::class,
-            self::ROUTE_MARKDOWN              => MarkdownController::class,
-            self::ROUTE_EXPORT_QUEUE          => ExportQueueController::class,
-            self::ROUTE_PLUGIN . '/{id}'      => PluginController::class,
-            self::ROUTE_PREMIUM_PLUGIN        => PremiumPluginController::class,
-            self::ROUTE_SEARCHCONFIG          => SearchConfigController::class,
-            self::ROUTE_IO                    => IOController::class,
-            self::ROUTE_SEARCHRESULTS         => SearchController::class,
-            self::ROUTE_ELFINDER              => ElfinderController::class,
-            self::ROUTE_CODE                  => CodeController::class,
-            self::ROUTE_LOCALIZATION_CHECK    => LocalizationController::class,
-
+        $controllers  = [
+            Route::BANNER                => BannerController::class,
+            Route::ORDERS                => OrderController::class,
+            Route::IMAGES                => ImagesController::class,
+            Route::PACKAGINGS            => PackagingsController::class,
+            Route::CONTACT_FORMS         => ContactFormsController::class,
+            Route::SYNC                  => SyncController::class,
+            Route::SHIPPING_METHODS      => ShippingMethodsController::class,
+            Route::COMPARELIST           => ComparelistController::class,
+            Route::SYSTEMLOG             => SystemLogController::class,
+            Route::SYSTEMCHECK           => SystemCheckController::class,
+            Route::STATUSMAIL            => StatusMailController::class,
+            Route::SEARCHSPECIAL         => SearchSpecialController::class,
+            Route::SEARCHSPECIALOVERLAYS => SearchSpecialOverlayController::class,
+            Route::STATUS                => StatusController::class,
+            Route::STATS . '[/{id}]'     => StatsController::class,
+            Route::LANGUAGE              => LanguageController::class,
+            Route::SITEMAP               => SitemapController::class,
+            Route::LOGO                  => LogoController::class,
+            Route::RSS                   => RSSController::class,
+            Route::META                  => GlobalMetaDataController::class,
+            Route::PROFILER              => ProfilerController::class,
+            Route::PRICEHISTORY          => PriceHistoryController::class,
+            Route::PERMISSIONCHECK       => PermissionCheckController::class,
+            Route::PASS                  => PasswordController::class,
+            Route::CUSTOMERFIELDS        => CustomerFieldsController::class,
+            Route::COUPONS               => CouponsController::class,
+            Route::FILESYSTEM            => FilesystemController::class,
+            Route::DBCHECK               => DBCheckController::class,
+            Route::CATEGORYCHECK         => CategoryCheckController::class,
+            Route::USERS                 => AdminAccountController::class,
+            Route::REVIEWS               => ReviewController::class,
+            Route::SLIDERS               => SliderController::class,
+            Route::IMAGE_MANAGEMENT      => ImageManagementController::class,
+            Route::BOXES                 => BoxController::class,
+            Route::BRANDING . '[/{id}]'  => BrandingController::class,
+            Route::CACHE                 => CacheController::class,
+            Route::CHECKBOX              => CheckboxController::class,
+            Route::COUNTRIES             => CountryController::class,
+            Route::DBMANAGER             => DBManagerController::class,
+            Route::DBUPDATER             => DBUpdateController::class,
+            Route::EMAILBLOCKLIST        => EmailBlocklistController::class,
+            Route::ACTIVATE              => ActivationController::class,
+            Route::LINKS                 => LinkController::class,
+            Route::EMAILHISTORY          => EmailHistoryController::class,
+            Route::EMAILTEMPLATES        => EmailTemplateController::class,
+            Route::CRON                  => CronController::class,
+            Route::NEWS                  => NewsController::class,
+            Route::PAYMENT_METHODS       => PaymentMethodsController::class,
+            Route::REDIRECT              => RedirectController::class,
+            Route::FAVS                  => FavsController::class,
+            Route::WAREHOUSES            => WarehousesController::class,
+            Route::DASHBOARD             => DashboardController::class,
+            Route::SELECTION_WIZARD      => SelectionWizardController::class,
+            Route::TAC                   => TaCController::class,
+            Route::RESET                 => ResetController::class,
+            Route::SEPARATOR             => SeparatorController::class,
+            Route::CONSENT               => ConsentController::class,
+            Route::EXPORT                => ExportController::class,
+            Route::EXPORT_START          => ExportStarterController::class,
+            Route::FILECHECK             => FileCheckController::class,
+            Route::GIFTS                 => GiftsController::class,
+            Route::CAMPAIGN              => CampaignController::class,
+            Route::CUSTOMER_IMPORT       => CustomerImportController::class,
+            Route::COUPON_STATS          => CouponStatsController::class,
+            Route::LICENSE               => LicenseController::class,
+            Route::LOGOUT                => LogoutController::class,
+            Route::NAVFILTER             => NavFilterController::class,
+            Route::NEWSLETTER            => NewsletterController::class,
+            Route::NEWSLETTER_IMPORT     => NewsletterImportController::class,
+            Route::OPC                   => OPCController::class,
+            Route::OPCCC                 => OPCCCController::class,
+            Route::ZIP_IMPORT            => ZipImportController::class,
+            Route::TEMPLATE              => TemplateController::class,
+            Route::SITEMAP_EXPORT        => SitemapExportController::class,
+            Route::PERSISTENT_CART       => PersistentCartController::class,
+            Route::WIZARD                => WizardController::class,
+            Route::WISHLIST              => WishlistController::class,
+            Route::LIVESEARCH            => LivesearchController::class,
+            Route::PLUGIN_MANAGER        => PluginManagerController::class,
+            Route::CONFIG . '[/{id}]'    => ConfigController::class,
+            Route::MARKDOWN              => MarkdownController::class,
+            Route::EXPORT_QUEUE          => ExportQueueController::class,
+            Route::PLUGIN . '/{id}'      => PluginController::class,
+            Route::PREMIUM_PLUGIN        => PremiumPluginController::class,
+            Route::SEARCHCONFIG          => SearchConfigController::class,
+            Route::IO                    => IOController::class,
+            Route::SEARCHRESULTS         => SearchController::class,
+            Route::ELFINDER              => ElfinderController::class,
+            Route::CODE                  => CodeController::class,
+            Route::LOCALIZATION_CHECK    => LocalizationController::class,
         ];
         foreach ($controllers as $route => $controller) {
             $container->add($controller, function () use (
@@ -350,39 +257,42 @@ class BackendRouter
         $this->router->setStrategy($strategy);
         $updateCheckMiddleWare = new UpdateCheckMiddleware($db, $account);
 
-        $this->router->group('/' . \rtrim(\PFAD_ADMIN, '/'), function (RouteGroup $route) use ($controllers) {
+        $basePath = (\parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '') . '/' . \PFAD_ADMIN;
+        $this->router->group(\rtrim($basePath, '/'), function (RouteGroup $route) use ($controllers) {
             $revisionMiddleware = new RevisionMiddleware($this->db);
             foreach ($controllers as $slug => $controller) {
-                if ($slug === self::ROUTE_PASS || $slug === self::ROUTE_DASHBOARD || $slug === self::ROUTE_CODE) {
+                if ($slug === Route::PASS || $slug === Route::DASHBOARD || $slug === Route::CODE) {
                     continue;
                 }
                 $route->get('/' . $slug, $controller . '::getResponse')->setName($slug);
                 $route->post('/' . $slug, $controller . '::getResponse')
                     ->middleware($revisionMiddleware)
-                    ->setName('post' . $slug);
+                    ->setName($slug . 'POST');
             }
         })->middleware(new AuthMiddleware($account))
             ->middleware($updateCheckMiddleWare)
             ->middleware(new WizardCheckMiddleware($this->db));
+        $this->router->get($basePath . Route::PASS, PasswordController::class . '::getResponse')
+            ->setName(Route::PASS);
+        $this->router->post($basePath . Route::PASS, PasswordController::class . '::getResponse')
+            ->setName(Route::PASS . 'POST');
 
-        $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
-            ->setName(self::ROUTE_PASS);
-        $this->router->post('/' . \PFAD_ADMIN . self::ROUTE_PASS, PasswordController::class . '::getResponse')
-            ->setName('post' . self::ROUTE_PASS);
+        $this->router->get($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+            ->setName(Route::CODE);
+        $this->router->post($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
+            ->setName(Route::CODE . 'POST');
 
-        $this->router->get('/' . \PFAD_ADMIN . self::ROUTE_CODE . '/{redir}', CodeController::class . '::getResponse')
-            ->setName(self::ROUTE_CODE);
-        $this->router->post('/' . \PFAD_ADMIN . self::ROUTE_CODE . '/{redir}', CodeController::class . '::getResponse')
-            ->setName('post' . self::ROUTE_CODE);
-
-        $this->router->get('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
-            ->setName(self::ROUTE_DASHBOARD)
+        $this->router->get($basePath, DashboardController::class . '::getResponse')
+            ->setName(Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare);
-        $this->router->post('/' . \PFAD_ADMIN, DashboardController::class . '::getResponse')
-            ->setName('post' . self::ROUTE_DASHBOARD)
+        $this->router->post($basePath, DashboardController::class . '::getResponse')
+            ->setName(Route::DASHBOARD . 'POST')
             ->middleware($updateCheckMiddleWare);
     }
 
+    /**
+     * @return void
+     */
     public function dispatch(): void
     {
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);

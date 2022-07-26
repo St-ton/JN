@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
@@ -29,8 +29,8 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Router\BackendRouter;
 use JTL\Router\Controller\ReviewController;
+use JTL\Router\Route;
 use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -190,9 +190,7 @@ class IOMethods
         if ((int)$amount != $amount && $product->cTeilbar !== 'Y') {
             $amount = \max((int)$amount, 1);
         }
-        // Prüfung
         $errors = CartHelper::addToCartCheck($product, $amount, $properties, 2, $token);
-
         if (\count($errors) > 0) {
             $localizedErrors = Product::getProductMessages($errors, true, $product, $amount);
 
@@ -231,25 +229,26 @@ class IOMethods
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();
         $boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
-        $sum[0]      = Preise::getLocalizedPriceString(
-            $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-        );
-        $sum[1]      = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]));
-        $smarty->assign('Boxen', $boxesToShow)
-            ->assign('WarenkorbWarensumme', $sum);
+        $xSelling    = Product::getXSelling($productID, $product->nIstVater > 0);
+        $sum         = [
+            Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)),
+            Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
+        ];
 
         $customerGroupID = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
             : Frontend::getCustomerGroup()->getID();
-        $xSelling        = Product::getXSelling($productID, $product->nIstVater > 0);
 
-        $smarty->assign(
-            'WarenkorbVersandkostenfreiHinweis',
-            ShippingMethod::getShippingFreeString(
-                ShippingMethod::getFreeShippingMinimum($customerGroupID),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true)
+        $smarty->assign('Boxen', $boxesToShow)
+            ->assign('WarenkorbWarensumme', $sum)
+            ->assign(
+                'WarenkorbVersandkostenfreiHinweis',
+                ShippingMethod::getShippingFreeString(
+                    ShippingMethod::getFreeShippingMinimum($customerGroupID),
+                    $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true),
+                    $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true)
+                )
             )
-        )
             ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
             ->assign('fAnzahl', $amount)
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
@@ -318,7 +317,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'vergleichsliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('compare')
             ]);
@@ -483,7 +482,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'wunschliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
@@ -587,7 +586,7 @@ class IOMethods
                 $qty             = $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]);
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
-                $error           = $smarty->getTemplateVars('fehler');
+                $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
@@ -595,7 +594,8 @@ class IOMethods
                 }
 
                 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);
-                $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $country);
+                $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $country);
 
                 $smarty->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
                     ->assign('Warensumme', $cart->gibGesamtsummeWaren())
@@ -608,13 +608,18 @@ class IOMethods
                     ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
                     ->assign('FavourableShipping', $cart->getFavourableShipping(
                         $shippingFreeMin !== 0
-                        && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                        && ShippingMethod::getShippingFreeDifference(
+                            $shippingFreeMin,
+                            $cartValueGros,
+                            $cartValueNet
+                        ) <= 0
                             ? (int)$shippingFreeMin->kVersandart
                             : null
                     ))
                     ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                         $shippingFreeMin,
-                        $cartValue
+                        $cartValueGros,
+                        $cartValueNet
                     ))
                     ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
                     ->assign('favourableShippingString', $cart->favourableShippingString);
@@ -842,13 +847,13 @@ class IOMethods
         $ioResponse = new IOResponse();
         $checkBulk  = isset($values['VariKindArtikel']);
         $parentID   = $checkBulk ? (int)$values['VariKindArtikel'] : (int)$values['a'];
-        $amount     = (float)$values['anzahl'];
-        $valueIDs   = \array_filter((array)$values['eigenschaftwert']);
-        $wrapper    = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
-
         if ($parentID <= 0) {
             return $ioResponse;
         }
+        $amount   = (float)$values['anzahl'];
+        $valueIDs = \array_filter((array)$values['eigenschaftwert']);
+        $wrapper  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
+
         $options                            = new stdClass();
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMain                     = 1;
@@ -898,22 +903,21 @@ class IOMethods
             Shop::getLanguageID(),
             $product->fArtikelgewicht + $weightDiff
         );
-        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
-
-        $currency     = Frontend::getCurrency();
-        $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
-        $fVKNetto     = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
-        $fVK          = [
+        $unitWeightLabel    = Shop::Lang()->get('weightUnit');
+        $currency           = Frontend::getCurrency();
+        $isNet              = Frontend::getCustomerGroup()->getIsMerchant();
+        $fVKNetto           = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
+        $fVK                = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
             $fVKNetto
         ];
-        $cVKLocalized = [
+        $cVKLocalized       = [
             0 => Preise::getLocalizedPriceString($fVK[0], $currency),
             1 => Preise::getLocalizedPriceString($fVK[1], $currency)
         ];
-        $cPriceLabel  = '';
+        $priceLabel         = '';
         if (isset($product->nVariationAnzahl) && $product->nVariationAnzahl > 0) {
-            $cPriceLabel = $product->nVariationOhneFreifeldAnzahl === \count($valueIDs)
+            $priceLabel = $product->nVariationOhneFreifeldAnzahl === \count($valueIDs)
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
@@ -922,15 +926,15 @@ class IOMethods
                 'setPrice',
                 $fVK[$isNet],
                 $cVKLocalized[$isNet],
-                $cPriceLabel,
+                $priceLabel,
                 $wrapper
             );
         }
         $ioResponse->callEvoProductFunction(
             'setArticleWeight',
             [
-                [$product->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
-                [$product->fArtikelgewicht, $weightProductTotal . ' ' . $cUnitWeightLabel],
+                [$product->fGewicht, $weightTotal . ' ' . $unitWeightLabel],
+                [$product->fArtikelgewicht, $weightProductTotal . ' ' . $unitWeightLabel],
             ],
             $wrapper
         );
@@ -962,11 +966,7 @@ class IOMethods
             );
         }
 
-        if ($product->cVPE === 'Y'
-            && $product->fVPEWert > 0
-            && $product->cVPEEinheit
-            && !empty($product->Preise)
-        ) {
+        if ($product->cVPE === 'Y' && $product->fVPEWert > 0 && $product->cVPEEinheit && !empty($product->Preise)) {
             $product->baueVPE($fVKNetto);
             $fStaffelVPE = [0 => [], 1 => []];
             $cStaffelVPE = [0 => [], 1 => []];
@@ -1012,7 +1012,6 @@ class IOMethods
         $set             = \array_filter($idx);
         $layout          = isset($values['layout']) ? Text::filterXSS($values['layout']) : '';
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
-
         if ($parentProductID <= 0) {
             throw new Exception('Product not found ' . $parentProductID);
         }
@@ -1261,10 +1260,10 @@ class IOMethods
         }
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryID);
+        $category   = new Kategorie($categoryID, 0, 0, false, $this->db);
         $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->getParentID());
+            $category   = new Kategorie($category->getParentID(), 0, 0, false, $this->db);
             $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 
@@ -1358,8 +1357,8 @@ class IOMethods
     public function getOpcDraftsHtml(
         string $curPageID,
         string $adminSessionToken,
-        array $languages,
-        array $currentLanguage
+        array  $languages,
+        array  $currentLanguage
     ): IOResponse {
         foreach ($languages as $i => $lang) {
             $languages[$i] = (object)$lang;
@@ -1377,7 +1376,7 @@ class IOMethods
             ->assign('currentLanguage', (object)$currentLanguage)
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
-            ->assign('opcStartUrl', Shop::getAdminURL() . BackendRouter::ROUTE_OPC)
+            ->assign('opcStartUrl', Shop::getAdminURL() . Route::OPC)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assignDom('opc-draft-list', 'innerHTML', $newDraftListHtml);
@@ -1445,7 +1444,6 @@ class IOMethods
             $this->db,
             Shop::Container()->getCache(),
             new State(),
-            Frontend::getCustomer()->getGroupID(),
             Shopsetting::getInstance()->getAll(),
             Shop::Container()->getAlertService()
         );
@@ -1462,7 +1460,7 @@ class IOMethods
         $response->review = flatten(filter(
             (new Artikel($this->db))
                 ->fuelleArtikel((int)($formData['a'] ?? 0), Artikel::getDetailOptions())?->Bewertungen->oBewertung_arr,
-            static function ($e) use ($formData) {
+            static function ($e) use ($formData): bool {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }
         ))[0];

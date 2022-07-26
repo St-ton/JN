@@ -50,7 +50,6 @@ class Visitors extends AbstractWidget
      */
     public function getJSON(): Linechart
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
         foreach ($currentMonth as $oCurrentMonth) {

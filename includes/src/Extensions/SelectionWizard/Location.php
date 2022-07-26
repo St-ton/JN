@@ -101,7 +101,7 @@ class Location
                     unset($_SESSION['oKategorie_arr_new']);
                 }
                 $langID   = $this->getLanguage($this->kAuswahlAssistentGruppe);
-                $category = new Kategorie($this->kKey, $langID);
+                $category = new Kategorie($this->kKey, $langID, 0, false, $this->db);
 
                 $this->cOrt = $category->getName($langID) . ' (' . \__('category') . ')';
                 break;

@@ -412,7 +412,7 @@ final class Orders extends AbstractSync
         $billingAddress->cLand = Adresse::checkISOCountryCode($billingAddress->cLand);
         if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
             \syncException(
-                'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
+                'Error Bestellung Update. Rechnungsadresse enthaelt keinen Nachnamen, Firma und Strasse! XML:' .
                 \print_r($xml, true),
                 \FREIDEFINIERBARER_FEHLER
             );
@@ -462,9 +462,9 @@ final class Orders extends AbstractSync
         $test   = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         $tpl    = $test->getTemplate();
         if ($tpl !== null
+            && (!isset($order->cSendeEMail) || $order->cSendeEMail === 'Y')
             && $tpl->getModel() !== null
             && $tpl->getModel()->getActive() === true
-            && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
         ) {
             if ($module) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
@@ -588,9 +588,7 @@ final class Orders extends AbstractSync
             $state = \BESTELLUNG_STATUS_VERSANDT;
         }
         $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
-        if ((\count($updatedOrder->oLieferschein_arr) > 0)
-            && (isset($order->nKomplettAusgeliefert) && (int)$order->nKomplettAusgeliefert === 0)
-        ) {
+        if ((int)($order->nKomplettAusgeliefert ?? -1) === 0 && \count($updatedOrder->oLieferschein_arr) > 0) {
             $state = \BESTELLUNG_STATUS_TEILVERSANDT;
         }
 

@@ -61,7 +61,7 @@ class ExtensionInstaller
      */
     private function getRecommendationByID(string $id): ?Recommendation
     {
-        return $this->recommendations->first(static function (Recommendation $rec) use ($id) {
+        return $this->recommendations->first(static function (Recommendation $rec) use ($id): bool {
             return $rec->getId() === $id;
         });
     }

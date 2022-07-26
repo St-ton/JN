@@ -5,7 +5,10 @@ use JTL\dbeS\Starter;
 use JTL\dbeS\Synclogin;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
+use JTL\Router\Router;
+use JTL\Router\State;
 use JTL\Shop;
+use JTL\Shopsetting;
 
 const DEFINES_PFAD             = __DIR__ . '/../includes/';
 const FREIDEFINIERBARER_FEHLER = 8;
@@ -91,7 +94,14 @@ $logger      = Shop::Container()->getLogService()->withName('dbeS');
 $pluginHooks = Helper::getHookList();
 $language    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
-Shop::bootstrap();
+Shop::setRouter(new Router(
+    $db,
+    $cache,
+    new State(),
+    Shop::Container()->getAlertService(),
+    Shopsetting::getInstance()->getAll()
+));
+Shop::bootstrap(true, $db, $cache);
 ob_start('handleError');
 $starter = new Starter(new Synclogin($db, $logger), new FileHandler($logger), $db, $cache, $logger);
 $starter->start($fileID, $_POST, $_FILES);

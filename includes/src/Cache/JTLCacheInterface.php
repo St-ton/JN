@@ -4,7 +4,7 @@ namespace JTL\Cache;
 
 /**
  * Interface JTLCacheInterface
- * @package Cache
+ * @package JTL\Cache
  */
 interface JTLCacheInterface
 {

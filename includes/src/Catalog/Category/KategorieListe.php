@@ -16,7 +16,7 @@ class KategorieListe
     /**
      * @var Kategorie[]
      */
-    public $elemente;
+    public array $elemente = [];
 
     /**
      * @var bool
@@ -130,9 +130,10 @@ class KategorieListe
         $customerGroupID  = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID       = $languageID ?: Shop::getLanguageID();
         $allCategories    = static::getCategoryList($customerGroupID, $languageID);
+        $db               = Shop::Container()->getDB();
         while ($currentParent > 0) {
             $category = $allCategories['oKategorie_arr'][$currentParent]
-                ?? new Kategorie($currentParent, $languageID, $customerGroupID);
+                ?? new Kategorie($currentParent, $languageID, $customerGroupID, false, $db);
             $category->setCurrentLanguageID($languageID);
             $this->elemente[] = $category;
             $currentParent    = $category->getParentID();
@@ -152,6 +153,7 @@ class KategorieListe
         if (!Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
+        $db              = Shop::Container()->getDB();
         $categories      = [];
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID      = $languageID ?: Shop::getLanguageID();
@@ -160,7 +162,7 @@ class KategorieListe
         if (\is_array($subCategories)) {
             foreach ($subCategories as $subCatID) {
                 $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
-                    ?? new Kategorie($subCatID, $languageID, $customerGroupID);
+                    ?? new Kategorie($subCatID, $languageID, $customerGroupID, false, $db);
                 $categories[$subCatID]->setCurrentLanguageID($languageID);
             }
 
@@ -171,12 +173,9 @@ class KategorieListe
             self::$wasModified = true;
         }
         // ist nicht im cache, muss holen
-        $db                                                            = Shop::Container()->getDB();
-        $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
-        $orderByName                                                   = $defaultLanguageActive
-            ? ''
-            : 'tkategoriesprache.cName, ';
-        $categories                                                    = $db->getObjects(
+        $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
+        $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
+        $categories            = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
@@ -190,6 +189,7 @@ class KategorieListe
                 ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
             ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
+
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
             $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);

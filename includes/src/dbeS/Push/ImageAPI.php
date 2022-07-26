@@ -33,7 +33,7 @@ final class ImageAPI extends AbstractPush
     {
         try {
             $this->getImageType();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return;
         }
         $class = Media::getClass($this->imageType);
@@ -140,10 +140,10 @@ final class ImageAPI extends AbstractPush
     private function getSizeByID(int $size): string
     {
         return match ($size) {
-            1 => Image::SIZE_LG,
-            2 => Image::SIZE_MD,
-            3 => Image::SIZE_SM,
-            4 => Image::SIZE_XS,
+            1       => Image::SIZE_LG,
+            2       => Image::SIZE_MD,
+            3       => Image::SIZE_SM,
+            4       => Image::SIZE_XS,
             default => Image::SIZE_XL,
         };
     }

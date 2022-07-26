@@ -275,12 +275,20 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
+ifndef('REDIR_OLD_ROUTES', true);
+ifndef('SLUG_ALLOW_SLASHES', true);
+ifndef('CATEGORIES_SLUG_HIERARCHICALLY', false);
 
 const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck';
 
 ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
+
+const ADMINGROUP                          = 1;
+const MAX_LOGIN_ATTEMPTS                  = 3;
+const LOCK_TIME                           = 5;
+const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
 
 /**
  * @param string $constant

@@ -44,20 +44,21 @@ class Errors extends DataCollector implements Renderable
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
     public function collect(): array
     {
-        $data = [];
-        foreach ($this->errors as $idx => $var) {
-            $data[\basename($var->file) . ':' . $var->line] = $this->getDataFormatter()->formatVar($var);
+        $data     = [];
+        $fomatter = $this->getDataFormatter();
+        foreach ($this->errors as $var) {
+            $data[\basename($var->file) . ':' . $var->line] = $fomatter->formatVar($var);
         }
 
         return ['errors' => $data, 'count' => \count($data)];
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getName(): string
     {

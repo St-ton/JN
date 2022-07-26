@@ -24,7 +24,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getBound(): self
     {
-        return $this->filter(static function (ExsLicense $e) {
+        return $this->filter(static function (ExsLicense $e): bool {
             return $e->getState() === ExsLicense::STATE_ACTIVE;
         });
     }
@@ -34,7 +34,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getUnbound(): self
     {
-        return $this->filter(static function (ExsLicense $e) {
+        return $this->filter(static function (ExsLicense $e): bool {
             return $e->getState() === ExsLicense::STATE_UNBOUND;
         });
     }
@@ -45,9 +45,9 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForItemID(string $itemID): ?ExsLicense
     {
-        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($itemID) {
+        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($itemID): bool {
             return $e->getID() === $itemID;
-        })->sort(static function (ExsLicense $e) {
+        })->sort(static function (ExsLicense $e): int {
             return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
         });
         if ($matches->count() > 1) {
@@ -68,9 +68,9 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForExsID(string $exsID): ?ExsLicense
     {
-        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($exsID) {
+        $matches = $this->getBound()->filter(static function (ExsLicense $e) use ($exsID): bool {
             return $e->getExsID() === $exsID;
-        })->sort(static function (ExsLicense $e) {
+        })->sort(static function (ExsLicense $e): int {
             return $e->getLicense()->getType() === License::TYPE_PROD ? -1 : 1;
         });
         if ($matches->count() > 1) {
@@ -92,7 +92,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getForLicenseKey(string $licenseKey): ?ExsLicense
     {
-        return $this->first(static function (ExsLicense $e) use ($licenseKey) {
+        return $this->first(static function (ExsLicense $e) use ($licenseKey): bool {
             return $e->getLicense()->getKey() === $licenseKey;
         });
     }
@@ -102,7 +102,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getActiveExpired(): self
     {
-        return $this->getBoundExpired()->filter(static function (ExsLicense  $e) {
+        return $this->getBoundExpired()->filter(static function (ExsLicense  $e): bool {
             $ref = $e->getReferencedItem();
 
             return $ref !== null && $ref->isActive();
@@ -114,7 +114,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getDedupedActiveExpired(): self
     {
-        return $this->getActiveExpired()->filter(function (ExsLicense $e) {
+        return $this->getActiveExpired()->filter(function (ExsLicense $e): bool {
             return $e === $this->getForExsID($e->getExsID());
         });
     }
@@ -124,7 +124,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getBoundExpired(): self
     {
-        return $this->getBound()->filter(static function (ExsLicense $e) {
+        return $this->getBound()->filter(static function (ExsLicense $e): bool {
             $ref = $e->getReferencedItem();
 
             return $ref !== null
@@ -137,7 +137,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getLicenseViolations(): self
     {
-        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e) {
+        return $this->getDedupedActiveExpired()->filter(static function (ExsLicense $e): bool {
             return !$e->canBeUsed();
         });
     }
@@ -155,7 +155,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getExpiredBoundTests(): self
     {
-        return $this->getBoundExpired()->filter(static function (ExsLicense $e) {
+        return $this->getBoundExpired()->filter(static function (ExsLicense $e): bool {
             return $e->getLicense()->getType() === License::TYPE_TEST;
         });
     }
@@ -165,7 +165,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getDedupedExpiredBoundTests(): self
     {
-        return $this->getExpiredBoundTests()->filter(function (ExsLicense $e) {
+        return $this->getExpiredBoundTests()->filter(function (ExsLicense $e): bool {
             return $e === $this->getForExsID($e->getExsID());
         });
     }
@@ -175,7 +175,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getPlugins(): self
     {
-        return $this->filter(static function (ExsLicense $e) {
+        return $this->filter(static function (ExsLicense $e): bool {
             return $e->getType() === ExsLicense::TYPE_PLUGIN || $e->getType() === ExsLicense::TYPE_PORTLET;
         });
     }
@@ -185,7 +185,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getTemplates(): self
     {
-        return $this->filter(static function (ExsLicense $e) {
+        return $this->filter(static function (ExsLicense $e): bool {
             return $e->getType() === ExsLicense::TYPE_TEMPLATE;
         });
     }
@@ -195,7 +195,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getPortlets(): self
     {
-        return $this->filter(static function (ExsLicense $e) {
+        return $this->filter(static function (ExsLicense $e): bool {
             return $e->getType() === ExsLicense::TYPE_PORTLET;
         });
     }
@@ -205,7 +205,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getInstalled(): self
     {
-        return $this->getBound()->filter(static function (ExsLicense $e) {
+        return $this->getBound()->filter(static function (ExsLicense $e): bool {
             return $e->getReferencedItem() !== null;
         });
     }
@@ -215,7 +215,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getUpdateableItems(): self
     {
-        return $this->getBound()->getInstalled()->filter(static function (ExsLicense $e) {
+        return $this->getBound()->getInstalled()->filter(static function (ExsLicense $e): bool {
             return $e->getReferencedItem()?->hasUpdate() === true;
         });
     }
@@ -225,7 +225,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getExpired(): self
     {
-        return $this->getBound()->filter(static function (ExsLicense $e) {
+        return $this->getBound()->filter(static function (ExsLicense $e): bool {
             return $e->getLicense()->isExpired() || $e->getLicense()->getSubscription()->isExpired();
         });
     }
@@ -236,7 +236,7 @@ class Collection extends \Illuminate\Support\Collection
      */
     public function getAboutToBeExpired(int $days = 28): self
     {
-        return $this->getBound()->filter(static function (ExsLicense $e) use ($days) {
+        return $this->getBound()->filter(static function (ExsLicense $e) use ($days): bool {
             $license = $e->getLicense();
 
             return (!$license->isExpired()

@@ -40,6 +40,19 @@ class Category extends BaseCategory
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function setValue($value): FilterInterface
@@ -231,7 +244,8 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories         = $this->productFilter->getDB()->getObjects(
+        $db                 = $this->productFilter->getDB();
+        $categories         = $db->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -249,14 +263,18 @@ class Category extends BaseCategory
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new Kategorie(
+                    $category->kKategorie,
+                    $langID,
+                    $customerGroupID,
+                    false,
+                    $db
+                ));
             }
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->kKategorie)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($category->cName)
@@ -265,7 +283,7 @@ class Category extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            \usort($options, static function ($a, $b) {
+            \usort($options, static function ($a, $b): int {
                 /** @var Option $a */
                 /** @var Option $b */
                 return \strcmp($a->getName(), $b->getName());

@@ -43,11 +43,14 @@ trait MigrationTableTrait
      * @param string $table
      * @param string $column
      */
-    public function dropColumn($table, $column): void
+    public function dropColumn(string $table, string $column): void
     {
+        if (!\array_key_exists($column, DBManager::getColumns($table))) {
+            return;
+        }
         try {
             $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
     }
 
@@ -91,7 +94,7 @@ trait MigrationTableTrait
      * @param string $key
      * @param string|null $section
      */
-    public function removeLocalization($key, $section = null): void
+    public function removeLocalization(string $key, string $section = null): void
     {
         if ($section) {
             $this->getDB()->queryPrepared(
@@ -300,9 +303,9 @@ trait MigrationTableTrait
     }
 
     /**
-     * @param string $key the key name to be removed
+     * @param string $key
      */
-    public function removeConfig($key): void
+    public function removeConfig(string $key): void
     {
         $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
         if ($this->getDB()->getSingleObject("SHOW TABLES LIKE 'teinstellungen_default'") !== null) {

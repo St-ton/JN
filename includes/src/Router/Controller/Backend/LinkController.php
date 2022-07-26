@@ -128,7 +128,7 @@ class LinkController extends AbstractBackendController
                 $this->alertService->addError(
                     \sprintf(
                         \__('hasDuplicateSpecialLink'),
-                        ' ' . $specialLinks->map(static function (LinkInterface $l) {
+                        ' ' . $specialLinks->map(static function (LinkInterface $l): string {
                             return $l->getName();
                         })->implode('/')
                     ),
@@ -447,7 +447,7 @@ class LinkController extends AbstractBackendController
         $ls  = new LinkService($this->db, $this->cache);
         $lgl = new LinkGroupList($this->db, $this->cache);
         $lgl->loadAll();
-        $linkGroups = $lgl->getLinkGroups()->filter(static function (LinkGroupInterface $e) {
+        $linkGroups = $lgl->getLinkGroups()->filter(static function (LinkGroupInterface $e): bool {
             return $e->isSpecial() === false || $e->getTemplate() === 'unassigned';
         });
         foreach ($linkGroups as $linkGroup) {

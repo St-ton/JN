@@ -24,16 +24,6 @@ class CountryService implements CountryServiceInterface
      */
     private Collection $countryList;
 
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
     public const CACHE_ID = 'serviceCountryList';
 
     /**
@@ -41,11 +31,9 @@ class CountryService implements CountryServiceInterface
      * @param DbInterface $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
         $this->countryList = new Collection();
-        $this->db          = $db;
-        $this->cache       = $cache;
         $this->init();
     }
 
@@ -53,7 +41,7 @@ class CountryService implements CountryServiceInterface
     {
         $languageID = Shop::getLanguageID();
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
+            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID): string {
                 return Text::replaceUmlauts($country->getName($languageID));
             });
 
@@ -86,7 +74,7 @@ class CountryService implements CountryServiceInterface
             $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID): string {
             return Text::replaceUmlauts($country->getName($languageID));
         });
 
@@ -107,7 +95,7 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $iso): ?Country
     {
-        return $this->getCountryList()->first(static function (Country $country) use ($iso) {
+        return $this->getCountryList()->first(static function (Country $country) use ($iso): bool {
             return $country->getISO() === \strtoupper($iso);
         });
     }
@@ -124,7 +112,7 @@ class CountryService implements CountryServiceInterface
         }
         $filterItems = \array_map('\strtoupper', $ISOToFilter);
 
-        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems): bool {
             return \in_array($country->getISO(), $filterItems, true);
         });
     }
@@ -136,7 +124,7 @@ class CountryService implements CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string
     {
         $name  = \strtolower($countryName);
-        $match = $this->getCountryList()->first(static function (Country $country) use ($name) {
+        $match = $this->getCountryList()->first(static function (Country $country) use ($name): bool {
             foreach ($country->getNames() as $tmpName) {
                 if (\strtolower($tmpName) === $name || $name === \strtolower($country->getNameDE())) {
                     return true;
@@ -202,16 +190,16 @@ class CountryService implements CountryServiceInterface
     public function getContinentSort(string $continent): int
     {
         return match ($continent) {
-            \__('Europa') => 1,
-            \__('europeanUnion') => 2,
+            \__('Europa')                 => 1,
+            \__('europeanUnion')          => 2,
             \__('notEuropeanUnionEurope') => 3,
-            \__('Asien') => 4,
-            \__('Afrika') => 5,
-            \__('Nordamerika') => 6,
-            \__('Suedamerika') => 7,
-            \__('Ozeanien') => 8,
-            \__('Antarktis') => 9,
-            default => 0,
+            \__('Asien')                  => 4,
+            \__('Afrika')                 => 5,
+            \__('Nordamerika')            => 6,
+            \__('Suedamerika')            => 7,
+            \__('Ozeanien')               => 8,
+            \__('Antarktis')              => 9,
+            default                       => 0,
         };
     }
 

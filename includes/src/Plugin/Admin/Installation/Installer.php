@@ -334,7 +334,7 @@ final class Installer
         $tags        = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
-        $tagsToFlush = map(select($tags, static function ($e) {
+        $tagsToFlush = map(select($tags, static function ($e): bool {
             return \defined(\trim($e));
         }), static function ($e) {
             return \constant(\trim($e));

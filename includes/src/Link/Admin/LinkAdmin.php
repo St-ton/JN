@@ -91,7 +91,7 @@ final class LinkAdmin
                     AND t2.cISO = tsprache.cISO
                 WHERE t2.cISO IS NULL
                     AND tlink.reference = 0'
-        )->map(static function (stdClass $e) {
+        )->map(static function (stdClass $e): int {
             return (int)$e->id;
         });
     }
@@ -104,7 +104,7 @@ final class LinkAdmin
         $all          = $this->db->getCollection(
             'SELECT kLink, nLinkart
                 FROM tlink'
-        )->map(static function ($link) {
+        )->map(static function (stdClass $link): stdClass {
             $link->kLink    = (int)$link->kLink;
             $link->nLinkart = (int)$link->nLinkart;
 
@@ -125,7 +125,7 @@ final class LinkAdmin
             )) {
                 continue;
             }
-            $hit = $all->first(static function ($val, $key) use ($specialPage) {
+            $hit = $all->first(static function ($val, $key) use ($specialPage): bool {
                 return $val->nLinkart === $specialPage->nLinkart;
             });
             if ($hit === null) {
@@ -196,7 +196,7 @@ final class LinkAdmin
             $link->nLinkart = (int)$post['nSpezialseite'];
         }
         $type            = $link->nLinkart;
-        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type) {
+        $link->bIsSystem = (int)$this->getSpecialPageTypes()->contains(static function ($value) use ($type): bool {
             return $value->nLinkart === $type;
         });
 
@@ -358,7 +358,7 @@ final class LinkAdmin
             'SELECT *
                 FROM tspezialseite
                 ORDER BY nSort'
-        )->map(static function ($link) {
+        )->map(static function (stdClass $link): stdClass {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;
             $link->nLinkart      = (int)$link->nLinkart;

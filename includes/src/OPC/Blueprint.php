@@ -18,7 +18,7 @@ class Blueprint implements \JsonSerializable
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var null|PortletInstance

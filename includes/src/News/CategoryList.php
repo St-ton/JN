@@ -48,9 +48,9 @@ final class CategoryList implements ItemListInterface
                 GROUP BY tnewskategoriesprache.kNewsKategorie,tnewskategoriesprache.languageID
                 ORDER BY tnewskategorie.lft'
         );
-        $items         = map(group($itemLanguages, static function ($e) {
+        $items         = map(group($itemLanguages, static function ($e): int {
             return (int)$e->kNewsKategorie;
-        }), function ($e, $newsID) use ($activeOnly) {
+        }), function ($e, $newsID) use ($activeOnly): Category {
             $c = new Category($this->db);
             $c->setID($newsID);
             $c->map($e, $activeOnly);
@@ -71,7 +71,7 @@ final class CategoryList implements ItemListInterface
      */
     private function findParentCategory(Collection $tree, int $id): ?Category
     {
-        $found = $tree->first(static function (Category $e) use ($id) {
+        $found = $tree->first(static function (Category $e) use ($id): bool {
             return $e->getID() === $id;
         });
         if ($found !== null) {

@@ -80,7 +80,7 @@ class CMS
         $limit   = '';
         $cgID    = Frontend::getCustomerGroup()->getID();
         $langID  = Shop::getLanguageID();
-        $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID . '_' . $cgID);
+        $cacheID = 'news_' . \md5(\json_encode($conf['news'], \JSON_THROW_ON_ERROR) . '_' . $langID . '_' . $cgID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
@@ -202,12 +202,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;
@@ -246,12 +251,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;
@@ -272,8 +282,9 @@ class CMS
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
+            $item->kNewsletterHistory = (int)$item->kNewsletterHistory;
+            $item->cURL               = URL::buildURL($item, \URLART_NEWSLETTER);
+            $item->cURLFull           = URL::buildURL($item, \URLART_NEWSLETTER, true);
         }
 
         return $history;

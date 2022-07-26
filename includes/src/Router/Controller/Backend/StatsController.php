@@ -34,10 +34,10 @@ class StatsController extends AbstractBackendController
             $statsType = \STATS_ADMIN_TYPE_BESUCHER;
         }
         $perm = match ($statsType) {
-            2 => Permissions::STATS_VISITOR_LOCATION_VIEW,
-            3 => Permissions::STATS_CRAWLER_VIEW,
-            4 => Permissions::STATS_EXCHANGE_VIEW,
-            5 => Permissions::STATS_LANDINGPAGES_VIEW,
+            2       => Permissions::STATS_VISITOR_LOCATION_VIEW,
+            3       => Permissions::STATS_CRAWLER_VIEW,
+            4       => Permissions::STATS_EXCHANGE_VIEW,
+            5       => Permissions::STATS_LANDINGPAGES_VIEW,
             default => Permissions::STATS_VISITOR_VIEW,
         };
         $this->checkPermissions($perm);
@@ -117,12 +117,12 @@ class StatsController extends AbstractBackendController
             $stats     = new Statistik($from, $to);
             $intervall = $stats->getAnzeigeIntervall();
             $data      = match ($type) {
-                \STATS_ADMIN_TYPE_BESUCHER => $stats->holeBesucherStats(),
-                \STATS_ADMIN_TYPE_KUNDENHERKUNFT => $stats->holeKundenherkunftStats(),
-                \STATS_ADMIN_TYPE_SUCHMASCHINE => $stats->holeBotStats(),
-                \STATS_ADMIN_TYPE_UMSATZ => $stats->holeUmsatzStats(),
+                \STATS_ADMIN_TYPE_BESUCHER        => $stats->holeBesucherStats(),
+                \STATS_ADMIN_TYPE_KUNDENHERKUNFT  => $stats->holeKundenherkunftStats(),
+                \STATS_ADMIN_TYPE_SUCHMASCHINE    => $stats->holeBotStats(),
+                \STATS_ADMIN_TYPE_UMSATZ          => $stats->holeUmsatzStats(),
                 \STATS_ADMIN_TYPE_EINSTIEGSSEITEN => $stats->holeEinstiegsseiten(),
-                default => [],
+                default                           => [],
             };
         }
 
@@ -191,9 +191,10 @@ class StatsController extends AbstractBackendController
         $axis    = new stdClass();
         $axis->y = 'nCount';
         $axis->x = match ($type) {
-            \STATS_ADMIN_TYPE_UMSATZ, \STATS_ADMIN_TYPE_BESUCHER => 'dZeit',
-            \STATS_ADMIN_TYPE_KUNDENHERKUNFT => 'cReferer',
-            \STATS_ADMIN_TYPE_SUCHMASCHINE => 'cUserAgent',
+            \STATS_ADMIN_TYPE_UMSATZ,
+            \STATS_ADMIN_TYPE_BESUCHER        => 'dZeit',
+            \STATS_ADMIN_TYPE_KUNDENHERKUNFT  => 'cReferer',
+            \STATS_ADMIN_TYPE_SUCHMASCHINE    => 'cUserAgent',
             \STATS_ADMIN_TYPE_EINSTIEGSSEITEN => 'cEinstiegsseite',
         };
 

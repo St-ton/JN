@@ -15,18 +15,14 @@ class CacheSession implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheSession
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $this->isInitialized = true;
-        $this->journalID     = 'session_journal';
-        $this->options       = $options;
+        $this->setIsInitialized(true);
+        $this->setJournalID('session_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**

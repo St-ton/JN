@@ -11,6 +11,7 @@ use JTL\Catalog\Navigation;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Customer\Visitor;
 use JTL\DB\DbInterface;
 use JTL\ExtensionPoint;
 use JTL\Filter\Items\Availability;
@@ -21,20 +22,22 @@ use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Minify\MinifyService;
+use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
-use JTL\Visitor;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -55,6 +58,11 @@ abstract class AbstractController implements ControllerInterface
      * @var int|null
      */
     protected ?int $languageID = null;
+
+    /**
+     * @var int|null
+     */
+    protected ?int $customerGroupID = null;
 
     /**
      * @var Artikel|null
@@ -107,10 +115,14 @@ abstract class AbstractController implements ControllerInterface
     protected ?string $metaKeywords = null;
 
     /**
+     * @var string
+     */
+    protected string $tseoSelector = '';
+
+    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param State                 $state
-     * @param int                   $customerGroupID
      * @param array                 $config
      * @param AlertServiceInterface $alertService
      */
@@ -118,7 +130,6 @@ abstract class AbstractController implements ControllerInterface
         protected DbInterface $db,
         protected JTLCacheInterface $cache,
         protected State $state,
-        protected int $customerGroupID,
         protected array $config,
         protected AlertServiceInterface $alertService
     ) {
@@ -132,7 +143,8 @@ abstract class AbstractController implements ControllerInterface
      */
     public function init(): bool
     {
-        $this->languageID = $this->state->languageID ?: Shop::getLanguageID();
+        $this->languageID      = $this->state->languageID ?: Shop::getLanguageID();
+        $this->customerGroupID = Frontend::getCustomerGroup()->getID();
 
         return true;
     }
@@ -154,6 +166,10 @@ abstract class AbstractController implements ControllerInterface
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
         }
+        if ($this->state->productID > 0 && Product::isVariChild($this->state->productID)) {
+            $this->state->childProductID = $this->state->productID;
+            $this->state->productID      = Product::getParent($this->state->productID);
+        }
         $this->updateShopParams($slug);
 
         return $this->updateProductFilter();
@@ -162,7 +178,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @return State
      */
-    protected function updateProductFilter(): State
+    public function updateProductFilter(): State
     {
         Shop::getProductFilter()->initStates($this->state->getAsParams());
         \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
@@ -210,12 +226,53 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * @param int $id
+     * @param int $languageID
+     * @return State
+     */
+    protected function handleSeoError(int $id, int $languageID): State
+    {
+        return $this->state;
+    }
+
+    /**
      * @param array $args
      * @return State
      */
     public function getStateFromSlug(array $args): State
     {
-        return $this->state;
+        $id   = (int)($args['id'] ?? 0);
+        $name = $args['name'] ?? null;
+        if ($id < 1 && $name === null) {
+            return $this->state;
+        }
+        if ($name !== null) {
+            $parser = new DefaultParser($this->db, $this->state);
+            $name   = $parser->parse($name);
+        }
+        $seo = $id > 0
+            ? $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key
+                      AND kKey = :kid
+                      AND kSprache = :lid',
+                ['key' => $this->tseoSelector, 'kid' => $id, 'lid' => $this->state->languageID]
+            )
+            : $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cKey = :key AND cSeo = :seo',
+                ['key' => $this->tseoSelector, 'seo' => $name]
+            );
+        if ($seo === null) {
+            return $this->handleSeoError($id, $this->state->languageID);
+        }
+        $slug          = $seo->cSeo;
+        $seo->kKey     = (int)$seo->kKey;
+        $seo->kSprache = (int)$seo->kSprache;
+
+        return $this->updateState($seo, $slug);
     }
 
     /**
@@ -235,7 +292,6 @@ abstract class AbstractController implements ControllerInterface
             $this->db,
             $this->cache,
             $this->state,
-            $this->customerGroupID,
             $this->config,
             $this->alertService
         );
@@ -258,8 +314,9 @@ abstract class AbstractController implements ControllerInterface
         $debugbarRenderer         = $debugbar->getJavascriptRenderer();
         $pageType                 = Shop::getPageType();
         $link                     = $this->currentLink ?? new Link($this->db);
+        $categoryID               = Request::verifyGPCDataInt('kategorie');
         $this->currentCategory    = $this->currentCategory
-            ?? new Kategorie(Request::verifyGPCDataInt('kategorie'), $this->languageID, $this->customerGroupID);
+            ?? new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db);
         $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
         // put availability on top
         $filters = $this->productFilter->getAvailableContentFilters();
@@ -275,7 +332,8 @@ abstract class AbstractController implements ControllerInterface
 
         $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
-        $cartValue       = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -304,7 +362,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
             ->assign(
                 'WarenkorbVersandkostenfreiHinweis',
-                ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValue)
+                ShippingMethod::getShippingFreeString($shippingFreeMin, $cartValueGros, $cartValueNet)
             )
             ->assign('oSpezialseiten_arr', $linkHelper->getSpecialPages())
             ->assign('bAjaxRequest', Request::isAjaxRequest())
@@ -316,7 +374,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('Steuerpositionen', $cart->gibSteuerpositionen())
             ->assign('FavourableShipping', $cart->getFavourableShipping(
                 $shippingFreeMin !== 0
-                && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValue) <= 0
+                && ShippingMethod::getShippingFreeDifference($shippingFreeMin, $cartValueGros, $cartValueNet) <= 0
                     ? (int)$shippingFreeMin->kVersandart
                     : null
             ))
@@ -324,7 +382,7 @@ abstract class AbstractController implements ControllerInterface
             ->assign('Einstellungen', $this->config)
             ->assign('deletedPositions', Cart::$deletedPositions)
             ->assign('updatedPositions', Cart::$updatedPositions)
-            ->assign('Firma', new Firma(true, $this->db))
+            ->assign('Firma', new Firma(true, $this->db, $this->cache))
             ->assign('showLoginCaptcha', isset($_SESSION['showLoginCaptcha']) && $_SESSION['showLoginCaptcha'])
             ->assign('AktuelleKategorie', $this->currentCategory)
             ->assign('Suchergebnisse', $this->searchResults)
@@ -339,7 +397,8 @@ abstract class AbstractController implements ControllerInterface
         $this->assignTemplateData();
         $this->assignMetaData($link);
 
-        Visitor::generateData();
+        $visitor = new Visitor($this->db, $this->cache);
+        $visitor->generateData();
         Campaign::checkCampaignParameters();
         Shop::Lang()->generateLanguageAndCurrencyLinks();
         $ep = new ExtensionPoint($pageType, Shop::getParameters(), $this->languageID, $this->customerGroupID);
@@ -353,8 +412,6 @@ abstract class AbstractController implements ControllerInterface
         $visitorCount = $this->config['global']['global_zaehler_anzeigen'] === 'Y'
             ? $this->db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
             : 0;
-        $debugbar->getTimer()->stopMeasure('init');
-
         $this->smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
             ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())
@@ -363,8 +420,9 @@ abstract class AbstractController implements ControllerInterface
             ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems($this->languageID))
             ->assign('nZeitGebraucht', $nStartzeit === null ? 0 : (\microtime(true) - $nStartzeit))
             ->assign('Besucherzaehler', $visitorCount)
-            ->assign('alertList', $this->alertService)
-            ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+            ->assign('alertList', $this->alertService);
+        $debugbar->getTimer()->stopMeasure('init');
+        $this->smarty->assign('dbgBarHead', $debugbarRenderer->renderHead())
             ->assign('dbgBarBody', $debugbarRenderer->render());
     }
 
@@ -412,14 +470,54 @@ abstract class AbstractController implements ControllerInterface
             ->assign('currentThemeDir', $paths->getRealRelThemeDir())
             ->assign('currentThemeDirFull', $paths->getRealThemeURL())
             ->assign('isFluidTemplate', ($this->config['template']['theme']['pagelayout'] ?? '') === 'fluid')
-            ->assign('shopFaviconURL', Shop::getFaviconURL())
+            ->assign('shopFaviconURL', $this->getFaviconURL($shopURL))
             ->assign('ShopLogoURL', Shop::getLogo(true))
             ->assign('lang', Shop::getLanguageCode())
-            ->assign('ShopHomeURL', Shop::getHomeURL())
+            ->assign('ShopHomeURL', $this->getHomeURL($shopURL))
             ->assign('ShopURLSSL', Shop::getURL(true))
             ->assign('imageBaseURL', Shop::getImageBaseURL())
             ->assign('isAjax', Request::isAjaxRequest());
         $tplService->save();
+    }
+
+    /**
+     * @param string $baseURL
+     * @return string
+     */
+    public function getHomeURL(string $baseURL): string
+    {
+        $homeURL = $baseURL . '/';
+        try {
+            if (!LanguageHelper::isDefaultLanguageActive()) {
+                $homeURL = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE)?->getURL();
+            }
+        } catch (SpecialPageNotFoundException $e) {
+            Shop::Container()->getLogService()->error($e->getMessage());
+        }
+
+        return $homeURL;
+    }
+
+    /**
+     * @param string $baseURL
+     * @return string
+     */
+    protected function getFaviconURL(string $baseURL): string
+    {
+        $templateDir      = $this->smarty->getTemplateDir($this->smarty->context);
+        $shopTemplatePath = $this->smarty->getTemplateUrlPath();
+        $faviconUrl       = $baseURL . '/';
+        if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
+        } elseif (\file_exists($templateDir . 'favicon.ico')) {
+            $faviconUrl .= $shopTemplatePath . 'favicon.ico';
+        } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
+            $faviconUrl .= 'favicon.ico';
+        } else {
+            $faviconUrl .= 'favicon-default.ico';
+        }
+
+        return $faviconUrl;
     }
 
     /**

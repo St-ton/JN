@@ -5,6 +5,7 @@ namespace JTL\OPC;
 use Exception;
 use JTL\Backend\AdminIO;
 use JTL\Events\Dispatcher;
+use JTL\Events\Event;
 use JTL\Helpers\Request;
 use JTL\IO\IOResponse;
 use JTL\Shop;
@@ -18,27 +19,12 @@ class PageService
     /**
      * @var string
      */
-    protected $adminName = '';
-
-    /**
-     * @var null|Service
-     */
-    protected $opc;
-
-    /**
-     * @var null|PageDB
-     */
-    protected $pageDB;
-
-    /**
-     * @var null|Locker
-     */
-    protected $locker;
+    protected string $adminName = '';
 
     /**
      * @var null|Page
      */
-    protected $curPage;
+    protected ?Page $curPage = null;
 
     /**
      * PageService constructor.
@@ -47,12 +33,8 @@ class PageService
      * @param Locker  $locker
      * @throws \SmartyException
      */
-    public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
+    public function __construct(protected Service $opc, protected PageDB $pageDB, protected Locker $locker)
     {
-        $this->opc    = $opc;
-        $this->pageDB = $pageDB;
-        $this->locker = $locker;
-
         Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
     }
 
@@ -116,7 +98,7 @@ class PageService
             $output = $areaList->getArea($id)->getFinalHtml($inContainer);
         }
 
-        Dispatcher::getInstance()->fire('shop.OPC.PageService.renderMountPoint', [
+        Dispatcher::getInstance()->fire(Event::OPC_PAGESERVICE_RENDERMOUNTPOINT, [
             'output' => &$output,
             'id'     => $id,
             'title'  => $title,
@@ -283,7 +265,7 @@ class PageService
                 $pageIdObj->manufacturerFilter = $params['kHerstellerFilter'];
             }
         }
-        return \json_encode($pageIdObj, \JSON_INVALID_UTF8_SUBSTITUTE);
+        return \json_encode($pageIdObj, \JSON_THROW_ON_ERROR | \JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -468,10 +450,11 @@ class PageService
 
     /**
      * @return array
+     * @throws \JsonException
      */
     public function getPreviewPageData()
     {
-        return \json_decode(Request::verifyGPDataString('pageData'), true);
+        return \json_decode(Request::verifyGPDataString('pageData'), true, 512, \JSON_THROW_ON_ERROR);
     }
 
     /**

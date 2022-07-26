@@ -28,17 +28,17 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var string|null
      */
-    protected $overrideSubject;
+    protected ?string $overrideSubject = null;
 
     /**
      * @var string|null
      */
-    protected $overrideFromName;
+    protected ?string $overrideFromName = null;
 
     /**
      * @var string|null
      */
-    protected $overrideFromMail;
+    protected ?string $overrideFromMail = null;
 
     /**
      * @var array
@@ -53,32 +53,27 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var Model|null
      */
-    protected $model;
-
-    /**
-     * @var RendererInterface
-     */
-    protected $renderer;
+    protected ?Model $model = null;
 
     /**
      * @var string|null
      */
-    protected $html;
+    protected ?string $html = null;
 
     /**
      * @var string|null
      */
-    protected $text;
+    protected ?string $text = null;
 
     /**
      * @var int
      */
-    protected $languageID;
+    protected int $languageID = 0;
 
     /**
      * @var int
      */
-    protected $customerGroupID;
+    protected int $customerGroupID = 0;
 
     /**
      * @var array
@@ -152,8 +147,8 @@ abstract class AbstractTemplate implements TemplateInterface
         );
         $data                  = first(
             $data,
-            function ($e) {
-                return (int)$e->kSprache === $this->languageID;
+            function (stdClass $item): bool {
+                return (int)$item->kSprache === $this->languageID;
             }
         ) ?? first($data);
         $agb                   = new stdClass();

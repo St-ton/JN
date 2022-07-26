@@ -19,7 +19,7 @@ class DefaultRenderer implements RendererInterface
     protected $smarty;
 
     /**
-     * @var BoxInterface
+     * @var BoxInterface|null
      */
     protected $box;
 

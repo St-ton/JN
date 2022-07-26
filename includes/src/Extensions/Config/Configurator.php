@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -262,7 +262,7 @@ class Configurator
      */
     public static function hasUnavailableGroup(array $confGroups): bool
     {
-        return some($confGroups, static function (Group $group) {
+        return some($confGroups, static function (Group $group): bool {
             return $group->getMin() > 0 && !$group->minItemsInStock();
         });
     }

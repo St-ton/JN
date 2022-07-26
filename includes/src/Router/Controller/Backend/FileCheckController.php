@@ -60,8 +60,8 @@ class FileCheckController extends AbstractBackendController
         $modifiedFilesCheck = $fileCheck->validateCsvFile($coreMD5HashFile, $modifiedFiles, $modifiedFilesCount);
         $modifiedFilesError = match ($modifiedFilesCheck) {
             FileCheck::ERROR_INPUT_FILE_MISSING => \sprintf(\__('errorFileNotFound'), $coreMD5HashFile),
-            FileCheck::ERROR_NO_HASHES_FOUND => \__('errorFileListEmpty'),
-            default => '',
+            FileCheck::ERROR_NO_HASHES_FOUND    => \__('errorFileListEmpty'),
+            default                             => '',
         };
         $this->alertService->addError(
             $modifiedFilesError,
@@ -89,8 +89,8 @@ class FileCheckController extends AbstractBackendController
         $orphanedFilesCheck = $fileCheck->validateCsvFile($orphanedFilesFile, $orphanedFiles, $orphanedFilesCount);
         $orphanedFilesError = match ($orphanedFilesCheck) {
             FileCheck::ERROR_INPUT_FILE_MISSING => \sprintf(\__('errorFileNotFound'), $orphanedFilesFile),
-            FileCheck::ERROR_NO_HASHES_FOUND => \__('errorFileListEmpty'),
-            default => '',
+            FileCheck::ERROR_NO_HASHES_FOUND    => \__('errorFileListEmpty'),
+            default                             => '',
         };
         if (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
             $backup   = \PFAD_ROOT . \PFAD_EXPORT_BACKUP

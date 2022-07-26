@@ -75,7 +75,7 @@ class SearchSpecialOverlayController extends AbstractBackendController
             'SELECT kSuchspecialOverlay FROM tsuchspecialoverlay',
             'kSuchspecialOverlay'
         ) as $type) {
-            $overlays[] = Overlay::getInstance($type, (int)$_SESSION['editLanguageID']);
+            $overlays[] = Overlay::getInstance($type, $this->currentLanguageID);
         }
 
         return $overlays;
@@ -87,6 +87,6 @@ class SearchSpecialOverlayController extends AbstractBackendController
      */
     private function getOverlayInstance(int $overlayID): Overlay
     {
-        return Overlay::getInstance($overlayID, (int)$_SESSION['editLanguageID']);
+        return Overlay::getInstance($overlayID, $this->currentLanguageID);
     }
 }

@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
 use JTL\Pagination\Pagination;
+use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -32,6 +33,7 @@ class NewsletterController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::MODULE_NEWSLETTER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletter');
+        $this->setLanguage();
 
         $conf          = Shop::getSettings([\CONF_NEWSLETTER]);
         $newsletterTPL = null;
@@ -43,10 +45,8 @@ class NewsletterController extends AbstractBackendController
         $activeSearchSQL          = new SqlObject();
         $customerGroup            = $this->db->select('tkundengruppe', 'cStandard', 'Y');
         $_SESSION['Kundengruppe'] = new CustomerGroup((int)$customerGroup->kKundengruppe);
-        $this->setLanguage();
-        $languageID = (int)$_SESSION['editLanguageID'];
-        $instance   = new Newsletter($this->db, $conf);
-        $postData   = Text::filterXSS($_POST);
+        $instance                 = new Newsletter($this->db, $conf);
+        $postData                 = Text::filterXSS($_POST);
         if (Form::validateToken()) {
             if (Request::postInt('einstellungen') === 1) {
                 if (isset($postData['speichern']) || Request::postVar('resetSetting') !== null) {
@@ -97,7 +97,7 @@ class NewsletterController extends AbstractBackendController
                             FROM tnewsletterhistory
                             WHERE kNewsletterHistory = :hid
                                 AND kSprache = :lid",
-                        ['hid' => $historyID, 'lid' => $languageID]
+                        ['hid' => $historyID, 'lid' => $this->currentLanguageID]
                     );
                     if ($hist !== null && $hist->kNewsletterHistory > 0) {
                         $smarty->assign('oNewsletterHistory', $hist);
@@ -137,7 +137,8 @@ class NewsletterController extends AbstractBackendController
                     $step = 'vorlage_vorschau_iframe';
                     $smarty->assign(
                         'cURL',
-                        'newsletter.php?vorschau=' . $nlTemplateID . '&token=' . $_SESSION['jtl_token']
+                        $this->baseURL . '/' . Route::NEWSLETTER
+                            . '?vorschau=' . $nlTemplateID . '&token=' . $_SESSION['jtl_token']
                     );
                     $preview = $instance->getPreview($newsletterTPL);
                 } elseif (isset($newsletterTPL->kNewsletterVorlage) && $newsletterTPL->kNewsletterVorlage > 0) {
@@ -276,13 +277,13 @@ class NewsletterController extends AbstractBackendController
                 'SELECT COUNT(*) AS cnt
                     FROM tnewslettervorlage
                     WHERE kSprache = :lid',
-                ['lid' => $languageID],
+                ['lid' => $this->currentLanguageID],
             )->cnt;
             $historyCount      = (int)$this->db->getSingleObject(
                 'SELECT COUNT(*) AS cnt
                     FROM tnewsletterhistory
                     WHERE kSprache = :lid',
-                ['lid' => $languageID]
+                ['lid' => $this->currentLanguageID]
             )->cnt;
             $pagiInactive      = (new Pagination('inaktive'))
                 ->setItemCount($recipientsCount)
@@ -308,7 +309,7 @@ class NewsletterController extends AbstractBackendController
                         AND l.kSprache = :langID
                     ORDER BY c.startDate DESC
                     LIMIT " . $pagiQueue->getLimitSQL(),
-                ['langID' => $languageID]
+                ['langID' => $this->currentLanguageID]
             );
             if (!($instance instanceof Newsletter)) {
                 $instance = new Newsletter($this->db, $conf);
@@ -326,7 +327,7 @@ class NewsletterController extends AbstractBackendController
                     FROM tnewslettervorlage
                     WHERE kSprache = :lid
                     ORDER BY kNewsletterVorlage DESC LIMIT ' . $pagiTemplates->getLimitSQL(),
-                ['lid' => $languageID]
+                ['lid' => $this->currentLanguageID]
             );
             foreach ($templates as $template) {
                 $template->cBetreff = Text::filterXSS($template->cBetreff);
@@ -337,7 +338,7 @@ class NewsletterController extends AbstractBackendController
                     FROM tnewslettervorlagestd
                     WHERE kSprache = :lid
                     ORDER BY cName',
-                ['lid' => $languageID]
+                ['lid' => $this->currentLanguageID]
             );
             foreach ($defaultData as $tpl) {
                 $tpl->oNewsletttervorlageStdVar_arr = $this->db->getObjects(
@@ -382,7 +383,7 @@ class NewsletterController extends AbstractBackendController
                     WHERE kSprache = :lid
                     ORDER BY dStart DESC
                     LIMIT " . $pagiHistory->getLimitSQL(),
-                ['lid' => $languageID]
+                ['lid' => $this->currentLanguageID]
             );
             $customerGroupsByName = $this->db->getObjects(
                 'SELECT *

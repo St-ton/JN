@@ -221,7 +221,7 @@ class CheckBox
             $this->oLink = new Link($this->db);
             try {
                 $this->oLink->load($this->kLink);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $logger = Shop::Container()->getLogService();
                 $logger->error('Checkbox cannot link to link ID ' . $this->kLink);
             }
@@ -286,11 +286,9 @@ class CheckBox
                     AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $sql . '
                 ORDER BY nSort'
-        )
-            ->map(function ($e) {
-                return new self((int)$e->id, $this->db);
-            })
-            ->all();
+        )->map(function (stdClass $e): self {
+            return new self((int)$e->id, $this->db);
+        })->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$checkboxes,
             'nAnzeigeOrt'   => $location,
@@ -437,10 +435,9 @@ class CheckBox
             'SELECT kCheckBox AS id
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL
-        )
-            ->map(function ($e) {
-                return new self((int)$e->id, $this->db);
-            })->all();
+        )->map(function (stdClass $e): self {
+            return new self((int)$e->id, $this->db);
+        })->all();
     }
 
     /**
@@ -563,7 +560,7 @@ class CheckBox
             'SELECT *
                 FROM tcheckboxfunktion
                 ORDER BY cName'
-        )->each(static function ($e) {
+        )->each(static function (stdClass $e): void {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
             $e->cName             = \__($e->cName);
         })->all();
@@ -577,20 +574,20 @@ class CheckBox
     public function insertDB(array $texts, array $descriptions): self
     {
         if (\count($texts) > 0) {
-            $checkbox = GeneralObject::copyMembers($this);
-            unset(
-                $checkbox->kCheckBox,
-                $checkbox->cID,
-                $checkbox->kKundengruppe_arr,
-                $checkbox->kAnzeigeOrt_arr,
-                $checkbox->oCheckBoxFunktion,
-                $checkbox->dErstellt_DE,
-                $checkbox->oLink,
-                $checkbox->oCheckBoxSprache_arr,
-                $checkbox->cLink
-            );
-            $id              = $this->db->insert('tcheckbox', $checkbox);
-            $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
+            $checkbox               = GeneralObject::copyMembers($this);
+            $ins                    = new stdClass();
+            $ins->kLink             = $checkbox->kLink;
+            $ins->kCheckBoxFunktion = $checkbox->kCheckBoxFunktion;
+            $ins->cName             = $checkbox->cName;
+            $ins->cKundengruppe     = $checkbox->cKundengruppe;
+            $ins->cAnzeigeOrt       = $checkbox->cAnzeigeOrt;
+            $ins->nAktiv            = $checkbox->nAktiv;
+            $ins->nPflicht          = $checkbox->nPflicht;
+            $ins->nLogging          = $checkbox->nLogging;
+            $ins->nSort             = $checkbox->nSort;
+            $ins->dErstellt         = $checkbox->dErstellt;
+            $id                     = $this->db->insert('tcheckbox', $ins);
+            $this->kCheckBox        = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
             $this->insertDBSprache($texts, $descriptions);
         }
 
@@ -685,6 +682,7 @@ class CheckBox
             $data                = new stdClass();
             $data->oCheckBox     = $checkBox;
             $data->oKunde        = $customer;
+            $data->tkunde        = $customer;
             $data->cAnzeigeOrt   = $this->mappeCheckBoxOrte($location);
             $data->mail          = new stdClass();
             $data->mail->toEmail = $conf['email_master_absender'];

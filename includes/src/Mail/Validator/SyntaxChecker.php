@@ -53,7 +53,7 @@ final class SyntaxChecker
     {
         try {
             return Shop::Smarty()->assign('template', $model)->fetch('snippets/mailtemplate_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (SmartyException | Exception) {
             return '';
         }
     }

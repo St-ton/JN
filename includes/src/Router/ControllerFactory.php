@@ -5,20 +5,22 @@ namespace JTL\Router;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\Exceptions\EmptyResultSetException;
-use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Product as ProductHelper;
+use JTL\Helpers\Text;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Media\Media;
-use JTL\Optin\Optin;
+use JTL\Redirect;
 use JTL\Router\Controller\AccountController;
 use JTL\Router\Controller\CartController;
+use JTL\Router\Controller\CategoryController;
+use JTL\Router\Controller\CharacteristicValueController;
 use JTL\Router\Controller\CheckoutController;
 use JTL\Router\Controller\ComparelistController;
 use JTL\Router\Controller\ContactController;
 use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\ForgotPasswordController;
 use JTL\Router\Controller\MaintenanceController;
+use JTL\Router\Controller\ManufacturerController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\NewsletterController;
 use JTL\Router\Controller\OrderCompleteController;
@@ -28,11 +30,13 @@ use JTL\Router\Controller\ProductController;
 use JTL\Router\Controller\ProductListController;
 use JTL\Router\Controller\RegistrationController;
 use JTL\Router\Controller\ReviewController;
+use JTL\Router\Controller\SearchController;
+use JTL\Router\Controller\SearchQueryController;
 use JTL\Router\Controller\WishlistController;
-use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class ControllerFactory
@@ -47,44 +51,23 @@ class ControllerFactory
      * @param JTLSmarty         $smarty
      */
     public function __construct(
-        private State $state,
-        private DbInterface $db,
+        private State             $state,
+        private DbInterface       $db,
         private JTLCacheInterface $cache,
-        private JTLSmarty $smarty
+        private JTLSmarty         $smarty
     ) {
     }
 
     /**
+     * @param ServerRequestInterface $request
      * @return ControllerInterface
      */
-    public function getEntryPoint(): ControllerInterface
+    public function getEntryPoint(ServerRequestInterface $request): ControllerInterface
     {
         $state           = $this->state;
         $fileName        = $this->state->fileName;
         $state->pageType = \PAGE_UNBEKANNT;
         $controller      = null;
-        if (\mb_strlen($state->optinCode) > 8) {
-            try {
-                $successMsg = (new Optin())
-                    ->setCode($state->optinCode)
-                    ->handleOptin();
-                Shop::Container()->getAlertService()->addInfo(
-                    Shop::Lang()->get($successMsg, 'messages'),
-                    'optinSucceeded'
-                );
-            } catch (EmptyResultSetException $e) {
-                Shop::Container()->getLogService()->notice($e->getMessage());
-                Shop::Container()->getAlertService()->addError(
-                    Shop::Lang()->get('optinCodeUnknown', 'errorMessages'),
-                    'optinCodeUnknown'
-                );
-            } catch (InvalidInputException) {
-                Shop::Container()->getAlertService()->addError(
-                    Shop::Lang()->get('optinActionUnknown', 'errorMessages'),
-                    'optinUnknownAction'
-                );
-            }
-        }
         if ($fileName === 'wartung.php') {
             $this->setLinkTypeByFileName($fileName);
             $controller = $this->getPageControllerByLinkType($this->state->linkType);
@@ -97,43 +80,43 @@ class ControllerFactory
                 $state->is404    = true;
                 $state->pageType = \PAGE_404;
 
-                return $this->fail();
+                return $this->fail($request);
             }
             if ($parentID > 0) {
-                $productID = $parentID;
-                // save data from child product POST and add to redirect
-                $cRP = '';
-                if (\is_array($_POST) && \count($_POST) > 0) {
-                    foreach (\array_keys($_POST) as $key) {
-                        $cRP .= '&' . $key . '=' . $_POST[$key];
-                    }
-                    // Redirect POST
-                    $cRP = '&cRP=' . \base64_encode($cRP);
-                }
-                // @todo!!! - use correct route
-                \http_response_code(301);
-                \header('Location: ' . Shop::getURL() . '/?a=' . $productID . $cRP);
+                $code = \is_array($_POST) && \count($_POST) > 0 ? 308 : 301;
+                $url  = Shop::getRouter()->getURLByType(
+                    Router::TYPE_PRODUCT,
+                    ['id' => $parentID, 'lang' => Text::convertISO2ISO639(Shop::getLanguageCode())]
+                );
+                \http_response_code($code);
+                \header('Location: ' . $url);
                 exit();
             }
             $controller      = $this->createController(ProductController::class);
             $state->pageType = \PAGE_ARTIKEL;
-        } elseif ($state->characteristicNotFound === false
-            && $state->categoryFilterNotFound === false
-            && $state->manufacturerFilterNotFound === false
-            && (($state->manufacturerID > 0
-                    || $state->searchQueryID > 0
-                    || $state->characteristicID > 0
-                    || $state->categoryID > 0
-                    || $state->ratingFilterID > 0
+        } elseif ($state->categoryFilterNotFound === false
+            && (($state->ratingFilterID > 0
                     || $state->manufacturerFilterID > 0
                     || $state->categoryFilterID > 0
                     || $state->searchSpecialID > 0
                     || $state->searchFilterID > 0)
                 || $state->priceRangeFilter !== '')
-//            && (Shop::getProductFilter()->getFilterCount() === 0)
         ) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(ProductListController::class);
+            $controller->updateProductFilter();
+        } elseif ($state->categoryID > 0 && $state->manufacturerFilterNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(CategoryController::class);
+        } elseif ($state->manufacturerID > 0 && $state->manufacturerFilterNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(ManufacturerController::class);
+        } elseif ($state->searchQueryID > 0) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(SearchQueryController::class);
+        } elseif ($state->characteristicID > 0 && $state->characteristicNotFound === false) {
+            $state->pageType = \PAGE_ARTIKELLISTE;
+            $controller      = $this->createController(CharacteristicValueController::class);
         } elseif ($state->wishlistID > 0) {
             $state->pageType = \PAGE_WUNSCHLISTE;
             $state->linkType = \LINKTYP_WUNSCHLISTE;
@@ -148,10 +131,11 @@ class ControllerFactory
             $controller      = $this->createController(NewsController::class);
         } elseif (!empty($state->searchQuery)) {
             $state->pageType = \PAGE_ARTIKELLISTE;
-            $controller      = $this->createController(ProductListController::class);
+            $controller      = $this->createController(SearchController::class);
         } elseif (!$state->linkID) {
             //check path
-            $path        = Shop::getRequestUri(true);
+            $shopPath    = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
+            $path        = \str_replace($shopPath, '', $request->getUri()->getPath());
             $requestFile = '/' . \ltrim($path, '/');
             if ($requestFile === '/index.php') {
                 // special case: /index.php shall be redirected to Shop-URL
@@ -169,28 +153,42 @@ class ControllerFactory
                 $this->setLinkTypeByFileName($fileName);
                 $controller = $this->getPageControllerByLinkType($this->state->linkType);
             } else {
-                return $this->fail();
+                return $this->fail($request);
             }
         } elseif (!empty($state->linkID) || $fileName === null) {
             $controller = $this->getPageController();
         }
         if ($controller !== null && !$controller->init()) {
-            return $this->fail();
+            return $this->fail($request);
         }
 
-        return $controller ?? $this->fail();
+        return $controller ?? $this->fail($request);
     }
 
     /**
+     * @param ServerRequestInterface $request
      * @return ControllerInterface
      */
-    private function fail(): ControllerInterface
+    private function fail(ServerRequestInterface $request): ControllerInterface
     {
         $this->state->is404 = true;
         if ($this->state->languageID === 0) {
             $this->state->languageID = Shop::getLanguageID();
         }
-        Shop::check404();
+        $shopPath = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
+        $path     = \str_replace($shopPath, '', $request->getUri()->getPath());
+        \executeHook(\HOOK_INDEX_SEO_404, ['seo' => $path]);
+        if (!$this->state->linkID) {
+            $hookInfos = Redirect::urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => $this->state->linkID
+            ]);
+            $linkID    = $hookInfos['value'];
+            if (!$linkID) {
+                $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+                Shop::$kLink         = $this->state->linkID;
+            }
+        }
 
         return $this->createController(PageController::class);
     }
@@ -201,21 +199,24 @@ class ControllerFactory
      */
     private function createController(string $class): ControllerInterface
     {
-        $customerGroupID = Frontend::getCustomer()->getGroupID();
-        $config          = Shopsetting::getInstance()->getAll();
-        $service         = Shop::Container()->getAlertService();
-
-        return new $class($this->db, $this->cache, $this->state, $customerGroupID, $config, $service, $this->smarty);
+        return new $class(
+            $this->db,
+            $this->cache,
+            $this->state,
+            Shopsetting::getInstance()->getAll(),
+            Shop::Container()->getAlertService(),
+            $this->smarty
+        );
     }
 
     /**
-     * @return false|ControllerInterface
+     * @return ControllerInterface|void|null
      */
     private function getPageController()
     {
         $link = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
         if ($link === null) {
-            return false;
+            return null;
         }
         $linkType = $link->getLinkType();
         if ($linkType <= 0) {
@@ -239,22 +240,22 @@ class ControllerFactory
     public static function getControllerClassByLinkType(int $linkType): ?string
     {
         return match ($linkType) {
-            \LINKTYP_VERGLEICHSLISTE => ComparelistController::class,
-            \LINKTYP_WUNSCHLISTE => WishlistController::class,
-            \LINKTYP_NEWS => NewsController::class,
-            \LINKTYP_NEWSLETTER => NewsletterController::class,
-            \LINKTYP_LOGIN => AccountController::class,
-            \LINKTYP_REGISTRIEREN => RegistrationController::class,
+            \LINKTYP_VERGLEICHSLISTE    => ComparelistController::class,
+            \LINKTYP_WUNSCHLISTE        => WishlistController::class,
+            \LINKTYP_NEWS               => NewsController::class,
+            \LINKTYP_NEWSLETTER         => NewsletterController::class,
+            \LINKTYP_LOGIN              => AccountController::class,
+            \LINKTYP_REGISTRIEREN       => RegistrationController::class,
             \LINKTYP_PASSWORD_VERGESSEN => ForgotPasswordController::class,
-            \LINKTYP_KONTAKT => ContactController::class,
-            \LINKTYP_WARENKORB => CartController::class,
-            \LINKTYP_WARTUNG => MaintenanceController::class,
-            \LINKTYP_BESTELLVORGANG => CheckoutController::class,
-            \LINKTYP_BESTELLABSCHLUSS => OrderCompleteController::class,
-            \LINKTYP_BESTELLSTATUS => OrderStatusController::class,
-            \LINKTYP_BEWERTUNG => ReviewController::class,
-            0 => null,
-            default => PageController::class
+            \LINKTYP_KONTAKT            => ContactController::class,
+            \LINKTYP_WARENKORB          => CartController::class,
+            \LINKTYP_WARTUNG            => MaintenanceController::class,
+            \LINKTYP_BESTELLVORGANG     => CheckoutController::class,
+            \LINKTYP_BESTELLABSCHLUSS   => OrderCompleteController::class,
+            \LINKTYP_BESTELLSTATUS      => OrderStatusController::class,
+            \LINKTYP_BEWERTUNG          => ReviewController::class,
+            0                           => null,
+            default                     => PageController::class
         };
     }
 
@@ -279,18 +280,18 @@ class ControllerFactory
     private function setLinkTypeByFileName(string $fileName): void
     {
         $this->state->linkType = match ($fileName) {
-            'news.php' => \LINKTYP_NEWS,
-            'jtl.php' => \LINKTYP_LOGIN,
-            'kontakt.php' => \LINKTYP_KONTAKT,
-            'newsletter.php' => \LINKTYP_NEWSLETTER,
-            'pass.php' => \LINKTYP_PASSWORD_VERGESSEN,
+            'news.php'         => \LINKTYP_NEWS,
+            'jtl.php'          => \LINKTYP_LOGIN,
+            'kontakt.php'      => \LINKTYP_KONTAKT,
+            'newsletter.php'   => \LINKTYP_NEWSLETTER,
+            'pass.php'         => \LINKTYP_PASSWORD_VERGESSEN,
             'registrieren.php' => \LINKTYP_REGISTRIEREN,
-            'warenkorb.php' => \LINKTYP_WARENKORB,
-            'wunschliste.php' => \LINKTYP_WUNSCHLISTE,
-            'wartung.php' => \LINKTYP_WARTUNG,
-            'status.php' => \LINKTYP_BESTELLSTATUS,
-            'bewertung.php' => \LINKTYP_BEWERTUNG,
-            default => $this->state->linkType,
+            'warenkorb.php'    => \LINKTYP_WARENKORB,
+            'wunschliste.php'  => \LINKTYP_WUNSCHLISTE,
+            'wartung.php'      => \LINKTYP_WARTUNG,
+            'status.php'       => \LINKTYP_BESTELLSTATUS,
+            'bewertung.php'    => \LINKTYP_BEWERTUNG,
+            default            => $this->state->linkType,
         };
     }
 }

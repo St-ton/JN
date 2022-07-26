@@ -677,7 +677,7 @@ class SearchResults implements SearchResultsInterface
      */
     private function updateOptions(FilterInterface $filter, array $values): void
     {
-        invoke(filter($filter->getOptions(), static function (Option $e) use ($values) {
+        invoke(filter($filter->getOptions(), static function (Option $e) use ($values): bool {
             return \in_array($e->getValue(), $values, true);
         }), 'setIsActive', [true]);
     }
@@ -690,7 +690,7 @@ class SearchResults implements SearchResultsInterface
      */
     private function getActiveFiltersByClassName(array $filters, string $class, $activeValues): array
     {
-        return filter($filters, static function (FilterInterface $f) use ($class, $activeValues) {
+        return filter($filters, static function (FilterInterface $f) use ($class, $activeValues): bool {
             return $f->getClassName() === $class && $f->getActiveValues() === $activeValues;
         });
     }
@@ -804,7 +804,7 @@ class SearchResults implements SearchResultsInterface
                     && $af->getVisibility() !== Visibility::SHOW_NEVER
                     && \array_reduce(
                         $options,
-                        static function ($carry, $option) {
+                        static function ($carry, $option): bool {
                             /** @var Option $option */
                             return $carry && $option->isActive();
                         },
@@ -814,7 +814,7 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($characteristicFilterOptions, static function (Option $item) {
+            if (every($characteristicFilterOptions, static function (Option $item): bool {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options

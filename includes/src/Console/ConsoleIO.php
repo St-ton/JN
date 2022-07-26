@@ -272,7 +272,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return bool
      */
-    public function isInteractive()
+    public function isInteractive(): bool
     {
         return $this->getInput()->hasOption('no-interaction') === false;
     }
@@ -397,7 +397,7 @@ class ConsoleIO extends OutputStyle
         $this->autoPrependText();
 
         $elements = \array_map(
-            static function ($element) {
+            static function ($element): string {
                 return \sprintf(' * %s', $element);
             },
             $elements
@@ -498,7 +498,7 @@ class ConsoleIO extends OutputStyle
             'style' => 'symfony-style-guide'
         ], $options);
         $headers = \array_map(
-            static function ($value) {
+            static function ($value): string {
                 return \sprintf('<info>%s</info>', $value);
             },
             $headers
@@ -728,12 +728,12 @@ class ConsoleIO extends OutputStyle
      * @param array|mixed $messages
      * @return array
      */
-    private function reduceBuffer($messages)
+    private function reduceBuffer($messages): array
     {
         // We need to know if the two last chars are PHP_EOL
         // Preserve the last 4 chars inserted (PHP_EOL on windows is two chars) in the history buffer
         return \array_map(
-            static function ($value) {
+            static function ($value): string {
                 return \substr($value, -4);
             },
             \array_merge([$this->bufferedOutput->fetch()], (array)$messages)

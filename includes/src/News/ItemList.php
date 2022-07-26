@@ -64,9 +64,9 @@ final class ItemList implements ItemListInterface
                 GROUP BY tnews.kNews, tnewssprache.languageID
                 ORDER BY FIELD(tnews.kNews, ' . $itemList . ')'
         );
-        $items         = map(group($itemLanguages, static function ($e) {
+        $items         = map(group($itemLanguages, static function ($e): int {
             return (int)$e->kNews;
-        }), function ($e, $newsID) {
+        }), function ($e, $newsID): Item {
             $l = new Item($this->db);
             $l->setID($newsID);
             $l->map($e);

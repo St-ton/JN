@@ -10,6 +10,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBManager;
+use JTLShop\SemVer\Parser as SemVerParser;
 use PDOException;
 use PhpMyAdmin\SqlParser\Components\Limit;
 use PhpMyAdmin\SqlParser\Parser;
@@ -71,6 +72,10 @@ class DBManagerController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param string $table
+     * @return ResponseInterface
+     */
     private function actionGetTable(string $table): ResponseInterface
     {
         return $this->smarty->assign('selectedTable', $table)
@@ -81,6 +86,9 @@ class DBManagerController extends AbstractBackendController
             ->getResponse('dbmanager.tpl');
     }
 
+    /**
+     * @return ResponseInterface
+     */
     private function actionQuery(): ResponseInterface
     {
         $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
@@ -115,7 +123,7 @@ class DBManagerController extends AbstractBackendController
                 }
                 $newQuery = $stmt->build();
                 $query    = Formatter::format($newQuery, ['type' => 'text']);
-                $result   = $this->exec_query($newQuery);
+                $result   = $this->executeQuery($newQuery);
                 $this->smarty->assign('result', $result);
             } catch (Exception $e) {
                 $this->smarty->assign('error', $e);
@@ -224,7 +232,7 @@ class DBManagerController extends AbstractBackendController
      * @return array
      * @throws PDOException
      */
-    private function exec_query(string $query): array
+    private function executeQuery(string $query): array
     {
         try {
             $this->db->beginTransaction();
@@ -243,7 +251,7 @@ class DBManagerController extends AbstractBackendController
      */
     public static function getDBFileStruct(): array
     {
-        $version    = \JTLShop\SemVer\Parser::parse(\APPLICATION_VERSION);
+        $version    = SemVerParser::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
             $preRelease  = $version->getPreRelease();
@@ -252,13 +260,14 @@ class DBManagerController extends AbstractBackendController
                 $versionStr .= '-' . $preRelease->getReleaseNumber();
             }
         }
-
         $fileList = PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . 'dbstruct_' . $versionStr . '.json';
         if (!\file_exists($fileList)) {
             return [];
         }
-        $struct = \json_decode(\file_get_contents($fileList));
-
-        return \is_object($struct) ? \get_object_vars($struct) : [];
+        try {
+            return \get_object_vars(\json_decode(\file_get_contents($fileList), false, 512, \JSON_THROW_ON_ERROR));
+        } catch (\JsonException) {
+            return [];
+        }
     }
 }

@@ -227,14 +227,14 @@ class ListingItem
     private function generateErrorMessage(int $code): void
     {
         $msg = match ($code) {
-            TemplateValidator::RES_OK => '',
-            TemplateValidator::RES_PARENT_NOT_FOUND => \__('errorParentNotFound'),
+            TemplateValidator::RES_OK                     => '',
+            TemplateValidator::RES_PARENT_NOT_FOUND       => \__('errorParentNotFound'),
             TemplateValidator::RES_SHOP_VERSION_NOT_FOUND => \__('errorShopVersionNotFound'),
-            TemplateValidator::RES_XML_NOT_FOUND => \__('errorXmlNotFound'),
-            TemplateValidator::RES_XML_PARSE_ERROR => \__('errorXmlParse'),
-            TemplateValidator::RES_NAME_NOT_FOUND => \__('errorNameNotFound'),
-            TemplateValidator::RES_INVALID_VERSION => \__('errorInvalidVersion'),
-            default => \__('errorUnknown'),
+            TemplateValidator::RES_XML_NOT_FOUND          => \__('errorXmlNotFound'),
+            TemplateValidator::RES_XML_PARSE_ERROR        => \__('errorXmlParse'),
+            TemplateValidator::RES_NAME_NOT_FOUND         => \__('errorNameNotFound'),
+            TemplateValidator::RES_INVALID_VERSION        => \__('errorInvalidVersion'),
+            default                                       => \__('errorUnknown'),
         };
         $this->setErrorMessage($msg);
     }

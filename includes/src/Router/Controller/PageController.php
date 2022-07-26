@@ -8,9 +8,10 @@ use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Link\SpecialPageNotFoundException;
+use JTL\Mapper\LinkTypeToPageType;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Router\ControllerFactory;
-use JTL\Router\State;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
@@ -25,42 +26,9 @@ use Psr\Http\Message\ServerRequestInterface;
 class PageController extends AbstractController
 {
     /**
-     * @inheritdoc
+     * @var string
      */
-    public function getStateFromSlug(array $args): State
-    {
-        $linkID   = (int)($args['id'] ?? 0);
-        $linkName = $args['name'] ?? null;
-        if ($linkID < 1 && $linkName === null) {
-            return $this->state;
-        }
-
-        $seo = $linkID > 0
-            ? $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key
-                      AND kKey = :kid
-                      AND kSprache = :lid',
-                ['key' => 'kLink', 'kid' => $linkID, 'lid' => $this->state->languageID]
-            )
-            : $this->db->getSingleObject(
-                'SELECT *
-                    FROM tseo
-                    WHERE cKey = :key AND cSeo = :seo',
-                ['key' => 'kLink', 'seo' => $linkName]
-            );
-        if ($seo === null) {
-            $this->state->is404 = true;
-
-            return $this->state;
-        }
-        $slug          = $seo->cSeo;
-        $seo->kSprache = (int)$seo->kSprache;
-        $seo->kKey     = (int)$seo->kKey;
-
-        return $this->updateState($seo, $slug);
-    }
+    protected string $tseoSelector = 'kLink';
 
     /**
      * @inheritdoc
@@ -69,8 +37,13 @@ class PageController extends AbstractController
     {
         parent::init();
         $this->currentLink = Shop::Container()->getLinkService()->getLinkByID($this->state->linkID);
+        if ($this->currentLink === null) {
+            return false;
+        }
+        $this->state->linkType = $this->currentLink->getLinkType();
+        $this->state->pageType = (new LinkTypeToPageType())->map($this->currentLink->getLinkType());
 
-        return $this->currentLink !== null && $this->currentLink->getLinkType() !== \LINKTYP_404;
+        return $this->state->linkType !== \LINKTYP_404;
     }
 
     /**
@@ -86,7 +59,8 @@ class PageController extends AbstractController
             $this->state->languageID = Shop::getLanguageID();
         }
         $this->state->is404  = true;
-        $this->state->linkID = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_404) ?: 0;
+        $this->currentLink   = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_404);
+        $this->state->linkID = $this->currentLink->getID();
         $sitemap             = new Sitemap($this->db, $this->cache, $this->config);
         $sitemap->assignData($this->smarty);
         Shop::setPageType(\PAGE_404);
@@ -104,6 +78,31 @@ class PageController extends AbstractController
     }
 
     /**
+     * @return void
+     */
+    protected function initHome(): void
+    {
+        try {
+            $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+        } catch (SpecialPageNotFoundException) {
+            return;
+        }
+        $this->state->pageType = \PAGE_STARTSEITE;
+        $this->state->linkType = \LINKTYP_STARTSEITE;
+
+        $this->updateState(
+            (object)[
+                'cSeo'     => $home->getSEO(),
+                'kLink'    => $home->getID(),
+                'kKey'     => $home->getID(),
+                'cKey'     => 'kLink',
+                'kSprache' => $home->getLanguageID()
+            ],
+            $home->getSEO()
+        );
+    }
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -113,6 +112,8 @@ class PageController extends AbstractController
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);
             }
+        } else {
+            $this->initHome();
         }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
@@ -130,7 +131,7 @@ class PageController extends AbstractController
             return $this->delegateResponse($mapped, $request, $args, $smarty);
         }
         if ($linkType === \LINKTYP_STARTSEITE) {
-            $this->canonicalURL = Shop::getHomeURL();
+            $this->canonicalURL = $this->getHomeURL(Shop::getURL());
             if ($this->currentLink->getRedirectCode() > 0) {
                 return new RedirectResponse($this->canonicalURL, $this->currentLink->getRedirectCode());
             }
@@ -242,7 +243,8 @@ class PageController extends AbstractController
         if ($linkFile === null || empty($linkFile->cDatei)) {
             return;
         }
-        global $oPlugin, $plugin;
+        global $oPlugin, $plugin, $smarty;
+        $smarty   = $this->smarty;
         $pluginID = (int)$linkFile->kPlugin;
         $plugin   = PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID);
         $oPlugin  = $plugin;
@@ -250,8 +252,8 @@ class PageController extends AbstractController
             ->assign('plugin', $plugin)
             ->assign('Link', $this->currentLink);
         if ($linkFile->cTemplate !== null && \mb_strlen($linkFile->cTemplate) > 0) {
-            $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
-                \PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)
+            $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath()
+                . \PFAD_PLUGIN_TEMPLATE . $linkFile->cTemplate)
                 ->assign('nFullscreenTemplate', 0);
         } else {
             $this->smarty->assign('cPluginTemplate', $plugin->getPaths()->getFrontendPath() .
@@ -278,7 +280,6 @@ class PageController extends AbstractController
             $this->db,
             $this->cache,
             $this->state,
-            $this->customerGroupID,
             $this->config,
             $this->alertService
         );

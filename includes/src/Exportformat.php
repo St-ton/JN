@@ -19,7 +19,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
-use JTL\Router\BackendRouter;
+use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
@@ -243,7 +243,7 @@ class Exportformat
     private function quit(bool $hasError = false): void
     {
         if (Request::getVar('back') === 'admin') {
-            $location = 'Location: ' . Shop::getAdminURL() . '/' . BackendRouter::ROUTE_EXPORT
+            $location = 'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT
                 . '?action=exported&token=' . $_SESSION['jtl_token']
                 . '&kExportformat=' . (int)$this->queue->foreignKeyID;
             if ($hasError) {
@@ -778,7 +778,7 @@ class Exportformat
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = Shop::Lang()->gibInstallierteSprachen();
-        $langISO   = first($languages, function (LanguageModel $l) {
+        $langISO   = first($languages, function (LanguageModel $l): bool {
             return $l->getId() === $this->getSprache();
         });
 
@@ -1313,7 +1313,8 @@ class Exportformat
                         (int)$categoryID,
                         $this->kSprache,
                         $this->kKundengruppe,
-                        !$this->useCache()
+                        !$this->useCache(),
+                        $this->db
                     );
                 }
                 $product->oKategorie_arr = $categories;
@@ -1322,7 +1323,8 @@ class Exportformat
                 $productCategoryID,
                 $this->kSprache,
                 $this->kKundengruppe,
-                !$this->useCache()
+                !$this->useCache(),
+                $this->db
             );
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
@@ -1654,7 +1656,7 @@ class Exportformat
         \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
 
         Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
-        \register_shutdown_function(static function () use ($id) {
+        \register_shutdown_function(static function () use ($id): void {
             $err = \error_get_last();
             if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
                 $out = \ob_get_clean();
@@ -1692,7 +1694,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function checkSyntax()
+    public function checkSyntax(): bool
     {
         return false;
     }
@@ -1701,7 +1703,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function doCheckSyntax()
+    public function doCheckSyntax(): bool
     {
         return false;
     }

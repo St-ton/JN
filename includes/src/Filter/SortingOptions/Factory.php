@@ -15,11 +15,6 @@ use JTL\Plugin\PluginInterface;
 class Factory
 {
     /**
-     * @var ProductFilter
-     */
-    private ProductFilter $productFilter;
-
-    /**
      * @var array
      */
     private static array $defaultSortingOptions = [
@@ -51,10 +46,8 @@ class Factory
      * Factory constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
-
         \executeHook(\HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,
             'productFilter' => $this->productFilter
@@ -88,7 +81,7 @@ class Factory
             $all->push(new $class($this->productFilter, $this->plugins[$id]));
         }
 
-        return $all->filter(static function (SortingOptionInterface $option) {
+        return $all->filter(static function (SortingOptionInterface $option): bool {
             return $option->getPriority() !== 0;
         });
     }

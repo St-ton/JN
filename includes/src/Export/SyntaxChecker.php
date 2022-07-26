@@ -132,7 +132,7 @@ class SyntaxChecker
         try {
             return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
                 ->fetch('snippets/exportformat_state.tpl');
-        } catch (Exception $e) {
+        } catch (Exception) {
             return '';
         }
     }
@@ -283,7 +283,7 @@ class SyntaxChecker
         $db = Shop::Container()->getDB();
         try {
             $model = Model::load(['id' => $exportID], $db, Model::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
         $smarty  = new ExportSmarty($db);

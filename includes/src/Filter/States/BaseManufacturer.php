@@ -13,6 +13,8 @@ use JTL\Filter\StateSQL;
 use JTL\Filter\Type;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
+use JTL\Router\RoutableTrait;
+use JTL\Router\Router;
 use JTL\Shop;
 
 /**
@@ -22,6 +24,7 @@ use JTL\Shop;
 class BaseManufacturer extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+    use RoutableTrait;
 
     /**
      * @var array
@@ -39,6 +42,7 @@ class BaseManufacturer extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
+        $this->setRouteType(Router::TYPE_MANUFACTURER);
         $this->setIsCustom(false)
              ->setUrlParam('h')
              ->setUrlParamSEO(\SEP_HST);
@@ -73,13 +77,19 @@ class BaseManufacturer extends AbstractFilter
                         AND kKey IN (" . \implode(', ', \array_map('\intval', $val)) . ')'
             );
             foreach ($languages as $language) {
-                $this->cSeo[$language->kSprache] = '';
+                $langID              = $language->kSprache;
+                $this->cSeo[$langID] = '';
                 foreach ($seoData as $seo) {
-                    if ($language->kSprache === (int)$seo->kSprache) {
-                        $sep                              = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
-                        $this->cSeo[$language->kSprache] .= $sep . $seo->cSeo;
+                    if ($langID === (int)$seo->kSprache) {
+                        $sep                  = $this->cSeo[$langID] === '' ? '' : \SEP_HST;
+                        $this->cSeo[$langID] .= $sep . $seo->cSeo;
+                        $this->slugs[$langID] = $seo->cSeo;
                     }
                 }
+            }
+            $this->createBySlug();
+            foreach ($this->getURLPaths() as $langID => $slug) {
+                $this->cSeo[$langID] = \ltrim($slug, '/');
             }
             if (isset($seoData[0]->cName)) {
                 $this->setName($seoData[0]->cName);
@@ -93,6 +103,18 @@ class BaseManufacturer extends AbstractFilter
         }
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoute(array $additional): ?string
+    {
+        $currentLanguageID = $this->getLanguageID();
+        $manufacturer      = new Hersteller($this->getValue(), $currentLanguageID);
+        $manufacturer->createBySlug($this->getValue(), $additional);
+
+        return \ltrim($manufacturer->getURLPath($currentLanguageID), '/');
     }
 
     /**
@@ -123,7 +145,7 @@ class BaseManufacturer extends AbstractFilter
 
         return $this->getType() === Type::OR
             ? 'tartikel.' . $this->getPrimaryKeyRow() . ' IN (' . \implode(', ', $val) . ')'
-            : \implode(' AND ', \array_map(function ($e) {
+            : \implode(' AND ', \array_map(function ($e): string {
                 return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $e;
             }, $val));
     }

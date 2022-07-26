@@ -58,9 +58,9 @@ final class CommentList implements ItemListInterface
                 GROUP BY tnewskommentar.kNewsKommentar
                 ORDER BY tnewskommentar.dErstellt DESC'
         );
-        $items   = map(group($data, static function ($e) {
+        $items   = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -90,9 +90,9 @@ final class CommentList implements ItemListInterface
                     ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID]
         );
-        $items        = map(group($data, static function ($e) {
+        $items        = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -112,7 +112,7 @@ final class CommentList implements ItemListInterface
      */
     public function filter(bool $active): Collection
     {
-        return $this->items->filter(static function (Comment $e) use ($active) {
+        return $this->items->filter(static function (Comment $e) use ($active): bool {
             return $e->isActive() === $active;
         });
     }

@@ -59,7 +59,7 @@ final class LinkGroupList implements LinkGroupListInterface
      * @param string $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset($name): bool
     {
         return $this->__get($name) !== null;
     }
@@ -345,7 +345,7 @@ final class LinkGroupList implements LinkGroupListInterface
                 return $l;
             });
             $filtered = clone $linkGroup;
-            $filtered->filterLinks(static function (LinkInterface $l) {
+            $filtered->filterLinks(static function (LinkInterface $l): bool {
                 return $l->isVisible();
             });
             $this->visibleLinkGroups->push($filtered);

@@ -4,8 +4,10 @@ namespace JTL\Helpers;
 
 use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\MerkmalWert;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\News\Item;
 use JTL\Router\Router;
 use JTL\Shop;
@@ -288,7 +290,7 @@ class URL
      * @param string $string
      * @return mixed
      */
-    public function urlDecodeUnreservedChars(string $string)
+    public function urlDecodeUnreservedChars(string $string): ?string
     {
         $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
@@ -311,7 +313,7 @@ class URL
                 return '/%' . \mb_convert_case($str, \MB_CASE_UPPER) . '/x';
             },
             $unreserved
-        ), static function ($matches) {
+        ), static function ($matches): string {
             $match = \str_starts_with($matches[0], '%') ? \mb_substr($matches[0], 1) : $matches[0];
             // php7.4+ expects strings like "7E" instead of "%7E"
             return \chr(\hexdec($match));
@@ -380,13 +382,13 @@ class URL
      */
     public static function unparseURL(array $parts): string
     {
-        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
-            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
-            ($parts['host'] ?? '') .
-            (isset($parts['port']) ? ':' . $parts['port'] : '') .
-            ($parts['path'] ?? '') .
-            (isset($parts['query']) ? '?' . $parts['query'] : '') .
-            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '')
+            . (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '')
+            . ($parts['host'] ?? '')
+            . (isset($parts['port']) ? ':' . $parts['port'] : '')
+            . ($parts['path'] ?? '')
+            . (isset($parts['query']) ? '?' . $parts['query'] : '')
+            . (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 
     /**
@@ -394,9 +396,9 @@ class URL
      */
     private static function getLocalizedFallback(): string
     {
-        return !LanguageHelper::isDefaultLanguageActive(true)
-            ? ('&lang=' . Shop::getLanguageCode())
-            : '';
+        return LanguageHelper::isDefaultLanguageActive(true)
+            ? ''
+            : ('&lang=' . Shop::getLanguageCode());
     }
 
     /**
@@ -407,6 +409,7 @@ class URL
      * @return string
      * @former baueURL()
      * @since 5.0.0
+     * @todo: allow overriding locale?
      */
     public static function buildURL($obj, int $type, bool $full = false, ?string $prefix = null): string
     {
@@ -419,74 +422,110 @@ class URL
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
         switch ($type) {
             case \URLART_ARTIKEL:
-                $route = null;
-                if (!empty($obj->cSeo)) {
-                    $route = $router->getPathByType(
+                return $full
+                    ? $router->getURLByType(
                         Router::TYPE_PRODUCT,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kArtikel ?? null]
+                        ['lang' => $localeCode, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_PRODUCT,
+                        ['lang' => $localeCode, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
                     );
-                }
-                return $route !== null
-                    ? \rtrim($prefix, '/') . $route
-                    : $prefix . '?a=' . $obj->kArtikel . self::getLocalizedFallback();
 
             case \URLART_KATEGORIE:
+                $slug = null;
+                $id   = null;
                 if ($obj instanceof MenuItem) {
-                    $base  = $obj->getURL();
-                    $route = $router->getPathByType(
-                        Router::TYPE_CATEGORY,
-                        ['lang' => $localeCode, 'name' => $base, 'id' => $obj->getID()]
-                    );
+                    $slug = $obj->getURL();
+                } elseif (!empty($obj->cSeo)) {
+                    $slug = $obj->cSeo;
+                    $id   = $obj?->getID() ?? $obj->kHersteller ?? null;
+                }
+                if ($slug !== null) {
+                    return $full
+                        ? $router->getURLByType(
+                            Router::TYPE_CATEGORY,
+                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                        )
+                        : $router->getPathByType(
+                            Router::TYPE_CATEGORY,
+                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                        );
+                }
 
-                    return \rtrim($prefix, '/') . $route;
-                }
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?k=' . $obj->getID() . self::getLocalizedFallback();
+                return $prefix . '?k=' . $obj->kHersteller . self::getLocalizedFallback();
+
             case \URLART_SEITE:
-                $route = null;
                 if (!empty($obj->cSeo)) {
-                    $route = $router->getPathByType(
-                        Router::TYPE_PAGE,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
-                    );
-                }
-                if ($route !== null) {
-                    return \rtrim($prefix, '/') . $route;
+                    return $full
+                        ? $router->getURLByType(
+                            Router::TYPE_PAGE,
+                            ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
+                        )
+                        : $router->getPathByType(
+                            Router::TYPE_PAGE,
+                            ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
+                        );
                 }
                 if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                     && \mb_strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']])
                 ) {
                     return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                 }
-                // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                $oSpezialseite = Shop::Container()->getDB()->select(
-                    'tspezialseite',
-                    'nLinkart',
-                    (int)$obj->nLinkart
-                );
 
-                return !empty($oSpezialseite->cDateiname)
-                    ? $prefix . $oSpezialseite->cDateiname
-                    : $prefix . '?s=' . $obj->kLink . self::getLocalizedFallback();
+                return Shop::Container()->getLinkService()->getSpecialPage((int)$obj->nLinkart)->getURL();
 
             case \URLART_HERSTELLER:
                 if ($obj instanceof Hersteller) {
                     return $obj->getURL();
                 }
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?h=' . $obj->kHersteller . self::getLocalizedFallback();
+                if (!empty($obj->cSeo)) {
+                    return $full
+                        ? $router->getURLByType(
+                            Router::TYPE_MANUFACTURER,
+                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                        )
+                        : $router->getPathByType(
+                            Router::TYPE_MANUFACTURER,
+                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                        );
+                }
+
+                return $prefix . '?h=' . $obj->kHersteller . self::getLocalizedFallback();
 
             case \URLART_LIVESUCHE:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?l=' . $obj->kSuchanfrage . self::getLocalizedFallback();
+                return $full
+                    ? $router->getURLByType(
+                        Router::TYPE_SEARCH_QUERY,
+                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_SEARCH_QUERY,
+                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    );
 
             case \URLART_MERKMAL:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?m=' . $obj->kMerkmalWert . self::getLocalizedFallback();
+                $slug = null;
+                $id   = null;
+                if ($obj instanceof MerkmalWert) {
+                    $slug = $obj->getURL();
+                } elseif (!empty($obj->cSeo)) {
+                    $slug = $obj->cSeo;
+                    $id   = $obj->kMerkmalWert ?? null;
+                }
+                if ($slug !== null) {
+                    return $full
+                        ? $router->getURLByType(
+                            Router::TYPE_CHARACTERISTIC_VALUE,
+                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                        )
+                        : $router->getPathByType(
+                            Router::TYPE_CHARACTERISTIC_VALUE,
+                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                        );
+                }
+
+                return $prefix . '?m=' . $obj->kMerkmalWert . self::getLocalizedFallback();
 
             case \URLART_NEWS:
                 if ($obj instanceof Item) {
@@ -495,25 +534,60 @@ class URL
                         ? $obj->getURL()
                         : $prefix . '?n=' . $obj->getID() . self::getLocalizedFallback();
                 }
-
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?n=' . $obj->kNews . self::getLocalizedFallback();
+                return $full
+                    ? $router->getURLByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    );
 
             case \URLART_NEWSMONAT:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?nm=' . $obj->kNewsMonatsUebersicht . self::getLocalizedFallback();
+                return $full
+                    ? $router->getURLByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    );
 
             case \URLART_NEWSKATEGORIE:
-                return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?nk=' . $obj->kNewsKategorie . self::getLocalizedFallback();
+                return $full
+                    ? $router->getURLByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_NEWS,
+                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    );
 
             case \URLART_SEARCHSPECIALS:
+                return $full
+                    ? $router->getURLByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    )
+                    : $router->getPathByType(
+                        Router::TYPE_SEARCH_SPECIAL,
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                    );
+            case \URLART_NEWSLETTER:
+                try {
+                    $link   = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_NEWSLETTER);
+                    $prefix = $full ? $link->getURL() : $link->getURLPath();
+                } catch (SpecialPageNotFoundException $e) {
+                    $prefix = '';
+                    Shop::Container()->getLogService()->error($e->getMessage());
+                }
                 return !empty($obj->cSeo)
-                    ? $prefix . $obj->cSeo
-                    : $prefix . '?q=' . $obj->kSuchspecial . self::getLocalizedFallback();
+                    ? $prefix . '/' . $obj->cSeo
+                    : $prefix . '?show=' . $obj->kNewsletterHistory;
+
             default:
                 return '';
         }

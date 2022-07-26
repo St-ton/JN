@@ -48,7 +48,7 @@ class Resources
 
     public function __sleep(): array
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'xmlList' && $e !== 'db';
         });
     }
@@ -270,12 +270,12 @@ class Resources
             }
             if (++$i === $iterations) {
                 return match ($comparator) {
-                    '==' => $conf == $settingValue,
-                    '===' => $conf === $settingValue,
-                    '>=' => $conf >= $settingValue,
-                    '<=' => $conf <= $settingValue,
-                    '>' => $conf > $settingValue,
-                    '<' => $conf < $settingValue,
+                    '=='    => $conf == $settingValue,
+                    '==='   => $conf === $settingValue,
+                    '>='    => $conf >= $settingValue,
+                    '<='    => $conf <= $settingValue,
+                    '>'     => $conf > $settingValue,
+                    '<'     => $conf < $settingValue,
                     default => false,
                 };
             }

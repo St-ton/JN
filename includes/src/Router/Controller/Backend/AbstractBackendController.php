@@ -34,6 +34,7 @@ abstract class AbstractBackendController implements ControllerInterface
      * @var JTLSmarty|null
      */
     protected ?JTLSmarty $smarty = null;
+
     /**
      * @var string
      */
@@ -50,6 +51,16 @@ abstract class AbstractBackendController implements ControllerInterface
     protected string $baseURL;
 
     /**
+     * @var int
+     */
+    protected int $currentLanguageID = 0;
+
+    /**
+     * @var string
+     */
+    protected string $currentLanguageCode;
+
+    /**
      * @param DbInterface           $db
      * @param JTLCacheInterface     $cache
      * @param AlertServiceInterface $alertService
@@ -64,6 +75,7 @@ abstract class AbstractBackendController implements ControllerInterface
         protected GetText $getText
     ) {
         $this->baseURL = Shop::getAdminURL(true);
+        $this->setLanguage();
     }
 
     /**
@@ -130,6 +142,8 @@ abstract class AbstractBackendController implements ControllerInterface
         }
 
         if (!isset($_SESSION['editLanguageID'])) {
+            $_SESSION['editLanguageID']   = 1;
+            $_SESSION['editLanguageCode'] = 'ger';
             // Wähle Standardsprache als aktuelle Sprache
             $language = $this->db->select('tsprache', 'cShopStandard', 'Y');
             if ((int)$language->kSprache > 0) {
@@ -144,6 +158,8 @@ abstract class AbstractBackendController implements ControllerInterface
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
         }
+        $this->currentLanguageID   = $_SESSION['editLanguageID'];
+        $this->currentLanguageCode = $_SESSION['editLanguageCode'];
     }
 
     /**
@@ -409,7 +425,7 @@ abstract class AbstractBackendController implements ControllerInterface
             'M', 'm' => (int)$size * 1048576,
             'K', 'k' => (int)$size * 1024,
             'G', 'g' => (int)$size * 1073741824,
-            default => $size,
+            default  => $size,
         };
     }
 

@@ -523,7 +523,7 @@ class DemoDataInstaller
                 if (\count($res) > 0) {
                     throw new OverflowException();
                 }
-            } catch (OverflowException $e) {
+            } catch (OverflowException) {
                 $name = $this->faker->unique(true)->productName . '_' . ++$index;
             }
 

@@ -236,11 +236,11 @@ final class Images extends AbstractSync
                 $this->db->update(
                     'tmerkmalwert',
                     'kMerkmalWert',
-                    (int)$image->kMerkmalWert,
+                    $image->kMerkmalWert,
                     (object)['cBildpfad' => $image->cPfad]
                 );
                 $charValImage               = new stdClass();
-                $charValImage->kMerkmalWert = (int)$image->kMerkmalWert;
+                $charValImage->kMerkmalWert = $image->kMerkmalWert;
                 $charValImage->cBildpfad    = $image->cPfad;
 
                 $this->upsert('tmerkmalwertbild', [$charValImage], 'kMerkmalWert');
@@ -1050,10 +1050,10 @@ final class Images extends AbstractSync
 
         return match ($size[2]) {
             \IMAGETYPE_JPEG => 'jpg',
-            \IMAGETYPE_PNG => \function_exists('imagecreatefrompng') ? 'png' : false,
-            \IMAGETYPE_GIF => \function_exists('imagecreatefromgif') ? 'gif' : false,
-            \IMAGETYPE_BMP => \function_exists('imagecreatefromwbmp') ? 'bmp' : false,
-            default => null,
+            \IMAGETYPE_PNG  => \function_exists('imagecreatefrompng') ? 'png' : false,
+            \IMAGETYPE_GIF  => \function_exists('imagecreatefromgif') ? 'gif' : false,
+            \IMAGETYPE_BMP  => \function_exists('imagecreatefromwbmp') ? 'bmp' : false,
+            default         => null,
         };
     }
 
@@ -1091,7 +1091,7 @@ final class Images extends AbstractSync
         $im      = match ($imgInfo[2]) {
             \IMAGETYPE_GIF => \imagecreatefromgif($source),
             \IMAGETYPE_PNG => \imagecreatefrompng($source),
-            default => \imagecreatefromjpeg($source),
+            default        => \imagecreatefromjpeg($source),
         };
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
@@ -1146,10 +1146,10 @@ final class Images extends AbstractSync
             return false;
         }
         $res = match (\strtolower($format)) {
-            'jpg' => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
-            'png' => \function_exists('imagepng') && \imagepng($im, $path),
-            'gif' => \function_exists('imagegif') && \imagegif($im, $path),
-            'bmp' => \function_exists('imagewbmp') && \imagewbmp($im, $path),
+            'jpg'   => \function_exists('imagejpeg') && \imagejpeg($im, $path, $quality),
+            'png'   => \function_exists('imagepng') && \imagepng($im, $path),
+            'gif'   => \function_exists('imagegif') && \imagegif($im, $path),
+            'bmp'   => \function_exists('imagewbmp') && \imagewbmp($im, $path),
             default => false,
         };
         if ($res !== false) {

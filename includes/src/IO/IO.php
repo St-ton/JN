@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
 use Exception;
+use JsonException;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use Laminas\Diactoros\Response;
@@ -17,14 +18,14 @@ use ReflectionMethod;
 class IO
 {
     /**
-     * @var static
+     * @var static|null
      */
-    protected static $instance;
+    protected static ?IO $instance = null;
 
     /**
      * @var array
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
      * IO constructor.
@@ -63,11 +64,9 @@ class IO
         if ($this->exists($name)) {
             throw new Exception('Function already registered');
         }
-
         if ($function === null) {
             $function = $name;
         }
-
         $this->functions[$name] = [$function, $include];
 
         return $this;
@@ -80,10 +79,10 @@ class IO
      */
     public function handleRequest(string $reqString)
     {
-        $request = \json_decode($reqString, true);
-
-        if (($errno = \json_last_error()) !== \JSON_ERROR_NONE) {
-            return new IOError('Error ' . $errno . ' while decoding data');
+        try {
+            $request = \json_decode($reqString, true, 512, \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return new IOError('Error while decoding data: '  . $e->getMessage());
         }
 
         if (!isset($request['name'], $request['params'])) {

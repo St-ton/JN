@@ -20,16 +20,6 @@ use function Functional\pluck;
 class AdminAccountManager
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    private JTLSmarty $smarty;
-
-    /**
      * @var array
      */
     private array $messages = [
@@ -44,11 +34,9 @@ class AdminAccountManager
      * @param DbInterface $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(JTLSmarty $smarty, DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(private JTLSmarty $smarty, private DbInterface $db, AlertServiceInterface $alertService)
     {
         \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
-        $this->smarty = $smarty;
-        $this->db     = $db;
     }
 
     /**
@@ -141,9 +129,9 @@ class AdminAccountManager
 
     /**
      * @param array $attribs
-     * @return array|bool
+     * @return bool
      */
-    public function validateAccount(array &$attribs)
+    public function validateAccount(array &$attribs): bool
     {
         return false;
     }
@@ -151,9 +139,9 @@ class AdminAccountManager
     /**
      * @param array $tmpFile
      * @param string $attribName
-     * @return bool|string
+     * @return bool
      */
-    public function uploadAvatarImage(array $tmpFile, string $attribName)
+    public function uploadAvatarImage(array $tmpFile, string $attribName): bool
     {
         return false;
     }

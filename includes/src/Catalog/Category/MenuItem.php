@@ -71,6 +71,11 @@ class MenuItem
     /**
      * @var string
      */
+    private string $seo = '';
+
+    /**
+     * @var string
+     */
     private string $imageURL = '';
 
     /**
@@ -217,6 +222,22 @@ class MenuItem
     public function setURL(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeo(): string
+    {
+        return $this->seo;
+    }
+
+    /**
+     * @param string $seo
+     */
+    public function setSeo(string $seo): void
+    {
+        $this->seo = $seo;
     }
 
     /**
@@ -450,6 +471,7 @@ class MenuItem
             $this->customImgName = $data->customImgName;
         }
         $this->setURL($data->cSeo ?? '');
+        $this->setSeo($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
         $this->setProductCount((int)($data->cnt ?? 0));

@@ -8,6 +8,7 @@ use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Router\ControllerFactory;
@@ -77,6 +78,31 @@ class PageController extends AbstractController
     }
 
     /**
+     * @return void
+     */
+    protected function initHome(): void
+    {
+        try {
+            $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+        } catch (SpecialPageNotFoundException) {
+            return;
+        }
+        $this->state->pageType = \PAGE_STARTSEITE;
+        $this->state->linkType = \LINKTYP_STARTSEITE;
+
+        $this->updateState(
+            (object)[
+                'cSeo'     => $home->getSEO(),
+                'kLink'    => $home->getID(),
+                'kKey'     => $home->getID(),
+                'cKey'     => 'kLink',
+                'kSprache' => $home->getLanguageID()
+            ],
+            $home->getSEO()
+        );
+    }
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -86,6 +112,8 @@ class PageController extends AbstractController
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);
             }
+        } else {
+            $this->initHome();
         }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);

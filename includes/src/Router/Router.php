@@ -276,9 +276,9 @@ class Router
                 $route->post('/news/{' . $name . '}', [$news, 'getResponse'])
                     ->setName('ROUTE_NEWS_BY_NAME' . $dynName . 'POST');
 
-                $route->get('/search/{query:.+}', [$search, 'getResponse'])
+                $route->get('/search[/{query:.+}]', [$search, 'getResponse'])
                     ->setName('ROUTE_SEARCH' . $dynName);
-                $route->post('/search/{query:.+}', [$search, 'getResponse'])
+                $route->post('/search[/{query:.+}]', [$search, 'getResponse'])
                     ->setName('ROUTE_SEARCH' . $dynName . 'POST');
 
                 $route->get('/pages/{id:\d+}', [$pages, 'getResponse'])

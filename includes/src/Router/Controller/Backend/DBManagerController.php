@@ -71,6 +71,10 @@ class DBManagerController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param string $table
+     * @return ResponseInterface
+     */
     private function actionGetTable(string $table): ResponseInterface
     {
         return $this->smarty->assign('selectedTable', $table)
@@ -81,6 +85,9 @@ class DBManagerController extends AbstractBackendController
             ->getResponse('dbmanager.tpl');
     }
 
+    /**
+     * @return ResponseInterface
+     */
     private function actionQuery(): ResponseInterface
     {
         $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];

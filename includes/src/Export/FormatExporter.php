@@ -198,7 +198,8 @@ class FormatExporter extends AbstractExporter
             }
             $product = $product->augmentProduct($this->config, $this->model);
             $product->addCategoryData($fallback);
-            $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
+            $product->Kategoriepfad = $product->Kategorie->getCategoryPath($languageID)
+                ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
                 ? $imageBaseURL . $product->Bilder[0]->cPfadGross

@@ -161,6 +161,7 @@ class UpdateIO
                 ->equals(Version::parse($currentFileVersion)))
             ->assign('version', $version)
             ->assign('updateError', $updateError)
+            ->assign('route', Route::DBUPDATER)
             ->assign('currentTemplateFileVersion', $template->getFileVersion() ?? '1.0.0')
             ->assign('currentTemplateDatabaseVersion', $template->getVersion());
 

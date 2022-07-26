@@ -600,6 +600,7 @@ class ProductFilter
      * @param array $params
      * @param bool  $validate
      * @return $this
+     * @todo: check for multiple calls
      */
     public function initStates(array $params, bool $validate = true): self
     {

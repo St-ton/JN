@@ -84,8 +84,9 @@ class Iframe
         // disable links and buttons that could change the current iframe page
         this.jq('a:not(.opc-no-disable), button:not(.opc-no-disable)')
             .off('click')
-            .attr('onclick', '')
+            .removeAttr('onclick')
             .on('click', e => e.preventDefault());
+        this.jq('.variations select').off('change');
     }
 
     getIframePageUrl()

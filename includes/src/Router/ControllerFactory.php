@@ -104,6 +104,7 @@ class ControllerFactory
         ) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(ProductListController::class);
+            $controller->updateProductFilter();
         } elseif ($state->categoryID > 0 && $state->manufacturerFilterNotFound === false) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(CategoryController::class);

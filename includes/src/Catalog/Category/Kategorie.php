@@ -194,9 +194,11 @@ class Kategorie implements RoutableInterface
         $this->setImageType(Image::TYPE_CATEGORY);
         $this->setRouteType(Router::TYPE_CATEGORY);
         $languageID = $languageID ?: Shop::getLanguageID();
+        $fallback   = LanguageHelper::getDefaultLanguage()->getId();
         if (!$languageID) {
-            $languageID = LanguageHelper::getDefaultLanguage()->getId();
+            $languageID = $fallback;
         }
+        $this->initLanguageID($fallback);
         $this->setCurrentLanguageID($languageID);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $customerGroupID, $noCache);
@@ -241,7 +243,7 @@ class Kategorie implements RoutableInterface
                 COALESCE(tkategoriesprache.cMetaDescription, \'\') cMetaDescription,
                 COALESCE(tkategoriesprache.cMetaKeywords, \'\') cMetaKeywords,
                 COALESCE(tkategoriesprache.cTitleTag, \'\') cTitleTag,
-                tsprache.kSprache, tsprache.cShopStandard
+                tsprache.kSprache
                 FROM tkategorie
                 JOIN tsprache
                     ON tsprache.active = 1
@@ -378,13 +380,15 @@ class Kategorie implements RoutableInterface
             $this->id                    = (int)$item->kKategorie;
             $this->sort                  = (int)$item->nSort;
             $this->dLetzteAktualisierung = $item->dLetzteAktualisierung;
-            $this->setName($item->cName, $languageID);
             $this->setDescription($item->cBeschreibung, $languageID);
             $this->customImgName = $item->customImgName;
             $this->lft           = (int)$item->lft;
             $this->rght          = (int)$item->rght;
             $this->setSlug($item->cSeo, $languageID);
-            $this->setName($item->cName, $languageID);
+            if (\mb_strlen($item->cName) > 0) {
+                // non-localized categories may have an empty string as name - but the fallback uses NULL
+                $this->setName($item->cName, $languageID);
+            }
             $this->setDescription($item->cBeschreibung, $languageID);
             $this->setMetaDescription($item->cMetaDescription, $languageID);
             $this->setMetaKeywords($item->cMetaKeywords, $languageID);
@@ -514,7 +518,7 @@ class Kategorie implements RoutableInterface
      */
     public function getName(int $idx = null): string
     {
-        return $this->names[$idx ?? $this->currentLanguageID] ?? '';
+        return $this->names[$idx ?? $this->currentLanguageID] ?? $this->names[$this->fallbackLanguageID];
     }
 
     /**

@@ -107,6 +107,11 @@ class Router
     private array $hosts;
 
     /**
+     * @var string
+     */
+    private string $path = '';
+
+    /**
      * @var RouteGroup[]
      */
     private array $routes = [];
@@ -196,7 +201,7 @@ class Router
                 if ($data['currency']) {
                     $dynName .= '_CRNCY';
                 }
-                if ($route->getPrefix() === '/' && ($this->isMultiDomain === true || $registeredDefault === false)) {
+                if (($this->isMultiDomain === true || $registeredDefault === false) && $route->getPrefix() === '/') {
                     // these routes must only be registered once per host
                     $registeredDefault = true;
                     $route->post('/_updateconsent', [$consent, 'getResponse'])
@@ -303,6 +308,12 @@ class Router
                 . ($data['localized'] ? '_LOCALIZED' : '')
                 . ($data['currency'] ? '_CRNCY' : ''));
         }
+        if ($this->isMultiDomain === false) {
+            $path = \parse_url(\URL_SHOP, \PHP_URL_PATH);
+            if ($path !== null && $path !== '/') {
+                $this->path = $path;
+            }
+        }
     }
 
     /**
@@ -382,16 +393,17 @@ class Router
             $replacements['lang'] = $this->defaultLocale;
         }
         $name = $this->getRouteName($type, $replacements, $byName);
+
         if ($byName === true) {
             if ($isDefaultLocale && (($this->config['global']['routing_default_language'] ?? 'F') === 'F')) {
-                return '/' . $replacements['name'];
+                return $this->path . '/' . $replacements['name'];
             }
             if (!$isDefaultLocale && (($this->config['global']['routing_scheme'] ?? 'F') === 'F')) {
-                return '/' . $replacements['name'];
+                return $this->path . '/' . $replacements['name'];
             }
         }
 
-        return $this->getNamedPath($name, $replacements);
+        return $this->path . $this->getNamedPath($name, $replacements);
     }
 
     /**
@@ -413,6 +425,9 @@ class Router
             return '';
         }
         $prefix = $this->getPrefix($route->getHost());
+        if ($this->path !== '/') {
+            $prefix .= $this->path;
+        }
         if ($byName === true) {
             if ($isDefaultLocale && (($this->config['global']['routing_default_language'] ?? 'F') === 'F')) {
                 return $prefix . '/' . ($replacements['name'] ?? '?a=' . $replacements['id']);
@@ -717,7 +732,6 @@ class Router
             }
         }
         $this->hosts = $hosts;
-//        dd($this->hosts);
 
         return $hosts;
     }

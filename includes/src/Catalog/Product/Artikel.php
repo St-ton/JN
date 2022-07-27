@@ -745,7 +745,7 @@ class Artikel implements RoutableInterface
     /**
      * @var string|null
      */
-    public?string  $dSonderpreisStart_de = null;
+    public ?string  $dSonderpreisStart_de = null;
 
     /**
      * @var string|null

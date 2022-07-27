@@ -301,6 +301,51 @@
             <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
         {/if}
         <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
+        <script>(function(){
+            // back-to-list-link mechanics
+
+            {if empty($Artikel->kArtikel)}
+                window.sessionStorage.setItem('has_starting_point', 'true');
+                window.sessionStorage.removeItem('cur_product_id');
+                window.sessionStorage.removeItem('product_page_visits');
+                window.should_render_backtolist_link = false;
+            {else}
+                let has_starting_point = window.sessionStorage.getItem('has_starting_point') === 'true';
+                let product_id         = Number(window.sessionStorage.getItem('cur_product_id'));
+                let page_visits        = Number(window.sessionStorage.getItem('product_page_visits'));
+                let no_reload          = performance.getEntriesByType('navigation')[0].type !== 'reload';
+
+                let browseNext         = {if isset($NavigationBlaettern->naechsterArtikel->kArtikel)}
+                        {$NavigationBlaettern->naechsterArtikel->kArtikel}{else}0{/if};
+
+                let browsePrev         = {if isset($NavigationBlaettern->vorherigerArtikel->kArtikel)}
+                        {$NavigationBlaettern->vorherigerArtikel->kArtikel}{else}0{/if};
+
+                let should_render_link = true;
+
+                if (has_starting_point === false) {
+                    should_render_link = false;
+                } else if (product_id === 0) {
+                    product_id  = {$Artikel->kArtikel};
+                    page_visits = 1;
+                } else if (product_id === {$Artikel->kArtikel}) {
+                    if (no_reload) {
+                        page_visits ++;
+                    }
+                } else if (product_id === browseNext || product_id === browsePrev) {
+                    product_id = {$Artikel->kArtikel};
+                    page_visits ++;
+                } else {
+                    has_starting_point = false;
+                    should_render_link = false;
+                }
+
+                window.sessionStorage.setItem('has_starting_point', has_starting_point);
+                window.sessionStorage.setItem('cur_product_id', product_id);
+                window.sessionStorage.setItem('product_page_visits', page_visits);
+                window.should_render_backtolist_link = should_render_link;
+            {/if}
+        })()</script>
     </head>
     {/block}
 

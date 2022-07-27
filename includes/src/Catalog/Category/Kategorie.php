@@ -518,7 +518,7 @@ class Kategorie implements RoutableInterface
      */
     public function getName(int $idx = null): string
     {
-        return $this->names[$idx ?? $this->currentLanguageID] ?? $this->names[$this->fallbackLanguageID];
+        return $this->names[$idx ?? $this->currentLanguageID] ?? $this->names[$this->fallbackLanguageID] ?? '';
     }
 
     /**
@@ -537,7 +537,8 @@ class Kategorie implements RoutableInterface
      */
     public function getShortName(int $idx = null): string
     {
-        return $this->shortNames[$idx ?? $this->currentLanguageID];
+        return $this->shortNames[$idx ?? $this->currentLanguageID]
+            ?? $this->shortNames[$this->fallbackLanguageID] ?? '';
     }
 
     /**

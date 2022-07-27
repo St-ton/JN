@@ -1304,6 +1304,10 @@
                     }
                 );
             } else if (this.isSingleArticle()) {
+                if($('#opc-startmenu').length > 0) {
+                    return this.redirectToArticle(id, variation, url, variations, wrapper);
+                }
+
                 $.evo.extended().loadContent(url, () => {
                     $.evo.extended().register();
                     $.evo.article().register(wrapper);

@@ -70,12 +70,12 @@ class Mapper
             case ExsLicense::TYPE_PORTLET:
                 $plugin = new ReferencedPlugin();
                 $plugin->initByExsID($this->manager->getDB(), $license, $esxLicense->getReleases());
-                $esxLicense->setReferencedItem($plugin->isInitialized() ? $plugin : null);
+                $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
                 $template = new ReferencedTemplate();
                 $template->initByExsID($this->manager->getDB(), $license, $esxLicense->getReleases());
-                $esxLicense->setReferencedItem($template->isInitialized() ? $template : null);
+                $esxLicense->setReferencedItem($template);
                 break;
         }
     }

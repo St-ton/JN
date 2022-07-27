@@ -166,7 +166,6 @@ class FormatExporter extends AbstractExporter
         }
         $fallback     = \str_contains($this->model->getContent(), '->oKategorie_arr');
         $options      = Product::getExportOptions();
-        $helper       = Category::getInstance($languageID, $customerGroupID);
         $shopURL      = Shop::getURL();
         $imageBaseURL = Shop::getImageBaseURL();
         $res          = $this->db->getPDOStatement($this->getExportSQL());
@@ -198,8 +197,7 @@ class FormatExporter extends AbstractExporter
             }
             $product = $product->augmentProduct($this->config, $this->model);
             $product->addCategoryData($fallback);
-            $product->Kategoriepfad = $product->Kategorie->getCategoryPath($languageID)
-                ?? $helper->getPath($product->Kategorie);
+            $product->Kategoriepfad = $product->Kategorie->getCategoryPathString($languageID);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
                 ? $imageBaseURL . $product->Bilder[0]->cPfadGross

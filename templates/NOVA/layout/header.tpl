@@ -304,7 +304,7 @@
         <script>(function(){
             // back-to-list-link mechanics
 
-            {if empty($Artikel->kArtikel)}
+            {if $nSeitenTyp !== $smarty.const.PAGE_ARTIKEL}
                 window.sessionStorage.setItem('has_starting_point', 'true');
                 window.sessionStorage.removeItem('cur_product_id');
                 window.sessionStorage.removeItem('product_page_visits');

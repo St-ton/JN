@@ -1076,7 +1076,22 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if ($layout === 'gallery') {
+                $childHasOPCContent = $this->db->getSingleInt(
+                    "SELECT COUNT(kPage) AS count
+                    FROM topcpage
+                    WHERE cPageId LIKE '%\"type\":\"product\"%'
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
+                    'count',
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
+                ) > 0;
+                if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,

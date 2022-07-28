@@ -17,6 +17,9 @@ msgstr "Startdatum"
 msgid "headingLastStarted"
 msgstr "zuletzt gestartet"
 
+msgid "headingNextStart"
+msgstr "nächster Start"
+
 msgid "headingFrequency"
 msgstr "Frequenz"
 

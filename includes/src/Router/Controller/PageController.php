@@ -64,7 +64,7 @@ class PageController extends AbstractController
         $sitemap             = new Sitemap($this->db, $this->cache, $this->config);
         $sitemap->assignData($this->smarty);
         Shop::setPageType(\PAGE_404);
-        $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+        $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound', ['dismissable' => false]);
 
         $this->preRender();
         $this->smarty->assign('Link', $this->currentLink)
@@ -187,7 +187,7 @@ class PageController extends AbstractController
             $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
             Shop::setPageType(\PAGE_404);
-            $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+            $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound', ['dismissable' => false]);
         } elseif ($linkType === \LINKTYP_GRATISGESCHENK) {
             if ($this->config['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
                 $freeGifts = CMS::getFreeGifts($this->config);

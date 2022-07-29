@@ -307,7 +307,7 @@ class PaymentMethod
             return;
         }
 
-        $this->customerGroups = \array_map(static function ($item) {
+        $this->customerGroups = \array_map(static function ($item): int {
             return (int)$item;
         }, \array_filter(\explode(';', $customerGroups)));
     }

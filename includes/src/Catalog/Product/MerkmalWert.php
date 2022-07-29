@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog\Product;
 
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
@@ -16,7 +17,7 @@ use function Functional\select;
  * Class MerkmalWert
  * @package JTL\Catalog\Product
  */
-class MerkmalWert
+class MerkmalWert implements RoutableInterface
 {
     use MultiSizeImage;
     use MagicCompatibilityTrait;

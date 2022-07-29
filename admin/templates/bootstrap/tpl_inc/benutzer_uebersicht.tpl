@@ -53,8 +53,8 @@
                                 </td>
                                 <td class="text-center">{if $oAdmin->b2FAauth}<i class="far fa-check-circle"></i>{else}<i class="far fa-circle"></i>{/if}</td>
                                 <td class="text-center">{$oAdmin->nLoginVersuch}</td>
-                                <td class="text-center">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
-                                <td class="text-center">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>
+                                <td class="text-center">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'d.m.Y H:i:s'}{else}---{/if}</td>
+                                <td class="text-center">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'d.m.Y H:i:s'}{else}---{/if}{/if}</td>
                                 <td class="text-center">
                                     <form method="post" action="{$url}">
                                         {$jtl_token}

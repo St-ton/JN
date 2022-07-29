@@ -303,7 +303,8 @@ class NiceDB implements DbInterface
      */
     public function close(): bool
     {
-        $this->pdo = null;
+        $this->pdo         = null;
+        $this->isConnected = false;
 
         return true;
     }
@@ -523,7 +524,7 @@ class NiceDB implements DbInterface
             }
         }
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keynamePrepared = \array_map(static function ($_v) {
+            $keynamePrepared = \array_map(static function ($_v): string {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where           = ' WHERE ' . \implode(' AND ', $keynamePrepared);
@@ -834,7 +835,7 @@ class NiceDB implements DbInterface
      */
     public function getInts(string $stmt, string $rowName, array $params = []): array
     {
-        return \array_map(static function (array $ele) use ($rowName) {
+        return \array_map(static function (array $ele) use ($rowName): int {
             return (int)$ele[$rowName];
         }, $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS));
     }
@@ -991,15 +992,15 @@ class NiceDB implements DbInterface
     private function failExecute(int $returnType)
     {
         return match ($returnType) {
-            ReturnType::COLLECTION => new Collection(),
+            ReturnType::COLLECTION         => new Collection(),
             ReturnType::ARRAY_OF_OBJECTS,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS,
             ReturnType::ARRAY_OF_BOTH_ARRAYS,
             ReturnType::SINGLE_ASSOC_ARRAY => [],
-            ReturnType::SINGLE_OBJECT => null,
-            ReturnType::QUERYSINGLE => new PDOStatement(),
-            ReturnType::DEFAULT => true,
-            default => 0,
+            ReturnType::SINGLE_OBJECT      => null,
+            ReturnType::QUERYSINGLE        => new PDOStatement(),
+            ReturnType::DEFAULT            => true,
+            default                        => 0,
         };
     }
 
@@ -1104,7 +1105,7 @@ class NiceDB implements DbInterface
         $start   = \microtime(true);
         $assigns = [];
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keyname = \array_map(static function ($_v) {
+            $keyname = \array_map(static function ($_v): string {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where   = \implode(' AND ', $keyname);
@@ -1366,9 +1367,9 @@ class NiceDB implements DbInterface
         if ($type === null) {
             $type = match (true) {
                 \is_bool($value) => PDO::PARAM_BOOL,
-                \is_int($value) => PDO::PARAM_INT,
-                $value === null => PDO::PARAM_NULL,
-                default => PDO::PARAM_STR,
+                \is_int($value)  => PDO::PARAM_INT,
+                $value === null  => PDO::PARAM_NULL,
+                default          => PDO::PARAM_STR,
             };
         }
 

@@ -29,12 +29,10 @@ class FilesystemController extends AbstractBackendController
         $this->checkPermissions(Permissions::FILESYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/filesystem');
         $this->getText->loadConfigLocales(true, true);
-
-        $settings = Shopsetting::getInstance();
         if (!empty($_POST) && Form::validateToken()) {
             $postData = Text::filterXSS($_POST);
             $this->saveAdminSectionSettings(\CONF_FS, $_POST);
-            $settings->reset();
+            Shopsetting::getInstance()->reset();
             if (isset($postData['test'])) {
                 $this->test($postData);
             }
@@ -70,9 +68,7 @@ class FilesystemController extends AbstractBackendController
                 'sftp_root'     => $postData['sftp_path']
             ]);
             $factory->setAdapter($postData['fs_adapter']);
-            $fs         = new Filesystem($factory->getAdapter());
-            $isShopRoot = $fs->fileExists('includes/config.JTL-Shop.ini.php');
-            if ($isShopRoot) {
+            if ((new Filesystem($factory->getAdapter()))->fileExists('includes/config.JTL-Shop.ini.php')) {
                 $this->alertService->addInfo(\__('fsValidConnection'), 'fsValidConnection');
             } else {
                 $this->alertService->addError(\__('fsInvalidShopRoot'), 'fsInvalidShopRoot');

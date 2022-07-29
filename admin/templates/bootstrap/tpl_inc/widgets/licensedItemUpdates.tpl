@@ -130,4 +130,4 @@
     {include file='tpl_inc/exstore_banner.tpl' useExstoreWidgetBanner=true}
 {/if}
 <hr class="mb-3">
-<p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'%d.%m.%Y %H:%M:%S'}</small></p>
+<p class="text-right"><small>{__('last update')} {$lastUpdate|date_format:'d.m.Y H:i:s'}</small></p>

@@ -49,20 +49,23 @@ class PersistentCartController extends AbstractBackendController
             ->getResponse('warenkorbpers.tpl');
     }
 
+    /**
+     * @return SqlObject
+     */
     private function getSearchSQL(): SqlObject
     {
         $searchSQL = new SqlObject();
-        if (\mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-            $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
-            if (\mb_strlen($query) > 0) {
-                $searchSQL->setWhere(' WHERE (tkunde.cKundenNr LIKE :qry
-                    OR tkunde.cVorname LIKE :qry 
-                    OR tkunde.cMail LIKE :qry)');
-                $searchSQL->addParam('qry', '%' . $query . '%');
-            }
-
-            $this->smarty->assign('cSuche', $query);
+        if (\mb_strlen(Request::verifyGPDataString('cSuche')) === 0) {
+            return $searchSQL;
         }
+        $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+        if (\mb_strlen($query) > 0) {
+            $searchSQL->setWhere(' WHERE (tkunde.cKundenNr LIKE :qry
+                OR tkunde.cVorname LIKE :qry 
+                OR tkunde.cMail LIKE :qry)');
+            $searchSQL->addParam('qry', '%' . $query . '%');
+        }
+        $this->smarty->assign('cSuche', $query);
 
         return $searchSQL;
     }
@@ -103,7 +106,6 @@ class PersistentCartController extends AbstractBackendController
                 LIMIT ' . $customerPagination->getLimitSQL(),
             $searchSQL->getParams()
         );
-
         foreach ($customers as $item) {
             $customer = new Customer((int)$item->kKunde);
 
@@ -115,6 +117,10 @@ class PersistentCartController extends AbstractBackendController
             ->assign('oPagiKunden', $customerPagination);
     }
 
+    /**
+     * @param int $customerID
+     * @return void
+     */
     private function actionShow(int $customerID): void
     {
         $this->step     = 'anzeigen';

@@ -8,6 +8,7 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
+use JTL\Shop;
 
 /**
  * Class BaseCategory
@@ -16,6 +17,12 @@ use JTL\MagicCompatibilityTrait;
 class BaseCategory extends AbstractFilter
 {
     use MagicCompatibilityTrait;
+
+    /**
+     * @var array
+     */
+    protected array $slugs = [];
+
 
     /**
      * @var array
@@ -90,7 +97,8 @@ class BaseCategory extends AbstractFilter
             $id              = $language->getId();
             $this->cSeo[$id] = '';
             foreach ($seoData as $seo) {
-                $this->cSeo[$id] = \ltrim($seo->getURLPath($id), '/');
+                $this->cSeo[$id]  = \ltrim($seo->getURLPath($id), '/');
+                $this->slugs[$id] = $seo->getSlug($id);
             }
         }
         foreach ($seoData as $item) {

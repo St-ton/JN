@@ -131,7 +131,7 @@ class Hersteller implements RoutableInterface
     {
         $this->initLanguageID($languageID);
         $this->setImageType(Image::TYPE_MANUFACTURER);
-        $this->setRouteType(Router::TYPE_MANUFACTURERS);
+        $this->setRouteType(Router::TYPE_MANUFACTURER);
         if ($id > 0) {
             $this->loadFromDB($id, $languageID, $noCache);
         }

@@ -302,10 +302,10 @@ class Item implements JsonSerializable
                 ORDER BY nSort ASC',
             ['groupID' => $groupID]
         )
-            ->map(static function (stdClass $item) use ($languageID, $customerGroupID) {
+            ->map(static function (stdClass $item) use ($languageID, $customerGroupID): self {
                 return new self((int)$item->kKonfigitem, $languageID, $customerGroupID);
             })
-            ->filter(static function (Item $item) {
+            ->filter(static function (Item $item): bool {
                 return $item->isValid();
             })
             ->toArray();

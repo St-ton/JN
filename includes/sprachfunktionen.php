@@ -131,13 +131,13 @@ function lang_suche_mindestanzahl($query, $count): string
 function lang_bestellstatus(int $state): string
 {
     return match ($state) {
-        BESTELLUNG_STATUS_OFFEN => Shop::Lang()->get('statusPending', 'order'),
+        BESTELLUNG_STATUS_OFFEN          => Shop::Lang()->get('statusPending', 'order'),
         BESTELLUNG_STATUS_IN_BEARBEITUNG => Shop::Lang()->get('statusProcessing', 'order'),
-        BESTELLUNG_STATUS_BEZAHLT => Shop::Lang()->get('statusPaid', 'order'),
-        BESTELLUNG_STATUS_VERSANDT => Shop::Lang()->get('statusShipped', 'order'),
-        BESTELLUNG_STATUS_STORNO => Shop::Lang()->get('statusCancelled', 'order'),
-        BESTELLUNG_STATUS_TEILVERSANDT => Shop::Lang()->get('statusPartialShipped', 'order'),
-        default => '',
+        BESTELLUNG_STATUS_BEZAHLT        => Shop::Lang()->get('statusPaid', 'order'),
+        BESTELLUNG_STATUS_VERSANDT       => Shop::Lang()->get('statusShipped', 'order'),
+        BESTELLUNG_STATUS_STORNO         => Shop::Lang()->get('statusCancelled', 'order'),
+        BESTELLUNG_STATUS_TEILVERSANDT   => Shop::Lang()->get('statusPartialShipped', 'order'),
+        default                          => '',
     };
 }
 

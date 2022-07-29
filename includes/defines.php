@@ -277,6 +277,7 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 ifndef('SEO_SLUG_LOWERCASE', false);
 ifndef('REDIR_OLD_ROUTES', true);
 ifndef('SLUG_ALLOW_SLASHES', true);
+ifndef('CATEGORIES_SLUG_HIERARCHICALLY', false);
 
 const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck';
 

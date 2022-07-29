@@ -200,11 +200,14 @@ class BaseSearchQuery extends AbstractFilter
                 $this->setSlug($seo->cSeo, $language->kSprache);
             }
         }
+        if ($seo === null) {
+            return $this;
+        }
         $this->createBySlug($this->getID());
         foreach ($this->getURLPaths() as $langID => $slug) {
             $this->cSeo[$langID] = \ltrim($slug, '/');
         }
-        if ($seo !== null & !empty($seo->cSuche)) {
+        if (!empty($seo->cSuche)) {
             $this->setName($seo->cSuche);
         }
 
@@ -956,7 +959,7 @@ class BaseSearchQuery extends AbstractFilter
         if ($searchCache->kSuchCache <= 0) {
             return $searchCache->kSuchCache;
         }
-        $productCols = \array_map(static function ($item) {
+        $productCols = \array_map(static function ($item): string {
             $items = \explode('.', $item, 2);
 
             return 'tartikel.' . $items[1];

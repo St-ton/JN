@@ -67,84 +67,22 @@ class LinkController extends AbstractBackendController
         $linkID          = Request::verifyGPCDataInt('kLink');
         $linkGroupID     = Request::verifyGPCDataInt('kLinkgruppe');
         $this->linkAdmin->getMissingSystemPages();
-        if ($action !== '' && Form::validateToken()) {
+        if (Form::validateToken()) {
             $this->handleAction($action, $linkGroupID, $linkID);
         }
-
         if ($this->step === 'loesch_linkgruppe' && $linkGroupID > 0) {
-            $this->step = 'uebersicht';
-            if ($this->deleteLinkGroup($linkGroupID) > 0) {
-                $this->alertService->addSuccess(\__('successLinkGroupDelete'), 'successLinkGroupDelete');
-                $this->clearCache = true;
-                $this->step       = 'uebersicht';
-            } else {
-                $this->alertService->addError(\__('errorLinkGroupDelete'), 'errorLinkGroupDelete');
-            }
-            $_POST = [];
+            $this->actionDeleteLinkGroup($linkGroupID);
         } elseif ($this->step === 'edit-link') {
-            $this->step = 'neuer Link';
-            $link       = new Link($this->db);
-            $link->load($linkID);
-            $link->deref();
-            $dirName = $this->uploadDir . $link->getID();
-            $files   = [];
-            if (Request::verifyGPCDataInt('delpic') === 1) {
-                @\unlink($dirName . '/' . Request::verifyGPDataString('cName'));
-            }
-            if (\is_dir($dirName)) {
-                $dirHandle = \opendir($dirName);
-                $shopURL   = Shop::getURL() . '/';
-                while (($file = \readdir($dirHandle)) !== false) {
-                    if ($file === '.' || $file === '..') {
-                        continue;
-                    }
-                    $newFile            = new stdClass();
-                    $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
-                    $newFile->cNameFull = $file;
-                    $newFile->cURL      = '<img class="link_image" src="' .
-                        $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
-                    $newFile->nBild     = (int)mb_substr(
-                        \str_replace('Bild', '', $file),
-                        0,
-                        \mb_strpos(\str_replace('Bild', '', $file), '.')
-                    );
-                    $files[]            = $newFile;
-                }
-                \usort($files, static function ($a, $b) {
-                    return $a->nBild <=> $b->nBild;
-                });
-                $this->smarty->assign('cDatei_arr', $files);
-            }
-            $this->smarty->assign('Link', $link);
+            $this->actionEditLink($linkID);
         }
         if ($this->clearCache === true) {
             $this->clearCache();
         }
         if ($this->step === 'uebersicht') {
-            foreach ($this->linkAdmin->getDuplicateSpecialLinks()->groupBy(static function (LinkInterface $l) {
-                return $l->getLinkType();
-            }) as $specialLinks) {
-                /** @var Collection $specialLinks */
-                $this->alertService->addError(
-                    \sprintf(
-                        \__('hasDuplicateSpecialLink'),
-                        ' ' . $specialLinks->map(static function (LinkInterface $l) {
-                            return $l->getName();
-                        })->implode('/')
-                    ),
-                    'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
-                );
-            }
-            $this->smarty->assign('linkGroupCountByLinkID', $this->getLinkGroupCountForLinkIDs())
-                ->assign('missingSystemPages', $this->linkAdmin->getMissingSystemPages())
-                ->assign('linkgruppen', $this->getLinkGroups());
+            $this->actionOverview();
         }
         if ($this->step === 'neuer Link') {
-            $cgroups = $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName');
-            $lgl     = new LinkGroupList($this->db, $this->cache);
-            $lgl->loadAll();
-            $this->smarty->assign('specialPages', $this->linkAdmin->getSpecialPageTypes())
-                ->assign('kundengruppen', $cgroups);
+            $this->actionCreateLink();
         }
 
         return $this->smarty->assign('step', $this->step)
@@ -164,275 +102,41 @@ class LinkController extends AbstractBackendController
     {
         switch ($action) {
             case 'add-link-to-linkgroup':
-                $this->step = 'neuer Link';
-                $link       = new Link($this->db);
-                $link->setLinkGroupID($linkGroupID);
-                $link->setLinkGroups([$linkGroupID]);
-                $this->smarty->assign('Link', $link);
+                $this->actionAddLinkToLinkGroup($linkGroupID);
                 break;
             case 'remove-link-from-linkgroup':
-                $res = $this->removeLinkFromLinkGroup($linkID, $linkGroupID);
-                if ($res > 0) {
-                    $this->alertService->addSuccess(
-                        \__('successLinkFromLinkGroupDelete'),
-                        'successLinkFromLinkGroupDelete'
-                    );
-                } else {
-                    $this->alertService->addError(
-                        \__('errorLinkFromLinkGroupDelete'),
-                        'errorLinkFromLinkGroupDelete'
-                    );
-                }
-                unset($_POST['kLinkgruppe']);
-                $this->step       = 'uebersicht';
-                $this->clearCache = true;
+                $this->actionRemoveLinkFromLinkGroup($linkGroupID, $linkID);
                 break;
             case 'delete-link':
-                if ($this->deleteLink($linkID) > 0) {
-                    $this->alertService->addSuccess(\__('successLinkDelete'), 'successLinkDelete');
-                } else {
-                    $this->alertService->addError(\__('errorLinkDelete'), 'errorLinkDelete');
-                }
-                $this->clearCache = true;
-                $this->step       = 'uebersicht';
-                $_POST            = [];
+                $this->actionDeleteLink($linkID);
                 break;
             case 'confirm-delete':
-                if (Request::verifyGPCDataInt('confirmation') === 1) {
-                    $this->step = 'loesch_linkgruppe';
-                } else {
-                    $this->step = 'uebersicht';
-                    $_POST      = [];
-                }
+                $this->actionConfirm();
                 break;
             case 'delete-linkgroup':
-                $this->step = 'linkgruppe_loeschen_confirm';
-                $group      = new LinkGroup($this->db);
-                $this->smarty->assign('linkGroup', $group->load($linkGroupID))
-                    ->assign('affectedLinkNames', $this->getPreDeletionLinks($linkGroupID));
+                $this->actionDeleteLinkGroupPre($linkGroupID);
                 break;
             case 'edit-linkgroup':
             case 'create-linkgroup':
-                $this->step = 'neue Linkgruppe';
-                $linkGroup  = null;
-                if ($linkGroupID > 0) {
-                    $linkGroup = new LinkGroup($this->db);
-                    $linkGroup = $linkGroup->load($linkGroupID);
-                }
-                $this->smarty->assign('linkGroup', $linkGroup);
+                $this->actionCreateEditLinkGroup($linkGroupID);
                 break;
             case 'save-linkgroup':
-                $checks = new PlausiCMS();
-                $checks->setPostVar($_POST);
-                $checks->doPlausi('grp');
-                if (\count($checks->getPlausiVar()) === 0) {
-                    $linkGroupTemplateExists = $this->db->select(
-                        'tlinkgruppe',
-                        'cTemplatename',
-                        $_POST['cTemplatename']
-                    );
-                    if ($linkGroupTemplateExists !== null
-                        && $linkGroupID !== (int)$linkGroupTemplateExists->kLinkgruppe
-                    ) {
-                        $this->step = 'neue Linkgruppe';
-                        $linkGroup  = null;
-                        if ($linkGroupID > 0) {
-                            $linkGroup = new LinkGroup($this->db);
-                            $linkGroup = $linkGroup->load($linkGroupID);
-                        }
-                        $this->alertService->addError(
-                            \__('errorTemplateNameDuplicate'),
-                            'errorTemplateNameDuplicate'
-                        );
-                        $this->smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
-                            ->assign('xPostVar_arr', $checks->getPostVar())
-                            ->assign('linkGroup', $linkGroup);
-                    } else {
-                        if ($linkGroupID === 0) {
-                            $this->createOrUpdateLinkGroup(0, $_POST);
-                            $this->alertService->addSuccess(
-                                \__('successLinkGroupCreate'),
-                                'successLinkGroupCreate'
-                            );
-                        } else {
-                            $linkgruppe = $this->createOrUpdateLinkGroup($linkGroupID, $_POST);
-                            $this->alertService->addSuccess(
-                                \sprintf(\__('successLinkGroupEdit'), $linkgruppe->cName),
-                                'successLinkGroupEdit'
-                            );
-                        }
-                        $this->step = 'uebersicht';
-                    }
-
-                    $this->clearCache = true;
-                } else {
-                    $this->step = 'neue Linkgruppe';
-                    $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
-                    $this->smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
-                        ->assign('xPostVar_arr', $checks->getPostVar());
-                }
+                $this->actionSaveLinkGroup($linkGroupID);
                 break;
             case 'move-to-linkgroup':
-                $res = $this->updateLinkGroup(
-                    $linkID,
-                    Request::postInt('kLinkgruppeAlt'),
-                    $linkGroupID
-                );
-                if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-                    $this->alertService->addError(\__('errorLinkMoveDuplicate'), 'errorLinkMoveDuplicate');
-                } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
-                    $this->alertService->addError(\__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
-                } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-                    $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
-                } elseif ($res instanceof LinkInterface) {
-                    $this->alertService->addSuccess(
-                        \sprintf(\__('successLinkMove'), $res->getDisplayName()),
-                        'successLinkMove'
-                    );
-                    $this->clearCache = true;
-                } else {
-                    $this->alertService->addError(\__('errorUnknownLong'), 'errorUnknownLong');
-                }
-                $this->step = 'uebersicht';
+                $this->actionMoveToLinkGroup($linkID, Request::postInt('kLinkgruppeAlt'), $linkGroupID);
                 break;
             case 'copy-to-linkgroup':
-                $res = $this->createReference($linkID, $linkGroupID);
-                if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
-                    $this->alertService->addError(\__('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
-                } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
-                    $this->alertService->addError(\__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
-                } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
-                    $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
-                } elseif ($res instanceof LinkInterface) {
-                    $this->alertService->addSuccess(
-                        \sprintf(\__('successLinkCopy'), $res->getDisplayName()),
-                        'successLinkCopy'
-                    );
-                    $this->step       = 'uebersicht';
-                    $this->clearCache = true;
-                } else {
-                    $this->alertService->addError(\__('errorUnknownLong'), 'errorUnknownLong');
-                }
+                $this->actionCopyToLinkGroup($linkGroupID, $linkID);
                 break;
             case 'change-parent':
-                $parentID = (int)($_POST['kVaterLink'] ?? 0);
-                if ($parentID >= 0 && ($link = $this->updateParentID($linkID, $parentID)) !== false) {
-                    $this->alertService->addSuccess(
-                        \sprintf(\__('successLinkMove'), $link->cName),
-                        'successLinkMove'
-                    );
-                    $this->step       = 'uebersicht';
-                    $this->clearCache = true;
-                } else {
-                    $this->alertService->addError(\__('errorLinkMove'), 'errorLinkMove');
-                }
+                $this->actionChangeParent($linkID, Request::postInt('kVaterLink'));
                 break;
             case 'edit-link':
                 $this->step = 'edit-link';
                 break;
             case 'create-or-update-link':
-                $hasHTML = [];
-                foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
-                    $hasHTML[] = 'cContent_' . $lang->getIso();
-                }
-                $checks = new PlausiCMS();
-                $checks->setPostVar($_POST, $hasHTML, true);
-                $checks->doPlausi('lnk');
-
-                if (\count($checks->getPlausiVar()) === 0) {
-                    $files = [];
-                    $link  = $this->linkAdmin->createOrUpdateLink($_POST);
-                    if (Request::postInt('kLink') === 0) {
-                        $this->alertService->addSuccess(\__('successLinkCreate'), 'successLinkCreate');
-                    } else {
-                        $this->alertService->addSuccess(
-                            \sprintf(\__('successLinkEdit'), $link->getDisplayName()),
-                            'successLinkEdit'
-                        );
-                    }
-                    $this->clearCache = true;
-                    $kLink            = $link->getID();
-                    $this->step       = 'uebersicht';
-                    $continue         = Request::postInt('continue') === 1;
-                    if ($continue) {
-                        $this->step     = 'neuer Link';
-                        $_POST['kLink'] = $kLink;
-                    }
-                    // Bilder hochladen
-                    if (!\is_dir($this->uploadDir . $kLink)
-                        && !\mkdir($concurrentDirectory = $this->uploadDir . $kLink)
-                        && !\is_dir($concurrentDirectory)
-                    ) {
-                        throw new \RuntimeException(\sprintf('Directory "%s" was not created', $concurrentDirectory));
-                    }
-                    if (\is_array($_FILES['Bilder']['name']) && \count($_FILES['Bilder']['name']) > 0) {
-                        $lastImage = $this->getLastImageNumber($kLink);
-                        $counter   = 0;
-                        if ($lastImage > 0) {
-                            $counter = $lastImage;
-                        }
-                        $imageCount = (\count($_FILES['Bilder']['name']) + $counter);
-                        for ($i = $counter; $i < $imageCount; ++$i) {
-                            $upload = [
-                                'size'     => $_FILES['Bilder']['size'][$i - $counter],
-                                'error'    => $_FILES['Bilder']['error'][$i - $counter],
-                                'type'     => $_FILES['Bilder']['type'][$i - $counter],
-                                'name'     => $_FILES['Bilder']['name'][$i - $counter],
-                                'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
-                            ];
-                            if (Image::isImageUpload($upload)) {
-                                $type         = $upload['type'];
-                                $uploadedFile = $this->uploadDir . $kLink . '/Bild' . ($i + 1) . '.' .
-                                    \mb_substr(
-                                        $type,
-                                        \mb_strpos($type, '/') + 1,
-                                        \mb_strlen($type) - \mb_strpos($type, '/') + 1
-                                    );
-                                \move_uploaded_file($upload['tmp_name'], $uploadedFile);
-                            }
-                        }
-                    }
-                    $dirName = $this->uploadDir . $link->getID();
-                    if (\is_dir($dirName)) {
-                        $dirHandle = \opendir($dirName);
-                        $shopURL   = Shop::getImageBaseURL() . '/';
-                        while (($file = \readdir($dirHandle)) !== false) {
-                            if ($file === '.' || $file === '..') {
-                                continue;
-                            }
-                            $newFile            = new stdClass();
-                            $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
-                            $newFile->cNameFull = $file;
-                            $newFile->cURL      = '<img class="link_image" src="' .
-                                $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
-                            $newFile->nBild     = (int)\mb_substr(
-                                \str_replace('Bild', '', $file),
-                                0,
-                                \mb_strpos(\str_replace('Bild', '', $file), '.')
-                            );
-                            $files[]            = $newFile;
-                        }
-                        \usort($files, static function ($a, $b) {
-                            return $a->nBild <=> $b->nBild;
-                        });
-                        $this->smarty->assign('cDatei_arr', $files);
-                    }
-                    $this->smarty->assign('Link', $link);
-                } else {
-                    $this->step = 'neuer Link';
-                    $link       = new Link($this->db);
-                    $link->setLinkGroupID(Request::postInt('kLinkgruppe'));
-                    $link->setLinkGroups([Request::postInt('kLinkgruppe')]);
-                    $checkVars = $checks->getPlausiVar();
-                    if (isset($checkVars['nSpezialseite'])) {
-                        $this->alertService->addError(\__('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
-                    } else {
-                        $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
-                    }
-                    $this->smarty->assign('xPlausiVar_arr', $checkVars)
-                        ->assign('Link', $link)
-                        ->assign('xPostVar_arr', $checks->getPostVar());
-                }
+                $this->actionCreateOrUpdateLink();
                 break;
             default:
                 break;
@@ -661,7 +365,7 @@ class LinkController extends AbstractBackendController
             ['linkGroupID', 'linkID'],
             [$newLinkGroupID, $link->getID()]
         );
-        if (!empty($exists)) {
+        if ($exists !== null) {
             return self::ERROR_LINK_ALREADY_EXISTS;
         }
         $upd              = new stdClass();
@@ -692,8 +396,7 @@ class LinkController extends AbstractBackendController
      */
     private function updateChildLinkGroups(LinkInterface $link, int $old, int $new): void
     {
-        $upd              = new stdClass();
-        $upd->linkGroupID = $new;
+        $upd = (object)['linkGroupID' => $new];
         foreach ($link->getChildLinks() as $childLink) {
             if ($old < 0) {
                 // previously unassigned
@@ -720,14 +423,10 @@ class LinkController extends AbstractBackendController
     public function copyChildLinksToLinkGroup(LinkInterface $link, int $linkGroupID): void
     {
         $link->buildChildLinks();
-        $ins              = new stdClass();
-        $ins->linkGroupID = $linkGroupID;
+        $ins = (object)['linkGroupID' => $linkGroupID];
         foreach ($link->getChildLinks() as $childLink) {
             $ins->linkID = $childLink->getID();
-            $this->db->insert(
-                'tlinkgroupassociations',
-                $ins
-            );
+            $this->db->insert('tlinkgroupassociations', $ins);
             $this->copyChildLinksToLinkGroup($childLink, $linkGroupID);
         }
     }
@@ -827,5 +526,402 @@ class LinkController extends AbstractBackendController
     private function specialChars(string $text): string
     {
         return \htmlspecialchars($text, \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET, false);
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionAddLinkToLinkGroup(int $linkGroupID): void
+    {
+        $this->step = 'neuer Link';
+        $link       = new Link($this->db);
+        $link->setLinkGroupID($linkGroupID);
+        $link->setLinkGroups([$linkGroupID]);
+        $this->smarty->assign('Link', $link);
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @param int $linkID
+     * @return void
+     */
+    private function actionRemoveLinkFromLinkGroup(int $linkGroupID, int $linkID): void
+    {
+        if ($this->removeLinkFromLinkGroup($linkID, $linkGroupID) > 0) {
+            $this->alertService->addSuccess(
+                \__('successLinkFromLinkGroupDelete'),
+                'successLinkFromLinkGroupDelete'
+            );
+        } else {
+            $this->alertService->addError(
+                \__('errorLinkFromLinkGroupDelete'),
+                'errorLinkFromLinkGroupDelete'
+            );
+        }
+        unset($_POST['kLinkgruppe']);
+        $this->step       = 'uebersicht';
+        $this->clearCache = true;
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $parentID
+     * @return void
+     */
+    private function actionChangeParent(int $linkID, int $parentID): void
+    {
+        if ($parentID >= 0 && ($link = $this->updateParentID($linkID, $parentID)) !== false) {
+            $this->alertService->addSuccess(\sprintf(\__('successLinkMove'), $link->cName), 'successLinkMove');
+            $this->step       = 'uebersicht';
+            $this->clearCache = true;
+            return;
+        }
+        $this->alertService->addError(\__('errorLinkMove'), 'errorLinkMove');
+    }
+
+    /**
+     * @return void
+     */
+    private function actionCreateOrUpdateLink(): void
+    {
+        $htmlContent = [];
+        foreach (LanguageHelper::getAllLanguages(0, true) as $lang) {
+            $htmlContent[] = 'cContent_' . $lang->getIso();
+        }
+        $checks = new PlausiCMS();
+        $checks->setPostVar($_POST, $htmlContent, true);
+        $checks->doPlausi('lnk');
+        if (\count($checks->getPlausiVar()) === 0) {
+            $files = [];
+            $link  = $this->linkAdmin->createOrUpdateLink($_POST);
+            if (Request::postInt('kLink') === 0) {
+                $this->alertService->addSuccess(\__('successLinkCreate'), 'successLinkCreate');
+            } else {
+                $this->alertService->addSuccess(
+                    \sprintf(\__('successLinkEdit'), $link->getDisplayName()),
+                    'successLinkEdit'
+                );
+            }
+            $this->clearCache = true;
+            $linkID           = $link->getID();
+            $this->step       = 'uebersicht';
+            $continue         = Request::postInt('continue') === 1;
+            if ($continue) {
+                $this->step     = 'neuer Link';
+                $_POST['kLink'] = $linkID;
+            }
+            // Bilder hochladen
+            if (!\is_dir($this->uploadDir . $linkID)
+                && !\mkdir($concurrentDirectory = $this->uploadDir . $linkID)
+                && !\is_dir($concurrentDirectory)
+            ) {
+                throw new \RuntimeException(\sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
+            if (\is_array($_FILES['Bilder']['name']) && \count($_FILES['Bilder']['name']) > 0) {
+                $lastImage = $this->getLastImageNumber($linkID);
+                $counter   = 0;
+                if ($lastImage > 0) {
+                    $counter = $lastImage;
+                }
+                $imageCount = (\count($_FILES['Bilder']['name']) + $counter);
+                for ($i = $counter; $i < $imageCount; ++$i) {
+                    $upload = [
+                        'size'     => $_FILES['Bilder']['size'][$i - $counter],
+                        'error'    => $_FILES['Bilder']['error'][$i - $counter],
+                        'type'     => $_FILES['Bilder']['type'][$i - $counter],
+                        'name'     => $_FILES['Bilder']['name'][$i - $counter],
+                        'tmp_name' => $_FILES['Bilder']['tmp_name'][$i - $counter],
+                    ];
+                    if (Image::isImageUpload($upload)) {
+                        $type         = $upload['type'];
+                        $uploadedFile = $this->uploadDir . $linkID . '/Bild' . ($i + 1) . '.' .
+                            \mb_substr(
+                                $type,
+                                \mb_strpos($type, '/') + 1,
+                                \mb_strlen($type) - \mb_strpos($type, '/') + 1
+                            );
+                        \move_uploaded_file($upload['tmp_name'], $uploadedFile);
+                    }
+                }
+            }
+            $dirName = $this->uploadDir . $link->getID();
+            if (\is_dir($dirName)) {
+                $dirHandle = \opendir($dirName);
+                $shopURL   = Shop::getImageBaseURL() . '/';
+                while (($file = \readdir($dirHandle)) !== false) {
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
+                    $newFile            = new stdClass();
+                    $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
+                    $newFile->cNameFull = $file;
+                    $newFile->cURL      = '<img class="link_image" src="' .
+                        $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
+                    $newFile->nBild     = (int)\mb_substr(
+                        \str_replace('Bild', '', $file),
+                        0,
+                        \mb_strpos(\str_replace('Bild', '', $file), '.')
+                    );
+                    $files[]            = $newFile;
+                }
+                \usort($files, static function ($a, $b) {
+                    return $a->nBild <=> $b->nBild;
+                });
+                $this->smarty->assign('cDatei_arr', $files);
+            }
+            $this->smarty->assign('Link', $link);
+        } else {
+            $this->step = 'neuer Link';
+            $link       = new Link($this->db);
+            $link->setLinkGroupID(Request::postInt('kLinkgruppe'));
+            $link->setLinkGroups([Request::postInt('kLinkgruppe')]);
+            $checkVars = $checks->getPlausiVar();
+            if (isset($checkVars['nSpezialseite'])) {
+                $this->alertService->addError(\__('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
+            } else {
+                $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
+            }
+            $this->smarty->assign('xPlausiVar_arr', $checkVars)
+                ->assign('Link', $link)
+                ->assign('xPostVar_arr', $checks->getPostVar());
+        }
+    }
+
+    /**
+     * @param int $linkID
+     * @return void
+     */
+    private function actionDeleteLink(int $linkID): void
+    {
+        if ($this->deleteLink($linkID) > 0) {
+            $this->alertService->addSuccess(\__('successLinkDelete'), 'successLinkDelete');
+        } else {
+            $this->alertService->addError(\__('errorLinkDelete'), 'errorLinkDelete');
+        }
+        $this->clearCache = true;
+        $this->step       = 'uebersicht';
+        $_POST            = [];
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionDeleteLinkGroupPre(int $linkGroupID): void
+    {
+        $this->step = 'linkgruppe_loeschen_confirm';
+        $this->smarty->assign('linkGroup', (new LinkGroup($this->db))->load($linkGroupID))
+            ->assign('affectedLinkNames', $this->getPreDeletionLinks($linkGroupID));
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionDeleteLinkGroup(int $linkGroupID): void
+    {
+        $this->step = 'uebersicht';
+        if ($this->deleteLinkGroup($linkGroupID) > 0) {
+            $this->alertService->addSuccess(\__('successLinkGroupDelete'), 'successLinkGroupDelete');
+            $this->clearCache = true;
+            $this->step       = 'uebersicht';
+        } else {
+            $this->alertService->addError(\__('errorLinkGroupDelete'), 'errorLinkGroupDelete');
+        }
+        $_POST = [];
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionCreateEditLinkGroup(int $linkGroupID): void
+    {
+        $this->step = 'neue Linkgruppe';
+        $linkGroup  = $linkGroupID > 0 ? (new LinkGroup($this->db))->load($linkGroupID) : null;
+        $this->smarty->assign('linkGroup', $linkGroup);
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionSaveLinkGroup(int $linkGroupID): void
+    {
+        $checks = new PlausiCMS();
+        $checks->setPostVar($_POST);
+        $checks->doPlausi('grp');
+        if (\count($checks->getPlausiVar()) === 0) {
+            $tplExists = $this->db->select('tlinkgruppe', 'cTemplatename', $_POST['cTemplatename']);
+            if ($tplExists !== null && $linkGroupID !== (int)$tplExists->kLinkgruppe) {
+                $this->step = 'neue Linkgruppe';
+                $linkGroup  = $linkGroupID > 0 ? (new LinkGroup($this->db))->load($linkGroupID) : null;
+                $this->alertService->addError(\__('errorTemplateNameDuplicate'), 'errorTemplateNameDuplicate');
+                $this->smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
+                    ->assign('xPostVar_arr', $checks->getPostVar())
+                    ->assign('linkGroup', $linkGroup);
+            } else {
+                if ($linkGroupID === 0) {
+                    $this->createOrUpdateLinkGroup(0, $_POST);
+                    $this->alertService->addSuccess(\__('successLinkGroupCreate'), 'successLinkGroupCreate');
+                } else {
+                    $linkGroup = $this->createOrUpdateLinkGroup($linkGroupID, $_POST);
+                    $this->alertService->addSuccess(
+                        \sprintf(\__('successLinkGroupEdit'), $linkGroup->cName),
+                        'successLinkGroupEdit'
+                    );
+                }
+                $this->step = 'uebersicht';
+            }
+            $this->clearCache = true;
+        } else {
+            $this->step = 'neue Linkgruppe';
+            $this->alertService->addError(\__('errorFillRequired'), 'errorFillRequired');
+            $this->smarty->assign('xPlausiVar_arr', $checks->getPlausiVar())
+                ->assign('xPostVar_arr', $checks->getPostVar());
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function actionConfirm(): void
+    {
+        if (Request::verifyGPCDataInt('confirmation') === 1) {
+            $this->step = 'loesch_linkgruppe';
+        } else {
+            $this->step = 'uebersicht';
+            $_POST      = [];
+        }
+    }
+
+    /**
+     * @param int $linkID
+     * @param int $oldLinkGroupID
+     * @param int $linkGroupID
+     * @return void
+     */
+    private function actionMoveToLinkGroup(int $linkID, int $oldLinkGroupID, int $linkGroupID): void
+    {
+        $res = $this->updateLinkGroup($linkID, $oldLinkGroupID, $linkGroupID);
+        if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
+            $this->alertService->addError(\__('errorLinkMoveDuplicate'), 'errorLinkMoveDuplicate');
+        } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
+            $this->alertService->addError(\__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
+        } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
+            $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
+        } elseif ($res instanceof LinkInterface) {
+            $this->alertService->addSuccess(
+                \sprintf(\__('successLinkMove'), $res->getDisplayName()),
+                'successLinkMove'
+            );
+            $this->clearCache = true;
+        } else {
+            $this->alertService->addError(\__('errorUnknownLong'), 'errorUnknownLong');
+        }
+        $this->step = 'uebersicht';
+    }
+
+    /**
+     * @param int $linkGroupID
+     * @param int $linkID
+     * @return void
+     */
+    private function actionCopyToLinkGroup(int $linkGroupID, int $linkID): void
+    {
+        $res = $this->createReference($linkID, $linkGroupID);
+        if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
+            $this->alertService->addError(\__('errorLinkCopyDuplicate'), 'errorLinkCopyDuplicate');
+        } elseif ($res === LinkAdmin::ERROR_LINK_NOT_FOUND) {
+            $this->alertService->addError(\__('errorLinkKeyNotFound'), 'errorLinkKeyNotFound');
+        } elseif ($res === LinkAdmin::ERROR_LINK_GROUP_NOT_FOUND) {
+            $this->alertService->addError(\__('errorLinkGroupKeyNotFound'), 'errorLinkGroupKeyNotFound');
+        } elseif ($res instanceof LinkInterface) {
+            $this->alertService->addSuccess(
+                \sprintf(\__('successLinkCopy'), $res->getDisplayName()),
+                'successLinkCopy'
+            );
+            $this->step       = 'uebersicht';
+            $this->clearCache = true;
+        } else {
+            $this->alertService->addError(\__('errorUnknownLong'), 'errorUnknownLong');
+        }
+    }
+
+    /**
+     * @param int $linkID
+     * @return void
+     */
+    private function actionEditLink(int $linkID): void
+    {
+        $this->step = 'neuer Link';
+        $link       = new Link($this->db);
+        $link->load($linkID);
+        $link->deref();
+        $dirName = $this->uploadDir . $link->getID();
+        $files   = [];
+        if (Request::verifyGPCDataInt('delpic') === 1) {
+            @\unlink($dirName . '/' . Request::verifyGPDataString('cName'));
+        }
+        if (\is_dir($dirName)) {
+            $dirHandle = \opendir($dirName);
+            $shopURL   = Shop::getURL() . '/';
+            while (($file = \readdir($dirHandle)) !== false) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+                $newFile            = new stdClass();
+                $newFile->cName     = \mb_substr($file, 0, \mb_strpos($file, '.'));
+                $newFile->cNameFull = $file;
+                $newFile->cURL      = '<img class="link_image" src="' .
+                    $shopURL . \PFAD_BILDER . \PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
+                $newFile->nBild     = (int)mb_substr(
+                    \str_replace('Bild', '', $file),
+                    0,
+                    \mb_strpos(\str_replace('Bild', '', $file), '.')
+                );
+                $files[]            = $newFile;
+            }
+            \usort($files, static function ($a, $b) {
+                return $a->nBild <=> $b->nBild;
+            });
+            $this->smarty->assign('cDatei_arr', $files);
+        }
+        $this->smarty->assign('Link', $link);
+    }
+
+    /**
+     * @return void
+     */
+    private function actionCreateLink(): void
+    {
+        (new LinkGroupList($this->db, $this->cache))->loadAll();
+        $this->smarty->assign('specialPages', $this->linkAdmin->getSpecialPageTypes())
+            ->assign('kundengruppen', $this->db->getObjects('SELECT * FROM tkundengruppe ORDER BY cName'));
+    }
+
+    /**
+     * @return void
+     */
+    private function actionOverview(): void
+    {
+        foreach ($this->linkAdmin->getDuplicateSpecialLinks()->groupBy(static function (LinkInterface $l): int {
+            return $l->getLinkType();
+        }) as $specialLinks) {
+            /** @var Collection $specialLinks */
+            $this->alertService->addError(
+                \sprintf(
+                    \__('hasDuplicateSpecialLink'),
+                    ' ' . $specialLinks->map(static function (LinkInterface $l): string {
+                        return $l->getName();
+                    })->implode('/')
+                ),
+                'hasDuplicateSpecialLink-' . $specialLinks->first()->getLinkType()
+            );
+        }
+        $this->smarty->assign('linkGroupCountByLinkID', $this->getLinkGroupCountForLinkIDs())
+            ->assign('missingSystemPages', $this->linkAdmin->getMissingSystemPages())
+            ->assign('linkgruppen', $this->getLinkGroups());
     }
 }

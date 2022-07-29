@@ -481,7 +481,7 @@ class Navigation
             default:
                 if ($this->link instanceof Link) {
                     $elems = $this->linkService->getParentLinks($this->link->getID())
-                        ->map(static function (LinkInterface $l) {
+                        ->map(static function (LinkInterface $l): NavigationEntry {
                             $res = new NavigationEntry();
                             $res->setName($l->getName());
                             $res->setURL($l->getURL());

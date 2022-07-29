@@ -100,8 +100,8 @@ abstract class AbstractExporter implements ExporterInterface
         $join  = '';
         $limit = '';
         $where = match ($this->getModel()->getVarcombOption()) {
-            2 => ' AND kVaterArtikel = 0',
-            3 => ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)',
+            2       => ' AND kVaterArtikel = 0',
+            3       => ' AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)',
             default => '',
         };
         if ($this->config['exportformate_lager_ueber_null'] === 'Y') {

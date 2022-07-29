@@ -44,7 +44,13 @@ class ProductListController extends AbstractController
         }
         $categoryID                  = $this->productFilter->getCategory()->getValue();
         $_SESSION['LetzteKategorie'] = $categoryID;
-        $this->currentCategory       = new Kategorie($categoryID, $this->languageID, $this->customerGroupID);
+        $this->currentCategory       = new Kategorie(
+            $categoryID,
+            $this->languageID,
+            $this->customerGroupID,
+            false,
+            $this->db
+        );
         if ($this->currentCategory->getID() === null) {
             // temp. workaround: do not return 404 when non-localized existing category is loaded
             if (Category::categoryExists($categoryID)) {
@@ -182,7 +188,8 @@ class ProductListController extends AbstractController
             return null;
         }
         $hasSubCategories = ($categoryID = $this->productFilter->getCategory()->getValue()) > 0
-            && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID))->existierenUnterkategorien();
+            && (new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db))
+                ->existierenUnterkategorien();
         if ($this->productFilter->getFilterCount() > 0
             || $this->productFilter->getRealSearch() !== null
             || ($this->productFilter->getCategory()->getValue() > 0 && !$hasSubCategories)
@@ -200,7 +207,7 @@ class ProductListController extends AbstractController
     {
         $bestsellers = [];
         if ($this->config['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-            $productsIDs = $this->searchResults->getProducts()->map(static function ($product) {
+            $productsIDs = $this->searchResults->getProducts()->map(static function ($product): int {
                 return (int)$product->kArtikel;
             });
             $bestsellers = Bestseller::buildBestsellers(

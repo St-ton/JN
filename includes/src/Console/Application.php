@@ -107,7 +107,7 @@ class Application extends BaseApplication
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i): bool {
             return $i->isShop5Compatible();
         });
         /** @var ListingItem $plugin */

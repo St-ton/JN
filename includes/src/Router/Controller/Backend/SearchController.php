@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller\Backend;
 
 use Illuminate\Support\Collection;
+use JTL\Backend\Menu;
 use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\Settings\Search;
@@ -95,13 +96,9 @@ class SearchController extends AbstractBackendController
      */
     private function adminMenuSearch(string $query): array
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'admin_menu.php';
-
-        global $adminMenu;
-
         $results = [];
-
-        foreach ($adminMenu as $menuName => $menu) {
+        $menu    = new Menu($this->db, $this->account, $this->getText);
+        foreach ($menu->getStructure() as $menuName => $menu) {
             foreach ($menu->items as $subMenuName => $subMenu) {
                 if (\is_array($subMenu)) {
                     foreach ($subMenu as $itemName => $item) {
@@ -187,21 +184,22 @@ class SearchController extends AbstractBackendController
         $results = [];
         foreach (\explode(',', $query) as $search) {
             $search = \trim($search);
-            if (\mb_strlen($search) > 2) {
-                $hits = $this->db->getObjects(
-                    'SELECT va.kVersandart, va.cName
-                        FROM tversandart AS va
-                        LEFT JOIN tversandartsprache AS vs 
-                            ON vs.kVersandart = va.kVersandart
-                            AND vs.cName LIKE :search
-                        WHERE va.cName LIKE :search
-                        OR vs.cName LIKE :search',
-                    ['search' => '%' . $search . '%']
-                );
-                foreach ($hits as $item) {
-                    $item->kVersandart           = (int)$item->kVersandart;
-                    $results[$item->kVersandart] = $item;
-                }
+            if (\mb_strlen($search) < 3) {
+                continue;
+            }
+            $hits = $this->db->getObjects(
+                'SELECT va.kVersandart, va.cName
+                    FROM tversandart AS va
+                    LEFT JOIN tversandartsprache AS vs 
+                        ON vs.kVersandart = va.kVersandart
+                        AND vs.cName LIKE :search
+                    WHERE va.cName LIKE :search
+                    OR vs.cName LIKE :search',
+                ['search' => '%' . $search . '%']
+            );
+            foreach ($hits as $item) {
+                $item->kVersandart           = (int)$item->kVersandart;
+                $results[$item->kVersandart] = $item;
             }
         }
 
@@ -216,26 +214,25 @@ class SearchController extends AbstractBackendController
     {
         $paymentMethodsByName = [];
         foreach (\explode(',', $query) as $string) {
-            // Leerzeichen löschen
             $string = \trim($string);
-            // Nur Eingaben mit mehr als 2 Zeichen
-            if (\mb_strlen($string) > 2) {
-                $data = $this->db->getObjects(
-                    'SELECT za.kZahlungsart, za.cName
-                        FROM tzahlungsart AS za
-                        LEFT JOIN tzahlungsartsprache AS zs 
-                            ON zs.kZahlungsart = za.kZahlungsart
-                            AND zs.cName LIKE :search
-                        WHERE za.cName LIKE :search 
-                        OR zs.cName LIKE :search
-                        GROUP BY za.kZahlungsart',
-                    ['search' => '%' . $string . '%']
-                );
-                foreach ($data as $paymentMethodByName) {
-                    $paymentMethodByName->kZahlungsart = (int)$paymentMethodByName->kZahlungsart;
+            if (\mb_strlen($string) < 3) {
+                continue;
+            }
+            $data = $this->db->getObjects(
+                'SELECT za.kZahlungsart, za.cName
+                    FROM tzahlungsart AS za
+                    LEFT JOIN tzahlungsartsprache AS zs 
+                        ON zs.kZahlungsart = za.kZahlungsart
+                        AND zs.cName LIKE :search
+                    WHERE za.cName LIKE :search 
+                    OR zs.cName LIKE :search
+                    GROUP BY za.kZahlungsart',
+                ['search' => '%' . $string . '%']
+            );
+            foreach ($data as $paymentMethodByName) {
+                $paymentMethodByName->kZahlungsart = (int)$paymentMethodByName->kZahlungsart;
 
-                    $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
-                }
+                $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
             }
         }
 

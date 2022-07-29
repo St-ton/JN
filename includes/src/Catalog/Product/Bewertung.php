@@ -138,11 +138,11 @@ class Bewertung
     private function getOrderSQL(int $option): string
     {
         return match ($option) {
-            3 => ' dDatum ASC',
-            4 => ' nSterne DESC',
-            5 => ' nSterne ASC',
-            6 => ' nHilfreich DESC',
-            7 => ' nHilfreich ASC',
+            3       => ' dDatum ASC',
+            4       => ' nSterne DESC',
+            5       => ' nSterne ASC',
+            6       => ' nHilfreich DESC',
+            7       => ' nHilfreich ASC',
             default => ' dDatum DESC',
         };
     }

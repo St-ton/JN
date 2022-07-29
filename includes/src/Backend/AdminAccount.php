@@ -12,6 +12,7 @@ use JTL\Mail\Mailer;
 use JTL\Mapper\AdminLoginStatusMessageMapper;
 use JTL\Mapper\AdminLoginStatusToLogLevel;
 use JTL\Model\AuthLogEntry;
+use JTL\Router\Route;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Backend;
 use JTL\Shop;
@@ -149,7 +150,7 @@ class AdminAccount
         if ($res > 0) {
             $user                   = $this->db->select('tadminlogin', 'cMail', $email);
             $obj                    = new stdClass();
-            $obj->passwordResetLink = Shop::getAdminURL() . '/pass.php?fpwh=' . $hash . '&mail=' . $email;
+            $obj->passwordResetLink = Shop::getAdminURL() . '/' . Route::PASS . '?fpwh=' . $hash . '&mail=' . $email;
             $obj->cHash             = $hash;
             $obj->mail              = new stdClass();
             $obj->mail->toEmail     = $email;
@@ -442,7 +443,7 @@ class AdminAccount
      */
     public function redirectOnUrl(): void
     {
-        $url    = Shop::getAdminURL() . '/index.php';
+        $url    = Shop::getAdminURL() . '/';
         $parsed = \parse_url($url);
         $host   = $parsed['host'];
         if (!empty($parsed['port']) && (int)$parsed['port'] > 0) {

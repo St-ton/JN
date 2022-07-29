@@ -126,7 +126,7 @@
                                     fileMaxSize=256
                                     fileInitialPreview="[
                                             {if $branding->cBrandingBild|strlen > 0}
-                                            '<img src=\"{$shopURL}/{$PFAD_BRANDINGBILDER}{$branding->cBrandingBild}?rnd={$cRnd}\" class=\"file-preview-image img-fluid\" alt=\"branding\" title=\"{__('branding')}\" />'
+                                            '<img src=\"{$shopURL}/{$smarty.const.PFAD_BRANDINGBILDER}{$branding->cBrandingBild}?rnd={$cRnd}\" class=\"file-preview-image img-fluid\" alt=\"branding\" title=\"{__('branding')}\" />'
                                             {/if}
                                         ]"
                                     fileInitialPreviewConfig="[

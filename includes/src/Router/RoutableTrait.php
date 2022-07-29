@@ -101,7 +101,6 @@ trait RoutableTrait
      */
     public function createBySlug(?int $fallbackID = null, array $additional = []): void
     {
-        $base      = Shop::getURL();
         $router    = Shop::getRouter();
         $languages = LanguageHelper::getAllLanguages();
         foreach ($this->getSlugs() as $langID => $slug) {
@@ -113,7 +112,11 @@ trait RoutableTrait
                         \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
                     );
                     $this->setURLPath($route, $langID);
-                    $this->setURL($base . $route, $langID);
+                    $url = $router->getURLByType(
+                        $this->getRouteType(),
+                        \array_merge(['lang' => $locale, 'name' => $slug, 'id' => $fallbackID], $additional)
+                    );
+                    $this->setURL($url, $langID);
                     break;
                 }
             }
@@ -128,7 +131,12 @@ trait RoutableTrait
                         false
                     );
                     $this->setURLPath($route, $langID);
-                    $this->setURL($base . $route, $langID);
+                    $url = $router->getURLByType(
+                        $this->getRouteType(),
+                        \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
+                        false
+                    );
+                    $this->setURL($url, $langID);
                 }
             }
         }

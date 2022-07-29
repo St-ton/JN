@@ -61,7 +61,7 @@ class IOController extends AbstractBackendController
             return $io->getResponse(new IOError('CSRF validation failed.', 403));
         }
 
-        $jsonApi = JSONAPI::getInstance();
+        $jsonApi = JSONAPI::getInstance($this->db, $this->cache);
         $io->setAccount($this->account);
         $images   = new Manager($this->db, $this->getText);
         $updateIO = new UpdateIO($this->db, $this->getText);
@@ -178,6 +178,7 @@ class IOController extends AbstractBackendController
 
         return $io->getResponse($io->handleRequest($req));
     }
+
     /**
      * @param float  $netPrice
      * @param float  $grossPrice
@@ -213,10 +214,10 @@ class IOController extends AbstractBackendController
      */
     public function addFav(string $title, string $url): array|IOError
     {
-        $success     = false;
-        $kAdminlogin = $this->account->getID();
+        $success = false;
+        $adminID = $this->account->getID();
         if (!empty($title) && !empty($url)) {
-            $success = (new AdminFavorite($this->db))->add($kAdminlogin, $title, $url);
+            $success = (new AdminFavorite($this->db))->add($adminID, $title, $url);
         }
 
         if ($success) {

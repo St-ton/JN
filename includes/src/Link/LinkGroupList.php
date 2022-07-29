@@ -345,7 +345,7 @@ final class LinkGroupList implements LinkGroupListInterface
                 return $l;
             });
             $filtered = clone $linkGroup;
-            $filtered->filterLinks(static function (LinkInterface $l) {
+            $filtered->filterLinks(static function (LinkInterface $l): bool {
                 return $l->isVisible();
             });
             $this->visibleLinkGroups->push($filtered);

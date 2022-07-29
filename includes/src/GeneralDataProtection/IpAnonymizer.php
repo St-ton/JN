@@ -271,7 +271,7 @@ class IpAnonymizer
         $ipParts = \preg_split('/[\.:]/', $ipString);
         $glue    = \str_contains($ipString, '.') ? '.' : ':';
 
-        return \implode($glue, \array_map(static function ($e) {
+        return \implode($glue, \array_map(static function ($e): int {
             return (int)$e;
         }, $ipParts));
     }

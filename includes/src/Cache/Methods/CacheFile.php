@@ -15,19 +15,14 @@ class CacheFile implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheFile
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $this->journalID     = 'file_journal';
-        $this->options       = $options;
-        $this->isInitialized = true;
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('file_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**

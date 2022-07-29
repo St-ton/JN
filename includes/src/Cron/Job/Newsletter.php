@@ -148,7 +148,7 @@ final class Newsletter extends Job
                 'lmts' => $queueEntry->tasksExecuted,
                 'lmte' => $queueEntry->taskLimit
             ]
-        )->map(static function (stdClass $recipient) {
+        )->map(static function (stdClass $recipient): stdClass {
             $recipient->kKundengruppe         = (int)$recipient->kKundengruppe;
             $recipient->kKunde                = (int)$recipient->kKunde;
             $recipient->kNewsletterEmpfaenger = (int)$recipient->kNewsletterEmpfaenger;

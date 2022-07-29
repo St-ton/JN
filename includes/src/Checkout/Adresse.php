@@ -204,8 +204,8 @@ class Adresse
     public function mappeAnrede(?string $anrede): string
     {
         return match (\mb_convert_case($anrede, \MB_CASE_LOWER)) {
-            'm' => Shop::Lang()->get('salutationM'),
-            'w' => Shop::Lang()->get('salutationW'),
+            'm'     => Shop::Lang()->get('salutationM'),
+            'w'     => Shop::Lang()->get('salutationW'),
             default => '',
         };
     }

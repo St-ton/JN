@@ -317,7 +317,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'vergleichsliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('compare')
             ]);
@@ -434,10 +434,10 @@ class IOMethods
         $smarty     = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
-            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
-                '?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_LOGIN_WUNSCHLISTE;
+            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php')
+                . '?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_LOGIN_WUNSCHLISTE;
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -447,9 +447,9 @@ class IOMethods
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
-            $response->cLocation = (Shop::getURL() . '/?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_VARWAEHLEN);
+            $response->cLocation = (Shop::getURL() . '/?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_VARWAEHLEN);
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -470,19 +470,17 @@ class IOMethods
         $response->nCount    = \count(Frontend::getWishList()->getItems());
         $response->productID = $productID;
         $response->cTitle    = Shop::Lang()->get('goToWishlist');
-        $buttons             = [
-            (object)[
-                'href'    => '#',
-                'fa'      => 'fa fa-arrow-circle-right',
-                'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
-                'primary' => true,
-                'dismiss' => 'modal'
-            ]
-        ];
+        $buttons             = [(object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]];
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'wunschliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
@@ -586,7 +584,7 @@ class IOMethods
                 $qty             = $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]);
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
-                $error           = $smarty->getTemplateVars('fehler');
+                $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
@@ -1076,7 +1074,22 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if ($layout === 'gallery') {
+                $childHasOPCContent = $this->db->getSingleInt(
+                    "SELECT COUNT(kPage) AS count
+                    FROM topcpage
+                    WHERE cPageId LIKE '%\"type\":\"product\"%'
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
+                    'count',
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
+                ) > 0;
+                if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,
@@ -1260,10 +1273,10 @@ class IOMethods
         }
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryID);
+        $category   = new Kategorie($categoryID, 0, 0, false, $this->db);
         $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->getParentID());
+            $category   = new Kategorie($category->getParentID(), 0, 0, false, $this->db);
             $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 

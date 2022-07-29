@@ -48,7 +48,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="dStart">{__('exportformatStart')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'d.m.Y H:i'}{/if}" />
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">

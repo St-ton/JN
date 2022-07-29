@@ -60,7 +60,7 @@ final class JTLCache implements JTLCacheInterface
      *
      * @var ICachingMethod
      */
-    private $method;
+    private ICachingMethod $method;
 
     /**
      * caching options
@@ -68,13 +68,6 @@ final class JTLCache implements JTLCacheInterface
      * @var array
      */
     private array $options = [];
-
-    /**
-     * plugin instance
-     *
-     * @var JTLCache|null
-     */
-    private static $instance;
 
     /**
      * get/set result code
@@ -97,13 +90,9 @@ final class JTLCache implements JTLCacheInterface
      * init cache and set default method
      *
      * @param array $options
-     * @param bool  $ignoreInstance - used for page cache to not overwrite the instance and delete debug output
      */
-    public function __construct(array $options = [], bool $ignoreInstance = false)
+    public function __construct(array $options = [])
     {
-        if ($ignoreInstance === false) {
-            self::$instance = $this;
-        }
         $this->setCachingGroups()
             ->setOptions($options)
             ->setMethod(CacheNull::getInstance($options));
@@ -243,47 +232,31 @@ final class JTLCache implements JTLCacheInterface
     public function setOptions(array $options = []): JTLCacheInterface
     {
         $defaults = [
-            'activated'        => false,
-            // main switch
-            'method'           => 'null',
-            // caching method to use - init with null to avoid errors after installation
-            'redis_port'       => self::DEFAULT_REDIS_PORT,
-            //port of redis server
-            'redis_pass'       => null,
-            // password for redis server
-            'redis_host'       => self::DEFAULT_REDIS_HOST,
-            //host of redis server
-            'redis_db'         => null,
-            // optional redis database id, null or 0 for default
-            'redis_persistent' => false,
-            // optional redis database id, null or 0 for default
-            'memcache_port'    => self::DEFAULT_MEMCACHE_PORT,
-            // port for memcache(d) server
-            'memcache_host'    => self::DEFAULT_MEMCACHE_HOST,
-            // host of memcache(d) server
+            'activated'        => false, // main switch
+            'method'           => 'null', // caching method to use - init with null to avoid errors after installation
+            'redis_port'       => self::DEFAULT_REDIS_PORT, //port of redis server
+            'redis_pass'       => null, // password for redis server
+            'redis_host'       => self::DEFAULT_REDIS_HOST, // host of redis server
+            'redis_db'         => null, // optional redis database id, null or 0 for default
+            'redis_persistent' => false, // optional redis database id, null or 0 for default
+            'memcache_port'    => self::DEFAULT_MEMCACHE_PORT, // port for memcache(d) server
+            'memcache_host'    => self::DEFAULT_MEMCACHE_HOST, // host of memcache(d) server
             'prefix'           => 'j5_' . (\defined('DB_NAME') ? \DB_NAME . '_' : ''),
             // try to make a quite unique prefix if multiple shops are used
-            'lifetime'         => self::DEFAULT_LIFETIME,
-            // cache lifetime in seconds
+            'lifetime'         => self::DEFAULT_LIFETIME, // cache lifetime in seconds
             'collect_stats'    => false,
             // used to tell caching methods to collect statistical data or not (if not provided transparently)
-            'debug'            => false,
-            // enable or disable collecting of debug data
-            'debug_method'     => 'echo',
-            // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => \OBJECT_CACHE_DIR,
-            //file cache directory
-            'file_extension'   => '.fc',
-            // file extension for file cache
-            'page_cache'       => false,
-            // smarty page cache switch
-            'types_disabled'   => []
-            // disabled cache groups
+            'debug'            => false, // enable or disable collecting of debug data
+            'debug_method'     => 'echo', // 'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
+            'cache_dir'        => \OBJECT_CACHE_DIR, // file cache directory
+            'file_extension'   => '.fc', // file extension for file cache
+            'page_cache'       => false, // smarty page cache switch
+            'types_disabled'   => [] // disabled cache groups
         ];
         // merge defaults with assigned options and set them
         $this->options = \array_merge($defaults, $options);
         // always add trailing slash
-        if (\mb_substr($this->options['cache_dir'], \mb_strlen($this->options['cache_dir']) - 1) !== '/') {
+        if (!\str_ends_with($this->options['cache_dir'], '/')) {
             $this->options['cache_dir'] .= '/';
         }
         if ($this->options['method'] !== 'redis' && $this->options['lifetime'] < 0) {
@@ -312,7 +285,7 @@ final class JTLCache implements JTLCacheInterface
             $class = 'JTL\Cache\Methods\Cache' . \ucfirst($methodName);
             $cache = \class_exists($class) ? new $class($this->options) : null;
             /** @var ICachingMethod $class */
-            if ($cache !== null && $cache instanceof ICachingMethod) {
+            if ($cache instanceof ICachingMethod) {
                 $this->setError($cache->getError());
                 if ($cache->isInitialized() && $cache->isAvailable()) {
                     $this->setMethod($cache);
@@ -329,7 +302,7 @@ final class JTLCache implements JTLCacheInterface
     /**
      * set caching method
      *
-     * @param ICachingMethod|JTLCacheTrait $method
+     * @param ICachingMethod $method
      * @return $this
      */
     private function setMethod(ICachingMethod $method): JTLCacheInterface
@@ -390,8 +363,7 @@ final class JTLCache implements JTLCacheInterface
             // set the configure caching method
             $this->setCache($this->options['method']);
             // preload shop settings and lang vars to avoid single cache/mysql requests
-            $settings = Shopsetting::getInstance();
-            $settings->preLoad();
+            Shopsetting::getInstance()->preLoad();
         } else {
             // set fallback null method
             $this->setCache('null');
@@ -548,9 +520,7 @@ final class JTLCache implements JTLCacheInterface
      */
     public function setCacheLifetime(int $lifetime): JTLCacheInterface
     {
-        $this->options['lifetime'] = $lifetime > 0
-            ? $lifetime
-            : self::DEFAULT_LIFETIME;
+        $this->options['lifetime'] = $lifetime > 0 ? $lifetime : self::DEFAULT_LIFETIME;
 
         return $this;
     }
@@ -684,6 +654,7 @@ final class JTLCache implements JTLCacheInterface
             'null',
             'redis',
             'redisCluster',
+            'sqlite',
             'session'
         ];
     }
@@ -778,13 +749,9 @@ final class JTLCache implements JTLCacheInterface
         $this->options['activated'] = true;
         $this->options['lifetime']  = self::DEFAULT_LIFETIME;
         // sanitize input
-        if ($runCount < 1) {
-            $runCount = 1;
-        }
-        if ($repeat < 1) {
-            $repeat = 1;
-        }
-        $results = [];
+        $runCount = \max($runCount, 1);
+        $repeat   = \max($repeat, 1);
+        $results  = [];
         if ($methods === 'all') {
             $methods = $this->getAllMethods();
         }
@@ -812,24 +779,17 @@ final class JTLCache implements JTLCacheInterface
                     // set testing
                     $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
-                        $cacheID = 'c_' . $j;
-                        $this->set($cacheID, $testData);
+                        $this->set('c_' . $j, $testData);
                     }
-                    $end          = \microtime(true);
-                    $runTimingSet = ($end - $start);
-                    $timesSet    += $runTimingSet;
+                    $timesSet += (\microtime(true) - $start);
                     // get testing
                     $start = \microtime(true);
                     for ($j = 0; $j < $runCount; ++$j) {
-                        $cacheID = 'c_' . $j;
-                        $res     = $this->get($cacheID);
-                        if ($res !== $testData) {
+                        if ($this->get('c_' . $j) !== $testData) {
                             $validResults = false;
                         }
                     }
-                    $end          = \microtime(true);
-                    $runTimingGet = ($end - $start);
-                    $timesGet    += $runTimingGet;
+                    $timesGet += (\microtime(true) - $start);
                 }
             } else {
                 if ($echo === true) {

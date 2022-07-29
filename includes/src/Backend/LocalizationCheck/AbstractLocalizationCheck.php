@@ -33,13 +33,13 @@ abstract class AbstractLocalizationCheck implements LocalizationCheckInterface
      */
     public function __construct(protected DbInterface $db, protected Collection $activeLanguages)
     {
-        $this->activeLanguageIDs   = $activeLanguages->map(static function (LanguageModel $model) {
+        $this->activeLanguageIDs   = $activeLanguages->map(static function (LanguageModel $model): int {
             return $model->getId();
         });
-        $this->activeLanguageCodes = $activeLanguages->map(static function (LanguageModel $model) {
+        $this->activeLanguageCodes = $activeLanguages->map(static function (LanguageModel $model): string {
             return $model->getCode();
         });
-        $this->nonDefaultLanguages = $this->activeLanguages->filter(static function (LanguageModel $model) {
+        $this->nonDefaultLanguages = $this->activeLanguages->filter(static function (LanguageModel $model): bool {
             return !$model->isShopDefault();
         });
     }

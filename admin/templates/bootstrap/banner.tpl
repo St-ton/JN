@@ -104,7 +104,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#vDatum"
-                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'d.m.Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'d.m.Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -118,7 +118,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#bDatum"
-                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'d.m.Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'d.m.Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -462,10 +462,10 @@
                                 </td>
                                 <td>
                                     {if $banner->vDatum !== null}
-                                        {$banner->vDatum|date_format:'%d.%m.%Y'}
+                                        {$banner->vDatum|date_format:'d.m.Y'}
                                     {/if} -
                                     {if $banner->bDatum !== null}
-                                        {$banner->bDatum|date_format:'%d.%m.%Y'}
+                                        {$banner->bDatum|date_format:'d.m.Y'}
                                     {/if}
                                 </td>
                                 <td class="text-center">

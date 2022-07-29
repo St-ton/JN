@@ -129,7 +129,7 @@ final class Listing
      */
     public function getInstalled(): Collection
     {
-        return $this->items->filter(static function (ListingItem $item) {
+        return $this->items->filter(static function (ListingItem $item): bool {
             return $item->isInstalled();
         });
     }

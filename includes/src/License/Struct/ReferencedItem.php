@@ -13,7 +13,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var bool
@@ -23,12 +23,12 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var Version|null
      */
-    private $installedVersion;
+    private ?Version $installedVersion = null;
 
     /**
      * @var Version|null
      */
-    private $maxInstallableVersion;
+    private ?Version $maxInstallableVersion = null;
 
     /**
      * @var bool
@@ -58,12 +58,12 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var string|null
      */
-    private $dateInstalled;
+    private ?string $dateInstalled = null;
 
     /**
      * @var bool
      */
-    private $filesMissing = false;
+    private bool $filesMissing = false;
 
     /**
      * @inheritDoc

@@ -1349,7 +1349,7 @@ class ShippingMethod
         $cacheID = 'bvkfls_' . $shippingMethod->fVersandkostenfreiAbX . \mb_strlen($shippingMethod->cLaender)
             . '_' . $langID;
         if (($shippingFreeCountries = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) use ($langID) {
+            $shippingFreeCountries = \implode(', ', \array_map(static function (Country $e) use ($langID): string {
                 return $e->getName($langID);
             }, Shop::Container()->getCountryService()->getFilteredCountryList(
                 \array_filter(\explode(' ', $shippingMethod->cLaender))

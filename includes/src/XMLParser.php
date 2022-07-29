@@ -58,6 +58,7 @@ class XMLParser
             echo '<?xml version="1.0" ?>', "\n";
         }
         foreach ($data as $key => $value) {
+            $key = (string)$key;
             if (!\mb_strpos($key, ' attr')) {
                 if (\is_array($value) && \array_key_exists(0, $value)) {
                     $this->serializeXML($value, $level, $key);
@@ -66,7 +67,7 @@ class XMLParser
                     echo \str_repeat("\t", $level), '<', $tag;
                     if (\array_key_exists($key . ' attr', $data)) { // if there's an attribute for this element
                         foreach ($data[$key . ' attr'] as $attr_name => $attr_value) {
-                            echo ' ', $attr_name, '="', Text::htmlspecialchars($attr_value), '"';
+                            echo ' ', $attr_name, '="', Text::htmlspecialchars((string)$attr_value), '"';
                         }
                         \reset($data[$key . ' attr']);
                     }
@@ -74,7 +75,7 @@ class XMLParser
                     if ($value === null) {
                         echo " />\n";
                     } elseif (!\is_array($value)) {
-                        echo '>', Text::htmlspecialchars($value), '</' . $tag . ">\n";
+                        echo '>', Text::htmlspecialchars((string)$value), '</' . $tag . ">\n";
                     } else {
                         echo ">\n", $this->serializeXML($value, $level + 1),
                         \str_repeat("\t", $level), '</' . $tag . ">\n";

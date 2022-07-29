@@ -16,7 +16,7 @@
             <div class="dropdown-item-text">
                 <span class="icon-text-indent">
                     <div><i class="fa fa-circle text-info" aria-hidden="true"></i></div>
-                    <a href="{$adminURL}{$route}#license-item-{$item->getID()}">
+                    <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$item->getID()}">
                         <span class="item-name">{$item->getName()} </span> <span class="badge badge-info">
                             {$item->getReferencedItem()->getInstalledVersion()} &rarr; {$item->getReferencedItem()->getMaxInstallableVersion()}
                         </span>

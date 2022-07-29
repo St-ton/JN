@@ -4,6 +4,7 @@ namespace JTL\News;
 
 use DateTime;
 use Illuminate\Support\Collection;
+use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
 use JTL\Media\Image;
@@ -17,7 +18,7 @@ use stdClass;
  * Class Category
  * @package JTL\News
  */
-class Category implements CategoryInterface
+class Category implements CategoryInterface, RoutableInterface
 {
     use MagicCompatibilityTrait;
     use MultiSizeImage;

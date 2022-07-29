@@ -191,7 +191,7 @@ class Manager
             [
                 'unknown' => \__('unknown'),
             ]
-        )->map(static function ($item) {
+        )->map(static function ($item): Log {
             return (new Log())->init($item);
         });
     }

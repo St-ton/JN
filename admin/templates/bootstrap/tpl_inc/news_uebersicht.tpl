@@ -191,7 +191,7 @@
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
                                             <td class="TD4">
                                                 {foreach $oNews->getCustomerGroups() as $customerGroupID}
-                                                    {if $customerGroupID === -1}{__('all')}{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
+                                                    {if $customerGroupID === -1}{__('all')}{else}{\JTL\Customer\CustomerGroup::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
                                             <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>

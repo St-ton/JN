@@ -74,7 +74,7 @@ final class PaymentPlugins extends AbstractStep
             }
         );
 
-        $question->setOnSave(function (QuestionInterface $question) use ($collection) {
+        $question->setOnSave(function (QuestionInterface $question) use ($collection): void {
             $requested = $question->getValue();
             if (!\is_array($requested) || \count($requested) === 0) {
                 return;

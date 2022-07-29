@@ -12,22 +12,18 @@ class Migration_20210915151919 extends Migration implements IMigration
     protected $description = 'Add ip field to settingslog';
 
     /**
-     * @inheridoc
+     * @inheritdoc
      */
     public function up()
     {
-        $this->execute(
-            "ALTER TABLE teinstellungenlog ADD COLUMN cIP varchar(40) AFTER cAdminname"
-        );
+        $this->execute('ALTER TABLE teinstellungenlog ADD COLUMN cIP varchar(40) AFTER cAdminname');
     }
 
     /**
-     * @inheridoc
+     * @inheritdoc
      */
     public function down()
     {
-        $this->execute(
-            "ALTER TABLE teinstellungenlog DROP COLUMN cIP"
-        );
+        $this->execute('ALTER TABLE teinstellungenlog DROP COLUMN cIP');
     }
 }

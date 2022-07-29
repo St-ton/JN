@@ -34,6 +34,20 @@ class Manufacturer extends BaseManufacturer
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        $this->setCurrentLanguageID($this->getLanguageID());
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param array|int $value
      * @return $this
      */

@@ -178,6 +178,7 @@ class IOController extends AbstractBackendController
 
         return $io->getResponse($io->handleRequest($req));
     }
+
     /**
      * @param float  $netPrice
      * @param float  $grossPrice

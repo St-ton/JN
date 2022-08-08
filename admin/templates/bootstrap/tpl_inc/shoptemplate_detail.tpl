@@ -334,7 +334,7 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
-                    {$saveAndContinueButton->render()}
+                    {include file='../snippets/buttons/saveAndContinueButton.tpl'}
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     {if isset($smarty.get.activate)}

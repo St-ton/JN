@@ -16,7 +16,6 @@ use JTL\Template\Admin\Validation\TemplateValidator;
 use JTL\Template\BootChecker;
 use JTL\Template\Compiler;
 use JTL\Template\Config;
-use JTL\Template\Snippets\Buttons\SaveAndContinueButton;
 use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use stdClass;
@@ -364,16 +363,14 @@ class Controller
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $templateConfig        = $this->config->getConfigXML($reader, $parentFolder);
-        $preview               = $this->getPreview($templateConfig);
-        $saveAndContinueButton = new SaveAndContinueButton();
+        $templateConfig = $this->config->getConfigXML($reader, $parentFolder);
+        $preview        = $this->getPreview($templateConfig);
 
         $this->smarty->assign('template', $current)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)
             ->assign('jumpToSection', $jumpToSection)
-            ->assignByRef('saveAndContinueButton', $saveAndContinueButton)
             ->display('shoptemplate.tpl');
     }
 

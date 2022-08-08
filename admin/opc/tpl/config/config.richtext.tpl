@@ -1,6 +1,6 @@
 <div class='form-group'>
     <label for="config-{$propname}">{$propdesc.label}</label>
-    <textarea name="{$propname}" id="textarea-{$propname}" class="form-control" {if $required}required{/if}>{$propval|htmlspecialchars}</textarea>
+    <textarea name="{$propname}" id="config-{$propname}" class="form-control" {if $required}required{/if}>{$propval|htmlspecialchars}</textarea>
     <script>
         var adminLang = '{\JTL\Shop::Container()->getGetText()->getLanguage()}'.toLowerCase();
 
@@ -9,7 +9,7 @@
         }
         
         CKEDITOR.replace(
-            'textarea-{$propname}',
+            'config-{$propname}',
             {
                 baseFloatZIndex: 9000,
                 language: adminLang,
@@ -53,7 +53,7 @@
         });
 
         opc.once('save-config', () => {
-            $('#textarea-{$propname}').val(CKEDITOR.instances['textarea-{$propname}'].getData());
+            $('#config-{$propname}').val(CKEDITOR.instances['config-{$propname}'].getData());
         });
     </script>
 </div>

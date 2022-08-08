@@ -31,7 +31,7 @@
                     {/if}
                 </label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
-                       value="{$propval|escape:'html'}"
+                       value="{$propval|default:''|escape:'html'}"
                        {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder|escape:'html'}"{/if}
                        {if $required === true}required{/if}>
                 {if isset($propdesc.help)}

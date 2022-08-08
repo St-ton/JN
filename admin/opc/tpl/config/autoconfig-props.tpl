@@ -18,7 +18,7 @@
 
     <div class="col-{$width} {$order}">
         {if $type === 'text' || $type === 'email' || $type === 'password' || $type === 'number'
-                || $type === 'date' || $type === 'time'}
+                || $type === 'date' || $type === 'time' || $type === 'password'}
             <div class="form-group">
                 <label for="config-{$propname}"
                         {if !empty($propdesc.desc)}
@@ -32,7 +32,8 @@
                 </label>
                 <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
                        value="{$propval|default:''|escape:'html'}"
-                       {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder|escape:'html'}"{/if}
+                       {if !empty($propdesc.placeholder)}
+                           placeholder="{$propdesc.placeholder|default:''|escape:'html'}"{/if}
                        {if $required === true}required{/if}>
                 {if isset($propdesc.help)}
                     <span class="help-block">{$propdesc.help}</span>

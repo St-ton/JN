@@ -291,13 +291,11 @@
                 $('html, body').animate({
                     scrollTop: $('#cfg-container').offset().top - offset - 15
                 });
-                let anchor = $(this).attr('href');
-                //TODO:scrollspy scrollt nicht zur entsprechenden gruppe
-                /*console.log($(anchor));
-                $(anchor)[0].scrollIntoView();*/
-                /*$('#cfg-container .cfg-options').stop().animate({
-                    scrollTop: $(anchor).offset().top
-                });*/
+                let anchor = $(this).attr('href'),
+                    elOffset = $(anchor)[0].offsetTop;
+                $('#cfg-container .cfg-options').stop().animate({
+                    scrollTop: elOffset
+                });
             });
         },
 

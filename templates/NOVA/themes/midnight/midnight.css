@@ -20754,6 +20754,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #cfg-container-tab-panes {
   border-bottom: 2px solid #ebebeb;
+  /*@include media-breakpoint-down(sm) {
+		height: calc((var(--vh, 1vh) * 87) - 5rem);
+	}*/
 }
 #cfg-container-tab-panes.cfg-gallery {
   height: calc((var(--vh, 1vh) * 78) - 3rem);
@@ -20768,6 +20771,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-grow: 1;
   align-items: center;
 }
 #cfg-container-tab-panes.cfg-list .custom-radio .cfg-item-description .input-group {
@@ -20781,11 +20785,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #cfg-container-tab-panes.cfg-list .custom-checkbox .config-item .input-group {
   width: auto;
-}
-@media (max-width: 767.98px) {
-  #cfg-container-tab-panes {
-    height: calc((var(--vh, 1vh) * 87) - 5rem);
-  }
 }
 .cfg-options {
   height: calc((var(--vh, 1vh) * 78) - 4rem);

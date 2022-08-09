@@ -465,6 +465,7 @@
 	}
 	.config-item {
         cursor: pointer;
+		display: block;
 		padding: $alert-padding-y;
 		border: 2px solid $cool-white;
 		margin-bottom: map_get($spacers, 5);

@@ -597,7 +597,7 @@ class IOMethods
                 $qty             = $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]);
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
-                $error           = $smarty->getTemplateVars('fehler');
+                $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
@@ -629,7 +629,8 @@ class IOMethods
                     ))
                     ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                         $shippingFreeMin,
-                        $cartValue
+                        $cartValueGros,
+                        $cartValueNet
                     ))
                     ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
                     ->assign('favourableShippingString', $cart->favourableShippingString);
@@ -1092,7 +1093,22 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if ($layout === 'gallery') {
+                $childHasOPCContent = $this->db->getSingleInt(
+                    "SELECT COUNT(kPage) AS count
+                    FROM topcpage
+                    WHERE cPageId LIKE '%\"type\":\"product\"%'
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
+                    'count',
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
+                ) > 0;
+                if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,

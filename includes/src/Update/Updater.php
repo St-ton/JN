@@ -209,10 +209,13 @@ class Updater
             $availableUpdates = $api->getAvailableVersions(true) ?? [];
 
             //Add Version-Obj to array to compare Versions
-            foreach ($availableUpdates as $availVersion) {
-                $availVersion['referenceVersion'] = Version::parse($availVersion['reference']);
+            foreach ($availableUpdates as $key => $availVersion) {
+                try {
+                    $availableUpdates[$key]['referenceVersion'] = Version::parse($availVersion['reference']);
+                } catch (\Exception $e) {
+                    unset($availableUpdates[$key]);
+                }
             }
-
             //Sort Versions ascending
             \usort($availableUpdates, static function ($x, $y) {
                 /** @var Version $versionX */
@@ -241,8 +244,7 @@ class Updater
                 ) {
                     continue;
                 }
-
-                $versionCollection->append($availableUpdate->reference);
+                $versionCollection->append($availableUpdate['reference']);
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))

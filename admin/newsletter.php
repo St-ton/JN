@@ -163,6 +163,11 @@ if (Form::validateToken()) {
             $tpl = $admin->getDefaultTemplate($kNewsletterVorlageStd);
             $smarty->assign('oNewslettervorlageStd', $tpl);
         }
+        if (isset($postData['speichern_und_weiter_bearbeiten_std'])) {
+            $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
+            $step = $admin->edit($admin->getCurrentId(), $smarty);
+        }
+
     } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
         // Vorlagen
         $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true));
@@ -184,8 +189,9 @@ if (Form::validateToken()) {
             }
             $step   = 'vorlage_erstellen';
             $option = 'editieren';
-            $id     = $checks->kNewsletterVorlage;
+            $id     = $admin->getCurrentId();
         }
+
         // Vorlage hinzufuegen
         if (isset($postData['vorlage_erstellen'])) {
             $step   = 'vorlage_erstellen';

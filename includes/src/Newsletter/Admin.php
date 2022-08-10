@@ -34,6 +34,7 @@ final class Admin
      */
     private AlertServiceInterface $alertService;
 
+    private int $currentId = 0;
     /**
      * Admin constructor.
      * @param DbInterface $db
@@ -124,10 +125,10 @@ final class Admin
             if ($stdVar->cTyp === 'TEXT') {
                 if ($noHTML) {
                     $text = \strip_tags($this->br2nl(\str_replace(
-                        '$#' . $stdVar->cName . '#$',
-                        $stdVar->cInhalt,
-                        $text
-                    )));
+                                                         '$#' . $stdVar->cName . '#$',
+                                                         $stdVar->cInhalt,
+                                                         $text
+                                                     )));
                 } else {
                     $text = \str_replace('$#' . $stdVar->cName . '#$', $stdVar->cInhalt, $text);
                 }
@@ -409,9 +410,9 @@ final class Admin
                         && Image::isImageUpload($_FILES[$idx])
                     ) {
                         $file = $uploadDir . $templateID
-                            . '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar
-                            . $this->mapFileType($_FILES['kNewslettervorlageStdVar_'
-                            . $tplVar->kNewslettervorlageStdVar]['type']);
+                                . '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar
+                                . $this->mapFileType($_FILES['kNewslettervorlageStdVar_'
+                                                             . $tplVar->kNewslettervorlageStdVar]['type']);
                         if (\file_exists($file)) {
                             \unlink($file);
                         }
@@ -430,7 +431,7 @@ final class Admin
                             '/kNewslettervorlageStdVar_' . $tplVar->kNewslettervorlageStdVar .
                             $this->mapFileType(
                                 $_FILES['kNewslettervorlageStdVar_' .
-                                $tplVar->kNewslettervorlageStdVar]['type']
+                                        $tplVar->kNewslettervorlageStdVar]['type']
                             );
 
                         $imageExists = true;
@@ -480,6 +481,8 @@ final class Admin
                 $this->db->insert('tnewslettervorlagestdvarinhalt', $nlTplContent);
             }
         }
+
+        $this->currentId = $templateID;
 
         return $checks;
     }
@@ -572,6 +575,7 @@ final class Admin
                 );
             }
             $tpl->kNewsletterVorlage = $templateID;
+            $this->currentId         = $templateID;
 
             return $tpl;
         }
@@ -1263,5 +1267,13 @@ final class Admin
         $this->alertService->addSuccess(\__('successNewsletterTemplateDelete'), 'successNewsletterTemplateDelete');
 
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentId(): int
+    {
+        return $this->currentId;
     }
 }

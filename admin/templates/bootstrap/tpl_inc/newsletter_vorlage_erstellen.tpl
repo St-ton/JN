@@ -320,6 +320,10 @@ function checkNewsletterSend() {ldelim}
                             <button class="btn btn-outline-primary btn-block" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
+                            <input type="hidden" name="section" value="" />
+                            {include file='../snippets/buttons/saveAndContinueButton.tpl' name="speichern_und_weiter_bearbeiten"}
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
                             <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
                         </div>
                     </div>

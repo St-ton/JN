@@ -42,7 +42,7 @@ if (Form::validateToken()) {
             $admin->setNewsletterCheckboxStatus();
         }
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
-        || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
+              || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
     ) {
         if ($admin->deleteSubscribers($postData['kNewsletterEmpfaenger'] ?? [])) {
             $alertService->addSuccess(__('successNewsletterAboDelete'), 'successNewsletterAboDelete');
@@ -175,14 +175,25 @@ if (Form::validateToken()) {
                 $groupString .= ';' . (int)$customerGroupID . ';';
             }
         }
+        if (isset($postData['speichern_und_weiter_bearbeiten'])) {
+            $checks = $admin->saveTemplate($_POST);
+            if (is_array($checks) && count($checks) > 0) {
+                $smarty->assign('cPlausiValue_arr', $checks)
+                    ->assign('cPostVar_arr', $_POST)
+                    ->assign('oNewsletterVorlage', $newsletterTPL);
+            }
+            $step   = 'vorlage_erstellen';
+            $option = 'editieren';
+            $id     = $checks->kNewsletterVorlage;
+        }
         // Vorlage hinzufuegen
         if (isset($postData['vorlage_erstellen'])) {
             $step   = 'vorlage_erstellen';
             $option = 'erstellen';
-        } elseif (Request::getInt('editieren') > 0 || Request::getInt('vorbereiten') > 0) {
+        } elseif ((isset($id) && $id > 0) || Request::getInt('editieren') > 0 || Request::getInt('vorbereiten') > 0) {
             // Vorlage editieren/vorbereiten
             $step         = 'vorlage_erstellen';
-            $nlTemplateID = Request::verifyGPCDataInt('vorbereiten');
+            $nlTemplateID = $id ?? Request::verifyGPCDataInt('vorbereiten');
             if ($nlTemplateID === 0) {
                 $nlTemplateID = Request::verifyGPCDataInt('editieren');
             }

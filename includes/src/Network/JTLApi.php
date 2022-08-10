@@ -62,12 +62,18 @@ final class JTLApi
     }
 
     /**
+     * @param bool $includingDev
+     *
      * @return array|null
      */
-    public function getAvailableVersions(): ?array
+    public function getAvailableVersions(bool $includingDev = false): ?array
     {
         if (!isset($this->session['rs']['versions'])) {
-            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
+            $url = self::URI_VERSION . '/versions';
+            if ($includingDev === true) {
+                $url .= '-dev';
+            }
+            $this->session['rs']['versions'] = $this->call($url);
         }
 
         return $this->session['rs']['versions'] === null

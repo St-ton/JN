@@ -167,7 +167,6 @@ if (Form::validateToken()) {
             $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
             $step = $admin->edit($admin->getCurrentId(), $smarty);
         }
-
     } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
         // Vorlagen
         $smarty->assign('oKampagne_arr', holeAlleKampagnen(false, true));

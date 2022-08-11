@@ -37,13 +37,21 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
     ];
 
     /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+
+    /**
      * runs all anonymize-routines
      *
      * @return void
      */
     public function execute(): void
     {
-        $workLimitStart = $this->workLimit;
+        $workLimitStart        = $this->workLimit;
         foreach ($this->methodName as $method) {
             if ($this->workLimit === 0) {
                 $this->isFinished = false;

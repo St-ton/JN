@@ -24,4 +24,9 @@ interface MethodInterface
      * @return int
      */
     public function getWorkSum(): int;
+
+    /**
+     * @return int
+     */
+    public function getTaskRepetitions(): int;
 }

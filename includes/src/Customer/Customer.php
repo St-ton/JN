@@ -921,6 +921,11 @@ class Customer
         bool $force = false,
         bool $confirmationMail = false
     ): int {
+        // --DEBUG-- -------------------------------------------------------------
+        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/www/shop5_02/_logging_conf.xml');
+        $oLogger = \Logger::getLogger('default');
+        // --DEBUG-- -------------------------------------------------------------
         $customerID = $this->getID();
 
         if (empty($customerID)) {
@@ -934,9 +939,12 @@ class Customer
         }
 
         $openOrders = $this->getOpenOrders();
+        // $oLogger->debug('open Orders: '.print_r($openOrders,true));    // --DEBUG--
         if (!$openOrders) {
             $this->erasePersonalData($issuerType, $issuerID);
             $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+
+            $retVal = self::CUSTOMER_DELETE_DONE;
         } else {
             if ($this->nRegistriert === 0) {
                 return self::CUSTOMER_DELETE_NO;
@@ -960,6 +968,8 @@ class Customer
                 $logMessage,
                 (object)['kKunde' => $customerID]
             );
+
+            $retVal = self::CUSTOMER_DELETE_DEACT;
         }
         Shop::Container()->getLogService()->notice($logMessage);
         if ($confirmationMail) {
@@ -970,7 +980,7 @@ class Customer
                 (object)['tkunde' => $this]
             ));
         }
-        return self::CUSTOMER_DELETE_DEACT;
+        return $retVal;
     }
 
     /**

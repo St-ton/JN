@@ -40,7 +40,7 @@ class Method
     /**
      * summery of processed entities per method
      *
-     * @var integer
+     * @var int
      */
     protected $workSum = 0;
 
@@ -50,6 +50,14 @@ class Method
      * @var boolean
      */
     protected $isFinished = false;
+
+    /**
+     * max repetitions of one task
+     * (can be overridden in each task)
+     *
+     * @var int
+     */
+    protected $taskRepetitions = 0;
 
     /**
      * the last date we keep
@@ -116,5 +124,15 @@ class Method
     public function getWorkSum(): int
     {
         return $this->workSum;
+    }
+
+    /**
+     * deliver the max alowed repetition of one task
+     *
+     * @return integer
+     */
+    public function getTaskRepetitions(): int
+    {
+        return $this->taskRepetitions;
     }
 }

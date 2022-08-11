@@ -19,6 +19,14 @@ use JTL\DB\ReturnType;
 class CleanupNewsletterRecipients extends Method implements MethodInterface
 {
     /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+
+    /**
      * runs all anonymize routines
      *
      * @return void

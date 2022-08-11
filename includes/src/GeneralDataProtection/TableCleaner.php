@@ -40,6 +40,11 @@ class TableCleaner
     private $isFinished = true;
 
     /**
+     * @var int
+     */
+    private $taskRepetitions;
+
+    /**
      * anonymize methods
      * (NOTE: the order of this methods is not insignificant and "can be configured")
      *
@@ -49,10 +54,10 @@ class TableCleaner
         ['name' => 'AnonymizeIps'                      , 'intervalDays' => 7],
         ['name' => 'AnonymizeDeletedCustomer'          , 'intervalDays' => 7],
         ['name' => 'CleanupCustomerRelicts'            , 'intervalDays' => 0],
-        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients'       , 'intervalDays' => 30],
         ['name' => 'CleanupLogs'                       , 'intervalDays' => 90],
-        ['name' => 'CleanupService'                    , 'intervalDays' => 0], // multiple own intervals
+        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0],  // --TODO-- move to END
+        ['name' => 'CleanupService'                    , 'intervalDays' => 0],  // multiple own intervals
         ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1]  // same as 24 hours
     ];
 
@@ -92,13 +97,29 @@ class TableCleaner
     }
 
     /**
+     * tells upper processes the max repetition count of one task
+     *
+     * @return integer
+     */
+    public function getTaskRepetitions(): int
+    {
+        return $this->taskRepetitions;
+    }
+
+    /**
      * execute one single job by its index number
      *
      * @param integer $taskIdx
      * @return void
      */
-    public function executeByStep(int $taskIdx): void
+    public function executeByStep(int $taskIdx, int $taskRepetitions): void
     {
+        // --DEBUG-- -------------------------------------------------------------
+        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/www/shop5_02/_logging_conf.xml');
+        $oLogger = \Logger::getLogger('default');
+        // --DEBUG-- -------------------------------------------------------------
+
         if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
@@ -109,8 +130,19 @@ class TableCleaner
         $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
         /** @var MethodInterface $instance */
         $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);
+        // repetition-value from DB has preference over methode-setting!
+        if ($taskRepetitions !== 0) {
+            // override the repetition-value of the instance
+            $instance->taskRepetitions = $taskRepetitions;
+            $this->taskRepetitions     = $taskRepetitions;
+        } else {
+            $this->taskRepetitions = $instance->getTaskRepetitions();
+        }
+        $oLogger->debug('value of taskRepetitions (aka tasksExecuted): '. print_r($this->taskRepetitions,true)); // --TRYOUT--
+
         $instance->execute();
-        $this->isFinished = $instance->getIsFinished();
+        $this->taskRepetitions = $instance->getTaskRepetitions();
+        $this->isFinished      = $instance->getIsFinished();
         ($this->logger === null) ?: $this->logger->log(
             \JTLLOG_LEVEL_NOTICE,
             'Anonymize method executed: ' . $this->methods[$taskIdx]['name'] . ', ' .

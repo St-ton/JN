@@ -20,6 +20,14 @@ use JTL\DB\ReturnType;
 class CleanupForgottenOptins extends Method implements MethodInterface
 {
     /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+
+    /**
      * @return void
      */
     public function execute(): void

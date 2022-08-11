@@ -17,12 +17,20 @@ use JTL\Customer\Customer;
 class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterface
 {
     /**
+     * "can be unfinished 5 times"
+     *
+     * @var int
+     */
+    public $taskRepetitions = 5;
+
+
+    /**
      * @inheritDoc
      * @return void
      */
     public function execute(): void
     {
-        $this->workLimit = 100; // override main value from Method class (can be configured here)
+        $this->workLimit = 50;        // override main value from Method class (can be configured here)      --TODO-- reset to 100 !
 
         $this->cleanupCustomers();
     }
@@ -55,25 +63,30 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 'worklimit' => $this->workLimit
             ]
         );
-        $this->workSum    = count($guestAccounts);
-        $this->isFinished = (count($guestAccounts) === 0);
         foreach ($guestAccounts as $guestAccount) {
-            // (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
-
             $customer = new Customer((int)$guestAccount->kKunde);
-            $r        = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
+            $delRes   = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);
 
-            // --TO-CHECK-- the following may be still wrong - it's only 'n idea
-            switch ($customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0)) {
-                case Customer::CUSTOMER_DELETE_DEACT:
-                case Customer::CUSTOMER_DELETE_DONE:
-                    break;
-                case Customer::CUSTOMER_DELETE_NO:
-                    break;
-                default:
-                    break;
+            if ($delRes === Customer::CUSTOMER_DELETE_DEACT ||
+                $delRes === Customer::CUSTOMER_DELETE_DONE) {
+                $oLogger->debug((int)$guestAccount->kKunde.' - remove-call: DELETE_DEACT, DELETE_DONE .. '.print_r($delRes, true));   // --DEBUG--
+                $this->workSum++;
+            // --DEBUG-- the following `else` can be removed completely
+            } else {
+                $oLogger->debug((int)$guestAccount->kKunde.' - remove-call: DELETE_NO .. '.print_r($delRes, true));   // --DEBUG--
             }
-            $oLogger->debug('remove-call: '.print_r($r, true));   // --DEBUG--
         }
+        $oLogger->debug('workSum: '.$this->workSum);   // --DEBUG--
+
+        if ($this->workSum === 0) {
+            // $finished = ($this->workSum === 0);                      // runs in "workLimit" steps until nothing is to do anymore
+            $finished              = true;
+            $this->taskRepetitions = 0;
+        } else {
+            $finished = false;
+            $this->taskRepetitions--;
+        }
+        $oLogger->debug('is finished: '.($finished ? 'true' : 'false').'    (repetiions left: '.$this->taskRepetitions.')');   // --DEBUG--
+        $this->isFinished = ($finished || $this->taskRepetitions === 0);
     }
 }

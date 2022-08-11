@@ -14,21 +14,38 @@ use JTL\GeneralDataProtection\TableCleaner;
 final class GeneralDataProtect extends Job
 {
     /**
+     * "ID" of a single GDP task/class
+     *
      * @var int
      */
-    protected int $foreignKey;
+    protected int $taskIdx;
+
+    /**
+     * Undocumented variable
+     *
+     * @var int
+     */
+    protected int $taskRepetitions;
+
 
     /**
      * @inheritDoc
      */
     public function saveProgress(QueueEntry $queueEntry): bool
     {
+        // --DEBUG-- -------------------------------------------------------------
+        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/www/shop5_02/_logging_conf.xml');
+        $oLogger = \Logger::getLogger('default');
+        // --DEBUG-- -------------------------------------------------------------
+        $oLogger->debug('saving progress ...');   // --DEBUG--
+
         parent::saveProgress($queueEntry);
         $this->db->update(
             'tjobqueue',
             'jobQueueID',
             $this->getQueueID(),
-            (object)['foreignKey' => (string)$this->foreignKey]
+            (object)['foreignKey' => (string)$this->taskIdx]
         );
 
         return true;
@@ -39,19 +56,31 @@ final class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        parent::start($queueEntry);
-        $this->foreignKey = (int)$queueEntry->foreignKey;
+        // --DEBUG-- -------------------------------------------------------------
+        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
+        \Logger::configure('/www/shop5_02/_logging_conf.xml');
+        $oLogger = \Logger::getLogger('default');
+        // --DEBUG-- -------------------------------------------------------------
 
-        // use `tcron`.`foreignKey` as a step-storage here
+        parent::start($queueEntry);
+
+        // using `tcron`.`foreignKey` as a task index storage and `tcron`.`tasksExecuted` as repetition (down)counter
+        $this->taskIdx         = (int)$queueEntry->foreignKey;
+        $this->taskRepetitions = (int)$queueEntry->tasksExecuted;
+
+        // $oLogger->debug('Q-entry: '.print_r($queueEntry,true)); // --DEBUG--
+
         if ($queueEntry->foreignKey === '') {
             $queueEntry->foreignKey = '0';
         }
         $tableCleaner = new TableCleaner();
-        $tableCleaner->executeByStep($this->foreignKey);
+        $tableCleaner->executeByStep($this->taskIdx, $this->taskRepetitions);  // --TRYOUT-- second param!
+
+        $queueEntry->tasksExecuted = $tableCleaner->getTaskRepetitions();     // --TRYOUT-- save the max repetition count of this task
         if ($tableCleaner->getIsFinished()) {
-            $this->setForeignKey((string)$this->foreignKey++);
+            $this->setForeignKey((string)$this->taskIdx++);
         }
-        $this->setFinished($this->foreignKey >= $tableCleaner->getMethodCount());
+        $this->setFinished($this->taskIdx >= $tableCleaner->getMethodCount());
 
         return $this;
     }

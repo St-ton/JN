@@ -1,7 +1,7 @@
 <div class="collapse" id="sidebar">
     <div class="row no-gutters align-items-center flex-nowrap topbar px-3">
         <div class="col">
-            <a href="index.php" title="{__('dashboard')}">
+            <a href="{$adminURL}/index.php" title="{__('dashboard')}">
                 <img class="brand-logo" width="101" height="32" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
             </a>
         </div>
@@ -15,7 +15,7 @@
         <ul class="nav categories">
             {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
                 {assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
-                {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
+                {if $oLinkOberGruppe->oLinkGruppe_arr|count === 0 && $oLinkOberGruppe->oLink_arr|count === 1}
                     <li class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}">
                         <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="nav-link">
@@ -39,14 +39,14 @@
                                 {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                 {if is_object($oLinkGruppe->oLink_arr)}
                                     <li id="dropdown-header-{$entryName}"
-                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active{/if}">
+                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active current-item{/if}">
                                         <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}"
                                             {if !empty($oLinkGruppe->oLink_arr->target)}
                                                 target="{$oLinkGruppe->oLink_arr->target}"{/if}>
                                             {$oLinkGruppe->cName}
                                         </a>
                                     </li>
-                                {elseif $oLinkGruppe->oLink_arr|@count > 0}
+                                {elseif $oLinkGruppe->oLink_arr|count > 0}
                                     <li id="dropdown-header-{$entryName}"
                                         class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]} active{/if}">
                                         <a class="nav-link {if !($oLinkGruppe->key === $currentMenuPath[1])}collapsed{/if}"
@@ -62,7 +62,7 @@
                                             id="collapse-{$entryName}"
                                             data-parent="#sidebar">
                                             {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                <li class="nav-item {if $oLink->key === $currentMenuPath[2]}active{/if}">
+                                                <li class="nav-item {if $oLink->key === $currentMenuPath[2]}active current-item{/if} ">
                                                     <a class="nav-link" href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                 </li>
                                             {/foreach}
@@ -82,4 +82,11 @@
         </ul>
     </div>
     <div class="opaque-background"></div>
+    <script>
+        let curItem = $('.current-item');
+
+        if(curItem.length) {
+            curItem[0].scrollIntoView();
+        }
+    </script>
 </div>

@@ -80,13 +80,14 @@ class Country
 
     /**
      * Country constructor.
-     * @param string $iso
-     * @param bool   $initFromDB
+     * @param string               $iso
+     * @param bool                 $initFromDB
+     * @param LanguageModel[]|null $languages
      */
-    public function __construct(string $iso, bool $initFromDB = false)
+    public function __construct(string $iso, bool $initFromDB = false, ?array $languages = null)
     {
         $this->setISO($iso);
-        foreach (Shop::Lang()->getAllLanguages() as $lang) {
+        foreach ($languages ?? Shop::Lang()->getAllLanguages() as $lang) {
             $this->setName($lang);
         }
         if ($initFromDB) {
@@ -108,8 +109,8 @@ class Country
              ->setEU($countryData->nEU)
              ->setNameDE($countryData->cDeutsch)
              ->setNameEN($countryData->cEnglisch)
-             ->setPermitRegistration($countryData->bPermitRegistration === '1')
-             ->setRequireStateDefinition($countryData->bRequireStateDefinition === '1')
+             ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
+             ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
              ->setShippingAvailable($db->getSingleObject(
                  'SELECT COUNT(*) AS cnt 
                     FROM tversandart

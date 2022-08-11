@@ -33,7 +33,7 @@ class ResetCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $db         = Shop::Container()->getDB();
         $settings   = Shopsetting::getInstance();
@@ -52,6 +52,6 @@ class ResetCommand extends Command
         }
         $io->writeln('<info>' . $count. ' templates has been reset.</info>');
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

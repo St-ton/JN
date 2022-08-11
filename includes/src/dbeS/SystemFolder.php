@@ -11,27 +11,27 @@ class SystemFolder
     /**
      * @var string
      */
-    public $cBaseName;
+    public string $cBaseName;
 
     /**
      * @var string
      */
-    public $cBasePath;
+    public string $cBasePath;
 
     /**
      * @var array
      */
-    public $oSubFolders;
+    public array $oSubFolders;
 
     /**
-     * @param string $cBaseName
-     * @param string $cBasePath
-     * @param array  $oSubFolders
+     * @param string $baseName
+     * @param string $basePath
+     * @param array  $subFolders
      */
-    public function __construct($cBaseName = '', $cBasePath = '', $oSubFolders = [])
+    public function __construct(string $baseName = '', string $basePath = '', array $subFolders = [])
     {
-        $this->cBaseName   = $cBaseName;
-        $this->cBasePath   = $cBasePath;
-        $this->oSubFolders = $oSubFolders;
+        $this->cBaseName   = $baseName;
+        $this->cBasePath   = $basePath;
+        $this->oSubFolders = $subFolders;
     }
 }

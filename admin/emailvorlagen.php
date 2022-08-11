@@ -1,7 +1,7 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Backend\Revision;
+use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -51,9 +51,9 @@ if ($pluginID > 0) {
     $settingsTableName = $pluginSettingsTable;
 }
 if (isset($_GET['err'])) {
-    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplate'), 'errorTemplate');
+    $alertHelper->addError(__('errorTemplate'), 'errorTemplate');
     if (is_array($_SESSION['last_error'])) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, $_SESSION['last_error']['message'], 'last_error');
+        $alertHelper->addError($_SESSION['last_error']['message'], 'last_error');
         unset($_SESSION['last_error']);
     }
 }
@@ -70,21 +70,17 @@ if (isset($_POST['resetConfirmJaSubmit'])
     && $controller->getTemplateByID($emailTemplateID) !== null
 ) {
     $controller->resetTemplate($emailTemplateID);
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
+    $alertHelper->addSuccess(__('successTemplateReset'), 'successTemplateReset');
 }
 if (Request::postInt('preview') > 0) {
     $state = $controller->sendPreviewMails(Request::postInt('preview'));
     if ($state === $controller::OK) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
+        $alertHelper->addSuccess(__('successEmailSend'), 'successEmailSend');
     } elseif ($state === $controller::ERROR_CANNOT_SEND) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEmailSend'), 'errorEmailSend');
+        $alertHelper->addError(__('errorEmailSend'), 'errorEmailSend');
     }
     foreach ($controller->getErrorMessages() as $i => $msg) {
-        $alertHelper->addAlert(
-            Alert::TYPE_ERROR,
-            $msg,
-            'sentError' . $i
-        );
+        $alertHelper->addError($msg, 'sentError' . $i);
     }
 }
 if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::validateToken()) {
@@ -116,18 +112,14 @@ if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::
     if ($hasError === false) {
         $res = $controller->updateTemplate($emailTemplateID, $_POST, $_FILES);
         if ($res === $controller::OK) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateEdit'), 'successTemplateEdit');
+            $alertHelper->addSuccess(__('successTemplateEdit'), 'successTemplateEdit');
             $step     = 'uebersicht';
             $continue = (bool)Request::verifyGPCDataInt('continue');
             $doCheck  = $emailTemplateID;
         } else {
             $mailTemplate = $controller->getModel();
             foreach ($controller->getErrorMessages() as $i => $msg) {
-                $alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    $msg,
-                    'errorUpload' . $i
-                );
+                $alertHelper->addError($msg, 'errorUpload' . $i);
             }
         }
     }
@@ -144,7 +136,7 @@ if ((($emailTemplateID > 0 && $continue === true)
     ) {
         $languageID = Request::verifyGPCDataInt('kS');
         $controller->deleteAttachments($emailTemplateID, $languageID);
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successFileAppendixDelete'), 'successFileAppendixDelete');
+        $alertHelper->addSuccess(__('successFileAppendixDelete'), 'successFileAppendixDelete');
     }
 
     $step        = 'bearbeiten';
@@ -154,7 +146,7 @@ if ((($emailTemplateID > 0 && $continue === true)
         $configAssoc[$item->cKey] = $item->cValue;
     }
     $mailTemplate = $mailTemplate ?? $controller->getTemplateByID($emailTemplateID);
-    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true))
+    $smarty->assign('availableLanguages', LanguageHelper::getAllLanguages(0, true, true))
            ->assign('mailConfig', $configAssoc)
            ->assign('cUploadVerzeichnis', $uploadDir);
 }

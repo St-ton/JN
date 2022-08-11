@@ -36,7 +36,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newLinks') cBeschreibung=$description}
 <div id="content">
     <div id="settings">
-        <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
+        <form id="create_link" name="link_erstellen" method="post" action="{$adminURL}/links.php" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="create-or-update-link" />
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
@@ -137,6 +137,18 @@
                                 <option value="1" {if $Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '1')}selected{/if}>{__('activated')}</option>
                                 <option value="0" {if !$Link->getIsEnabled() || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '0')}selected{/if}>{__('deactivated')}</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center" id="option_target">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="linkTarget">{__('linkTarget')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" type="selectbox" name="linkTarget" id="linkTarget">
+                                <option value="_self" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_self') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_self')}selected{/if}>{__('targetSelf')}</option>
+                                <option value="_blank" {if (!isset($xPostVar_arr.linkTarget) && $Link->getTarget() === '_blank') || (isset($xPostVar_arr.linkTarget) && $xPostVar_arr.linkTarget === '_blank')}selected{/if}>{__('targetBlank')}</option>
+                            </select>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            {getHelpDesc cDesc=__('targetDesc')}
                         </div>
                     </div>
                     {if !isset($Link->getLinkType()) || $Link->getLinkType() != LINKTYP_LOGIN}
@@ -257,7 +269,7 @@
                                                    value="{if isset($xPostVar_arr.$cName_ISO) && $xPostVar_arr.$cName_ISO}{$xPostVar_arr.$cName_ISO}{elseif !empty($Link->getName($langID))}{$Link->getName($langID)}{/if}" tabindex="7" />
                                         </div>
                                     </div>
-                                    <div class="form-group form-row align-items-center">
+                                    <div class="form-group form-row align-items-center{if isset($xPlausiVar_arr.scheme)} form-error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">
                                             {__('linkSeo')}:
                                         </label>
@@ -267,6 +279,9 @@
                                                    id="cSeo_{$cISO}"
                                                    value="{if isset($xPostVar_arr.$cSeo_ISO) && $xPostVar_arr.$cSeo_ISO}{$xPostVar_arr.$cSeo_ISO}{elseif !empty($Link->getSEO($langID))}{$Link->getSEO($langID)}{/if}"
                                                    tabindex="7" />
+                                        </div>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                            {getHelpDesc cDesc=__('cSeoDescription')}
                                         </div>
                                     </div>
                                     {assign var=cTitle_ISO value='cTitle_'|cat:$cISO}
@@ -308,7 +323,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text" name="cMetaTitle_{$cISO}"
                                                    id="cMetaTitle_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaTitle_ISO) && $xPostVar_arr.$cMetaTitle_ISO}{$xPostVar_arr.$cMetaTitle_ISO|htmlspecialchars}{elseif !empty($Link->getMetaTitle($langID))}{$Link->getMetaTitle($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -324,7 +339,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaKeywords_{$cISO}" id="cMetaKeywords_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaKeywords_ISO) && $xPostVar_arr.$cMetaKeywords_ISO}{$xPostVar_arr.$cMetaKeywords_ISO|htmlspecialchars}{elseif !empty($Link->getMetaKeyword($langID))}{$Link->getMetaKeyword($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -340,7 +355,7 @@
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text"
                                                    name="cMetaDescription_{$cISO}" id="cMetaDescription_{$cISO}"
-                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|@htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|@htmlspecialchars}{/if}"
+                                                   value="{if isset($xPostVar_arr.$cMetaDescription_ISO) && $xPostVar_arr.$cMetaDescription_ISO}{$xPostVar_arr.$cMetaDescription_ISO|htmlspecialchars}{elseif !empty($Link->getMetaDescription($langID))}{$Link->getMetaDescription($langID)|htmlspecialchars}{/if}"
                                                    tabindex="9" />
                                         </div>
                                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
@@ -356,7 +371,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="links.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/links.php">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

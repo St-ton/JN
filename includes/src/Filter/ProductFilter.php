@@ -335,31 +335,6 @@ class ProductFilter
     }
 
     /**
-     * for compatibility reasons only - called when oSprache_arr is directly read from ProductFilter instance
-     *
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getLanguages(): array
-    {
-        return $this->filterConfig->getLanguages();
-    }
-
-    /**
-     * for compatibility reasons only - called when oSprache_arr is directly set on ProductFilter instance
-     *
-     * @param array $languages
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function setLanguages(array $languages): array
-    {
-        $this->filterConfig->setLanguages($languages);
-
-        return $languages;
-    }
-
-    /**
      * @return ProductFilterSQLInterface
      */
     public function getFilterSQL(): ProductFilterSQLInterface
@@ -978,7 +953,7 @@ class ProductFilter
     /**
      * get filters that can be displayed at content level
      *
-     * @return array|FilterInterface[]
+     * @return FilterInterface[]
      */
     public function getAvailableContentFilters(): array
     {
@@ -989,8 +964,7 @@ class ProductFilter
 
         return \array_filter(
             $this->filters,
-            static function ($f) use ($templateSettings) {
-                /** @var FilterInterface $f */
+            static function (FilterInterface $f) use ($templateSettings) {
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
                     || ($f->getClassName() === PriceRange::class
@@ -1457,6 +1431,7 @@ class ProductFilter
             && !$this->hasSearchQuery()
             && !$this->hasCharacteristicValue()
             && !$this->hasSearchSpecial()
+            && !(\get_class($this->getBaseState()) === DummyState::class && $this->getBaseState()->isInitialized())
         ) {
             // we have a manufacturer filter that doesn't filter anything
             if ($this->manufacturerFilter->getSeo($languageID) !== null) {
@@ -1720,7 +1695,7 @@ class ProductFilter
                 $productsPerPage = null;
             }
             foreach ($productKeys->forPage($this->nSeite, $productsPerPage) as $id) {
-                $productList->push((new Artikel())->fuelleArtikel($id, $opt));
+                $productList->push((new Artikel($this->db))->fuelleArtikel($id, $opt));
             }
             $productList = $productList->filter();
             $this->searchResults->setVisibleProductCount($productList->count());
@@ -1878,18 +1853,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['mf'])) {
             if (\is_string($_GET['mf'])) {
-                $filter[] = $_GET['mf'];
+                $filter[] = (int)$_GET['mf'];
             } else {
-                foreach ($_GET['mf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['mf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['mf'])) {
             if (\is_string($_POST['mf'])) {
-                $filter[] = $_POST['mf'];
+                $filter[] = (int)$_POST['mf'];
             } else {
-                foreach ($_POST['mf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['mf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_SERVER['REQUEST_METHOD'])) {
@@ -1926,18 +1901,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['sf'])) {
             if (\is_string($_GET['sf'])) {
-                $filter[] = $_GET['sf'];
+                $filter[] = (int)$_GET['sf'];
             } else {
-                foreach ($_GET['sf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['sf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['sf'])) {
             if (\is_string($_POST['sf'])) {
-                $filter[] = $_POST['sf'];
+                $filter[] = (int)$_POST['sf'];
             } else {
-                foreach ($_POST['sf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['sf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } else {
@@ -1968,18 +1943,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['kf'])) {
             if (\is_string($_GET['kf'])) {
-                $filter[] = $_GET['kf'];
+                $filter[] = (int)$_GET['kf'];
             } else {
-                foreach ($_GET['kf'] as $cf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['kf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['kf'])) {
             if (\is_string($_POST['kf'])) {
-                $filter[] = $_POST['kf'];
+                $filter[] = (int)$_POST['kf'];
             } else {
-                foreach ($_POST['kf'] as $cf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['kf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } else {

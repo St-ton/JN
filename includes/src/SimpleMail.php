@@ -123,7 +123,7 @@ class SimpleMail
     public function __construct(bool $shopMail = true, array $mailConfig = [])
     {
         if ($shopMail === true) {
-            $config = Shop::getSettings([\CONF_EMAILS])['emails'];
+            $config = Shop::getSettingSection(\CONF_EMAILS);
 
             $this->cMethod        = $config['email_methode'];
             $this->cSendMailPfad  = $config['email_sendmail_pfad'];
@@ -487,8 +487,7 @@ class SimpleMail
         if (Text::filterEmailAddress($mail) === false) {
             return true;
         }
-        $conf = Shop::getSettings([\CONF_EMAILBLACKLIST]);
-        if ($conf['emailblacklist']['blacklist_benutzen'] !== 'Y') {
+        if (Shop::getSettingValue(\CONF_EMAILBLACKLIST, 'blacklist_benutzen') !== 'Y') {
             return false;
         }
         foreach (Shop::Container()->getDB()->getObjects('SELECT cEmail FROM temailblacklist') as $item) {

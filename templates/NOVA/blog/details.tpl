@@ -71,7 +71,12 @@
                                         {lang key='newsComments' section='news'}
                                     {/if}
                                 </span>
-                                <span itemprop="commentCount">{$newsItem->getCommentCount()}</span>
+                                <span itemprop="commentCount">
+                                    {$newsItem->getCommentCount()}
+                                    {if $newsItem->getChildCommentsCount()  && $Einstellungen.news.news_kommentare_anzahl_antwort_kommentare_anzeigen === 'Y'}
+                                        ({$newsItem->getChildCommentsCount()})
+                                    {/if}
+                                </span>
                             {/link}
                             {/if}
                         {/block}
@@ -157,7 +162,7 @@
                                 {alert variant="warning"}{lang key='newsLogin' section='news'}{/alert}
                             {/block}
                         {/if}
-                        {if $comments|@count > 0}
+                        {if $comments|count > 0}
                             {block name='blog-details-comments-content'}
                                 {if $newsItem->getURL() !== ''}
                                     {assign var=articleURL value=$newsItem->getURL()}
@@ -175,7 +180,10 @@
                                             {block name='blog-details-comments-content-heading'}
                                                 <div class="h2 section-heading">{lang key='newsComments' section='news'}
                                                     <span itemprop="commentCount">
-                                                        ({$comments|count})
+                                                        {$newsItem->getCommentCount()}
+                                                        {if $newsItem->getChildCommentsCount() && $Einstellungen.news.news_kommentare_anzahl_antwort_kommentare_anzeigen === 'Y'}
+                                                            ({$newsItem->getChildCommentsCount()})
+                                                        {/if}
                                                     </span>
                                                 </div>
                                             {/block}
@@ -220,7 +228,7 @@
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
-                    itemscope=true
+                    itemscope
                     itemtype="https://schema.org/Blog"
                     class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
                     data-slick-type="slider-three">

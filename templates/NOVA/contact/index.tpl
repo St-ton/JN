@@ -40,11 +40,10 @@
                     {form name="contact" action="{get_static_route id='kontakt.php'}" method="post" class="contact-form jtl-validate" slide=true}
                         {block name='contact-index-form-content'}
                             {block name='contact-index-fieldset-contact'}
-                            <fieldset>
-                                {row class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
+                                {row tag='fieldset' class="{if !empty($Spezialcontent->oben)}is-top{/if}"}
                                      {col cols=12 lg=4}
                                         {block name='contact-index-legend-contact'}
-                                            <legend class="h3">{lang key='contact'}</legend>
+                                            <div class="h3">{lang key='contact'}</div>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -165,17 +164,16 @@
                                         {/block}
                                     {/col}
                                 {/row}
-                            </fieldset>
                             {/block}
                             {block name='contact-index-hr'}
                                 <hr class="contact-form-hr">
                             {/block}
                             {block name='contact-index-fieldset-message'}
-                            <fieldset>
-                                {row}
+
+                                {row tag='fieldset'}
                                     {col cols=12 lg=4}
                                         {block name='contact-index-legend-message'}
-                                            <legend class="h3">{lang key='message' section='contact'}</legend>
+                                            <div class="h3">{lang key='message' section='contact'}</div>
                                         {/block}
                                     {/col}
                                     {col cols=12 lg=8}
@@ -232,7 +230,7 @@
                             </fieldset>
                             {/block}
                             {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}
+                                isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && JTL\Session\Frontend::getCustomer()->getID() === 0}
                                 {block name='contact-index-form-captcha'}
                                     <hr>
                                     {row}

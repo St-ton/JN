@@ -18,37 +18,37 @@ class VueInstaller
     /**
      * @var string
      */
-    private $task;
+    private string $task;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $post;
-
-    /**
-     * @var bool
-     */
-    private $cli;
-
-    /**
-     * @var NiceDB
-     */
-    private $db;
+    private ?array $post;
 
     /**
      * @var bool
      */
-    private $responseStatus = true;
+    private bool $cli;
+
+    /**
+     * @var NiceDB|null
+     */
+    private ?NiceDB $db = null;
+
+    /**
+     * @var bool
+     */
+    private bool $responseStatus = true;
 
     /**
      * @var array
      */
-    private $responseMessage = [];
+    private array $responseMessage = [];
 
     /**
      * @var array
      */
-    private $payload = [];
+    private array $payload = [];
 
     /**
      * Installer constructor.
@@ -96,12 +96,13 @@ class VueInstaller
     }
 
     /**
-     *
+     * @return array|null
+     * @throws \JsonException
      */
     private function output(): ?array
     {
         if (!$this->cli) {
-            echo \json_encode($this->payload);
+            echo \json_encode($this->payload, \JSON_THROW_ON_ERROR);
             exit(0);
         }
 
@@ -109,7 +110,8 @@ class VueInstaller
     }
 
     /**
-     *
+     * @return void
+     * @throws \JsonException
      */
     private function sendResponse(): void
     {
@@ -120,7 +122,7 @@ class VueInstaller
             'ok'      => $this->responseStatus,
             'payload' => $this->payload,
             'msg'     => \implode('<br>', $this->responseMessage)
-        ]);
+        ], \JSON_THROW_ON_ERROR);
         exit(0);
     }
 
@@ -236,18 +238,15 @@ define('DB_USER','" . \addcslashes($credentials['user'], "'") . "');
 define('DB_PASS','" . \addcslashes($credentials['pass'], "'") . "');
 
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
-
-define('EVO_COMPATIBILITY', false);
-
-//enables printing of warnings/infos/errors for the shop frontend
+// enables printing of warnings/infos/errors for the shop frontend
 define('SHOP_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the dbeS sync
+// enables printing of warnings/infos/errors for the dbeS sync
 define('SYNC_LOG_LEVEL', E_ALL ^ E_NOTICE ^ E_DEPRECATED ^ E_WARNING);
-//enables printing of warnings/infos/errors for the admin backend
+// enables printing of warnings/infos/errors for the admin backend
 define('ADMIN_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the smarty templates
+// enables printing of warnings/infos/errors for the smarty templates
 define('SMARTY_LOG_LEVEL', E_ALL);
-//excplicitly show/hide errors
+// excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
         $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
         \fwrite($file, $config);
@@ -299,7 +298,7 @@ ini_set('display_errors', 0);" . "\n";
     {
         $adminLogin                    = new stdClass();
         $adminLogin->cLogin            = $this->post['admin']['name'];
-        $adminLogin->cPass             = \md5($this->post['admin']['pass']);
+        $adminLogin->cPass             = \password_hash($this->post['admin']['pass'], \PASSWORD_DEFAULT);
         $adminLogin->cName             = 'Admin';
         $adminLogin->cMail             = '';
         $adminLogin->kAdminlogingruppe = 1;
@@ -429,7 +428,7 @@ ini_set('display_errors', 0);" . "\n";
         }
         $salt = \md5($salt);
         \mt_srand();
-        if (\strlen($seed) > 0) {
+        if ($seed !== '') {
             [$strings] = \explode(';', $seed);
             if (\is_array($strings) && \count($strings) > 0) {
                 foreach ($strings as $string) {
@@ -460,7 +459,7 @@ ini_set('display_errors', 0);" . "\n";
      * @param null|string $hashPass
      * @return bool|string
      */
-    private function cryptPasswort(string $pass, $hashPass = null)
+    private function cryptPasswort(string $pass, ?string $hashPass = null)
     {
         $passLen = \strlen($pass);
         $salt    = \sha1(\uniqid((string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX), true));

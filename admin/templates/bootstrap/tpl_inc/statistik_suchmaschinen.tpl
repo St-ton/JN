@@ -56,7 +56,7 @@
                 <div class="card-body">
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
-                    {if isset($oStat_arr) && $oStat_arr|@count > 0}
+                    {if isset($oStat_arr) && $oStat_arr|count > 0}
                         <div class="table-responsive">
                             <table class="table table-striped table-sm">
                                 <thead>
@@ -67,10 +67,10 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach name=stats key=i from=$oStat_arr item=oStat}
+                                {foreach $oStat_arr as $i => $oStat}
                                     {if $i >= $nPosAb && $i < $nPosBis}
                                         <tr>
-                                            {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
+                                            {foreach $cMember_arr[$i] as $j => $cMember}
                                                 {assign var=cMemberVar value=$cMember[0]}
                                                 <td class="text-center">
                                                     {if $cMemberVar === 'nCount' && $nTyp === $smarty.const.STATS_ADMIN_TYPE_UMSATZ}
@@ -99,7 +99,7 @@
             <div class="subheading1">{__('crawlerOverviewTitle')}</div>
             <hr class="mb-3">
             {include file='tpl_inc/pagination.tpl' pagination=$crawlerPagination cParam_arr=['s'=>$nTyp,'tab'=>'settings']}
-            <form id="crawlerList" name="crawlerList" method="post" action="statistik.php?s=3&tab=settings">
+            <form id="crawlerList" name="crawlerList" method="post" action="{$adminURL}/statistik.php?s=3&tab=settings">
                 {$jtl_token}
                 <div class="table-responsive">
                     <table id="category-list" class="list table table-striped">
@@ -107,12 +107,12 @@
                         <tr>
                             <th class="check">&nbsp;</th>
                             <th class="text-center">{__('crawlerListUserAgent')}</th>
-                            <th class=" text-center">{__('crawlerListDescription')}</th>
+                            <th class="text-center">{__('crawlerListDescription')}</th>
                             <th class="th-5 text-center">&nbsp;</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {if $crawler_arr|@count}
+                        {if $crawler_arr|count}
                             {foreach $crawler_arr as $crawler}
                                 <tr scope="row" class="tab_bg{$crawler@iteration % 2}">
                                     <td class="check">
@@ -121,11 +121,11 @@
                                             <label class="custom-control-label" for="crawler-cb-{$crawler->kBesucherBot}"></label>
                                         </div>
                                     </td>
-                                    <td class="text-center">{$crawler->cUserAgent}</td>
-                                    <td class="text-center">{$crawler->cBeschreibung}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cUserAgent)}</td>
+                                    <td class="text-center">{JTL\Helpers\Text::filterXSS($crawler->cBeschreibung)}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <a href="statistik.php?s=3&edit=1&id={$crawler->kBesucherBot}"
+                                            <a href="{$adminURL}/statistik.php?s=3&edit=1&id={$crawler->kBesucherBot}"
                                                class="btn btn-link px-2"
                                                title="{__('modify')}"
                                                data-toggle="tooltip">
@@ -161,7 +161,7 @@
                             <button disabled name="delete" type="button" data-toggle="modal"  data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <a href="statistik.php?s=3&new=1" value="{__('newCrawler')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newCrawler')}</a>
+                            <a href="{$adminURL}/statistik.php?s=3&new=1" value="{__('newCrawler')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newCrawler')}</a>
                         </div>
                     </div>
                 </div>

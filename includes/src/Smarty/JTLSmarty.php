@@ -12,19 +12,17 @@ use JTL\Plugin\Helper;
 use JTL\Shop;
 use JTL\Template\BootChecker;
 use RuntimeException;
-use SmartyBC;
 
 /**
  * Class JTLSmarty
  * @package \JTL\Smarty
- * @method JTLSmarty assign(string $variable, mixed $value)
  */
-class JTLSmarty extends SmartyBC
+class JTLSmarty extends BC
 {
     /**
      * @var array
      */
-    public $config;
+    public array $config;
 
     /**
      * @var array
@@ -34,27 +32,27 @@ class JTLSmarty extends SmartyBC
     /**
      * @var JTLSmarty[]
      */
-    private static $instance = [];
+    private static array $instance = [];
 
     /**
      * @var string
      */
-    public $context;
+    public string $context;
 
     /**
      * @var bool
      */
-    public static $isChildTemplate = false;
+    public static bool $isChildTemplate = false;
 
     /**
      * @var string
      */
-    private $templateDir;
+    private string $templateDir;
 
     /**
-     * @var string|null
+     * @var array
      */
-    private $parentTemplateName;
+    private array $mapping = [];
 
     /**
      * modified constructor with custom initialisation
@@ -65,7 +63,7 @@ class JTLSmarty extends SmartyBC
     public function __construct(bool $fast = false, string $context = ContextType::FRONTEND)
     {
         parent::__construct();
-        \Smarty::$_CHARSET = \JTL_CHARSET;
+        self::$_CHARSET = \JTL_CHARSET;
         $this->setErrorReporting(\SMARTY_LOG_LEVEL)
             ->setForceCompile(\SMARTY_FORCE_COMPILE)
             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
@@ -97,30 +95,32 @@ class JTLSmarty extends SmartyBC
             if ($model->getTemplate() === null) {
                 throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
             }
+            $paths      = $model->getPaths();
             $tplDir     = $model->getDir();
             $parent     = $model->getParent();
-            $compileDir = \PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/';
+            $compileDir = $paths->getCompileDir();
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
             $this->template_dir = [];
             $this->setCompileDir($compileDir)
-                ->setCacheDir(\PFAD_ROOT . \PFAD_COMPILEDIR . $tplDir . '/' . 'page_cache/')
+                ->setCacheDir($paths->getCacheDir())
                 ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                ->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/');
+                ->assign('tplDir', $paths->getBaseDir())
+                ->assign('parentTemplateDir', null);
             if ($parent !== null) {
                 self::$isChildTemplate = true;
-                $this->assign('tplDir', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parent_template_path', \PFAD_ROOT . \PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parentTemplateDir', \PFAD_TEMPLATES . $parent . '/')
-                    ->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $parent, $parent);
+                $this->assign('tplDir', $paths->getParentDir())
+                    ->assign('parent_template_path', $paths->getParentDir())
+                    ->assign('parentTemplateDir', $paths->getParentRelDir())
+                    ->addTemplateDir($paths->getParentRelDir(), $parent);
             }
-            $this->addTemplateDir(\PFAD_ROOT . \PFAD_TEMPLATES . $tplDir . '/', $this->context);
+            $this->addTemplateDir($paths->getBaseDir(), $this->context);
             foreach (Helper::getTemplatePaths() as $moduleId => $path) {
                 $templateKey = 'plugin_' . $moduleId;
                 $this->addTemplateDir($path, $templateKey);
             }
-            if (($bootstrapper = BootChecker::bootstrap($tplDir)) !== null) {
+            if (($bootstrapper = BootChecker::bootstrap($tplDir) ?? BootChecker::bootstrap($parent)) !== null) {
                 $bootstrapper->setSmarty($this);
                 $bootstrapper->setTemplate($model);
                 $bootstrapper->boot();
@@ -131,7 +131,7 @@ class JTLSmarty extends SmartyBC
             if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
                 throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
             }
-            $this->setCaching(\Smarty::CACHING_OFF)
+            $this->setCaching(self::CACHING_OFF)
                 ->setDebugging(\SMARTY_DEBUG_CONSOLE)
                 ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
                 ->setCompileDir($compileDir)
@@ -147,7 +147,7 @@ class JTLSmarty extends SmartyBC
      * @param string|null $parent
      * @throws \SmartyException
      */
-    private function init($parent = null): void
+    private function init(?string $parent = null): void
     {
         $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
@@ -308,23 +308,13 @@ class JTLSmarty extends SmartyBC
         }
         $file   = \basename($filename, '.tpl');
         $dir    = \dirname($filename);
-        $custom = \mb_strpos($dir, \PFAD_ROOT) === false
+        $custom = !\str_contains($dir, \PFAD_ROOT)
             ? $this->getTemplateDir($this->context) . (($dir === '.')
                 ? ''
                 : ($dir . '/')) . $file . '_custom.tpl'
             : ($dir . '/' . $file . '_custom.tpl');
 
         return \file_exists($custom) ? $custom : $filename;
-    }
-
-    /**
-     * @param string $filename
-     * @return string
-     * @deprecated since 5.0.0
-     */
-    public function getFallbackFile(string $filename): string
-    {
-        return $filename;
     }
 
     /**
@@ -340,9 +330,7 @@ class JTLSmarty extends SmartyBC
      */
     public function fetch($template = null, $cacheID = null, $compileID = null, $parent = null): string
     {
-        $debug = !empty($this->_debug->template_data)
-            ? $this->_debug->template_data
-            : null;
+        $debug = $this->_debug->template_data ?? null;
         $res   = parent::fetch($this->getResourceName($template), $cacheID, $compileID, $parent);
         if ($debug !== null) {
             // fetch overwrites the old debug data so we have to merge it with our previously saved data
@@ -386,12 +374,16 @@ class JTLSmarty extends SmartyBC
     public function getResourceName(string $resourceName): string
     {
         $transform = false;
-        if (\mb_strpos($resourceName, 'string:') === 0 || \mb_strpos($resourceName, '[') !== false) {
+        if (\str_starts_with($resourceName, 'string:') || \str_contains($resourceName, '[')) {
             return $resourceName;
         }
-        if (\mb_strpos($resourceName, 'file:') === 0) {
+        if (\str_starts_with($resourceName, 'file:')) {
             $resourceName = \str_replace('file:', '', $resourceName);
             $transform    = true;
+        }
+        $mapped = $this->mapping[$resourceName] ?? null;
+        if ($mapped !== null) {
+            return $mapped;
         }
         $resource_custom_name = $this->getCustomFile($resourceName);
         $resource_cfb_name    = $resource_custom_name;
@@ -407,7 +399,7 @@ class JTLSmarty extends SmartyBC
             if ($resourceName === $resource_cfb_name) {
                 $extends = [];
                 foreach ($this->getTemplateDir() as $module => $templateDir) {
-                    if (\mb_strpos($module, 'plugin_') === 0) {
+                    if (\str_starts_with($module, 'plugin_')) {
                         $pluginID    = \mb_substr($module, 7);
                         $templateVar = 'oPlugin_' . $pluginID;
                         if ($this->getTemplateVars($templateVar) === null) {
@@ -428,8 +420,10 @@ class JTLSmarty extends SmartyBC
                 }
             }
         }
+        $res                          = $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+        $this->mapping[$resourceName] = $res;
 
-        return $transform ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
+        return $res;
     }
 
     /**
@@ -497,7 +491,6 @@ class JTLSmarty extends SmartyBC
     public function activateBackendSecurityMode(): self
     {
         $sec                = new \Smarty_Security($this);
-        $sec->php_handling  = \Smarty::PHP_REMOVE;
         $jtlModifier        = [
             'replace_delim',
             'count_characters',
@@ -531,5 +524,18 @@ class JTLSmarty extends SmartyBC
         }
 
         return $functions;
+    }
+
+    /**
+     * @param string $name
+     * @param $value
+     * @param string $version
+     * @return JTLSmarty
+     */
+    public function assignDeprecated(string $name, $value, string $version): self
+    {
+        $this->tpl_vars[$name] = new DeprecatedVariable($value, $name, $version);
+
+        return $this;
     }
 }

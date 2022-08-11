@@ -159,6 +159,7 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
 
     use JTL\License\Manager;
     use JTL\License\Struct\ExsLicense;
+    use JTL\Shop;
 
     class Bootstrap extends \Template\NOVA\Bootstrap
     {
@@ -180,6 +181,8 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
             } elseif ($license->getLicense()->getDaysRemaining() < 14) {
                 echo 'Achtung! Lizenz läuft bald aus!';
             } elseif ($license->getLicense()->isExpired()) {
+                // FALLBACK to default template
+                Shop::Container()->getTemplateService()->setActiveTemplate('NOVA');
                 die('Bitte erwerben Sie eine neue Lizenz!');
             } elseif ($license->getLicense()->getSubscription()->isExpired()) {
                 die('Bitte erwerben Sie eine neue Subscription!');
@@ -202,6 +205,8 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
         public function licenseExpired(ExsLicense $license): void
         {
             echo 'Argh! Meine Lizenz ist abgelaufen!';
+            // FALLBACK to default template
+            Shop::Container()->getTemplateService()->setActiveTemplate('NOVA');
         }
     }
 

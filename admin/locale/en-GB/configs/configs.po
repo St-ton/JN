@@ -24,13 +24,13 @@ msgid "artikel_lagerampel_gruen_name"
 msgstr "Green stock level"
 
 msgid "artikel_lagerampel_gruen_desc"
-msgstr "Enter from which stock level on the content of the language variable \"ampel gruen\" is displayed. Between this stock level and the stock level for \"Red stock level\", the content of the language variable \"ampel gelb\" is displayed."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here from which stock level the text of the language variable \"ampelGruen\" is displayed. Between this stock level and the stock level entered for \"Red stock level\", the text of the language variable \"ampelGelb\" is displayed. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "artikel_lagerampel_rot_name"
 msgstr "Red stock level"
 
 msgid "artikel_lagerampel_rot_desc"
-msgstr "Enter until which stock level on the content of the language variable \"ampel rot\" is displayed. Between this stock level and the stock level for \"Green stock level\", the content of the language variable \"ampel gelb\" is displayed."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here from which stock level the text of the language variable \"ampelRot\" is displayed. Between this stock level and the stock level entered for \"Green stock level\", the text of the language variable \"ampelGelb\" is displayed. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "artikel_ampel_lagernull_gruen_name"
 msgstr "Green stock level with \"Allow negative stock\""
@@ -86,6 +86,12 @@ msgstr "Minimum number of sales for bestsellers"
 msgid "global_bestseller_minanzahl_desc"
 msgstr "Specify the minimum number of times an item must be sold in order to be marked as a bestseller."
 
+msgid "global_bestseller_tage_name"
+msgstr "Determine bestsellers on the basis of last X days"
+
+msgid "global_bestseller_tage_desc"
+msgstr "Specify how many past days are to be considered for determining bestsellers. This allows you to limit the calculation of bestsellers to a certain period, e.g. to just the last 3 months or a whole year."
+
 msgid "kategorien_anzeigefilter_name"
 msgstr "Category display"
 
@@ -96,7 +102,7 @@ msgid "artikel_lagerampel_keinlager_name"
 msgstr "Coloured stock level indicator (non-inventory items)"
 
 msgid "artikel_lagerampel_keinlager_desc"
-msgstr "Specify the text that is to be displayed for non-inventory items."
+msgstr "If the setting \"Stock level display > Stock level indicator in green, yellow and red\" is active, you can set here which text and colour will be displayed for the stock level indicator with non-inventory items. For all other options of the setting \"Stock level display\", only the colour of the stock level indicator changes. The text stays the same."
 
 msgid "global_shopname_name"
 msgstr "Online shop name"
@@ -1010,6 +1016,12 @@ msgstr "Show dimensions"
 msgid "artikeldetails_abmessungen_anzeigen_desc"
 msgstr "Specify whether to display the dimensions (length x width x height) defined in JTL-Wawi on the item detail page."
 
+msgid "artikeldetails_inhalt_anzeigen_name"
+msgstr "Show content"
+
+msgid "artikeldetails_inhalt_anzeigen_desc"
+msgstr "Specify whether to display the content defined in JTL-Wawi on the item detail page."
+
 msgid "artikeldetails_attribute_anhaengen_name"
 msgstr "Add item attributes to description"
 
@@ -1248,7 +1260,7 @@ msgid "warenkorb_versandermittlung_anzeigen_name"
 msgstr "Show shipping cost determination"
 
 msgid "warenkorb_versandermittlung_anzeigen_desc"
-msgstr "Specify whether to display the shipping cost determination on the special page \"Shipments\"."
+msgstr "Specify whether to display the shipping cost determination on the special page \"Basket\"."
 
 msgid "warenkorb_kupon_anzeigen_name"
 msgstr "Prompt coupons in basket"
@@ -1339,6 +1351,12 @@ msgstr "Show item attributes"
 
 msgid "bestellvorgang_artikelattribute_desc"
 msgstr ""
+
+msgid "bestellvorgang_partlist_name"
+msgstr "Show line items"
+
+msgid "bestellvorgang_partlist_desc"
+msgstr "Show line items in cart and chekout?"
 
 msgid "bestellvorgang_artikelkurzbeschreibung_name"
 msgstr "Show unique brief item description"
@@ -1818,24 +1836,6 @@ msgid "zahlungsart_nachnahme_max_name"
 msgstr "Maximum order value"
 
 msgid "zahlungsart_nachnahme_max_desc"
-msgstr "Specify the basket value up to which a payment method is available for selection."
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_name"
-msgstr "Number of required orders"
-
-msgid "zahlungsart_kreditkarte_min_bestellungen_desc"
-msgstr "Specify the minimum number of orders a customer must have placed to be offered this payment method."
-
-msgid "zahlungsart_kreditkarte_min_name"
-msgstr "Minimum order value"
-
-msgid "zahlungsart_kreditkarte_min_desc"
-msgstr "Specify the minimum basket value required for a payment method to be available for selection."
-
-msgid "zahlungsart_kreditkarte_max_name"
-msgstr "Maximum order value"
-
-msgid "zahlungsart_kreditkarte_max_desc"
 msgstr "Specify the basket value up to which a payment method is available for selection."
 
 msgid "zahlungsart_rechnung_min_bestellungen_name"
@@ -2636,6 +2636,12 @@ msgstr "Show blog categories under blog"
 msgid "news_kategorie_unternewsanzeigen_desc"
 msgstr "Specify whether to display the respective blog categories under a selected blog post."
 
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_name"
+msgstr "Show number of responses"
+
+msgid "news_kommentare_anzahl_antwort_kommentare_anzeigen_desc"
+msgstr "Show the number of responses next to the comment count. Default = Y"
+
 msgid "sitemap_seiten_anzeigen_name"
 msgstr "Show all custom pages"
 
@@ -3034,3 +3040,9 @@ msgstr "Show cookie banner"
 
 msgid "consent_manager_show_banner_desc"
 msgstr "Specify when visitors of your online shop will see the banner for giving or denying global consent."
+
+msgid "forgot_password_captcha_name"
+msgstr "Enable spam protection"
+
+msgid "forgot_password_captcha_desc"
+msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."

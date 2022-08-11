@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
@@ -7,7 +7,7 @@ use JTL\Shop;
 /**
  * @return bool
  */
-function generiereRSSXML()
+function generiereRSSXML(): bool
 {
     Shop::Container()->getLogService()->debug('RSS wird erstellt');
     if (!is_writable(PFAD_ROOT . FILE_RSS_FEED)) {
@@ -19,8 +19,8 @@ function generiereRSSXML()
     }
     $shopURL = Shop::getURL();
     $db      = Shop::Container()->getDB();
-    $conf    = Shop::getSettings([CONF_RSS]);
-    if ($conf['rss']['rss_nutzen'] !== 'Y') {
+    $conf    = Shop::getSettingSection(CONF_RSS);
+    if ($conf['rss_nutzen'] !== 'Y') {
         return false;
     }
     $language                = $db->select('tsprache', 'cShopStandard', 'Y');
@@ -30,27 +30,27 @@ function generiereRSSXML()
     // ISO-8859-1
     $xml = '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-	<channel>
-		<title>' . $conf['rss']['rss_titel'] . '</title>
-		<link>' . $shopURL . '</link>
-		<description>' . $conf['rss']['rss_description'] . '</description>
-		<language>' . Text::convertISO2ISO639($language->cISO) . '</language>
-		<copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
-		<pubDate>' . date('r') . '</pubDate>
-		<atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
-		<image>
-			<url>' . $conf['rss']['rss_logoURL'] . '</url>
-			<title>' . $conf['rss']['rss_titel'] . '</title>
-			<link>' . $shopURL . '</link>
-		</image>';
+    <channel>
+        <title>' . $conf['rss_titel'] . '</title>
+        <link>' . $shopURL . '</link>
+        <description>' . $conf['rss_description'] . '</description>
+        <language>' . Text::convertISO2ISO639($language->cISO) . '</language>
+        <copyright>' . $conf['rss_copyright'] . '</copyright>
+        <pubDate>' . date('r') . '</pubDate>
+        <atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
+        <image>
+            <url>' . $conf['rss_logoURL'] . '</url>
+            <title>' . $conf['rss_titel'] . '</title>
+            <link>' . $shopURL . '</link>
+        </image>';
     //Artikel STD Sprache
     $lagerfilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-    $days        = (int)$conf['rss']['rss_alterTage'];
+    $days        = (int)$conf['rss_alterTage'];
     if (!$days) {
         $days = 14;
     }
     // Artikel beachten?
-    if ($conf['rss']['rss_artikel_beachten'] === 'Y') {
+    if ($conf['rss_artikel_beachten'] === 'Y') {
         $products = $db->getObjects(
             "SELECT tartikel.kArtikel, tartikel.cName, tartikel.cKurzBeschreibung, tseo.cSeo, 
                 tartikel.dLetzteAktualisierung, tartikel.dErstellt, 
@@ -83,7 +83,7 @@ function generiereRSSXML()
         }
     }
     // News beachten?
-    if ($conf['rss']['rss_news_beachten'] === 'Y') {
+    if ($conf['rss_news_beachten'] === 'Y') {
         $news = $db->getObjects(
             "SELECT tnews.*, t.title, t.preview, DATE_FORMAT(dGueltigVon, '%a, %d %b %Y %H:%i:%s UTC') AS dErstellt_RSS
                 FROM tnews
@@ -98,7 +98,7 @@ function generiereRSSXML()
         foreach ($news as $item) {
             $url  = URL::buildURL($item, URLART_NEWS, true, $shopURL . '/');
             $xml .= '
-        <item>p
+        <item>
             <title>' . wandelXMLEntitiesUm($item->title) . '</title>
             <description>' . wandelXMLEntitiesUm($item->preview) . '</description>
             <link>' . $url . '</link>
@@ -108,7 +108,7 @@ function generiereRSSXML()
         }
     }
     // bewertungen beachten?
-    if ($conf['rss']['rss_bewertungen_beachten'] === 'Y') {
+    if ($conf['rss_bewertungen_beachten'] === 'Y') {
         $reviews = $db->getObjects(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
@@ -131,9 +131,9 @@ function generiereRSSXML()
     }
 
     $xml .= '
-	</channel>
+    </channel>
 </rss>
-		';
+        ';
 
     $file = fopen(PFAD_ROOT . FILE_RSS_FEED, 'w+');
     fwrite($file, $xml);
@@ -157,7 +157,7 @@ function bauerfc2822datum($dateString)
  * @param string $text
  * @return string
  */
-function wandelXMLEntitiesUm($text)
+function wandelXMLEntitiesUm($text): string
 {
     return mb_strlen($text) > 0
         ? '<![CDATA[ ' . Text::htmlentitydecode($text) . ' ]]>'

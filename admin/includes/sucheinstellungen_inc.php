@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Helpers\Text;
 use JTL\IO\IOError;
@@ -13,7 +13,6 @@ use JTL\Shopsetting;
 function createSearchIndex($index, $create)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/sucheinstellungen');
-    require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
     $index    = mb_convert_case(Text::xssClean($index), MB_CASE_LOWER);
     $notice   = '';
@@ -24,9 +23,10 @@ function createSearchIndex($index, $create)
         return new IOError(__('errorIndexInvalid'), 403);
     }
 
+    $keyName = 'idx_' . $index . '_fulltext';
     try {
-        if ($db->getSingleObject("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'")) {
-            $db->query("ALTER TABLE $index DROP KEY idx_{$index}_fulltext");
+        if ($db->getSingleObject('SHOW INDEX FROM ' . $index . ' WHERE KEY_NAME = :keyName', ['keyName' => $keyName])) {
+            $db->query('ALTER TABLE ' . $index . ' DROP KEY ' . $keyName);
         }
     } catch (Exception $e) {
         // Fehler beim Index löschen ignorieren
@@ -64,17 +64,13 @@ function createSearchIndex($index, $create)
                 return new IOError(__('errorIndexInvalid'), 403);
         }
 
-        try {
-            $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
-            $res = $db->getPDOStatement(
-                "ALTER TABLE $index
-                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $rows) . ')'
-            );
-        } catch (Exception $e) {
-            $res = 0;
-        }
+        /** @noinspection SqlWithoutWhere */
+        $db->query('UPDATE tsuchcache SET dGueltigBis = DATE_ADD(NOW(), INTERVAL 10 MINUTE)');
+        $res = $db->getPDOStatement(
+            'ALTER TABLE ' . $index . ' ADD FULLTEXT KEY idx_' . $index . '_fulltext (' . implode(', ', $rows) . ')'
+        );
 
-        if ($res === 0) {
+        if ($res->queryString === null) {
             $errorMsg     = __('errorIndexNotCreatable');
             $shopSettings = Shopsetting::getInstance();
             $settings     = $shopSettings[Shopsetting::mapSettingName(CONF_ARTIKELUEBERSICHT)];
@@ -103,6 +99,7 @@ function createSearchIndex($index, $create)
 
 /**
  * @return array
+ * @noinspection SqlWithoutWhere
  */
 function clearSearchCache(): array
 {

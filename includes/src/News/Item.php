@@ -4,6 +4,7 @@ namespace JTL\News;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\ContentAuthor;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
@@ -11,7 +12,6 @@ use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
 use JTL\Shop;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class Item
@@ -24,124 +24,136 @@ class Item extends AbstractItem
     /**
      * @var int
      */
-    protected $id = -1;
+    protected int $id = -1;
 
     /**
      * @var int[]
      */
-    protected $languageIDs = [];
+    protected array $languageIDs = [];
 
     /**
      * @var string[]
      */
-    protected $languageCodes = [];
+    protected array $languageCodes = [];
 
     /**
      * @var int[]
      */
-    protected $customerGroups = [];
+    protected array $customerGroups = [];
 
     /**
      * @var string[]
      */
-    protected $titles = [];
+    protected array $titles = [];
 
     /**
      * @var string[]
      */
-    protected $previews = [];
+    protected array $previews = [];
 
     /**
      * @var string[]
      */
-    protected $previewImages = [];
+    protected array $previewImages = [];
 
     /**
      * @var string[]
      */
-    protected $contents = [];
+    protected array $contents = [];
 
     /**
      * @var string[]
      */
-    protected $metaTitles = [];
+    protected array $metaTitles = [];
 
     /**
      * @var string[]
      */
-    protected $metaKeywords = [];
+    protected array $metaKeywords = [];
 
     /**
      * @var string[]
      */
-    protected $metaDescriptions = [];
+    protected array $metaDescriptions = [];
 
     /**
      * @var string[]
      */
-    protected $seo = [];
+    protected array $seo = [];
 
     /**
      * @var string[]
      */
-    protected $urls = [];
+    protected array $urls = [];
 
     /**
      * @var bool
      */
-    protected $isActive = true;
+    protected bool $isActive = true;
 
     /**
      * @var DateTime
      */
-    protected $dateCreated;
+    protected DateTime $dateCreated;
 
     /**
      * @var DateTime
      */
-    protected $dateValidFrom;
+    protected DateTime $dateValidFrom;
 
     /**
      * @var DateTime
      */
-    protected $date;
+    protected DateTime $date;
 
     /**
      * @var bool
      */
-    protected $isVisible = true;
+    protected bool $isVisible = true;
 
     /**
      * @var CommentList
      */
-    protected $comments;
+    protected CommentList $comments;
 
     /**
      * @var int
      */
-    protected $commentCount = 0;
+    protected int $commentCount = 0;
+
+    /**
+     * @var int
+     */
+    protected $commentChildCount = 0;
 
     /**
      * @var stdClass|null
      */
-    protected $author;
+    protected ?stdClass $author = null;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    protected $db;
+    protected ?DbInterface $db = null;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    protected JTLCacheInterface $cache;
 
     /**
      * Item constructor.
-     * @param DbInterface $db
+     * @param DbInterface            $db
+     * @param JTLCacheInterface|null $cache
      */
-    public function __construct(DbInterface $db)
+    public function __construct(DbInterface $db, ?JTLCacheInterface $cache = null)
     {
         $this->db            = $db;
         $this->date          = \date_create();
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
         $this->comments      = new CommentList($this->db);
+        $this->cache         = $cache ?? Shop::Container()->getCache();
         $this->setImageType(Image::TYPE_NEWS);
     }
 
@@ -151,6 +163,14 @@ class Item extends AbstractItem
      */
     public function load(int $id): ItemInterface
     {
+        $cacheID = 'jtlnwstm_' . $id;
+        if (($mapped = $this->cache->get($cacheID)) !== false) {
+            foreach (\get_object_vars($mapped) as $key => $value) {
+                $this->$key = $value;
+            }
+
+            return $mapped;
+        }
         $this->id = $id;
         $item     = $this->db->getObjects(
             "SELECT tnewssprache.languageID,
@@ -181,8 +201,10 @@ class Item extends AbstractItem
         if (\count($item) === 0) {
             throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.');
         }
+        $mapped = $this->map($item);
+        $this->cache->set($cacheID, $mapped, [\CACHING_GROUP_NEWS]);
 
-        return $this->map($item);
+        return $mapped;
     }
 
     /**
@@ -239,11 +261,16 @@ class Item extends AbstractItem
             $this->setDateValidFrom(\date_create($item->dateValidFrom));
         }
         $this->comments->createItemsByNewsItem($this->id);
-        $this->commentCount = $this->comments->getItems()->count();
+        $this->commentCount      = $this->comments->getCommentsCount();
+        $this->commentChildCount = $this->comments->getCommentsCount('child');
+
         if (($preview = $this->getPreviewImage()) !== '') {
             $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
         }
         $this->setContentAuthor();
+        \executeHook(\HOOK_NEWS_ITEM_MAPPED, [
+            'item' => $this
+        ]);
 
         return $this;
     }
@@ -252,7 +279,7 @@ class Item extends AbstractItem
     {
         $author = ContentAuthor::getInstance()->getAuthor('NEWS', $this->getID(), true);
 
-        if (!isset($author->kAdminlogin) || $author->kAdminlogin <= 0) {
+        if ($author === null || $author->kAdminlogin <= 0) {
             return;
         }
         if (isset($author->extAttribs['useAvatar']) && $author->extAttribs['useAvatar']->cAttribValue === 'U') {
@@ -278,16 +305,15 @@ class Item extends AbstractItem
      */
     public function getCategoryIDs(): array
     {
-        return map($this->db->getObjects(
+        return $this->db->getInts(
             'SELECT DISTINCT(tnewskategorie.kNewsKategorie)
                 FROM tnewskategorie 
                 JOIN tnewskategorienews
                     ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                 WHERE tnewskategorienews.kNews = :nid',
+            'kNewsKategorie',
             ['nid' => $this->id]
-        ), static function ($e) {
-            return (int)$e->kNewsKategorie;
-        });
+        );
     }
 
     /**
@@ -866,7 +892,7 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return CommentList
      */
     public function getComments(): CommentList
     {
@@ -874,7 +900,8 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @param CommentList $comments
+     * @return void
      */
     public function setComments(CommentList $comments): void
     {
@@ -883,7 +910,7 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return int
      */
     public function getCommentCount(): int
     {
@@ -891,7 +918,16 @@ class Item extends AbstractItem
     }
 
     /**
-     * @inheritdoc
+     * @return int
+     */
+    public function getChildCommentsCount(): int
+    {
+        return $this->commentChildCount;
+    }
+
+    /**
+     * @param int $commentCount
+     * @return void
      */
     public function setCommentCount(int $commentCount): void
     {
@@ -919,8 +955,9 @@ class Item extends AbstractItem
      */
     public function __debugInfo()
     {
-        $res       = \get_object_vars($this);
-        $res['db'] = '*truncated*';
+        $res          = \get_object_vars($this);
+        $res['db']    = '*truncated*';
+        $res['cache'] = '*truncated*';
 
         return $res;
     }

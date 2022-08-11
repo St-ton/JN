@@ -18,12 +18,12 @@ class Localization
     /**
      * @var Collection
      */
-    private $langVars;
+    private Collection $langVars;
 
     /**
      * @var string
      */
-    private $currentLanguageCode;
+    private string $currentLanguageCode;
 
     /**
      * Localization constructor.

@@ -79,7 +79,7 @@
                     {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
                 </p>
                 <div class="alert alert-warning">{__('warningDoBackup')}</div>
-                <form method="post" action="dbcheck.php">
+                <form method="post" action="{$adminURL}/dbcheck.php">
                     <div id="settings" class="card">
                         <div class="card-body">
                             <div class="custom-control custom-checkbox">

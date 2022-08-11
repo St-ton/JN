@@ -6,7 +6,7 @@
         right=true
         text='<span class="fas fa-user"></span>'
         class="account-icon-dropdown"}
-        {if empty($smarty.session.Kunde->kKunde)}
+        {if JTL\Session\Frontend::getCustomer()->getID() === 0}
             {block name='layout-header-shop-nav-account-logged-out'}
                 <div class="dropdown-body lg-min-w-lg">
                     {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="jtl-validate" slide=true}

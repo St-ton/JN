@@ -5,6 +5,7 @@ namespace JTL\Update;
 use Exception;
 use Ifsnop\Mysqldump\Mysqldump;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Minify\MinifyService;
 use JTL\Network\JTLApi;
 use JTL\Shop;
@@ -203,17 +204,60 @@ class Updater
         }
 
         if (empty($targetVersion)) {
-            $api               = Shop::Container()->get(JTLApi::class);
-            $availableUpdates  = $api->getAvailableVersions() ?? [];
+            /** @var JTLApi $api */
+            $api              = Shop::Container()->get(JTLApi::class);
+            $availableUpdates = $api->getAvailableVersions(true) ?? [];
+
+            //Add Version-Obj to array to compare Versions
+            foreach ($availableUpdates as $key => $availVersion) {
+                try {
+                    $availableUpdates[$key]['referenceVersion'] = Version::parse($availVersion['reference']);
+                } catch (\Exception $e) {
+                    unset($availableUpdates[$key]);
+                }
+            }
+            //Sort Versions ascending
+            \usort($availableUpdates, static function ($x, $y) {
+                /** @var Version $versionX */
+                $versionX = $x['referenceVersion'];
+                /** @var Version $versionY */
+                $versionY = $y['referenceVersion'];
+
+                if ($versionX->smallerThan($versionY)) {
+                    return -1;
+                }
+
+                if ($versionX->greaterThan($versionY)) {
+                    return 1;
+                }
+
+                return 0;
+            });
+
             $versionCollection = new VersionCollection();
 
             foreach ($availableUpdates as $availableUpdate) {
-                $versionCollection->append($availableUpdate->reference);
+                /** @var Version $referenceVersion */
+                $referenceVersion = $availableUpdate['referenceVersion'];
+                if ($availableUpdate['isPublic'] === 0
+                    && $referenceVersion->equals($this->getCurrentFileVersion()) === false
+                ) {
+                    continue;
+                }
+                $versionCollection->append($availableUpdate['reference']);
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
                 ? $versionCollection->getNextVersion($version)
                 : $version;
+
+            /*
+             * if target-version is greater than file-version: set file-version as target-version to avoid
+             * mistakes with missing versions in the version-list from the API (fallback)
+            */
+            if ($targetVersion->greaterThan($this->getCurrentFileVersion())) {
+                $targetVersion = $this->getCurrentFileVersion();
+            }
         }
 
         return $targetVersion ?? Version::parse(\APPLICATION_VERSION);
@@ -515,6 +559,28 @@ class Updater
             \JTL_MIN_SHOP_UPDATE_VERSION,
             \APPLICATION_VERSION,
             \__('dbupdaterURL')
+        );
+    }
+
+    public function forceMaintenanceMode(): void
+    {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') !== 'Y') {
+            $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'Y']);
+            Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION]);
+            $_SESSION['maintenance_forced'] = true;
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function disablePlugins(): int
+    {
+        return $this->db->query(
+            'UPDATE tplugin
+                SET nStatus = 1
+                WHERE nStatus = 2',
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

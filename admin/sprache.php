@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
-use JTL\Alert\Alert;
+use JTL\CSV\Export;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
@@ -17,8 +18,6 @@ require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $db          = Shop::Container()->getDB();
 $cache       = Shop::Container()->getCache();
@@ -39,9 +38,9 @@ if (isset($_FILES['csvfile']['tmp_name'])
     $res         = $lang->import($csvFilename, $langCode, $importType);
 
     if ($res !== false) {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, sprintf(__('successImport'), $res), 'successImport');
+        $alertHelper->addSuccess(sprintf(__('successImport'), $res), 'successImport');
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImport'), 'errorImport');
+        $alertHelper->addError(__('errorImport'), 'errorImport');
     }
     $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
     $lang = new LanguageHelper($db, $cache);
@@ -55,7 +54,7 @@ $langActive         = false;
 $smarty->assign('availableLanguages', $availableLanguages);
 
 if (count($installedLanguages) !== count($availableLanguages)) {
-    $alertHelper->addAlert(Alert::TYPE_NOTE, __('newLangAvailable'), 'newLangAvailable');
+    $alertHelper->addNotice(__('newLangAvailable'), 'newLangAvailable');
 }
 
 foreach ($installedLanguages as $language) {
@@ -79,11 +78,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             $name = Request::getVar('cName');
             $lang->loesche(Request::getInt('kSprachsektion'), $name);
             $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                sprintf(__('successVarRemove'), $name),
-                'successVarRemove'
-            );
+            $alertHelper->addSuccess(sprintf(__('successVarRemove'), $name), 'successVarRemove');
             break;
         case 'savevar':
             // neue Variable speichern
@@ -135,7 +130,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             }
 
             if (count($errors) > 0) {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, implode('<br>', $errors), 'newVar');
+                $alertHelper->addError(implode('<br>', $errors), 'newVar');
                 $step = 'newvar';
             } else {
                 foreach ($variable->cWert_arr as $cISO => $cWert) {
@@ -177,8 +172,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             $cache->flushTags([CACHING_GROUP_CORE]);
             $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
 
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
+            $alertHelper->addSuccess(
                 count($modified) > 0
                     ? __('successVarChange') . implode(', ', $modified)
                     : __('errorVarChangeNone'),
@@ -190,7 +184,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             $lang->setzeSprache($langCode)
                 ->clearLog();
             $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()');
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successListReset'), 'successListReset');
+            $alertHelper->addSuccess(__('successListReset'), 'successListReset');
             break;
         default:
             break;
@@ -232,16 +226,18 @@ if ($step === 'newvar') {
             WHERE sw.kSprachISO = :liso ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ['liso' => $langIsoID]
     );
-
-    handleCsvExportAction(
-        'langvars',
-        $langCode . '_' . date('YmdHis') . '.slf',
-        $values,
-        ['cSektionName', 'cName', 'cWert', 'bSystem'],
-        [],
-        ';',
-        false
-    );
+    if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === 'langvars') {
+        $export = new Export();
+        $export->export(
+            'langvars',
+            $langCode . '_' . date('YmdHis') . '.slf',
+            $values,
+            ['cSektionName', 'cName', 'cWert', 'bSystem'],
+            [],
+            ';',
+            false
+        );
+    }
 
     $pagination = (new Pagination('langvars'))
         ->setRange(4)

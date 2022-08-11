@@ -3,6 +3,7 @@
 namespace JTL\Filter\SortingOptions;
 
 use JTL\Filter\ProductFilter;
+use JTL\Shop;
 
 /**
  * Class SortDefault
@@ -26,5 +27,8 @@ class SortDefault extends AbstractSortingOption
         ) {
             $this->setOrderBy('jSuche.nSort'); // was tsuchcachetreffer in 4.06, but is aliased to jSuche
         }
+        $this->setName(Shop::Lang()->get('standard'));
+        $this->setValue(\SEARCH_SORT_STANDARD);
+        $this->setPriority(10);
     }
 }

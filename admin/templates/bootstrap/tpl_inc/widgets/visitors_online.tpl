@@ -9,7 +9,7 @@
         <div class="widget-container"><div class="alert alert-info">{__('noVisitorsATM')}</div></div>
     {/if}
 
-    {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
+    {if is_array($oVisitors_arr) && $oVisitors_arr|count > 0}
         <table class="table table-border-light table-sm">
             <thead>
                 <tr>

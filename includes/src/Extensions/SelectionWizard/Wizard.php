@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\SelectionWizard;
 
@@ -22,72 +22,72 @@ class Wizard
     /**
      * @var int
      */
-    private $kAuswahlAssistentOrt = 0;
+    private int $kAuswahlAssistentOrt = 0;
 
     /**
      * @var int
      */
-    private $kAuswahlAssistentGruppe = 0;
+    private int $kAuswahlAssistentGruppe = 0;
 
     /**
      * @var string
      */
-    private $cKey = '';
+    private string $cKey = '';
 
     /**
      * @var int
      */
-    private $kKey = 0;
+    private int $kKey = 0;
 
     /**
      * @var int
      */
-    private $kSprache = 0;
+    private int $kSprache = 0;
 
     /**
      * @var string
      */
-    private $cName = '';
+    private string $cName = '';
 
     /**
      * @var string
      */
-    private $cBeschreibung = '';
+    private string $cBeschreibung = '';
 
     /**
      * @var int
      */
-    private $nAktiv = 0;
+    private int $nAktiv = 0;
 
     /**
      * @var Question[]
      */
-    private $questions = [];
+    private array $questions = [];
 
     /**
      * @var Question[] - keys are kMerkmal
      */
-    private $questionsAssoc = [];
+    private array $questionsAssoc = [];
 
     /**
      * @var int
      */
-    private $nCurQuestion = 0;
+    private int $nCurQuestion = 0;
 
     /**
      * @var array
      */
-    private $selections = [];
+    private array $selections = [];
 
     /**
-     * @var ProductFilter
+     * @var ProductFilter|null
      */
-    private $productFilter;
+    private ?ProductFilter $productFilter;
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * Wizard constructor.
@@ -99,7 +99,7 @@ class Wizard
      */
     public function __construct(string $keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
-        $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
+        $this->config = Shop::getSettingSection(\CONF_AUSWAHLASSISTENT);
         $languageID   = $languageID ?: Shop::getLanguageID();
 
         if ($id > 0
@@ -158,28 +158,29 @@ class Wizard
         if ($item === null) {
             return;
         }
-        foreach (\get_object_vars($item) as $name => $value) {
-            $this->$name = $value;
-        }
-        $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
-        $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
-        $this->kKey                    = (int)$this->kKey;
-        $this->kSprache                = (int)$this->kSprache;
-        $this->nAktiv                  = (int)$this->nAktiv;
+        $this->kAuswahlAssistentOrt    = (int)$item->kAuswahlAssistentOrt;
+        $this->kAuswahlAssistentGruppe = (int)$item->kAuswahlAssistentGruppe;
+        $this->kKey                    = (int)$item->kKey;
+        $this->kSprache                = (int)$item->kSprache;
+        $this->nAktiv                  = (int)$item->nAktiv;
+        $this->cKey                    = $item->cKey;
+        $this->cName                   = $item->cName;
+        $this->cBeschreibung           = $item->cBeschreibung;
 
-        $questionIDs = Shop::Container()->getDB()->getObjects(
+        $questionIDs = Shop::Container()->getDB()->getInts(
             'SELECT kAuswahlAssistentFrage AS id
                 FROM tauswahlassistentfrage
                 WHERE kAuswahlAssistentGruppe = :groupID' .
             ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
             'ORDER BY nSort',
+            'id',
             ['groupID' => $this->kAuswahlAssistentGruppe]
         );
 
         $this->questions = [];
 
         foreach ($questionIDs as $questionID) {
-            $question                                  = new Question((int)$questionID->id);
+            $question                                  = new Question($questionID);
             $this->questions[]                         = $question;
             $this->questionsAssoc[$question->kMerkmal] = $question;
         }
@@ -385,11 +386,11 @@ class Wizard
 
     /**
      * @param string $name
-     * @return string
+     * @return string|null
      */
     public function getConf(string $name): ?string
     {
-        return $this->config[$name];
+        return $this->config[$name] ?? null;
     }
 
     /**
@@ -399,7 +400,7 @@ class Wizard
      */
     public static function isRequired(): bool
     {
-        return Shop::getSettings([\CONF_AUSWAHLASSISTENT])['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        return Shop::getSettingValue(\CONF_AUSWAHLASSISTENT, 'auswahlassistent_nutzen') === 'Y';
     }
 
     /**
@@ -415,9 +416,9 @@ class Wizard
         string $keyName,
         int $id,
         int $languageID = 0,
-        $smarty = null,
-        $selected = [],
-        $pf = null
+        ?JTLSmarty $smarty = null,
+        array $selected = [],
+        ?ProductFilter $pf = null
     ): ?self {
         // only start if enabled in the backend settings
         if (!self::isRequired()) {

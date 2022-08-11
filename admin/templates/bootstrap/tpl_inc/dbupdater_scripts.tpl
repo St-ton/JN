@@ -54,7 +54,6 @@
     function update($element)
     {
         var url = $element.attr('href');
-
         disableUpdateControl(true);
         pushEvent('Starte Update');
 
@@ -63,7 +62,6 @@
                 var message = error
                     ? '{/literal}{__('infoUpdatePause')}{literal}' + error.message
                     : '{/literal}{__('successUpdate')}{literal}'
-
                 showNotify(error ? 'danger' : 'success', 'Update', message);
                 disableUpdateControl(false);
             };
@@ -71,8 +69,7 @@
             if (error) {
                 pushEvent('Fehler bei Update: ' + error.message);
                 _once();
-            }
-            else {
+            } else {
                 pushEvent('     Update auf ' + formatVersion(data.result) + ' erfolgreich');
                 if (!data.availableUpdate) {
                     //pushEvent('Update beendet');
@@ -104,31 +101,6 @@
             .children()
             .attr('disabled', false)
             .toggle();
-    }
-
-    /**
-     * @deprecated since 4.06
-     * @param $element
-     */
-    function migrate($element)
-    {
-        var url = $element.attr('href'),
-            $ladda = Ladda.create($('#migrate-button')[0]);
-
-        $ladda.start();
-
-        ajaxManagedCall(url, {}, function(result, error) {
-            var count = error
-                ? 0 : (typeof result.data.migrations === 'object'
-                    ? result.data.migrations.length : 0);
-            var message = error
-                ? error.message
-                : '<strong>' + count + '</strong>' + '{/literal}{__('successMigrations')}{literal}';
-
-            $ladda.stop();
-            updateStatusTpl(null);
-            showNotify(error ? 'danger' : 'success', 'Migration', message);
-        });
     }
 
     function migration($element)
@@ -177,32 +149,6 @@
 
             if (dir === 'down') {
                 $('#resultLog').show();
-            }
-        });
-    }
-
-    /**
-     * @deprecated since 4.06
-     * @param url
-     * @param params
-     * @param callback
-     */
-    function ajaxManagedCall(url, params, callback)
-    {
-        ajaxCall(url, params, function(result, xhr) {
-            if (xhr && xhr.error && xhr.error.code === 401) {
-                createNotify({
-                    title: '{/literal}{__('sessionExpired')}{literal}',
-                    message: '{/literal}{__('redirectToLogin')}{literal}',
-                    icon: 'fa fa-lock'
-                }, {
-                    type: 'danger',
-                    onClose: function() {
-                        window.location.pathname = '/' + adminPath + 'index.php';
-                    }
-                });
-            } else if (typeof callback === 'function') {
-                callback(result, result.error);
             }
         });
     }

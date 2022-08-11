@@ -115,7 +115,7 @@ interface JobInterface
     public function setStartTime($startTime): void;
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getStartDate(): ?DateTime;
 
@@ -196,9 +196,9 @@ interface JobInterface
     public function isRunning(): bool;
 
     /**
-     * @param bool $running
+     * @param bool|int $running
      */
-    public function setRunning(bool $running): void;
+    public function setRunning($running): void;
 
     /**
      * @return int

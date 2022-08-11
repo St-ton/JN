@@ -26,7 +26,7 @@ class StatusCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $list               = [];
         $manager            = new MigrationManager(Shop::Container()->getDB());
@@ -42,7 +42,7 @@ class StatusCommand extends Command
         }
         $this->printMigrationTable($list);
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**

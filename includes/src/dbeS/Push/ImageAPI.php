@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -19,12 +19,12 @@ final class ImageAPI extends AbstractPush
     /**
      * @var string
      */
-    private $imageType;
+    private string $imageType;
 
     /**
      * @var int
      */
-    private $imageID = 0;
+    private int $imageID = 0;
 
     /**
      * @inheritdoc

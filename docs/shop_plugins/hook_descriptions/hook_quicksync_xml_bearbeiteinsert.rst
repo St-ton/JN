@@ -9,5 +9,5 @@ Nach dem Einfügen eines Artikels in die Datenbank, in ``bearbeiteInsert()`` (in
 Parameter
 """""""""
 
-``JTL\Catalog\Product\Artikel`` **oArtikel**
+``stdClass`` **oArtikel**
     **oArtikel** Artikelobjekt

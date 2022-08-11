@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -16,7 +16,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * The highest allowed ascii character in decimal representation
      */
-    public const ASCII_MAX = 127;
+    public const ASCII_MAX = 126;
 
     /**
      * @var CryptoServiceInterface
@@ -35,6 +35,25 @@ class PasswordService implements PasswordServiceInterface
     /**
      * @inheritdoc
      */
+    public function cryptOldPasswort($password, $passwordHash = null)
+    {
+        $salt = \sha1(\uniqid((string)\mt_rand(), true));
+        $len  = \mb_strlen($salt);
+        $len  = \max($len >> 3, ($len >> 2) - \mb_strlen($password));
+        $salt = $passwordHash
+            ? \mb_substr($passwordHash, \min(\mb_strlen($password), \mb_strlen($passwordHash) - $len), $len)
+            : \strrev(\mb_substr($salt, 0, $len));
+        $hash = \sha1($password);
+        $hash = \sha1(\mb_substr($hash, 0, \mb_strlen($password)) . $salt . \mb_substr($hash, \mb_strlen($password)));
+        $hash = \mb_substr($hash, $len);
+        $hash = \mb_substr($hash, 0, \mb_strlen($password)) . $salt . \mb_substr($hash, \mb_strlen($password));
+
+        return $passwordHash && $passwordHash !== $hash ? false : $hash;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function generate($length): string
     {
         /**
@@ -44,8 +63,8 @@ class PasswordService implements PasswordServiceInterface
          */
         $result = '';
         for ($x = 0; $x < $length; $x++) {
-            $no      = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
-            $result .= \chr($no);
+            $number  = $this->cryptoService->randomInt(self::ASCII_MIN, self::ASCII_MAX);
+            $result .= \chr($number);
         }
 
         return $result;
@@ -70,7 +89,7 @@ class PasswordService implements PasswordServiceInterface
             return \md5($password) === $hash;
         }
         if ($length === 40) {
-            return \cryptPasswort($password, $hash) !== false;
+            return $this->cryptOldPasswort($password, $hash) !== false;
         }
 
         return \password_verify($password, $hash);

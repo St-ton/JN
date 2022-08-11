@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Revision;
@@ -31,7 +31,6 @@ if (!isset($bExtern) || !$bExtern) {
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
-require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
@@ -49,7 +48,7 @@ if (!function_exists('Shop')) {
     /**
      * @return Shop
      */
-    function Shop()
+    function Shop(): Shop
     {
         return Shop::getInstance();
     }
@@ -76,9 +75,9 @@ if ($loggedIn && isset($GLOBALS['plgSafeMode'])) {
     }
 }
 
-if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate'])) {
+if (!empty($_COOKIE['JTLSHOP']) && empty($_SESSION['frontendUpToDate']) && !$hasUpdates) {
     $adminToken   = $_SESSION['jtl_token'];
-    $adminLangTag = $_SESSION['AdminAccount']->language;
+    $adminLangTag = $_SESSION['AdminAccount']->language ?? 'de-DE';
     $eSIdAdm      = session_id();
     session_write_close();
     session_name('JTLSHOP');

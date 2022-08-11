@@ -1,6 +1,6 @@
 <div id="verfuegbar" class="tab-pane fade {if $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php" id="available-plugins">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}/pluginverwaltung.php" id="available-plugins">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>

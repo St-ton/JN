@@ -1,8 +1,8 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -20,20 +20,16 @@ $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 
 $db            = Shop::Container()->getDB();
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);
-$alertHelper   = Shop::Container()->getAlertService();
+$alertService  = Shop::Container()->getAlertService();
 $newsletterTPL = null;
 $step          = 'uebersicht';
 $option        = '';
-$admin         = new Admin($db, $alertHelper);
+$admin         = new Admin($db, $alertService);
 
-$inactiveSearchSQL         = new stdClass();
-$inactiveSearchSQL->cJOIN  = '';
-$inactiveSearchSQL->cWHERE = '';
-$activeSearchSQL           = new stdClass();
-$activeSearchSQL->cJOIN    = '';
-$activeSearchSQL->cWHERE   = '';
-$customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
+$inactiveSearchSQL        = new SqlObject();
+$activeSearchSQL          = new SqlObject();
+$customerGroup            = $db->select('tkundengruppe', 'cStandard', 'Y');
+$_SESSION['Kundengruppe'] = new CustomerGroup((int)$customerGroup->kKundengruppe);
 setzeSprache();
 $languageID = (int)$_SESSION['editLanguageID'];
 $instance   = new Newsletter($db, $conf);
@@ -42,34 +38,22 @@ if (Form::validateToken()) {
     if (Request::postInt('einstellungen') === 1) {
         if (isset($postData['speichern']) || Request::postVar('resetSetting') !== null) {
             $step = 'uebersicht';
-            $alertHelper->addAlert(
-                Alert::TYPE_SUCCESS,
-                saveAdminSectionSettings(CONF_NEWSLETTER, $_POST),
-                'saveSettings'
-            );
+            saveAdminSectionSettings(CONF_NEWSLETTER, $_POST);
             $admin->setNewsletterCheckboxStatus();
         }
     } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
         || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($postData['abonnentloeschenSubmit']))
     ) {
         if ($admin->deleteSubscribers($postData['kNewsletterEmpfaenger'] ?? [])) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
+            $alertService->addSuccess(__('successNewsletterAboDelete'), 'successNewsletterAboDelete');
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorAtLeastOneNewsletterAbo'),
-                'errorAtLeastOneNewsletterAbo'
-            );
+            $alertService->addError(__('errorAtLeastOneNewsletterAbo'), 'errorAtLeastOneNewsletterAbo');
         }
     } elseif (isset($postData['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
         if ($admin->activateSubscribers($postData['kNewsletterEmpfaenger'])) {
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
+            $alertService->addSuccess(__('successNewsletterAbounlock'), 'successNewsletterAbounlock');
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                __('errorAtLeastOneNewsletterAbo'),
-                'errorAtLeastOneNewsletterAbo'
-            );
+            $alertService->addError(__('errorAtLeastOneNewsletterAbo'), 'errorAtLeastOneNewsletterAbo');
         }
     } elseif (Request::postInt('newsletterabonnent_neu') === 1) {
         $newsletter = $admin->addRecipient($instance, $postData);
@@ -79,7 +63,7 @@ if (Form::validateToken()) {
             if (!empty($postData['kNewsletterQueue']) && is_array($postData['kNewsletterQueue'])) {
                 $admin->deleteQueue($postData['kNewsletterQueue']);
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
+                $alertService->addError(__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
     } elseif (Request::postInt('newsletterhistory') === 1 || Request::getInt('newsletterhistory') === 1) {
@@ -87,7 +71,7 @@ if (Form::validateToken()) {
             if (is_array($postData['kNewsletterHistory'])) {
                 $admin->deleteHistory($postData['kNewsletterHistory']);
             } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
+                $alertService->addError(__('errorAtLeastOneHistory'), 'errorAtLeastOneHistory');
             }
         } elseif (isset($_GET['anzeigen'])) {
             $step      = 'history_anzeigen';
@@ -105,23 +89,25 @@ if (Form::validateToken()) {
             }
         }
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheInaktiv')) > 0) { // Inaktive Abonnentensuche
-        $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheInaktiv')));
+        $query = Request::verifyGPDataString('cSucheInaktiv');
         if (mb_strlen($query) > 0) {
-            $inactiveSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
+            $inactiveSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
+                OR tnewsletterempfaenger.cNachname LIKE :qry
+                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+            $inactiveSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
-        $smarty->assign('cSucheInaktiv', $query);
+        $smarty->assign('cSucheInaktiv', Text::filterXSS($query));
     } elseif (mb_strlen(Request::verifyGPDataString('cSucheAktiv')) > 0) { // Aktive Abonnentensuche
-        $query = $db->escape(Text::filterXSS(Request::verifyGPDataString('cSucheAktiv')));
+        $query = Request::verifyGPDataString('cSucheAktiv');
         if (mb_strlen($query) > 0) {
-            $activeSearchSQL->cWHERE = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cNachname LIKE '%" . $query .
-                "%' OR tnewsletterempfaenger.cEmail LIKE '%" . $query . "%')";
+            $activeSearchSQL->setWhere(' AND (tnewsletterempfaenger.cVorname LIKE :qry
+                OR tnewsletterempfaenger.cNachname LIKE :qry
+                OR tnewsletterempfaenger.cEmail LIKE :qry)');
+            $activeSearchSQL->addParam('qry', '%' . $query . '%');
         }
 
-        $smarty->assign('cSucheAktiv', $query);
+        $smarty->assign('cSucheAktiv', Text::filterXSS($query));
     } elseif (Request::verifyGPCDataInt('vorschau') > 0) { // Vorschau
         $nlTemplateID = Request::verifyGPCDataInt('vorschau');
         // Infos der Vorlage aus DB holen
@@ -145,7 +131,7 @@ if (Form::validateToken()) {
             $preview              = $instance->getPreview($newsletterTPL);
         }
         if (is_string($preview)) {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, $preview, 'errorNewsletterPreview');
+            $alertService->addError($preview, 'errorNewsletterPreview');
         }
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
@@ -264,12 +250,14 @@ if ($step === 'uebersicht') {
     $recipientsCount   = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE
+            WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->getWhere(),
+        $inactiveSearchSQL->getParams()
     )->cnt;
     $queueCount        = (int)$db->getSingleObject(
         "SELECT COUNT(*) AS cnt
-            FROM tjobqueue
-            WHERE jobType = 'newsletter'"
+             FROM tcron c
+             LEFT JOIN tjobqueue q ON c.cronID = q.cronID
+             WHERE c.jobType = 'newsletter'"
     )->cnt;
     $templateCount     = (int)$db->getSingleObject(
         'SELECT COUNT(*) AS cnt
@@ -357,9 +345,10 @@ if ($step === 'uebersicht') {
             LEFT JOIN tkundengruppe
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
-            " . $inactiveSearchSQL->cWHERE . '
+            " . $inactiveSearchSQL->getWhere() . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC
-            LIMIT ' . $pagiInactive->getLimitSQL()
+            LIMIT ' . $pagiInactive->getLimitSQL(),
+        $inactiveSearchSQL->getParams()
     );
     foreach ($inactiveRecipients as $recipient) {
         $customer                = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
@@ -385,13 +374,13 @@ if ($step === 'uebersicht') {
             FROM tkundengruppe
             ORDER BY cName'
     );
+    getAdminSectionSettings(CONF_NEWSLETTER);
     $smarty->assign('kundengruppen', $customerGroupsByName)
         ->assign('oNewsletterQueue_arr', $queue)
         ->assign('oNewsletterVorlage_arr', $templates)
         ->assign('oNewslettervorlageStd_arr', $defaultData)
         ->assign('oNewsletterEmpfaenger_arr', $inactiveRecipients)
         ->assign('oNewsletterHistory_arr', $history)
-        ->assign('oConfig_arr', getAdminSectionSettings(CONF_NEWSLETTER))
         ->assign('oAbonnenten_arr', $admin->getSubscribers(
             ' LIMIT ' . $pagiSubscriptions->getLimitSQL(),
             $activeSearchSQL
@@ -404,11 +393,7 @@ if ($step === 'uebersicht') {
         ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
 if (isset($checks) && is_array($checks) && count($checks) > 0) {
-    $alertHelper->addAlert(
-        Alert::TYPE_ERROR,
-        __('errorFillRequired'),
-        'plausiErrorFillRequired'
-    );
+    $alertService->addError(__('errorFillRequired'), 'plausiErrorFillRequired');
 }
 $smarty->assign('step', $step)
     ->assign('customerGroups', CustomerGroup::getGroups())

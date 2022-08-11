@@ -83,8 +83,8 @@
                                             <p><strong class="title">{lang key='shippingOptions'}</strong></p>
                                             <p>{$smarty.session.Versandart->angezeigterName|trans}</p>
 
-                                            {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
-                                            {if $cEstimatedDelivery|@count_characters > 0}
+                                            {$cEstimatedDelivery = JTL\Session\Frontend::getCart()->getEstimatedDeliveryTime()}
+                                            {if $cEstimatedDelivery|strlen > 0}
                                                 <p class="small text-muted-util">
                                                     <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
                                                 </p>

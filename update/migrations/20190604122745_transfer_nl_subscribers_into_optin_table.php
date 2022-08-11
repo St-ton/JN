@@ -8,6 +8,7 @@
 
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -26,14 +27,19 @@ class Migration_20190604122745 extends Migration implements IMigration
     {
         $nlSubscribers = $this->getDB()->getObjects('SELECT * FROM tnewsletterempfaenger WHERE nAktiv = 1');
         foreach ($nlSubscribers as $subscriber) {
+            $languageID = (int)($nlSubscribers->kSprache ?? 0);
+            if ($languageID === 0) {
+                $languageID = Shop::getLanguageID();
+            }
+
             $refData = (new OptinRefData())
                 ->setOptinClass(OptinNewsletter::class)
-                ->setLanguageID(Shop::getLanguageID())
-                ->setSalutation($subscriber->cAnrede)
-                ->setFirstName($subscriber->cVorname)
-                ->setLastName($subscriber->cNachname)
-                ->setEmail($subscriber->cEmail)
-                ->setCustomerID($subscriber->kKunde);
+                ->setLanguageID($languageID)
+                ->setSalutation($subscriber->cAnrede ?? '')
+                ->setFirstName($subscriber->cVorname ?? '')
+                ->setLastName($subscriber->cNachname ?? '')
+                ->setEmail($subscriber->cEmail ?? '')
+                ->setCustomerID((int)$subscriber->kKunde);
 
             $this->getDB()->queryPrepared(
                 'INSERT INTO toptin(

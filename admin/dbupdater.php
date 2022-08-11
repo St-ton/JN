@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use JTL\Alert\Alert;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\MigrationManager;
@@ -22,12 +21,25 @@ $template            = Shop::Container()->getTemplateService()->getActiveTemplat
 $fileVersion         = $updater->getCurrentFileVersion();
 $hasMinUpdateVersion = true;
 if (!$updater->hasMinUpdateVersion()) {
-    Shop::Container()->getAlertService()->addAlert(
-        Alert::TYPE_WARNING,
+    Shop::Container()->getAlertService()->addWarning(
         $updater->getMinUpdateVersionError(),
         'errorMinShopVersionRequired'
     );
     $hasMinUpdateVersion = false;
+}
+if ((int)($_SESSION['disabledPlugins'] ?? 0) > 0) {
+    Shop::Container()->getAlertService()->addWarning(
+        sprintf(
+            __('%d plugins were disabled for compatibility reasons. Please check your installed plugins manually.'),
+            (int)$_SESSION['disabledPlugins']
+        ),
+        'errorMinShopVersionRequired'
+    );
+    unset($_SESSION['disabledPlugins']);
+}
+if (($_SESSION['maintenance_forced'] ?? false) === true) {
+    $db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'N']);
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 $smarty->assign('updatesAvailable', $updater->hasPendingUpdates())
     ->assign('manager', ADMIN_MIGRATION ? new MigrationManager($db) : null)

@@ -126,15 +126,13 @@ function getAxisNames($type): stdClass
  * @param array $mapping
  * @return array
  */
-function mappeDatenMember($members, $mapping)
+function mappeDatenMember(array $members, array $mapping): array
 {
-    if (is_array($members) && count($members) > 0) {
-        foreach ($members as $i => $data) {
-            foreach ($data as $j => $member) {
-                $members[$i][$j]    = [];
-                $members[$i][$j][0] = $member;
-                $members[$i][$j][1] = $mapping[$member];
-            }
+    foreach ($members as $i => $data) {
+        foreach ($data as $j => $member) {
+            $members[$i][$j]    = [];
+            $members[$i][$j][0] = $member;
+            $members[$i][$j][1] = $mapping[$member];
         }
     }
 

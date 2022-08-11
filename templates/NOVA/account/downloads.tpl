@@ -9,7 +9,6 @@
                     {cardheader id="download-{$oDownload@iteration}"}
                         {button
                             variant="link"
-                            role="button"
                             block=true
                             aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
@@ -81,7 +80,6 @@
                                             {cardheader id="download-{$oDownload@iteration}"}
                                                 {button
                                                     variant="link"
-                                                    role="button"
                                                     block=true
                                                     aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
@@ -121,7 +119,7 @@
                                                             {col md=8}
                                                             {form method="post" action="{get_static_route id='jtl.php'}" slide=true}
                                                                 {input name="kBestellung" type="hidden" value=$oDownload->kBestellung}
-                                                                {input name="kKunde" type="hidden" value=$smarty.session.Kunde->kKunde}
+                                                                {input name="kKunde" type="hidden" value=JTL\Session\Frontend::getCustomer()->getID()}
                                                                 {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT
                                                                 || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT
                                                                 || $cStatus == $smarty.const.BESTELLUNG_STATUS_TEILVERSANDT}

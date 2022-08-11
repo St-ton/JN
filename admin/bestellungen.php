@@ -1,10 +1,10 @@
 <?php
 
-use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
@@ -20,21 +20,21 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
         switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
             case -1: // Alles O.K.
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOrderReset'), 'successOrderReset');
+                $alertHelper->addSuccess(__('successOrderReset'), 'successOrderReset');
                 break;
             case 1:  // Array mit Keys nicht vorhanden oder leer
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
+                $alertHelper->addError(__('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
                 break;
         }
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
+        $alertHelper->addError(__('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1 && Form::validateToken()) {
     $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
     if (mb_strlen($query) > 0) {
         $searchFilter = $query;
     } else {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMissingOrderNumber'), 'errorMissingOrderNumber');
+        $alertHelper->addError(__('errorMissingOrderNumber'), 'errorMissingOrderNumber');
     }
 }
 

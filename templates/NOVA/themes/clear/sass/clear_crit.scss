@@ -5,6 +5,9 @@
 @import "../../base/bootstrap/scss/functions";
 @import "../../base/bootstrap/scss/variables";
 @import "../../base/bootstrap/scss/mixins";
+// begin bootstrap components
+// Info: removed in templates/NOVA/themes/base/bootstrap/scss/bootstrap.scss
+// to address multiple imports
 @import "../../base/bootstrap/scss/root";
 @import "../../base/bootstrap/scss/reboot";
 //@import "../../base/bootstrap/scss/type";
@@ -13,6 +16,7 @@
 @import "../../base/bootstrap/scss/grid";
 @import "../../base/bootstrap/scss/nav";
 @import "../../base/bootstrap/scss/navbar";
+// end bootstrap components
 @import "../../base/sass/mixins";
 @import "../../base/sass/components/pagination";
 
@@ -129,8 +133,8 @@ html {
   margin-left: auto;
   .nav-link {
     @include media-breakpoint-down(sm) {
-      padding-left:	map_get($spacers, 3) * 0.75;
-      padding-right: map_get($spacers, 3) * 0.75
+      padding-left:	$nav-link-padding-sm-x;
+      padding-right: $nav-link-padding-sm-x;
     }
   }
 }
@@ -207,10 +211,10 @@ html {
 #header-top-bar, header {
   background-color: $header-bg-color;
   color: $header-color;
-  a {
+  a:not(.dropdown-item):not(.btn)  {
     text-decoration: none;
     color: $header-color;
-    &:hover:not(.dropdown-item):not(.btn) {
+    &:hover{
       color: $primary;
     }
   }

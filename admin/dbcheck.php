@@ -4,7 +4,6 @@
  * @global \JTL\Smarty\JTLSmarty     $smarty
  */
 
-use JTL\Alert\Alert;
 use JTL\Backend\Status;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -66,7 +65,7 @@ if (count($dbErrors) > 0) {
         $fulltextIndizes = DBMigrationHelper::getFulltextIndizes();
     }
 }
-Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $errorMsg, 'errorDBCheck');
+Shop::Container()->getAlertService()->addError($errorMsg, 'errorDBCheck');
 
 $smarty->assign('cDBFileStruct_arr', $dbFileStruct)
     ->assign('cDBStruct_arr', $dbStruct)

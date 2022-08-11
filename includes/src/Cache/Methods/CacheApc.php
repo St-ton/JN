@@ -30,7 +30,7 @@ class CacheApc implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         $this->isInitialized = true;
         $this->journalID     = 'apc_journal';
@@ -42,7 +42,7 @@ class CacheApc implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 
@@ -52,7 +52,7 @@ class CacheApc implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         $func = $this->u ? 'apcu_store' : 'apc_store';
 

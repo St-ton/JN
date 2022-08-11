@@ -142,7 +142,7 @@
                                         <div class="form-row productbox-onhover productbox-actions item-list-basket-details">
                                             {if ($Artikel->inWarenkorbLegbar === 1
                                                     || ($Artikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))
-                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|@count === 0)
+                                                && (($Artikel->nIstVater === 0 && $Artikel->Variationen|count === 0)
                                                     || $hasOnlyListableVariations === 1)
                                                 && !$Artikel->bHasKonfig
                                                 && $Einstellungen.template.productlist.buy_productlist === 'Y'}
@@ -174,8 +174,11 @@
                                                                     name="anzahl"
                                                                     autocomplete="off"
                                                                     aria=["label"=>{lang key='quantity'}]
-                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                                    data=[
+                                                                        "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
+                                                                        "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
+                                                                    ]
+                                                                    value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"}
                                                                 {inputgroupappend}
                                                                     {button variant=""
                                                                         data=["count-up"=>""]

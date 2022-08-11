@@ -211,13 +211,11 @@ class VariationValue
         $this->fAufpreisNetto = $data->fAufpreisNetto;
         $this->fGewichtDiff   = $data->fGewichtDiff;
         $this->cArtNr         = $data->cArtNr;
-        $this->nSort          = $data->teigenschaftwert_nSort;
+        $this->nSort          = (int)$data->teigenschaftwert_nSort;
         $this->fLagerbestand  = $data->fLagerbestand;
         $this->fPackeinheit   = $data->fPackeinheit;
         $this->inStock        = true;
-        $this->notExists      = isset($data->nMatched)
-            && (int)$data->nMatched < $cntVariationen - 1;
-
+        $this->notExists      = isset($data->nMatched) && (int)$data->nMatched < $cntVariationen - 1;
         if (isset($data->fVPEWert) && $data->fVPEWert > 0) {
             $this->fVPEWert = $data->fVPEWert;
         }
@@ -313,92 +311,84 @@ class VariationValue
         int $precision,
         string $per
     ): void {
+        if (!isset($this->fAufpreisNetto) || $this->fAufpreisNetto === 0.0) {
+            return;
+        }
+
+        $surcharge                   = $this->fAufpreisNetto;
+        $customerGroupID             = Frontend::getCustomerGroup()->getID();
+        $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
+            Tax::getGross($surcharge, $taxRate, 4),
+            $currency
+        );
+        $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
+        // Wenn der Artikel ein VarkombiKind ist
+        if ($product->kVaterArtikel > 0) {
+            $vkNetto = $product->gibPreis(1, [], $customerGroupID, '', false);
+        } else {
+            $vkNetto = $product->gibPreis(1, [
+                $this->kEigenschaft => $this->kEigenschaftWert
+            ], $customerGroupID, '', false);
+        }
+        $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
+            Tax::getGross($vkNetto, $taxRate),
+            $currency
+        );
+        $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($vkNetto, $currency);
+
+        if ($this->fAufpreisNetto > 0) {
+            $this->cAufpreisLocalized[0] = '+ ' . $this->cAufpreisLocalized[0];
+            $this->cAufpreisLocalized[1] = '+ ' . $this->cAufpreisLocalized[1];
+        } else {
+            $this->cAufpreisLocalized[0] = \str_replace('-', '- ', $this->cAufpreisLocalized[0]);
+            $this->cAufpreisLocalized[1] = \str_replace('-', '- ', $this->cAufpreisLocalized[1]);
+        }
+
+        $this->fAufpreis[0] = Tax::getGross($surcharge * $currency->getConversionFactor(), $taxRate);
+        $this->fAufpreis[1] = $surcharge * $currency->getConversionFactor();
+
+        if ($surcharge > 0) {
+            $product->nVariationsAufpreisVorhanden = 1;
+        }
+
         if ($mayViewPrices && isset($this->fVPEWert) && $this->fVPEWert > 0) {
-            $base                           = $this->fAufpreisNetto / $this->fVPEWert;
+            $base = [
+                0 => $this->fAufpreis[0] / $this->fVPEWert,
+                1 => $this->fAufpreis[1] / $this->fVPEWert,
+            ];
+
             $this->cPreisVPEWertAufpreis[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($base, $taxRate),
+                $base[0],
                 $currency,
                 true,
                 $precision
             ) . $per;
-
             $this->cPreisVPEWertAufpreis[1] = Preise::getLocalizedPriceString(
-                $base,
+                $base[1],
                 $currency,
                 true,
                 $precision
             ) . $per;
-
-            $base = ($this->fAufpreisNetto + $product->Preise->fVKNetto) / $this->fVPEWert;
 
             $this->cPreisVPEWertInklAufpreis[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($base, $taxRate),
+                Tax::getGross($vkNetto, $taxRate),
                 $currency,
                 true,
                 $precision
             ) . $per;
             $this->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
-                $base,
+                $vkNetto,
                 $currency,
                 true,
                 $precision
             ) . $per;
-        }
-        if (isset($this->fAufpreisNetto) && $this->fAufpreisNetto != 0) {
-            $surcharge                   = $this->fAufpreisNetto;
-            $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($surcharge, $taxRate, 4),
-                $currency
-            );
-            $this->cAufpreisLocalized[1] = Preise::getLocalizedPriceString($surcharge, $currency);
-            // Wenn der Artikel ein VarkombiKind ist
-            if ($product->kVaterArtikel > 0) {
-                $customer           = Frontend::getCustomer();
-                $variationBasePrice = new Preise(
-                    $customer->getGroupID() ?? Frontend::getCustomerGroup()->getID(),
-                    (int)$this->oVariationsKombi->kArtikel,
-                    $customer->getID() ?? 0
-                );
-
-                $VariationVKNetto            = $variationBasePrice->oPriceRange->getProductData()->fNettoPreis;
-                $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($VariationVKNetto, $taxRate),
-                    $currency
-                );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString($VariationVKNetto, $currency);
-            } else {
-                $this->cPreisInklAufpreis[0] = Preise::getLocalizedPriceString(
-                    Tax::getGross($surcharge + $product->Preise->fVKNetto, $taxRate),
-                    $currency
-                );
-                $this->cPreisInklAufpreis[1] = Preise::getLocalizedPriceString(
-                    $surcharge + $product->Preise->fVKNetto,
-                    $currency
-                );
-            }
-
-            if ($this->fAufpreisNetto > 0) {
-                $this->cAufpreisLocalized[0] = '+ ' . $this->cAufpreisLocalized[0];
-                $this->cAufpreisLocalized[1] = '+ ' . $this->cAufpreisLocalized[1];
-            } else {
-                $this->cAufpreisLocalized[0] = \str_replace('-', '- ', $this->cAufpreisLocalized[0]);
-                $this->cAufpreisLocalized[1] = \str_replace('-', '- ', $this->cAufpreisLocalized[1]);
-            }
-            $surcharge = $this->fAufpreisNetto;
-
-            $this->fAufpreis[0] = Tax::getGross($surcharge * $currency->getConversionFactor(), $taxRate);
-            $this->fAufpreis[1] = $surcharge * $currency->getConversionFactor();
-
-            if ($surcharge > 0) {
-                $product->nVariationsAufpreisVorhanden = 1;
-            }
         }
     }
 
     /**
      * @return int
      */
-    public function getID()
+    public function getID(): int
     {
         return $this->kEigenschaftWert;
     }

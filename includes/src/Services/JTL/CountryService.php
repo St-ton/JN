@@ -51,9 +51,10 @@ class CountryService implements CountryServiceInterface
 
     public function init(): void
     {
+        $languageID = Shop::getLanguageID();
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) {
-                return Text::replaceUmlauts($country->getName());
+            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
+                return Text::replaceUmlauts($country->getName($languageID));
             });
 
             return;
@@ -69,14 +70,15 @@ class CountryService implements CountryServiceInterface
                 \explode(' ', $shippingMethod->cLaender)
             ));
         }
+        $languages = Shop::Lang()->getAllLanguages();
         foreach ($countries as $country) {
-            $countryTMP = new Country($country->cISO);
+            $countryTMP = new Country($country->cISO, false, $languages);
             $countryTMP->setEU((int)$country->nEU)
                        ->setContinent($country->cKontinent)
                        ->setNameDE($country->cDeutsch)
                        ->setNameEN($country->cEnglisch)
-                       ->setPermitRegistration($country->bPermitRegistration === '1')
-                       ->setRequireStateDefinition($country->bRequireStateDefinition === '1')
+                       ->setPermitRegistration((int)$country->bPermitRegistration === 1)
+                       ->setRequireStateDefinition((int)$country->bRequireStateDefinition === 1)
                        ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
             if (\in_array($countryTMP->getISO(), $possibleStates, true)) {
                 $countryTMP->setStates($this->getStates($countryTMP->getISO()));
@@ -84,8 +86,8 @@ class CountryService implements CountryServiceInterface
             $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->countryList->sortBy(static function (Country $country) {
-            return Text::replaceUmlauts($country->getName());
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID) {
+            return Text::replaceUmlauts($country->getName($languageID));
         });
 
         $this->cache->set(self::CACHE_ID, $this->countryList, [\CACHING_GROUP_OBJECT]);
@@ -101,7 +103,7 @@ class CountryService implements CountryServiceInterface
 
     /**
      * @param string $iso
-     * @return Country
+     * @return Country|null
      */
     public function getCountry(string $iso): ?Country
     {

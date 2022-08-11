@@ -33,13 +33,6 @@ final class GeneralDataProtect extends Job
      */
     public function saveProgress(QueueEntry $queueEntry): bool
     {
-        // --DEBUG-- -------------------------------------------------------------
-        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/www/shop5_02/_logging_conf.xml');
-        $oLogger = \Logger::getLogger('default');
-        // --DEBUG-- -------------------------------------------------------------
-        $oLogger->debug('saving progress ...');   // --DEBUG--
-
         parent::saveProgress($queueEntry);
         $this->db->update(
             'tjobqueue',
@@ -56,27 +49,16 @@ final class GeneralDataProtect extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        // --DEBUG-- -------------------------------------------------------------
-        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/www/shop5_02/_logging_conf.xml');
-        $oLogger = \Logger::getLogger('default');
-        // --DEBUG-- -------------------------------------------------------------
-
         parent::start($queueEntry);
-
         // using `tcron`.`foreignKey` as a task index storage and `tcron`.`tasksExecuted` as repetition (down)counter
         $this->taskIdx         = (int)$queueEntry->foreignKey;
         $this->taskRepetitions = (int)$queueEntry->tasksExecuted;
-
-        // $oLogger->debug('Q-entry: '.print_r($queueEntry,true)); // --DEBUG--
-
         if ($queueEntry->foreignKey === '') {
             $queueEntry->foreignKey = '0';
         }
         $tableCleaner = new TableCleaner();
-        $tableCleaner->executeByStep($this->taskIdx, $this->taskRepetitions);  // --TRYOUT-- second param!
-
-        $queueEntry->tasksExecuted = $tableCleaner->getTaskRepetitions();     // --TRYOUT-- save the max repetition count of this task
+        $tableCleaner->executeByStep($this->taskIdx, $this->taskRepetitions);
+        $queueEntry->tasksExecuted = $tableCleaner->getTaskRepetitions(); // save the max repetition count of this task
         if ($tableCleaner->getIsFinished()) {
             $this->setForeignKey((string)$this->taskIdx++);
         }

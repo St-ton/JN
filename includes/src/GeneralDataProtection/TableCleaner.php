@@ -56,9 +56,9 @@ class TableCleaner
         ['name' => 'CleanupCustomerRelicts'            , 'intervalDays' => 0],
         ['name' => 'CleanupNewsletterRecipients'       , 'intervalDays' => 30],
         ['name' => 'CleanupLogs'                       , 'intervalDays' => 90],
-        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0],  // --TODO-- move to END
         ['name' => 'CleanupService'                    , 'intervalDays' => 0],  // multiple own intervals
-        ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1]  // same as 24 hours
+        ['name' => 'CleanupForgottenOptins'            , 'intervalDays' => 1],  // same as 24 hours
+        ['name' => 'CleanupGuestAccountsWithoutOrders' , 'intervalDays' => 0]
     ];
 
     /**
@@ -114,12 +114,6 @@ class TableCleaner
      */
     public function executeByStep(int $taskIdx, int $taskRepetitions): void
     {
-        // --DEBUG-- -------------------------------------------------------------
-        require_once('/www/shop5_02/includes/vendor/apache/log4php/src/main/php/Logger.php');
-        \Logger::configure('/www/shop5_02/_logging_conf.xml');
-        $oLogger = \Logger::getLogger('default');
-        // --DEBUG-- -------------------------------------------------------------
-
         if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
@@ -130,7 +124,7 @@ class TableCleaner
         $methodName = __NAMESPACE__ . '\\' . $this->methods[$taskIdx]['name'];
         /** @var MethodInterface $instance */
         $instance = new $methodName($this->now, $this->methods[$taskIdx]['intervalDays'], $this->db);
-        // repetition-value from DB has preference over methode-setting!
+        // repetition-value from DB has preference over task-setting!
         if ($taskRepetitions !== 0) {
             // override the repetition-value of the instance
             $instance->taskRepetitions = $taskRepetitions;
@@ -138,8 +132,6 @@ class TableCleaner
         } else {
             $this->taskRepetitions = $instance->getTaskRepetitions();
         }
-        $oLogger->debug('value of taskRepetitions (aka tasksExecuted): '. print_r($this->taskRepetitions,true)); // --TRYOUT--
-
         $instance->execute();
         $this->taskRepetitions = $instance->getTaskRepetitions();
         $this->isFinished      = $instance->getIsFinished();

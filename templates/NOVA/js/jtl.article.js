@@ -188,7 +188,7 @@
                         + previewHeight;
 
                     $galleryImages.removeAttr('sizes');
-                    lazySizes.autoSizer.updateElem($galleryImages);
+                    // lazySizes.autoSizer.updateElem($galleryImages);
 
                     if (hidePreview) {
                         $previewBar.addClass('d-none');

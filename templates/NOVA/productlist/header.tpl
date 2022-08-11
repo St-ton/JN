@@ -57,6 +57,8 @@
                 class='productlist-header-description-image'
                 item=$navData
                 square=false
+                width=$Einstellungen.bilder.bilder_kategorien_gross_breite
+                height=$Einstellungen.bilder.bilder_kategorien_gross_hoehe
                 alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}

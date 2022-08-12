@@ -5,6 +5,7 @@
         {$fluid       = $fluid|default:true}
         {$lazy        = $lazy|default:true}
         {$webp        = $webp|default:true}
+        {$sizes       = $sizes|default:'100vw'}
         {$class       = $class|default:''}
         {$squareClass = $squareClass|default:''}
         {$srcSize     = $srcSize|default:'md'}
@@ -127,6 +128,7 @@
                                 {$item->getImage(\JTL\Media\Image::SIZE_SM)} {$klein}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_MD)} {$normal}w,
                                 {$item->getImage(\JTL\Media\Image::SIZE_LG)} {$gross}w"
+                        sizes=$sizes
                         alt=$alt
                         width=$width
                         height=$height

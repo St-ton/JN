@@ -17,10 +17,41 @@ use stdClass;
  */
 class Import
 {
+    const DEFAULT_ACCEPTED_FIELDS = [
+        'cKundenNr',
+        'cPasswort',
+        'cAnrede',
+        'cTitel',
+        'cVorname',
+        'cNachname',
+        'cFirma',
+        'cZusatz',
+        'cStrasse',
+        'cHausnummer',
+        'cAdressZusatz',
+        'cPLZ',
+        'cOrt',
+        'cBundesland',
+        'cLand',
+        'cTel',
+        'cMobil',
+        'cFax',
+        'cMail',
+        'cUSTID',
+        'cWWW',
+        'fGuthaben',
+        'cNewsletter',
+        'dGeburtstag',
+        'fRabatt',
+        'cHerkunft',
+        'dErstellt',
+        'cAktiv'
+    ];
+
     /**
      * @var array
      */
-    private array $format;
+    private array $acceptedFields;
 
     /**
      * @var int
@@ -62,38 +93,9 @@ class Import
      * @param DbInterface $db
      * @param array|null  $format
      */
-    public function __construct(private DbInterface $db, array $format = null)
+    public function __construct(private DbInterface $db, array $acceptedFields = self::DEFAULT_ACCEPTED_FIELDS)
     {
-        $this->format          = $format ?? [
-                'cKundenNr',
-                'cPasswort',
-                'cAnrede',
-                'cTitel',
-                'cVorname',
-                'cNachname',
-                'cFirma',
-                'cZusatz',
-                'cStrasse',
-                'cHausnummer',
-                'cAdressZusatz',
-                'cPLZ',
-                'cOrt',
-                'cBundesland',
-                'cLand',
-                'cTel',
-                'cMobil',
-                'cFax',
-                'cMail',
-                'cUSTID',
-                'cWWW',
-                'fGuthaben',
-                'cNewsletter',
-                'dGeburtstag',
-                'fRabatt',
-                'cHerkunft',
-                'dErstellt',
-                'cAktiv'
-            ];
+        $this->acceptedFields  = $acceptedFields;
         $this->passwordService = Shop::Container()->getPasswordService();
         $this->mailer          = Shop::Container()->get(Mailer::class);
         $this->initDefaultCountry();
@@ -140,7 +142,7 @@ class Import
         $fmt = [];
         $cnt = \count($data);
         for ($i = 0; $i < $cnt; $i++) {
-            if (\in_array($data[$i], $this->format, true)) {
+            if (\in_array($data[$i], $this->getAcceptedFields(), true)) {
                 $fmt[$i] = $data[$i];
             } else {
                 $fmt[$i] = '';
@@ -214,7 +216,9 @@ class Import
         $tmp->cHausnummer = $customer->cHausnummer;
         $tmp->password    = 'Plaintext passwords are deprecated. Please update your email template!';
         if ($customer->insertInDB()) {
-            $this->notifyCustomer($customer, $tmp);
+            if ($this->usePasswordsFromCsv === false) {
+                $this->notifyCustomer($customer, $tmp);
+            }
 
             return \__('successImportRecord') . $customer->cVorname . ' ' . $customer->cNachname;
         }
@@ -272,17 +276,17 @@ class Import
     /**
      * @return array
      */
-    public function getFormat(): array
+    public function getAcceptedFields(): array
     {
-        return $this->format;
+        return $this->acceptedFields;
     }
 
     /**
-     * @param array $format
+     * @param array $acceptedFields
      */
-    public function setFormat(array $format): void
+    public function setAcceptedFields(array $acceptedFields): void
     {
-        $this->format = $format;
+        $this->acceptedFields = $acceptedFields;
     }
 
     /**

@@ -31,6 +31,7 @@ final class UpcomingProducts extends AbstractBox
             $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $cached     = false;
                 $productIDs = Shop::Container()->getDB()->getObjects(
                     'SELECT tartikel.kArtikel
                         FROM tartikel

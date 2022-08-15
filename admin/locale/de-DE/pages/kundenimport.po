@@ -35,6 +35,9 @@ msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Datensatz wurde √
 msgid "errorImportRecord"
 msgstr "Zeile konnte nicht importiert werden. Bitte sehen Sie sich die Log-Datei (Root/logs/) an und beheben Sie die entsprechenden Fehler in der CSV-Datei."
 
+msgid "successImportCustomerCsv"
+msgstr "Erfolgreich importierte Kundendatens√§tze: %s"
+
 msgid "successImportRecord"
 msgstr "Datensatz OK. Importiere: "
 

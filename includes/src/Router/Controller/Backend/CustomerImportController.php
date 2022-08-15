@@ -33,12 +33,15 @@ class CustomerImportController extends AbstractBackendController
             $importer = new Import($this->db);
             $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
             $importer->setLanguageID(Request::postInt('kSprache'));
-            $result = $importer->processFile($_FILES['csv']['tmp_name']);
-            $notice = '';
-            foreach ($result as $item) {
-                $notice .= $item . '<br>';
+
+            if ($importer->processFile($_FILES['csv']['tmp_name']) === false) {
+                $this->alertService->addError(\implode('<br>', $importer->getErrors()), 'importNotice');
+            } else {
+                $this->alertService->addSuccess(
+                    \sprintf(\__('successImportCustomerCsv'), $importer->getImportedRowsCount()),
+                    'importNotice'
+                );
             }
-            $this->alertService->addNotice($notice, 'importNotice');
         }
 
         return $smarty->assign('kundengruppen', $this->db->getObjects(

@@ -84,9 +84,14 @@ class Import
     private $defaultCountryCode;
 
     /**
-     * @var bool
+     * @var string[]
      */
-    private bool $generatePasswords = false;
+    private array $errors = [];
+
+    /**
+     * @var int
+     */
+    private int $importedRowsCount = 0;
 
     /**
      * Import constructor.
@@ -103,97 +108,113 @@ class Import
 
     /**
      * @param string $filename
-     * @return array
+     * @return bool
      * @throws InvalidArgumentException
      */
-    public function processFile(string $filename): array
+    public function processFile(string $filename): bool
     {
-        $result = [];
-        $file   = \fopen($filename, 'rb');
+        $this->errors            = [];
+        $this->importedRowsCount = 0;
+
+        $file = \fopen($filename, 'rb');
         if ($file === false) {
             throw new InvalidArgumentException('Cannot open file ' . $filename);
         }
-        $delimiter = \JTL\CSV\Import::getCsvDelimiter($filename);
-        $row       = 0;
-        $fmt       = [];
-        while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {
-            if ($row === 0) {
-                $fmt = $this->validate($data);
-                if ($fmt === -1) {
-                    $result[] = \__('errorFormatNotFound');
-                    break;
-                }
-            } else {
-                $result[] = \__('row') . ' ' . $row . ': ' . $this->processImport($fmt, $data);
-            }
-            $row++;
-        }
-        \fclose($file);
 
-        return $result;
+        $delimiter = \JTL\CSV\Import::getCsvDelimiter($filename);
+        $head      = \fgetcsv($file, null, $delimiter);
+        if ($head === false) {
+            $this->errors[] = \__('errorFormatNotFound');
+            \fclose($file);
+            return false;
+        }
+
+        $format = $this->validateHead($head);
+        if ($format === false) {
+            $this->errors[] = \__('errorFormatNotFound');
+            \fclose($file);
+            return false;
+        }
+
+        $index = 1;
+        while (($data = \fgetcsv($file, null, $delimiter)) !== false) {
+            $this->processLine($index, $format, $data);
+            $index ++;
+            $this->importedRowsCount ++;
+        }
+
+        \fclose($file);
+        return \count($this->errors) > 0;
     }
 
     /**
-     * @param array $data
-     * @return array|int
+     * @param string[] $head
+     * @return string[]|false
      */
-    protected function validate(array $data)
+    protected function validateHead(array $head)
     {
-        $fmt = [];
-        $cnt = \count($data);
-        for ($i = 0; $i < $cnt; $i++) {
-            if (\in_array($data[$i], $this->getAcceptedFields(), true)) {
-                $fmt[$i] = $data[$i];
-            } else {
-                $fmt[$i] = '';
-            }
+        if (!\in_array('cMail', $head, true)) {
+            return false;
         }
-        if (!\in_array('cMail', $fmt, true)) {
-            return -1;
-        }
-        if (\in_array('cPasswort', $fmt, true)) {
+        if (\in_array('cPasswort', $head, true)) {
             $this->usePasswordsFromCsv = true;
         }
-
-        return $fmt;
+        return array_map(
+            function ($field) {
+                return \in_array($field, $this->acceptedFields, true) ? $field : false;
+            },
+            $head
+        );
     }
 
     /**
-     * @param array $fmt
-     * @param array $data
-     * @return string
+     * @param int $index
+     * @param array $format
+     * @param array $values
+     * @return void
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \SmartyException
      */
-    protected function processImport(array $fmt, array $data): string
+    protected function processLine(int $index, array $format, array $values)
     {
         $customer = $this->getCustomer();
-        $cnt      = \count($data);
-        for ($i = 0; $i < $cnt; $i++) {
-            if (!empty($fmt[$i])) {
-                $customer->{$fmt[$i]} = $data[$i];
+        foreach ($format as $i => $fieldName) {
+            if ($fieldName !== false) {
+                $customer->{$fieldName} = $values[$i];
             }
         }
+
         if (Text::filterEmailAddress($customer->cMail) === false) {
-            return \sprintf(\__('errorInvalidEmail'), $customer->cMail);
+            $this->errors[] = \__('row') . ' ' . $index . ': '
+                . \sprintf(\__('errorInvalidEmail'), $customer->cMail);
+            return;
         }
+
         if ($this->usePasswordsFromCsv === true
             && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
-            return \__('errorNoPassword');
+            $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoPassword');
+            return;
         }
+
         if (!$customer->cNachname) {
-            return \__('errorNoSurname');
+            $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoSurname');
+            return;
         }
 
         $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
-            return \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
+            $this->errors[] = \__('row') . ' ' . $index . ': '
+                . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
+            return;
         }
+
         if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'frau') {
             $customer->cAnrede = 'w';
-        }
-        if ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'herr') {
+        } elseif ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'herr') {
             $customer->cAnrede = 'm';
         }
+
         if ($customer->cNewsletter === '1' || $customer->cNewsletter === 'y' || $customer->cNewsletter === 'Y') {
             $customer->cNewsletter = 'Y';
         } else {
@@ -209,21 +230,14 @@ class Import
             $customer->cPasswort = $this->passwordService->hash($password);
         }
 
-        $tmp              = new stdClass();
-        $tmp->cNachname   = $customer->cNachname;
-        $tmp->cFirma      = $customer->cFirma;
-        $tmp->cStrasse    = $customer->cStrasse;
-        $tmp->cHausnummer = $customer->cHausnummer;
-        $tmp->password    = 'Plaintext passwords are deprecated. Please update your email template!';
-        if ($customer->insertInDB()) {
-            if ($this->usePasswordsFromCsv === false) {
-                $this->notifyCustomer($customer, $tmp);
-            }
-
-            return \__('successImportRecord') . $customer->cVorname . ' ' . $customer->cNachname;
+        if ($customer->insertInDB() === 0) {
+            $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorImportRecord');
+            return;
         }
 
-        return \__('errorImportRecord');
+        if ($this->usePasswordsFromCsv === false) {
+            $this->notifyCustomer($customer);
+        }
     }
 
     protected function initDefaultCountry(): void
@@ -257,36 +271,20 @@ class Import
 
     /**
      * @param Customer $customer
-     * @param stdClass $tmp
      * @return bool
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \SmartyException
      */
-    private function notifyCustomer(Customer $customer, stdClass $tmp): bool
+    private function notifyCustomer(Customer $customer): bool
     {
-        $customer->cPasswortKlartext = $tmp->password;
-        $customer->cNachname         = $tmp->cNachname;
-        $customer->cFirma            = $tmp->cFirma;
-        $customer->cStrasse          = $tmp->cStrasse;
-        $customer->cHausnummer       = $tmp->cHausnummer;
-        $obj                         = new stdClass();
-        $obj->tkunde                 = $customer;
-        $mail                        = new Mail();
-        return $this->mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
-    }
+        $customer->cPasswortKlartext = 'Plaintext passwords are deprecated. Please update your email template!';
 
-    /**
-     * @return array
-     */
-    public function getAcceptedFields(): array
-    {
-        return $this->acceptedFields;
-    }
-
-    /**
-     * @param array $acceptedFields
-     */
-    public function setAcceptedFields(array $acceptedFields): void
-    {
-        $this->acceptedFields = $acceptedFields;
+        return $this->mailer->send(
+            (new Mail())->createFromTemplateID(
+                \MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER,
+                (object)['tkunde' => $customer]
+            )
+        );
     }
 
     /**
@@ -322,22 +320,6 @@ class Import
     }
 
     /**
-     * @return bool
-     */
-    public function getGeneratePasswords(): bool
-    {
-        return $this->generatePasswords;
-    }
-
-    /**
-     * @param bool $generatePasswords
-     */
-    public function setGeneratePasswords(bool $generatePasswords): void
-    {
-        $this->generatePasswords = $generatePasswords;
-    }
-
-    /**
      * @return string|null
      */
     public function getDefaultCountryCode(): ?string
@@ -351,5 +333,31 @@ class Import
     public function setDefaultCountryCode(?string $defaultCountryCode): void
     {
         $this->defaultCountryCode = $defaultCountryCode;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param string[] $errors
+     * @return Import
+     */
+    public function setErrors(array $errors): Import
+    {
+        $this->errors = $errors;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getImportedRowsCount(): int
+    {
+        return $this->importedRowsCount;
     }
 }

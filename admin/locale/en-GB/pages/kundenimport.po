@@ -35,6 +35,9 @@ msgstr "A customer with this email address already exists: %s. Data set was skip
 msgid "errorImportRecord"
 msgstr "The row could not be imported. Please have a look at the log file (Root/logs/) and correct the respective errors in the CSV file."
 
+msgid "successImportCustomerCsv"
+msgstr "Successfully imported customer datasets: %s"
+
 msgid "successImportRecord"
 msgstr "Data set OK. Import of: "
 

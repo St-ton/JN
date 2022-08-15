@@ -53,14 +53,6 @@
                                             square=false
                                             alt=$posName
                                         }
-
-{*
-                                        {image lazy=true
-                                            webp=true
-                                            src=$oPosition->Artikel->cVorschaubildURL
-                                            alt=$posName
-                                            fluid-grow=true
-                                        }*}
                                     {/link}
                                 {/if}
                             {/col}

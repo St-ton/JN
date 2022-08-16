@@ -166,10 +166,10 @@ class TemplateService implements TemplateServiceInterface
             $tplXML,
             $parentXML
         );
-        if ($withLicense === true) {
+        if ($withLicense === true && $template->getExsID() !== null) {
             $manager    = new Manager($this->db, $this->cache);
-            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
-            if ($exsLicense === null && $template->getExsID() !== null) {
+            $exsLicense = $manager->getLicenseByExsID($template->getExsID());
+            if ($exsLicense === null) {
                 $exsLicense = new ExpiredExsLicense();
                 $exsLicense->initFromTemplateData($template);
             }

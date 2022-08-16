@@ -4,17 +4,14 @@
         {container fluid=$Link->getIsFluid() class="page-manufacturers {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
             {row}
                 {foreach $oHersteller_arr as $mft}
-                    {col xl=3 md=4 sm=6}
+                    {col xl=3 md=4 cols=6}
                         {link href=$mft->getURL() title=$mft->getMetaTitle()|escape:'html'}
-                                <div class="square square-image manufacturer-image-wrapper">
-                                    <div class="inner">
-                                        {if !empty($mft->getImage(\JTL\Media\Image::SIZE_MD))}
-                                            {image fluid=true lazy=true webp=true
-                                            src=$mft->getImage(\JTL\Media\Image::SIZE_MD)
-                                            alt=$mft->getName()|escape:'html'}
-                                        {/if}
-                                    </div>
-                                </div>
+                            {include file='snippets/image.tpl'
+                                lazy=($mft@iteration > 8)
+                                item=$mft
+                                sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, 50vw'
+                                alt=$mft->getName()|escape:'html'
+                            }
                             {$mft->getName()}
                         {/link}
                     {/col}

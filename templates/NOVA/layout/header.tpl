@@ -237,12 +237,7 @@
         {/if}
         {$dbgBarHead}
 
-        <script>
-            window.lazySizesConfig = window.lazySizesConfig || {};
-            window.lazySizesConfig.expand  = 50;
-        </script>
         <script src="{$ShopURL}/{$templateDir}js/jquery-3.5.1.min.js"></script>
-        <script src="{$ShopURL}/{$templateDir}js/lazysizes.min.js"></script>
 
         {if $Einstellungen.template.general.use_minify === 'N'}
             {if isset($cPluginJsHead_arr)}
@@ -496,15 +491,9 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && !empty($boxes.left|strip_tags|trim)
-                && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
+        {if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row">
-                    {block name='layout-header-sidepanel-left'}
-                        <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-last order-lg-first dropdown-full-width">
-                            {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
-                        </aside>
-                    {/block}
                     <div class="col-lg-8 col-xl-9 ml-auto-util">
             {/block}
         {/if}

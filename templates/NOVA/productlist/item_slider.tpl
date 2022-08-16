@@ -9,7 +9,19 @@
                         {assign var=alt value=$Artikel->cName}
                     {/if}
                     {block name='productlist-item-slider-image'}
-                        {include file='snippets/image.tpl' item=$Artikel square=false srcSize='sm' class='product-image'}
+                        {if $tplscope === 'half'}
+                            {$imgSizes = '(min-width: 1300px) 19vw, (min-width: 992px) 29vw, 50vw'}
+                        {elseif $tplscope === 'slider'}
+                            {$imgSizes = '(min-width: 1300px) 15vw, (min-width: 992px) 20vw, (min-width: 768px) 34vw, 50vw'}
+                        {elseif $tplscope === 'box'}
+                            {$imgSizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, (min-width: 768px) 100vw, 50vw'}
+                        {/if}
+                        {include file='snippets/image.tpl' item=$Artikel
+                            square=false
+                            srcSize='sm'
+                            class='product-image'
+                            sizes=$imgSizes|default:'100vw'
+                        }
                     {/block}
                     {if $tplscope !== 'box'}
                         <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">

@@ -1,6 +1,6 @@
 {block name='layout-header-nav-search'}
     {block name='layout-header-nav-search-search'}
-        <div class="nav-item" id="search">
+        <{$tag|default:'div'} class="nav-item" id="search">
             <div class="search-wrapper">
                 <form action="{$ShopURL}/search/" method="get">
                     <div class="form-icon">
@@ -14,7 +14,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </{$tag|default:'div'}>
     {/block}
     {block name='layout-header-nav-search-search-dropdown'}
         {if $Einstellungen.template.header.mobile_search_type === 'dropdown'}

@@ -47,11 +47,11 @@
                             {col cols=3 xl=2 class="cart-items-image"}
                                 {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {link href=$oPosition->Artikel->cURLFull title=$posName}
-                                        {image lazy=true
-                                            webp=true
-                                            src=$oPosition->Artikel->cVorschaubildURL
+                                        {include file='snippets/image.tpl'
+                                            item=$oPosition->Artikel
+                                            sizes='(min-width: 1300px) 17vw, (min-width: 992px) 15vw, 25vw'
+                                            square=false
                                             alt=$posName
-                                            fluid-grow=true
                                         }
                                     {/link}
                                 {/if}

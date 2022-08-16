@@ -57,7 +57,8 @@
                 class='productlist-header-description-image'
                 item=$navData
                 square=false
-                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->getDescription()|strip_tags|truncate:50}{/if}"}
+                lazy=false
+                alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}
             <div class="title">
@@ -110,11 +111,15 @@
                                         {$imgAlt = $subCategory->getAttribute('img_alt')}
                                         {$imgSrc = $subCategory->getImage(\JTL\Media\Image::SIZE_SM)}
                                         <div class="subcategories-image d-none d-md-flex">
-                                            {image fluid=true lazy=true webp=true class="img-aspect-ratio"
+                                            {image fluid=true lazy=true webp=true
                                                 src=$imgSrc
-                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}auto{/if}"
-                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}auto{/if}"
-                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
+                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_breite}{/if}"
+                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_hoehe}{/if}"
+                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"
+                                                srcset="{$subCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
+                                            }
                                         </div>
                                     {/link}
                                 {/block}

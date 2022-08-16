@@ -1,15 +1,22 @@
 {include file='tpl_inc/header.tpl'}
 
 {if !empty($noPasswordCustomerIds)}
-    <div class="alert alert-warning" role="alert">
-        <p>
-            <i class="fal fa-exclamation-triangle mr-2"></i>
-            Einige importierte Kunden müssen ein neues Passwort setzen!
-            Sollen diese Kunden jetzt per E-Mail benachrichtigt werden?
-        </p>
-        <button type="submit" value="notify" class="btn btn-secondary">
-            Ja, Kunden jetzt per E-Mail auffordern, ein neues Passwort zu setzen
-        </button>
+    <div class="alert alert-warning align-items-center" data-fade-out="0" data-key="importNotifyModal">
+        <div class="row mr-0">
+            <div class="col">
+                <p>
+                    <i class="fal fa-exclamation-triangle mr-2"></i>
+                    Einige importierte Kunden müssen ein neues Passwort setzen!
+                    Sollen diese Kunden jetzt per E-Mail benachrichtigt werden?
+                </p>
+                <button type="submit" value="notify" class="btn btn-secondary">
+                    Ja, Kunden jetzt per E-Mail auffordern, ein neues Passwort zu setzen
+                </button>
+            </div>
+            <div class="col-auto ml-auto">
+                <div class="close">&times;</div>
+            </div>
+        </div>
     </div>
 {/if}
 

@@ -546,15 +546,15 @@ class BoxController extends AbstractBackendController
         $box = $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode);
         if (isset($box->kBox)) {
             $upd          = new stdClass();
-            $upd->cTitel  = Text::filterXSS($title);
+            $upd->cTitel  = $title;
             $upd->cInhalt = $content;
 
             return $this->db->update('tboxsprache', ['kBox', 'cISO'], [$boxID, $isoCode], $upd) >= 0;
         }
         $ins          = new stdClass();
         $ins->kBox    = $boxID;
-        $ins->cISO    = Text::filterXSS($isoCode);
-        $ins->cTitel  = Text::filterXSS($title);
+        $ins->cISO    = $isoCode;
+        $ins->cTitel  = $title;
         $ins->cInhalt = $content;
 
         return $this->db->insert('tboxsprache', $ins) > 0;

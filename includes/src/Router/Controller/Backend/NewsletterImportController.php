@@ -89,7 +89,7 @@ class NewsletterImportController extends AbstractBackendController
      * @param array $formats
      * @return array|int
      */
-    private function checkformat(array $data, array $formats)
+    private function checkformat(array $data, array $formats): int|array
     {
         $fmt = [];
         $cnt = \count($data);

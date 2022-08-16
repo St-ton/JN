@@ -570,7 +570,7 @@ class PluginManagerController extends AbstractBackendController
                 $this->notice = \__('successPluginInstall');
                 $this->reload = true;
                 $this->minify->flushCache();
-            } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
+            } elseif ($res > InstallCode::OK) {
                 $mapper             = new ValidationMapper();
                 $this->errorMessage = \sprintf(
                     \__('Error during the installation. Error code %d - %s'),

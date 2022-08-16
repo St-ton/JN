@@ -275,7 +275,7 @@ class ActivationController extends AbstractBackendController
      * @return stdClass[]
      * @former gibBewertungFreischalten()
      */
-    private function getReviews(string $sql, SqlObject $searchSQL): array
+    public function getReviews(string $sql, SqlObject $searchSQL): array
     {
         $searchSQL->addParam('lid', $this->currentLanguageID);
 
@@ -298,7 +298,7 @@ class ActivationController extends AbstractBackendController
      * @return stdClass[]
      * @former gibSuchanfrageFreischalten()
      */
-    private function getSearchQueries(string $sql, SqlObject $searchSQL): array
+    public function getSearchQueries(string $sql, SqlObject $searchSQL): array
     {
         $searchSQL->addParam('lid', $this->currentLanguageID);
 
@@ -318,7 +318,7 @@ class ActivationController extends AbstractBackendController
      * @return stdClass[]
      * @former gibNewskommentarFreischalten()
      */
-    private function getNewsComments(string $sql, SqlObject $searchSQL): array
+    public function getNewsComments(string $sql, SqlObject $searchSQL): array
     {
         $searchSQL->addParam('lid', $this->currentLanguageID);
 
@@ -351,7 +351,7 @@ class ActivationController extends AbstractBackendController
      * @return stdClass[]
      * @former gibNewsletterEmpfaengerFreischalten()
      */
-    private function getNewsletterRecipients(string $sql, SqlObject $searchSQL): array
+    public function getNewsletterRecipients(string $sql, SqlObject $searchSQL): array
     {
         $searchSQL->addParam('lid', $this->currentLanguageID);
 

@@ -49,6 +49,11 @@ class MenuItem
     private int $parentID = 0;
 
     /**
+     * @var int
+     */
+    private int $languageID = 0;
+
+    /**
      * @var string
      */
     private string $name = '';
@@ -446,11 +451,28 @@ class MenuItem
     }
 
     /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->languageID = $languageID;
+    }
+
+    /**
      * MenuItem constructor.
      * @param stdClass $data
      */
     public function __construct(stdClass $data)
     {
+        $this->setLanguageID((int)($data->languageID ?? 0));
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);
         $this->setLevel((int)$data->nLevel);

@@ -20,6 +20,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ImagesController extends AbstractBackendController
 {
+    /**
+     * @inheritdoc
+     */
     public function getResponse(
         ServerRequestInterface $request,
         array $args,
@@ -28,7 +31,6 @@ class ImagesController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/bilder');
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::SETTINGS_SITEMAP_VIEW);
-
         if (isset($_POST['speichern']) && Form::validateToken()) {
             $this->actionSaveConfig();
         }
@@ -55,6 +57,9 @@ class ImagesController extends AbstractBackendController
             ->getResponse('bilder.tpl');
     }
 
+    /**
+     * @return void
+     */
     private function actionSaveConfig(): void
     {
         $shopSettings = Shopsetting::getInstance();

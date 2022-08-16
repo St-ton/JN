@@ -3,6 +3,7 @@
 namespace JTL\Router\Controller;
 
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,6 +17,13 @@ interface ControllerInterface
      * @return bool
      */
     public function init(): bool;
+
+    /**
+     * @param RouteGroup $route
+     * @param string     $dynName
+     * @return void
+     */
+    public function register(RouteGroup $route, string $dynName): void;
 
     /**
      * @param ServerRequestInterface $request

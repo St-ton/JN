@@ -31,6 +31,7 @@ final class UpcomingProducts extends AbstractBox
             $limit          = (int)$config['boxen']['box_erscheinende_anzahl_basis'];
             $cacheID        = 'box_ikv_' . $customerGroupID . '_' . $limit . \md5($stockFilterSQL . $parentSQL);
             if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $cached     = false;
                 $productIDs = Shop::Container()->getDB()->getObjects(
                     'SELECT tartikel.kArtikel
                         FROM tartikel
@@ -59,7 +60,7 @@ final class UpcomingProducts extends AbstractBox
                 $products = new ArtikelListe();
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
+                $this->setURL(Shop::getURL() . '/' . SearchSpecial::buildURL(\SEARCHSPECIALS_UPCOMINGPRODUCTS));
                 \executeHook(\HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE, [
                     'box'        => &$this,
                     'cache_tags' => &$cacheTags,

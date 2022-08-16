@@ -65,7 +65,7 @@ final class BestsellingProducts extends AbstractBox
                 $products = new ArtikelListe();
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
+                $this->setURL(Shop::getURL() . '/' . SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
             \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [

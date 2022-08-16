@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20180509152100 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'removes rma special page';
+    protected $description = 'Remove RMA special page';
 
     /**
      * @inheritDoc

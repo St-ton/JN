@@ -20,37 +20,32 @@ class Import
     /**
      * @var array
      */
-    private $format;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private array $format;
 
     /**
      * @var int
      */
-    private $customerGroupID = 1;
+    private int $customerGroupID = 1;
 
     /**
      * @var int
      */
-    private $languageID = 1;
+    private int $languageID = 1;
 
     /**
      * @var bool
      */
-    private $usePasswordsFromCsv = false;
+    private bool $usePasswordsFromCsv = false;
 
     /**
      * @var Mailer
      */
-    private $mailer;
+    private Mailer $mailer;
 
     /**
      * @var PasswordServiceInterface
      */
-    private $passwordService;
+    private PasswordServiceInterface $passwordService;
 
     /**
      * @var string|null
@@ -58,13 +53,17 @@ class Import
     private $defaultCountryCode;
 
     /**
+     * @var bool
+     */
+    private bool $generatePasswords = false;
+
+    /**
      * Import constructor.
      * @param DbInterface $db
      * @param array|null  $format
      */
-    public function __construct(DbInterface $db, array $format = null)
+    public function __construct(private DbInterface $db, array $format = null)
     {
-        $this->db              = $db;
         $this->format          = $format ?? [
                 'cKundenNr',
                 'cPasswort',
@@ -112,7 +111,7 @@ class Import
         if ($file === false) {
             throw new InvalidArgumentException('Cannot open file ' . $filename);
         }
-        $delimiter = \getCsvDelimiter($filename);
+        $delimiter = \JTL\CSV\Import::getCsvDelimiter($filename);
         $row       = 0;
         $fmt       = [];
         while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {

@@ -52,7 +52,7 @@ class ReferencedPlugin extends ReferencedItem
         try {
             $carbon        = new Carbon($installed->dInstalliert);
             $dateInstalled = $carbon->toIso8601ZuluString();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $dateInstalled = null;
         }
         $this->setDateInstalled($dateInstalled);

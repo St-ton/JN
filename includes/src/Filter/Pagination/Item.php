@@ -15,27 +15,27 @@ class Item
     /**
      * @var int
      */
-    private $page = 0;
+    private int $page = 0;
 
     /**
      * @var string|null
      */
-    private $url;
+    private ?string $url = null;
 
     /**
      * @var bool
      */
-    private $isActive = false;
+    private bool $isActive = false;
 
     /**
      * @var int|null - compatibility only
      */
-    public $nBTN;
+    public ?int $nBTN = null;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cURL'   => 'URL',
         'page'   => 'PageNumber',
         'nSeite' => 'PageNumber',

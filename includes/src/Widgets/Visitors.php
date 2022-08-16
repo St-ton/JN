@@ -2,6 +2,8 @@
 
 namespace JTL\Widgets;
 
+use JTL\Backend\Stats;
+use JTL\Helpers\Date;
 use JTL\Linechart;
 use JTL\Statistik;
 
@@ -24,7 +26,7 @@ class Visitors extends AbstractWidget
      */
     public function getVisitorsOfCurrentMonth(): array
     {
-        return (new Statistik(\firstDayOfMonth(), \time()))->holeBesucherStats(2);
+        return (new Statistik(Date::getFirstDayOfMonth(), \time()))->holeBesucherStats(2);
     }
 
     /**
@@ -38,9 +40,9 @@ class Visitors extends AbstractWidget
             $month = 12;
             $year  = \date('Y') - 1;
         }
-        $oStatistik = new Statistik(\firstDayOfMonth($month, $year), \lastDayOfMonth($month, $year));
+        $stats = new Statistik(Date::getFirstDayOfMonth($month, $year), Date::getLastDayOfMonth($month, $year));
 
-        return $oStatistik->holeBesucherStats(2);
+        return $stats->holeBesucherStats(2);
     }
 
     /**
@@ -48,7 +50,6 @@ class Visitors extends AbstractWidget
      */
     public function getJSON(): Linechart
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $currentMonth = $this->getVisitorsOfCurrentMonth();
         $lastMonth    = $this->getVisitorsOfLastMonth();
         foreach ($currentMonth as $oCurrentMonth) {
@@ -63,7 +64,7 @@ class Visitors extends AbstractWidget
             'Dieser Monat'  => $currentMonth
         ];
 
-        return \prepareLineChartStatsMulti($series, \getAxisNames(\STATS_ADMIN_TYPE_BESUCHER), 2);
+        return Stats::prepareLineChartStatsMulti($series, Stats::getAxisNames(\STATS_ADMIN_TYPE_BESUCHER), 2);
     }
 
     /**
@@ -72,6 +73,6 @@ class Visitors extends AbstractWidget
     public function getContent()
     {
         return $this->oSmarty->assign('linechart', $this->getJSON())
-                             ->fetch('tpl_inc/widgets/visitors.tpl');
+            ->fetch('tpl_inc/widgets/visitors.tpl');
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -18,59 +18,53 @@ class Group implements JsonSerializable
     use MultiSizeImage;
 
     /**
+     * @var string|null
+     */
+    protected ?string $cBildPfad = null;
+
+    /**
      * @var int
      */
-    protected $kKonfiggruppe;
+    protected int $nMin = 0;
+
+    /**
+     * @var int
+     */
+    protected int $nMax = 0;
+
+    /**
+     * @var int
+     */
+    protected int $nTyp = 0;
 
     /**
      * @var string
      */
-    protected $cBildPfad;
-
-    /**
-     * @var int
-     */
-    protected $nMin;
-
-    /**
-     * @var int
-     */
-    protected $nMax;
-
-    /**
-     * @var int
-     */
-    protected $nTyp;
-
-    /**
-     * @var string
-     */
-    public $cKommentar;
+    public string $cKommentar = '';
 
     /**
      * @var GroupLocalization|null
      */
-    public $oSprache;
+    public ?GroupLocalization $oSprache = null;
 
     /**
      * @var Item[]
      */
-    public $oItem_arr = [];
+    public array $oItem_arr = [];
 
     /**
-     * @var bool|null
+     * @var bool
      */
-    public $bAktiv;
+    public bool $bAktiv = false;
 
     /**
      * Group constructor.
-     * @param int $id
+     * @param int $kKonfiggruppe
      * @param int $languageID
      */
-    public function __construct(int $id = 0, int $languageID = 0)
+    public function __construct(protected int $kKonfiggruppe = 0, int $languageID = 0)
     {
         $this->setImageType(Image::TYPE_CONFIGGROUP);
-        $this->kKonfiggruppe = $id;
         if ($this->kKonfiggruppe > 0) {
             $this->loadFromDB($this->kKonfiggruppe, $languageID);
         }
@@ -95,11 +89,11 @@ class Group implements JsonSerializable
             $this->oSprache = new GroupLocalization($this->kKonfiggruppe);
         }
         $override = [
-            'kKonfiggruppe' => (int)$this->kKonfiggruppe,
+            'kKonfiggruppe' => $this->kKonfiggruppe,
             'cBildPfad'     => $this->getBildPfad(),
             'nMin'          => (float)$this->nMin,
             'nMax'          => (float)$this->nMax,
-            'nTyp'          => (int)$this->nTyp,
+            'nTyp'          => $this->nTyp,
             'fInitial'      => (float)$this->getInitQuantity(),
             'bAnzahl'       => $this->getAnzeigeTyp() === \KONFIG_ANZEIGE_TYP_RADIO
                 || $this->getAnzeigeTyp() === \KONFIG_ANZEIGE_TYP_DROPDOWN,
@@ -127,16 +121,13 @@ class Group implements JsonSerializable
 
             return $this;
         }
-        foreach (\array_keys(\get_object_vars($data)) as $member) {
-            $this->$member = $data->$member;
-        }
-        if (!$languageID) {
-            $languageID = Shop::getLanguageID();
-        }
-        $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
-        $this->nMin          = (int)$this->nMin;
-        $this->nMax          = (int)$this->nMax;
-        $this->nTyp          = (int)$this->nTyp;
+        $languageID          = $languageID ?: Shop::getLanguageID();
+        $this->kKonfiggruppe = (int)$data->kKonfiggruppe;
+        $this->nMin          = (int)$data->nMin;
+        $this->nMax          = (int)$data->nMax;
+        $this->nTyp          = (int)$data->nTyp;
+        $this->cKommentar    = $data->cKommentar;
+        $this->cBildPfad     = $data->cBildPfad;
         $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
         $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe, $languageID);
         $this->generateAllImageSizes(true, 1, $this->cBildPfad);
@@ -156,23 +147,23 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @param string $cBildPfad
+     * @param string $path
      * @return $this
      */
-    public function setBildPfad($cBildPfad): self
+    public function setBildPfad(string $path): self
     {
-        $this->cBildPfad = $cBildPfad;
+        $this->cBildPfad = $path;
 
         return $this;
     }
 
     /**
-     * @param int $nTyp
+     * @param int $type
      * @return $this
      */
-    public function setAnzeigeTyp(int $nTyp): self
+    public function setAnzeigeTyp(int $type): self
     {
-        $this->nTyp = $nTyp;
+        $this->nTyp = $type;
 
         return $this;
     }
@@ -186,9 +177,9 @@ class Group implements JsonSerializable
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getID()
+    public function getID(): int
     {
         return $this->kKonfiggruppe;
     }
@@ -256,12 +247,13 @@ class Group implements JsonSerializable
      */
     public function getItemCount(): int
     {
-        return (int)Shop::Container()->getDB()->getSingleObject(
+        return Shop::Container()->getDB()->getSingleInt(
             'SELECT COUNT(*) AS cnt 
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :gid',
-            ['gid' => (int)$this->kKonfiggruppe]
-        )->cnt;
+            'cnt',
+            ['gid' => $this->kKonfiggruppe]
+        );
     }
 
     /**
@@ -269,16 +261,17 @@ class Group implements JsonSerializable
      */
     public function quantityEquals(): bool
     {
+        if (\count($this->oItem_arr) === 0) {
+            return false;
+        }
         $equal = false;
-        if (\count($this->oItem_arr) > 0) {
-            $item = $this->oItem_arr[0];
-            if ($item->getMin() === $item->getMax()) {
-                $equal = true;
-                $nKey  = $item->getMin();
-                foreach ($this->oItem_arr as $item) {
-                    if (!($item->getMin() === $item->getMax() && $item->getMin() === $nKey)) {
-                        $equal = false;
-                    }
+        $item  = $this->oItem_arr[0];
+        if ($item->getMin() === $item->getMax()) {
+            $equal = true;
+            $nKey  = $item->getMin();
+            foreach ($this->oItem_arr as $item) {
+                if (!($item->getMin() === $item->getMax() && $item->getMin() === $nKey)) {
+                    $equal = false;
                 }
             }
         }

@@ -22,31 +22,13 @@ use stdClass;
 class DefaultsHydrator implements HydratorInterface
 {
     /**
-     * @var JTLSmarty
-     */
-    protected $smarty;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var Shopsetting
-     */
-    protected $settings;
-
-    /**
      * DefaultsHydrator constructor.
      * @param JTLSmarty   $smarty
      * @param DbInterface $db
      * @param Shopsetting $settings
      */
-    public function __construct(JTLSmarty $smarty, DbInterface $db, Shopsetting $settings)
+    public function __construct(protected JTLSmarty $smarty, protected DbInterface $db, protected Shopsetting $settings)
     {
-        $this->smarty   = $smarty;
-        $this->db       = $db;
-        $this->settings = $settings;
     }
 
     /**
@@ -147,11 +129,11 @@ class DefaultsHydrator implements HydratorInterface
         }
         if (isset($customer->cAnrede)) {
             if ($customer->cAnrede === 'w') {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationW');
+                $customer->cAnredeLocalized = $language->get('salutationW');
             } elseif ($customer->cAnrede === 'm') {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationM');
+                $customer->cAnredeLocalized = $language->get('salutationM');
             } else {
-                $customer->cAnredeLocalized = Shop::Lang()->get('salutationGeneral');
+                $customer->cAnredeLocalized = $language->get('salutationGeneral');
             }
         }
         $customer = GeneralObject::deepCopy($customer);

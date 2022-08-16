@@ -75,7 +75,7 @@ final class LegacyPluginValidator extends AbstractValidator
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        \preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $hits);
+        \preg_match('/\d{3}/', $baseNode['XMLVersion'], $hits);
         if (\count($hits) === 0
             || (\mb_strlen($hits[0]) !== \mb_strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
         ) {
@@ -139,11 +139,11 @@ final class LegacyPluginValidator extends AbstractValidator
         $version = '';
         foreach ($node['Version'] as $i => $Version) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 $version = $Version['nr'];
-                \preg_match('/[0-9]+/', $Version['nr'], $hits);
+                \preg_match('/\d+/', $Version['nr'], $hits);
                 if (\mb_strlen($hits[0]) !== \mb_strlen($Version['nr'])) {
                     return InstallCode::INVALID_VERSION_NUMBER;
                 }
@@ -158,11 +158,7 @@ final class LegacyPluginValidator extends AbstractValidator
                 if (!\is_dir($dir . '/' . \PFAD_PLUGIN_VERSION . $version)) {
                     return InstallCode::MISSING_VERSION_DIR;
                 }
-                \preg_match(
-                    '/[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}/',
-                    $Version['CreateDate'],
-                    $hits
-                );
+                \preg_match('/\d{4}-[0-1]\d-[0-3]\d/', $Version['CreateDate'], $hits);
                 if (!isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($Version['CreateDate'])) {
                     return InstallCode::INVALID_DATE;
                 }

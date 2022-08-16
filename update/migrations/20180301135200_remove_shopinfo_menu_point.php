@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20180301135200 extends Migration implements IMigration
 {
     protected $author      = 'mschop';
-    protected $description = 'remove-shopinfo-menu-point';
+    protected $description = 'Remove shopinfo menu item';
 
     /**
      * @inheritDoc

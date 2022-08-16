@@ -12,9 +12,9 @@
             {/block}
             {*Prio: -> Funktionsattribut -> Benutzereingabe -> Standarddarstellung*}
             {block name='productlist-index-include-productlist-header-grid'}
-                {if (!empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
-                    && $AktuelleKategorie->categoryFunctionAttributes['darstellung'] == 1)
-                    || (empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                {if (!empty($AktuelleKategorie->getCategoryAttribute('darstellung'))
+                    && $AktuelleKategorie->getCategoryAttribute('darstellung') == 1)
+                    || (empty($AktuelleKategorie->getCategoryAttribute('darstellung'))
                         && ((!empty($oErweiterteDarstellung->nDarstellung) && $oErweiterteDarstellung->nDarstellung == 1)
                             || (empty($oErweiterteDarstellung->nDarstellung)
                                 && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht)

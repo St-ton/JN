@@ -59,9 +59,8 @@ class PlausiCMS extends Plausi
                     foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
                         $code = $language->getIso();
                         if (!empty($this->xPostVar_arr['cSeo_' . $code])) {
-                            $url    = $this->xPostVar_arr['cSeo_' . $code];
-                            $parsed = \parse_url($url);
-                            if (!isset($parsed['scheme'])) {
+                            $url = $this->xPostVar_arr['cSeo_' . $code];
+                            if (\parse_url($url, \PHP_URL_SCHEME) === null) {
                                 $this->xPlausiVar_arr['scheme'] = 1;
                             }
                         }

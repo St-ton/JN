@@ -45,8 +45,12 @@ final class NewsCurrentMonth extends AbstractBox
             ['lid' => $langID]
         );
         foreach ($newsOverview as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWSMONAT);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSMONAT, true);
+            $item->kNewsMonatsUebersicht = (int)$item->kNewsMonatsUebersicht;
+            $item->nMonat                = (int)$item->nMonat;
+            $item->nJahr                 = (int)$item->nJahr;
+            $item->nAnzahl               = (int)$item->nAnzahl;
+            $item->cURL                  = URL::buildURL($item, \URLART_NEWSMONAT);
+            $item->cURLFull              = URL::buildURL($item, \URLART_NEWSMONAT, true);
         }
         $this->setShow(\count($newsOverview) > 0);
         $this->setItems($newsOverview);

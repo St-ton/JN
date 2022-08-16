@@ -3,6 +3,7 @@
 namespace JTL\Console\Command\Model;
 
 use DateTime;
+use Exception;
 use JTL\Console\Command\Command;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -57,7 +58,13 @@ class CreateCommand extends Command
         $io        = $this->getIO();
         $targetDir = $input->getArgument('target-dir') ?? \PFAD_ROOT;
         $tableName = $input->getArgument('table');
-        $modelName = $this->writeDataModel($targetDir, $tableName);
+        try {
+            $modelName = $this->writeDataModel($targetDir, $tableName);
+        } catch (Exception $e) {
+            $io->error('Error: ' . $e->getMessage());
+
+            return Command::FAILURE;
+        }
         $io->writeln(\sprintf('<info>Created DataModel:</info> <comment>%s</comment>', $modelName));
 
         return Command::SUCCESS;
@@ -90,7 +97,7 @@ class CreateCommand extends Command
         ];
 
         foreach ($attribs as $attrib) {
-            $dataType    = \preg_match('/^([a-zA-Z0-9]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
+            $dataType    = \preg_match('/^([a-zA-Z\d]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
             $tableDesc[] = (object)[
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,

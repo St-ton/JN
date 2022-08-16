@@ -32,11 +32,6 @@ class TemplateValidator implements ValidatorInterface
     public const RES_INVALID_VERSION = 8;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
      * @var string
      */
     protected string $dir;
@@ -45,9 +40,8 @@ class TemplateValidator implements ValidatorInterface
      * AbstractValidator constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -63,7 +57,7 @@ class TemplateValidator implements ValidatorInterface
      */
     public function setDir(string $dir): void
     {
-        $this->dir = \mb_strpos($dir, \PFAD_ROOT) === 0
+        $this->dir = \str_starts_with($dir, \PFAD_ROOT)
             ? $dir
             : self::BASE_DIR . $dir;
     }
@@ -127,7 +121,7 @@ class TemplateValidator implements ValidatorInterface
             Version::parse($node['Version'] ?? '0');
             Version::parse($minShopversion);
             Version::parse($node['MaxShopVersion'] ?? '0.0.0');
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return self::RES_INVALID_VERSION;
         }
 

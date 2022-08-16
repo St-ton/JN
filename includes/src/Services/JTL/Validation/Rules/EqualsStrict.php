@@ -16,17 +16,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class EqualsStrict implements RuleInterface
 {
     /**
-     * @var mixed
-     */
-    protected $eq;
-
-    /**
      * EqualsStrict constructor.
      * @param mixed $eq
      */
-    public function __construct($eq)
+    public function __construct(protected $eq)
     {
-        $this->eq = $eq;
     }
 
     /**

@@ -23,25 +23,20 @@ use function Functional\first;
 class ProductFilterURL
 {
     /**
-     * @var ProductFilter
-     */
-    private $productFilter;
-
-    /**
      * ProductFilterURL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
     }
 
     /**
-     * @param FilterInterface|null $extraFilter
-     * @param bool                 $canonical
+     * @param FilterInterface|stdClass|null $extraFilter
+     * @param bool                          $canonical
+     * @param array                         $additional
      * @return string
      */
-    public function getURL($extraFilter = null, $canonical = false): string
+    public function getURL($extraFilter = null, bool $canonical = false, array $additional = []): string
     {
         $isSearchQuery      = false;
         $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
@@ -61,7 +56,10 @@ class ProductFilterURL
             'misc'   => []
         ];
         if ($base->isInitialized()) {
-            $filterSeoUrl = $base->getSeo($languageID);
+            $filterSeoUrl = \count($additional) > 0
+                ? $base->getRoute($additional)
+                : null;
+            $filterSeoUrl = $filterSeoUrl ?? $base->getSeo($languageID);
             if (!empty($filterSeoUrl)) {
                 $seoParam          = new stdClass();
                 $seoParam->value   = $base->getValue();
@@ -78,8 +76,8 @@ class ProductFilterURL
             }
         }
         if ($canonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL() .
-                $this->buildURLString(
+            return $this->productFilter->getFilterConfig()->getBaseURL()
+                . $this->buildURLString(
                     $seoFilterParams,
                     $nonSeoFilterParams
                 );
@@ -191,7 +189,7 @@ class ProductFilterURL
         if ($extraFilter !== null && $extraFilter->isParamExclusive() === true) {
             // some filters (like rating filter) must only have one exclusive param (?bf=1 etc.) - no array of params
             foreach ($urlParams as $param => $value) {
-                if ($param === $extraFilter->getUrlParam() && \is_array($value)) {
+                if (\is_array($value) && $param === $extraFilter->getUrlParam()) {
                     foreach ($value as $index => $val) {
                         if (isset($val->value) && $val->value !== $extraFilter->getValue()) {
                             unset($urlParams[$param][$index]);
@@ -215,11 +213,11 @@ class ProductFilterURL
             }
         }
         if (empty($seoFilterParams) && $languageID !== Shop::getLanguageID()) {
-            $language = first(Frontend::getLanguages(), static function (LanguageModel $l) use ($languageID) {
+            $language = first(Frontend::getLanguages(), static function (LanguageModel $l) use ($languageID): bool {
                 return $l->getId() === $languageID;
             });
             if ($language !== null) {
-                $nonSeoFilterParams['lang'] = $language->cISO;
+                $nonSeoFilterParams['lang'] = $language->getCode();
             }
         }
 
@@ -260,7 +258,7 @@ class ProductFilterURL
         }
 
         // remove numeric indices from array representation
-        return \preg_replace('/%5B[\d]+%5D/imU', '%5B%5D', $url);
+        return \preg_replace('/%5B\d+%5D/imU', '%5B%5D', $url);
     }
 
     /**
@@ -391,7 +389,7 @@ class ProductFilterURL
 
         foreach (\array_filter(
             $this->productFilter->getAvailableFilters(),
-            static function ($f) {
+            static function ($f): bool {
                 /** @var FilterInterface $f */
                 return $f->isInitialized() && $f->isCustom();
             }

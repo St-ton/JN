@@ -4,7 +4,7 @@
         <div class="form-group">
             {include file='tpl_inc/fileupload.tpl'
             fileID='plugin-install-upload'
-            fileUploadUrl="{$adminURL}/pluginverwaltung.php"
+            fileUploadUrl="{$adminURL}{$route}"
             fileBrowseClear=true
             fileUploadAsync=true
             fileAllowedExtensions="['zip']"

@@ -51,7 +51,7 @@ class Variation extends AbstractImage
                     ON p.kEigenschaftWert = t.kEigenschaftWert
                 WHERE p.kEigenschaftWert = :vid',
             ['vid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }

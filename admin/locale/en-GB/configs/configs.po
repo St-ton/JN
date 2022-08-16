@@ -3046,3 +3046,48 @@ msgstr "Enable spam protection"
 
 msgid "forgot_password_captcha_desc"
 msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
+
+msgid "configgroup_1_routing"
+msgstr "Routing"
+
+msgid "routing_scheme_name"
+msgstr "Routing scheme"
+
+msgid "routing_default_language_name"
+msgstr "Routing scheme for default language"
+
+msgid "routing_duplicates_name"
+msgstr "Handling of non-default routes"
+
+msgid "routing_duplicates_value(R)"
+msgstr "301 redirect to default route"
+
+msgid "routing_duplicates_value(I)"
+msgstr "Leave as-is"
+
+msgid "routing_duplicates_value(F)"
+msgstr "404 error"
+
+msgid "routing_default_language_value(F)"
+msgstr "Flat (Default)"
+
+msgid "routing_default_language_value(L)"
+msgstr "With locale"
+
+msgid "routing_default_language_value(P)"
+msgstr "With prefix"
+
+msgid "routing_default_language_value(LP)"
+msgstr "With locale and prefix"
+
+msgid "routing_scheme_value(F)"
+msgstr "Flat (Default)"
+
+msgid "routing_scheme_value(L)"
+msgstr "With locale"
+
+msgid "routing_scheme_value(P)"
+msgstr "With prefix"
+
+msgid "routing_scheme_value(LP)"
+msgstr "With locale and prefix"

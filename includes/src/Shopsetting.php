@@ -13,24 +13,24 @@ use function Functional\reindex;
 final class Shopsetting implements ArrayAccess
 {
     /**
-     * @var Shopsetting
+     * @var Shopsetting|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @var array
      */
-    private $container = [];
+    private array $container = [];
+
+    /**
+     * @var array|null
+     */
+    private ?array $allSettings = null;
 
     /**
      * @var array
      */
-    private $allSettings;
-
-    /**
-     * @var array
-     */
-    private static $mapping = [
+    private static array $mapping = [
         \CONF_GLOBAL              => 'global',
         \CONF_STARTSEITE          => 'startseite',
         \CONF_EMAILS              => 'emails',
@@ -59,7 +59,6 @@ final class Shopsetting implements ArrayAccess
         \CONF_SITEMAP             => 'sitemap',
         \CONF_SUCHSPECIAL         => 'suchspecials',
         \CONF_TEMPLATE            => 'template',
-        \CONF_CHECKBOX            => 'checkbox',
         \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
         \CONF_CRON                => 'cron',
         \CONF_FS                  => 'fs',
@@ -165,7 +164,7 @@ final class Shopsetting implements ArrayAccess
         if ($section === \CONF_TEMPLATE) {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->getTemplateConfig(Shop::Container()->getDB());
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
@@ -180,7 +179,7 @@ final class Shopsetting implements ArrayAccess
         } elseif ($section === \CONF_BRANDING) {
             return Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->getBrandingConfig(Shop::Container()->getDB());
                     $tags    = [\CACHING_GROUP_OPTION];
 
@@ -190,7 +189,7 @@ final class Shopsetting implements ArrayAccess
         } else {
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
-                function ($cache, $id, &$content, &$tags) use ($section) {
+                function ($cache, $id, &$content, &$tags) use ($section): bool {
                     $content = $this->getSectionData($section);
                     $tags    = [\CACHING_GROUP_OPTION];
 
@@ -253,10 +252,10 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param array|int $sections
+     * @param int|array $sections
      * @return array
      */
-    public function getSettings($sections): array
+    public function getSettings(int|array $sections): array
     {
         $ret = [];
         foreach ((array)$sections as $section) {
@@ -272,9 +271,9 @@ final class Shopsetting implements ArrayAccess
     /**
      * @param int    $sectionID
      * @param string $option
-     * @return string|array|int|null
+     * @return mixed
      */
-    public function getValue(int $sectionID, string $option)
+    public function getValue(int $sectionID, string $option): mixed
     {
         $section = $this->getSection($sectionID);
 
@@ -297,7 +296,7 @@ final class Shopsetting implements ArrayAccess
      * @param null|string $name
      * @return mixed|null
      */
-    public static function mapSettingName(?int $section = null, ?string $name = null)
+    public static function mapSettingName(?int $section = null, ?string $name = null): mixed
     {
         if ($section === null && $name === null) {
             return false;
@@ -417,7 +416,7 @@ final class Shopsetting implements ArrayAccess
         $cacheID           = 'settings_all_preload';
         $result            = Shop::Container()->getCache()->get(
             $cacheID,
-            function ($cache, $id, &$content, &$tags) {
+            function ($cache, $id, &$content, &$tags): bool {
                 $content = $this->getAll();
                 $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION, \CACHING_GROUP_CORE];
 

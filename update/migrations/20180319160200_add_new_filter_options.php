@@ -16,7 +16,7 @@ use JTL\Update\Migration;
 class Migration_20180319160200 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds options for new filters';
+    protected $description = 'Add options for new filters';
 
     /**
      * @inheritDoc

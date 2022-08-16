@@ -37,9 +37,8 @@
                                 {if $Einstellungen.template.megamenu.show_categories === 'mobile'} d-lg-none
                                 {elseif $Einstellungen.template.megamenu.show_categories === 'desktop'} d-none d-lg-inline-block {/if}
                                 {if $category->getID() === $activeId
-                            || ((isset($activeParent)
-                                && isset($activeParent->kKategorie))
-                                && $activeParent->kKategorie == $category->getID())} active{/if}">
+                            || (isset($activeParent)
+                                && $activeParent->getID() === $category->getID())} active{/if}">
                                 {link href=$category->getURL()
                                     title=$category->getName()|escape:'html'
                                     class="nav-link dropdown-toggle"

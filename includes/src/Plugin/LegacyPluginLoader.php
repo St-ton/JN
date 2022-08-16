@@ -132,7 +132,7 @@ class LegacyPluginLoader extends AbstractLoader
         $this->plugin->setLicense($this->loadLicense($obj));
         $this->plugin->setLinks(new Links());
         $this->plugin->setCache($this->loadCacheData($this->plugin));
-        $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
+        $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis, $id));
         $this->plugin->oPluginHook_arr = $this->loadHooks($id);
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
@@ -170,9 +170,9 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    protected function loadPaths(string $pluginDir): Paths
+    protected function loadPaths(string $pluginDir, int $id): Paths
     {
-        $paths     = parent::loadPaths($pluginDir);
+        $paths     = parent::loadPaths($pluginDir, $id);
         $shopURL   = $paths->getShopURL();
         $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . '/';
         $versioned = \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . '/';

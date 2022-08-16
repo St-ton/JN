@@ -20,7 +20,7 @@ class Migration_20210621080300 extends Migration implements IMigration
     {
         $template = Shop::Container()->getTemplateService()->getActiveTemplate(false);
         $config   = new Config($template->getDir(), $this->getDB());
-        $settings = Shop::getSettings([\CONF_TEMPLATE])['template'];
+        $settings = Shop::getSettings([CONF_TEMPLATE])['template'];
         if (!isset($settings['theme']['left_sidebar'])
             && ($template->getName() === 'NOVA' || $template->getParent() === 'NOVA')
         ) {

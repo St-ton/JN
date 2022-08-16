@@ -16,7 +16,7 @@ final class Orders extends AbstractPush
     private const LIMIT_ORDERS = 100;
 
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {

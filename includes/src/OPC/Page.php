@@ -13,62 +13,62 @@ class Page implements \JsonSerializable
     /**
      * @var int
      */
-    protected $key = 0;
+    protected int $key = 0;
 
     /**
      * @var string
      */
-    protected $id = '';
+    protected string $id = '';
 
     /**
      * @var bool
      */
-    protected $isModifiable = true;
+    protected bool $isModifiable = true;
 
     /**
      * @var null|string
      */
-    protected $publishFrom;
+    protected ?string $publishFrom = null;
 
     /**
      * @var null|string
      */
-    protected $publishTo;
+    protected ?string $publishTo = null;
 
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var int
      */
-    protected $revId = 0;
+    protected int $revId = 0;
 
     /**
      * @var string
      */
-    protected $url = '';
+    protected string $url = '';
 
     /**
      * @var null|string
      */
-    protected $lastModified;
+    protected ?string $lastModified = null;
 
     /**
      * @var string
      */
-    protected $lockedBy = '';
+    protected string $lockedBy = '';
 
     /**
      * @var null|string
      */
-    protected $lockedAt;
+    protected ?string $lockedAt = null;
 
     /**
-     * @var null|AreaList
+     * @var AreaList
      */
-    protected $areaList;
+    protected AreaList $areaList;
 
     /**
      * Page constructor.

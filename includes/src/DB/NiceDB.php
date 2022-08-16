@@ -20,58 +20,53 @@ use stdClass;
 class NiceDB implements DbInterface
 {
     /**
-     * @var pdo
+     * @var PDO|null
      */
-    protected $db;
+    protected ?PDO $db = null;
 
     /**
      * @var bool
      */
-    protected $isConnected = false;
+    protected bool $isConnected = false;
 
     /**
      * @var bool
      */
-    public $logErrors = false;
+    public bool $logErrors = false;
 
     /**
      * debug mode
      *
      * @var bool
      */
-    private $debug = false;
+    private bool $debug = false;
 
     /**
      * debug level, 0 no debug, 1 normal, 2 verbose, 3 very verbose with backtrace
      *
      * @var int
      */
-    private $debugLevel = 0;
-
-    /**
-     * @var NiceDB
-     */
-    private static $instance;
+    private int $debugLevel = 0;
 
     /**
      * @var PDO|null
      */
-    private $pdo;
+    private ?PDO $pdo;
 
     /**
      * @var string
      */
-    public $state = 'instanciated';
+    public string $state = 'instanciated';
 
     /**
      * @var array
      */
-    private $config;
+    private array $config;
 
     /**
      * @var int
      */
-    private $transactionCount = 0;
+    private int $transactionCount = 0;
 
     /**
      * create DB Connection with default parameters
@@ -111,7 +106,6 @@ class NiceDB implements DbInterface
         }
         $this->initDebugging($forceDebug);
         $this->isConnected = true;
-        self::$instance    = $this;
     }
 
     /**
@@ -218,7 +212,7 @@ class NiceDB implements DbInterface
         float $time = 0
     ): DbInterface {
         if ($this->debug !== true
-            || \mb_strpos($stmt, 'tprofiler') !== false
+            || \str_contains($stmt, 'tprofiler')
             || \mb_stripos($stmt, 'create table') !== false
         ) {
             return $this;
@@ -290,7 +284,7 @@ class NiceDB implements DbInterface
             $bt['function'] = $bt['function'] ?? '';
             if (isset($bt['file'])
                 && !($bt['class'] === __CLASS__ && $bt['function'] === '__call')
-                && \mb_strpos($bt['file'], 'NiceDB.php') === false
+                && !\str_contains($bt['file'], 'NiceDB.php')
             ) {
                 $stripped[] = [
                     'file'     => $bt['file'],
@@ -309,7 +303,8 @@ class NiceDB implements DbInterface
      */
     public function close(): bool
     {
-        $this->pdo = null;
+        $this->pdo         = null;
+        $this->isConnected = false;
 
         return true;
     }
@@ -423,7 +418,7 @@ class NiceDB implements DbInterface
             return 0;
         }
         $id = $this->pdo->lastInsertId();
-        if (\mb_strpos($tableName, 'tprofiler') !== 0) {
+        if (!\str_starts_with($tableName, 'tprofiler')) {
             $this->analyzeQuery($stmt, $assigns, null, \microtime(true) - $start);
         }
 
@@ -511,7 +506,7 @@ class NiceDB implements DbInterface
         $arr     = \get_object_vars($object);
         $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; // list of values to insert as param for ->prepare()
-        if (!\is_array($arr) || !$keyname || !$keyvalue) {
+        if (!$keyname || !$keyvalue) {
             return -1;
         }
         foreach ($arr as $_key => $_val) {
@@ -529,7 +524,7 @@ class NiceDB implements DbInterface
             }
         }
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keynamePrepared = \array_map(static function ($_v) {
+            $keynamePrepared = \array_map(static function ($_v): string {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where           = ' WHERE ' . \implode(' AND ', $keynamePrepared);
@@ -840,7 +835,7 @@ class NiceDB implements DbInterface
      */
     public function getInts(string $stmt, string $rowName, array $params = []): array
     {
-        return \array_map(static function (array $ele) use ($rowName) {
+        return \array_map(static function (array $ele) use ($rowName): int {
             return (int)$ele[$rowName];
         }, $this->_execute(1, $stmt, $params, ReturnType::ARRAY_OF_ASSOC_ARRAYS));
     }
@@ -992,27 +987,21 @@ class NiceDB implements DbInterface
 
     /**
      * @param int $returnType
-     * @return array|bool|Collection|int|PDOStatement|stdClass
+     * @return array|bool|Collection|int|PDOStatement|null
      */
     private function failExecute(int $returnType)
     {
-        switch ($returnType) {
-            case ReturnType::COLLECTION:
-                return new Collection();
-            case ReturnType::ARRAY_OF_OBJECTS:
-            case ReturnType::ARRAY_OF_ASSOC_ARRAYS:
-            case ReturnType::ARRAY_OF_BOTH_ARRAYS:
-            case ReturnType::SINGLE_ASSOC_ARRAY:
-                return [];
-            case ReturnType::SINGLE_OBJECT:
-                return null;
-            case ReturnType::QUERYSINGLE:
-                return new PDOStatement();
-            case ReturnType::DEFAULT:
-                return true;
-            default:
-                return 0;
-        }
+        return match ($returnType) {
+            ReturnType::COLLECTION         => new Collection(),
+            ReturnType::ARRAY_OF_OBJECTS,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS,
+            ReturnType::ARRAY_OF_BOTH_ARRAYS,
+            ReturnType::SINGLE_ASSOC_ARRAY => [],
+            ReturnType::SINGLE_OBJECT      => null,
+            ReturnType::QUERYSINGLE        => new PDOStatement(),
+            ReturnType::DEFAULT            => true,
+            default                        => 0,
+        };
     }
 
     /**
@@ -1116,7 +1105,7 @@ class NiceDB implements DbInterface
         $start   = \microtime(true);
         $assigns = [];
         if (\is_array($keyname) && \is_array($keyvalue)) {
-            $keyname = \array_map(static function ($_v) {
+            $keyname = \array_map(static function ($_v): string {
                 return '`' . $_v . '`=?';
             }, $keyname);
             $where   = \implode(' AND ', $keyname);
@@ -1319,11 +1308,8 @@ class NiceDB implements DbInterface
     public function getErrorMessage(): string
     {
         $error = $this->getError();
-        if (\is_array($error) && isset($error[2])) {
-            return \is_string($error[2]) ? $error[2] : '';
-        }
 
-        return '';
+        return (isset($error[2]) && \is_string($error[2])) ? $error[2] : '';
     }
 
     /**
@@ -1379,20 +1365,12 @@ class NiceDB implements DbInterface
         $parameter = \is_string($parameter) ? $this->_bindName($parameter) : $parameter;
 
         if ($type === null) {
-            switch (true) {
-                case \is_bool($value):
-                    $type = PDO::PARAM_BOOL;
-                    break;
-                case \is_int($value):
-                    $type = PDO::PARAM_INT;
-                    break;
-                case $value === null:
-                    $type = PDO::PARAM_NULL;
-                    break;
-                default:
-                    $type = PDO::PARAM_STR;
-                    break;
-            }
+            $type = match (true) {
+                \is_bool($value) => PDO::PARAM_BOOL,
+                \is_int($value)  => PDO::PARAM_INT,
+                $value === null  => PDO::PARAM_NULL,
+                default          => PDO::PARAM_STR,
+            };
         }
 
         $stmt->bindValue($parameter, $value, $type);
@@ -1438,7 +1416,7 @@ class NiceDB implements DbInterface
      */
     protected function isValidEntityName(string $name): bool
     {
-        return \preg_match('/^[a-z_0-9]+$/i', \trim($name)) === 1;
+        return \preg_match('/^[a-z_\d]+$/i', \trim($name)) === 1;
     }
 
     /**
@@ -1504,26 +1482,18 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
+     * @param array $data
+     * @return void
      */
-    public function serialize(): ?string
+    public function __unserialize(array $data): void
     {
-        return null;
     }
 
     /**
-     * @inheritdoc
+     * @return array
      */
-    public function unserialize($data): void
-    {
-    }
-
     public function __serialize(): array
     {
         return [];
-    }
-
-    public function __unserialize(array $data): void
-    {
     }
 }

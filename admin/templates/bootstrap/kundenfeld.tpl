@@ -112,7 +112,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$adminURL|cat:'/kundenfeld.php'}
+            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$adminURL|cat:$route}
         </div>
     </div>
     <div class="tabs">
@@ -132,7 +132,7 @@
         </nav>
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                <form name="kundenfeld" method="post" action="{$adminURL}/kundenfeld.php">
+                <form name="kundenfeld" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="kundenfelder" value="1">
                     <input name="tab" type="hidden" value="uebersicht">
@@ -287,7 +287,7 @@
                     <hr class="mb-3">
                     <div>
                     {if isset($oKundenfeld_arr) && $oKundenfeld_arr|count > 0}
-                        <form method="post" action="{$adminURL}/kundenfeld.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input name="kundenfelder" type="hidden" value="1">
                             <input name="tab" type="hidden" value="uebersicht">
@@ -342,7 +342,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="{$adminURL}/kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}"
                                                        data-toggle="tooltip">
                                                         <span class="icon-hover">
@@ -382,7 +382,7 @@
                 </div>
             </div>
             <div id="config" class="tab-pane fade{if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:'/kundenfeld.php' buttonCaption=__('save') tab='einstellungen'}
+                {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings' action=$adminURL|cat:$route buttonCaption=__('save') tab='einstellungen'}
             </div>
         </div>
     </div>

@@ -28,7 +28,7 @@ final class Categories extends AbstractSync
             if (isset($xml['tkategorie attr']['nGesamt']) || isset($xml['tkategorie attr']['nAktuell'])) {
                 unset($xml['tkategorie attr']['nGesamt'], $xml['tkategorie attr']['nAktuell']);
             }
-            if (\strpos($file, 'katdel.xml') !== false) {
+            if (\str_contains($file, 'katdel.xml')) {
                 $this->handleDeletes($xml);
             } else {
                 $categoryIDs[] = $this->handleInserts($xml);
@@ -53,7 +53,7 @@ final class Categories extends AbstractSync
         if ($source === null) {
             return;
         }
-        if (!\is_array($source) && \is_numeric($source)) {
+        if (\is_numeric($source)) {
             $source = [$source];
         }
         if (!\is_array($source)) {
@@ -294,9 +294,10 @@ final class Categories extends AbstractSync
     {
         // Fix: die Wawi überträgt für die normalen Attribute die ID in kAttribut statt in kKategorieAttribut
         if (!isset($attribute->kKategorieAttribut) && isset($attribute->kAttribut)) {
-            $attribute->kKategorieAttribut = (int)$attribute->kAttribut;
+            $attribute->kKategorieAttribut = $attribute->kAttribut;
             unset($attribute->kAttribut);
         }
+        $attribute->kKategorieAttribut = (int)$attribute->kKategorieAttribut;
         $this->insertOnExistUpdate('tkategorieattribut', [$attribute], ['kKategorieAttribut', 'kKategorie']);
         $localized = $this->mapper->mapArray($xmlParent, 'tattributsprache', 'mKategorieAttributSprache');
         // Die Standardsprache wird nicht separat übertragen und wird deshalb aus den Attributwerten gesetzt
@@ -315,7 +316,7 @@ final class Categories extends AbstractSync
             $pkValues['kSprache']
         );
 
-        return (int)$attribute->kKategorieAttribut;
+        return $attribute->kKategorieAttribut;
     }
 
     /**

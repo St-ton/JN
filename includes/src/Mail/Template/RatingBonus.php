@@ -30,6 +30,6 @@ class RatingBonus extends AbstractTemplate
             false
         );
         $smarty->assign('oKunde', $data->tkunde)
-               ->assign('oBewertungGuthabenBonus', $data->oBewertungGuthabenBonus);
+            ->assign('oBewertungGuthabenBonus', $data->oBewertungGuthabenBonus);
     }
 }

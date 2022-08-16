@@ -19,7 +19,7 @@ class Migration_20210608094115 extends Migration implements IMigration
         $this->setConfig(
             'merkmalfilter_trefferanzahl_anzeigen',
             'E',
-            \CONF_NAVIGATIONSFILTER,
+            CONF_NAVIGATIONSFILTER,
             'Trefferanzahl bei Merkmalfiltern anzeigen',
             'selectbox',
             183,

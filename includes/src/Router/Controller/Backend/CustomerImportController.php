@@ -1,0 +1,50 @@
+<?php declare(strict_types=1);
+
+namespace JTL\Router\Controller\Backend;
+
+use JTL\Backend\Permissions;
+use JTL\Customer\Import;
+use JTL\Helpers\Form;
+use JTL\Helpers\Request;
+use JTL\Smarty\JTLSmarty;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
+/**
+ * Class CustomerImportController
+ * @package JTL\Router\Controller\Backend
+ */
+class CustomerImportController extends AbstractBackendController
+{
+    /**
+     * @inheritdoc
+     */
+    public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
+    {
+        $this->smarty = $smarty;
+        $this->checkPermissions(Permissions::IMPORT_CUSTOMER_VIEW);
+        $this->getText->loadAdminLocale('pages/kundenimport');
+
+        if (isset($_FILES['csv']['tmp_name'])
+            && Request::postInt('kundenimport') === 1
+            && Form::validateToken()
+            && \mb_strlen($_FILES['csv']['tmp_name']) > 0
+        ) {
+            $importer = new Import($this->db);
+            $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
+            $importer->setLanguageID(Request::postInt('kSprache'));
+            $result = $importer->processFile($_FILES['csv']['tmp_name']);
+            $notice = '';
+            foreach ($result as $item) {
+                $notice .= $item . '<br>';
+            }
+            $this->alertService->addNotice($notice, 'importNotice');
+        }
+
+        return $smarty->assign('kundengruppen', $this->db->getObjects(
+            'SELECT * FROM tkundengruppe ORDER BY cName'
+        ))
+            ->assign('route', $this->route)
+            ->getResponse('kundenimport.tpl');
+    }
+}

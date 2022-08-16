@@ -21,26 +21,6 @@ use JTL\Plugin\State;
 class StateChanger
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var ValidatorInterface|null
-     */
-    private ?ValidatorInterface $legacyValidator;
-
-    /**
-     * @var ValidatorInterface|null
-     */
-    protected ?ValidatorInterface $pluginValidator;
-
-    /**
      * StateChanger constructor.
      * @param DbInterface             $db
      * @param JTLCacheInterface       $cache
@@ -48,15 +28,11 @@ class StateChanger
      * @param ValidatorInterface|null $pluginValidator
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        ValidatorInterface $legacyValidator = null,
-        ValidatorInterface $pluginValidator = null
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private ?ValidatorInterface $legacyValidator = null,
+        private ?ValidatorInterface $pluginValidator = null
     ) {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
     }
 
     /**

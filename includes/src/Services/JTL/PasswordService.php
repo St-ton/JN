@@ -19,17 +19,11 @@ class PasswordService implements PasswordServiceInterface
     public const ASCII_MAX = 126;
 
     /**
-     * @var CryptoServiceInterface
-     */
-    protected $cryptoService;
-
-    /**
      * PasswordService constructor.
      * @param CryptoServiceInterface $cryptoService
      */
-    public function __construct(CryptoServiceInterface $cryptoService)
+    public function __construct(protected CryptoServiceInterface $cryptoService)
     {
-        $this->cryptoService = $cryptoService;
     }
 
     /**

@@ -5,10 +5,10 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-4">
-                    {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/suchspecialoverlay.php'}
+                    {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
                 </div>
                 <div class="col-md-auto">
-                    <form name="suchspecialoverlay" method="post" action="{$adminURL}/suchspecialoverlay.php" class="inline_block">
+                    <form name="suchspecialoverlay" method="post" action="{$adminURL}{$route}" class="inline_block">
                         {$jtl_token}
                         <div class="form-row">
                             <label class="col-sm-auto col-form-label" for="{__('suchspecial')}">{__('suchspecial')}:</label>
@@ -28,7 +28,7 @@
     </div>
 
     {if $oSuchspecialOverlay->getType() > 0}
-        <form name="einstellen" method="post" action="{$adminURL}/suchspecialoverlay.php" enctype="multipart/form-data" onsubmit="checkfile(event)">
+        <form name="einstellen" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data" onsubmit="checkfile(event)">
             {$jtl_token}
             <input type="hidden" name="suchspecialoverlay" value="1" />
             <input type="hidden" name="kSuchspecialOverlay" value="{$oSuchspecialOverlay->getType()}" />

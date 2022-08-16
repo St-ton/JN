@@ -156,9 +156,7 @@
                                                 {/row}
                                             {/block}
                                         {/if}
-                                        {if !isset($cPost_arr)}
-                                            {assign var=cPost_arr value=array()}
-                                        {/if}
+                                        {assign var=cPost_arr value=$cPost_arr|default:[]}
                                         {block name='contact-index-include-checkbox'}
                                             {include file='snippets/checkbox.tpl' nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$fehlendeAngaben cPost_arr=$cPost_arr}
                                         {/block}

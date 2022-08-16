@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use Illuminate\Support\Collection;
 use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
-use JTL\Backend\LocalizationCheck\LocalizationCheckInterface;
 use JTL\Backend\LocalizationCheck\Result;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
@@ -26,6 +25,7 @@ use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Profiler;
 use JTL\Shop;
+use JTL\Update\DBMigrationHelper;
 use JTL\Update\Updater;
 use stdClass;
 use Systemcheck\Environment;
@@ -40,19 +40,9 @@ use function Functional\some;
 class Status
 {
     /**
-     * @var JTLCacheInterface
+     * @var self|null
      */
-    protected JTLCacheInterface $cache;
-
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var self
-     */
-    private static $instance;
+    private static ?Status $instance = null;
 
     public const CACHE_ID_FOLDER_PERMISSIONS   = 'validFolderPermissions';
     public const CACHE_ID_DATABASE_STRUCT      = 'validDatabaseStruct';
@@ -66,11 +56,8 @@ class Status
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
-
         self::$instance = $this;
     }
 
@@ -119,7 +106,7 @@ class Status
     public function getSystemLogInfo(): stdClass
     {
         /** @var int $conf */
-        $conf = Shop::getConfigValue(\CONF_GLOBAL, 'systemlog_flag');
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
 
         return (object)[
             'error'  => $conf >= \JTLLOG_LEVEL_ERROR,
@@ -135,23 +122,17 @@ class Status
      */
     public function validDatabaseStruct(): bool
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'dbcheck_inc.php';
-
         if (($dbStruct = $this->cache->get(self::CACHE_ID_DATABASE_STRUCT)) === false) {
-            $dbStruct             = [];
-            $dbStruct['current']  = \getDBStruct(true);
-            $dbStruct['original'] = \getDBFileStruct();
-
-            $this->cache->set(
-                self::CACHE_ID_DATABASE_STRUCT,
-                $dbStruct,
-                [\CACHING_GROUP_STATUS]
-            );
+            $dbStruct = [
+                'current'  => DBMigrationHelper::getDBStruct(true),
+                'original' => DBMigrationHelper::getDBFileStruct()
+            ];
+            $this->cache->set(self::CACHE_ID_DATABASE_STRUCT, $dbStruct, [\CACHING_GROUP_STATUS]);
         }
 
         return \is_array($dbStruct['current'])
             && \is_array($dbStruct['original'])
-            && \count(\compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
+            && \count(DBMigrationHelper::compareDBStruct($dbStruct['original'], $dbStruct['current'])) === 0;
     }
 
     /**
@@ -162,25 +143,19 @@ class Status
      */
     public function validModifiedFileStruct(?string &$hash = null): bool
     {
-        if (($validModifiedFileStruct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
+        if (($struct = $this->cache->get(self::CACHE_ID_MODIFIED_FILE_STRUCT)) === false) {
             $check   = new FileCheck();
             $files   = [];
             $stats   = 0;
             $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
-
-            $validModifiedFileStruct = $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
+            $struct  = $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
                 ? $stats
                 : 1;
-
-            $this->cache->set(
-                self::CACHE_ID_MODIFIED_FILE_STRUCT,
-                $validModifiedFileStruct,
-                [\CACHING_GROUP_STATUS]
-            );
+            $this->cache->set(self::CACHE_ID_MODIFIED_FILE_STRUCT, $struct, [\CACHING_GROUP_STATUS]);
         }
-        $hash = \md5(($hash ?? 'validModifiedFileStruct') . '_' . $validModifiedFileStruct);
+        $hash = \md5(($hash ?? 'validModifiedFileStruct') . '_' . $struct);
 
-        return $validModifiedFileStruct === 0;
+        return $struct === 0;
     }
 
     /**
@@ -191,27 +166,20 @@ class Status
      */
     public function validOrphanedFilesStruct(?string &$hash = null): bool
     {
-        if (($validOrphanedFilesStruct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
-            $check             = new FileCheck();
-            $files             = [];
-            $stats             = 0;
-            $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
-                \PFAD_INCLUDES . \PFAD_SHOPMD5
+        if (($struct = $this->cache->get(self::CACHE_ID_ORPHANED_FILE_STRUCT)) === false) {
+            $check   = new FileCheck();
+            $files   = [];
+            $stats   = 0;
+            $csvFile = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5
                 . 'deleted_files_' . $check->getVersionString() . '.csv';
-
-            $validOrphanedFilesStruct = $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
+            $struct  = $check->validateCsvFile($csvFile, $files, $stats) === FileCheck::OK
                 ? $stats
                 : 1;
-
-            $this->cache->set(
-                self::CACHE_ID_ORPHANED_FILE_STRUCT,
-                $validOrphanedFilesStruct,
-                [\CACHING_GROUP_STATUS]
-            );
+            $this->cache->set(self::CACHE_ID_ORPHANED_FILE_STRUCT, $struct, [\CACHING_GROUP_STATUS]);
         }
-        $hash = \md5(($hash ?? 'validOrphanedFilesStruct') . '_' . $validOrphanedFilesStruct);
+        $hash = \md5(($hash ?? 'validOrphanedFilesStruct') . '_' . $struct);
 
-        return $validOrphanedFilesStruct === 0;
+        return $struct === 0;
     }
 
     /**
@@ -220,19 +188,15 @@ class Status
      */
     public function validFolderPermissions(?string &$hash = null): bool
     {
-        if (($filesystemFolders = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
+        if (($struct = $this->cache->get(self::CACHE_ID_FOLDER_PERMISSIONS)) === false) {
             $filesystem = new Filesystem(\PFAD_ROOT);
             $filesystem->getFoldersChecked();
-            $filesystemFolders = $filesystem->getFolderStats();
-            $this->cache->set(
-                self::CACHE_ID_FOLDER_PERMISSIONS,
-                $filesystemFolders,
-                [\CACHING_GROUP_STATUS]
-            );
+            $struct = $filesystem->getFolderStats();
+            $this->cache->set(self::CACHE_ID_FOLDER_PERMISSIONS, $struct, [\CACHING_GROUP_STATUS]);
         }
-        $hash = \md5(($hash ?? 'validFolderPermissions') . '_' . $filesystemFolders->nCountInValid);
+        $hash = \md5(($hash ?? 'validFolderPermissions') . '_' . $struct->nCountInValid);
 
-        return $filesystemFolders->nCountInValid === 0;
+        return $struct->nCountInValid === 0;
     }
 
     /**
@@ -310,7 +274,7 @@ class Status
                 'php'  => $phpTime->format('Y-m-d H:i:s'),
                 'diff' => \abs($dbTime->getTimestamp() - $phpTime->getTimestamp())
             ];
-        } catch (Exception $e) {
+        } catch (Exception) {
             return ['diff' => 0];
         }
     }
@@ -322,7 +286,7 @@ class Status
     {
         try {
             $template = Shop::Container()->getTemplateService()->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         return $template->getVersion() !== \APPLICATION_VERSION;
@@ -335,7 +299,7 @@ class Status
     {
         try {
             $template = Shop::Container()->getTemplateService()->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
         if ($template->isResponsive()) {
@@ -345,8 +309,6 @@ class Status
                 if (\file_exists($xmlFile)) {
                     return true;
                 }
-                // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
-                // ist der DB-Eintrag falsch und wird gelöscht
                 $this->db->delete('ttemplate', 'eTyp', 'mobil');
             }
         }
@@ -381,9 +343,10 @@ class Status
     public function hasInstalledStandardLang(): bool
     {
         $defaultID = LanguageHelper::getDefaultLanguage()->getId();
+
         return some(
             LanguageHelper::getInstance()->getInstalled(),
-            static function (LanguageModel $lang) use ($defaultID) {
+            static function (LanguageModel $lang) use ($defaultID): bool {
                 return $lang->getId() === $defaultID;
             }
         );
@@ -410,16 +373,13 @@ class Status
      */
     public function getMySQLStats(): array
     {
-        $stats = $this->db->getServerStats();
-        $info  = $this->db->getServerInfo();
-        $lines = \explode('  ', $stats);
-        $lines = \array_map(static function ($v) {
+        $lines = \array_map(static function ($v): array {
             [$key, $value] = \explode(':', $v, 2);
 
             return ['key' => \trim($key), 'value' => \trim($value)];
-        }, $lines);
+        }, \explode('  ', $this->db->getServerStats()));
 
-        return \array_merge([['key' => 'Version', 'value' => $info]], $lines);
+        return \array_merge([['key' => 'Version', 'value' => $this->db->getServerInfo()]], $lines);
     }
 
     /**
@@ -447,9 +407,9 @@ class Status
 
     /**
      * @param bool $has
-     * @return array|bool
+     * @return stdClass[]|bool
      */
-    public function getOrphanedCategories(bool $has = true)
+    public function getOrphanedCategories(bool $has = true): bool|array
     {
         $categories = $this->db->getObjects(
             'SELECT kKategorie, cName
@@ -492,10 +452,8 @@ class Status
      */
     public function hasLicenseExpirations(?string &$hash = null): bool
     {
-        $manager = new Manager($this->db, $this->cache);
-        $mapper  = new Mapper($manager);
-
-        $toBeExpired  = $mapper->getCollection()->getAboutToBeExpired(28)->count();
+        $mapper       = new Mapper(new Manager($this->db, $this->cache));
+        $toBeExpired  = $mapper->getCollection()->getAboutToBeExpired()->count();
         $boundExpired = $mapper->getCollection()->getBoundExpired()->count();
         $hash         = \md5(($hash ?? 'hasLicenseExpirations') . '_' . $toBeExpired . '_' . $boundExpired);
 
@@ -522,7 +480,7 @@ class Status
         foreach ($data as $item) {
             try {
                 $plugin = Helper::getLoader((int)$item->bExtension === 1)->init((int)$item->kPlugin);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             if ($plugin->getCurrentVersion()->greaterThan($item->nVersion)) {
@@ -537,7 +495,7 @@ class Status
      * @param bool $has
      * @return bool|Collection
      */
-    public function getLocalizationProblems(bool $has = true)
+    public function getLocalizationProblems(bool $has = true): bool|Collection
     {
         if (\SAFE_MODE === true) {
             return false;
@@ -578,7 +536,7 @@ class Status
         );
         foreach ($translations as $t) {
             $old = '{$neues_passwort}';
-            if (\mb_strpos($t->cContentHtml, $old) !== false || \mb_strpos($t->cContentText, $old) !== false) {
+            if (\str_contains($t->cContentHtml, $old) || \str_contains($t->cContentText, $old)) {
                 return true;
             }
         }
@@ -587,7 +545,7 @@ class Status
     }
 
     /**
-     * Checks, whether SMTP is configured for sending mails but no encryption method is chosen for E-Mail-Server
+     * Checks whether SMTP is configured for sending mails but no encryption method is chosen for email server
      * communication
      *
      * @param string|null $hash
@@ -595,7 +553,7 @@ class Status
      */
     public function hasInsecureMailConfig(?string &$hash = null): bool
     {
-        $conf = Shop::getConfig([\CONF_EMAILS])['emails'];
+        $conf = Shop::getSettingSection(\CONF_EMAILS);
         $hash = \md5(($hash ?? 'hasInsecureMailConfig') . '_' . $conf['email_methode']);
 
         return $conf['email_methode'] === 'smtp' && empty(\trim($conf['email_smtp_verschluesselung']));
@@ -647,7 +605,6 @@ class Status
 
             $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EXPORT_SYNTAX_CHECK]);
         }
-
         $hash = \md5($hash . $syntaxErrCnt);
 
         return $syntaxErrCnt;
@@ -678,7 +635,6 @@ class Status
 
             $this->cache->set($cacheKey, $syntaxErrCnt, [\CACHING_GROUP_STATUS, self::CACHE_ID_EMAIL_SYNTAX_CHECK]);
         }
-
         $hash = \md5($hash . $syntaxErrCnt);
 
         return $syntaxErrCnt;

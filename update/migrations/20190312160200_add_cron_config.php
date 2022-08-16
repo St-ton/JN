@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20190312160200 extends Migration implements IMigration
 {
     protected $author = 'fm';
-    protected $description = 'add cron config';
+    protected $description = 'Add cron config';
 
     /**
      * @inheritDoc

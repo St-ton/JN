@@ -40,7 +40,7 @@ class PersistentCartItem
     /**
      * @var string
      */
-    public $dHinzugefuegt;
+    public $dHinzugefuegt = 'NOW()';
 
     /**
      * @var string
@@ -106,7 +106,6 @@ class PersistentCartItem
         $this->kArtikel        = $productID;
         $this->cArtikelName    = $productName;
         $this->fAnzahl         = $qty;
-        $this->dHinzugefuegt   = 'NOW()';
         $this->kWarenkorbPers  = $cartItemID;
         $this->cUnique         = $unique;
         $this->cResponsibility = !empty($responsibility) ? $responsibility : 'core';

@@ -61,7 +61,7 @@ abstract class FilterField
         $this->title     = \is_array($title) ? $title[0] : $title;
         $this->titleLong = \is_array($title) ? $title[1] : '';
         $this->column    = $column;
-        $this->id        = \preg_replace('/[^a-zA-Z0-9_]+/', '', $this->title);
+        $this->id        = \preg_replace('/\W+/', '', $this->title);
         $this->value     = Text::filterXSS(
             $filter->getAction() === $filter->getID() . '_filter'
                 ? $_GET[$filter->getID() . '_' . $this->id]

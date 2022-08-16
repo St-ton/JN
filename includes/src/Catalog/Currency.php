@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog;
 
@@ -19,62 +19,62 @@ class Currency
     /**
      * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
      */
-    private $code;
+    private string $code;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $htmlEntity;
+    private string $htmlEntity;
 
     /**
      * @var float
      */
-    private $conversionFactor;
+    private float $conversionFactor;
 
     /**
      * @var bool
      */
-    private $isDefault = false;
+    private bool $isDefault = false;
 
     /**
      * @var bool
      */
-    private $forcePlacementBeforeNumber = false;
+    private bool $forcePlacementBeforeNumber = false;
 
     /**
      * @var string
      */
-    private $decimalSeparator;
+    private string $decimalSeparator;
 
     /**
      * @var string
      */
-    private $thousandsSeparator;
+    private string $thousandsSeparator;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $cURL;
+    private ?string $cURL = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $cURLFull;
+    private ?string $cURLFull = null;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kWaehrung'            => 'ID',
         'cISO'                 => 'Code',
         'cName'                => 'Name',
@@ -356,7 +356,7 @@ class Currency
      * @param stdClass $obs
      * @return $this
      */
-    private function extract(stdClass $obs): self
+    public function extract(stdClass $obs): self
     {
         foreach (\get_object_vars($obs) as $var => $value) {
             if (($mapped = self::getMapping($var)) !== null) {
@@ -468,18 +468,29 @@ class Currency
     }
 
     /**
+     * @return self[]
+     */
+    public static function loadAll(): array
+    {
+        $currencies = [];
+        foreach (Shop::Container()->getDB()->selectAll('twaehrung', [], []) as $item) {
+            $item->kWaehrung = (int)$item->kWaehrung;
+            $currency        = new self();
+            $currency->extract($item);
+            $currencies[] = $currency;
+        }
+
+        return $currencies;
+    }
+
+    /**
      * @param bool $update
      * @return void
      */
     public static function setCurrencies(bool $update = false): void
     {
         if ($update || \count(Frontend::getCurrencies()) === 0) {
-            $currencies    = [];
-            $allCurrencies = Shop::Container()->getDB()->selectAll('twaehrung', [], [], 'kWaehrung');
-            foreach ($allCurrencies as $currency) {
-                $currencies[] = new self((int)$currency->kWaehrung);
-            }
-            $_SESSION['Waehrungen'] = $currencies;
+            $_SESSION['Waehrungen'] = self::loadAll();
         }
     }
 }

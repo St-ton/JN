@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:'/bewertung.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
         </div>
     </div>
 
@@ -48,7 +48,7 @@
             <div id="freischalten" class="tab-pane fade {if $cTab === '' || $cTab === 'freischalten'} active show{/if}">
                 {if $inactiveReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
-                    <form method="post" action="{$adminURL}/bewertung.php">
+                    <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                         <input type="hidden" name="tab" value="freischalten" />
@@ -80,7 +80,7 @@
                                                 </td>
                                                 <td>
                                                     <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                    &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                                    &nbsp;<a href="{$shopURL}/?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                                 </td>
                                                 <td>{$review->cName}.</td>
                                                 <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
@@ -88,7 +88,7 @@
                                                 <td class="text-center">{$review->Datum}</td>
                                                 <td class="text-center">
                                                     <div class="btn-group">
-                                                        <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                        <a href="{$adminURL}{$route}?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
                                                            class="btn btn-link px-2"
                                                            title="{__('modify')}"
                                                            data-toggle="tooltip">
@@ -134,7 +134,7 @@
             <div id="letzten50" class="tab-pane fade {if $cTab === 'letzten50'} active show{/if}">
                 {if $activeReviews|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
-                    <form name="letzten50" method="post" action="{$adminURL}/bewertung.php">
+                    <form name="letzten50" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="bewertung_aktiv" value="1" />
                         <input type="hidden" name="tab" value="letzten50" />
@@ -182,7 +182,7 @@
                                             <td class="text-center">{$review->Datum}</td>
                                             <td class="text-center">
                                                 {if !empty($review->cAntwort)}
-                                                    <a href="{$adminURL}/bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2 delete-confirm"
                                                        title="{__('removeReply')}"
                                                        data-toggle="tooltip"
@@ -194,7 +194,7 @@
                                                     </a>
                                                 {/if}
                                                 <a class="btn btn-link px-2"
-                                                   href="{$shopURL}/index.php?a={$review->kArtikel}"
+                                                   href="{$shopURL}/?a={$review->kArtikel}"
                                                    target="_blank"
                                                    title="{__('linkItemShop')}"
                                                    data-toggle="tooltip">
@@ -203,7 +203,7 @@
                                                         <span class="fas fa-external-link"></span>
                                                     </span>
                                                 </a>
-                                                <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                <a href="{$adminURL}{$route}?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -239,7 +239,7 @@
                 {/if}
             </div>
             <div id="artikelbewertung" class="tab-pane fade {if $cTab === 'artikelbewertung'} active show{/if}">
-                <form name="artikelbewertung" method="post" action="{$adminURL}/bewertung.php">
+                <form name="artikelbewertung" method="post" action="{$adminURL}{$route}">
                     <div class="mb-3">
                         {$jtl_token}
                         <div class="form-row">
@@ -291,14 +291,14 @@
                                             </td>
                                             <td>
                                                 <label for="filtered-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                                &nbsp;<a href="{$shopURL}/?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                             </td>
                                             <td>{$review->cName}.</td>
                                             <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
                                             <td class="text-center">{$review->nSterne}</td>
                                             <td class="text-center">{$review->Datum}</td>
                                             <td class="text-center">
-                                                <a href="{$adminURL}/bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
+                                                <a href="{$adminURL}{$route}?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"
                                                    data-toggle="tooltip">
@@ -333,7 +333,7 @@
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action=$adminURL|cat:'/bewertung.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

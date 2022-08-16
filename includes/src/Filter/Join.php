@@ -11,27 +11,27 @@ class Join implements JoinInterface
     /**
      * @var string
      */
-    private $type = 'JOIN';
+    private string $type = 'JOIN';
 
     /**
      * @var string
      */
-    private $table = '';
+    private string $table = '';
 
     /**
      * @var string
      */
-    private $comment = '';
+    private string $comment = '';
 
     /**
      * @var string
      */
-    private $on = '';
+    private string $on = '';
 
     /**
      * @var string
      */
-    private $origin = '';
+    private string $origin = '';
 
     /**
      * @inheritdoc

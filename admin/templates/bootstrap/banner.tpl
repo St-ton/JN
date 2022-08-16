@@ -47,7 +47,7 @@
         }
     </script>
     <div id="settings">
-        <form name="banner" action="{$adminURL}/banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="{$adminURL}{$route}" method="post" enctype="multipart/form-data">
             {$jtl_token}
             <input type="hidden" name="action" value="{$action}" />
             {if $action === 'edit'}
@@ -104,7 +104,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#vDatum"
-                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'d.m.Y'}{elseif isset($banner->vDatum) && $banner->vDatum > 0}{$banner->vDatum|date_format:'d.m.Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -118,7 +118,7 @@
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#bDatum"
-                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'d.m.Y'}{elseif isset($banner->bDatum) && $banner->bDatum > 0}{$banner->bDatum|date_format:'d.m.Y'}{/if}"
                             format="DD.MM.YYYY"
                             separator="{__('datepickerSeparator')}"
                             single=true
@@ -326,7 +326,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
@@ -417,7 +417,7 @@
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block" href="{$adminURL}/banner.php" id="cancel">
+                <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}" id="cancel">
                     {__('cancelWithIcon')}
                 </a>
             </div>
@@ -462,14 +462,14 @@
                                 </td>
                                 <td>
                                     {if $banner->vDatum !== null}
-                                        {$banner->vDatum|date_format:'%d.%m.%Y'}
+                                        {$banner->vDatum|date_format:'d.m.Y'}
                                     {/if} -
                                     {if $banner->bDatum !== null}
-                                        {$banner->bDatum|date_format:'%d.%m.%Y'}
+                                        {$banner->bDatum|date_format:'d.m.Y'}
                                     {/if}
                                 </td>
                                 <td class="text-center">
-                                    <form action="{$adminURL}/banner.php" method="post">
+                                    <form action="{$adminURL}{$route}" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$banner->kImageMap}" />
                                         <div class="btn-group">
@@ -514,7 +514,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-primary btn-block" href="{$adminURL}/banner.php?action=new&token={$smarty.session.jtl_token}">
+                        <a class="btn btn-primary btn-block" href="{$adminURL}{$route}?action=new&token={$smarty.session.jtl_token}">
                             <i class="fa fa-share"></i> {__('addBanner')}
                         </a>
                     </div>

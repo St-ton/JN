@@ -9,7 +9,7 @@
         <td></td>
     {else}
         <td class="{if !$isActive} inactive text-muted{/if}{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            {$oBox->getTitle()}
+            {$oBox->getTitle()|escape}
         </td>
         <td class="{if !$isActive} inactive text-muted{/if}">
             {$oBox->getType()|ucfirst}
@@ -73,7 +73,7 @@
             <a href="{$adminURL}{$route}?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('remove')}"
                class="btn btn-link px-2 delete-confirm {if $disabled}disabled{/if}"
-               data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}"}"
+               data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()|escape|htmlentities}{/if}"}"
                data-toggle="tooltip">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>

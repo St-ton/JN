@@ -203,17 +203,17 @@ class Updater
             $availableUpdates = $api->getAvailableVersions(true) ?? [];
             foreach ($availableUpdates as $key => $availVersion) {
                 try {
-                    $availableUpdates[$key]['referenceVersion'] = Version::parse($availVersion['reference']);
+                    $availVersion->referenceVersion = Version::parse($availVersion->reference);
                 } catch (Exception) {
                     unset($availableUpdates[$key]);
                 }
             }
             // sort versions ascending
-            \usort($availableUpdates, static function ($x, $y): int {
+            \usort($availableUpdates, static function (stdClass $x, stdClass $y): int {
                 /** @var Version $versionX */
-                $versionX = $x['referenceVersion'];
+                $versionX = $x->referenceVersion;
                 /** @var Version $versionY */
-                $versionY = $y['referenceVersion'];
+                $versionY = $y->referenceVersion;
                 if ($versionX->smallerThan($versionY)) {
                     return -1;
                 }
@@ -227,13 +227,13 @@ class Updater
             $versionCollection = new VersionCollection();
             foreach ($availableUpdates as $availableUpdate) {
                 /** @var Version $referenceVersion */
-                $referenceVersion = $availableUpdate['referenceVersion'];
-                if ($availableUpdate['isPublic'] === 0
+                $referenceVersion = $availableUpdate->referenceVersion;
+                if ($availableUpdate->isPublic === 0
                     && $referenceVersion->equals($this->getCurrentFileVersion()) === false
                 ) {
                     continue;
                 }
-                $versionCollection->append($availableUpdate['reference']);
+                $versionCollection->append($availableUpdate->reference);
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))

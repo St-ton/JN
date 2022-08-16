@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -16,12 +16,60 @@ class Revision
     /**
      * @var array
      */
-    private $mapping;
+    private array $mapping = [
+        'link' => [
+            'table'         => 'tlink',
+            'id'            => 'kLink',
+            'reference'     => 'tlinksprache',
+            'reference_id'  => 'kLink',
+            'reference_key' => 'cISOSprache'
+        ],
+        'export'   => [
+            'table' => 'texportformat',
+            'id'    => 'kExportformat'
+        ],
+        'mail'     => [
+            'table'         => 'temailvorlage',
+            'id'            => 'kEmailvorlage',
+            'reference'     => 'temailvorlagesprache',
+            'reference_id'  => 'kEmailvorlage',
+            'reference_key' => 'kSprache'
+        ],
+        'opcpage'  => [
+            'table' => 'topcpage',
+            'id'    => 'kPage'
+        ],
+        'news' => [
+            'table'         => 'tnews',
+            'id'            => 'kNews',
+            'reference'     => 'tnewssprache',
+            'reference_id'  => 'kNews',
+            'reference_key' => 'languageCode'
+        ],
+        'box'      => [
+            'table'         => 'tboxen',
+            'id'            => 'kBox',
+            'reference'     => 'tboxsprache',
+            'reference_id'  => 'kBox',
+            'reference_key' => 'cISO'
+        ],
+        'newsletterstd' => [
+            'table'         => 'tnewslettervorlage',
+            'id'            => 'kNewsletterVorlage',
+            'reference'     => 'tnewslettervorlagestdvarinhalt',
+            'reference_id'  => 'kNewslettervorlage',
+            'reference_key' => 'kNewslettervorlageStdVar'
+        ],
+        'newsletter'    => [
+            'table' => 'tnewslettervorlage',
+            'id'    => 'kNewsletterVorlage'
+        ]
+    ];
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Revision constructor.
@@ -29,56 +77,7 @@ class Revision
      */
     public function __construct(?DbInterface $db = null)
     {
-        $this->db      = $db ?? Shop::Container()->getDB();
-        $this->mapping = [
-            'link' => [
-                'table'         => 'tlink',
-                'id'            => 'kLink',
-                'reference'     => 'tlinksprache',
-                'reference_id'  => 'kLink',
-                'reference_key' => 'cISOSprache'
-            ],
-            'export'   => [
-                'table' => 'texportformat',
-                'id'    => 'kExportformat'
-            ],
-            'mail'     => [
-                'table'         => 'temailvorlage',
-                'id'            => 'kEmailvorlage',
-                'reference'     => 'temailvorlagesprache',
-                'reference_id'  => 'kEmailvorlage',
-                'reference_key' => 'kSprache'
-            ],
-            'opcpage'  => [
-                'table' => 'topcpage',
-                'id'    => 'kPage'
-            ],
-            'news' => [
-                'table'         => 'tnews',
-                'id'            => 'kNews',
-                'reference'     => 'tnewssprache',
-                'reference_id'  => 'kNews',
-                'reference_key' => 'languageCode'
-            ],
-            'box'      => [
-                'table'         => 'tboxen',
-                'id'            => 'kBox',
-                'reference'     => 'tboxsprache',
-                'reference_id'  => 'kBox',
-                'reference_key' => 'cISO'
-            ],
-            'newsletterstd' => [
-                'table'         => 'tnewslettervorlage',
-                'id'            => 'kNewsletterVorlage',
-                'reference'     => 'tnewslettervorlagestdvarinhalt',
-                'reference_id'  => 'kNewslettervorlage',
-                'reference_key' => 'kNewslettervorlageStdVar'
-            ],
-            'newsletter'    => [
-                'table' => 'tnewslettervorlage',
-                'id'    => 'kNewsletterVorlage'
-            ]
-        ];
+        $this->db = $db ?? Shop::Container()->getDB();
     }
 
     /**
@@ -203,7 +202,7 @@ class Revision
      */
     public function getRevisions(string $type, int $primary): array
     {
-        return \array_map(static function ($e) {
+        return \array_map(static function (stdClass $e): stdClass {
             $e->content = \json_decode($e->content);
 
             return $e;

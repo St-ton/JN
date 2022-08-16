@@ -29,12 +29,12 @@ class Migration_20171116114700 extends Migration implements IMigration
     /**
      * @var int
      */
-    private $hiddenLinkGroupID = 0;
+    private int $hiddenLinkGroupID = 0;
 
     /**
      * @var array
      */
-    private $languages = [];
+    private array $languages = [];
 
     /**
      * @inheritDoc

@@ -1,4 +1,3 @@
-
 .breadcrumb-wrapper {
 	align-items: center;
 	margin-bottom: map-get($spacers, 4);
@@ -28,9 +27,17 @@
 .breadcrumb-arrow {
 	display: flex;
 	@include media-breakpoint-up(md) { display: none;}
-	&::before {
-		@include fas('f104');
+	&:first-child::before {
+		@include fas('f053');
 		margin-right: 6px;
+	}
+
+	&:not(:first-child) {
+		padding-left: 0;
+
+		&::before {
+			content: none;
+		}
 	}
 }
 
@@ -41,5 +48,26 @@
 	@include media-breakpoint-up(md) { display: block; }
 	.btn {
 		float: right;
+	}
+}
+.has-left-sidebar {
+	.breadcrumb-container {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+.breadcrumb-backtolist {
+	display: flex;
+
+	&::before {
+		@include fas('f053');
+		margin-right: 6px;
+	}
+
+	&::after {
+		content: "|";
+		margin-left: 6px;
+		margin-right: 6px;
 	}
 }

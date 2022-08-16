@@ -8,6 +8,7 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -79,11 +80,18 @@ class Method implements MethodInterface
     public $kZahlungsart;
 
     /**
-     * @param string $moduleID
-     * @param int    $nAgainCheckout
+     * @var DbInterface
      */
-    public function __construct(string $moduleID, int $nAgainCheckout = 0)
+    private DbInterface $db;
+
+    /**
+     * @param string           $moduleID
+     * @param int              $nAgainCheckout
+     * @param DbInterface|null $db
+     */
+    public function __construct(string $moduleID, int $nAgainCheckout = 0, DbInterface $db = null)
     {
+        $this->db       = $db ?? Shop::Container()->getDB();
         $this->moduleID = $moduleID;
         // extract: za_mbqc_visa_jtl => myqc_visa
         $pattern = '&za_(.*)_jtl&is';
@@ -100,7 +108,7 @@ class Method implements MethodInterface
     public function init(int $nAgainCheckout = 0)
     {
         $this->name           = '';
-        $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
+        $result               = $this->db->select('tzahlungsart', 'cModulId', $this->moduleID);
         $this->caption        = $result->cName ?? null;
         $this->duringCheckout = isset($result->nWaehrendBestellung)
             ? (int)$result->nWaehrendBestellung
@@ -122,7 +130,7 @@ class Method implements MethodInterface
     public function getOrderHash(Bestellung $order): ?string
     {
         $orderId = isset($order->kBestellung)
-            ? Shop::Container()->getDB()->getSingleObject(
+            ? $this->db->getSingleObject(
                 'SELECT cId FROM tbestellid WHERE kBestellung = :oid',
                 ['oid' => (int)$order->kBestellung]
             )
@@ -139,18 +147,19 @@ class Method implements MethodInterface
         if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
         ) {
-            return Shop::getURL() . '/bestellvorgang.php';
+            return Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php');
         }
-        if (Shop::getSettings([\CONF_KAUFABWICKLUNG])['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+        if (Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_abschlussseite') === 'A') {
             // Abschlussseite
-            $paymentID = Shop::Container()->getDB()->getSingleObject(
+            $paymentID = $this->db->getSingleObject(
                 'SELECT cId
                     FROM tbestellid
                     WHERE kBestellung = :oid',
                 ['oid' => (int)$order->kBestellung]
             );
             if ($paymentID !== null) {
-                return Shop::getURL() . '/bestellabschluss.php?i=' . $paymentID->cId;
+                return Shop::Container()->getLinkService()->getStaticRoute('bestellabschluss.php')
+                    . '?i=' . $paymentID->cId;
             }
         }
 
@@ -174,9 +183,9 @@ class Method implements MethodInterface
     {
         if ($orderID > 0) {
             $upd            = new stdClass();
-            $upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
+            $upd->cNotifyID = $cNotifyID;
             $upd->dNotify   = 'NOW()';
-            Shop::Container()->getDB()->update('tzahlungsession', 'kBestellung', $orderID, $upd);
+            $this->db->update('tzahlungsession', 'kBestellung', $orderID, $upd);
         }
 
         return $this;
@@ -187,7 +196,7 @@ class Method implements MethodInterface
      */
     public function getShopTitle(): string
     {
-        return Shop::getConfigValue(\CONF_GLOBAL, 'global_shopname');
+        return Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname');
     }
 
     /**
@@ -232,7 +241,7 @@ class Method implements MethodInterface
         }
 
         if ($order->kBestellung !== null) {
-            $oBestellID              = Shop::Container()->getDB()->select(
+            $oBestellID              = $this->db->select(
                 'tbestellid',
                 'kBestellung',
                 (int)$order->kBestellung
@@ -244,16 +253,16 @@ class Method implements MethodInterface
             $paymentID->cId          = $hash;
             $paymentID->txn_id       = '';
             $paymentID->dDatum       = 'NOW()';
-            Shop::Container()->getDB()->insert('tzahlungsid', $paymentID);
+            $this->db->insert('tzahlungsid', $paymentID);
         } else {
-            Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [\session_id(), 0]);
+            $this->db->delete('tzahlungsession', ['cSID', 'kBestellung'], [\session_id(), 0]);
             $paymentSession               = new stdClass();
             $paymentSession->cSID         = \session_id();
             $paymentSession->cNotifyID    = '';
             $paymentSession->dZeitBezahlt = 'NOW()';
             $paymentSession->cZahlungsID  = \uniqid('', true);
             $paymentSession->dZeit        = 'NOW()';
-            Shop::Container()->getDB()->insert('tzahlungsession', $paymentSession);
+            $this->db->insert('tzahlungsession', $paymentSession);
             $hash = '_' . $paymentSession->cZahlungsID;
         }
 
@@ -265,7 +274,7 @@ class Method implements MethodInterface
      */
     public function deletePaymentHash(string $paymentHash)
     {
-        Shop::Container()->getDB()->delete('tzahlungsid', 'cId', $paymentHash);
+        $this->db->delete('tzahlungsid', 'cId', $paymentHash);
 
         return $this;
     }
@@ -287,7 +296,7 @@ class Method implements MethodInterface
             'cHinweis'          => '',
             'cAbgeholt'         => 'N'
         ], (array)$payment);
-        Shop::Container()->getDB()->insert('tzahlungseingang', $model);
+        $this->db->insert('tzahlungseingang', $model);
 
         return $this;
     }
@@ -297,10 +306,10 @@ class Method implements MethodInterface
      */
     public function setOrderStatusToPaid(Bestellung $order)
     {
-        $_upd                = new stdClass();
-        $_upd->cStatus       = \BESTELLUNG_STATUS_BEZAHLT;
-        $_upd->dBezahltDatum = 'NOW()';
-        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $_upd);
+        $upd                = new stdClass();
+        $upd->cStatus       = \BESTELLUNG_STATUS_BEZAHLT;
+        $upd->dBezahltDatum = 'NOW()';
+        $this->db->update('tbestellung', 'kBestellung', (int)$order->kBestellung, $upd);
 
         return $this;
     }
@@ -366,7 +375,7 @@ class Method implements MethodInterface
     public function getCustomerOrderCount(int $customerID): int
     {
         if ($customerID > 0) {
-            return (int)Shop::Container()->getDB()->getSingleObject(
+            return (int)$this->db->getSingleObject(
                 "SELECT COUNT(*) AS cnt
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
@@ -383,7 +392,7 @@ class Method implements MethodInterface
      */
     public function loadSettings()
     {
-        $this->paymentConfig = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $this->paymentConfig = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
 
         return $this;
     }
@@ -409,15 +418,14 @@ class Method implements MethodInterface
             return false;
         }
 
-        $customerGroups = PaymentMethod::load(Shop::Container()->getDB(), $this->moduleID)->getCustomerGroups();
+        $customerGroups = PaymentMethod::load($this->db, $this->moduleID)->getCustomerGroups();
         $customerGroup  = (int)($customer->kKundengruppe ?? CustomerGroup::getCurrent());
-        if (count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
+        if (\count($customerGroups) > 0 && !\in_array($customerGroup, $customerGroups, true)) {
             return false;
         }
-
-        if ($this->getSetting('min_bestellungen') > 0) {
+        if (($minOrders = $this->getSetting('min_bestellungen')) > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
-                $count = (int)Shop::Container()->getDB()->getSingleObject(
+                $count = (int)$this->db->getSingleObject(
                     'SELECT COUNT(*) AS cnt
                         FROM tbestellung
                         WHERE kKunde = :cid
@@ -428,11 +436,11 @@ class Method implements MethodInterface
                         'sts' => \BESTELLUNG_STATUS_VERSANDT
                     ]
                 )->cnt;
-                if ($count < $this->getSetting('min_bestellungen')) {
+                if ($count < $minOrders) {
                     ZahlungsLog::add(
                         $this->moduleID,
                         'Bestellanzahl ' . $count . ' ist kleiner als die Mindestanzahl von ' .
-                        $this->getSetting('min_bestellungen'),
+                        $minOrders,
                         null,
                         \LOGLEVEL_NOTICE
                     );
@@ -567,7 +575,7 @@ class Method implements MethodInterface
         $upd                = new stdClass();
         $upd->cStatus       = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
         $upd->dBezahltDatum = 'NOW()';
-        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $upd);
+        $this->db->update('tbestellung', 'kBestellung', $orderID, $upd);
 
         return $this;
     }
@@ -582,7 +590,7 @@ class Method implements MethodInterface
             $upd                = new stdClass();
             $upd->cStatus       = \BESTELLUNG_STATUS_STORNO;
             $upd->dBezahltDatum = 'NOW()';
-            Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $upd);
+            $this->db->update('tbestellung', 'kBestellung', $orderID, $upd);
         }
 
         return $this;
@@ -690,5 +698,21 @@ class Method implements MethodInterface
         }
 
         return $paymentMethod;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 }

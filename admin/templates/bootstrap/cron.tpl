@@ -142,7 +142,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start-date">{__('headingStartDate')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'%Y-%m-%d'}" required>
+                                <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'Y-m-d'}" required>
                             </div>
                         </div>
                         <div class="save-wrapper">
@@ -160,8 +160,8 @@
         </div>
 
         <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
-            {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
-            action='cron.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
+            {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings'
+            action=$adminURL|cat:$route buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
         </div>
     </div>
 </div>

@@ -3,13 +3,14 @@
 namespace JTL\Export;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\Backend\AdminIO;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ExportSmarty;
-use SmartyException;
 use stdClass;
 
 /**
@@ -25,32 +26,20 @@ class SyntaxChecker
     /**
      * @var ExportSmarty
      */
-    private $smarty;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private ExportSmarty $smarty;
 
     /**
      * @var int
      */
-    private $id;
-
-    /**
-     * @var int
-     */
-    public $errorCode = self::SYNTAX_NOT_CHECKED;
+    public int $errorCode = self::SYNTAX_NOT_CHECKED;
 
     /**
      * SyntaxChecker constructor.
      * @param int         $id
      * @param DbInterface $db
      */
-    public function __construct(int $id, DbInterface $db)
+    public function __construct(private int $id, private DbInterface $db)
     {
-        $this->id = $id;
-        $this->db = $db;
     }
 
     /**
@@ -71,9 +60,9 @@ class SyntaxChecker
         $realpath           = \realpath($pathinfo['dirname']);
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (!\str_contains($post['cDateiname'], '.')) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif ($realpath === false || \mb_strpos($realpath, \realpath(\PFAD_ROOT)) === false) {
+        } elseif ($realpath === false || !\str_contains($realpath, \realpath(\PFAD_ROOT))) {
             $validation['cDateiname'] = 3;
         } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
@@ -87,11 +76,11 @@ class SyntaxChecker
             $validation['cContent'] = 1;
         } elseif (!\EXPORTFORMAT_ALLOW_PHP
             && (
-                \mb_strpos($post['cContent'], '{php}') !== false
-                || \mb_strpos($post['cContent'], '<?php') !== false
-                || \mb_strpos($post['cContent'], '<%') !== false
-                || \mb_strpos($post['cContent'], '<%=') !== false
-                || \mb_strpos($post['cContent'], '<script language="php">') !== false
+                \str_contains($post['cContent'], '{php}')
+                || \str_contains($post['cContent'], '<?php')
+                || \str_contains($post['cContent'], '<%')
+                || \str_contains($post['cContent'], '<%=')
+                || \str_contains($post['cContent'], '<script language="php">')
             )
         ) {
             $validation['cContent'] = 2;
@@ -143,7 +132,7 @@ class SyntaxChecker
         try {
             return Shop::Smarty()->assign('exportformat', (object)['nFehlerhaft' => $error])
                 ->fetch('snippets/exportformat_state.tpl');
-        } catch (SmartyException | Exception $e) {
+        } catch (Exception) {
             return '';
         }
     }
@@ -203,26 +192,35 @@ class SyntaxChecker
         $model   = Model::load(['id' => $this->id], $this->db);
         $session->initSession($model, $this->db);
         $this->initSmarty();
-        $product     = null;
-        $productData = $this->db->getSingleObject(
+        $product   = null;
+        $productID = $this->db->getSingleInt(
             "SELECT kArtikel 
                 FROM tartikel 
                 WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
+                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+            'kArtikel'
         );
-        if ($productData !== null) {
-            $product = new Product();
-            $product->fuelleArtikel((int)$productData->kArtikel, Product::getExportOptions());
-            $product->cDeeplink             = '';
-            $product->Artikelbild           = '';
-            $product->Lieferbar             = 'N';
-            $product->Lieferbar_01          = 0;
-            $product->cBeschreibungHTML     = '';
-            $product->cKurzBeschreibungHTML = '';
-            $product->fUst                  = 0.00;
-            $product->Kategorie             = new Kategorie();
-            $product->Kategoriepfad         = '';
-            $product->Versandkosten         = -1;
+        if ($productID > 0) {
+            $confData = $this->db->selectAll(
+                'texportformateinstellungen',
+                'kExportformat',
+                $this->id
+            );
+            $config   = [];
+            foreach ($confData as $conf) {
+                $config[$conf->cName] = $conf->cWert;
+            }
+            $product = new Product($this->db, $_SESSION['Kundengruppe'], $_SESSION['Waehrung']);
+            $product->fuelleArtikel($productID, Product::getExportOptions());
+            $product->kSprache                 = $model->getLanguageID();
+            $product->kKundengruppe            = $model->getCustomerGroupID();
+            $product->kWaehrung                = $model->getCurrencyID();
+            $product->campaignValue            = $model->getCampaignValue();
+            $product->currencyConversionFactor = $_SESSION['Waehrung']->getConversionFactor();
+            $product->cDeeplink                = '';
+            $product->Artikelbild              = '';
+            $product->augmentProduct($config, $model);
+            $product->addCategoryData();
         }
         try {
             $this->smarty->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
@@ -278,6 +276,78 @@ class SyntaxChecker
             ];
         }
         $res->state = self::getHTMLState($ef->errorCode);
+
+        return $res;
+    }
+
+    /**
+     * @param int $exportID
+     * @return stdClass
+     * @throws InvalidArgumentException
+     */
+    public static function testExport(int $exportID): stdClass
+    {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
+        $db = Shop::Container()->getDB();
+        try {
+            $model = Model::load(['id' => $exportID], $db, Model::ON_NOTEXISTS_FAIL);
+        } catch (Exception) {
+            throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
+        }
+        $smarty  = new ExportSmarty($db);
+        $factory = new ExporterFactory($db, Shop::Container()->getLogService(), Shop::Container()->getCache());
+        $ef      = $factory->getExporter($exportID);
+        $writer  = new TestWriter($model, $ef->getConfig(), $smarty);
+        $test    = (object)[
+            'jobQueueID'    => 0,
+            'cronID'        => 0,
+            'foreignKeyID'  => 0,
+            'taskLimit'     => 10,
+            'tasksExecuted' => 0,
+            'lastProductID' => 0,
+            'jobType'       => 'test',
+            'foreignKey'    => 'test',
+            'tableName'     => 'test',
+        ];
+        $ef->setWriter($writer);
+        $ef->startExport(
+            $exportID,
+            new QueueEntry($test),
+            false,
+            false,
+            true,
+            10
+        );
+        $nl        = $writer->getNewLine();
+        $separator = ',';
+        if (\str_contains($writer->getHeader(), "\t")) {
+            $separator = "\t";
+        } elseif (\str_contains($writer->getHeader(), ';')) {
+            $separator = ';';
+        }
+        $header  = \array_filter(\mb_split($nl, $writer->getHeader()));
+        $content = \array_filter(\mb_split($nl, $writer->getContent()));
+        $footer  = \array_filter(\mb_split($nl, $writer->getFooter()));
+
+        $res          = new stdClass();
+        $res->header  = [];
+        $res->content = [];
+        $res->footer  = [];
+
+        foreach ($header as $item) {
+            $res->header[] = \str_getcsv($item, $separator);
+        }
+        foreach ($content as $item) {
+            $res->content[] = \str_getcsv($item, $separator);
+        }
+        foreach ($footer as $item) {
+            $res->footer[] = \str_getcsv($item, $separator);
+        }
+        $res->html = Shop::Smarty()
+            ->assign('header', $res->header)
+            ->assign('content', $res->content)
+            ->assign('footer', $res->footer)
+            ->fetch('tpl_inc/exportformate_testresult.tpl');
 
         return $res;
     }

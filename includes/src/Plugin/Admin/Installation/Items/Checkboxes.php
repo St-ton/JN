@@ -30,7 +30,7 @@ class Checkboxes extends AbstractItem
     {
         foreach ($this->getNode() as $i => $function) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits);
+            \preg_match('/\d+/', $i, $hits);
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }

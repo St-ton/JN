@@ -14,9 +14,9 @@
         <div class="alert alert-warning">
             <div class="card-title">{__('warningOldDBVersion')}</div>
             {{__('warningOldDBVersionLong')}|sprintf:{$DB_Version->server}}
-            {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
+            {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
                 <ul>
-                    {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N')}
+                    {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N')}
                     <li>{__('fullTextDeactivate')}</li>
                     {/if}
                     {if $FulltextIndizes !== false}
@@ -76,17 +76,17 @@
                     {else}
                         {__('approximately')} {($engineUpdate->estimated[1] / 3600)|ceil} {__('hours')}
                     {/if}
-                    {{__('notePatienceTwo')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}
+                    {{__('notePatienceTwo')}|sprintf:{$adminURL}}
                 </p>
                 <div class="alert alert-warning">{__('warningDoBackup')}</div>
-                <form method="post" action="dbcheck.php">
+                <form method="post" action="{$adminURL}{$route}">
                     <div id="settings" class="card">
                         <div class="card-body">
                             <div class="custom-control custom-checkbox">
                                 <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
                                 <label class="custom-control-label" for="update_auto_backup">{__('yesBackup')}</label>
                             </div>
-                            {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
+                            {if $config.global.wartungsmodus_aktiviert === 'Y'}
                             <div class="input-group">
                                 <span class="input-group-addon"><span class="badge alert-success">{__('maintenanceActive')}</span></span>
                                 <input id="update_auto_wartungsmodus" type="hidden" name="update_auto_wartungsmodus" value="1" >
@@ -118,11 +118,11 @@
                 <p>{__('noteMigrationScript')}</p>
                 <p>{__('noteMigrationScriptClick')}</p>
                 <p>{__('noteMigrationScriptDesc')}</p>
-                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$shopURL}:{$smarty.const.PFAD_ADMIN}}</p>
+                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$adminURL}}</p>
                 <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
                 <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
                 <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
-                <form action="{$adminURL}/dbcheck.php" method="post">
+                <form action="{$adminURL}{$route}" method="post">
                     {$jtl_token}
                     <div class="btn-group">
                         <button class="btn btn-primary" name="update" value="script"><i class="fa fa-cogs"></i> {__('buttonCreateScript')}</button>

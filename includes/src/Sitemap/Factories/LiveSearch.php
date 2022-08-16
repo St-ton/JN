@@ -3,6 +3,7 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
+use JTL\Language\LanguageModel;
 use JTL\Sitemap\Items\LiveSearch as Item;
 use PDO;
 use function Functional\map;
@@ -18,8 +19,8 @@ final class LiveSearch extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, static function ($e) {
-            return (int)$e->kSprache;
+        $languageIDs = map($languages, static function (LanguageModel $e): int {
+            return $e->getId();
         });
         $res         = $this->db->getPDOStatement(
             "SELECT tsuchanfrage.kSuchanfrage, tseo.cSeo, tsuchanfrage.dZuletztGesucht AS dlm,

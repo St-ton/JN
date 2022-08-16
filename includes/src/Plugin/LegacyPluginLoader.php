@@ -21,9 +21,9 @@ use stdClass;
 class LegacyPluginLoader extends AbstractLoader
 {
     /**
-     * @var LegacyPlugin
+     * @var LegacyPlugin|null
      */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * PluginLoader constructor.
@@ -55,8 +55,7 @@ class LegacyPluginLoader extends AbstractLoader
         if (($languageID = $languageID ?? Shop::getLanguageID()) === 0) {
             $languageID = Shop::Lang()::getDefaultLanguage()->kSprache;
         }
-        $languageCode  = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
-        $this->cacheID = \CACHING_GROUP_PLUGIN . '_' . $id . '_' . $languageID;
+        $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
         if ($this->plugin === null) {
             $this->plugin = new LegacyPlugin();
         }
@@ -128,12 +127,12 @@ class LegacyPluginLoader extends AbstractLoader
         $this->plugin->setState((int)$obj->nStatus);
         $this->plugin->setPriority((int)$obj->nPrio);
         $this->plugin->setBootstrap((int)$obj->bBootstrap === 1);
-        $this->plugin->setIsExtension(isset($obj->bExtension) && (int)$obj->bExtension === 1);
+        $this->plugin->setIsExtension((int)($obj->bExtension ?? 0) === 1);
         $this->plugin->setMeta($this->loadMetaData($obj));
         $this->plugin->setLicense($this->loadLicense($obj));
         $this->plugin->setLinks(new Links());
         $this->plugin->setCache($this->loadCacheData($this->plugin));
-        $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis));
+        $this->plugin->setPaths($this->loadPaths($obj->cVerzeichnis, $id));
         $this->plugin->oPluginHook_arr = $this->loadHooks($id);
         $this->loadMarkdownFiles($this->plugin->getPaths()->getBasePath(), $this->plugin->getMeta());
         $this->loadAdminMenu($this->plugin);
@@ -171,9 +170,9 @@ class LegacyPluginLoader extends AbstractLoader
     /**
      * @inheritdoc
      */
-    protected function loadPaths(string $pluginDir): Paths
+    protected function loadPaths(string $pluginDir, int $id): Paths
     {
-        $paths     = parent::loadPaths($pluginDir);
+        $paths     = parent::loadPaths($pluginDir, $id);
         $shopURL   = $paths->getShopURL();
         $basePath  = \PFAD_ROOT . \PFAD_PLUGIN . $pluginDir . '/';
         $versioned = \PFAD_PLUGIN_VERSION . $this->plugin->getMeta()->getVersion() . '/';

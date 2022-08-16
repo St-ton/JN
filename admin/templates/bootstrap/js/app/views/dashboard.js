@@ -52,9 +52,9 @@ sortable.on('sortable:stop', (evt) => {
 	to = setTimeout(() => {
 		$body.removeClass('draggable--show-grid')
         ioCall('setWidgetPosition', [
-            $(evt.data.dragEvent.data.originalSource).attr('ref'),
+            parseInt($(evt.data.dragEvent.data.originalSource).attr('ref')),
             $(evt.data.newContainer).prop('id'),
-            evt.data.newIndex
+            parseInt(evt.data.newIndex)
         ]);
     }, saveDelay)
 })
@@ -73,7 +73,7 @@ $(document).on('click', `[${Data.widgetRemove}]`, (e) => {
 
 $(function () {
     $('.widget').each(function (i, widget) {
-        var widgetId = $(widget).attr('ref');
+        var widgetId = parseInt($(widget).attr('ref'));
         var $widgetContent = $('.widget-content', widget);
         var $widget = $(widget);
         var hidden = $('.widget-hidden', widget).length > 0;

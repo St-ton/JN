@@ -20,37 +20,32 @@ class Import
     /**
      * @var array
      */
-    private $format;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
+    private array $format;
 
     /**
      * @var int
      */
-    private $customerGroupID = 1;
+    private int $customerGroupID = 1;
 
     /**
      * @var int
      */
-    private $languageID = 1;
+    private int $languageID = 1;
 
     /**
      * @var bool
      */
-    private $generatePasswords = false;
+    private bool $usePasswordsFromCsv = false;
 
     /**
      * @var Mailer
      */
-    private $mailer;
+    private Mailer $mailer;
 
     /**
      * @var PasswordServiceInterface
      */
-    private $passwordService;
+    private PasswordServiceInterface $passwordService;
 
     /**
      * @var string|null
@@ -58,13 +53,17 @@ class Import
     private $defaultCountryCode;
 
     /**
+     * @var bool
+     */
+    private bool $generatePasswords = false;
+
+    /**
      * Import constructor.
      * @param DbInterface $db
      * @param array|null  $format
      */
-    public function __construct(DbInterface $db, array $format = null)
+    public function __construct(private DbInterface $db, array $format = null)
     {
-        $this->db              = $db;
         $this->format          = $format ?? [
                 'cKundenNr',
                 'cPasswort',
@@ -112,7 +111,7 @@ class Import
         if ($file === false) {
             throw new InvalidArgumentException('Cannot open file ' . $filename);
         }
-        $delimiter = \getCsvDelimiter($filename);
+        $delimiter = \JTL\CSV\Import::getCsvDelimiter($filename);
         $row       = 0;
         $fmt       = [];
         while ($data = \fgetcsv($file, 2000, $delimiter, '"')) {
@@ -147,12 +146,11 @@ class Import
                 $fmt[$i] = '';
             }
         }
-        if ($this->generatePasswords === false) {
-            if (!\in_array('cPasswort', $fmt, true) || !\in_array('cMail', $fmt, true)) {
-                return -1;
-            }
-        } elseif (!\in_array('cMail', $fmt, true)) {
+        if (!\in_array('cMail', $fmt, true)) {
             return -1;
+        }
+        if (\in_array('cPasswort', $fmt, true)) {
+            $this->usePasswordsFromCsv = true;
         }
 
         return $fmt;
@@ -175,7 +173,7 @@ class Import
         if (Text::filterEmailAddress($customer->cMail) === false) {
             return \sprintf(\__('errorInvalidEmail'), $customer->cMail);
         }
-        if ($this->getGeneratePasswords() === false
+        if ($this->usePasswordsFromCsv === true
             && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
             return \__('errorNoPassword');
@@ -203,17 +201,18 @@ class Import
         if (empty($customer->cLand) && $this->defaultCountryCode !== null) {
             $customer->cLand = $this->defaultCountryCode;
         }
-        $password = '';
-        if ($this->getGeneratePasswords() === true) {
+
+        if ($this->usePasswordsFromCsv === false) {
             $password            = $this->passwordService->generate(\PASSWORD_DEFAULT_LENGTH);
             $customer->cPasswort = $this->passwordService->hash($password);
         }
+
         $tmp              = new stdClass();
         $tmp->cNachname   = $customer->cNachname;
         $tmp->cFirma      = $customer->cFirma;
         $tmp->cStrasse    = $customer->cStrasse;
         $tmp->cHausnummer = $customer->cHausnummer;
-        $tmp->password    = $password;
+        $tmp->password    = 'Plaintext passwords are deprecated. Please update your email template!';
         if ($customer->insertInDB()) {
             $this->notifyCustomer($customer, $tmp);
 
@@ -259,9 +258,6 @@ class Import
      */
     private function notifyCustomer(Customer $customer, stdClass $tmp): bool
     {
-        if ($this->getGeneratePasswords() !== true) {
-            return true;
-        }
         $customer->cPasswortKlartext = $tmp->password;
         $customer->cNachname         = $tmp->cNachname;
         $customer->cFirma            = $tmp->cFirma;

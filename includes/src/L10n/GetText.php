@@ -7,6 +7,7 @@ use Gettext\Loader\MoLoader;
 use Gettext\Translations;
 use Gettext\Translator;
 use Gettext\TranslatorFunctions;
+use JTL\Backend\Settings\Item;
 use JTL\Plugin\Admin\ListingItem as PluginListingItem;
 use JTL\Plugin\PluginInterface;
 use JTL\Template\Admin\ListingItem as TemplateListingItem;
@@ -22,26 +23,24 @@ class GetText
     /**
      * @var string
      */
-    private $langTag;
+    private string $langTag = 'de-DE';
 
     /**
      * @var Translations[]
      */
-    private $translations;
+    private array $translations = [];
 
     /**
      * @var Translator
      */
-    private $translator;
+    private Translator $translator;
 
     /**
      * GetText constructor.
      */
     public function __construct()
     {
-        $this->langTag      = $this->getDefaultLanguage();
-        $this->translations = [];
-        $this->translator   = new Translator();
+        $this->translator = new Translator();
         TranslatorFunctions::register($this->translator);
         $this->setLanguage()->loadAdminLocale('base');
     }
@@ -133,12 +132,13 @@ class GetText
      */
     public function loadLocaleFile(string $path): self
     {
-        if (!\array_key_exists($path, $this->translations)) {
-            $this->translations[$path] = null;
-            if (\file_exists($path)) {
-                $this->translations[$path] = (new MoLoader())->loadFile($path);
-                $this->translator->addTranslations((new ArrayGenerator())->generateArray($this->translations[$path]));
-            }
+        if (\array_key_exists($path, $this->translations)) {
+            return $this;
+        }
+        $this->translations[$path] = null;
+        if (\file_exists($path)) {
+            $this->translations[$path] = (new MoLoader())->loadFile($path);
+            $this->translator->addTranslations((new ArrayGenerator())->generateArray($this->translations[$path]));
         }
 
         return $this;
@@ -234,22 +234,20 @@ class GetText
      */
     public function setLanguage(?string $langTag = null): self
     {
-        $langTag = $langTag
-            ?? $_SESSION['AdminAccount']->language
-            ?? $this->langTag;
-
-        if ($this->langTag !== $langTag) {
-            $oldLangTag         = $this->langTag;
-            $oldTranslations    = $this->translations;
-            $this->langTag      = $langTag;
-            $this->translations = [];
-            $this->translator   = new Translator();
-            TranslatorFunctions::register($this->translator);
-            if (!empty($oldLangTag)) {
-                foreach ($oldTranslations as $path => $trans) {
-                    $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
-                    $this->loadLocaleFile($newPath);
-                }
+        $langTag = $langTag ?? $_SESSION['AdminAccount']->language ?? $this->langTag;
+        if ($this->langTag === $langTag) {
+            return $this;
+        }
+        $oldLangTag         = $this->langTag;
+        $oldTranslations    = $this->translations;
+        $this->langTag      = $langTag;
+        $this->translations = [];
+        $this->translator   = new Translator();
+        TranslatorFunctions::register($this->translator);
+        if (!empty($oldLangTag)) {
+            foreach ($oldTranslations as $path => $trans) {
+                $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
+                $this->loadLocaleFile($newPath);
             }
         }
 
@@ -261,10 +259,8 @@ class GetText
      */
     public function getAdminLanguages(): array
     {
-        $languages  = [];
-        $localeDirs = \scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING);
-
-        foreach ($localeDirs as $dir) {
+        $languages = [];
+        foreach (\scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING) as $dir) {
             if ($dir !== '.' && $dir !== '..') {
                 $languages[$dir] = \Locale::getDisplayLanguage($dir, $dir);
             }
@@ -282,35 +278,32 @@ class GetText
         $this->loadAdminLocale('configs/configs')
             ->loadAdminLocale('configs/values')
             ->loadAdminLocale('configs/groups');
-
         if ($withGroups) {
             $this->loadAdminLocale('configs/groups');
         }
-
         if ($withSections) {
             $this->loadAdminLocale('configs/sections');
         }
     }
 
     /**
-     * @param stdClass $config
+     * @param Item $config
      */
-    public function localizeConfig(stdClass $config): void
+    public function localizeConfig(Item $config): void
     {
-        if ($config->cConf === 'Y') {
-            $config->cName         = \__($config->cWertName . '_name');
-            $config->cBeschreibung = \__($config->cWertName . '_desc');
-
-            if ($config->cBeschreibung === $config->cWertName . '_desc') {
-                $config->cBeschreibung = '';
+        if ($config->isConfigurable()) {
+            $config->setName(\__($config->getValueName() . '_name'));
+            $config->setDescription(\__($config->getValueName() . '_desc'));
+            if ($config->getDescription() === $config->getValueName() . '_desc') {
+                $config->setDescription('');
             }
-        } elseif ($config->cConf === 'N') {
-            $config->cName = \__($config->cWertName);
+        } else {
+            $config->setName(\__($config->getValueName()));
         }
     }
 
     /**
-     * @param stdClass[] $configs
+     * @param Item[] $configs
      */
     public function localizeConfigs(array $configs): void
     {
@@ -320,19 +313,19 @@ class GetText
     }
 
     /**
-     * @param stdClass $config
+     * @param Item $config
      * @param stdClass $value
      */
-    public function localizeConfigValue(stdClass $config, stdClass $value): void
+    public function localizeConfigValue(Item $config, stdClass $value): void
     {
-        $value->cName = \__($config->cWertName . '_value(' . $value->cWert . ')');
+        $value->cName = \__($config->getValueName() . '_value(' . $value->cWert . ')');
     }
 
     /**
-     * @param stdClass   $config
+     * @param Item   $config
      * @param stdClass[] $values
      */
-    public function localizeConfigValues(stdClass $config, array $values): void
+    public function localizeConfigValues(Item $config, array $values): void
     {
         foreach ($values as $value) {
             $this->localizeConfigValue($config, $value);

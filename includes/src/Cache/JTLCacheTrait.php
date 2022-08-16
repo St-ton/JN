@@ -2,47 +2,54 @@
 
 namespace JTL\Cache;
 
+use DateTime;
+
 /**
  * Trait JTLCacheTrait
- * @package Cache
+ * @package JTL\Cache
  */
 trait JTLCacheTrait
 {
     /**
      * @var array
      */
-    public $options;
+    public array $options;
 
     /**
      * @var string
      */
-    public $journalID;
+    public string $journalID = '';
 
     /**
      * @var array|null
      */
-    public $journal;
+    public ?array $journal = null;
 
     /**
      * @var bool
      */
-    public $isInitialized = false;
+    public bool $isInitialized = false;
 
     /**
      * @var bool
      */
-    public $journalHasChanged = false;
+    public bool $journalHasChanged = false;
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
+
+    /**
+     * @var ICachingMethod|null
+     */
+    public static ?ICachingMethod $instance = null;
 
     /**
      * @param array $options
-     * @return JTLCacheTrait
+     * @return ICachingMethod
      */
-    public static function getInstance($options)
+    public static function getInstance(array $options): ICachingMethod
     {
         return self::$instance ?? new self($options);
     }
@@ -52,8 +59,8 @@ trait JTLCacheTrait
      */
     public function __destruct()
     {
-        //save journal on destruct
-        if ($this->isInitialized === true && $this->journalHasChanged === true && \count($this->journal) > 0) {
+        // save journal on destruct
+        if ($this->isInitialized === true && $this->journalHasChanged === true) {
             $this->store($this->journalID, $this->journal, 0);
         }
     }
@@ -69,7 +76,7 @@ trait JTLCacheTrait
     /**
      * @param string $id
      */
-    public function setJournalID($id): void
+    public function setJournalID(string $id): void
     {
         $this->journalID = $id;
     }
@@ -99,12 +106,12 @@ trait JTLCacheTrait
     /**
      * check if string was serialized before
      *
-     * @param string $data
+     * @param mixed $data
      * @return bool
      */
     public function is_serialized($data): bool
     {
-        //if it isn't a string, it isn't serialized
+        // if it isn't a string, it isn't serialized
         if (!\is_string($data)) {
             return false;
         }
@@ -119,14 +126,14 @@ trait JTLCacheTrait
             case 'a':
             case 'O':
             case 's':
-                if (\preg_match("/^{$badions[1]}:[0-9]+:.*[;}]\$/s", $data)) {
+                if (\preg_match("/^{$badions[1]}:\d+:.*[;}]\$/s", $data)) {
                     return true;
                 }
                 break;
             case 'b':
             case 'i':
             case 'd':
-                if (\preg_match("/^{$badions[1]}:[0-9.E-]+;\$/", $data)) {
+                if (\preg_match("/^{$badions[1]}:[\d.E-]+;\$/", $data)) {
                     return true;
                 }
                 break;
@@ -151,7 +158,7 @@ trait JTLCacheTrait
      * write meta data to journal - for use of cache tags
      *
      * @param string|array $tags
-     * @param string       $cacheID - not prefixed
+     * @param string|int   $cacheID - not prefixed
      * @return bool
      */
     public function writeJournal($tags, $cacheID): bool
@@ -200,7 +207,6 @@ trait JTLCacheTrait
                     }
                 }
             }
-
             // remove duplicate keys from array and return it
             return \array_unique($res);
         }
@@ -246,8 +252,6 @@ trait JTLCacheTrait
             $this->clearCacheTags($_id);
             if ($res === true) {
                 ++$deleted;
-            } elseif (\is_int($res)) {
-                $deleted += $res;
             }
         }
 
@@ -268,20 +272,20 @@ trait JTLCacheTrait
             }
         }
         $this->getJournal();
-        //avoid infinite loops
+        // avoid infinite loops
         if ($tags !== $this->journalID && $this->journal !== false) {
             //load meta data
             foreach ($this->journal as $tagName => $value) {
-                //search for key in meta values
+                // search for key in meta values
                 if (($index = \array_search($tags, $value, true)) !== false) {
                     unset($this->journal[$tagName][$index]);
                     if (\count($this->journal[$tagName]) === 0) {
-                        //remove empty tag nodes
+                        // remove empty tag nodes
                         unset($this->journal[$tagName]);
                     }
                 }
             }
-            //write back journal
+            // write back journal
             $this->journalHasChanged = true;
 
             return true;
@@ -343,13 +347,13 @@ trait JTLCacheTrait
     /**
      * more readable output for uptime stats
      *
-     * @param int $seconds
+     * @param int|string $seconds
      * @return string
      */
     protected function secondsToTime($seconds): string
     {
-        $dtF = new \DateTime('@0');
-        $dtT = new \DateTime('@' . $seconds);
+        $dtF = new DateTime('@0');
+        $dtT = new DateTime('@' . $seconds);
 
         return $dtF->diff($dtT)->format(
             '%a ' . \__('days') . ', %h' . \__('hours') . ', %i ' . \__('minutes') . ', %s ' . \__('seconds')
@@ -365,6 +369,15 @@ trait JTLCacheTrait
     }
 
     /**
+     * @param bool $initialized
+     * @return void
+     */
+    public function setIsInitialized(bool $initialized): void
+    {
+        $this->isInitialized = $initialized;
+    }
+
+    /**
      * @inheritdoc
      */
     public function getError(): string
@@ -375,10 +388,24 @@ trait JTLCacheTrait
     /**
      * @inheritdoc
      */
-    public function setError(string $error)
+    public function setError(string $error): void
     {
         $this->error = $error;
+    }
 
-        return $this;
+    /**
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
+    }
+
+    /**
+     * @param array $options
+     */
+    public function setOptions(array $options): void
+    {
+        $this->options = $options;
     }
 }

@@ -1,6 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
 <div id="content">
-    <form name="einstellen" method="post" action="zahlungsarten.php" class="settings">
+    einstellen!!!!!!!!!!!!!!!
+    <form name="einstellen" method="post" action="{$adminURL}{$route}" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />
         <input type="hidden" name="kZahlungsart" value="{if isset($zahlungsart->kZahlungsart)}{$zahlungsart->kZahlungsart}{/if}" />
@@ -92,10 +93,10 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nMailSenden">{__('paymentAckMail')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="nMailSenden" name="nMailSenden" class="custom-select combo">
-                            <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG} selected="selected"{/if}>
+                            <option value="1"{if $zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_EINGANG} selected="selected"{/if}>
                                 {__('yes')}
                             </option>
-                            <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_EINGANG)} selected="selected"{/if}>
+                            <option value="0"{if !($zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_EINGANG)} selected="selected"{/if}>
                                 {__('no')}
                             </option>
                         </select>
@@ -106,10 +107,10 @@
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nMailSendenStorno">{__('paymentCancelMail')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="nMailSendenStorno" name="nMailSendenStorno" class="custom-select combo">
-                            <option value="1"{if $zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO} selected="selected"{/if}>
+                            <option value="1"{if $zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_STORNO} selected="selected"{/if}>
                                 {__('yes')}
                             </option>
-                            <option value="0"{if !($zahlungsart->nMailSenden & $ZAHLUNGSART_MAIL_STORNO)} selected="selected"{/if}>
+                            <option value="0"{if !($zahlungsart->nMailSenden & $smarty.const.ZAHLUNGSART_MAIL_STORNO)} selected="selected"{/if}>
                                 {__('no')}
                             </option>
                         </select>
@@ -121,8 +122,7 @@
                     'za_ueberweisung_jtl',
                     'za_rechnung_jtl',
                     'za_barzahlung_jtl',
-                    'za_lastschrift_jtl',
-                    'za_kreditkarte_jtl'
+                    'za_lastschrift_jtl'
                 ]}
 
                 {if !$zahlungsart->cModulId|in_array:$filters}
@@ -144,62 +144,62 @@
         </div>
         <div class="card">
             {assign var=hasBody value=false}
-            {foreach $Conf as $cnf}
-            {if $cnf->cConf === 'Y'}
-            {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
-                <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
-                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->cInputTyp === 'number'}config-type-number{/if}">
-                    {if $cnf->cInputTyp === 'selectbox'}
-                        <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="custom-select combo">
-                            {foreach $cnf->ConfWerte as $wert}
-                                <option value="{$wert->cWert}" {if isset($cnf->gesetzterWert) && $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                            {/foreach}
-                        </select>
-                    {elseif $cnf->cInputTyp === 'password'}
-                        <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
-                    {elseif $cnf->cInputTyp === 'number'}
-                        <div class="input-group form-counter">
-                            <div class="input-group-prepend">
-                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                    <span class="fas fa-minus"></span>
-                                </button>
+            {foreach $configItems as $cnf}
+                {if $cnf->isConfigurable()}
+                    {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->getValueName()}">{$cnf->getName()}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
+                            {if $cnf->getInputType() === 'selectbox'}
+                                <select name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" class="custom-select combo">
+                                    {foreach $cnf->getValues() as $wert}
+                                        <option value="{$wert->cWert}" {if $cnf->getSetValue() !== null && $cnf->getSetValue() == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                    {/foreach}
+                                </select>
+                            {elseif $cnf->getInputType() === 'password'}
+                                <input class="form-control" autocomplete="off" type="password" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" />
+                            {elseif $cnf->getInputType() === 'number'}
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" name="{$cnf->getValueName()}"
+                                           id="{$cnf->getValueName()}"
+                                           value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"/>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            {elseif $cnf->getInputType() === 'textarea'}
+                                <textarea class="form-control" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}</textarea>
+                            {else}
+                                <input class="form-control" type="text" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}" />
+                                {if isset($cnf->getID())}
+                                    <span id="EinstellungAjax_{$cnf->getID()}"></span>
+                                {/if}
+                            {/if}
                             </div>
-                            <input class="form-control" type="number" name="{$cnf->cWertName}"
-                                   id="{$cnf->cWertName}"
-                                   value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}"/>
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                    <span class="fas fa-plus"></span>
-                                </button>
-                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->getDescription()}</div>
                         </div>
-                    {elseif $cnf->cInputTyp === 'textarea'}
-                        <textarea class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}</textarea>
                     {else}
-                        <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" />
-                        {if isset($cnf->kEinstellungenConf)}
-                            <span id="EinstellungAjax_{$cnf->kEinstellungenConf}"></span>
-                        {/if}
+                        <div class="card-header">
+                            <div class="subheading1">{__('settings')}: {$cnf->getName()}</div>
+                            <hr class="mb-n3">
+                        </div>
+                        <div class="card-body">
+                            {assign var=hasBody value=true}
                     {/if}
-                    </div>
-                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->cBeschreibung}</div>
-                </div>
-                {else}
-                    <div class="card-header">
-                        <div class="subheading1">{__('settings')}: {$cnf->cName}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
-                        {assign var=hasBody value=true}
-            {/if}
             {/foreach}
                 </div>
             </div>
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                    <a href="{$adminURL}{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -16,7 +16,7 @@ final class Orders extends AbstractPush
     private const LIMIT_ORDERS = 100;
 
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {

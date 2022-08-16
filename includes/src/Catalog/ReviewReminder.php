@@ -22,7 +22,7 @@ class ReviewReminder
     /**
      * @var array
      */
-    private $settings;
+    private array $settings;
 
     /**
      * @var array
@@ -42,29 +42,29 @@ class ReviewReminder
     /**
      * @var string
      */
-    private $sqlPartCustomerGroups = '';
+    private string $sqlPartCustomerGroups = '';
 
     /**
      * @var string
      */
-    private $sqlPartBundle1 = '';
+    private string $sqlPartBundle1 = '';
 
     /**
      * @var string
      */
-    private $sqlPartBundle2 = '';
+    private string $sqlPartBundle2 = '';
 
     /**
      * @var array
      */
-    private $orders = [];
+    private array $orders = [];
 
     /**
      * ReviewReminder constructor.
      */
     public function __construct()
     {
-        $this->settings       = Shop::getSettings([\CONF_BEWERTUNG])['bewertung'];
+        $this->settings       = Shop::getSettingSection(\CONF_BEWERTUNG);
         $this->customerGroups = $this->settings['bewertungserinnerung_kundengruppen'];
     }
 
@@ -110,7 +110,7 @@ class ReviewReminder
                 if ($item->kArtikel <= 0) {
                     continue;
                 }
-                $productVisible = (new Artikel())->fuelleArtikel(
+                $productVisible = (new Artikel($db))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
                     (int)$customer->kKundengruppe

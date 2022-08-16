@@ -27,7 +27,7 @@
                             </td>
                             <td class="text-right">
                                 <div class="btn-group">
-                                    <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                    <a href="{$adminURL}{$route}?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                        class="btn btn-link sx-2 down
                                                   {if $zahlungsart->nLogCount > 0}
                                                         {if $zahlungsart->nErrorLogCount}text-danger{/if}
@@ -51,7 +51,7 @@
                                             {/if}
                                         </span>
                                     </a>
-                                    <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
+                                    <a {if $zahlungsart->nEingangAnzahl > 0}href="{$adminURL}{$route}?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
                                        title="{__('paymentsReceived')}"
                                        data-toggle="tooltip">
@@ -61,7 +61,7 @@
                                         </span>
                                     </a>
                                     {if $zahlungsart->markedForDelete}
-                                        <a href="zahlungsarten.php?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link sx-2"
                                            title="{__('delete')}"
                                            data-toggle="tooltip">
@@ -71,7 +71,7 @@
                                             </span>
                                         </a>
                                     {else}
-                                        <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                        <a href="{$adminURL}{$route}?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link sx-2"
                                            title="{__('edit')}"
                                            data-toggle="tooltip">
@@ -89,7 +89,7 @@
                 </table>
             </div>
             <div class="card-footer save-wrapper">
-                <form method="post" action="zahlungsarten.php" class="top">
+                <form method="post" action="{$adminURL}{$route}" class="top">
                     {$jtl_token}
                     <input type="hidden" name="checkNutzbar" value="1"/>
                     <div class="row">

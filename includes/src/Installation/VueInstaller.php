@@ -16,39 +16,24 @@ use Systemcheck\Platform\Filesystem;
 class VueInstaller
 {
     /**
-     * @var string
+     * @var NiceDB|null
      */
-    private $task;
-
-    /**
-     * @var array
-     */
-    private $post;
+    private ?NiceDB $db = null;
 
     /**
      * @var bool
      */
-    private $cli;
-
-    /**
-     * @var NiceDB
-     */
-    private $db;
-
-    /**
-     * @var bool
-     */
-    private $responseStatus = true;
+    private bool $responseStatus = true;
 
     /**
      * @var array
      */
-    private $responseMessage = [];
+    private array $responseMessage = [];
 
     /**
      * @var array
      */
-    private $payload = [];
+    private array $payload = [];
 
     /**
      * Installer constructor.
@@ -57,11 +42,8 @@ class VueInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct(string $task, array $post = null, bool $cli = false)
+    public function __construct(private string $task, private ?array $post = null, private bool $cli = false)
     {
-        $this->task = $task;
-        $this->post = $post;
-        $this->cli  = $cli;
     }
 
     /**
@@ -96,12 +78,13 @@ class VueInstaller
     }
 
     /**
-     *
+     * @return array|null
+     * @throws \JsonException
      */
     private function output(): ?array
     {
         if (!$this->cli) {
-            echo \json_encode($this->payload);
+            echo \json_encode($this->payload, \JSON_THROW_ON_ERROR);
             exit(0);
         }
 
@@ -109,7 +92,8 @@ class VueInstaller
     }
 
     /**
-     *
+     * @return void
+     * @throws \JsonException
      */
     private function sendResponse(): void
     {
@@ -120,7 +104,7 @@ class VueInstaller
             'ok'      => $this->responseStatus,
             'payload' => $this->payload,
             'msg'     => \implode('<br>', $this->responseMessage)
-        ]);
+        ], \JSON_THROW_ON_ERROR);
         exit(0);
     }
 
@@ -223,7 +207,7 @@ class VueInstaller
             $socket = "\ndefine('DB_SOCKET', '" . $credentials['host'] . "');";
         }
         $rootPath = \PFAD_ROOT;
-        if (\strpos(\PFAD_ROOT, '\\') !== false) {
+        if (\str_contains(\PFAD_ROOT, '\\')) {
             $rootPath = \str_replace('\\', '\\\\', $rootPath);
         }
         $config = "<?php
@@ -236,20 +220,17 @@ define('DB_USER','" . \addcslashes($credentials['user'], "'") . "');
 define('DB_PASS','" . \addcslashes($credentials['pass'], "'") . "');
 
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
-
-define('EVO_COMPATIBILITY', false);
-
-//enables printing of warnings/infos/errors for the shop frontend
+// enables printing of warnings/infos/errors for the shop frontend
 define('SHOP_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the dbeS sync
+// enables printing of warnings/infos/errors for the dbeS sync
 define('SYNC_LOG_LEVEL', E_ALL ^ E_NOTICE ^ E_DEPRECATED ^ E_WARNING);
-//enables printing of warnings/infos/errors for the admin backend
+// enables printing of warnings/infos/errors for the admin backend
 define('ADMIN_LOG_LEVEL', E_ALL);
-//enables printing of warnings/infos/errors for the smarty templates
+// enables printing of warnings/infos/errors for the smarty templates
 define('SMARTY_LOG_LEVEL', E_ALL);
-//excplicitly show/hide errors
+// excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-        $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+        $file   = \fopen(\PFAD_ROOT . \PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'wb');
         \fwrite($file, $config);
         \fclose($file);
 
@@ -271,9 +252,9 @@ ini_set('display_errors', 0);" . "\n";
         foreach ($content as $i => $line) {
             $tsl = \trim($line);
             if ($line !== ''
-                && \strpos($tsl, '/*') !== 0
-                && \strpos($tsl, '--') !== 0
-                && \strpos($tsl, '#') !== 0
+                && !\str_starts_with($tsl, '/*')
+                && !\str_starts_with($tsl, '--')
+                && !\str_starts_with($tsl, '#')
             ) {
                 $query .= $line;
                 if (\preg_match('/;\s*$/', $line)) {
@@ -299,7 +280,7 @@ ini_set('display_errors', 0);" . "\n";
     {
         $adminLogin                    = new stdClass();
         $adminLogin->cLogin            = $this->post['admin']['name'];
-        $adminLogin->cPass             = \md5($this->post['admin']['pass']);
+        $adminLogin->cPass             = \password_hash($this->post['admin']['pass'], \PASSWORD_DEFAULT);
         $adminLogin->cName             = 'Admin';
         $adminLogin->cMail             = '';
         $adminLogin->kAdminlogingruppe = 1;
@@ -310,12 +291,8 @@ ini_set('display_errors', 0);" . "\n";
         }
 
         if (!$this->db->insertRow('tadminlogin', $adminLogin)) {
-            $error                   = $this->db->getError();
             $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
-            if (!\is_array($error)) {
-                $this->responseMessage[] = $error;
-            }
-            $this->responseStatus = false;
+            $this->responseStatus    = false;
         }
 
         $syncLogin        = new stdClass();
@@ -324,12 +301,8 @@ ini_set('display_errors', 0);" . "\n";
         $syncLogin->cPass = \password_hash($this->post['wawi']['pass'], \PASSWORD_DEFAULT);
 
         if (!$this->db->insertRow('tsynclogin', $syncLogin)) {
-            $error                   = $this->db->getError();
             $this->responseMessage[] = 'Error code: ' . $this->db->getErrorCode();
-            if (!\is_array($error)) {
-                $this->responseMessage[] = $error;
-            }
-            $this->responseStatus = false;
+            $this->responseStatus    = false;
         }
 
         return $this;
@@ -429,7 +402,7 @@ ini_set('display_errors', 0);" . "\n";
         }
         $salt = \md5($salt);
         \mt_srand();
-        if (\strlen($seed) > 0) {
+        if ($seed !== '') {
             [$strings] = \explode(';', $seed);
             if (\is_array($strings) && \count($strings) > 0) {
                 foreach ($strings as $string) {
@@ -460,7 +433,7 @@ ini_set('display_errors', 0);" . "\n";
      * @param null|string $hashPass
      * @return bool|string
      */
-    private function cryptPasswort(string $pass, $hashPass = null)
+    private function cryptPasswort(string $pass, ?string $hashPass = null)
     {
         $passLen = \strlen($pass);
         $salt    = \sha1(\uniqid((string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX), true));

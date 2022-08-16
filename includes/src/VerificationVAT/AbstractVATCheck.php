@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -11,24 +11,12 @@ use Psr\Log\LoggerInterface;
 abstract class AbstractVATCheck implements VATCheckInterface
 {
     /**
-     * @var VATCheckDownSlots
-     */
-    protected $downTimes;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * VATCheckEU constructor.
-     * @param VATCheckDownSlots $slots
+     * @param VATCheckDownSlots $downTimes
      * @param LoggerInterface   $logger
      */
-    public function __construct(VATCheckDownSlots $slots, LoggerInterface $logger)
+    public function __construct(protected VATCheckDownSlots $downTimes, protected LoggerInterface $logger)
     {
-        $this->downTimes = $slots;
-        $this->logger    = $logger;
     }
 
     /**
@@ -38,7 +26,7 @@ abstract class AbstractVATCheck implements VATCheckInterface
      * @param string $sourceString
      * @return string
      */
-    public function condenseSpaces($sourceString): string
+    public function condenseSpaces(string $sourceString): string
     {
         return \str_replace(' ', '', $sourceString);
     }

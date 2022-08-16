@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -13,22 +13,16 @@ class VATCheck
     /**
      * @var VATCheckInterface
      */
-    private $location;
-
-    /**
-     * @var string
-     */
-    private $ustID;
+    private VATCheckInterface $location;
 
     /**
      * VATCheck constructor.
      * @param string $ustID
      */
-    public function __construct(string $ustID = '')
+    public function __construct(private string $ustID = '')
     {
-        $slots       = new VATCheckDownSlots();
-        $logger      = Shop::Container()->getLogService();
-        $this->ustID = $ustID;
+        $slots  = new VATCheckDownSlots();
+        $logger = Shop::Container()->getLogService();
         if ($this->startsWith($this->ustID, 'CHE')) {
             $this->location = new VATCheckNonEU($slots, $logger);
         } else {
@@ -47,9 +41,9 @@ class VATCheck
      *      , errorinfo : additional information to show it the user in the frontend
      * ]
      *
-     * @return mixed  array if error, location-object otherwise
+     * @return array
      */
-    public function doCheckID()
+    public function doCheckID(): array
     {
         if ($this->ustID === '') {
             return [
@@ -77,6 +71,6 @@ class VATCheck
             return true;
         }
 
-        return \strpos($sourceString, $pattern) === 0;
+        return \str_starts_with($sourceString, $pattern);
     }
 }

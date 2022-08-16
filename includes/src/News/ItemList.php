@@ -14,22 +14,16 @@ use function Functional\map;
 final class ItemList implements ItemListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
-     * LinkList constructor.
+     * ItemList constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db    = $db;
         $this->items = new Collection();
     }
 
@@ -70,9 +64,9 @@ final class ItemList implements ItemListInterface
                 GROUP BY tnews.kNews, tnewssprache.languageID
                 ORDER BY FIELD(tnews.kNews, ' . $itemList . ')'
         );
-        $items         = map(group($itemLanguages, static function ($e) {
+        $items         = map(group($itemLanguages, static function ($e): int {
             return (int)$e->kNews;
-        }), function ($e, $newsID) {
+        }), function ($e, $newsID): Item {
             $l = new Item($this->db);
             $l->setID($newsID);
             $l->map($e);

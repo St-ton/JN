@@ -19,14 +19,14 @@ use function Functional\first;
 class Session
 {
     /**
-     * @var stdClass
+     * @var stdClass|null
      */
-    private $oldSession;
+    private ?stdClass $oldSession = null;
 
     /**
      * @var Currency
      */
-    private $currency;
+    private Currency $currency;
 
     /**
      * @return Currency
@@ -68,7 +68,7 @@ class Session
         Tax::setTaxRates();
         $net       = $db->select('tkundengruppe', 'kKundengruppe', $model->getCustomerGroupID());
         $languages = Shop::Lang()->gibInstallierteSprachen();
-        $langISO   = first($languages, static function (LanguageModel $l) use ($languageID) {
+        $langISO   = first($languages, static function (LanguageModel $l) use ($languageID): bool {
             return $l->getId() === $languageID;
         });
 

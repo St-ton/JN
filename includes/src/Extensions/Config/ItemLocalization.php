@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -13,24 +13,24 @@ use JTL\Shop;
 class ItemLocalization
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKonfigitem;
+    protected ?int $kKonfigitem = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kSprache;
-
-    /**
-     * @var string
-     */
-    protected $cName = '';
+    protected ?int $kSprache = null;
 
     /**
      * @var string
      */
-    protected $cBeschreibung = '';
+    protected string $cName = '';
+
+    /**
+     * @var string
+     */
+    protected string $cBeschreibung = '';
 
     /**
      * ItemLocalization constructor.
@@ -77,7 +77,7 @@ class ItemLocalization
                 'kKonfigitem',
                 $itemID,
                 'kSprache',
-                (int)$defaultLanguage->kSprache,
+                $defaultLanguage->getId(),
                 null,
                 null,
                 false,
@@ -91,7 +91,7 @@ class ItemLocalization
                 'kKonfigitem',
                 $itemID,
                 'kSprache',
-                (int)$defaultLanguage->kSprache,
+                $defaultLanguage->getId(),
                 null,
                 null,
                 false,
@@ -101,40 +101,11 @@ class ItemLocalization
         }
 
         if (isset($item->kKonfigitem, $item->kSprache) && $item->kKonfigitem > 0 && $item->kSprache > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
+            $this->cName         = $item->cName;
+            $this->cBeschreibung = $item->cBeschreibung;
+            $this->kKonfigitem   = (int)$item->kKonfigitem;
+            $this->kSprache      = (int)$item->kSprache;
         }
-    }
-
-    /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function delete(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return 0;
     }
 
     /**
@@ -186,7 +157,7 @@ class ItemLocalization
      */
     public function getKonfigitem(): int
     {
-        return (int)$this->kKonfigitem;
+        return $this->kKonfigitem ?? 0;
     }
 
     /**
@@ -194,7 +165,7 @@ class ItemLocalization
      */
     public function getSprache(): int
     {
-        return (int)$this->kSprache;
+        return $this->kSprache ?? 0;
     }
 
     /**

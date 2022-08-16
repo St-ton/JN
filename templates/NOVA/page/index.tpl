@@ -3,7 +3,7 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}
+    {if isset($StartseiteBoxen) && $StartseiteBoxen|count > 0}
         {assign var=moreLink value=null}
         {assign var=moreTitle value=null}
 
@@ -43,7 +43,7 @@
     {/if}
 
     {block name='page-index-additional-content'}
-        {if isset($oNews_arr) && $oNews_arr|@count > 0}
+        {if isset($oNews_arr) && $oNews_arr|count > 0}
 
             {opcMountPoint id='opc_before_news' inContainer=false}
 

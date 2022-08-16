@@ -5,6 +5,9 @@
 @import "../../base/bootstrap/scss/functions";
 @import "../../base/bootstrap/scss/variables";
 @import "../../base/bootstrap/scss/mixins";
+// begin bootstrap components
+// Info: removed in templates/NOVA/themes/base/bootstrap/scss/bootstrap.scss
+// to address multiple imports
 @import "../../base/bootstrap/scss/root";
 @import "../../base/bootstrap/scss/reboot";
 //@import "../../base/bootstrap/scss/type";
@@ -13,6 +16,7 @@
 @import "../../base/bootstrap/scss/grid";
 @import "../../base/bootstrap/scss/nav";
 @import "../../base/bootstrap/scss/navbar";
+// end bootstrap components
 @import "../../base/sass/mixins";
 
 .fa, .fas, .far, .fal {
@@ -128,8 +132,8 @@ html {
   margin-left: auto;
   .nav-link {
     @include media-breakpoint-down(sm) {
-      padding-left:	map_get($spacers, 3) * 0.75;
-      padding-right: map_get($spacers, 3) * 0.75
+      padding-left:	$nav-link-padding-sm-x;
+      padding-right: $nav-link-padding-sm-x;
     }
   }
 }
@@ -789,15 +793,9 @@ $jqcloud-classes: 7;
   background-color: $footer-bg-color;
   color: $footer-color;
 }
-
 /* header logo position - start */
 .toggler-logo-wrapper {
-  float: none;
-  @include media-breakpoint-up(lg) {
-    .logo-wrapper {
-      padding-left: map-get($spacers, 4);
-    }
-  }
+  float: left;
   @include media-breakpoint-down(md) {
     position: absolute;
     .logo-wrapper {
@@ -807,26 +805,6 @@ $jqcloud-classes: 7;
       float: left;
       padding-top: 1rem;
     }
-  }
-}
-#header-top-bar {
-  float: right;
-  position: fixed;
-  top: 0;
-  right: 0;
-  &:not(.is-fullwidth) {
-    /* max-width of container-fluid-xl + padding of container-fluid */
-    @media (min-width: 103.125rem + 2rem) {
-      margin-right: calc((100vw - 103.125rem - 2rem) / 2);
-    }
-  }
-}
-body > #header-top-bar {
-  max-width: 80%;
-}
-.is-checkout {
-  .logo-wrapper {
-    float: left;
   }
 }
 /* header logo position - end */

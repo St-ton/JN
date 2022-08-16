@@ -4,8 +4,8 @@
         {assign var=titles value=false}
         <div class="mediafiles card-columns {if $mediaType->count < 3}card-columns-2{/if}">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
-            {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
-            || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
+            {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|strlen == 0)
+            || ($oMedienDatei->cAttributTab|strlen > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
                 {if $oMedienDatei->nErreichbar == 0}
                     {block name='productdetails-mediafilealert'}
                         {col class="mediafiles-no-media"}
@@ -25,14 +25,15 @@
                     {if $oMedienDatei->nMedienTyp === 1}
                         {block name='productdetails-mediafile-images'}
                             {$cMediaAltAttr = ""}
-                            {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|@count > 0}
+                            {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|count > 0}
                                 {foreach $oMedienDatei->oMedienDateiAttribut_arr as $oAttribut}
                                     {if $oAttribut->cName === 'img_alt'}
                                         {assign var=cMediaAltAttr value=$oAttribut->cWert}
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}"
+                                title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}
@@ -130,12 +131,12 @@
                                                 href="{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}"
                                                 target="_blank"
                                             }
-                                                {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
+                                                {image alt="PDF" src="{$ShopURL}/{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
                                                 <span class="text-decoration-underline" >{$oMedienDatei->cName}</span>
                                             {/link}
                                         {elseif !empty($oMedienDatei->cURL)}
                                             {link class="text-decoration-none-util" href=$oMedienDatei->cURL target="_blank"}
-                                                {image alt="PDF" src="{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
+                                                {image alt="PDF" src="{$ShopURL}/{$smarty.const.PFAD_BILDER}intern/file-pdf.png"}
                                                 <span class="text-decoration-underline">{$oMedienDatei->cName}</span>
                                             {/link}
                                         {/if}

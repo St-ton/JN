@@ -15,24 +15,12 @@ use JTL\Plugin\InstallCode;
 class Updater
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var Installer
-     */
-    private $installer;
-
-    /**
      * Updater constructor.
      * @param DbInterface $db
      * @param Installer   $installer
      */
-    public function __construct(DbInterface $db, Installer $installer)
+    public function __construct(private DbInterface $db, private Installer $installer)
     {
-        $this->db        = $db;
-        $this->installer = $installer;
     }
 
     /**
@@ -48,7 +36,7 @@ class Updater
         $loader = Helper::getLoaderByPluginID($pluginID, $this->db);
         try {
             $plugin = $loader->init($pluginID, true);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $this->installer->setPlugin($plugin);
@@ -63,13 +51,13 @@ class Updater
      */
     public function updateFromListingItem(ListingItem $item): int
     {
-        if ($item === null || $item->getID() === 0) {
+        if ($item->getID() === 0) {
             return InstallCode::WRONG_PARAM;
         }
         $loader = Helper::getLoaderByPluginID($item->getID(), $this->db);
         try {
             $plugin = $loader->init($item->getID(), true);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         $this->installer->setPlugin($plugin);

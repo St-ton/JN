@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Smarty;
 
@@ -13,24 +13,12 @@ use Smarty_Resource_Custom;
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
     /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * SmartyResourceNiceDB constructor.
      * @param DbInterface $db
      * @param string      $type
      */
-    public function __construct(DbInterface $db, string $type = ContextType::EXPORT)
+    public function __construct(private DbInterface $db, private string $type = ContextType::EXPORT)
     {
-        $this->db   = $db;
-        $this->type = $type;
     }
 
     /**
@@ -130,8 +118,8 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
         } else {
             $source = '';
             Shop::Container()->getLogService()->notice(
-                'Emailvorlage mit der ID ' . (int)$pcs[1] .
-                ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
+                'Emailvorlage mit der ID ' . (int)$pcs[1]
+                . ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden'
             );
         }
 
@@ -144,11 +132,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      */
     private function getExportSource(int $id): string
     {
-        $exportformat = $this->db->select('texportformat', 'kExportformat', $id);
-
-        return empty($exportformat->kExportformat)
-            ? ''
-            : $exportformat->cContent;
+        return $this->db->select('texportformat', 'kExportformat', $id)->cContent ?? '';
     }
 
     /**

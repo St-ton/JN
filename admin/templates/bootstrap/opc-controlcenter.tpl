@@ -19,7 +19,7 @@
         <div class="tab-pane fade active show" id="pages">
             <div>
                 {assign var=allPages value=$opcPageDB->getPages()}
-                {if $allPages|@count > 0}
+                {if $allPages|count > 0}
                     {assign var=pages value=array_slice(
                         $allPages,
                         $pagesPagi->getFirstPageItem(),
@@ -47,7 +47,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">
+                                            <a href="{$shopURL}{$page->cPageUrl}" target="_blank">
                                                 <span class="icon-hover">
                                                     <span class="far fa-link"></span><span class="fas fa-link"></span>
                                                 </span>
@@ -74,7 +74,7 @@
                                                     </span>
                                                 </a>
                                                 <button class="btn btn-link px-2" title="{__('preview')}"
-                                                        data-src="{$URL_SHOP}{$page->cPageUrl}"
+                                                        data-src="{$shopURL}{$page->cPageUrl}"
                                                         data-toggle="modal"
                                                         data-target="#previewModal">
                                                     <span class="icon-hover">
@@ -108,20 +108,20 @@
                                                                 <span class="text-danger">{__('unpublished')}</span>
                                                             {elseif $publicPageRow !== null && $publicPageRow->kPage == $draft->getKey()}
                                                                 <span class="text-success">
-                                                                    {$draft->getPublishFrom()|date_format:'%c'}
+                                                                    {$draft->getPublishFrom()|date_format:'r'}
                                                                 </span>
                                                             {else}
-                                                                {$draft->getPublishFrom()|date_format:'%c'}
+                                                                {$draft->getPublishFrom()|date_format:'r'}
                                                             {/if}
                                                         </td>
                                                         <td>
                                                             {if empty($draft->getPublishTo())}
                                                                 {__('tillUnknown')}
                                                             {else}
-                                                                {$draft->getPublishTo()|date_format:'%c'}
+                                                                {$draft->getPublishTo()|date_format:'r'}
                                                             {/if}
                                                         </td>
-                                                        <td>{$draft->getLastModified()|date_format:'%c'}</td>
+                                                        <td>{$draft->getLastModified()|date_format:'r'}</td>
                                                         <td>
                                                             {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                         </td>
@@ -139,7 +139,7 @@
                                                                     </span>
                                                                 </a>
                                                                 <a class="btn btn-link px-2" title="{__('edit')}" target="_blank"
-                                                                   href="{strip}./opc.php?
+                                                                   href="{strip}{$adminURL}{JTL\Router\Route::OPC}?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
                                                                         action=edit{/strip}"
@@ -203,7 +203,7 @@
         <div class="tab-pane fade" id="blueprints">
             <div>
                 {assign var=blueprints value=$opc->getBlueprints()}
-                {if $blueprints|@count > 0}
+                {if $blueprints|count > 0}
                     <div class="table-responsive">
                         <table class="list table table-striped">
                             <thead>

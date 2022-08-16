@@ -16,11 +16,6 @@ use function Functional\first;
 abstract class AbstractTemplate implements TemplateInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
      * @var string
      */
     protected $id;
@@ -28,75 +23,69 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * @var string
      */
-    protected $settingsTable = 'temailvorlageeinstellungen';
+    protected string $settingsTable = 'temailvorlageeinstellungen';
 
     /**
      * @var string|null
      */
-    protected $overrideSubject;
+    protected ?string $overrideSubject = null;
 
     /**
      * @var string|null
      */
-    protected $overrideFromName;
+    protected ?string $overrideFromName = null;
 
     /**
      * @var string|null
      */
-    protected $overrideFromMail;
+    protected ?string $overrideFromMail = null;
 
     /**
      * @var array
      */
-    protected $overrideCopyTo = [];
+    protected array $overrideCopyTo = [];
 
     /**
      * @var array
      */
-    protected $legalData = [];
+    protected array $legalData = [];
 
     /**
      * @var Model|null
      */
-    protected $model;
-
-    /**
-     * @var RendererInterface
-     */
-    protected $renderer;
+    protected ?Model $model = null;
 
     /**
      * @var string|null
      */
-    protected $html;
+    protected ?string $html = null;
 
     /**
      * @var string|null
      */
-    protected $text;
+    protected ?string $text = null;
 
     /**
      * @var int
      */
-    protected $languageID;
+    protected int $languageID = 0;
 
     /**
      * @var int
      */
-    protected $customerGroupID;
+    protected int $customerGroupID = 0;
 
     /**
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * AbstractTemplate constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->init();
     }
 
@@ -112,7 +101,6 @@ abstract class AbstractTemplate implements TemplateInterface
         if ($this->model !== null && $languageID === $this->languageID && $customerGroupID === $this->customerGroupID) {
             return $this->model;
         }
-        $this->model           = null;
         $this->languageID      = $languageID;
         $this->customerGroupID = $customerGroupID;
         $this->model           = new Model($this->db);
@@ -159,8 +147,8 @@ abstract class AbstractTemplate implements TemplateInterface
         );
         $data                  = first(
             $data,
-            function ($e) {
-                return (int)$e->kSprache === $this->languageID;
+            function (stdClass $item): bool {
+                return (int)$item->kSprache === $this->languageID;
             }
         ) ?? first($data);
         $agb                   = new stdClass();

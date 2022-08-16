@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS;
 
@@ -14,19 +14,9 @@ use stdClass;
 class NetSyncHandler
 {
     /**
-     * @var NetSyncHandler
+     * @var NetSyncHandler|null
      */
-    private static $instance;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    protected static ?NetSyncHandler $instance = null;
 
     /**
      * NetSyncHandler constructor.
@@ -34,14 +24,9 @@ class NetSyncHandler
      * @param LoggerInterface $logger
      * @throws Exception
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(protected DbInterface $db, protected LoggerInterface $logger)
     {
-        if (self::$instance !== null) {
-            throw new Exception('Class ' . __CLASS__ . ' already created');
-        }
         self::$instance = $this;
-        $this->db       = $db;
-        $this->logger   = $logger;
         if (!$this->isAuthenticated()) {
             static::throwResponse(NetSyncResponse::ERRORLOGIN);
         }
@@ -88,7 +73,7 @@ class NetSyncHandler
             $response->cToken = \session_id();
             $response->oData  = $data;
         }
-        echo \json_encode($response);
+        echo \json_encode($response, \JSON_THROW_ON_ERROR);
         exit;
     }
 
@@ -117,7 +102,7 @@ class NetSyncHandler
      * @param string $mimetype
      * @param string $outname
      */
-    public function streamFile($filename, $mimetype, $outname = ''): void
+    public function streamFile(string $filename, string $mimetype, string $outname = ''): void
     {
         $browser = $this->getBrowser($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
@@ -159,9 +144,9 @@ class NetSyncHandler
     private function getBrowser(string $userAgent): string
     {
         $browser = 'other';
-        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        if (\preg_match('/^Opera(\/| )(\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'opera';
-        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+        } elseif (\preg_match('/^MSIE (\d.\d{1,2})/', $userAgent) === 1) {
             $browser = 'ie';
         }
 

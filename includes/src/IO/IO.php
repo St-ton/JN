@@ -1,10 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
 use Exception;
+use JsonException;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use ReflectionFunction;
 use ReflectionMethod;
 
@@ -15,14 +18,14 @@ use ReflectionMethod;
 class IO
 {
     /**
-     * @var static
+     * @var static|null
      */
-    protected static $instance;
+    protected static ?IO $instance = null;
 
     /**
      * @var array
      */
-    protected $functions = [];
+    protected array $functions = [];
 
     /**
      * IO constructor.
@@ -61,11 +64,9 @@ class IO
         if ($this->exists($name)) {
             throw new Exception('Function already registered');
         }
-
         if ($function === null) {
             $function = $name;
         }
-
         $this->functions[$name] = [$function, $include];
 
         return $this;
@@ -76,12 +77,12 @@ class IO
      * @return IOError|mixed
      * @throws Exception
      */
-    public function handleRequest($reqString)
+    public function handleRequest(string $reqString)
     {
-        $request = \json_decode($reqString, true);
-
-        if (($errno = \json_last_error()) !== \JSON_ERROR_NONE) {
-            return new IOError("Error {$errno} while decoding data");
+        try {
+            $request = \json_decode($reqString, true, 512, \JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            return new IOError('Error while decoding data: '  . $e->getMessage());
         }
 
         if (!isset($request['name'], $request['params'])) {
@@ -104,7 +105,7 @@ class IO
      * @param object $data
      * @throws Exception
      */
-    public function respondAndExit($data)
+    public function respondAndExit($data): void
     {
         // respond with an error?
         if (\is_object($data)) {
@@ -123,6 +124,31 @@ class IO
         \header('Content-type: application/json');
 
         die(Text::json_safe_encode($data));
+    }
+
+    /**
+     * @param mixed $data
+     * @throws Exception
+     */
+    public function getResponse($data): ResponseInterface
+    {
+        $code = 200;
+        if (\is_object($data)) {
+            if ($data instanceof IOError) {
+                $code = empty($data->code) ? 500 : $data->code;
+            } elseif ($data instanceof IOFile) {
+                $this->pushFile($data->filename, $data->mimetype);
+            }
+        }
+        $response = (new Response())->withStatus($code)
+            ->withAddedHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
+            ->withAddedHeader('Last-Modified', \gmdate('D, d M Y H:i:s') . ' GMT')
+            ->withAddedHeader('Cache-Control', 'no-cache, must-revalidate')
+            ->withAddedHeader('Pragma', 'no-cache')
+            ->withAddedHeader('Content-type', 'application/json');
+        $response->getBody()->write(Text::json_safe_encode($data));
+
+        return $response;
     }
 
     /**
@@ -182,9 +208,9 @@ class IO
     {
         $userAgent    = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $browserAgent = '';
-        if (\preg_match('/Opera\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        if (\preg_match('/Opera\/(\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'opera';
-        } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $m)) {
+        } elseif (\preg_match('/MSIE (\d.\d{1,2})/', $userAgent, $m)) {
             $browserAgent = 'ie';
         }
 

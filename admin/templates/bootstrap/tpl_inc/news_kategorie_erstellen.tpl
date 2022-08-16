@@ -37,7 +37,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('category')}
 <div id="content">
-    <form name="news" method="post" action="news.php" enctype="multipart/form-data">
+    <form name="news" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_kategorie_speichern" value="1" />
@@ -105,7 +105,7 @@
                                 }
                             </div>
                         </div>
-                        {if $files|@count > 0}
+                        {if $files|count > 0}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                                 <div>
@@ -116,7 +116,7 @@
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$file->cName}#$">
                                                 <div class="input-group-addon">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
+                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$file->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                                         <i class="fa fa-exclamation"></i> {__('Cancel')}
                                     </a>
                                 </div>

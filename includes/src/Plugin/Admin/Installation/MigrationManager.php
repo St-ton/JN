@@ -22,37 +22,17 @@ final class MigrationManager
     /**
      * @var IMigration[]
      */
-    private $migrations;
+    private array $migrations = [];
 
     /**
      * @var array|null
      */
-    private $executedMigrations;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var string
-     */
-    private $pluginID;
-
-    /**
-     * @var string
-     */
-    private $path;
+    private ?array $executedMigrations = null;
 
     /**
      * @var MigrationHelper
      */
-    private $helper;
-
-    /**
-     * @var Version
-     */
-    private $version;
+    private MigrationHelper $helper;
 
     /**
      * MigrationManager constructor.
@@ -61,13 +41,13 @@ final class MigrationManager
      * @param string       $pluginID
      * @param Version|null $version
      */
-    public function __construct(DbInterface $db, string $path, string $pluginID, Version $version = null)
-    {
-        $this->helper   = new MigrationHelper($path, $db);
-        $this->db       = $db;
-        $this->pluginID = $pluginID;
-        $this->path     = $path;
-        $this->version  = $version;
+    public function __construct(
+        private DbInterface $db,
+        private string $path,
+        private string $pluginID,
+        private ?Version $version = null
+    ) {
+        $this->helper = new MigrationHelper($path, $db);
     }
 
     /**
@@ -192,7 +172,7 @@ final class MigrationManager
      * @param string $direction
      * @throws Exception
      */
-    public function executeMigrationById($id, $direction = IMigration::UP): void
+    public function executeMigrationById($id, string $direction = IMigration::UP): void
     {
         $this->executeMigration($this->getMigrationById($id), $direction);
     }
@@ -260,7 +240,7 @@ final class MigrationManager
      */
     public function getMigrations(): array
     {
-        if (\is_array($this->migrations) && \count($this->migrations) > 0) {
+        if (\count($this->migrations) > 0) {
             return $this->migrations;
         }
         $migrations = [];
@@ -314,15 +294,14 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $version = $this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT kMigration 
                 FROM tpluginmigration 
                 WHERE pluginID = :pid
                 ORDER BY kMigration DESC',
+            'kMigration',
             ['pid' => $this->pluginID]
         );
-
-        return (int)($version->kMigration ?? 0);
     }
 
     /**
@@ -355,7 +334,7 @@ final class MigrationManager
         $executed   = $this->getExecutedMigrations();
         $migrations = \array_keys($this->getMigrations());
 
-        return \array_udiff($migrations, $executed, static function ($a, $b) {
+        return \array_udiff($migrations, $executed, static function ($a, $b): int {
             return \strcmp((string)$a, (string)$b);
         });
     }

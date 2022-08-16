@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -16,21 +16,14 @@ class PHPSettings
      * @param string $shorthand
      * @return int
      */
-    private function shortHandToInt($shorthand): int
+    private function shortHandToInt(string $shorthand): int
     {
-        switch (\mb_substr($shorthand, -1)) {
-            case 'M':
-            case 'm':
-                return (int)$shorthand * 1048576;
-            case 'K':
-            case 'k':
-                return (int)$shorthand * 1024;
-            case 'G':
-            case 'g':
-                return (int)$shorthand * 1073741824;
-            default:
-                return (int)$shorthand;
-        }
+        return match (\mb_substr($shorthand, -1)) {
+            'M', 'm' => (int)$shorthand * 1048576,
+            'K', 'k' => (int)$shorthand * 1024,
+            'G', 'g' => (int)$shorthand * 1073741824,
+            default  => (int)$shorthand,
+        };
     }
 
     /**
@@ -196,18 +189,18 @@ class PHPSettings
     {
         $errno  = null;
         $errstr = null;
-        $url    = \parse_url(\trim($url));
-        $scheme = \mb_convert_case($url['scheme'], \MB_CASE_LOWER);
+        $parsed = \parse_url(\trim($url));
+        $scheme = \mb_convert_case($parsed['scheme'], \MB_CASE_LOWER);
         if ($scheme !== 'http' && $scheme !== 'https') {
             return false;
         }
-        if (!isset($url['port'])) {
-            $url['port'] = 80;
+        if (!isset($parsed['port'])) {
+            $parsed['port'] = 80;
         }
-        if (!isset($url['path'])) {
-            $url['path'] = '/';
+        if (!isset($parsed['path'])) {
+            $parsed['path'] = '/';
         }
 
-        return (bool)\fsockopen($url['host'], $url['port'], $errno, $errstr, 30);
+        return (bool)\fsockopen($parsed['host'], $parsed['port'], $errno, $errstr, 30);
     }
 }

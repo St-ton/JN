@@ -7,6 +7,19 @@
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="https://schema.org/BreadcrumbList"}
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
+                        {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
+                            {/strip}<script>(function(){
+                                if (window.should_render_backtolist_link) {
+                                    // render back-to-list-link if allowed
+                                    document.write(`
+                                        {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
+                                            class="breadcrumb-backtolist" href="#"}
+                                            {lang key='goBackToList'}
+                                        {/breadcrumbitem}
+                                    `);
+                                }
+                            })();</script>{strip}
+                        {/if}
                         {if $parent !== null}
                             {breadcrumbitem class="breadcrumb-arrow"
                                 href=$parent->getURLFull()

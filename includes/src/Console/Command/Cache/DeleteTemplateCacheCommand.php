@@ -38,12 +38,12 @@ class DeleteTemplateCacheCommand extends Command
             if ($item->isDir()) {
                 try {
                     $filesystem->deleteDirectory($item->path());
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             } else {
                 try {
                     $filesystem->delete($item->path());
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             }
         }
@@ -52,7 +52,7 @@ class DeleteTemplateCacheCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io             = $this->getIO();
         $adminTpl       = $this->getOption('admin');
@@ -65,11 +65,11 @@ class DeleteTemplateCacheCommand extends Command
             $filesystem->deleteDirectory('/templates_c/' . $activeTemplate->getDir());
             $io->success('Template cache deleted.');
 
-            return 0;
+            return Command::SUCCESS;
         } catch (Throwable $e) {
             $io->warning('Could not delete: ' . $e->getMessage());
 
-            return 1;
+            return Command::FAILURE;
         }
     }
 }

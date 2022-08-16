@@ -218,7 +218,7 @@
                                 {/block}
                                 {if !$isBrandFree}
                                     {block name='layout-footer-copyright-brand'}
-                                        {col class="col-auto ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-8{/if}" id="system-credits"}
+                                        {col cols=12 md="auto" class="ml-auto-util{if $Einstellungen.template.theme.button_scroll_top === 'Y'} pr-md-8{/if}" id="system-credits"}
                                             Powered by {link href="https://jtl-url.de/jtlshop" class="text-white text-decoration-underline" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                         {/col}
                                     {/block}
@@ -256,7 +256,7 @@
                         $('#consent-manager, #consent-settings-btn').removeClass('d-none');
                     }, 100)
                     document.addEventListener('consent.updated', function(e) {
-                        $.post('{$ShopURLSSL}/', {
+                        $.post('{$ShopURLSSL}/_updateconsent', {
                                 'action': 'updateconsent',
                                 'jtl_token': '{$smarty.session.jtl_token}',
                                 'data': e.detail
@@ -270,7 +270,7 @@
                     {/if}
 
                     window.CM = new ConsentManager({
-                        version: 1
+                        version: {$smarty.session.consentVersion|default:1}
                     });
                     var trigger = document.querySelectorAll('.trigger')
                     var triggerCall = function(e) {
@@ -287,7 +287,7 @@
                             });
                         }
                     }
-                    for(let i = 0; i < trigger.length; ++i) {
+                    for (let i = 0; i < trigger.length; ++i) {
                         trigger[i].addEventListener('click', triggerCall)
                     }
                 </script>

@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="links.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="action" value="confirm-delete" />
                 <input type="hidden" name="kLinkgruppe" value="{$linkGroup->getID()}" />

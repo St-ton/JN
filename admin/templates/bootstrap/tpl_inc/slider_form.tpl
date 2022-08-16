@@ -1,5 +1,5 @@
 <div id="settings">
-    <form action="slider.php?action={$action}" method="post" accept-charset="iso-8859-1" id="slider" enctype="multipart/form-data">
+    <form action="{$adminURL}{$route}?action={$action}" method="post" accept-charset="iso-8859-1" id="slider" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="action" value="{$action}" />
         <input type="hidden" name="kSlider" value="{$oSlider->getID()}" />
@@ -383,7 +383,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <button type="button" class="btn btn-default btn-block" onclick="window.location.href = 'slider.php';" value="zurück">
+                    <button type="button" class="btn btn-default btn-block" onclick="window.location.href = '{$adminURL}{$route}';" value="zurück">
                         {__('cancelWithIcon')}
                     </button>
                 </div>

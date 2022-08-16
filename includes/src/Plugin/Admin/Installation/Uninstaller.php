@@ -25,24 +25,12 @@ use Throwable;
 final class Uninstaller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
      * Uninstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -74,7 +62,7 @@ final class Uninstaller
             : new LegacyPluginLoader($this->db, $this->cache);
         try {
             $plugin = $loader->init($pluginID);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ($update) {
@@ -89,7 +77,7 @@ final class Uninstaller
             if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {
                     include $plugin->getPaths()->getUninstaller();
-                } catch (Exception $exc) {
+                } catch (Exception) {
                 }
             }
             $this->doSQLDelete($pluginID, $update, $newID, $deleteData);
@@ -104,7 +92,7 @@ final class Uninstaller
                     : (\PFAD_PLUGIN . $dir);
                 try {
                     $manager->deleteDirectory('plgn://' . $dirName);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             }
         }
@@ -249,33 +237,34 @@ final class Uninstaller
         $this->db->delete('tplugin_resources', 'kPlugin', $pluginID);
         $links = [];
         if ($newPluginID !== null && $newPluginID > 0) {
-            $links = $this->db->getObjects(
+            $links = $this->db->getInts(
                 'SELECT kLink
                     FROM tlink
                     WHERE kPlugin IN (:pid, :npid)
                         ORDER BY kLink',
+                'kLink',
                 ['pid' => $pluginID, 'npid' => $newPluginID]
             );
         }
         if (\count($links) === 2) {
             $languages = LanguageHelper::getAllLanguages(2, true);
-            foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]->kLink) as $item) {
+            foreach ($this->db->selectAll('tlinksprache', 'kLink', $links[0]) as $item) {
                 $this->db->update(
                     'tlinksprache',
                     ['kLink', 'cISOSprache'],
-                    [$links[1]->kLink, $item->cISOSprache],
+                    [$links[1], $item->cISOSprache],
                     (object)['cSeo' => $item->cSeo]
                 );
                 $languageID = $languages[$item->cISOSprache]->kSprache;
                 $this->db->delete(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[0]->kLink, $languageID]
+                    ['kLink', $links[0], $languageID]
                 );
                 $this->db->update(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[1]->kLink, $languageID],
+                    ['kLink', $links[1], $languageID],
                     (object)['cSeo' => $item->cSeo]
                 );
             }

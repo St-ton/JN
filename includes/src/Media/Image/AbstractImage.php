@@ -33,17 +33,17 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\$\-\_\.\+\!\*\\\'\(\)\,';
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,';
 
     /**
      * @var array
      */
-    protected static $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
+    protected static array $imageExtensions = ['jpg', 'jpeg', 'webp', 'gif', 'png', 'bmp'];
 
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * AbstractImage constructor.
@@ -181,9 +181,7 @@ abstract class AbstractImage implements IMedia
     }
 
     /**
-     * @param string $type
-     * @param int    $id
-     * @return stdClass|null
+     * @inheritdoc
      */
     public static function getImageStmt(string $type, int $id): ?stdClass
     {
@@ -303,7 +301,7 @@ abstract class AbstractImage implements IMedia
      */
     public function getUncachedImageCount(): int
     {
-        return \count(select($this->getAllImages(), function (MediaImageRequest $e) {
+        return \count(select($this->getAllImages(), function (MediaImageRequest $e): bool {
             return !$this->isCached($e) && ($file = $e->getRaw()) !== null && \file_exists($file);
         }));
     }
@@ -365,8 +363,8 @@ abstract class AbstractImage implements IMedia
             map($ids, static function ($e) use ($baseDir) {
                 return $e === null ? $baseDir : \realpath($baseDir . '/' . $e);
             }),
-            static function ($e) use ($baseDir) {
-                return $e !== false && \strpos($e, $baseDir) === 0;
+            static function ($e) use ($baseDir): bool {
+                return $e !== false && \str_starts_with($e, $baseDir);
             }
         );
         try {
@@ -399,7 +397,7 @@ abstract class AbstractImage implements IMedia
                     $res  = $res && $loop;
                 }
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             $res = false;
         }
 
@@ -428,7 +426,7 @@ abstract class AbstractImage implements IMedia
      */
     protected function isCached(MediaImageRequest $req): bool
     {
-        return every(Image::getAllSizes(), static function ($e) use ($req) {
+        return every(Image::getAllSizes(), static function ($e) use ($req): bool {
             return \file_exists($req->getThumb($e, true));
         });
     }
@@ -455,7 +453,7 @@ abstract class AbstractImage implements IMedia
         if (!\is_string($request) || \mb_strlen($request) === 0) {
             return null;
         }
-        if (\mb_strpos($request, '/') === 0) {
+        if (\str_starts_with($request, '/')) {
             $request = \mb_substr($request, 1);
         }
 

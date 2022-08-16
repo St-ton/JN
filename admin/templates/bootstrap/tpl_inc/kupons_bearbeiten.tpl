@@ -37,7 +37,7 @@
 </script>
 
 <div id="content">
-    <form method="post" action="kupons.php">
+    <form method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
@@ -498,7 +498,7 @@
                                 $('#customerSelectionInfo').val(selectedCustomers.length + ' {__('customers')}');
                                 $('#cKunden').val(selectedCustomers.join(';'));
                             } else {
-                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customer')}');
+                                $('#customerSelectionInfo').val('{__('all')}' + ' {__('customers')}');
                                 $('#cKunden').val('-1');
                             }
                         }
@@ -513,7 +513,8 @@
                             {include file='snippets/searchpicker_button.tpl' target='#customerPicker-modal'}
                         </div>
                     </div>
-                    <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
+                    {* disabled with d-none because of SHOP-5794 *}
+                    <div class="form-group form-row align-items-center d-none {if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="informieren">{__('informCustomers')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <div class="custom-control custom-checkbox">
@@ -528,7 +529,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="kupons.php?tab={$oKupon->cKuponTyp}">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab={$oKupon->cKuponTyp}">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

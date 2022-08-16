@@ -14,10 +14,10 @@
         </div>
     </div>
     {if $modifiedFiles|count > 0}
-        <div class="card-body  collapse" id="pageCheckModifiedFiles">
-            <p class="small text-muted">{__('fileCheckModifiedFilesNote')}</p>
+        <div class="card-body collapse" id="pageCheckModifiedFiles">
+            <p class="alert alert-warning">{__('fileCheckModifiedFilesNote')}</p>
             <div id="contentModifiedFilesCheck">
-                <table class="table table-sm table-borderless req">
+                <table class="table table-sm table-borderless req table-striped">
                     <thead>
                     <tr>
                         <th class="text-left">{__('file')}</th>
@@ -43,21 +43,29 @@
         </div>
     </div>
     {if $orphanedFiles|count > 0}
-        <div class="card-body  collapse" id="pageCheckOrphanedFiles">
+        <div class="card-body collapse" id="pageCheckOrphanedFiles">
             <p class="alert alert-info">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
-                <table class="table table-sm table-borderless req">
+                <table class="table table-sm table-borderless req table-striped">
                     <thead>
                         <tr>
                             <th class="text-left">{__('file')}</th>
                             <th class="text-right">{__('lastModified')}</th>
                         </tr>
                     </thead>
+                    {$cnt = 0}
+                    {$ofc = $orphanedFiles|count}
                     {foreach $orphanedFiles as $file}
                         <tr class="filestate mod{$file@iteration % 2} orphaned">
                             <td class="text-left">{$file->name}</td>
                             <td class="text-right">{$file->lastModified}</td>
                         </tr>
+                        {if $cnt++ > 98}
+                            <tr>
+                                <td colspan="2"><strong>{__('And %d more')|sprintf:($ofc - $cnt)}</strong></td>
+                            </tr>
+                            {break}
+                        {/if}
                     {/foreach}
                 </table>
                 <div class="save-wrapper">
@@ -76,7 +84,7 @@
                             </div>
                         </div>
                         <div class="collapse" id="show-script">
-                            <div class="card card-body">
+                            <div class="card card-body text-left">
                                 <pre style="margin-top:1em;">{$deleteScript}</pre>
                             </div>
                         </div>

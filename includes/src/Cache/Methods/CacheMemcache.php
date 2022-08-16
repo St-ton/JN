@@ -16,11 +16,6 @@ class CacheMemcache implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheMemcache
-     */
-    public static $instance;
-
-    /**
      * @var \Memcache
      */
     private $memcache;
@@ -28,16 +23,16 @@ class CacheMemcache implements ICachingMethod
     /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
         if (!empty($options['memcache_host']) && !empty($options['memcache_port']) && $this->isAvailable()) {
-            $this->setMemcache($options['memcache_host'], $options['memcache_port']);
-            $this->isInitialized = true;
-            $this->journalID     = 'memcache_journal';
+            $this->setMemcache($options['memcache_host'], (int)$options['memcache_port']);
+            $this->setIsInitialized(true);
+            $this->setJournalID('memcache_journal');
             //@see http://php.net/manual/de/memcached.expiration.php
             $options['lifetime'] = \min(60 * 60 * 24 * 30, $options['lifetime']);
-            $this->options       = $options;
-            self::$instance      = $this;
+            $this->setOptions($options);
+            self::$instance = $this;
         }
     }
 
@@ -46,13 +41,11 @@ class CacheMemcache implements ICachingMethod
      * @param int    $port
      * @return $this
      */
-    private function setMemcache($host, $port): ICachingMethod
+    private function setMemcache(string $host, int $port): ICachingMethod
     {
-        if ($this->memcache !== null) {
-            $this->memcache->close();
-        }
+        $this->memcache?->close();
         $this->memcache = new \Memcache();
-        $this->memcache->addServer($host, (int)$port);
+        $this->memcache->addServer($host, $port);
 
         return $this;
     }
@@ -60,7 +53,7 @@ class CacheMemcache implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         return $this->memcache->set(
             $this->options['prefix'] . $cacheID,
@@ -73,7 +66,7 @@ class CacheMemcache implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         return $this->memcache->set($this->prefixArray($idContent), $expiration ?? $this->options['lifetime']);
     }

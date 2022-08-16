@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
+use SimpleXMLElement;
 
 /**
  * Class DeliveryNotes
@@ -16,7 +17,7 @@ final class DeliveryNotes extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             $fileName     = \pathinfo($file)['basename'];
             if ($fileName === 'lief.xml') {
@@ -30,9 +31,9 @@ final class DeliveryNotes extends AbstractSync
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleInserts($xml): void
+    private function handleInserts(SimpleXMLElement $xml): void
     {
         foreach ($xml->tlieferschein as $item) {
             $deliveryNote = $this->mapper->map($item, 'mLieferschein');
@@ -54,25 +55,30 @@ final class DeliveryNotes extends AbstractSync
                 }
             }
 
+            \executeHook(\HOOK_DELIVERYNOTES_XML_INSERT, ['deliveryNote' => $item]);
             foreach ($item->tversand as $shipping) {
                 $shipping                = $this->mapper->map($shipping, 'mVersand');
                 $shipping->kLieferschein = $deliveryNote->kLieferschein;
                 $shipping->dErstellt     = \date_format(\date_create($shipping->dErstellt), 'U');
                 $this->upsert('tversand', [$shipping], 'kVersand');
+
+                \executeHook(\HOOK_DELIVERYNOTES_XML_SHIPPING, ['shipping' => $shipping]);
             }
         }
     }
 
     /**
-     * @param object $xml
+     * @param SimpleXMLElement $xml
      */
-    private function handleDeletes($xml): void
+    private function handleDeletes(SimpleXMLElement $xml): void
     {
         $items = $xml->kLieferschein;
         if (!\is_array($items)) {
             $items = (array)$items;
         }
         foreach (\array_filter(\array_map('\intval', $items)) as $id) {
+            \executeHook(\HOOK_DELIVERYNOTES_XML_DELETE, ['deliveryNoteID' => $id]);
+
             $this->db->delete('tversand', 'kLieferschein', $id);
             $this->db->delete('tlieferschein', 'kLieferschein', $id);
             foreach ($this->db->selectAll(

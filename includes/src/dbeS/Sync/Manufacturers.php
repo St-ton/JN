@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -22,11 +22,11 @@ final class Manufacturers extends AbstractSync
     public function handle(Starter $starter)
     {
         $cacheTags = [];
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_hersteller.xml') !== false) {
+            if (\str_contains($file, 'del_hersteller.xml')) {
                 $cacheTags[] = $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'hersteller.xml') !== false) {
+            } elseif (\str_contains($file, 'hersteller.xml')) {
                 $cacheTags[] = $this->handleInserts($xml);
             }
         }
@@ -138,7 +138,7 @@ final class Manufacturers extends AbstractSync
      * @param string          $slug
      * @return string
      */
-    private function updateSeo(int $id, array $languages, array $xmlLanguage, $slug): string
+    private function updateSeo(int $id, array $languages, array $xmlLanguage, string $slug): string
     {
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
         $mfSeo  = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');

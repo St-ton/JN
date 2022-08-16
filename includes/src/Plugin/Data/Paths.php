@@ -11,72 +11,77 @@ class Paths
     /**
      * @var string
      */
-    private $shopURL;
+    private string $shopURL;
 
     /**
      * @var string
      */
-    private $baseDir;
+    private string $baseDir;
 
     /**
      * @var string
      */
-    private $basePath;
+    private string $basePath;
 
     /**
      * @var string
      */
-    private $versionedPath;
+    private string $versionedPath;
 
     /**
      * @var string
      */
-    private $frontendPath;
+    private string $frontendPath;
 
     /**
      * @var string
      */
-    private $frontendURL;
+    private string $frontendURL;
 
     /**
      * @var string
      */
-    private $baseURL;
+    private string $baseURL;
 
     /**
      * @var string
      */
-    private $adminPath;
+    private string $adminPath;
 
     /**
      * @var string
      */
-    private $adminURL;
+    private string $adminURL;
+
+    /**
+     * @var string
+     */
+    private string $backendURL;
 
     /**
      * @var string|null
      */
-    private $licencePath;
+    private ?string $licencePath = null;
 
     /**
      * @var string|null
      */
-    private $uninstaller;
+    private ?string $uninstaller = null;
 
     /**
      * @var string|null
      */
-    private $portletsPath;
+    private ?string $portletsPath = null;
 
     /**
      * @var string|null
      */
-    private $portletsUrl;
+    private ?string $portletsUrl = null;
 
     /**
      * @var string|null
      */
-    private $exportPath;
+    private ?string $exportPath = null;
 
     /**
      * @return string
@@ -220,6 +225,22 @@ class Paths
     public function setAdminURL(string $adminURL): void
     {
         $this->adminURL = $adminURL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendURL(): string
+    {
+        return $this->backendURL;
+    }
+
+    /**
+     * @param string $backendURL
+     */
+    public function setBackendURL(string $backendURL): void
+    {
+        $this->backendURL = $backendURL;
     }
 
     /**

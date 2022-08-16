@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Events;
 
@@ -19,14 +19,14 @@ final class Dispatcher
      *
      * @var array
      */
-    private $listeners = [];
+    private array $listeners = [];
 
     /**
      * The wildcard listeners.
      *
      * @var array
      */
-    private $wildcards = [];
+    private array $wildcards = [];
 
     /**
      * Determine if a given event has listeners.
@@ -50,12 +50,24 @@ final class Dispatcher
     {
         foreach ((array)$eventNames as $event) {
             $item = (object)['listener' => $listener, 'priority' => $priority];
-            if (\mb_strpos($event, '*') !== false) {
+            if (\str_contains($event, '*')) {
                 $this->wildcards[$event][] = $item;
             } else {
                 $this->listeners[$event][] = $item;
             }
         }
+    }
+
+    /**
+     * @param int      $hookID
+     * @param callable $listener
+     * @param int      $priority
+     * @return void
+     * @since 5.2.0
+     */
+    public function hookInto(int $hookID, callable $listener, int $priority = 5): void
+    {
+        $this->listeners['shop.hook.' . $hookID][] = (object)['listener' => $listener, 'priority' => $priority];
     }
 
     /**
@@ -78,7 +90,7 @@ final class Dispatcher
      */
     public function forget(string $eventName): void
     {
-        if (\mb_strpos($eventName, '*') !== false) {
+        if (\str_contains($eventName, '*')) {
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
@@ -125,10 +137,10 @@ final class Dispatcher
         $wildcards = [];
         foreach ($this->wildcards as $key => $listeners) {
             if (\fnmatch($key, $eventName)) {
-                $wildcards = \array_merge($wildcards, $listeners);
+                $wildcards[] = $listeners;
             }
         }
 
-        return $wildcards;
+        return \array_merge(...$wildcards);
     }
 }

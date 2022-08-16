@@ -4,10 +4,10 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action='globalemetaangaben.php"'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
         </div>
     </div>
-    <form method="post" action="globalemetaangaben.php">
+    <form method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <div class="settings">
@@ -37,55 +37,7 @@
                 </div>
             </div>
 
-            {assign var=open value=false}
-            {foreach $oConfig_arr as $oConfig}
-                {if $oConfig->cConf === 'Y'}
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $oConfig->cInputTyp === 'number'}config-type-number{/if}">
-                            {if $oConfig->cInputTyp === 'selectbox'}
-                                <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
-                                    {foreach $oConfig->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                    {/foreach}
-                                </select>
-                            {elseif $oConfig->cInputTyp === 'number'}
-                                <div class="input-group form-counter">
-                                    <div class="input-group-prepend">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
-                                            <span class="fas fa-minus"></span>
-                                        </button>
-                                    </div>
-                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </div>
-                            {else}
-                                <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
-                            {/if}
-                        </div>
-                        {include file='snippets/einstellungen_icons.tpl' cnf=$oConfig}
-                    </div>
-                {else}
-                    {if $open}</div></div>{/if}
-                    <div class="card">
-                        {if $oConfig->cName}
-                            <div class="card-header">
-                                <div class="subheading1">{__('settings')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                        {/if}
-                        <div class="card-body">
-                        {assign var=open value=true}
-                {/if}
-            {/foreach}
-            {if $open}
-                </div>
-            </div>
-            {/if}
+            {include file='tpl_inc/config_sections.tpl'}
         </div>
 
         <div class="card-footer save-wrapper submit">

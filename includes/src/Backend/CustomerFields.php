@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
+use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
@@ -15,41 +16,43 @@ class CustomerFields
     /**
      * @var static[]
      */
-    private static $instances;
+    private static array $instances = [];
 
     /**
-     * @var object[]
+     * @var stdClass[]
      */
-    protected $customerFields = [];
+    protected array $customerFields = [];
 
     /**
-     * @var int
+     * @var DbInterface
      */
-    protected $langID;
+    private DbInterface $db;
 
     /**
      * CustomerFields constructor.
      *
-     * @param int $langID
+     * @param int              $langID
+     * @param DbInterface|null $db
      */
-    public function __construct(int $langID)
+    public function __construct(protected int $langID, DbInterface $db = null)
     {
-        $this->langID = $langID;
+        $this->db = $db ?? Shop::Container()->getDB();
         $this->loadFields($langID);
     }
 
     /**
-     * @param int|null $langID
+     * @param int|null         $langID
+     * @param DbInterface|null $db
      * @return CustomerFields
      */
-    public static function getInstance(int $langID = null): self
+    public static function getInstance(int $langID = null, DbInterface $db = null): self
     {
         if ($langID === null || $langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
         }
 
         if (!isset(self::$instances[$langID])) {
-            self::$instances[$langID] = new static($langID);
+            self::$instances[$langID] = new static($langID, $db);
         }
 
         return self::$instances[$langID];
@@ -60,7 +63,7 @@ class CustomerFields
      */
     protected function loadFields(int $langID): void
     {
-        $this->customerFields = Shop::Container()->getDB()->getCollection(
+        $this->customerFields = $this->db->getCollection(
             'SELECT * FROM tkundenfeld
                 WHERE kSprache = :lid
                 ORDER BY nSort ASC',
@@ -69,10 +72,10 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
+     * @param stdClass $customerField
      * @return object
      */
-    public function prepare($customerField)
+    public function prepare(stdClass $customerField)
     {
         $customerField->kKundenfeld = (int)$customerField->kKundenfeld;
         $customerField->kSprache    = (int)$customerField->kSprache;
@@ -101,15 +104,15 @@ class CustomerFields
     }
 
     /**
-     * @param object $customerField
-     * @return null|object[]
+     * @param stdClass $customerField
+     * @return null|stdClass[]
      */
-    public function getCustomerFieldValues($customerField): ?array
+    public function getCustomerFieldValues(stdClass $customerField): ?array
     {
         $this->prepare($customerField);
 
         if ($customerField->cTyp === 'auswahl') {
-            return Shop::Container()->getDB()->selectAll(
+            return $this->db->selectAll(
                 'tkundenfeldwert',
                 'kKundenfeld',
                 $customerField->kKundenfeld,
@@ -122,18 +125,18 @@ class CustomerFields
     }
 
     /**
-     * @param int $kCustomerField
+     * @param int $fieldID
      * @return bool
      */
-    public function delete(int $kCustomerField): bool
+    public function delete(int $fieldID): bool
     {
-        if ($kCustomerField !== 0) {
-            $ret = Shop::Container()->getDB()->delete('tkundenattribut', 'kKundenfeld', $kCustomerField) >= 0
-                && Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField) >= 0
-                && Shop::Container()->getDB()->delete('tkundenfeld', 'kKundenfeld', $kCustomerField) >= 0;
+        if ($fieldID !== 0) {
+            $ret = $this->db->delete('tkundenattribut', 'kKundenfeld', $fieldID) >= 0
+                && $this->db->delete('tkundenfeldwert', 'kKundenfeld', $fieldID) >= 0
+                && $this->db->delete('tkundenfeld', 'kKundenfeld', $fieldID) >= 0;
 
             if ($ret) {
-                unset($this->customerFields[$kCustomerField]);
+                unset($this->customerFields[$fieldID]);
             } else {
                 $this->loadFields($this->langID);
             }
@@ -150,8 +153,7 @@ class CustomerFields
      */
     protected function updateCustomerFieldValues(int $customerFieldID, array $customerFieldValues): void
     {
-        $db = Shop::Container()->getDB();
-        $db->delete('tkundenfeldwert', 'kKundenfeld', $customerFieldID);
+        $this->db->delete('tkundenfeldwert', 'kKundenfeld', $customerFieldID);
 
         foreach ($customerFieldValues as $customerFieldValue) {
             $entitie              = new stdClass();
@@ -159,32 +161,32 @@ class CustomerFields
             $entitie->cWert       = $customerFieldValue['cWert'];
             $entitie->nSort       = (int)$customerFieldValue['nSort'];
 
-            $db->insert('tkundenfeldwert', $entitie);
+            $this->db->insert('tkundenfeldwert', $entitie);
         }
 
         // Delete all customer values that are not in value list
-        $db->queryPrepared(
+        $this->db->queryPrepared(
             "DELETE tkundenattribut
-                    FROM tkundenattribut
-                    INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
-                    WHERE tkundenfeld.cTyp = 'auswahl'
-                        AND tkundenfeld.kKundenfeld = :kKundenfeld
-                        AND NOT EXISTS (
-                            SELECT 1
-                            FROM tkundenfeldwert
-                            WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
-                                AND tkundenfeldwert.cWert = tkundenattribut.cWert
+                FROM tkundenattribut
+                INNER JOIN tkundenfeld ON tkundenfeld.kKundenfeld = tkundenattribut.kKundenfeld
+                WHERE tkundenfeld.cTyp = 'auswahl'
+                    AND tkundenfeld.kKundenfeld = :kKundenfeld
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM tkundenfeldwert
+                        WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
+                            AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
             ['kKundenfeld' => $customerFieldID]
         );
     }
 
     /**
-     * @param object     $customerField
+     * @param stdClass   $customerField
      * @param null|array $customerFieldValues
      * @return bool
      */
-    public function save($customerField, $customerFieldValues = null): bool
+    public function save(stdClass $customerField, ?array $customerFieldValues = null): bool
     {
         $this->prepare($customerField);
         $key = $customerField->kKundenfeld ?? null;
@@ -197,18 +199,18 @@ class CustomerFields
             // this entities are not changeable
             unset($customerField->kKundenfeld, $customerField->kSprache, $customerField->cWawi);
 
-            $ret = Shop::Container()->getDB()->update('tkundenfeld', 'kKundenfeld', $key, $customerField) >= 0;
+            $ret = $this->db->update('tkundenfeld', 'kKundenfeld', $key, $customerField) >= 0;
 
             if ($oldType !== $customerField->cTyp) {
                 // cTyp has been changed
                 if ($oldType === 'auswahl') {
                     // cTyp changed from "auswahl" to something else - delete values for the customer field
-                    Shop::Container()->getDB()->delete('tkundenfeldwert', 'kKundenfeld', $key);
+                    $this->db->delete('tkundenfeldwert', 'kKundenfeld', $key);
                 }
                 switch ($customerField->cTyp) {
                     case 'zahl':
                         // all customer values will be changed to numbers if possible
-                        Shop::Container()->getDB()->queryPrepared(
+                        $this->db->queryPrepared(
                             'UPDATE tkundenattribut SET
                                 cWert =	CAST(CAST(cWert AS DOUBLE) AS CHAR)
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld',
@@ -217,7 +219,7 @@ class CustomerFields
                         break;
                     case 'datum':
                         // all customer values will be changed to date if possible
-                        Shop::Container()->getDB()->queryPrepared(
+                        $this->db->queryPrepared(
                             "UPDATE tkundenattribut SET
                                 cWert =	DATE_FORMAT(STR_TO_DATE(cWert, '%d.%m.%Y'), '%d.%m.%Y')
                                 WHERE tkundenattribut.kKundenfeld = :kKundenfeld",
@@ -231,7 +233,7 @@ class CustomerFields
                 }
             }
         } else {
-            $key = Shop::Container()->getDB()->insert('tkundenfeld', $customerField);
+            $key = $this->db->insert('tkundenfeld', $customerField);
 
             if ($key > 0) {
                 $customerField->kKundenfeld = $key;
@@ -250,5 +252,37 @@ class CustomerFields
         }
 
         return $ret;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLangID(): int
+    {
+        return $this->langID;
+    }
+
+    /**
+     * @param int $langID
+     */
+    public function setLangID(int $langID): void
+    {
+        $this->langID = $langID;
+    }
+
+    /**
+     * @return DbInterface|null
+     */
+    public function getDB(): ?DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
     }
 }

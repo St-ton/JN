@@ -8,11 +8,11 @@
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}6{else}8{/if}"}
                         {row}
                             {col cols=3 md=4 class='order-item-image-wrapper'}
-                                {if !empty($oPosition->Artikel->cVorschaubild)}
+                                {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
                                             {image webp=true fluid=true lazy=true
-                                                src=$oPosition->Artikel->cVorschaubild
+                                                src=$oPosition->Artikel->cVorschaubildURL
                                                 alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}
@@ -71,13 +71,13 @@
 
                                         {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                             {block name='account-order-item-characteristics'}
-                                                {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
                                                     <li class="characteristic">
-                                                        {$oMerkmale_arr->cName}:
+                                                        {$characteristic->getName()}:
                                                         <span class="values">
-                                                            {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                {if !$oWert@first}, {/if}
-                                                                {$oWert->cWert}
+                                                            {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                                {if !$characteristicValue@first}, {/if}
+                                                                {$characteristicValue->getValue()}
                                                             {/foreach}
                                                         </span>
                                                     </li>

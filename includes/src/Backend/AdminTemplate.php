@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -23,14 +23,14 @@ class AdminTemplate
     public static $nVersion;
 
     /**
-     * @var AdminTemplate
+     * @var AdminTemplate|null
      */
-    private static $instance;
+    private static ?AdminTemplate $instance = null;
 
     /**
      * @var bool
      */
-    private static $isAdmin = true;
+    private static bool $isAdmin = true;
 
     /**
      * @var string

@@ -9,7 +9,7 @@
         <div class="widget-container"><div class="alert alert-info">{__('noVisitorsATM')}</div></div>
     {/if}
 
-    {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
+    {if is_array($oVisitors_arr) && $oVisitors_arr|count > 0}
         <table class="table table-border-light table-sm">
             <thead>
                 <tr>
@@ -28,7 +28,7 @@
                         </td>
                         <td>
                             {if $oVisitor->cBrowser|strlen > 0}
-                                <a href="#" data-toggle="tooltip" data-placement="top" title="{if $oVisitor->dErstellt|strlen > 0}Kunde seit {$oVisitor->dErstellt|date_format:'%d.%m.%Y'}{/if} | Browser: {$oVisitor->cBrowser}{if $oVisitor->cIP|strlen > 0} | IP: {$oVisitor->cIP}{/if}">
+                                <a href="#" data-toggle="tooltip" data-placement="top" title="{if $oVisitor->dErstellt|strlen > 0}Kunde seit {$oVisitor->dErstellt|date_format:'d.m.Y'}{/if} | Browser: {$oVisitor->cBrowser}{if $oVisitor->cIP|strlen > 0} | IP: {$oVisitor->cIP}{/if}">
                                     <i class="fa fa-user"></i><span class="sr-only">{__('details')}</span>
                                 </a>
                             {/if}
@@ -47,16 +47,16 @@
                             {if $oVisitor->dLetzteAktivitaet|strlen > 0}
                                  {if $oVisitor->cAusstiegsseite|strlen > 0}
                                     <a href="{$oVisitor->cAusstiegsseite}" target="_blank" data-toggle="tooltip" data-placement="top" title="{$oVisitor->cAusstiegsseite}">
-                                        {$oVisitor->dLetzteAktivitaet|date_format:'%H:%M:%S'}
+                                        {$oVisitor->dLetzteAktivitaet|date_format:'H:i:s'}
                                      </a>
                                  {else}
-                                    {$oVisitor->dLetzteAktivitaet|date_format:'%H:%M:%S'}
+                                    {$oVisitor->dLetzteAktivitaet|date_format:'H:i:s'}
                                  {/if}
                             {/if}
                         </td>
                         <td class="basket text-right">
                             {if $oVisitor->kBestellung > 0}
-                                <span title="Letzter Einkauf vom {$oVisitor->dErstellt|date_format:'%d.%m.%Y'}">
+                                <span title="Letzter Einkauf vom {$oVisitor->dErstellt|date_format:'d.m.Y'}">
                                     <i class="fa fa-shopping-cart" aria-hidden="true"></i> {$oVisitor->fGesamtsumme}
                                 </span>
                             {else}

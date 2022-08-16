@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services;
 
@@ -28,7 +28,7 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class ServiceLocator
+ * Class Container
  *
  * This class provides default services, that are provided by JTL-Shop core. Those Services are provided though a
  * separate interface for improving IntelliSense support for external and internal developers
@@ -170,6 +170,7 @@ class Container extends ContainerBase implements DefaultServicesInterface
      */
     public function getNewsService(): NewsServiceInterface
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         return $this->get(NewsServiceInterface::class);
     }
 

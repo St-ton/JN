@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
 <div id="content">
-    <form name="kundenimporter" method="post" action="kundenimport.php" enctype="multipart/form-data">
+    <form name="kundenimporter" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="kundenimport" value="1" />
         <div class="settings card">
@@ -27,15 +27,6 @@
                             {foreach $kundengruppen as $kundengruppe}
                                 <option value="{$kundengruppe->kKundengruppe}">{$kundengruppe->cName}</option>
                             {/foreach}
-                        </select>
-                    </span>
-                </div>
-                <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="PasswortGenerieren">{__('generateNewPass')}:</label>
-                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select name="PasswortGenerieren" id="PasswortGenerieren" class="custom-select comboFullSize">
-                            <option value="0">{__('passNo')}</option>
-                            <option value="1">{__('passYes')}</option>
                         </select>
                     </span>
                 </div>

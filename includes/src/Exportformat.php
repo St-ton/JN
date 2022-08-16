@@ -19,6 +19,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
+use JTL\Router\Route;
 use JTL\Session\Frontend;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
@@ -196,6 +197,7 @@ class Exportformat
      */
     public function __construct(int $id = 0, DbInterface $db = null)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
@@ -227,14 +229,12 @@ class Exportformat
     }
 
     /**
-     * @param string     $msg
-     * @param null|array $context
+     * @param string $msg
+     * @param array  $context
      */
     private function log(string $msg, array $context = []): void
     {
-        if ($this->logger !== null) {
-            $this->logger->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
-        }
+        $this->logger?->log(\JTLLOG_LEVEL_NOTICE, $msg, $context);
     }
 
     /**
@@ -243,8 +243,9 @@ class Exportformat
     private function quit(bool $hasError = false): void
     {
         if (Request::getVar('back') === 'admin') {
-            $location  = 'Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'];
-            $location .= '&kExportformat=' . (int)$this->queue->foreignKeyID;
+            $location = 'Location: ' . Shop::getAdminURL() . '/' . Route::EXPORT
+                . '?action=exported&token=' . $_SESSION['jtl_token']
+                . '&kExportformat=' . (int)$this->queue->foreignKeyID;
             if ($hasError) {
                 $location .= '&hasError=1';
             }
@@ -747,57 +748,6 @@ class Exportformat
     }
 
     /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function insertEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $item) {
-            $ins = new stdClass();
-            if (\is_array($item) && \count($item) > 0) {
-                foreach (\array_keys($item) as $cMember) {
-                    $ins->$cMember = $item[$cMember];
-                }
-                $ins->kExportformat = $this->getExportformat();
-            }
-            $ok = $ok && ($this->db->insert('texportformateinstellungen', $ins) > 0);
-        }
-
-        return $ok;
-    }
-
-    /**
-     * @param array $config
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function updateEinstellungen(array $config): bool
-    {
-        $ok = true;
-        foreach ($config as $conf) {
-            $import = [
-                'exportformate_semikolon',
-                'exportformate_equot',
-                'exportformate_quot'
-            ];
-            if (\in_array($conf['cName'], $import, true)) {
-                $_upd        = new stdClass();
-                $_upd->cWert = $conf['cWert'];
-                $ok          = $ok && ($this->db->update(
-                    'tboxensichtbar',
-                    ['kExportformat', 'cName'],
-                    [$this->getExportformat(), $conf['cName']],
-                    $_upd
-                ) >= 0);
-            }
-        }
-
-        return $ok;
-    }
-
-    /**
      * @return Exportformat
      */
     private function initSmarty(): self
@@ -828,7 +778,7 @@ class Exportformat
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
         $languages = Shop::Lang()->gibInstallierteSprachen();
-        $langISO   = first($languages, function (LanguageModel $l) {
+        $langISO   = first($languages, function (LanguageModel $l): bool {
             return $l->getId() === $this->getSprache();
         });
 
@@ -901,10 +851,7 @@ class Exportformat
         }
 
         $condition = 'AND (tartikel.dErscheinungsdatum IS NULL OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE()))';
-        $conf      = Shop::getSettings([\CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich'])
-            && $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
-        ) {
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'global_erscheinende_kaeuflich') === 'Y') {
             $condition = "AND (
                 tartikel.dErscheinungsdatum IS NULL 
                 OR NOT (DATE(tartikel.dErscheinungsdatum) > CURDATE())
@@ -951,9 +898,9 @@ class Exportformat
     }
 
     /**
-     * @return QueueEntry
+     * @return QueueEntry|null
      */
-    public function getQueue()
+    public function getQueue(): ?QueueEntry
     {
         return $this->queue;
     }
@@ -1106,7 +1053,7 @@ class Exportformat
     {
         if (\is_dir(\PFAD_ROOT . \PFAD_EXPORT) && ($dir = \opendir(\PFAD_ROOT . \PFAD_EXPORT)) !== false) {
             while (($fdir = \readdir($dir)) !== false) {
-                if ($fdir !== $fileName && \mb_strpos($fdir, $fileNameSplit) !== false) {
+                if ($fdir !== $fileName && \str_contains($fdir, $fileNameSplit)) {
                     \unlink(\PFAD_ROOT . \PFAD_EXPORT . $fdir);
                 }
             }
@@ -1172,7 +1119,7 @@ class Exportformat
         $product->Versandkosten         = ShippingMethod::getLowestShippingFees(
             $this->config['exportformate_lieferland'] ?? '',
             $product,
-            0,
+            false,
             $this->kKundengruppe
         );
         if ($product->Versandkosten !== -1) {
@@ -1183,7 +1130,7 @@ class Exportformat
         }
         // Kampagne URL
         if (!empty($this->campaignParameter)) {
-            $cSep           = (\mb_strpos($product->cURL, '.php') !== false) ? '&' : '?';
+            $cSep           = (\str_contains($product->cURL, '.php')) ? '&' : '?';
             $product->cURL .= $cSep . $this->campaignParameter . '=' . $this->campaignValue;
         }
         $product->Lieferbar    = $product->fLagerbestand <= 0 ? 'N' : 'Y';
@@ -1214,7 +1161,7 @@ class Exportformat
             return !$started;
         }
         $this->setQueue($queueObject)->initSession()->initSmarty();
-        if ($this->getPlugin() > 0 && \mb_strpos($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+        if ($this->getPlugin() > 0 && \str_contains($this->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE)) {
             $this->log('Starting plugin exportformat "' . $this->getName() .
                 '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Container()->getCache()->isActive() && $this->useCache())
@@ -1224,9 +1171,7 @@ class Exportformat
             try {
                 $oPlugin = $loader->init($this->getPlugin());
             } catch (InvalidArgumentException $e) {
-                if ($this->logger !== null) {
-                    $this->logger->error($e->getMessage());
-                }
+                $this->logger?->error($e->getMessage());
                 $this->quit(true);
 
                 return false;
@@ -1302,8 +1247,10 @@ class Exportformat
         if ((int)$this->queue->tasksExecuted === 0) {
             $this->writeHeader($tmpFile);
         }
+        $customerGroup    = CustomerGroup::getByID($this->getKundengruppe());
+        $currency         = new Currency($this->kWaehrung);
         $content          = $this->getContent();
-        $categoryFallback = (\mb_strpos($content, '->oKategorie_arr') !== false);
+        $categoryFallback = \str_contains($content, '->oKategorie_arr');
         $options          = Artikel::getExportOptions();
         $helper           = Category::getInstance($this->getSprache(), $this->getKundengruppe());
         $shopURL          = Shop::getURL();
@@ -1334,7 +1281,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($this->db->getObjects($this->getExportSQL()) as $productData) {
-            $product = new Artikel();
+            $product = new Artikel($this->db, $customerGroup, $currency);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
@@ -1355,7 +1302,7 @@ class Exportformat
                 ++$cacheMisses;
             }
             $product           = $this->augmentProduct($product, $findTwo, $replaceTwo);
-            $productCategoryID = $product->gibKategorie();
+            $productCategoryID = $product->gibKategorie($this->kKundengruppe);
             if ($categoryFallback === true) {
                 // since 4.05 the product class only stores category IDs in Artikel::oKategorie_arr
                 // but old google base exports rely on category attributes that wouldn't be available anymore
@@ -1366,7 +1313,8 @@ class Exportformat
                         (int)$categoryID,
                         $this->kSprache,
                         $this->kKundengruppe,
-                        !$this->useCache()
+                        !$this->useCache(),
+                        $this->db
                     );
                 }
                 $product->oKategorie_arr = $categories;
@@ -1375,7 +1323,8 @@ class Exportformat
                 $productCategoryID,
                 $this->kSprache,
                 $this->kKundengruppe,
-                !$this->useCache()
+                !$this->useCache(),
+                $this->db
             );
             $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
@@ -1534,9 +1483,9 @@ class Exportformat
         $extensionWhitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
-        } elseif (\mb_strpos($post['cDateiname'], '.') === false) { // Dateiendung fehlt
+        } elseif (!\str_contains($post['cDateiname'], '.')) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
-        } elseif (\mb_strpos(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT)) === false) {
+        } elseif (!\str_contains(\realpath($pathinfo['dirname']), \realpath(\PFAD_ROOT))) {
             $validation['cDateiname'] = 3;
         } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
             $validation['cDateiname'] = 4;
@@ -1550,11 +1499,11 @@ class Exportformat
             $validation['cContent'] = 1;
         } elseif (!\EXPORTFORMAT_ALLOW_PHP
             && (
-                \mb_strpos($post['cContent'], '{php}') !== false
-                || \mb_strpos($post['cContent'], '<?php') !== false
-                || \mb_strpos($post['cContent'], '<%') !== false
-                || \mb_strpos($post['cContent'], '<%=') !== false
-                || \mb_strpos($post['cContent'], '<script language="php">') !== false
+                \str_contains($post['cContent'], '{php}')
+                || \str_contains($post['cContent'], '<?php')
+                || \str_contains($post['cContent'], '<%')
+                || \str_contains($post['cContent'], '<%=')
+                || \str_contains($post['cContent'], '<script language="php">')
             )
         ) {
             $validation['cContent'] = 2;
@@ -1667,7 +1616,7 @@ class Exportformat
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1"
         );
         if ($productData !== null && $productData->kArtikel > 0) {
-            $product = new Artikel();
+            $product = new Artikel($this->db);
             $product->fuelleArtikel($productData->kArtikel, Artikel::getExportOptions());
             $product->cDeeplink             = '';
             $product->Artikelbild           = '';
@@ -1700,13 +1649,14 @@ class Exportformat
      */
     public static function ioCheckSyntax(int $id): stdClass
     {
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         \ini_set('html_errors', '0');
         \ini_set('display_errors', '1');
         \ini_set('log_errors', '0');
         \error_reporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);
 
         Shop::Container()->getGetText()->loadAdminLocale('pages/exportformate');
-        \register_shutdown_function(static function () use ($id) {
+        \register_shutdown_function(static function () use ($id): void {
             $err = \error_get_last();
             if ($err !== null && ($err['type'] & !(\E_NOTICE | \E_STRICT | \E_DEPRECATED) !== 0)) {
                 $out = \ob_get_clean();
@@ -1744,7 +1694,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function checkSyntax()
+    public function checkSyntax(): bool
     {
         return false;
     }
@@ -1753,7 +1703,7 @@ class Exportformat
      * @return bool|string
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
-    public function doCheckSyntax()
+    public function doCheckSyntax(): bool
     {
         return false;
     }

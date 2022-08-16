@@ -30,39 +30,14 @@ use function Functional\select;
 final class Installer
 {
     /**
-     * @var DbInterface
+     * @var string|null
      */
-    private $db;
-
-    /**
-     * @var string
-     */
-    private $dir;
-
-    /**
-     * @var Uninstaller
-     */
-    private $uninstaller;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $legacyValidator;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $pluginValidator;
+    private ?string $dir = null;
 
     /**
      * @var PluginInterface|null
      */
-    private $plugin;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private ?PluginInterface $plugin = null;
 
     /**
      * Installer constructor.
@@ -73,17 +48,13 @@ final class Installer
      * @param JTLCacheInterface|null $cache
      */
     public function __construct(
-        DbInterface $db,
-        Uninstaller $uninstaller,
-        ValidatorInterface $legacyValidator,
-        ValidatorInterface $pluginValidator,
-        ?JTLCacheInterface $cache = null
+        private DbInterface $db,
+        private Uninstaller $uninstaller,
+        private ValidatorInterface $legacyValidator,
+        private ValidatorInterface $pluginValidator,
+        private ?JTLCacheInterface $cache = null
     ) {
-        $this->db              = $db;
-        $this->uninstaller     = $uninstaller;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
-        $this->cache           = $cache ?? Shop::Container()->getCache();
+        $this->cache = $cache ?? Shop::Container()->getCache();
     }
 
     /**
@@ -226,7 +197,7 @@ final class Installer
             $plugin->kPlugin = 0;
             $loader          = new PluginLoader($this->db, $this->cache);
             if (($languageID = Shop::getLanguageID()) === 0) {
-                $languageID = Shop::Lang()->getDefaultLanguage()->kSprache;
+                $languageID = Shop::Lang()->getDefaultLanguage()->getId();
             }
             $languageCode = Shop::Lang()->getIsoFromLangID($languageID)->cISO;
             $instance     = $loader->loadFromObject($plugin, $languageCode);
@@ -289,7 +260,7 @@ final class Installer
                 continue;
             }
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
+            \preg_match('/\d+\sattr/', $i, $hits1);
 
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($i)) {
                 continue;
@@ -363,7 +334,7 @@ final class Installer
         $tags        = empty($baseNode['Install'][0]['FlushTags'])
             ? []
             : \explode(',', $baseNode['Install'][0]['FlushTags']);
-        $tagsToFlush = map(select($tags, static function ($e) {
+        $tagsToFlush = map(select($tags, static function ($e): bool {
             return \defined(\trim($e));
         }), static function ($e) {
             return \constant(\trim($e));
@@ -425,15 +396,15 @@ final class Installer
         if (!\file_exists($file)) {
             return [];// SQL Datei existiert nicht
         }
-        $handle   = \fopen($file, 'r');
+        $handle   = \fopen($file, 'rb');
         $sqlLines = [];
         $line     = '';
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
-            if ($data !== '' && \mb_strpos($data, '--') !== 0) {
-                if (\mb_strpos($data, 'CREATE TABLE') !== false) {
+            if ($data !== '' && !\str_starts_with($data, '--')) {
+                if (\str_contains($data, 'CREATE TABLE')) {
                     $line .= \trim($data);
-                } elseif (\mb_strpos($data, 'INSERT') !== false) {
+                } elseif (\str_contains($data, 'INSERT')) {
                     $line .= \trim($data);
                 } else {
                     $line .= \trim($data);
@@ -531,7 +502,7 @@ final class Installer
      */
     private function getTableName(string $sql, string $action = 'create table( if not exists)')
     {
-        \preg_match('/' . $action . "? ([`']?)([a-z0-9_]+)\\2/i", $sql, $matches);
+        \preg_match('/' . $action . "? ([`']?)([a-z\d_]+)\\2/i", $sql, $matches);
 
         return \end($matches);
     }

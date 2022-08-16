@@ -7,7 +7,7 @@ use JTL\Helpers\Request;
 use JTL\Nice;
 use JTLShop\SemVer\Version;
 use stdClass;
-use function Functional\first;
+use function Functional\last;
 
 /**
  * Class JTLApi
@@ -22,12 +22,7 @@ final class JTLApi
     /**
      * @var array
      */
-    private $session;
-
-    /**
-     * @var Nice
-     */
-    private $nice;
+    private array $session;
 
     /**
      * JTLApi constructor.
@@ -35,10 +30,9 @@ final class JTLApi
      * @param array $session
      * @param Nice  $nice
      */
-    public function __construct(array &$session, Nice $nice)
+    public function __construct(array &$session, private Nice $nice)
     {
         $this->session = &$session;
-        $this->nice    = $nice;
     }
 
     /**
@@ -62,15 +56,23 @@ final class JTLApi
     }
 
     /**
+     * @param bool $includingDev
+     *
      * @return array|null
      */
-    public function getAvailableVersions()
+    public function getAvailableVersions(bool $includingDev = false): ?array
     {
         if (!isset($this->session['rs']['versions'])) {
-            $this->session['rs']['versions'] = $this->call(self::URI_VERSION . '/versions');
+            $url = self::URI_VERSION . '/versions';
+            if ($includingDev === true) {
+                $url .= '-dev';
+            }
+            $this->session['rs']['versions'] = $this->call($url);
         }
 
-        return $this->session['rs']['versions'];
+        return $this->session['rs']['versions'] === null
+            ? null
+            : (array)$this->session['rs']['versions'];
     }
 
     /**
@@ -81,14 +83,14 @@ final class JTLApi
     {
         $shopVersion       = \APPLICATION_VERSION;
         $parsedShopVersion = Version::parse($shopVersion);
-        $oVersions         = $this->getAvailableVersions();
+        $availableVersions = $this->getAvailableVersions();
 
-        $oNewerVersions = \array_filter((array)$oVersions, static function ($v) use ($parsedShopVersion) {
-                return Version::parse($v->reference)->greaterThan($parsedShopVersion);
+        $newerVersions = \array_filter((array)$availableVersions, static function ($v) use ($parsedShopVersion) {
+            return Version::parse($v->reference)->greaterThan($parsedShopVersion);
         });
-        $oVersion       = \count($oNewerVersions) > 0 ? first($oNewerVersions) : \end($oVersions);
+        $version       = \count($newerVersions) > 0 ? last($newerVersions) : \end($availableVersions);
 
-        return Version::parse($oVersion->reference);
+        return Version::parse($version->reference);
     }
 
     /**
@@ -100,7 +102,7 @@ final class JTLApi
             return \APPLICATION_BUILD_SHA === '#DEV#'
                 ? false
                 : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }

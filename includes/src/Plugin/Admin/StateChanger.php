@@ -6,8 +6,6 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Plugin\Admin\Installation\Installer;
 use JTL\Plugin\Admin\Installation\Uninstaller;
-use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
-use JTL\Plugin\Admin\Validation\PluginValidator;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
@@ -23,26 +21,6 @@ use JTL\Plugin\State;
 class StateChanger
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var ValidatorInterface|LegacyPluginValidator
-     */
-    private $legacyValidator;
-
-    /**
-     * @var ValidatorInterface|PluginValidator
-     */
-    protected $pluginValidator;
-
-    /**
      * StateChanger constructor.
      * @param DbInterface             $db
      * @param JTLCacheInterface       $cache
@@ -50,15 +28,11 @@ class StateChanger
      * @param ValidatorInterface|null $pluginValidator
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        ValidatorInterface $legacyValidator = null,
-        ValidatorInterface $pluginValidator = null
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        private ?ValidatorInterface $legacyValidator = null,
+        private ?ValidatorInterface $pluginValidator = null
     ) {
-        $this->db              = $db;
-        $this->cache           = $cache;
-        $this->legacyValidator = $legacyValidator;
-        $this->pluginValidator = $pluginValidator;
     }
 
     /**

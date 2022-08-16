@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -22,21 +22,15 @@ use stdClass;
 class Order extends CartHelper
 {
     /**
-     * @var Bestellung
-     */
-    protected $order;
-
-    /**
      * Order constructor.
      * @param Bestellung $order
      */
-    public function __construct(Bestellung $order)
+    public function __construct(protected Bestellung $order)
     {
-        $this->order = $order;
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function calculateCredit(stdClass $cartInfo): void
     {
@@ -80,7 +74,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getPositions(): array
     {
@@ -88,7 +82,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @return Customer
+     * @inheritdoc
      */
     public function getCustomer(): ?Customer
     {
@@ -96,7 +90,7 @@ class Order extends CartHelper
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCustomerGroup(): CustomerGroup
     {
@@ -193,5 +187,37 @@ class Order extends CartHelper
         }
 
         return $credit;
+    }
+    /**
+     * @param array $post
+     * @former plausiGuthaben()
+     * @since 5.2.0
+     */
+    public static function checkBalance(array $post): void
+    {
+        if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
+            || (isset($post['guthabenVerrechnen']) && (int)$post['guthabenVerrechnen'] === 1)
+        ) {
+            if (!isset($_SESSION['Bestellung'])) {
+                $_SESSION['Bestellung'] = new stdClass();
+            }
+            $_SESSION['Bestellung']->GuthabenNutzen   = 1;
+            $_SESSION['Bestellung']->fGuthabenGenutzt = self::getOrderCredit($_SESSION['Bestellung']);
+
+            \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
+        }
+    }
+
+    /**
+     * @former pruefeGuthabenNutzen()
+     * @since since 5.2.0
+     */
+    public static function setUsedBalance(): void
+    {
+        if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
+            $_SESSION['Bestellung']->fGuthabenGenutzt = self::getOrderCredit($_SESSION['Bestellung']);
+        }
+
+        \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
     }
 }

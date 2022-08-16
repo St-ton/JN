@@ -14,24 +14,12 @@ use stdClass;
 final class MailValidator implements ValidatorInterface
 {
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * MailValidator constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private DbInterface $db, private array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**

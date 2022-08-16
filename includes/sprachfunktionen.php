@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use JTL\Cart\Cart;
 use JTL\Catalog\Product\Artikel;
@@ -14,74 +14,72 @@ use JTL\Shop;
 function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 {
     if ($cart->hatTeilbareArtikel()) {
-        $nPositionen = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
-        $ret         = Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nPositionen . ' ';
-        if ($nPositionen === 1) {
-            $ret .= Shop::Lang()->get('position');
-        } else {
-            $ret .= Shop::Lang()->get('positions');
+        $itemCount = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
+        if ($itemCount === 1) {
+            return Shop::Lang()->get('yourbasketcontainsPositionsSingular', 'checkout', $itemCount);
         }
 
-        return $ret;
+        return Shop::Lang()->get('yourbasketcontainsPositionsPlural', 'checkout', $itemCount);
     }
     $count       = $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]);
     $countString = str_replace('.', ',', (string)$count);
     if ($count === 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout')
-            . ' ' . $countString . ' ' . Shop::Lang()->get('product');
+        return Shop::Lang()->get('yourbasketcontainsItemsSingular', 'checkout', $countString);
     }
     if ($count > 1) {
-        return Shop::Lang()->get('yourbasketcontains', 'checkout')
-            . ' ' . $countString . ' ' . Shop::Lang()->get('products');
-    }
-    if ($count === 0) {
-        return Shop::Lang()->get('emptybasket', 'checkout');
+        return Shop::Lang()->get('yourbasketcontainsItemsPlural', 'checkout', $countString);
     }
 
-    return '';
+    return Shop::Lang()->get('emptybasket', 'checkout');
 }
 
 /**
  * @param Cart $cart
- * @return string,
+ * @return string
+ * @deprecated since 5.2.0
  */
-function lang_warenkorb_warenkorbLabel(Cart $cart)
+function lang_warenkorb_warenkorbLabel(Cart $cart): string
 {
-    return Shop::Lang()->get('basket', 'checkout') .
-        ' (' .
-        Preise::getLocalizedPriceString(
-            $cart->gibGesamtsummeWarenExt(
-                [C_WARENKORBPOS_TYP_ARTIKEL],
-                !Frontend::getCustomerGroup()->isMerchant()
-            )
-        ) . ')';
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return Shop::Lang()->get('cartSumLabel', 'checkout', Preise::getLocalizedPriceString(
+        $cart->gibGesamtsummeWarenExt(
+            [C_WARENKORBPOS_TYP_ARTIKEL],
+            !Frontend::getCustomerGroup()->isMerchant()
+        )
+    ));
 }
 
 /**
  * @param Cart $cart
  * @return string
  */
-function lang_warenkorb_bestellungEnthaeltXArtikel(Cart $cart)
+function lang_warenkorb_bestellungEnthaeltXArtikel(Cart $cart): string
 {
-    $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($cart->PositionenArr) . ' ';
-    if (count($cart->PositionenArr) === 1) {
-        $ret .= Shop::Lang()->get('position');
-    } else {
-        $ret .= Shop::Lang()->get('positions');
-    }
-    $count = !empty($cart->kWarenkorb)
+    $posCount  = count($cart->PositionenArr);
+    $itemCount = !empty($cart->kWarenkorb)
         ? $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
         : 0;
+    if ($posCount === 1) {
+        if ($itemCount === 1) {
+            return Shop::Lang()->get('orderPositionSingularItemsSingular', 'checkout', $posCount, $itemCount);
+        }
+        return Shop::Lang()->get('orderPositionSingularItemsPlural', 'checkout', $posCount, $itemCount);
+    }
+    if ($itemCount === 1) {
+        return Shop::Lang()->get('orderPositionPluralItemsSingular', 'checkout', $posCount, $itemCount);
+    }
 
-    return $ret . ' ' . Shop::Lang()->get('with') . ' ' . lang_warenkorb_Artikelanzahl($count);
+    return Shop::Lang()->get('orderPositionPluralItemsPlural', 'checkout', $posCount, $itemCount);
 }
 
 /**
  * @param int $count
  * @return string
+ * @deprecated since 5.2.0
  */
-function lang_warenkorb_Artikelanzahl($count)
+function lang_warenkorb_Artikelanzahl($count): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return $count == 1
         ? ($count . ' ' . Shop::Lang()->get('product'))
         : ($count . ' ' . Shop::Lang()->get('products'));
@@ -90,10 +88,12 @@ function lang_warenkorb_Artikelanzahl($count)
 /**
  * @param int $length
  * @return string
+ * @deprecated since 5.2.0
  */
-function lang_passwortlaenge($length)
+function lang_passwortlaenge($length): string
 {
-    return $length . ' ' . Shop::Lang()->get('min', 'characters') . '!';
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return Shop::Lang()->get('minCharLen', 'messages', $length);
 }
 
 /**
@@ -101,7 +101,7 @@ function lang_passwortlaenge($length)
  * @param bool       $net
  * @return string
  */
-function lang_steuerposition($ust, $net)
+function lang_steuerposition($ust, $net): string
 {
     if ($ust == (int)$ust) {
         $ust = (int)$ust;
@@ -116,13 +116,12 @@ function lang_steuerposition($ust, $net)
  * @param string $query
  * @param int    $count
  * @return string
+ * @deprecated since 5.2.0
  */
-function lang_suche_mindestanzahl($query, $count)
+function lang_suche_mindestanzahl($query, $count): string
 {
-    return Shop::Lang()->get('expressionHasTo') . ' ' .
-        $count . ' ' .
-        Shop::Lang()->get('characters') . '<br />' .
-        Shop::Lang()->get('yourSearch') . ': ' . $query;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return Shop::Lang()->get('searchQueryMinLength', 'messages', $count, $query);
 }
 
 /**
@@ -131,22 +130,15 @@ function lang_suche_mindestanzahl($query, $count)
  */
 function lang_bestellstatus(int $state): string
 {
-    switch ($state) {
-        case BESTELLUNG_STATUS_OFFEN:
-            return Shop::Lang()->get('statusPending', 'order');
-        case BESTELLUNG_STATUS_IN_BEARBEITUNG:
-            return Shop::Lang()->get('statusProcessing', 'order');
-        case BESTELLUNG_STATUS_BEZAHLT:
-            return Shop::Lang()->get('statusPaid', 'order');
-        case BESTELLUNG_STATUS_VERSANDT:
-            return Shop::Lang()->get('statusShipped', 'order');
-        case BESTELLUNG_STATUS_STORNO:
-            return Shop::Lang()->get('statusCancelled', 'order');
-        case BESTELLUNG_STATUS_TEILVERSANDT:
-            return Shop::Lang()->get('statusPartialShipped', 'order');
-        default:
-            return '';
-    }
+    return match ($state) {
+        BESTELLUNG_STATUS_OFFEN          => Shop::Lang()->get('statusPending', 'order'),
+        BESTELLUNG_STATUS_IN_BEARBEITUNG => Shop::Lang()->get('statusProcessing', 'order'),
+        BESTELLUNG_STATUS_BEZAHLT        => Shop::Lang()->get('statusPaid', 'order'),
+        BESTELLUNG_STATUS_VERSANDT       => Shop::Lang()->get('statusShipped', 'order'),
+        BESTELLUNG_STATUS_STORNO         => Shop::Lang()->get('statusCancelled', 'order'),
+        BESTELLUNG_STATUS_TEILVERSANDT   => Shop::Lang()->get('statusPartialShipped', 'order'),
+        default                          => '',
+    };
 }
 
 /**
@@ -155,7 +147,7 @@ function lang_bestellstatus(int $state): string
  * @param int       $configItemID
  * @return string
  */
-function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
+function lang_mindestbestellmenge(Artikel $product, $amount, int $configItemID = 0): string
 {
     if ($product->cEinheit) {
         $product->cEinheit = ' ' . $product->cEinheit;
@@ -165,9 +157,11 @@ function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
         $name = (new Item($configItemID))->getName();
     }
 
-    return Shop::Lang()->get('product') . ' &quot;' . $name . '&quot; ' .
-        Shop::Lang()->get('hasMbm', 'messages') . ' (' .
-        $product->fMindestbestellmenge . $product->cEinheit . '). ' .
-        Shop::Lang()->get('yourQuantity', 'messages') . ' ' .
-        (float)$amount . $product->cEinheit . '.';
+    return Shop::Lang()->get(
+        'productMinorderQty',
+        'messages',
+        $name,
+        $product->fMindestbestellmenge . $product->cEinheit,
+        (float)$amount . $product->cEinheit
+    );
 }

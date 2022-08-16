@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20190509121204 extends Migration implements IMigration
 {
     protected $author = 'cr';
-    protected $description = 'fix msg-id spelling for optin';
+    protected $description = 'Fix msg-id spelling for optin';
 
     /**
      * @inheritDoc

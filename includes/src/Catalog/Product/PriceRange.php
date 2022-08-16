@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Product;
 
-use JTL\Extensions\Config\Configurator;
+use JTL\DB\DbInterface;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -17,22 +17,22 @@ class PriceRange
     /**
      * @var stdClass
      */
-    private $productData;
+    private stdClass $productData;
 
     /**
      * @var int
      */
-    private $customerGroupID;
+    private int $customerGroupID;
 
     /**
      * @var int
      */
-    private $customerID;
+    private int $customerID;
 
     /**
      * @var float|int
      */
-    private $discount;
+    private $discount = 0;
 
     /**
      * @var float
@@ -47,88 +47,93 @@ class PriceRange
     /**
      * @var float
      */
-    public $minBruttoPrice;
+    public float $minBruttoPrice = 0.0;
 
     /**
      * @var float
      */
-    public $maxBruttoPrice;
+    public float $maxBruttoPrice = 0.0;
 
     /**
      * @var bool
      */
-    public $isMinSpecialPrice;
+    public bool $isMinSpecialPrice = false;
 
     /**
      * @var bool
      */
-    public $isMaxSpecialPrice;
+    public bool $isMaxSpecialPrice = false;
 
     /**
      * PriceRange constructor.
      *
-     * @param int $productID
-     * @param int $customerGroupID
-     * @param int $customerID
+     * @param int              $productID
+     * @param int              $customerGroupID
+     * @param int              $customerID
+     * @param DbInterface|null $db
      */
-    public function __construct(int $productID, int $customerGroupID = 0, int $customerID = 0)
+    public function __construct(int $productID, int $customerGroupID = 0, int $customerID = 0, ?DbInterface $db = null)
     {
-        if ($customerGroupID === 0) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
+        $db              = $db ?? Shop::Container()->getDB();
+        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
+        $customerID      = $customerID ?: Frontend::getCustomer()->getID();
 
-        if ($customerID === 0) {
-            $customerID = Frontend::getCustomer()->kKunde ?? 0;
-        }
-
+        $this->productData     = (object)[
+            'kArtikel'      => 0,
+            'kSteuerklasse' => 0,
+            'fLagerbestand' => 0,
+            'kKonfiggruppe' => 0,
+            'fNettoPreis'   => 0.0,
+        ];
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
-        $this->discount        = 0;
-        $this->productData     = Shop::Container()->getDB()->selectSingleRow(
-            'tartikel',
-            'kArtikel',
-            $productID,
-            null,
-            null,
-            null,
-            null,
-            false,
-            'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
-        );
-        if ($this->productData !== null) {
-            $this->productData->kArtikel      = (int)$this->productData->kArtikel;
-            $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
-            $this->productData->fLagerbestand = (float)$this->productData->fLagerbestand;
-            $this->productData->fNettoPreis   = (float)$this->productData->fNettoPreis;
 
-            $this->loadPriceRange();
-        } else {
-            $this->productData = (object)[
-                'kArtikel'            => 0,
-                'kSteuerklasse'       => 0,
-                'fLagerbestand'       => 0,
-                'fNettoPreis'         => 0.0,
-            ];
+        $productData = $db->getSingleObject(
+            'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
+                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
+                FROM tartikel
+                LEFT JOIN tartikelkonfiggruppe
+                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
+                LEFT JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                        AND tartikelkonfiggruppe.kArtikel = :pid
+                WHERE tartikel.kArtikel = :pid',
+            ['pid' => $productID]
+        );
+        if ($productData !== null) {
+            $this->productData->kArtikel      = (int)$productData->kArtikel;
+            $this->productData->kSteuerklasse = (int)$productData->kSteuerklasse;
+            $this->productData->fLagerbestand = (float)$productData->fLagerbestand;
+            $this->productData->fNettoPreis   = (float)$productData->fNettoPreis;
+            $this->productData->kKonfiggruppe = 0;
+            if ($productData->g1 !== null && $productData->g1 === $productData->g2) {
+                $this->productData->kKonfiggruppe = (int)$productData->g1;
+            }
+            $this->loadPriceRange($db);
         }
     }
 
     /**
-     * load price range from database
+     * @param DbInterface $db
      */
-    private function loadPriceRange(): void
+    private function loadPriceRange(DbInterface $db): void
     {
-        $priceRange = Shop::Container()->getDB()->getSingleObject(
+        $priceRange = $db->getSingleObject(
             "SELECT baseprice.kArtikel,
                     MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                        COALESCE(baseprice.specialPrice, 999999999),
-                        baseprice.specialPrice + varaufpreis.fMinAufpreisNetto)) specialPriceMin,
+                        ROUND(COALESCE(baseprice.specialPrice, 999999999), 4),
+                        ROUND(baseprice.specialPrice, 4) + ROUND(varaufpreis.fMinAufpreisNetto, 4))) specialPriceMin,
                     MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                        COALESCE(baseprice.specialPrice, 0),
-                        baseprice.specialPrice + varaufpreis.fMaxAufpreisNetto)) specialPriceMax,
-                   MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
-                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMinAufpreisNetto)) fVKNettoMin,
-                   MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
-                      baseprice.fVKNetto, baseprice.fVKNetto + varaufpreis.fMaxAufpreisNetto)) fVKNettoMax
+                        ROUND(COALESCE(baseprice.specialPrice, 0), 4),
+                        ROUND(baseprice.specialPrice, 4) + ROUND(varaufpreis.fMaxAufpreisNetto, 4))) specialPriceMax,
+                    MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
+                        ROUND(baseprice.fVKNetto, 4),
+                        ROUND(baseprice.fVKNetto, 4) + ROUND(varaufpreis.fMinAufpreisNetto, 4))
+                    ) fVKNettoMin,
+                    MAX(IF(varaufpreis.fMaxAufpreisNetto IS NULL,
+                        ROUND(baseprice.fVKNetto, 4),
+                        ROUND(baseprice.fVKNetto, 4) + ROUND(varaufpreis.fMaxAufpreisNetto, 4))
+                    ) fVKNettoMax
             FROM (
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                        tartikel.kArtikel kKindArtikel,
@@ -141,14 +146,14 @@ class PriceRange
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 LEFT JOIN  tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                 LEFT JOIN  tsonderpreise
-                           ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-                               AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
-                               AND tartikelsonderpreis.cAktiv = 'Y'
-                               AND tartikelsonderpreis.dStart <= CURDATE()
-                               AND (tartikelsonderpreis.nIstAnzahl = 0
-                                        OR (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand))
-                               AND (tartikelsonderpreis.nIstDatum = 0
-                                        OR (tartikelsonderpreis.dEnde >= CURDATE()))
+                    ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+                       AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
+                       AND tartikelsonderpreis.cAktiv = 'Y'
+                       AND tartikelsonderpreis.dStart <= CURDATE()
+                       AND (tartikelsonderpreis.nIstAnzahl = 0 
+                           OR (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand))
+                       AND (tartikelsonderpreis.nIstDatum = 0
+                           OR (tartikelsonderpreis.dEnde >= CURDATE()))
                 WHERE tartikel.nIstVater = 0
                   AND ((tpreis.kKundengruppe = 0 AND tpreis.kKunde = :customerID)
                     OR (tpreis.kKundengruppe = :customerGroup AND NOT EXISTS(
@@ -163,31 +168,30 @@ class PriceRange
                   )
             ) baseprice
             LEFT JOIN (
-                      SELECT variations.kArtikel,
-                             variations.kKundengruppe,
-                             SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
-                             SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
-                      FROM (
-                          SELECT teigenschaft.kArtikel,
-                                 tkundengruppe.kKundengruppe,
-                                 MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
-                                              teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
-                                 MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
-                                              teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
-                          FROM teigenschaft
-                          INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
-                          JOIN       tkundengruppe
-                          LEFT JOIN  teigenschaftwertaufpreis
-                                     ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
-                          WHERE teigenschaft.kArtikel = :productID
-                          GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
-                      ) variations
-                      GROUP BY variations.kArtikel, variations.kKundengruppe
-                  ) varaufpreis
-                      ON varaufpreis.kArtikel = baseprice.kKindArtikel
-                          AND varaufpreis.kKundengruppe = :customerGroup
-                          AND baseprice.nIstVater = 0
+                SELECT variations.kArtikel, variations.kKundengruppe,
+                     SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
+                     SUM(variations.fMaxAufpreisNetto) fMaxAufpreisNetto
+                FROM (
+                  SELECT teigenschaft.kArtikel,
+                         tkundengruppe.kKundengruppe,
+                         MIN(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
+                            teigenschaftwert.fAufpreisNetto)) fMinAufpreisNetto,
+                         MAX(COALESCE(teigenschaftwertaufpreis.fAufpreisNetto,
+                            teigenschaftwert.fAufpreisNetto)) fMaxAufpreisNetto
+                  FROM teigenschaft
+                  INNER JOIN teigenschaftwert ON teigenschaftwert.kEigenschaft = teigenschaft.kEigenschaft
+                  JOIN  tkundengruppe
+                  LEFT JOIN teigenschaftwertaufpreis
+                      ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                      AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
+                  WHERE teigenschaft.kArtikel = :productID
+                  GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
+                ) variations
+                GROUP BY variations.kArtikel, variations.kKundengruppe
+            ) varaufpreis
+                ON varaufpreis.kArtikel = baseprice.kKindArtikel
+                  AND varaufpreis.kKundengruppe = :customerGroup
+                  AND baseprice.nIstVater = 0
             GROUP BY baseprice.kArtikel",
             [
                 'productID'     => (int)$this->productData->kArtikel,
@@ -197,39 +201,42 @@ class PriceRange
         );
 
         if ($priceRange) {
+            $roundedMin              = \round((float)($priceRange->specialPriceMin ?? 0), 2);
+            $roundedMax              = \round((float)($priceRange->specialPriceMax ?? 0), 2);
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice     = (float)$priceRange->fVKNettoMax;
-            $this->isMinSpecialPrice = (\round($priceRange->specialPriceMin, 2) === \round($this->minNettoPrice, 2));
-            $this->isMaxSpecialPrice = (\round($priceRange->specialPriceMax, 2) === \round($this->maxNettoPrice));
+            $this->isMinSpecialPrice = $roundedMin === \round($this->minNettoPrice, 2);
+            $this->isMaxSpecialPrice = $roundedMax === \round($this->maxNettoPrice, 2);
         } else {
-            $this->minNettoPrice     = $this->productData->fNettoPreis;
-            $this->maxNettoPrice     = $this->productData->fNettoPreis;
-            $this->isMinSpecialPrice = false;
-            $this->isMaxSpecialPrice = false;
+            $this->minNettoPrice = $this->productData->fNettoPreis;
+            $this->maxNettoPrice = $this->productData->fNettoPreis;
         }
 
-        if (Configurator::hasKonfig($this->productData->kArtikel)) {
-            $this->loadConfiguratorRange();
+        if ($this->productData->kKonfiggruppe > 0) {
+            $this->loadConfiguratorRange($db);
         }
 
         $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
-        $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
-        $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
+        $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+        $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
     }
 
-    public function loadConfiguratorRange(): void
+    /**
+     * @param DbInterface $db
+     */
+    private function loadConfiguratorRange(DbInterface $db): void
     {
-        $configItems = Shop::Container()->getDB()->getObjects(
+        $configItems = $db->getObjects(
             'SELECT tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
-                    MIN(tkonfiggruppe.nMin) nMin,
-                    MAX(tkonfiggruppe.nMax) nMax,
+                    MIN(tkonfiggruppe.nMin) AS nMin,
+                    MAX(tkonfiggruppe.nMax) AS nMax,
                     tkonfigitem.kArtikel kKindArtikel,
                     tkonfigitem.bPreis,
-                    MIN(tkonfigitem.fMin) fMin,
-                    MAX(tkonfigitem.fMax) fMax,
-                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse) kSteuerklasse,
+                    MIN(tkonfigitem.fMin) AS fMin,
+                    MAX(tkonfigitem.fMax) AS fMax,
+                    IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse) AS kSteuerklasse,
                     MIN(tkonfigitempreis.fPreis) fMinPreis,
                     Max(tkonfigitempreis.fPreis) fMaxPreis
                 FROM tartikel
@@ -361,8 +368,8 @@ class PriceRange
             if (!$this->isMaxSpecialPrice) {
                 $this->maxNettoPrice *= (1 - $this->discount);
             }
-            $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
-            $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
+            $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+            $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
         }
     }
 
@@ -388,27 +395,6 @@ class PriceRange
         return (int)$this->minNettoPrice !== 0
             ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
             : 0;
-    }
-
-    /**
-     * get localized min - max strings
-     *
-     * @param int|null $netto
-     * @return string|string[]
-     * @deprecated since 5.0.0
-     */
-    public function getLocalized(int $netto = null)
-    {
-        $rangePrices = $this->getLocalizedArray($netto);
-
-        if ($netto !== null) {
-            return $rangePrices[0] . ' - '. $rangePrices[1];
-        }
-
-        return [
-            $rangePrices[0][0] . ' - '. $rangePrices[0][1],
-            $rangePrices[1][0] . ' - '. $rangePrices[1][1],
-        ];
     }
 
     /**
@@ -478,9 +464,9 @@ class PriceRange
     /**
      * get product data
      *
-     * @return mixed|stdClass
+     * @return stdClass
      */
-    public function getProductData()
+    public function getProductData(): stdClass
     {
         return $this->productData;
     }

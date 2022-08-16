@@ -15,7 +15,7 @@ class MinifyService
     /**
      * @var string
      */
-    protected $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
+    protected string $baseDir = \PFAD_ROOT . \PATH_STATIC_MINIFY;
 
     public const TYPE_CSS = 'css';
 
@@ -40,13 +40,13 @@ class MinifyService
      * @param string|null $cacheTime
      * @return string
      */
-    public function buildURI($urlPrefix, $query, $type, string $cacheTime = null): string
+    public function buildURI(string $urlPrefix, string $query, string $type, string $cacheTime = null): string
     {
         $urlPrefix = \rtrim($urlPrefix, '/');
         $query     = \ltrim($query, '?');
         $ext       = '.' . $type;
         $cacheTime = $cacheTime ?? $this->getCacheTime();
-        if (\substr($query, -\strlen($ext)) !== $ext) {
+        if (!\str_ends_with($query, $ext)) {
             $query .= '&z=' . $ext;
         }
 
@@ -86,7 +86,7 @@ class MinifyService
     {
         $time = $this->getCacheTime(false);
 
-        return $time ? $this->removeTree($this->baseDir . $time) : false;
+        return $time && $this->removeTree($this->baseDir . $time);
     }
 
     /**
@@ -112,8 +112,8 @@ class MinifyService
     {
         $minify      = $template->getResources()->getMinifyArray();
         $tplVersion  = $template->getVersion();
-        $config      = Shop::getConfig([\CONF_TEMPLATE])['template'];
-        $allowStatic = isset($config['general']['use_minify']) && $config['general']['use_minify'] === 'static';
+        $config      = Shop::getSettingValue(\CONF_TEMPLATE, 'general');
+        $allowStatic = ($config['use_minify'] ?? 'N') === 'static';
         $cacheTime   = $allowStatic ? $this->getCacheTime() : null;
         $css         = $minify[$themeDir . '.css'] ?? [];
         $js          = $minify['jtl3.js'] ?? [];
@@ -147,6 +147,9 @@ class MinifyService
                 } else {
                     $uri = 'asset/' . $group . '?v=' . $tplVersion;
                 }
+                if ($template->getIsPreview()) {
+                    $uri .= '&preview=1';
+                }
                 $res[$type][$group] = $uri;
             }
         }
@@ -163,7 +166,9 @@ class MinifyService
             }
             $combinedCSS .= '?v=' . $tplVersion;
         }
-
+        if ($template->getIsPreview()) {
+            $combinedCSS .= '&preview=1';
+        }
         $smarty->assign('cPluginCss_arr', $minify['plugin_css'])
             ->assign('cPluginJsHead_arr', $minify['plugin_js_head'])
             ->assign('cPluginJsBody_arr', $minify['plugin_js_body'])

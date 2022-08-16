@@ -16,7 +16,7 @@ class Banner extends Portlet
      * @param int $productID
      * @return Artikel
      */
-    public function getProduct(int $productID)
+    public function getProduct(int $productID): Artikel
     {
         return (new Artikel())->fuelleArtikel($productID, Artikel::getDefaultOptions());
     }

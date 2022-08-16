@@ -6,8 +6,6 @@ use DateTime;
 use Illuminate\Support\Collection;
 use JTL\Cart\CartHelper;
 use JTL\Cart\CartItem;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
@@ -23,7 +21,7 @@ use stdClass;
 
 /**
  * Class Bestellung
- * @package JTL
+ * @package JTL\Checkout
  */
 class Bestellung
 {
@@ -362,6 +360,16 @@ class Bestellung
     public $OrderAttributes;
 
     /**
+     * @var int
+     */
+    public $nZahlungsTyp = 0;
+
+    /**
+     * @var string|null
+     */
+    public $cEstimatedDeliveryEx = null;
+
+    /**
      * Bestellung constructor.
      * @param int  $id
      * @param bool $init
@@ -395,6 +403,7 @@ class Bestellung
             $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
             $this->kZahlungsart      = (int)$this->kZahlungsart;
             $this->kVersandart       = (int)$this->kVersandart;
+            $this->nZahlungsTyp      = (int)$this->nZahlungsTyp;
         }
 
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
@@ -423,6 +432,7 @@ class Bestellung
         if (!($this->kWarenkorb > 0 || $external > 0)) {
             return $this;
         }
+        $customer         = null;
         $db               = Shop::Container()->getDB();
         $this->Positionen = $db->selectAll(
             'twarenkorbpos',
@@ -465,7 +475,8 @@ class Bestellung
             'kBestellung',
             (int)$this->kBestellung
         );
-        $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . ($orderState->cUID ?? '');
+        $this->BestellstatusURL = Shop::Container()->getLinkService()->getStaticRoute('status.php')
+            . '?uid=' . ($orderState->cUID ?? '');
         $sum                    = $db->getSingleObject(
             'SELECT SUM(((fPreis * fMwSt)/100 + fPreis) * nAnzahl) AS wert
                 FROM twarenkorbpos
@@ -507,8 +518,6 @@ class Bestellung
                 $nNettoPreis = 1;
             }
         }
-        $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $htmlCurrency);
-        $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kWaehrung > 0) {
             $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
@@ -527,6 +536,8 @@ class Bestellung
                 $this->loadPaymentMethod();
             }
         }
+        $this->cBestellwertLocalized = Preise::getLocalizedPriceString($sum->wert ?? 0, $this->Waehrung, $htmlCurrency);
+        $this->Status                = \lang_bestellstatus((int)$this->cStatus);
         if ($this->kBestellung > 0) {
             $this->Zahlungsinfo = new ZahlungsInfo(0, $this->kBestellung);
         }
@@ -541,12 +552,13 @@ class Bestellung
         $this->fVersandNetto      = 0;
         $defaultOptions           = Artikel::getDefaultOptions();
         $languageID               = Shop::getLanguageID();
+        $customerGroupID          = $customer?->getGroupID() ?? 0;
         if (!$languageID) {
             $language             = LanguageHelper::getDefaultLanguage();
             $languageID           = (int)$language->kSprache;
             $_SESSION['kSprache'] = $languageID;
         }
-        foreach ($this->Positionen as $i => $item) {
+        foreach ($this->Positionen as $item) {
             $item->kArtikel            = (int)$item->kArtikel;
             $item->nPosTyp             = (int)$item->nPosTyp;
             $item->kWarenkorbPos       = (int)$item->kWarenkorbPos;
@@ -574,7 +586,8 @@ class Bestellung
 
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 if ($initProduct) {
-                    $item->Artikel = (new Artikel())->fuelleArtikel($item->kArtikel, $defaultOptions);
+                    $item->Artikel = (new Artikel($db))
+                        ->fuelleArtikel($item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
                 }
                 if ($this->kBestellung > 0) {
                     $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $languageID);
@@ -770,7 +783,7 @@ class Bestellung
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as $deliveryNote) {
                 foreach ($deliveryNote->oPosition_arr as $deliveryItem) {
-                    if ($deliveryItem->kKonfigitem == 0 && !empty($deliveryItem->cUnique)) {
+                    if ($deliveryItem->kKonfigitem === 0 && !empty($deliveryItem->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $child) {
                             if ($child->cUnique === $deliveryItem->cUnique
@@ -844,35 +857,6 @@ class Bestellung
             }
             $this->Zahlungsart = $paymentMethod;
         }
-    }
-
-    /**
-     * @return $this
-     * @deprecated since 5.0.0
-     */
-    public function machGoogleAnalyticsReady(): self
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        foreach ($this->Positionen as $item) {
-            $item->nPosTyp = (int)$item->nPosTyp;
-            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && $item->kArtikel > 0) {
-                $product            = new Artikel();
-                $product->kArtikel  = $item->kArtikel;
-                $expandedCategories = new KategorieListe();
-                $category           = new Kategorie($product->gibKategorie());
-                $expandedCategories->getOpenCategories($category);
-                $item->Category = '';
-                $elemCount      = \count($expandedCategories->elemente) - 1;
-                for ($o = $elemCount; $o >= 0; $o--) {
-                    $item->Category = $expandedCategories->elemente[$o]->cName;
-                    if ($o > 0) {
-                        $item->Category .= ' / ';
-                    }
-                }
-            }
-        }
-
-        return $this;
     }
 
     /**
@@ -969,24 +953,28 @@ class Bestellung
         int $posType = \C_WARENKORBPOS_TYP_ARTIKEL
     ): array {
         $items = [];
-        if ($orderID > 0) {
-            $data = Shop::Container()->getDB()->getObjects(
-                'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
-                      FROM tbestellung
-                      JOIN twarenkorbpos
-                        ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                          AND nPosTyp = :ty
-                      WHERE tbestellung.kBestellung = :oid',
-                ['ty' => $posType, 'oid' => $orderID]
-            );
-            foreach ($data as $item) {
-                if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {
-                    if ($assoc) {
-                        $items[$item->kArtikel] = new CartItem($item->kWarenkorbPos);
-                    } else {
-                        $items[] = new CartItem($item->kWarenkorbPos);
-                    }
-                }
+        if ($orderID <= 0) {
+            return $items;
+        }
+        $data = Shop::Container()->getDB()->getObjects(
+            'SELECT twarenkorbpos.kWarenkorbPos, twarenkorbpos.kArtikel
+                  FROM tbestellung
+                  JOIN twarenkorbpos
+                    ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                      AND nPosTyp = :ty
+                  WHERE tbestellung.kBestellung = :oid',
+            ['ty' => $posType, 'oid' => $orderID]
+        );
+        foreach ($data as $item) {
+            if ($item->kWarenkorbPos <= 0) {
+                continue;
+            }
+            $item->kArtikel      = (int)$item->kArtikel;
+            $item->kWarenkorbPos = (int)$item->kWarenkorbPos;
+            if ($assoc) {
+                $items[$item->kArtikel] = new CartItem($item->kWarenkorbPos);
+            } else {
+                $items[] = new CartItem($item->kWarenkorbPos);
             }
         }
 
@@ -1103,22 +1091,6 @@ class Bestellung
         return $this;
     }
 
-    /**
-     * @return string
-     * @deprecated since 4.06
-     */
-    public function getEstimatedDeliveryTime(): string
-    {
-        if (empty($this->oEstimatedDelivery->localized)) {
-            $this->berechneEstimatedDelivery();
-        }
-
-        return $this->oEstimatedDelivery->localized;
-    }
-
-    /**
-     * set Kampagne
-     */
     public function setKampagne(): void
     {
         $this->oKampagne = Shop::Container()->getDB()->getSingleObject(
@@ -1134,6 +1106,10 @@ class Bestellung
                 'kampagneDef' => \KAMPAGNE_DEF_VERKAUF
             ]
         );
+        if ($this->oKampagne !== null) {
+            $this->oKampagne->kKampagne   = (int)$this->oKampagne->kKampagne;
+            $this->oKampagne->kBestellung = (int)$this->oKampagne->kBestellung;
+        }
     }
 
     /**

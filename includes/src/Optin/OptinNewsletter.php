@@ -2,7 +2,6 @@
 
 namespace JTL\Optin;
 
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Exceptions\InvalidInputException;
 use JTL\Helpers\Form;
@@ -25,22 +24,22 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     /**
      * @var bool
      */
-    private $hasSendingPermission = false;
+    private bool $hasSendingPermission = false;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $historyID;
+    private ?int $historyID = null;
 
     /**
      * @var AlertServiceInterface
      */
-    private $alertHelper;
+    private AlertServiceInterface $alertHelper;
 
     /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * OptinNewsletter constructor.
@@ -70,7 +69,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
     {
         $res = [];
         if ($location === \CHECKBOX_ORT_NEWSLETTERANMELDUNG
-            && Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
+            && Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N'
             && !Form::validateCaptcha($_POST)) {
             $res['captcha'] = 2;
         }
@@ -92,7 +91,6 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $this->optCode = $this->generateUniqOptinCode();
 
         if (!SimpleMail::checkBlacklist($this->refData->getEmail())) {
-            // the following code replaces the function from "newsletter_inc.php"
             $checks              = new stdClass();
             $checks->nPlausi_arr = [];
             $nlCustomer          = null;
@@ -134,8 +132,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                         || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                     ) {
                         // former: TYPE_ERROR, newsletterExists = "Fehler: Ihre E-Mail-Adresse ist bereits vorhanden."
-                        $this->alertHelper->addAlert(
-                            Alert::TYPE_INFO,
+                        $this->alertHelper->addInfo(
                             Shop::Lang()->get('optinSucceededMailSent', 'messages'),
                             'optinSucceededMailSent'
                         );
@@ -209,8 +206,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                             $this->activateOptin();
 
                             // "Vielen Dank, Sie wurden in den Newsletterversand eingetragen."
-                            $this->alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
+                            $this->alertHelper->addNotice(
                                 Shop::Lang()->get('newsletterNomailAdd', 'messages'),
                                 'newsletterNomailAdd'
                             );
@@ -219,8 +215,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 }
             } else {
                 // "Entschuldigung, Ihre E-Mail-Adresse ist nicht im richtigen Format."
-                $this->alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $this->alertHelper->addError(
                     Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
                     'newsletterWrongemail'
                 );
@@ -229,8 +224,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             Shop::Smarty()->assign('oPlausi', $checks);
             $this->dbHandler->delete('tnewsletterempfaengerblacklist', 'cMail', $this->refData->getEmail());
         } else {
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_ERROR,
+            Shop::Container()->getAlertService()->addError(
                 Text::filterEmailAddress($_POST['cEmail']) !== false
                     ? (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />')
                     : (Shop::Lang()->get('invalidEmail') . '<br />'),
@@ -293,11 +287,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
             $this->historyID,
             (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
         );
-        $this->alertHelper->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('newsletterAdd', 'messages'),
-            'newsletterAdd'
-        );
+        $this->alertHelper->addNotice(Shop::Lang()->get('newsletterAdd', 'messages'), 'newsletterAdd');
     }
 
     /**
@@ -378,11 +368,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $blacklist->dErstellt = 'NOW()';
                 $this->dbHandler->insert('tnewsletterempfaengerblacklist', $blacklist);
             } else {
-                $this->alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
-                    Shop::Lang()->get('newsletterNocode', 'errorMessages'),
-                    'newsletterNocode'
-                );
+                $this->alertHelper->addError(Shop::Lang()->get('newsletterNocode', 'errorMessages'), 'nwsltrNocode');
             }
         } elseif (!empty($this->emailAddress)) {
             // de-activate by mail-address
@@ -426,14 +412,9 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                 $blacklist->dErstellt = 'NOW()';
                 $this->dbHandler->insert('tnewsletterempfaengerblacklist', $blacklist);
                 // former: newsletterDelete = "Sie wurden erfolgreich aus unserem Newsletterverteiler ausgetragen."
-                $this->alertHelper->addAlert(
-                    Alert::TYPE_INFO,
-                    Shop::Lang()->get('optinCanceled', 'messages'),
-                    'optinCanceled'
-                );
+                $this->alertHelper->addInfo(Shop::Lang()->get('optinCanceled', 'messages'), 'optinCanceled');
             } else {
-                $this->alertHelper->addAlert(
-                    Alert::TYPE_ERROR,
+                $this->alertHelper->addError(
                     Shop::Lang()->get('newsletterNoexists', 'errorMessages'),
                     'newsletterNoexists'
                 );

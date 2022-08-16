@@ -22,26 +22,21 @@ class CacheAdvancedfile implements ICachingMethod
     }
 
     /**
-     * @var CacheAdvancedfile
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
-        $this->journalID     = 'advancedfile_journal';
-        $this->options       = $options;
-        $this->isInitialized = true;
-        self::$instance      = $this;
+        $this->setJournalID('advancedfile_journal');
+        $this->setOptions($options);
+        $this->setIsInitialized(true);
+        self::$instance = $this;
     }
 
     /**
-     * @param string $cacheID
+     * @param string|mixed $cacheID
      * @return bool|string
      */
-    private function getFileName($cacheID)
+    private function getFileName($cacheID): bool|string
     {
         return \is_string($cacheID)
             ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
@@ -51,7 +46,7 @@ class CacheAdvancedfile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $fileName = $this->getFileName($cacheID);
         $dir      = $this->options['cache_dir'];
@@ -60,7 +55,7 @@ class CacheAdvancedfile implements ICachingMethod
         }
         $info = \pathinfo($fileName);
         $real = \realpath($info['dirname']);
-        if (!\is_string($real) || \mb_strpos($real, \realpath($dir)) !== 0) {
+        if (!\is_string($real) || !\str_starts_with($real, \realpath($dir))) {
             return false;
         }
 
@@ -76,7 +71,7 @@ class CacheAdvancedfile implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
@@ -220,7 +215,7 @@ class CacheAdvancedfile implements ICachingMethod
         if (\count($tags) > 0) {
             $res = true;
             foreach ($tags as $tag) {
-                //create subdirs for every underscore
+                // create subdirs for every underscore
                 $dirs = \explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
@@ -231,7 +226,6 @@ class CacheAdvancedfile implements ICachingMethod
                     $path .= $dir . '/';
                     if (!\file_exists($path) && !\mkdir($path) && !\is_dir($path)) {
                         $res = false;
-                        continue;
                     }
                 }
                 if (\file_exists($path . $cacheID)
@@ -239,7 +233,6 @@ class CacheAdvancedfile implements ICachingMethod
                     || !\symlink($fileName, $path . $cacheID)
                 ) {
                     $res = false;
-                    continue;
                 }
             }
         }
@@ -262,27 +255,28 @@ class CacheAdvancedfile implements ICachingMethod
             foreach ($dirs as $dir) {
                 $path .= $dir . '/';
             }
-            if (\is_dir($path)) {
-                $rdi = new RecursiveDirectoryIterator(
-                    $path,
-                    FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-                );
-                foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                    $res = false;
-                    if ($value->isLink()) {
-                        $value = $value->getPathname();
-                        // cache entries may have multiple tags - so check if the real entry still exists
-                        if (($target = \readlink($value)) !== false && \is_file($target)) {
-                            // delete real cache entry
-                            $res = \unlink($target);
-                        }
-                        // delete symlink to the entry
-                        \unlink($value);
+            if (!\is_dir($path)) {
+                continue;
+            }
+            $rdi = new RecursiveDirectoryIterator(
+                $path,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            );
+            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                $res = false;
+                if ($value->isLink()) {
+                    $value = $value->getPathname();
+                    // cache entries may have multiple tags - so check if the real entry still exists
+                    if (($target = \readlink($value)) !== false && \is_file($target)) {
+                        // delete real cache entry
+                        $res = \unlink($target);
                     }
-                    if ($res === true) {
-                        // only count cache files, not symlinks
-                        ++$deleted;
-                    }
+                    // delete symlink to the entry
+                    \unlink($value);
+                }
+                if ($res === true) {
+                    // only count cache files, not symlinks
+                    ++$deleted;
                 }
             }
         }
@@ -309,31 +303,30 @@ class CacheAdvancedfile implements ICachingMethod
         if (\is_string($tags)) {
             $tags = [$tags];
         }
-        if (\is_array($tags)) {
-            $res = [];
-            foreach ($tags as $tag) {
-                $dirs = \explode('_', $tag);
-                $path = $this->options['cache_dir'];
-                foreach ($dirs as $dir) {
-                    $path .= $dir . '/';
-                }
-                if (\is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator(
-                        $path,
-                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
-                    );
-                    foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
-                        if ($value->isFile()) {
-                            $res[] = $value->getFilename();
-                        }
-                    }
+        if (!\is_array($tags)) {
+            return [];
+        }
+        $res = [];
+        foreach ($tags as $tag) {
+            $dirs = \explode('_', $tag);
+            $path = $this->options['cache_dir'];
+            foreach ($dirs as $dir) {
+                $path .= $dir . '/';
+            }
+            if (!\is_dir($path)) {
+                continue;
+            }
+            $rdi = new RecursiveDirectoryIterator(
+                $path,
+                FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+            );
+            foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
+                if ($value->isFile()) {
+                    $res[] = $value->getFilename();
                 }
             }
-
-            // remove duplicate keys from array and return it
-            return \array_unique($res);
         }
 
-        return [];
+        return \array_unique($res);
     }
 }

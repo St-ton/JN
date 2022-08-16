@@ -27,22 +27,22 @@ abstract class Job implements JobInterface
     /**
      * @var int
      */
-    private $limit = 100;
+    private int $limit = 100;
 
     /**
      * @var int
      */
-    private $executed = 0;
+    private int $executed = 0;
 
     /**
      * @var int
      */
-    private $cronID = 0;
+    private int $cronID = 0;
 
     /**
      * @var int
      */
-    private $queueID = 0;
+    private int $queueID = 0;
 
     /**
      * @var int|null
@@ -75,58 +75,34 @@ abstract class Job implements JobInterface
     private $startDate;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $tableName = '';
+    private ?string $tableName = '';
 
     /**
      * @var bool
      */
-    private $finished = false;
+    private bool $finished = false;
 
     /**
-     * @var bool
+     * @var bool|int
      */
     private $running = false;
 
     /**
      * @var int
      */
-    private $frequency = 24;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var JobHydrator
-     */
-    protected $hydrator;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
+    private int $frequency = 24;
 
     /**
      * @inheritdoc
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JobHydrator $hydrator,
-        JTLCacheInterface $cache
+        protected DbInterface $db,
+        protected LoggerInterface $logger,
+        protected JobHydrator $hydrator,
+        protected JTLCacheInterface $cache
     ) {
-        $this->db       = $db;
-        $this->logger   = $logger;
-        $this->hydrator = $hydrator;
-        $this->cache    = $cache;
     }
 
     /**
@@ -409,7 +385,7 @@ abstract class Job implements JobInterface
             'tjobqueue',
             'jobQueueID',
             $queueEntry->jobQueueID,
-            (object)['isRunning' => $queueEntry->isRunning, 'lastStart' => 'NOW()']
+            (object)['isRunning' => (int)$queueEntry->isRunning, 'lastStart' => 'NOW()']
         );
         $this->db->update(
             'tcron',
@@ -474,15 +450,15 @@ abstract class Job implements JobInterface
      */
     public function isRunning(): bool
     {
-        return $this->running;
+        return (int)$this->running === 1;
     }
 
     /**
      * @inheritdoc
      */
-    public function setRunning(bool $running): void
+    public function setRunning($running): void
     {
-        $this->running = $running;
+        $this->running = (int)$running;
     }
 
     /**

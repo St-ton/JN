@@ -14,22 +14,16 @@ use function Functional\map;
 final class CategoryList implements ItemListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
-     * LinkList constructor.
+     * CategoryList constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db    = $db;
         $this->items = new Collection();
     }
 
@@ -54,9 +48,9 @@ final class CategoryList implements ItemListInterface
                 GROUP BY tnewskategoriesprache.kNewsKategorie,tnewskategoriesprache.languageID
                 ORDER BY tnewskategorie.lft'
         );
-        $items         = map(group($itemLanguages, static function ($e) {
+        $items         = map(group($itemLanguages, static function ($e): int {
             return (int)$e->kNewsKategorie;
-        }), function ($e, $newsID) use ($activeOnly) {
+        }), function ($e, $newsID) use ($activeOnly): Category {
             $c = new Category($this->db);
             $c->setID($newsID);
             $c->map($e, $activeOnly);
@@ -77,7 +71,7 @@ final class CategoryList implements ItemListInterface
      */
     private function findParentCategory(Collection $tree, int $id): ?Category
     {
-        $found = $tree->first(static function (Category $e) use ($id) {
+        $found = $tree->first(static function (Category $e) use ($id): bool {
             return $e->getID() === $id;
         });
         if ($found !== null) {
@@ -108,10 +102,7 @@ final class CategoryList implements ItemListInterface
             }
             $parentID = $item->getParentID();
             $found    = $this->findParentCategory($tree, $parentID);
-
-            if ($found !== null) {
-                $found->addChild($item);
-            }
+            $found?->addChild($item);
         }
 
         return $tree;

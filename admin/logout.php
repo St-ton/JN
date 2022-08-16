@@ -1,11 +1,4 @@
-<?php
-
-use JTL\Helpers\Form;
+<?php declare(strict_types=1);
 
 require_once __DIR__ . '/includes/admininclude.php';
-/** @global \JTL\Backend\AdminAccount $oAccount */
-
-if (Form::validateToken()) {
-    $oAccount->logout();
-}
-$oAccount->redirectOnFailure();
+routeRedirect(JTL\Router\Route::LOGOUT);

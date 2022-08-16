@@ -566,7 +566,6 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br
         </tr>
     </table>
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
-{elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}

@@ -13,19 +13,19 @@ use Psr\Log\LoggerInterface;
 class Synclogin
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public $cMail;
+    public ?string $cMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPass;
+    public ?string $cPass = null;
 
     /**
      * Synclogin constructor.
@@ -50,7 +50,7 @@ class Synclogin
      * @return bool
      * @throws \Exception
      */
-    public function checkLogin($user, $pass): bool
+    public function checkLogin(string $user, string $pass): bool
     {
         return $this->cName !== null
             && $this->cPass !== null

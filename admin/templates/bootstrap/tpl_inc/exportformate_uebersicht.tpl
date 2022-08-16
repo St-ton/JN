@@ -1,7 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats') cBeschreibung=__('exportformatsDesc') cDokuURL=__('exportformatsURL')}
 <div id="content">
     <script type="text/javascript">
-        var url     = "{$adminURL}/exportformate.php",
+        var url     = "{$adminURL}{$route}",
             token   = "{$smarty.session.jtl_token}",
             running = [],
             imgPath = "{$templateBaseURL}gfx/jquery";
@@ -128,7 +128,7 @@
                                 {include file='snippets/exportformat_state.tpl' exportformat=$exportformat}
                             </td>
                             <td class="text-center">
-                                <form method="post" action="exportformate.php">
+                                <form method="post" action="{$adminURL}{$route}">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->getId()}" />
                                     <div class="btn-group">
@@ -209,7 +209,7 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
-                    <a class="btn btn-primary btn-block" href="{$adminURL}/exportformate.php?action=view&new=true&token={$smarty.session.jtl_token}">
+                    <a class="btn btn-primary btn-block" href="{$adminURL}{$route}?action=view&new=true&token={$smarty.session.jtl_token}">
                         <i class="fa fa-share"></i> {__('newExportformat')}
                     </a>
                 </div>
@@ -230,7 +230,7 @@
     }
     function validateExportFormatSyntax(tplID, massCheck) {
         $('#exFormat_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'exportformatSyntaxCheck',

@@ -12,16 +12,6 @@ use Psr\Log\LoggerInterface;
 class Checker
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * @var resource|bool
      */
     private $filePointer;
@@ -31,13 +21,11 @@ class Checker
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger)
     {
         if (!\file_exists(\JOBQUEUE_LOCKFILE)) {
             \touch(\JOBQUEUE_LOCKFILE);
         }
-        $this->db          = $db;
-        $this->logger      = $logger;
         $this->filePointer = \fopen(\JOBQUEUE_LOCKFILE, 'rb');
     }
 

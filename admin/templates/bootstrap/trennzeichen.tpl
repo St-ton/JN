@@ -3,10 +3,10 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' action='trennzeichen.php'}
+            {include file='tpl_inc/language_switcher.tpl' action=$adminURL|cat:$route}
         </div>
     </div>
-    <form method="post" action="trennzeichen.php">
+    <form method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="save" value="1" />
         <div id="settings">

@@ -14,7 +14,7 @@ use JTL\Shop;
 class PaymentMethod
 {
     /**
-     * @param \PaymentMethod|Zahlungsart $paymentMethod
+     * @param Zahlungsart $paymentMethod
      * @return bool
      */
     public static function shippingMethodWithValidPaymentMethod($paymentMethod): bool
@@ -23,72 +23,62 @@ class PaymentMethod
             return false;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $conf                         = Shop::getSettings([\CONF_ZAHLUNGSARTEN])['zahlungsarten'];
+        $customerID                   = Frontend::getCustomer()->getID();
+        $conf                         = Shop::getSettingSection(\CONF_ZAHLUNGSARTEN);
         $paymentMethod->einstellungen = $conf;
         switch ($paymentMethod->cModulId) {
             case 'za_ueberweisung_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_ueberweisung_min_bestellungen'] ?? 0)) {
+                if (!self::checkMinOrders($conf['zahlungsart_ueberweisung_min_bestellungen'] ?? 0, $customerID)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_ueberweisung_min'] ?? 0)) {
+                if (!self::checkMinOrderValue($conf['zahlungsart_ueberweisung_min'] ?? 0)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_ueberweisung_max'] ?? 0)) {
+                if (!self::checkMaxOrderValue($conf['zahlungsart_ueberweisung_max'] ?? 0)) {
                     return false;
                 }
                 break;
             case 'za_nachnahme_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_nachnahme_min_bestellungen'] ?? 0)) {
+                if (!self::checkMinOrders($conf['zahlungsart_nachnahme_min_bestellungen'] ?? 0, $customerID)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_nachnahme_min'] ?? 0)) {
+                if (!self::checkMinOrderValue($conf['zahlungsart_nachnahme_min'] ?? 0)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_nachnahme_max'] ?? 0)) {
-                    return false;
-                }
-                break;
-            case 'za_kreditkarte_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_kreditkarte_min_bestellungen'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_kreditkarte_min'] ?? 0)) {
-                    return false;
-                }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_kreditkarte_max'] ?? 0)) {
+                if (!self::checkMaxOrderValue($conf['zahlungsart_nachnahme_max'] ?? 0)) {
                     return false;
                 }
                 break;
             case 'za_rechnung_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_rechnung_min_bestellungen'] ?? 0)) {
+                if (!self::checkMinOrders($conf['zahlungsart_rechnung_min_bestellungen'] ?? 0, $customerID)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_rechnung_min'] ?? 0)) {
+                if (!self::checkMinOrderValue($conf['zahlungsart_rechnung_min'] ?? 0)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_rechnung_max'] ?? 0)) {
+                if (!self::checkMaxOrderValue($conf['zahlungsart_rechnung_max'] ?? 0)) {
                     return false;
                 }
                 break;
             case 'za_lastschrift_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_lastschrift_min_bestellungen'] ?? 0)) {
+                if (!self::checkMinOrders($conf['zahlungsart_lastschrift_min_bestellungen'] ?? 0, $customerID)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_lastschrift_min'] ?? 0)) {
+                if (!self::checkMinOrderValue($conf['zahlungsart_lastschrift_min'] ?? 0)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_lastschrift_max'] ?? 0)) {
+                if (!self::checkMaxOrderValue($conf['zahlungsart_lastschrift_max'] ?? 0)) {
                     return false;
                 }
                 break;
             case 'za_barzahlung_jtl':
-                if (!\pruefeZahlungsartMinBestellungen($conf['zahlungsart_barzahlung_min_bestellungen'] ?? 0)) {
+                if (!self::checkMinOrders($conf['zahlungsart_barzahlung_min_bestellungen'] ?? 0, $customerID)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMinBestellwert($conf['zahlungsart_barzahlung_min'] ?? 0)) {
+                if (!self::checkMinOrderValue($conf['zahlungsart_barzahlung_min'] ?? 0)) {
                     return false;
                 }
-                if (!\pruefeZahlungsartMaxBestellwert($conf['zahlungsart_barzahlung_max'] ?? 0)) {
+                if (!self::checkMaxOrderValue($conf['zahlungsart_barzahlung_max'] ?? 0)) {
                     return false;
                 }
                 break;
@@ -100,6 +90,86 @@ class PaymentMethod
                     return $payMethod->isValidIntern([Frontend::getCustomer(), Frontend::getCart()]);
                 }
                 break;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * @param int $minOrders
+     * @param int $customerID
+     * @return bool
+     */
+    public static function checkMinOrders(int $minOrders, int $customerID): bool
+    {
+        if ($minOrders <= 0) {
+            return true;
+        }
+        if ($customerID <= 0) {
+            Shop::Container()->getLogService()->debug('pruefeZahlungsartMinBestellungen erhielt keinen kKunden');
+
+            return false;
+        }
+        $count = Shop::Container()->getDB()->getSingleObject(
+            'SELECT COUNT(*) AS anz
+                FROM tbestellung
+                WHERE kKunde = :cid
+                    AND (cStatus = :s1 OR cStatus = :s2)',
+            [
+                'cid' => $customerID,
+                's1'  => \BESTELLUNG_STATUS_BEZAHLT,
+                's2'  => \BESTELLUNG_STATUS_VERSANDT
+            ]
+        );
+        if ($count !== null && $count->anz < $minOrders) {
+            Shop::Container()->getLogService()->debug(
+                'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl '
+                . (int)$count->anz . ' < ' . $minOrders
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param float|string $minOrderValue
+     * @return bool
+     */
+    public static function checkMinOrderValue($minOrderValue): bool
+    {
+        if ($minOrderValue > 0
+            && Frontend::getCart()->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_VERSANDPOS], true) < $minOrderValue
+        ) {
+            Shop::Container()->getLogService()->debug(
+                'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
+                Frontend::getCart()->gibGesamtsummeWaren(true) . ' < ' . $minOrderValue
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param float|string $maxOrderValue
+     * @return bool
+     */
+    public static function checkMaxOrderValue($maxOrderValue): bool
+    {
+        if ($maxOrderValue > 0
+            && Frontend::getCart()->gibGesamtsummeWarenOhne([\C_WARENKORBPOS_TYP_VERSANDPOS], true)
+            >= $maxOrderValue
+        ) {
+            Shop::Container()->getLogService()->debug(
+                'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
+                Frontend::getCart()->gibGesamtsummeWaren(true) . ' > ' . $maxOrderValue
+            );
+
+            return false;
         }
 
         return true;

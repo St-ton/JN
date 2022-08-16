@@ -15,24 +15,20 @@ class CacheSession implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheSession
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options)
     {
-        $this->isInitialized = true;
-        $this->journalID     = 'session_journal';
-        $this->options       = $options;
+        $this->setIsInitialized(true);
+        $this->setJournalID('session_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function store($cacheID, $content, $expiration = null): bool
+    public function store($cacheID, $content, int $expiration = null): bool
     {
         $_SESSION[$this->options['prefix'] . $cacheID] = [
             'value'     => $content,
@@ -46,7 +42,7 @@ class CacheSession implements ICachingMethod
     /**
      * @inheritdoc
      */
-    public function storeMulti($idContent, $expiration = null): bool
+    public function storeMulti(array $idContent, int $expiration = null): bool
     {
         foreach ($idContent as $_key => $_value) {
             $this->store($_key, $_value, $expiration);
@@ -112,7 +108,7 @@ class CacheSession implements ICachingMethod
     public function flushAll(): bool
     {
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (\mb_strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\str_starts_with($_sessionKey, $this->options['prefix'])) {
                 unset($_SESSION[$_sessionKey]);
             }
         }
@@ -136,7 +132,7 @@ class CacheSession implements ICachingMethod
         $num = 0;
         $tmp = [];
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
-            if (\mb_strpos($_sessionKey, $this->options['prefix']) === 0) {
+            if (\str_starts_with($_sessionKey, $this->options['prefix'])) {
                 $num++;
                 $tmp[] = $_sessionKey;
             }

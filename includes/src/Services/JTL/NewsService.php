@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Services\JTL;
 
@@ -8,33 +8,17 @@ use JTL\DB\DbInterface;
 /**
  * Class NewsService
  * @package JTL\Services\JTL
+ * @deprecated since 5.2.0
  */
 class NewsService implements NewsServiceInterface
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
-     * @var NewsServiceInterface
-     */
-    private static $instance;
-
-    /**
-     * LinkService constructor.
+     * NewsService constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
     public function __construct(DbInterface $db, JTLCacheInterface $cache)
     {
-        $this->db       = $db;
-        $this->cache    = $cache;
-        self::$instance = $this;
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     }
 }

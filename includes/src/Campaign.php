@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Customer\Visitor;
 use stdClass;
 
 /**
@@ -15,42 +16,47 @@ class Campaign
     /**
      * @var int
      */
-    public $kKampagne;
+    public int $kKampagne = 0;
 
     /**
      * @var string
      */
-    public $cName;
+    public string $cName = '';
 
     /**
      * @var string
      */
-    public $cParameter;
+    public string $cParameter = '';
 
     /**
      * @var string
      */
-    public $cWert;
+    public string $cWert = '';
 
     /**
      * @var int
      */
-    public $nDynamisch;
+    public int $nDynamisch = 0;
 
     /**
      * @var int
      */
-    public $nAktiv;
+    public int $nAktiv = 0;
 
     /**
      * @var string
      */
-    public $dErstellt;
+    public string $dErstellt = '';
 
     /**
      * @var string
      */
-    public $dErstellt_DE;
+    public string $dErstellt_DE = '';
+
+    /**
+     * @var int
+     */
+    public int $nInternal = 1;
 
     /**
      * Kampagne constructor.
@@ -69,17 +75,23 @@ class Campaign
      */
     public function loadFromDB(int $id): self
     {
-        $campaign = Shop::Container()->getDB()->getSingleObject(
+        $data = Shop::Container()->getDB()->getSingleObject(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
                 WHERE tkampagne.kKampagne = :cid",
             ['cid' => $id]
         );
 
-        if ($campaign !== null && $campaign->kKampagne > 0) {
-            foreach (\array_keys(\get_object_vars($campaign)) as $member) {
-                $this->$member = $campaign->$member;
-            }
+        if ($data !== null && $data->kKampagne > 0) {
+            $this->kKampagne    = (int)$data->kKampagne;
+            $this->cName        = $data->cName;
+            $this->cParameter   = $data->cParameter;
+            $this->cWert        = $data->cWert;
+            $this->nDynamisch   = (int)$data->nDynamisch;
+            $this->nAktiv       = (int)$data->nAktiv;
+            $this->dErstellt    = $data->dErstellt;
+            $this->dErstellt_DE = $data->dErstellt_DE;
+            $this->nInternal    = (int)$data->nInternal;
         }
 
         return $this;
@@ -94,8 +106,8 @@ class Campaign
         $obj->cName      = Text::filterXSS($this->cName);
         $obj->cParameter = Text::filterXSS($this->cParameter);
         $obj->cWert      = Text::filterXSS($this->cWert);
-        $obj->nDynamisch = (int)$this->nDynamisch;
-        $obj->nAktiv     = (int)$this->nAktiv;
+        $obj->nDynamisch = $this->nDynamisch;
+        $obj->nAktiv     = $this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
         $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
         if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
@@ -115,10 +127,10 @@ class Campaign
         $obj->cName      = Text::filterXSS($this->cName);
         $obj->cParameter = Text::filterXSS($this->cParameter);
         $obj->cWert      = Text::filterXSS($this->cWert);
-        $obj->nDynamisch = (int)$this->nDynamisch;
-        $obj->nAktiv     = (int)$this->nAktiv;
+        $obj->nDynamisch = $this->nDynamisch;
+        $obj->nAktiv     = $this->nAktiv;
         $obj->dErstellt  = $this->dErstellt;
-        $obj->kKampagne  = (int)$this->kKampagne;
+        $obj->kKampagne  = $this->kKampagne;
 
         $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
         if (\mb_convert_case($this->dErstellt, \MB_CASE_LOWER) === 'now()') {
@@ -143,7 +155,7 @@ class Campaign
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
                 WHERE tkampagne.kKampagne = :cid',
-            ['cid' => (int)$this->kKampagne]
+            ['cid' => $this->kKampagne]
         );
 
         return true;
@@ -239,13 +251,12 @@ class Campaign
                     }
                     $event->dErstellt = 'NOW()';
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher']        = $campaign;
-                    $_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
-                    break;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
 
-            if (!$hit && \mb_strpos($_SERVER['HTTP_REFERER'] ?? '', '.google.') !== false) {
+            if (!$hit && \str_contains($_SERVER['HTTP_REFERER'] ?? '', '.google.')) {
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen
                 $event = $db->select(
                     'tkampagnevorgang',
@@ -262,12 +273,12 @@ class Campaign
                     $event->fWert        = 1.0;
                     $event->cParamWert   = $campaign->cWert;
                     $event->dErstellt    = 'NOW()';
-                    if ((int)$campaign->nDynamisch === 1) {
+                    if ($campaign->nDynamisch === 1) {
                         $event->cParamWert = $given;
                     }
                     $db->insert('tkampagnevorgang', $event);
-                    $_SESSION['Kampagnenbesucher']        = $campaign;
-                    $_SESSION['Kampagnenbesucher']->cWert = $event->cParamWert;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]        = $campaign;
+                    $_SESSION['Kampagnenbesucher'][$campaign->kKampagne]->cWert = $event->cParamWert;
                 }
             }
         }
@@ -284,19 +295,23 @@ class Campaign
     public static function setCampaignAction(int $id, int $kKey, $fWert, $customData = null): int
     {
         if ($id > 0 && $kKey > 0 && $fWert > 0 && isset($_SESSION['Kampagnenbesucher'])) {
-            $event               = new stdClass();
-            $event->kKampagne    = $_SESSION['Kampagnenbesucher']->kKampagne;
-            $event->kKampagneDef = $id;
-            $event->kKey         = $kKey;
-            $event->fWert        = $fWert;
-            $event->cParamWert   = $_SESSION['Kampagnenbesucher']->cWert;
-            $event->dErstellt    = 'NOW()';
+            $events = [];
+            foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
+                $event               = new stdClass();
+                $event->kKampagne    = $campaign->kKampagne;
+                $event->kKampagneDef = $id;
+                $event->kKey         = $kKey;
+                $event->fWert        = $fWert;
+                $event->cParamWert   = $campaign->cWert;
+                $event->dErstellt    = 'NOW()';
 
-            if ($customData !== null) {
-                $event->cCustomData = \mb_substr($customData, 0, 255);
+                if ($customData !== null) {
+                    $event->cCustomData = \mb_substr($customData, 0, 255);
+                }
+                $events[] = $event;
             }
 
-            return Shop::Container()->getDB()->insert('tkampagnevorgang', $event);
+            return Shop::Container()->getDB()->insertBatch('tkampagnevorgang', $events);
         }
 
         return 0;

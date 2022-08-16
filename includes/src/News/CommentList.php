@@ -15,22 +15,22 @@ use function Functional\map;
 final class CommentList implements ItemListInterface
 {
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db;
 
     /**
      * @var int
      */
-    private $newsID;
+    private int $newsID;
 
     /**
      * @var Collection
      */
-    private $items;
+    private Collection $items;
 
     /**
-     * LinkList constructor.
+     * CommentList constructor.
      * @param DbInterface $db
      */
     public function __construct(DbInterface $db)
@@ -44,11 +44,11 @@ final class CommentList implements ItemListInterface
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
-        $itemIDs = \array_map('\intval', $itemIDs);
         if (\count($itemIDs) === 0) {
             return $this->items;
         }
-        $data  = $this->db->getObjects(
+        $itemIDs = \array_map('\intval', $itemIDs);
+        $data    = $this->db->getObjects(
             'SELECT tnewskommentar.*, t.title
                 FROM tnewskommentar
                 JOIN tnewssprache t 
@@ -56,12 +56,11 @@ final class CommentList implements ItemListInterface
                 WHERE kNewsKommentar IN (' . \implode(',', $itemIDs) . ')'
                 . ($activeOnly ? ' AND nAktiv = 1 ' : '') . '
                 GROUP BY tnewskommentar.kNewsKommentar
-                ORDER BY tnewskommentar.dErstellt DESC',
-            ['nid' => $this->newsID]
+                ORDER BY tnewskommentar.dErstellt DESC'
         );
-        $items = map(group($data, static function ($e) {
+        $items   = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -91,9 +90,9 @@ final class CommentList implements ItemListInterface
                     ORDER BY tnewskommentar.dErstellt DESC',
             ['nid' => $this->newsID]
         );
-        $items        = map(group($data, static function ($e) {
+        $items        = map(group($data, static function ($e): int {
             return (int)$e->kNewsKommentar;
-        }), function ($e, $commentID) {
+        }), function ($e, $commentID): Comment {
             $l = new Comment($this->db);
             $l->setID($commentID);
             $l->map($e);
@@ -113,7 +112,7 @@ final class CommentList implements ItemListInterface
      */
     public function filter(bool $active): Collection
     {
-        return $this->items->filter(static function (Comment $e) use ($active) {
+        return $this->items->filter(static function (Comment $e) use ($active): bool {
             return $e->isActive() === $active;
         });
     }
@@ -127,11 +126,32 @@ final class CommentList implements ItemListInterface
     }
 
     /**
+     * @param string $whatcount
+     * @return int
+     */
+    public function getCommentsCount(string $whatcount = 'parent'): int
+    {
+        $parent = 0;
+        $child  = 0;
+        foreach ($this->items as $comment) {
+            if ($comment->getParentCommentID() === 0) {
+                $parent++;
+            } else {
+                $child++;
+            }
+        }
+
+        return $whatcount === 'parent' ? $parent : $child;
+    }
+
+    /**
      * @return Collection
      */
     public function getThreadedItems(): Collection
     {
+        /** @var Comment $comment */
         foreach ($this->items as $comment) {
+            /** @var Comment $child */
             foreach ($this->items as $child) {
                 if ($comment->getID() === $child->getParentCommentID()) {
                     $comment->setChildComment($child);
@@ -161,6 +181,38 @@ final class CommentList implements ItemListInterface
     public function addItem($item): void
     {
         $this->items->push($item);
+    }
+
+    /**
+     * @return DbInterface|null
+     */
+    public function getDB(): ?DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @param DbInterface $db
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNewsID(): int
+    {
+        return $this->newsID;
+    }
+
+    /**
+     * @param int $newsID
+     */
+    public function setNewsID(int $newsID): void
+    {
+        $this->newsID = $newsID;
     }
 
     /**

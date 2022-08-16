@@ -16,7 +16,7 @@ abstract class PluginBC extends AbstractPlugin
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kPlugin'                         => 'ID',
         'nStatus'                         => 'State',
         'nVersion'                        => ['getMeta', 'Version'],
@@ -69,12 +69,12 @@ abstract class PluginBC extends AbstractPlugin
     /**
      * @var int
      */
-    private $calledHookID = -1;
+    private int $calledHookID = -1;
 
     /**
      * @var bool
      */
-    private $boostrap = false;
+    private bool $boostrap = false;
 
     /**
      * @return string

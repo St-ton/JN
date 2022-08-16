@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -17,7 +17,7 @@ class Storage
     /**
      * @var JTLHandlerInterface
      */
-    protected $handler;
+    protected JTLHandlerInterface $handler;
 
     /**
      * Storage constructor.
@@ -52,9 +52,9 @@ class Storage
      */
     private function initHandler(): JTLHandlerInterface
     {
-        $bot           = \SAVE_BOT_SESSION !== 0 && isset($_SERVER['HTTP_USER_AGENT'])
-            ? self::getIsCrawler($_SERVER['HTTP_USER_AGENT'])
-            : false;
+        $bot           = \SAVE_BOT_SESSION !== 0
+            && isset($_SERVER['HTTP_USER_AGENT'])
+            && self::getIsCrawler($_SERVER['HTTP_USER_AGENT']);
         $this->handler = $bot === false || \SAVE_BOT_SESSION === Behaviour::DEFAULT
             ? $this->initDefaultHandler()
             : $this->initBotHandler();

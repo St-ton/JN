@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Helpers;
 
@@ -6,6 +6,7 @@ use Exception;
 use JTL\Customer\CustomerGroup;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\RateLimit\Upload;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -98,7 +99,7 @@ class Form
     public static function getMissingContactFormData(): array
     {
         $ret  = [];
-        $conf = Shop::getSettings([\CONF_KONTAKTFORMULAR, \CONF_GLOBAL])['kontakt'];
+        $conf = Shop::getSettingSection(\CONF_KONTAKTFORMULAR);
         if (empty($_POST['nachricht'])) {
             $ret['nachricht'] = 1;
         }
@@ -212,7 +213,7 @@ class Form
         $from     = new stdClass();
         $senders  = Shop::Container()->getDB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         $mailData = new stdClass();
-        if (\is_array($senders) && \count($senders)) {
+        if (\count($senders)) {
             foreach ($senders as $f) {
                 $from->{$f->cKey} = $f->cValue;
             }
@@ -234,9 +235,7 @@ class Form
         }
         $data->mail = $mailData;
         if (isset($_SESSION['kSprache']) && !isset($data->tkunde)) {
-            if (!isset($data->tkunde)) {
-                $data->tkunde = new stdClass();
-            }
+            $data->tkunde           = new stdClass();
             $data->tkunde->kSprache = $_SESSION['kSprache'];
         }
         $mailer = Shop::Container()->get(Mailer::class);
@@ -296,22 +295,16 @@ class Form
         if ($max <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
-            "DELETE
-                FROM tfloodprotect
-                WHERE dErstellt < DATE_SUB(NOW(), INTERVAL 1 HOUR)
-                    AND cTyp = 'upload'"
-        );
+        $limiter = new Upload(Shop::Container()->getDB());
+        $limiter->setLimit($max);
+        $limiter->init(Request::getRealIP());
+        $ok = $limiter->check();
+        $limiter->cleanup();
+        if ($ok === true) {
+            $limiter->persist();
+        }
 
-        $result = Shop::Container()->getDB()->getSingleObject(
-            "SELECT COUNT(kFloodProtect) AS cnt
-                FROM tfloodprotect
-                WHERE cTyp = 'upload'
-                    AND cIP = :ip",
-            ['ip' => Request::getRealIP()]
-        );
-
-        return ($result->cnt ?? 0) >= $max;
+        return !$ok;
     }
 
     /**
@@ -339,18 +332,28 @@ class Form
             'cTel'      => 'tel',
             'cMobil'    => 'mobil'
         ];
-
         foreach ($inputs as $key => $input) {
             $msg->$key = isset($_POST[$input]) ? Text::filterXSS($_POST[$input]) : ($_SESSION['Kunde']->$key ?? null);
         }
-
         if ($msg->cAnrede === 'm') {
             $msg->cAnredeLocalized = Shop::Lang()->get('salutationM');
         } elseif ($msg->cAnrede === 'w') {
             $msg->cAnredeLocalized = Shop::Lang()->get('salutationW');
         }
 
-
         return $msg;
+    }
+
+    /**
+     * @param array $missingData
+     * @return int
+     * @former angabenKorrekt()
+     * @since 5.2.0
+     */
+    public static function hasNoMissingData(array $missingData): int
+    {
+        return (int)none($missingData, static function ($e) {
+            return $e > 0;
+        });
     }
 }

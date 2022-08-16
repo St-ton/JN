@@ -19,7 +19,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
 
-        {if $oVergleichsliste->oArtikel_arr|@count > 0}
+        {if $oVergleichsliste->oArtikel_arr|count > 0}
             {block name='comparelist-index-filter'}
                 {opcMountPoint id='opc_before_filter' inContainer=false}
                 {container fluid=$Link->getIsFluid() class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
@@ -30,7 +30,6 @@
                                     {buttongroup}
                                         {button
                                             variant="outline-secondary"
-                                            role="button"
                                             data=["toggle"=> "collapse", "target"=>"#collapse-checkboxes"]
                                         }
                                             {lang key='filter'}
@@ -57,10 +56,10 @@
                                             {/col}
                                         {/if}
                                         {if $row['key'] === 'Merkmale'}
-                                            {foreach $oMerkmale_arr as $oMerkmale}
+                                            {foreach $oMerkmale_arr as $characteristic}
                                                 {col cols=6 md=4 lg=3 xl=2 class="comparelist-checkbox-wrapper"}
-                                                    {checkbox checked=true data=['id' => "attr-{$oMerkmale->cName}"] class='comparelist-checkbox'}
-                                                        <div class="text-truncate">{$oMerkmale->cName}</div>
+                                                    {checkbox checked=true data=['id' => "attr-{$characteristic->getName()}"] class='comparelist-checkbox'}
+                                                        <div class="text-truncate">{$characteristic->getName()}</div>
                                                     {/checkbox}
                                                 {/col}
                                             {/foreach}
@@ -184,7 +183,7 @@
                                                     {/block}
                                                 </td>
                                             {elseif $oArtikel->$row['key'] !== ''}
-                                                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -225,18 +224,18 @@
                                     </tr>
                                 {elseif $row['key'] === 'Merkmale'}
                                     {block name='comparelist-index-characteristics'}
-                                        {foreach $oMerkmale_arr as $oMerkmale}
-                                            <tr class="comparelist-row" data-id="row-attr-{$oMerkmale->cName}">
+                                        {foreach $oMerkmale_arr as $characteristic}
+                                            <tr class="comparelist-row" data-id="row-attr-{$characteristic->getName()}">
                                                 <td class="comparelist-label">
-                                                    {$oMerkmale->cName|truncate:20}
+                                                    {$characteristic->getName()|truncate:20}
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                    <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
-                                                                {if $oMerkmale->cName == $oMerkmaleArtikel->cName}
-                                                                    {foreach $oMerkmaleArtikel->oMerkmalWert_arr as $oMerkmalWert}
-                                                                        {$oMerkmalWert->cWert}{if !$oMerkmalWert@last}, {/if}
+                                                                {if $characteristic->getName() === $oMerkmaleArtikel->getName()}
+                                                                    {foreach $oMerkmaleArtikel->getCharacteristicValues() as $characteristicValue}
+                                                                        {$characteristicValue->getValue()}{if !$characteristicValue@last}, {/if}
                                                                     {/foreach}
                                                                 {/if}
                                                             {/foreach}
@@ -259,7 +258,7 @@
                                                 {/block}
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td data-product-id-cl="{$oArtikel->kArtikel}">
-                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
+                                                        {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|count > 0}
                                                             {foreach $oArtikel->oVariationenNurKind_arr as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}
@@ -271,14 +270,14 @@
                                                                     {/foreach}
                                                                 {/if}
                                                             {/foreach}
-                                                        {elseif $oArtikel->Variationen|@count > 0}
+                                                        {elseif $oArtikel->Variationen|count > 0}
                                                             {foreach $oArtikel->Variationen as $oVariationenArtikel}
                                                                 {if $oVariationen->cName == $oVariationenArtikel->cName}
                                                                     {foreach $oVariationenArtikel->Werte as $oVariationsWerte}
                                                                         {$oVariationsWerte->cName}
-                                                                        {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
+                                                                        {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
                                                                             ({$oVariationsWerte->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise]}{/if})
-                                                                        {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
+                                                                        {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
                                                                             ({$oVariationsWerte->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                                         {/if}
                                                                         {if !$oVariationsWerte@last},{/if}

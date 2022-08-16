@@ -5,6 +5,8 @@ namespace JTL\dbeS;
 use JTL\Catalog\ReviewReminder;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
+use JTL\dbeS\Job\JobInterface;
+use JTL\Export\RSS;
 use JTL\Helpers\FileSystem;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -24,24 +26,12 @@ use stdClass;
 final class LastJob
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
      * LastJob constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger)
     {
-        $this->db     = $db;
-        $this->logger = $logger;
     }
 
     public function execute(): void
@@ -50,14 +40,18 @@ final class LastJob
         if (!\KEEP_SYNC_FILES) {
             FileSystem::delDirRecursively(\PFAD_ROOT . \PFAD_DBES_TMP);
         }
+        $this->disableUnsedManufacturers();
         $this->finishStdJobs();
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
         $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
         \executeHook(\HOOK_LASTJOBS_HOLEJOBS, ['jobs' => &$jobs]);
-        $config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
+        $config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP, \CONF_BEWERTUNG]);
         foreach ($jobs as $job) {
             switch ((int)$job->nJob) {
                 case \LASTJOBS_BEWERTUNGSERINNNERUNG:
+                    if ($config['bewertung']['bewertung_anzeigen'] !== 'Y') {
+                        break;
+                    }
                     $recipients = (new ReviewReminder())->getRecipients();
                     $mailer     = Shop::Container()->get(Mailer::class);
                     $mail       = new Mail();
@@ -67,45 +61,57 @@ final class LastJob
                     $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     break;
                 case \LASTJOBS_SITEMAP:
-                    if ($config['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                        $exportConfig = new DefaultConfig(
-                            $this->db,
-                            $config,
-                            Shop::getURL() . '/',
-                            Shop::getImageBaseURL()
-                        );
-                        $exporter     = new Export(
-                            $this->db,
-                            $this->logger,
-                            new DefaultRenderer(),
-                            new DefaultSchemaRenderer(),
-                            $config
-                        );
-                        $exporter->generate(
-                            [CustomerGroup::getDefaultGroupID()],
-                            LanguageHelper::getAllLanguages(),
-                            $exportConfig->getFactories()
-                        );
-                        $this->restartJob(\LASTJOBS_SITEMAP);
+                    if ($config['sitemap']['sitemap_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    $exportConfig = new DefaultConfig(
+                        $this->db,
+                        $config,
+                        Shop::getURL() . '/',
+                        Shop::getImageBaseURL()
+                    );
+                    $exporter     = new Export(
+                        $this->db,
+                        $this->logger,
+                        new DefaultRenderer(),
+                        new DefaultSchemaRenderer(),
+                        $config
+                    );
+                    $exporter->generate(
+                        [CustomerGroup::getDefaultGroupID()],
+                        LanguageHelper::getAllLanguages(),
+                        $exportConfig->getFactories()
+                    );
+                    $this->restartJob(\LASTJOBS_SITEMAP);
                     break;
                 case \LASTJOBS_RSS:
-                    if ($config['rss']['rss_wawiabgleich'] === 'Y') {
-                        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'rss_inc.php';
-                        \generiereRSSXML();
-                        $this->restartJob(\LASTJOBS_RSS);
+                    if ($config['rss']['rss_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    $rss = new RSS($this->db, $this->logger);
+                    $rss->generateXML();
+                    $this->restartJob(\LASTJOBS_RSS);
                     break;
                 case \LASTJOBS_GARBAGECOLLECTOR:
-                    if ($config['global']['garbagecollector_wawiabgleich'] === 'Y') {
-                        Shop::Container()->getDBServiceGC()->run();
-                        $this->restartJob(\LASTJOBS_GARBAGECOLLECTOR);
+                    if ($config['global']['garbagecollector_wawiabgleich'] !== 'Y') {
+                        break;
                     }
+                    Shop::Container()->getDBServiceGC()->run();
+                    $this->restartJob(\LASTJOBS_GARBAGECOLLECTOR);
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    private function disableUnsedManufacturers(): void
+    {
+        $this->db->query(
+            'UPDATE thersteller
+                SET nAktiv = IF(
+                    EXISTS (SELECT 1 FROM tartikel WHERE tartikel.kHersteller = thersteller.kHersteller), 1, 0)'
+        );
     }
 
     /**
@@ -148,22 +154,21 @@ final class LastJob
 
     /**
      * @param int         $jobID
-     * @param string|null $name
+     * @param string|null $className
      * @return stdClass
      */
-    public function run(int $jobID, $name = null): stdClass
+    public function run(int $jobID, string $className = null): stdClass
     {
         $job = $this->getJob($jobID);
         if ($job === null) {
-            $job = (object)[
+            $job       = (object)[
                 'cType'     => 'STD',
                 'nJob'      => $jobID,
-                'cJobName'  => $name,
+                'cJobName'  => $className,
                 'nCounter'  => 1,
                 'dErstellt' => \date('Y-m-d H:i:s'),
                 'nFinished' => 0,
             ];
-
             $job->kJob = $this->db->insert('tlastjob', $job);
         } else {
             $job->nCounter++;
@@ -177,11 +182,10 @@ final class LastJob
 
     /**
      * @param int $jobID
-     * @return int
      */
-    private function restartJob(int $jobID): int
+    private function restartJob(int $jobID): void
     {
-        return $this->db->update(
+        $this->db->update(
             'tlastjob',
             'nJob',
             $jobID,
@@ -194,36 +198,26 @@ final class LastJob
     }
 
     /**
-     * @param int|null $jobID
-     * @return int
+     * @return void
      */
-    private function finishStdJobs(int $jobID = null): int
+    private function finishStdJobs(): void
     {
         $keys    = ['cType', 'nFinished'];
         $keyVals = ['STD', 0];
-
-        if ($jobID > 0) {
-            $keys[]    = 'nJob';
-            $keyVals[] = $jobID;
-        }
-
         $this->db->update('tlastjob', $keys, $keyVals, (object)['nFinished' => 1]);
 
         $keyVals[1] = 1;
         $jobs       = $this->getStdJobs();
         foreach ($jobs as $job) {
-            $fileName   = \PFAD_ROOT . \PFAD_DBES . $job->cJobName . '.inc.php';
-            $finishProc = $job->cJobName . '_Finish';
-
-            if (\is_file($fileName)) {
-                require_once $fileName;
-
-                if (\function_exists($finishProc)) {
-                    $finishProc();
-                }
+            $class = $job->cJobName;
+            $full  = 'JTL\\dbeS\\Job\\' . $class;
+            if (!\class_exists($full) || !\in_array(JobInterface::class, \class_implements($full), true)) {
+                continue;
             }
+            /** @var JobInterface $instance */
+            $instance = new $full($this->db, Shop::Container()->getCache());
+            $instance->run();
         }
-
-        return $this->db->delete('tlastjob', $keys, $keyVals);
+        $this->db->delete('tlastjob', $keys, $keyVals);
     }
 }

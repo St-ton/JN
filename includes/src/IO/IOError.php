@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
@@ -11,19 +11,9 @@ use JsonSerializable;
 class IOError implements JsonSerializable
 {
     /**
-     * @var string
-     */
-    public $message = '';
-
-    /**
-     * @var int
-     */
-    public $code = 500;
-
-    /**
      * @var array
      */
-    public $errors = [];
+    public array $errors = [];
 
     /**
      * IOError constructor.
@@ -32,11 +22,9 @@ class IOError implements JsonSerializable
      * @param int        $code
      * @param array|null $errors
      */
-    public function __construct($message, $code = 500, array $errors = null)
+    public function __construct(public string $message, public int $code = 500, array $errors = null)
     {
-        $this->message = $message;
-        $this->code    = $code;
-        $this->errors  = $errors;
+        $this->errors = $errors ?? [];
     }
 
     /**

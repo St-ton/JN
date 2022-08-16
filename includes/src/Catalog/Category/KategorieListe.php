@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Catalog\Category;
 
-use JTL\DB\DbInterface;
 use JTL\Helpers\Category;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -17,12 +16,12 @@ class KategorieListe
     /**
      * @var Kategorie[]
      */
-    public $elemente;
+    public array $elemente = [];
 
     /**
      * @var bool
      */
-    public static $wasModified = false;
+    public static bool $wasModified = false;
 
     /**
      * temporary array to store list of all categories
@@ -31,102 +30,7 @@ class KategorieListe
      *
      * @var array
      */
-    private static $allCats = [];
-
-    /**
-     * Holt die ersten 3 Ebenen von Kategorien, jeweils nach Name sortiert
-     *
-     * @param int $levels
-     * @param int $customerGroupID
-     * @param int $languageID
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function holKategorienAufEinenBlick(int $levels = 2, int $customerGroupID = 0, int $languageID = 0): array
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $this->elemente = [];
-        if (!Frontend::getCustomerGroup()->mayViewCategories()) {
-            return $this->elemente;
-        }
-        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
-        $languageID      = $languageID ?: Shop::getLanguageID();
-        $levels          = \min($levels, 3);
-        foreach ($this->getChildCategories(0, $customerGroupID, $languageID) as $level1item) {
-            $cat1           = $level1item;
-            $cat1->children = [];
-            if ($levels > 1) {
-                // 2nd level
-                $level2items = $this->getChildCategories($cat1->kKategorie, $customerGroupID, $languageID);
-                foreach ($level2items as $level2item) {
-                    $cat2           = $level2item;
-                    $cat2->children = [];
-                    if ($levels > 2) {
-                        // 3rd level
-                        $cat2->children = $this->getChildCategories(
-                            $cat2->kKategorie,
-                            $customerGroupID,
-                            $languageID
-                        );
-                    }
-                    $cat1->children[] = $cat2;
-                }
-            }
-            $this->elemente[] = $cat1;
-        }
-
-        return $this->elemente;
-    }
-
-    /**
-     * Holt Stamm einer Kategorie
-     *
-     * @param Kategorie $category
-     * @param int       $customerGroupID
-     * @param int       $languageID
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function getUnterkategorien($category, int $customerGroupID = 0, int $languageID = 0): array
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $this->elemente = [];
-        if (!Frontend::getCustomerGroup()->mayViewCategories()) {
-            return $this->elemente;
-        }
-        if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
-        if (!$languageID) {
-            $languageID = Shop::getLanguageID();
-        }
-        $searchIn   = [];
-        $searchIn[] = $category;
-        while (\count($searchIn) > 0) {
-            $current = \array_pop($searchIn);
-            if (!empty($current->kKategorie)) {
-                $this->elemente[] = $current;
-                foreach ($this->getChildCategories($current->kKategorie, $customerGroupID, $languageID) as $item) {
-                    $searchIn[] = $item;
-                }
-            }
-        }
-
-        return $this->elemente;
-    }
-
-    /**
-     * @param int $categoryID
-     * @param int $customerGroupID
-     * @param int $languageID
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public function holUnterkategorien(int $categoryID, int $customerGroupID, int $languageID): array
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return $this->getChildCategories($categoryID, $customerGroupID, $languageID);
-    }
+    private static array $allCats = [];
 
     /**
      * Holt UnterKategorien für die spezifizierte kKategorie, jeweils nach nSort, Name sortiert
@@ -144,20 +48,19 @@ class KategorieListe
         }
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID      = $languageID ?: Shop::getLanguageID();
-        $conf            = Shop::getSettings([\CONF_NAVIGATIONSFILTER])['navigationsfilter'];
-        $showLevel2      = $conf['unterkategorien_lvl2_anzeigen'] ?? 'N';
+        $showLevel2      = Shop::getSettingValue(\CONF_NAVIGATIONSFILTER, 'unterkategorien_lvl2_anzeigen');
         if ($categoryID > 0 && \count(self::$allCats) === 0) {
             $this->getAllCategoriesOnLevel(0, $customerGroupID, $languageID);
         }
         foreach ($this->getChildCategories($categoryID, $customerGroupID, $languageID) as $category) {
-            $category->bAktiv          = (Shop::$kKategorie > 0 && (int)$category->kKategorie === (int)Shop::$kKategorie);
-            $category->Unterkategorien = [];
+            $category->bAktiv = (Shop::$kKategorie > 0 && $category->getID() === Shop::$kKategorie);
+            $category->setSubCategories([]);
             if ($showLevel2 === 'Y') {
-                $category->Unterkategorien = $this->getChildCategories(
-                    $category->kKategorie,
+                $category->setSubCategories($this->getChildCategories(
+                    $category->getID(),
                     $customerGroupID,
                     $languageID
-                );
+                ));
             }
             $this->elemente[] = $category;
         }
@@ -198,11 +101,11 @@ class KategorieListe
     }
 
     /**
-     * @param array $categoryList
-     * @param int   $customerGroupID
-     * @param int   $languageID
+     * @param Kategorie[] $categoryList
+     * @param int         $customerGroupID
+     * @param int         $languageID
      */
-    public static function setCategoryList($categoryList, int $customerGroupID, int $languageID): void
+    public static function setCategoryList(array $categoryList, int $customerGroupID, int $languageID): void
     {
         $cacheID                 = \CACHING_GROUP_CATEGORY . '_list_' . $customerGroupID . '_' . $languageID;
         self::$allCats[$cacheID] = $categoryList;
@@ -219,19 +122,21 @@ class KategorieListe
     public function getOpenCategories(Kategorie $currentCategory, int $customerGroupID = 0, int $languageID = 0): array
     {
         $this->elemente = [];
-        if (empty($currentCategory->kKategorie) || !Frontend::getCustomerGroup()->mayViewCategories()) {
+        if (empty($currentCategory->getID()) || !Frontend::getCustomerGroup()->mayViewCategories()) {
             return $this->elemente;
         }
         $this->elemente[] = $currentCategory;
-        $currentParent    = $currentCategory->kOberKategorie;
+        $currentParent    = $currentCategory->getParentID();
         $customerGroupID  = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID       = $languageID ?: Shop::getLanguageID();
         $allCategories    = static::getCategoryList($customerGroupID, $languageID);
+        $db               = Shop::Container()->getDB();
         while ($currentParent > 0) {
-            $category         = $allCategories['oKategorie_arr'][$currentParent]
-                ?? new Kategorie($currentParent, $languageID, $customerGroupID);
+            $category = $allCategories['oKategorie_arr'][$currentParent]
+                ?? new Kategorie($currentParent, $languageID, $customerGroupID, false, $db);
+            $category->setCurrentLanguageID($languageID);
             $this->elemente[] = $category;
-            $currentParent    = $category->kOberKategorie;
+            $currentParent    = $category->getParentID();
         }
 
         return $this->elemente;
@@ -248,15 +153,17 @@ class KategorieListe
         if (!Frontend::getCustomerGroup()->mayViewCategories()) {
             return [];
         }
+        $db              = Shop::Container()->getDB();
         $categories      = [];
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $languageID      = $languageID ?: Shop::getLanguageID();
         $categoryList    = self::getCategoryList($customerGroupID, $languageID);
         $subCategories   = $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] ?? null;
-        if ($subCategories !== null && \is_array($subCategories)) {
+        if (\is_array($subCategories)) {
             foreach ($subCategories as $subCatID) {
                 $categories[$subCatID] = $categoryList['oKategorie_arr'][$subCatID]
-                    ?? new Kategorie($subCatID, $languageID, $customerGroupID);
+                    ?? new Kategorie($subCatID, $languageID, $customerGroupID, false, $db);
+                $categories[$subCatID]->setCurrentLanguageID($languageID);
             }
 
             return $categories;
@@ -266,10 +173,9 @@ class KategorieListe
             self::$wasModified = true;
         }
         // ist nicht im cache, muss holen
-        $db                                                            = Shop::Container()->getDB();
-        $defaultLanguageActive                                         = LanguageHelper::isDefaultLanguageActive();
-        $orderByName                                                   = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
-        $categories                                                    = $db->getObjects(
+        $defaultLanguageActive = LanguageHelper::isDefaultLanguageActive();
+        $orderByName           = $defaultLanguageActive ? '' : 'tkategoriesprache.cName, ';
+        $categories            = $db->getObjects(
             'SELECT tkategorie.kKategorie
                 FROM tkategorie
                 LEFT JOIN tkategoriesprache 
@@ -283,18 +189,19 @@ class KategorieListe
                 ORDER BY tkategorie.nSort, ' . $orderByName . 'tkategorie.cName',
             ['lid' => $languageID, 'cid' => $categoryID, 'cgid' => $customerGroupID]
         );
+
         $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
         foreach ($categories as $i => &$category) {
             $category = new Kategorie((int)$category->kKategorie, $languageID, $customerGroupID);
-            if (!$this->nichtLeer($category->kKategorie, $customerGroupID)) {
-                $categoryList['ks'][$category->kKategorie] = 2;
+            if (!$this->nichtLeer($category->getID(), $customerGroupID)) {
+                $categoryList['ks'][$category->getID()] = 2;
                 unset($categories[$i]);
                 continue;
             }
             // ks = ist kategorie leer 1 = nein, 2 = ja
-            $categoryList['ks'][$category->kKategorie]                       = 1;
-            $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID][] = $category->kKategorie;
-            $categoryList['oKategorie_arr'][$category->kKategorie]           = $category;
+            $categoryList['ks'][$category->getID()]                          = 1;
+            $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID][] = $category->getID();
+            $categoryList['oKategorie_arr'][$category->getID()]              = $category;
         }
         unset($category);
         $categories = \array_merge($categories);
@@ -310,12 +217,12 @@ class KategorieListe
      */
     public function nichtLeer(int $categoryID, int $customerGroupID): bool
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL])['global'];
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
+        $conf = (int)(Shop::getSettingValue(\CONF_GLOBAL, 'kategorien_anzeigefilter') ?? 0);
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
-        $languageID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
-        if ((int)$conf['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
+        $languageID = LanguageHelper::getDefaultLanguage()->getId();
+        if ($conf === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($customerGroupID, $languageID);
             if (isset($categoryList['ks'][$categoryID])) {
                 if ($categoryList['ks'][$categoryID] === 1) {

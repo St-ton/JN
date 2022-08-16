@@ -49,10 +49,10 @@
         </nav>
         <div class="tab-content">
             <div id="uebersicht" class="tab-pane fade {if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                {if isset($oCheckBox_arr) && $oCheckBox_arr|@count > 0}
+                {if isset($oCheckBox_arr) && $oCheckBox_arr|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht'}
                     <div id="tabellenLivesuche">
-                        <form name="uebersichtForm" method="post" action="checkbox.php">
+                        <form name="uebersichtForm" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="uebersicht" value="1" />
                             <input type="hidden" name="tab" value="uebersicht" />
@@ -101,13 +101,13 @@
                                                     <td class="text-center">{$oCheckBoxUebersicht->nSort}</td>
                                                     <td>
                                                         {foreach $oCheckBoxUebersicht->kKundengruppe_arr as $id}
-                                                            {Kundengruppe::getNameByID($id)}{if !$id@last}, {/if}
+                                                            {JTL\Customer\CustomerGroup::getNameByID($id)}{if !$id@last}, {/if}
                                                         {/foreach}
                                                     </td>
                                                     <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
+                                                            <a href="{$adminURL}{$route}?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
                                                                class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-edit"></span>
@@ -158,7 +158,7 @@
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht' isBottom=true}
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    <form method="post" action="checkbox.php">
+                    <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input name="tab" type="hidden" value="erstellen" />
                         <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
@@ -170,7 +170,7 @@
                     <div class="subheading1">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
                         <hr class="mb-3">
                     <div>
-                        <form method="post" action="checkbox.php" >
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input name="erstellen" type="hidden" value="1" />
                             <input name="tab" type="hidden" value="erstellen" />
@@ -188,7 +188,7 @@
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                                 </div>
-                                {if $availableLanguages|@count > 0}
+                                {if $availableLanguages|count > 0}
                                     {foreach $availableLanguages as $language}
                                         {assign var=cISO value=$language->getCode()}
                                         {assign var=kSprache value=$language->getId()}
@@ -216,7 +216,7 @@
                                     {/foreach}
                                 {/if}
 
-                                {if isset($oLink_arr) && $oLink_arr|@count > 0}
+                                {if isset($oLink_arr) && $oLink_arr|count > 0}
                                     <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kLink)} form-error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLinkTitle')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -256,17 +256,17 @@
                                                 onClick="checkFunctionDependency();"
                                                 data-selected-text-format="count > 2"
                                                 data-size="7">
-                                            {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
+                                            {foreach $cAnzeigeOrt_arr as $key => $cAnzeigeOrt}
                                                 {assign var=bAOSelect value=false}
-                                                {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $CHECKBOX_ORT_REGISTRIERUNG}
+                                                {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $smarty.const.CHECKBOX_ORT_REGISTRIERUNG}
                                                     {assign var=bAOSelect value=true}
-                                                {elseif isset($oCheckBox->kAnzeigeOrt_arr) && $oCheckBox->kAnzeigeOrt_arr|@count > 0}
+                                                {elseif isset($oCheckBox->kAnzeigeOrt_arr) && $oCheckBox->kAnzeigeOrt_arr|count > 0}
                                                     {foreach $oCheckBox->kAnzeigeOrt_arr as $kAnzeigeOrt}
                                                         {if $key == $kAnzeigeOrt}
                                                             {assign var=bAOSelect value=true}
                                                         {/if}
                                                     {/foreach}
-                                                {elseif isset($cPost_arr.cAnzeigeOrt) && $cPost_arr.cAnzeigeOrt|@count > 0}
+                                                {elseif isset($cPost_arr.cAnzeigeOrt) && $cPost_arr.cAnzeigeOrt|count > 0}
                                                     {foreach $cPost_arr.cAnzeigeOrt as $cBoxAnzeigeOrt}
                                                         {if $cBoxAnzeigeOrt == $key}
                                                             {assign var=bAOSelect value=true}
@@ -328,12 +328,12 @@
                                 <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} form-error{/if}">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sortHigherBottom')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input id="nSort" name="nSort" type="text" class="form-control" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
+                                        <input id="nSort" name="nSort" type="number" class="form-control" value="{if isset($cPost_arr.nSort)}{$cPost_arr.nSort}{elseif isset($oCheckBox->nSort)}{$oCheckBox->nSort}{/if}" />
                                     </div>
                                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxOrder')}</div>
                                 </div>
 
-                                {if isset($oCheckBoxFunktion_arr) && $oCheckBoxFunktion_arr|@count > 0}
+                                {if isset($oCheckBoxFunktion_arr) && $oCheckBoxFunktion_arr|count > 0}
                                     <div class="form-group form-row align-items-center">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="kCheckBoxFunktion">{__('specialShopFunction')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -348,7 +348,7 @@
                                     </div>
                                 {/if}
 
-                                {if $customerGroups|@count > 0}
+                                {if $customerGroups|count > 0}
                                     <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} form-error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -359,17 +359,17 @@
                                                     data-selected-text-format="count > 2"
                                                     data-size="7"
                                                     data-actions-box="true">
-                                            {foreach name=kundengruppen from=$customerGroups key=key item=customerGroup}
+                                            {foreach $customerGroups as $customerGroup}
                                                 {assign var=bKGSelect value=false}
                                                 {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $customerGroup->isDefault()}
                                                     {assign var=bKGSelect value=true}
-                                                {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|@count > 0}
+                                                {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|count > 0}
                                                     {foreach $oCheckBox->kKundengruppe_arr as $kKundengruppe}
                                                         {if $kKundengruppe == $customerGroup->getID()}
                                                             {assign var=bKGSelect value=true}
                                                         {/if}
                                                     {/foreach}
-                                                {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|@count > 0}
+                                                {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|count > 0}
                                                     {foreach $cPost_arr.kKundengruppe as $kKundengruppe}
                                                         {if $kKundengruppe == $customerGroup->getID()}
                                                             {assign var=bKGSelect value=true}
@@ -388,7 +388,7 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <a class="btn btn-outline-primary btn-block" href="checkbox.php">
+                                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                         {__('cancelWithIcon')}
                                     </a>
                                 </div>

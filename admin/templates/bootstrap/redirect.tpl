@@ -99,7 +99,7 @@
             <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
             </div>
-            <div class="{if !$oRedirect_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+            <div class="col-sm-6 col-xl-auto">
                 {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
             </div>
         </div>
@@ -128,7 +128,7 @@
             <div>
                 <form method="post">
                     {$jtl_token}
-                    {if $oRedirect_arr|@count > 0}
+                    {if $oRedirect_arr|count > 0}
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -234,7 +234,7 @@
                                                                             {/if}
                                                                         </td>
                                                                         <td>
-                                                                            {$oRedirectReferer->dDate|date_format:'%d.%m.%Y - %H:%M:%S'}
+                                                                            {$oRedirectReferer->dDate|date_format:'d.m.Y - H:M:S'}
                                                                         </td>
                                                                     </tr>
                                                                 {/foreach}
@@ -261,7 +261,7 @@
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                 </div>
                             </div>
-                            {if $oRedirect_arr|@count > 0}
+                            {if $oRedirect_arr|count > 0}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button name="action" value="delete" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('deleteSelected')}

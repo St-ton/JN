@@ -70,129 +70,6 @@ class Jtllog
     }
 
     /**
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public function save(): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return false;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public function update(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return 0;
-    }
-
-    /**
-     * @param string $cLog
-     * @param int    $nLevel
-     * @param bool   $bForce
-     * @param string $cKey
-     * @param string $kKey
-     * @param bool   $bPrim
-     * @return bool|int
-     * @deprecated since 5.0.0
-     */
-    public function write($cLog, $nLevel = \JTLLOG_LEVEL_ERROR, $bForce = false, $cKey = '', $kKey = '', $bPrim = true)
-    {
-        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
-
-        return self::writeLog($cLog, $nLevel, $bForce, $cKey, (int)$kKey);
-    }
-
-    /**
-     * @param int $nLevel
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public static function doLog($nLevel = \JTLLOG_LEVEL_ERROR): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
-
-        return $nLevel >= self::getSytemlogFlag();
-    }
-
-    /**
-     * @param string $cLog
-     * @param int    $nLevel
-     * @param bool   $bForce
-     * @param string $cKey
-     * @param int    $kKey
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public static function writeLog(
-        $cLog,
-        $nLevel = \JTLLOG_LEVEL_ERROR,
-        $bForce = false,
-        $cKey = '',
-        $kKey = 0
-    ): bool {
-        \trigger_error(__METHOD__ . ' is deprecated. Use the log service instead.', \E_USER_DEPRECATED);
-        if (\mb_strlen($cLog) > 0 && ($bForce || self::doLog($nLevel))) {
-            $logger = Shop::Container()->getLogService();
-            if ($cKey !== '') {
-                $logger = $logger->withName($cKey);
-            }
-            $logger->log($nLevel, $cLog, [$kKey]);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param string $cFilter
-     * @param int    $nLevel
-     * @param int    $nLimitN
-     * @param int    $nLimitM
-     * @return array
-     * @deprecated since 5.0.0
-     */
-    public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
-    {
-        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $logs       = [];
-        $conditions = [];
-        $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
-        if (\mb_strlen($cFilter) > 0) {
-            $conditions[]   = 'cLog LIKE :clog';
-            $values['clog'] = '%' . $cFilter . '%';
-        }
-        if ($nLevel > 0) {
-            $conditions[]     = 'nLevel = :nlevel';
-            $values['nlevel'] = $nLevel;
-        }
-        $where = \count($conditions) > 0
-            ? ' WHERE ' . \implode(' AND ', $conditions)
-            : '';
-        $data  = Shop::Container()->getDB()->getObjects(
-            'SELECT kLog
-                FROM tjtllog
-                ' . $where . '
-                ORDER BY dErstellt DESC, kLog DESC
-                LIMIT :limitfrom, :limitto',
-            $values
-        );
-        foreach ($data as $oLog) {
-            if (isset($oLog->kLog) && (int)$oLog->kLog > 0) {
-                $logs[] = new self($oLog->kLog);
-            }
-        }
-
-        return $logs;
-    }
-
-    /**
      * @param string $whereSQL
      * @param string $limitSQL
      * @return array
@@ -205,7 +82,7 @@ class Jtllog
             ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
             ' ORDER BY dErstellt DESC, kLog DESC ' .
             ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : '')
-        )->map(static function (stdClass $log) {
+        )->map(static function (stdClass $log): stdClass {
             $log->kLog   = (int)$log->kLog;
             $log->nLevel = (int)$log->nLevel;
             $log->kKey   = (int)$log->kKey;
@@ -328,7 +205,7 @@ class Jtllog
      */
     public function setcKey($cKey): self
     {
-        $this->cKey = Shop::Container()->getDB()->escape($cKey);
+        $this->cKey = $cKey;
 
         return $this;
     }
@@ -350,20 +227,9 @@ class Jtllog
      */
     public function setErstellt($dErstellt): self
     {
-        $this->dErstellt = Shop::Container()->getDB()->escape($dErstellt);
+        $this->dErstellt = $dErstellt;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     * @deprecated since 5.0.0
-     */
-    public static function setBitFlag(): int
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return \JTLLOG_LEVEL_NOTICE;
     }
 
     /**
@@ -415,41 +281,15 @@ class Jtllog
     }
 
     /**
-     * @param int $nVal
-     * @param int $nFlag
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public static function isBitFlagSet($nVal, $nFlag): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return false;
-    }
-
-    /**
-     * @param string $string
-     * @param int    $level
-     * @return bool
-     * @deprecated since 5.0.0
-     */
-    public static function cronLog(string $string, int $level = 1): bool
-    {
-        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-
-        return false;
-    }
-
-    /**
      * @param bool $cache
      * @return int
      * @former getSytemlogFlag()
      */
     public static function getSytemlogFlag(bool $cache = true): int
     {
-        $conf = Shop::getSettings([\CONF_GLOBAL]);
-        if ($cache === true && isset($conf['global']['systemlog_flag'])) {
-            return (int)$conf['global']['systemlog_flag'];
+        $conf = Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag');
+        if ($cache === true && $conf !== null) {
+            return (int)$conf;
         }
         $conf = Shop::Container()->getDB()->getSingleObject(
             "SELECT cWert 

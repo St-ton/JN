@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -31,36 +31,21 @@ use stdClass;
 abstract class AbstractSync
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * @var Mapper
      */
-    protected $mapper;
+    protected Mapper $mapper;
 
     /**
-     * Products constructor.
+     * AbstractSync constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      * @param LoggerInterface   $logger
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, LoggerInterface $logger)
-    {
-        $this->db     = $db;
-        $this->cache  = $cache;
-        $this->logger = $logger;
+    public function __construct(
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected LoggerInterface $logger
+    ) {
         $this->mapper = new Mapper();
     }
 
@@ -71,13 +56,13 @@ abstract class AbstractSync
     abstract public function handle(Starter $starter);
 
     /**
-     * @param array      $xml
-     * @param string     $table
-     * @param string     $toMap
-     * @param string     $pk1
-     * @param int|string $pk2
+     * @param array       $xml
+     * @param string      $table
+     * @param string      $toMap
+     * @param string      $pk1
+     * @param string|null $pk2
      */
-    protected function upsertXML($xml, $table, $toMap, $pk1, $pk2 = 0): void
+    protected function upsertXML(array $xml, string $table, string $toMap, string $pk1, ?string $pk2 = null): void
     {
         $idx = $table . ' attr';
         if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
@@ -103,12 +88,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param string     $tablename
-     * @param array      $objects
-     * @param string     $pk1
-     * @param string|int $pk2
+     * @param string      $tablename
+     * @param array       $objects
+     * @param string      $pk1
+     * @param string|null $pk2
      */
-    protected function upsert(string $tablename, array $objects, $pk1, $pk2 = 0): void
+    protected function upsert(string $tablename, array $objects, string $pk1, ?string $pk2 = null): void
     {
         foreach ($objects as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
@@ -133,13 +118,6 @@ abstract class AbstractSync
     protected function insertOnExistUpdate(string $tableName, array $objects, array $pks): array
     {
         $result = \array_fill_keys($pks, []);
-        if (!\is_array($objects)) {
-            return $result;
-        }
-        if (!\is_array($pks)) {
-            $pks = [(string)$pks];
-        }
-
         foreach ($objects as $object) {
             foreach ($pks as $pk) {
                 if (!isset($object->$pk)) {
@@ -195,46 +173,56 @@ abstract class AbstractSync
     }
 
     /**
-     * @param object $product
-     * @param array  $conf
+     * @param stdClass $data
+     * @param array    $conf
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    protected function sendAvailabilityMails($product, array $conf): void
+    protected function sendAvailabilityMails(stdClass $data, array $conf): void
     {
-        if ($product->kArtikel <= 0) {
+        if ($data->kArtikel <= 0) {
             return;
         }
-        $stockRatio    = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
-        $stockRelevanz = ($product->cLagerKleinerNull ?? '') !== 'Y' && ($product->cLagerBeachten ?? 'Y') === 'Y';
-        $subscriptions = $this->db->selectAll(
+        $sendMails      = true;
+        $stockRatio     = $conf['artikeldetails']['benachrichtigung_min_lagernd'] / 100;
+        $stockRelevance = ($data->cLagerKleinerNull ?? '') !== 'Y' && ($data->cLagerBeachten ?? 'Y') === 'Y';
+        $subscriptions  = $this->db->selectAll(
             'tverfuegbarkeitsbenachrichtigung',
             ['nStatus', 'kArtikel'],
-            [0, $product->kArtikel]
+            [0, $data->kArtikel]
         );
-        $subCount      = \count($subscriptions);
-        if ($subCount === 0 || (
-                $stockRelevanz && ($product->fLagerbestand <= 0 || ($product->fLagerbestand / $subCount) < $stockRatio)
-            )
-        ) {
+        \executeHook(\HOOK_SYNC_SEND_AVAILABILITYMAILS, [
+            'sendMails'     => &$sendMails,
+            'product'       => $data,
+            'subscriptions' => &$subscriptions,
+        ]);
+        $subCount = \count($subscriptions);
+        if ($subCount === 0) {
+            return;
+        }
+        $noStock = ($data->fLagerbestand <= 0 || ($data->fLagerbestand / $subCount) < $stockRatio);
+        if ($sendMails === false || ($stockRelevance && $noStock)) {
             return;
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
 
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
-        $product                             = (new Artikel())->fuelleArtikel($product->kArtikel, $options);
-        if ($product === null) {
+        $product                             = new Artikel($this->db);
+        $product->fuelleArtikel($data->kArtikel, $options);
+        if ($product->kArtikel === null) {
             return;
         }
         $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $sep            = !\str_contains($product->cURL, '.php') ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
+        $mailer = Shop::Container()->get(Mailer::class);
         foreach ($subscriptions as $msg) {
-            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance()
-                ->setProduct($product)
+            /** @var OptinAvailAgain $availAgainOptin */
+            $availAgainOptin = (new Optin(OptinAvailAgain::class))->getOptinInstance();
+            $availAgainOptin->setProduct($product)
                 ->setEmail($msg->cMail);
             if (!$availAgainOptin->isActive()) {
                 continue;
@@ -251,9 +239,7 @@ abstract class AbstractSync
                 : $msg->cMail;
             $tplData->mail                             = $tplMail;
 
-            $mailer = Shop::Container()->get(Mailer::class);
-            $mail   = new Mail();
-            
+            $mail = new Mail();
             // if original language was deleted between ActivationOptIn and now, try to send it in english,
             // if there is no english, use the shop-default.
             $mail->setLanguage(
@@ -261,7 +247,7 @@ abstract class AbstractSync
                 LanguageHelper::getAllLanguages(2)['eng'] ??
                 LanguageHelper::getDefaultLanguage()
             );
-            
+
             $mail->setToMail($tplMail->toEmail);
             $mail->setToName($tplMail->toName);
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $tplData));
@@ -286,9 +272,6 @@ abstract class AbstractSync
      */
     protected function handlePriceHistory(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
         // Delete price history from not existing customer groups
         $this->db->queryPrepared(
             'DELETE tpreisverlauf
@@ -384,12 +367,12 @@ abstract class AbstractSync
             }
             try {
                 $startDate = new DateTime($price->dStart);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $startDate = (new DateTime())->setTime(0, 0);
             }
             try {
                 $endDate = new DateTime($price->dEnde);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $endDate = (new DateTime())->setTime(0, 0);
             }
             $today = (new DateTime())->setTime(0, 0);
@@ -424,19 +407,18 @@ abstract class AbstractSync
      * @param int $productID
      * @param int $customerGroupID
      * @param int $customerID
-     * @return mixed
      */
-    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0)
+    protected function handlePriceFormat(int $productID, int $customerGroupID, int $customerID = 0): void
     {
         if ($customerID > 0) {
             $this->flushCustomerPriceCache($customerID);
         }
-
-        return $this->db->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 VALUES (:productID, :customerGroup, :customerID)
                 ON DUPLICATE KEY UPDATE
-                    kKunde = :customerID',
+                    kKunde     = :customerID,
+                    noDiscount = IF(:customerID > 0, 0, noDiscount)',
             [
                 'productID'     => $productID,
                 'customerGroup' => $customerGroupID,
@@ -485,10 +467,6 @@ abstract class AbstractSync
      */
     protected function handleNewPriceFormat(int $productID, array $xml): void
     {
-        if (!\is_array($xml)) {
-            return;
-        }
-
         $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(
@@ -511,12 +489,17 @@ abstract class AbstractSync
                     AND tpreisdetail.nAnzahlAb > 0',
             ['productID' => $productID]
         );
-        // Insert price record for each customer group - ignore existing
+        // Insert price record for each customer group - update existing
         $this->db->queryPrepared(
-            'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
-                SELECT :productID, kKundengruppe, 0
-                FROM tkundengruppe',
-            ['productID' => $productID]
+            'INSERT INTO tpreis (kArtikel, kKundengruppe, kKunde, noDiscount)
+                SELECT :productID, kKundengruppe, 0, COALESCE(:noDiscount, 0)
+                FROM tkundengruppe
+                ON DUPLICATE KEY UPDATE
+                    tpreis.noDiscount = COALESCE(:noDiscount, noDiscount)',
+            [
+                'productID'  => $productID,
+                'noDiscount' => isset($xml['nNichtRabattfaehig']) ? (int)$xml['nNichtRabattfaehig'] : null,
+            ]
         );
         // Insert base price for each price record - update existing
         $this->db->queryPrepared(
@@ -578,14 +561,14 @@ abstract class AbstractSync
     protected function mapSalutation(string $salutation): string
     {
         $salutation = \strtolower($salutation);
-        if ($salutation === 'w' || $salutation === 'm') {
-            return $salutation;
+        if ($salutation === 'm' || $salutation === 'herr' || $salutation === 'mr' || $salutation === 'mr.') {
+            return 'm';
         }
-        if ($salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
+        if ($salutation === 'w' || $salutation === 'frau' || $salutation === 'mrs' || $salutation === 'mrs.') {
             return 'w';
         }
 
-        return 'm';
+        return '';
     }
 
     /**
@@ -595,7 +578,7 @@ abstract class AbstractSync
      * @param string|null $assoc
      * @return array|null|stdClass
      */
-    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
+    protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, ?string $assoc = null)
     {
         if ($keyValue <= 0 || $keyName === '') {
             return null;
@@ -625,11 +608,11 @@ abstract class AbstractSync
     }
 
     /**
-     * @param array $arr
-     * @param array $excludes
+     * @param array|mixed $arr
+     * @param array       $excludes
      * @return array
      */
-    protected function buildAttributes(&$arr, $excludes = []): array
+    protected function buildAttributes(&$arr, array $excludes = []): array
     {
         $attributes = [];
         if (!\is_array($arr)) {
@@ -648,7 +631,7 @@ abstract class AbstractSync
     /**
      * @param object $object
      */
-    protected function extractStreet($object): void
+    protected function extractStreet(object $object): void
     {
         $data  = \explode(' ', $object->cStrasse);
         $parts = \count($data);
@@ -664,14 +647,13 @@ abstract class AbstractSync
      * @param string $newSeo
      * @return bool
      */
-    protected function checkDbeSXmlRedirect($oldSeo, $newSeo): bool
+    protected function checkDbeSXmlRedirect(string $oldSeo, string $newSeo): bool
     {
-        // Insert into tredirect weil sich das SEO von der Kategorie geändert hat
+        // Insert into tredirect weil sich SEO von Kategorie oder Artikel geändert hat
         if ($oldSeo === $newSeo || $oldSeo === '' || $newSeo === '') {
             return false;
         }
-        $redirect = new Redirect();
 
-        return $redirect->saveExt('/' . $oldSeo, $newSeo, true);
+        return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
 }

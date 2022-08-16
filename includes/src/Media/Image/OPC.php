@@ -3,9 +3,14 @@
 namespace JTL\Media\Image;
 
 use DirectoryIterator;
+use FilesystemIterator;
+use Generator;
 use JTL\Media\Image;
 use JTL\Media\MediaImageRequest;
 use JTL\OPC\PortletInstance;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 
 /**
  * Class OPC
@@ -53,6 +58,7 @@ class OPC extends AbstractImage
     {
         /** @var PortletInstance $mixed */
         $pathInfo = \pathinfo($mixed->currentImagePath);
+
         return (!empty($pathInfo['dirname']) && $pathInfo['dirname'] !== '.'
                 ? $pathInfo['dirname'] . '/'
                 : '') . $pathInfo['filename'];
@@ -63,7 +69,7 @@ class OPC extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        return $id;
+        return $id === null ? null : (string)$id;
     }
 
     /**
@@ -79,9 +85,8 @@ class OPC extends AbstractImage
      */
     public function getTotalImageCount(): int
     {
-        $iterator = new DirectoryIterator(\PFAD_ROOT . self::getStoragePath());
-        $cnt      = 0;
-        foreach ($iterator as $fileinfo) {
+        $cnt = 0;
+        foreach (new DirectoryIterator(\PFAD_ROOT . self::getStoragePath()) as $fileinfo) {
             if ($fileinfo->isDot() || !$fileinfo->isFile()) {
                 continue;
             }
@@ -89,5 +94,50 @@ class OPC extends AbstractImage
         }
 
         return $cnt;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAllImages(int $offset = null, int $limit = null): Generator
+    {
+        $base    = \PFAD_ROOT . self::getStoragePath();
+        $rdi     = new RecursiveDirectoryIterator(
+            $base,
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+        );
+        $index   = 0;
+        $yielded = 0;
+        foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo) {
+            /** @var SplFileInfo $fileinfo */
+            if (!$fileinfo->isFile() || !\in_array($fileinfo->getExtension(), self::$imageExtensions, true)) {
+                continue;
+            }
+            if (\str_contains($fileinfo->getPath(), '.tmb')) {
+                continue;
+            }
+            if ($offset !== null && $offset > $index++) {
+                continue;
+            }
+            ++$yielded;
+            if ($limit !== null && $yielded > $limit) {
+                return;
+            }
+            $path  = \str_replace($base, '', $fileinfo->getPathname());
+            $parts = \explode('/', $path);
+            $id    = 0;
+            if (isset($parts[0]) && \is_numeric($parts[0])) {
+                $id = (int)$parts[0];
+            }
+            yield MediaImageRequest::create([
+                'id'         => $id,
+                'type'       => self::TYPE,
+                'name'       => $fileinfo->getBasename('.' . $fileinfo->getExtension()),
+                'number'     => 1,
+                'path'       => $path,
+                'sourcePath' => $path,
+                'ext'        => static::getFileExtension($path)
+            ]);
+        }
     }
 }

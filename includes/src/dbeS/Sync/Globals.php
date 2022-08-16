@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -17,11 +17,11 @@ final class Globals extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_globals.xml') !== false) {
+            if (\str_contains($file, 'del_globals.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'globals.xml') !== false) {
+            } elseif (\str_contains($file, 'globals.xml')) {
                 $this->handleInserts($xml);
             }
         }
@@ -205,7 +205,7 @@ final class Globals extends AbstractSync
      * @param string $toMap
      * @param bool   $del
      */
-    private function xml2db($xml, string $table, string $toMap, bool $del = true): void
+    private function xml2db(array $xml, string $table, string $toMap, bool $del = true): void
     {
         if (GeneralObject::isCountable($table, $xml)) {
             $objects = $this->mapper->mapArray($xml, $table, $toMap);
@@ -218,11 +218,8 @@ final class Globals extends AbstractSync
      * @param array    $objects
      * @param int|bool $del
      */
-    private function dbDelInsert(string $tablename, $objects, $del): void
+    private function dbDelInsert(string $tablename, array $objects, bool $del): void
     {
-        if (!\is_array($objects)) {
-            return;
-        }
         if ($del) {
             if ($tablename === 'tsprache') {
                 $this->db->query("DELETE FROM tsprache WHERE cISO != 'ger' AND cISO != 'eng'");

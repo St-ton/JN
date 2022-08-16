@@ -25,6 +25,9 @@ use JTL\Plugin\Admin\InputType;
  * @property int    $pluginID
  * @method int getPluginID()
  * @method void setPluginID(int $value)
+ * @property string $templateID
+ * @method string getTemplateID()
+ * @method void setTemplateID(string $value)
  * @property int    $active
  * @method int getActive()
  * @method void setActive(int $value)
@@ -73,10 +76,10 @@ final class ConsentModel extends DataModel
                         $this->getDB(),
                         ConsentLocalizationModel::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($loc) {
+                $existing = $res->first(static function ($e) use ($loc): bool {
                     return $e->consentID === $loc->consentID && $e->languageID === $loc->languageID;
                 });
                 if ($existing === null) {
@@ -107,7 +110,7 @@ final class ConsentModel extends DataModel
         }
         $all = LanguageHelper::getInstance($this->getDB())->gibInstallierteSprachen();
         if ($loc->count() !== \count($all)) {
-            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e) {
+            $existingLanguageIDs = $loc->map(function (ConsentLocalizationModel $e): int {
                 return $e->getLanguageID();
             });
             $default             = clone $loc->first();
@@ -116,7 +119,7 @@ final class ConsentModel extends DataModel
                 if (!$existingLanguageIDs->containsStrict($langID)) {
                     /** @var ConsentLocalizationModel $default */
                     $default->setLanguageID($languageModel->getId());
-                    $default->setId(0);
+                    $default->setID(0);
                     $loc->add($default);
                 }
             }
@@ -137,9 +140,12 @@ final class ConsentModel extends DataModel
             $attributes['id'] = $id;
             $itemID           = DataAttribute::create('itemID', 'varchar', null, false);
             $itemID->getInputConfig()->setModifyable(false);
-            $attributes['itemID']  = $itemID;
-            $attributes['company'] = DataAttribute::create('company', 'varchar', null, false);
-            $pluginID              = DataAttribute::create('pluginID', 'int', self::cast('0', 'int'), false);
+            $attributes['itemID'] = $itemID;
+            $templateID           = DataAttribute::create('templateID', 'varchar', null, false);
+            $templateID->getInputConfig()->setModifyable(false);
+            $attributes['templateID'] = $templateID;
+            $attributes['company']    = DataAttribute::create('company', 'varchar', null, false);
+            $pluginID                 = DataAttribute::create('pluginID', 'int', self::cast('0', 'int'), false);
             $pluginID->getInputConfig()->setModifyable(false);
             $pluginID->getInputConfig()->setInputType(InputType::NUMBER);
             $attributes['pluginID'] = $pluginID;
@@ -150,7 +156,6 @@ final class ConsentModel extends DataModel
             ]);
             $active->getInputConfig()->setInputType(InputType::SELECT);
             $attributes['active'] = $active;
-
 
             $attributes['localization'] = DataAttribute::create(
                 'localization',

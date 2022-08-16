@@ -1,15 +1,15 @@
 <div class="content-header">
     <div class="row">
         <div class="col">
-            <h1 class="content-header-headline {if isset($cBeschreibung) && $cBeschreibung|@strlen == 0}nospacing{/if}">{if $cTitel|@strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>
+            <h1 class="content-header-headline {if isset($cBeschreibung) && $cBeschreibung|strlen == 0}nospacing{/if}">{if $cTitel|strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>
         </div>
         <div class="col-auto ml-auto">
             {if $wizardDone}
-                <a href="favs.php" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
+                <a href="{$adminURL}/favs" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
                     <span class="fal fa-star"></span>
                 </a>
             {/if}
-            {if isset($cDokuURL) && $cDokuURL|@strlen > 0}
+            {if isset($cDokuURL) && $cDokuURL|strlen > 0}
                 <a href="{$cDokuURL}" target="_blank" class="btn btn-link btn-lg" data-toggle="tooltip"
                    data-container="body" data-placement="left" title="{__('goToDocu')}">
                     <span class="fal fa-map-signs"></span>
@@ -17,7 +17,7 @@
             {/if}
         </div>
     </div>
-    {if isset($cBeschreibung) && $cBeschreibung|@strlen > 0}
+    {if isset($cBeschreibung) && $cBeschreibung|strlen > 0}
         <div class="description {if isset($cClass)}{$cClass}{/if}">
             {if isset($onClick)}<a href="#" onclick="{$onClick}">{/if}{$cBeschreibung}{if isset($onClick)}</a>{/if}
         </div>

@@ -22,7 +22,7 @@ class Mail implements MailInterface
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private int $customerGroupID = 0;
 
     /**
      * @var LanguageModel
@@ -32,12 +32,12 @@ class Mail implements MailInterface
     /**
      * @var string
      */
-    private $fromMail;
+    private string $fromMail;
 
     /**
      * @var string
      */
-    private $fromName;
+    private string $fromName;
 
     /**
      * @var string
@@ -67,32 +67,32 @@ class Mail implements MailInterface
     /**
      * @var string
      */
-    private $bodyHTML = '';
+    private string $bodyHTML = '';
 
     /**
      * @var string
      */
-    private $bodyText = '';
+    private string $bodyText = '';
 
     /**
      * @var Attachment[]
      */
-    private $attachments = [];
+    private array $attachments = [];
 
     /**
      * @var Attachment[]
      */
-    private $pdfAttachments = [];
+    private array $pdfAttachments = [];
 
     /**
      * @var string
      */
-    private $error = '';
+    private string $error = '';
 
     /**
      * @var array
      */
-    private $copyRecipients = [];
+    private array $copyRecipients = [];
 
     /**
      * @var TemplateInterface|null
@@ -275,9 +275,9 @@ class Mail implements MailInterface
      */
     public function initDefaults(): void
     {
-        $config         = Shop::getSettings([\CONF_EMAILS]);
-        $this->fromName = $config['emails']['email_master_absender_name'] ?? '';
-        $this->fromMail = $config['emails']['email_master_absender'] ?? '';
+        $config         = Shop::getSettingSection(\CONF_EMAILS);
+        $this->fromName = $config['email_master_absender_name'] ?? '';
+        $this->fromMail = $config['email_master_absender'] ?? '';
     }
 
     /**

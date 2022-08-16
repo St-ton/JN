@@ -40,6 +40,19 @@ class Category extends BaseCategory
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function setValue($value): FilterInterface
@@ -80,7 +93,11 @@ class Category extends BaseCategory
         $values = ' IN (' . \implode(', ', $value)  . ')';
 
         if ($this->getIncludeSubCategories() === true) {
-            return ' tkategorieartikel.kKategorie IN (
+            $row = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
+                ? 'tkategorieartikelgesamt'
+                : 'tkategorieartikel';
+
+            return $row . '.kKategorie IN (
                         SELECT tchild.kKategorie FROM tkategorie AS tparent
                             JOIN tkategorie AS tchild
                                 ON tchild.lft BETWEEN tparent.lft AND tparent.rght
@@ -169,7 +186,6 @@ class Category extends BaseCategory
                 ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
                 ->setOrigin(__CLASS__));
         } else {
-            // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
                 $sql->addJoin((new Join())
                     ->setComment('join3 from ' . __METHOD__)
@@ -227,7 +243,8 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories         = $this->productFilter->getDB()->getObjects(
+        $db                 = $this->productFilter->getDB();
+        $categories         = $db->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -245,14 +262,18 @@ class Category extends BaseCategory
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new Kategorie(
+                    $category->kKategorie,
+                    $langID,
+                    $customerGroupID,
+                    false,
+                    $db
+                ));
             }
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL(
-                    $additionalFilter->init((int)$category->kKategorie)
-                ))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->kKategorie)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($category->cName)
@@ -261,7 +282,7 @@ class Category extends BaseCategory
                 ->setSort((int)$category->nSort);
         }
         if ($categoryFilterType === 'KP') {
-            \usort($options, static function ($a, $b) {
+            \usort($options, static function ($a, $b): int {
                 /** @var Option $a */
                 /** @var Option $b */
                 return \strcmp($a->getName(), $b->getName());

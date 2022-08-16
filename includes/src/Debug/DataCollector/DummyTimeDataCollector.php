@@ -13,14 +13,14 @@ class DummyTimeDataCollector extends TimeDataCollector
     /**
      * @inheritdoc
      */
-    public function startMeasure($name, $label = null, $collector = null)
+    public function startMeasure($name, $label = null, $collector = null): void
     {
     }
 
     /**
      * @inheritdoc
      */
-    public function stopMeasure($name, $params = [])
+    public function stopMeasure($name, $params = []): void
     {
     }
 }

@@ -419,6 +419,7 @@
 	}
 	.config-item {
         cursor: pointer;
+		display: block;
 		padding: $alert-padding-y;
 		border: 2px solid $cool-white;
 		margin-bottom: map_get($spacers, 5);
@@ -600,6 +601,12 @@
 		}
 		&:not(.badge-right) {
 			margin-left: map_get($spacers, 1);
+		}
+	}
+	.swatches {
+		.variation-badge {
+			white-space: initial;
+			margin-left: auto;
 		}
 	}
 }

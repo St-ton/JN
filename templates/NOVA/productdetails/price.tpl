@@ -43,11 +43,11 @@
                 {block name='productdetails-price-snippets'}
                     {if $tplscope !== 'box'}
                         {if $Artikel->Preise->oPriceRange->isRange()}
-                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->minBruttoPrice}">
-                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->maxBruttoPrice}">
+                            <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
+                            <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
                         {/if}
-                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{$Artikel->Preise->oPriceRange->minBruttoPrice}{else}{$Artikel->Preise->fVKBrutto}{/if}">
-                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                        <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
+                        <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
@@ -68,8 +68,8 @@
                             {if !empty($Artikel->cLocalizedVPE)}
                                 {block name='productdetails-price-detail-base-price'}
                                     <div class="base-price text-nowrap-util" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
-                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->minBruttoPrice/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
-                                        <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                                        <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
+                                        <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                         <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                             {$Artikel->cLocalizedVPE[$NettoPreise]}
                                             <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
@@ -83,6 +83,25 @@
                                 <span class="vat_info">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                                 </span>
+                            {/block}
+
+                            {block name='productdetails-price-min-value-info'}
+                                {$minOrderValue = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
+                                {if $minOrderValue > 0}
+                                    {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+                                        {if $NettoPreise == 1}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minNettoPrice}
+                                        {else}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minBruttoPrice}
+                                        {/if}
+                                    {else}
+                                        {$minPrice = $Artikel->Preise->fVK[$NettoPreise]}
+                                    {/if}
+
+                                    {if $minOrderValue > $minPrice}
+                                        <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$minOrderValue|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                    {/if}
+                                {/if}
                             {/block}
 
                             {block name='productdetails-price-special-prices-detail'}
@@ -178,8 +197,8 @@
                         {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
                             {block name='productdetails-price-list-base-price'}
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
-                                    <meta itemprop="price" content="{($Artikel->Preise->fVKBrutto/$Artikel->fVPEWert)|string_format:"%.2f"}">
-                                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->getName()}">
+                                    <meta itemprop="price" content="{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}">
+                                    <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">

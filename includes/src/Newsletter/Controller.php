@@ -3,7 +3,6 @@
 namespace JTL\Newsletter;
 
 use DateTime;
-use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
@@ -23,24 +22,12 @@ use stdClass;
 final class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * Manager constructor.
+     * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private DbInterface $db, private array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**
@@ -75,7 +62,7 @@ final class Controller
      * @param bool              $validate
      * @return stdClass
      */
-    public function addSubscriber($customer, $validate = false): stdClass
+    public function addSubscriber($customer, bool $validate = false): stdClass
     {
         $alertHelper         = Shop::Container()->getAlertService();
         $plausi              = new stdClass();
@@ -117,11 +104,7 @@ final class Controller
                 if ((isset($recipient->cEmail) && \mb_strlen($recipient->cEmail) > 0)
                     || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
                 ) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        Shop::Lang()->get('newsletterExists', 'errorMessages'),
-                        'newsletterExists'
-                    );
+                    $alertHelper->addError(Shop::Lang()->get('newsletterExists', 'errorMessages'), 'newsletterExists');
                 } else {
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -184,10 +167,11 @@ final class Controller
                             && empty($_SESSION['Kunde']->kKunde))
                         || $this->config['newsletter']['newsletter_doubleopt'] === 'A'
                     ) {
-                        $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                        $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
+                        $nlBase = Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')
+                            . '?lang=' . $_SESSION['cISOSprache'];
+
+                        $recipient->cLoeschURL     = $nlBase . '&lc=' . $recipient->cLoeschCode;
+                        $recipient->cFreischaltURL = $nlBase . '&fc=' . $recipient->cOptCode;
                         $obj                       = new stdClass();
                         $obj->tkunde               = $_SESSION['Kunde'] ?? null;
                         $obj->NewsletterEmpfaenger = $recipient;
@@ -201,15 +185,10 @@ final class Controller
                             $historyID,
                             (object)['cEmailBodyHtml' => $mail->getBodyHTML()]
                         );
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
-                            Shop::Lang()->get('newsletterAdd', 'messages'),
-                            'newsletterAdd'
-                        );
+                        $alertHelper->addNotice(Shop::Lang()->get('newsletterAdd', 'messages'), 'newsletterAdd');
                         $plausi = new stdClass();
                     } else {
-                        $alertHelper->addAlert(
-                            Alert::TYPE_NOTE,
+                        $alertHelper->addNotice(
                             Shop::Lang()->get('newsletterNomailAdd', 'messages'),
                             'newsletterNomailAdd'
                         );
@@ -217,11 +196,7 @@ final class Controller
                 }
             }
         } else {
-            $alertHelper->addAlert(
-                Alert::TYPE_ERROR,
-                Shop::Lang()->get('newsletterWrongemail', 'errorMessages'),
-                'newsletterWrongemail'
-            );
+            $alertHelper->addError(Shop::Lang()->get('newsletterWrongemail', 'errorMessages'), 'newsletterWrongemail');
         }
 
         return $plausi;
@@ -363,21 +338,22 @@ final class Controller
      * @param string $groupKeys
      * @return bool
      */
-    private function checkHistory(int $groupID, $groupKeys): bool
+    private function checkHistory(int $groupID, string $groupKeys): bool
     {
-        if (\mb_strlen($groupKeys) > 0) {
-            $groupIDs = [];
-            foreach (\explode(';', $groupKeys) as $id) {
-                if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
-                    $groupIDs[] = (int)$id;
-                }
+        if (\mb_strlen($groupKeys) === 0) {
+            return false;
+        }
+        $groupIDs = [];
+        foreach (\explode(';', $groupKeys) as $id) {
+            if ((int)$id > 0 || (\mb_strlen($id) > 0 && (int)$id === 0)) {
+                $groupIDs[] = (int)$id;
             }
-            if (\in_array(0, $groupIDs, true)) {
-                return true;
-            }
-            if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
-                return true;
-            }
+        }
+        if (\in_array(0, $groupIDs, true)) {
+            return true;
+        }
+        if ($groupID > 0 && \in_array($groupID, $groupIDs, true)) {
+            return true;
         }
 
         return false;

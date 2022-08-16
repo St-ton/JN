@@ -11,7 +11,7 @@ class AreaList implements \JsonSerializable
     /**
      * @var Area[]
      */
-    protected $areas = [];
+    protected array $areas = [];
 
     /**
      * @return $this
@@ -105,7 +105,7 @@ class AreaList implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $res = [];
         foreach ($this->areas as $id => $area) {

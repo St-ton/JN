@@ -6,7 +6,6 @@ use JTL\Catalog\Product\ArtikelListe;
 use JTL\Helpers\SearchSpecial;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use function Functional\map;
 
 /**
  * Class BestsellingProducts
@@ -28,8 +27,10 @@ final class BestsellingProducts extends AbstractBox
             $cacheTags      = [\CACHING_GROUP_BOX, \CACHING_GROUP_ARTICLE];
             $stockFilterSQL = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $parentSQL      = ' AND tartikel.kVaterArtikel = 0';
-            $cacheID        = 'bx_bstsl_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
-            if (($productIDs = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $cacheID        = 'bx_bsp_' . $customerGroupID . '_' . \md5($parentSQL . $stockFilterSQL);
+            $cache          = Shop::Container()->getCache();
+            $db             = Shop::Container()->getDB();
+            if (($productIDs = $cache->get($cacheID)) === false) {
                 $cached   = false;
                 $minCount = (int)$this->config['global']['global_bestseller_minanzahl'] > 0
                     ? (int)$this->config['global']['global_bestseller_minanzahl']
@@ -38,7 +39,7 @@ final class BestsellingProducts extends AbstractBox
                     ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
                     : 10;
 
-                $productIDs = Shop::Container()->getDB()->getObjects(
+                $productIDs = $db->getInts(
                     'SELECT tartikel.kArtikel
                         FROM tbestseller, tartikel
                         LEFT JOIN tartikelsichtbarkeit 
@@ -48,24 +49,19 @@ final class BestsellingProducts extends AbstractBox
                             AND tbestseller.kArtikel = tartikel.kArtikel
                             AND ROUND(tbestseller.fAnzahl) >= :ms ' . $parentSQL . $stockFilterSQL . '
                         ORDER BY fAnzahl DESC LIMIT :lmt ',
+                    'kArtikel',
                     ['cgid' => $customerGroupID, 'ms' => $minCount, 'lmt' => $limit]
                 );
-                Shop::Container()->getCache()->set($cacheID, $productIDs, $cacheTags);
+                $cache->set($cacheID, $productIDs, $cacheTags);
             }
             \shuffle($productIDs);
-            $res = map(
-                \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']),
-                static function ($productID) {
-                    return (int)$productID->kArtikel;
-                }
-            );
-
+            $res = \array_slice($productIDs, 0, $this->config['boxen']['box_bestseller_anzahl_anzeige']);
             if (\count($res) > 0) {
                 $this->setShow(true);
-                $products = new ArtikelListe();
+                $products = new ArtikelListe($db, $cache);
                 $products->getArtikelByKeys($res, 0, \count($res));
                 $this->setProducts($products);
-                $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_BESTSELLER));
+                $this->setURL((new SearchSpecial($db, $cache))->getURL(\SEARCHSPECIALS_BESTSELLER));
             }
 
             \executeHook(\HOOK_BOXEN_INC_BESTSELLER, [

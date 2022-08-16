@@ -5,7 +5,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
 <div id="content">
-    <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
+    <form class="settings navbar-form" action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <input type="hidden" name="tab" value="group_view" />
         <div class="card">
@@ -88,7 +88,7 @@
                             <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
                         {/if}
                         <input type="hidden" name="save" value="1" />
-                        <a class="btn btn-outline-primary btn-block" href="benutzerverwaltung.php?tab=group_view">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}?tab=group_view">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

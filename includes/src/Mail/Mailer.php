@@ -20,24 +20,9 @@ use stdClass;
 class Mailer
 {
     /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
      * @var array
      */
-    private $config;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private array $config;
 
     /**
      * Mailer constructor.
@@ -47,15 +32,12 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        HydratorInterface $hydrator,
-        RendererInterface $renderer,
+        private HydratorInterface $hydrator,
+        private RendererInterface $renderer,
         Shopsetting $settings,
-        ValidatorInterface $validator
+        private ValidatorInterface $validator
     ) {
-        $this->hydrator  = $hydrator;
-        $this->renderer  = $renderer;
-        $this->config    = $settings->getAll();
-        $this->validator = $validator;
+        $this->config = $settings->getAll();
     }
 
     /**
@@ -132,7 +114,7 @@ class Mailer
         $method->sendmail_pfad = $this->config['emails']['email_sendmail_pfad'];
         $method->smtp_hostname = $this->config['emails']['email_smtp_hostname'];
         $method->smtp_port     = $this->config['emails']['email_smtp_port'];
-        $method->smtp_auth     = $this->config['emails']['email_smtp_auth'];
+        $method->smtp_auth     = (int)$this->config['emails']['email_smtp_auth'] === 1;
         $method->smtp_user     = $this->config['emails']['email_smtp_user'];
         $method->smtp_pass     = $this->config['emails']['email_smtp_pass'];
         $method->SMTPSecure    = $this->config['emails']['email_smtp_verschluesselung'];

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Backend;
 
@@ -12,9 +12,9 @@ use JTL\IO\IOError;
 class AdminIO extends IO
 {
     /**
-     * @var AdminAccount
+     * @var AdminAccount|null
      */
-    protected $oAccount;
+    protected ?AdminAccount $oAccount = null;
 
     /**
      * @param AdminAccount $account
@@ -43,7 +43,7 @@ class AdminIO extends IO
      * @return $this
      * @throws \Exception
      */
-    public function register(string $name, $function = null, $include = null, $permission = null)
+    public function register(string $name, $function = null, $include = null, ?string $permission = null)
     {
         parent::register($name, $function, $include);
         $this->functions[$name][] = $permission;

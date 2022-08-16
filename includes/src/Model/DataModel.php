@@ -22,30 +22,35 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @var array
      * Stores the property values
      */
-    protected $members = [];
+    protected array $members = [];
 
     /**
      * @var callable[]
      * List of setting handlers
      */
-    protected $setters = [];
+    protected array $setters = [];
 
     /**
      * @var callable[]
      * List of getting handlers
      */
-    protected $getters = [];
+    protected array $getters = [];
+
+    /**
+     * @var array
+     */
+    protected static array $nameMapping = [];
 
     /**
      * true when loaded from database
      * @var bool
      */
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
      * @inheritDoc
@@ -102,7 +107,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'getters' && $e !== 'db' && $e !== 'setters';
         });
     }
@@ -121,10 +126,10 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $attribute = \lcfirst(\substr($name, 3));
         if (\array_key_exists($attribute, $this->members)) {
-            if (\strpos($name, 'get') === 0) {
+            if (\str_starts_with($name, 'get')) {
                 return $this->$attribute;
             }
-            if (\strpos($name, 'set') === 0) {
+            if (\str_starts_with($name, 'set')) {
                 $this->$attribute = $arguments[0];
 
                 return null;
@@ -208,7 +213,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      * @return $this
      * @throws Exception
      */
-    protected function createNew($option = self::NONE): self
+    protected function createNew(int $option = self::NONE): self
     {
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
         if (!empty($pkValue)) {
@@ -386,7 +391,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             case 'object':
                 return $value;
             case 'yesno':
-                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                if (\in_array($value, ['Y', 'N'], true)) {
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
@@ -683,17 +688,17 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function getMapping($attribName): string
     {
-        static $nameMapping = [];
-        if (!isset($nameMapping[$attribName])) {
+        $tableName = $this->getTableName();
+        if (!isset(static::$nameMapping[$tableName][$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $nameMapping[$attribName] = $name;
+                    static::$nameMapping[$tableName][$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return $nameMapping[$attribName] ?? $attribName;
+        return static::$nameMapping[$tableName][$attribName] ?? $attribName;
     }
 
     /**
@@ -702,17 +707,17 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private function hasMapping(string $attribName): bool
     {
-        static $mapping = [];
-        if (!isset($mapping[$attribName])) {
+        $tableName = $this->getTableName();
+        if (!isset(static::$nameMapping[$tableName][$attribName])) {
             foreach ($this->getAttributes() as $name => $attribute) {
                 if ($attribute->name === $attribName) {
-                    $mapping[$attribName] = $name;
+                    static::$nameMapping[$tableName][$attribName] = $name;
                     break;
                 }
             }
         }
 
-        return isset($mapping[$attribName]);
+        return isset(static::$nameMapping[$tableName][$attribName]);
     }
 
     /**
@@ -849,7 +854,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
-                    $value = $value->map(static function (DataModelInterface $e) {
+                    $value = $value->map(static function (DataModelInterface $e): array {
                         return $e->rawArray(true);
                     })->toArray();
                 } elseif ($value instanceof DataModelInterface) {
@@ -925,9 +930,8 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
-        $instance = static::newInstance($this->db);
 
-        return $instance->init((array)$members);
+        return static::newInstance($this->db)->init((array)$members);
     }
 
     /**
@@ -939,7 +943,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (!\is_a($childModel, Collection::class)) {
                 continue;
             }
-            $childModel->each(function (DataModelInterface $model) {
+            $childModel->each(function (DataModelInterface $model): void {
                 $class = \get_class($model);
                 foreach ($this->getKeyUpdates($class) as $k => $v) {
                     $model->$k = $v;
@@ -978,7 +982,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         foreach ($this->getChildModels() as $childModel) {
             if (\is_a($childModel, Collection::class)) {
-                $childModel->each(function (DataModelInterface $model) {
+                $childModel->each(function (DataModelInterface $model): void {
                     $model->setDB($this->db);
                     $model->delete();
                 });

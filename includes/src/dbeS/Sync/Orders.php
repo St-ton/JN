@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -32,21 +32,21 @@ final class Orders extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'ack_bestellung.xml') !== false) {
+            if (\str_contains($file, 'ack_bestellung.xml')) {
                 $this->handleACK($xml);
-            } elseif (\strpos($file, 'del_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'del_bestellung.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'delonly_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'delonly_bestellung.xml')) {
                 $this->handleDeleteOnly($xml);
-            } elseif (\strpos($file, 'storno_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'storno_bestellung.xml')) {
                 $this->handleCancelation($xml);
-            } elseif (\strpos($file, 'reaktiviere_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'reaktiviere_bestellung.xml')) {
                 $this->handleReactivation($xml);
-            } elseif (\strpos($file, 'ack_zahlungseingang.xml') !== false) {
+            } elseif (\str_contains($file, 'ack_zahlungseingang.xml')) {
                 $this->handlePaymentACK($xml);
-            } elseif (\strpos($file, 'set_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'set_bestellung.xml')) {
                 $this->handleSet($xml);
-            } elseif (\strpos($file, 'upd_bestellung.xml') !== false) {
+            } elseif (\str_contains($file, 'upd_bestellung.xml')) {
                 $this->handleUpdate($xml);
             }
         }
@@ -57,7 +57,7 @@ final class Orders extends AbstractSync
     /**
      * @param array $xml
      */
-    private function handleACK($xml): void
+    private function handleACK(array $xml): void
     {
         $source = $xml['ack_bestellungen']['kBestellung'] ?? [];
         if (\is_numeric($source)) {
@@ -77,7 +77,7 @@ final class Orders extends AbstractSync
 
     /**
      * @param int $orderID
-     * @return bool|\PaymentMethod
+     * @return bool|LegacyMethod
      */
     private function getPaymentMethod(int $orderID)
     {
@@ -296,7 +296,7 @@ final class Orders extends AbstractSync
      * @param Rechnungsadresse $billingAddress
      * @param array            $xml
      */
-    private function updateAddresses($oldOrder, $billingAddress, array $xml): void
+    private function updateAddresses(stdClass $oldOrder, Rechnungsadresse $billingAddress, array $xml): void
     {
         $deliveryAddress = new Lieferadresse($oldOrder->kLieferadresse);
         $this->mapper->mapObject($deliveryAddress, $xml['tbestellung']['tlieferadresse'], 'mLieferadresse');
@@ -400,7 +400,7 @@ final class Orders extends AbstractSync
      * @param array    $xml
      * @return Rechnungsadresse
      */
-    private function getBillingAddress($oldOrder, array $xml): Rechnungsadresse
+    private function getBillingAddress(stdClass $oldOrder, array $xml): Rechnungsadresse
     {
         $billingAddress = new Rechnungsadresse($oldOrder->kRechnungsadresse);
         $this->mapper->mapObject($billingAddress, $xml['tbestellung']['trechnungsadresse'], 'mRechnungsadresse');
@@ -412,7 +412,7 @@ final class Orders extends AbstractSync
         $billingAddress->cLand = Adresse::checkISOCountryCode($billingAddress->cLand);
         if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
             \syncException(
-                'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
+                'Error Bestellung Update. Rechnungsadresse enthaelt keinen Nachnamen, Firma und Strasse! XML:' .
                 \print_r($xml, true),
                 \FREIDEFINIERBARER_FEHLER
             );
@@ -422,21 +422,32 @@ final class Orders extends AbstractSync
     }
 
     /**
-     * @param stdClass $oldOrder
-     * @param stdClass $order
-     * @param stdClass $paymentMethod
+     * @param stdClass      $oldOrder
+     * @param stdClass      $order
+     * @param stdClass|null $paymentMethod
      */
-    private function updateOrderData($oldOrder, $order, $paymentMethod): void
+    private function updateOrderData(stdClass $oldOrder, stdClass $order, ?stdClass $paymentMethod): void
     {
-        $upd               = new stdClass();
-        $upd->fGuthaben    = $order->fGuthaben;
-        $upd->fGesamtsumme = $order->fGesamtsumme;
-        $upd->cKommentar   = $order->cKommentar;
-        if (isset($paymentMethod->kZahlungsart) && $paymentMethod->kZahlungsart > 0) {
-            $upd->kZahlungsart     = (int)$paymentMethod->kZahlungsart;
-            $upd->cZahlungsartName = $paymentMethod->cName;
+        $params    = [
+            'fg'    => $order->fGuthaben,
+            'total' => $order->fGesamtsumme,
+            'cmt'   => $order->cKommentar,
+            'oid'   => $oldOrder->kBestellung
+        ];
+        $updateSql = '';
+        if ($paymentMethod !== null && $paymentMethod->kZahlungsart > 0) {
+            $params['pmid'] = (int)$paymentMethod->kZahlungsart;
+            $params['pmnm'] = $paymentMethod->cName;
+            $updateSql      = ' , kZahlungsart = :pmid, cZahlungsartName = :pmnm ';
         }
-        $this->db->update('tbestellung', 'kBestellung', $oldOrder->kBestellung, $upd);
+        $this->db->queryPrepared(
+            'UPDATE tbestellung SET
+            fGuthaben = :fg,
+            fGesamtsumme = :total,
+            cKommentar = :cmt ' . $updateSql . '
+            WHERE kBestellung = :oid',
+            $params
+        );
     }
 
     /**
@@ -444,16 +455,16 @@ final class Orders extends AbstractSync
      * @param stdClass $order
      * @param Customer $customer
      */
-    private function sendMail($oldOrder, $order, $customer): void
+    private function sendMail(stdClass $oldOrder, stdClass $order, Customer $customer): void
     {
         $module = $this->getPaymentMethod($oldOrder->kBestellung);
         $mail   = new Mail();
         $test   = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
         $tpl    = $test->getTemplate();
         if ($tpl !== null
+            && (!isset($order->cSendeEMail) || $order->cSendeEMail === 'Y')
             && $tpl->getModel() !== null
             && $tpl->getModel()->getActive() === true
-            && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
         ) {
             if ($module) {
                 $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
@@ -473,7 +484,7 @@ final class Orders extends AbstractSync
      * @param float    $correctionFactor
      * @param array    $xml
      */
-    private function updateCartItems($oldOrder, $correctionFactor, array $xml): void
+    private function updateCartItems(stdClass $oldOrder, float $correctionFactor, array $xml): void
     {
         $oldItems = $this->db->selectAll(
             'twarenkorbpos',
@@ -577,9 +588,7 @@ final class Orders extends AbstractSync
             $state = \BESTELLUNG_STATUS_VERSANDT;
         }
         $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
-        if ((\count($updatedOrder->oLieferschein_arr) > 0)
-            && (isset($order->nKomplettAusgeliefert) && (int)$order->nKomplettAusgeliefert === 0)
-        ) {
+        if ((int)($order->nKomplettAusgeliefert ?? -1) === 0 && \count($updatedOrder->oLieferschein_arr) > 0) {
             $state = \BESTELLUNG_STATUS_TEILVERSANDT;
         }
 
@@ -628,7 +637,7 @@ final class Orders extends AbstractSync
         $methodName  = $this->db->escape($order->cZahlungsartName);
         $clearedDate = $this->db->escape($order->dBezahltDatum);
         $shippedDate = $this->db->escape($order->dVersandt);
-        if ($shippedDate === null || $shippedDate === '') {
+        if ($shippedDate === '') {
             $shippedDate = '_DBNULL_';
         }
 
@@ -657,7 +666,7 @@ final class Orders extends AbstractSync
      * @param int        $state
      * @param Customer   $customer
      */
-    private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, $customer): void
+    private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, Customer $customer): void
     {
         $doSend = false;
         foreach ($updatedOrder->oLieferschein_arr as $note) {
@@ -667,7 +676,7 @@ final class Orders extends AbstractSync
                 break;
             }
         }
-        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum)));
+        $earlier = new DateTime(\date('Y-m-d', \strtotime($updatedOrder->dVersandDatum ?? '1970-01-01')));
         $now     = new DateTime(\date('Y-m-d'));
         $diff    = $now->diff($earlier)->format('%a');
 
@@ -707,9 +716,8 @@ final class Orders extends AbstractSync
      * @param stdClass $order
      * @param Customer $customer
      */
-    private function sendPaymentMail(stdClass $shopOrder, stdClass $order, $customer): void
+    private function sendPaymentMail(stdClass $shopOrder, stdClass $order, Customer $customer): void
     {
-
         if (!$shopOrder->dBezahltDatum && $order->dBezahltDatum && $customer->kKunde > 0) {
             $earlier = new DateTime(\date('Y-m-d', \strtotime($order->dBezahltDatum)));
             $now     = new DateTime(\date('Y-m-d'));
@@ -839,32 +847,30 @@ final class Orders extends AbstractSync
      * @param int        $orderID
      * @param stdClass[] $orderAttributes
      */
-    private function editAttributes(int $orderID, $orderAttributes): void
+    private function editAttributes(int $orderID, array $orderAttributes): void
     {
         $updated = [];
-        if (\is_array($orderAttributes)) {
-            foreach ($orderAttributes as $orderAttributeData) {
-                $orderAttribute    = (object)$orderAttributeData;
-                $orderAttributeOld = $this->db->select(
+        foreach ($orderAttributes as $orderAttributeData) {
+            $orderAttribute    = (object)$orderAttributeData;
+            $orderAttributeOld = $this->db->select(
+                'tbestellattribut',
+                ['kBestellung', 'cName'],
+                [$orderID, $orderAttribute->key]
+            );
+            if (isset($orderAttributeOld->kBestellattribut)) {
+                $this->db->update(
                     'tbestellattribut',
-                    ['kBestellung', 'cName'],
-                    [$orderID, $orderAttribute->key]
+                    'kBestellattribut',
+                    (int)$orderAttributeOld->kBestellattribut,
+                    (object)['cValue' => $orderAttribute->value]
                 );
-                if (isset($orderAttributeOld->kBestellattribut)) {
-                    $this->db->update(
-                        'tbestellattribut',
-                        'kBestellattribut',
-                        (int)$orderAttributeOld->kBestellattribut,
-                        (object)['cValue' => $orderAttribute->value]
-                    );
-                    $updated[] = (int)$orderAttributeOld->kBestellattribut;
-                } else {
-                    $updated[] = $this->db->insert('tbestellattribut', (object)[
-                        'kBestellung' => $orderID,
-                        'cName'       => $orderAttribute->key,
-                        'cValue'      => $orderAttribute->value,
-                    ]);
-                }
+                $updated[] = (int)$orderAttributeOld->kBestellattribut;
+            } else {
+                $updated[] = $this->db->insert('tbestellattribut', (object)[
+                    'kBestellung' => $orderID,
+                    'cName'       => $orderAttribute->key,
+                    'cValue'      => $orderAttribute->value,
+                ]);
             }
         }
 

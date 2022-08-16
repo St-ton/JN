@@ -11,12 +11,12 @@ class PortletGroup
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var Portlet[]
      */
-    protected $portlets = [];
+    protected array $portlets = [];
 
     /**
      * PortletGroup constructor.

@@ -26,9 +26,9 @@ final class LicenceExtension extends AbstractItem
             $content = \file_get_contents($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile']);
             // ioncube encoded files usually have a header that checks loaded extions itself
             // but it can also be in short form, where there are no opening php tags
-            $requiresMissingIoncube = ((\mb_strpos($content, 'ionCube') !== false
-                    && \mb_strpos($content, 'extension_loaded') !== false)
-                || \mb_strpos($content, '<?php') === false);
+            $requiresMissingIoncube = ((\str_contains($content, 'ionCube')
+                    && \str_contains($content, 'extension_loaded'))
+                || !\str_contains($content, '<?php'));
         }
         if (isset($node['LicenceClassFile']) && \mb_strlen($node['LicenceClassFile']) > 0) {
             if (!\file_exists($dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'])) {
@@ -41,7 +41,7 @@ final class LicenceExtension extends AbstractItem
                 return InstallCode::IONCUBE_REQUIRED;
             }
             $namespace    = $this->getPluginID() . '\\' . \trim(\PFAD_PLUGIN_LICENCE, '\\/');
-            $licenceClass = \strpos($node['LicenceClass'], 'Plugin\\') !== 0
+            $licenceClass = !\str_starts_with($node['LicenceClass'], 'Plugin\\')
                 ? \sprintf('Plugin\\%s\\%s', $namespace, $node['LicenceClass'])
                 : $node['LicenceClass'];
             require_once $dir . \PFAD_PLUGIN_LICENCE . $node['LicenceClassFile'];

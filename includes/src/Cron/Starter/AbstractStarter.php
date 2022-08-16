@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cron\Starter;
 
@@ -13,12 +13,12 @@ abstract class AbstractStarter implements StarterInterface
      *
      * @var int
      */
-    protected $timeout = 150;
+    protected int $timeout = 150;
 
     /**
      * @var string
      */
-    protected $url;
+    protected string $url;
 
     /**
      * @inheritdoc

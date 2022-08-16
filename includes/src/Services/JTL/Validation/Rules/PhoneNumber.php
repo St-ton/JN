@@ -15,7 +15,7 @@ use JTL\Services\JTL\Validation\RuleResult;
  */
 class PhoneNumber implements RuleInterface
 {
-    public const REGEX = '/^[0-9\-\(\)\/\+\s]{1,}$/'; // taken from tools.Global.php function checkeTel
+    public const REGEX = '/^[\d\-\(\)\/\+\s]+$/';
 
     /**
      * @inheritdoc

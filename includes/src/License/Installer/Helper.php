@@ -12,7 +12,6 @@ use JTL\License\Exception\DownloadValidationException;
 use JTL\License\Exception\FilePermissionException;
 use JTL\License\Manager;
 use JTL\License\Struct\ExsLicense;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Helper
@@ -21,38 +20,20 @@ use Psr\Http\Message\ResponseInterface;
 class Helper
 {
     /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
-
-    /**
      * Helper constructor.
      * @param Manager           $manager
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(Manager $manager, DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private Manager $manager, private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->manager = $manager;
-        $this->db      = $db;
-        $this->cache   = $cache;
     }
 
     /**
      * @param string $itemID
-     * @return PluginInstaller|TemplateInstaller
+     * @return InstallerInterface
      */
-    public function getInstaller(string $itemID)
+    public function getInstaller(string $itemID): InstallerInterface
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -62,27 +43,23 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find release for item with ID ' . $itemID);
         }
-        switch ($licenseData->getType()) {
-            case ExsLicense::TYPE_PLUGIN:
-            case ExsLicense::TYPE_PORTLET:
-                return new PluginInstaller($this->db, $this->cache);
-            case ExsLicense::TYPE_TEMPLATE:
-                return new TemplateInstaller($this->db, $this->cache);
-            default:
-                throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType());
-        }
+        return match ($licenseData->getType()) {
+            ExsLicense::TYPE_PLUGIN, ExsLicense::TYPE_PORTLET => new PluginInstaller($this->db, $this->cache),
+            ExsLicense::TYPE_TEMPLATE => new TemplateInstaller($this->db, $this->cache),
+            default => throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType()),
+        };
     }
 
     /**
      * @param string $itemID
-     * @return ResponseInterface|string
+     * @return string
      * @throws DownloadValidationException
      * @throws InvalidArgumentException
      * @throws ApiResultCodeException
      * @throws FilePermissionException
      * @throws ChecksumValidationException
      */
-    public function getDownload(string $itemID)
+    public function getDownload(string $itemID): string
     {
         $licenseData = $this->manager->getLicenseByItemID($itemID);
         if ($licenseData === null) {
@@ -92,8 +69,7 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find update for item with ID ' . $itemID);
         }
-        $downloader = new Downloader();
 
-        return $downloader->downloadRelease($available);
+        return (new Downloader())->downloadRelease($available);
     }
 }

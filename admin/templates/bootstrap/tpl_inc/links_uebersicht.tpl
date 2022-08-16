@@ -18,7 +18,7 @@
             <p>{__('Please create the missing pages manually.')}</p>
         </div>
     {/if}
-    <form action="links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto">
@@ -61,7 +61,7 @@
                         </span>
                     </div>
                     <div class="col-md-6">
-                        <form method="post" action="links.php">
+                        <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
@@ -105,7 +105,7 @@
             </div>
         {/foreach}
     </div>{* /accordion *}
-    <form action="links.php" method="post">
+    <form action="{$adminURL}{$route}" method="post">
         {$jtl_token}
         <div class="row no-gutters">
             <div class="col-sm-6 col-xl-auto mb-4">

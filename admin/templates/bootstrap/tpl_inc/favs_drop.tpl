@@ -12,5 +12,5 @@
 
         <div class="dropdown-divider"></div>
     {/if}
-    <a class="dropdown-item" href="favs.php"><i class="fa fa-pencil mr-1"></i> {__('manageFavorites')}</a>
+    <a class="dropdown-item" href="{$adminURL}/favs"><i class="fa fa-pencil mr-1"></i> {__('manageFavorites')}</a>
 </div>

@@ -12,6 +12,7 @@ use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class CartItem
@@ -120,7 +121,7 @@ class CartItem
     public $Artikel;
 
     /**
-     * @var array
+     * @var CartItemProperty[]
      */
     public $WarenkorbPosEigenschaftArr = [];
 
@@ -185,6 +186,11 @@ class CartItem
     public $discountForArticle;
 
     /**
+     * @var array
+     */
+    public $fVK;
+
+    /**
      * @var object {
      *      localized: string,
      *      longestMin: int,
@@ -192,6 +198,33 @@ class CartItem
      * }
      */
     public $oEstimatedDelivery;
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        if ($this->kArtikel > 0) {
+            $this->Artikel         = new Artikel();
+            $options               = Artikel::getDefaultOptions();
+            $options->nStueckliste = 1;
+            $options->nVariationen = 1;
+            if ($this->kKonfigitem > 0) {
+                $options->nKeineSichtbarkeitBeachten = 1;
+            }
+            $this->Artikel->fuelleArtikel($this->kArtikel, $options);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep()
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'Artikel';
+        });
+    }
 
     /**
      * CartItem constructor.
@@ -223,20 +256,20 @@ class CartItem
         $newAttributes->kEigenschaftWert   = $valueID;
         $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
         $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
-        $Aufpreis_obj                      = $db->select(
+        $surcharge                         = $db->select(
             'teigenschaftwertaufpreis',
             'kEigenschaftWert',
-            (int)$newAttributes->kEigenschaftWert,
+            $newAttributes->kEigenschaftWert,
             'kKundengruppe',
             Frontend::getCustomerGroup()->getID()
         );
-        if (!empty($Aufpreis_obj->fAufpreisNetto)) {
+        if (!empty($surcharge->fAufpreisNetto)) {
             if ($this->Artikel->Preise->rabatt > 0) {
-                $newAttributes->fAufpreis     = $Aufpreis_obj->fAufpreisNetto -
-                    (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
-                $Aufpreis_obj->fAufpreisNetto = $newAttributes->fAufpreis;
+                $newAttributes->fAufpreis  = $surcharge->fAufpreisNetto -
+                    (($this->Artikel->Preise->rabatt / 100) * $surcharge->fAufpreisNetto);
+                $surcharge->fAufpreisNetto = $newAttributes->fAufpreis;
             } else {
-                $newAttributes->fAufpreis = $Aufpreis_obj->fAufpreisNetto;
+                $newAttributes->fAufpreis = $surcharge->fAufpreisNetto;
             }
         }
         $newAttributes->cTyp               = $attribute->cTyp;
@@ -244,35 +277,35 @@ class CartItem
         //posname lokalisiert ablegen
         $newAttributes->cEigenschaftName     = [];
         $newAttributes->cEigenschaftWertName = [];
-        foreach ($_SESSION['Sprachen'] as $language) {
-            $newAttributes->cEigenschaftName[$language->cISO]     = $attribute->cName;
-            $newAttributes->cEigenschaftWertName[$language->cISO] = $attributeValue->cName;
+        foreach (Frontend::getLanguages() as $language) {
+            $code = $language->getCode();
 
-            if ($language->cStandard !== 'Y') {
-                $eigenschaft_spr = $db->select(
+            $newAttributes->cEigenschaftName[$code]     = $attribute->cName;
+            $newAttributes->cEigenschaftWertName[$code] = $attributeValue->cName;
+            if ($language->isDefault() === false) {
+                $localized = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
-                    (int)$newAttributes->kEigenschaft,
+                    $newAttributes->kEigenschaft,
                     'kSprache',
-                    (int)$language->kSprache
+                    $language->getId()
                 );
-                if (!empty($eigenschaft_spr->cName)) {
-                    $newAttributes->cEigenschaftName[$language->cISO] = $eigenschaft_spr->cName;
+                if (!empty($localized->cName)) {
+                    $newAttributes->cEigenschaftName[$code] = $localized->cName;
                 }
                 $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
-                    (int)$newAttributes->kEigenschaftWert,
+                    $newAttributes->kEigenschaftWert,
                     'kSprache',
-                    (int)$language->kSprache
+                    $language->getId()
                 );
                 if (!empty($eigenschaftwert_spr->cName)) {
-                    $newAttributes->cEigenschaftWertName[$language->cISO] = $eigenschaftwert_spr->cName;
+                    $newAttributes->cEigenschaftWertName[$code] = $eigenschaftwert_spr->cName;
                 }
             }
-
             if ($freeText || \mb_strlen(\trim($freeText)) > 0) {
-                $newAttributes->cEigenschaftWertName[$language->cISO] = $db->escape($freeText);
+                $newAttributes->cEigenschaftWertName[$code] = $db->escape($freeText);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;
@@ -290,9 +323,8 @@ class CartItem
     public function gibGesetztenEigenschaftsWert(int $propertyID): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
-            $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
             if ($WKPosEigenschaft->kEigenschaft === $propertyID) {
-                return (int)$WKPosEigenschaft->kEigenschaftWert;
+                return $WKPosEigenschaft->kEigenschaftWert;
             }
         }
 
@@ -353,17 +385,6 @@ class CartItem
         }
 
         return $weight;
-    }
-
-    /**
-     * typo in function name - for compatibility reasons only
-     *
-     * @deprecated since 4.05
-     * @return $this
-     */
-    public function setzeGesamtpreisLoacalized(): self
-    {
-        return $this->setzeGesamtpreisLocalized();
     }
 
     /**
@@ -481,6 +502,12 @@ class CartItem
             $this->$member = $obj->$member;
         }
         $this->kSteuerklasse = 0;
+        $this->kWarenkorbPos = (int)$this->kWarenkorbPos;
+        $this->kWarenkorb    = (int)$this->kWarenkorb;
+        $this->kArtikel      = (int)$this->kArtikel;
+        $this->nPosTyp       = (int)$this->nPosTyp;
+        $this->kKonfigitem   = (int)$this->kKonfigitem;
+        $this->kBestellpos   = (int)$this->kBestellpos;
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
             self::setEstimatedDelivery($this, $this->nLongestMinDelivery, $this->nLongestMaxDelivery);
             unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
@@ -540,7 +567,7 @@ class CartItem
      */
     public function istKonfigVater(): bool
     {
-        return \is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem === 0;
+        return \is_string($this->cUnique) && !empty($this->cUnique) && $this->kKonfigitem === 0;
     }
 
     /**
@@ -548,7 +575,7 @@ class CartItem
      */
     public function istKonfigKind(): bool
     {
-        return \is_string($this->cUnique) && !empty($this->cUnique) && (int)$this->kKonfigitem > 0;
+        return \is_string($this->cUnique) && !empty($this->cUnique) && $this->kKonfigitem > 0;
     }
 
     /**
@@ -624,7 +651,6 @@ class CartItem
      */
     public static function getTaxRate(object $item): float
     {
-        $taxRate = Tax::getSalesTax(0);
         if (($item->kSteuerklasse ?? 0) === 0) {
             if (isset($item->fMwSt)) {
                 $taxRate = $item->fMwSt;
@@ -632,11 +658,24 @@ class CartItem
                 $taxRate = ($item->Artikel->kSteuerklasse ?? 0) > 0
                     ? Tax::getSalesTax($item->Artikel->kSteuerklasse)
                     : $item->Artikel->fMwSt;
+            } else {
+                $taxRate = Tax::getSalesTax(0);
             }
         } else {
             $taxRate = Tax::getSalesTax($item->kSteuerklasse);
         }
 
         return (float)$taxRate;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res            = \get_object_vars($this);
+        $res['Artikel'] = '*truncated*';
+
+        return $res;
     }
 }

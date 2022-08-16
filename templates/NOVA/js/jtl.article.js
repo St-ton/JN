@@ -91,6 +91,23 @@
             return $current;
         },
 
+        incrementProductVisitCount: function() {
+            if (this.isSingleArticle()) {
+                let page_visits = Number(window.sessionStorage.getItem('product_page_visits'));
+                window.sessionStorage.setItem('product_page_visits', page_visits + 1);
+            }
+        },
+
+        navigateBackToList: function() {
+            if (this.isSingleArticle()) {
+                let visits = window.sessionStorage.getItem('product_page_visits');
+
+                if (visits !== null) {
+                    window.history.go(-visits);
+                }
+            }
+        },
+
         register: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
@@ -106,6 +123,7 @@
             this.registerAccordion();
             // this.registerImageSwitch($wrapper);
             //this.registerArticleOverlay($wrapper);
+            this.registerImageHover($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
             this.initAbnahmeIntervallError();
@@ -382,7 +400,7 @@
                                 .removeClass('show d-md-block');
                     });
                 })
-                .on('hide.bs.select', function () { 
+                .on('hide.bs.select', function () {
                     $(this).parent().find('li .variation').off('mouseenter mouseleave');
                     $('.variation-image-preview').removeClass('show');
                 });
@@ -517,6 +535,17 @@
                         }
                     });
             }
+        },
+
+        registerImageHover: function($wrapper) {
+            $('.productbox-show-variations', $wrapper).on('mouseenter', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('show');
+            });
+            $('.productbox-show-variations', $wrapper).on(' mouseleave', function () {
+                var collapse = $(this).find('.productbox-variations>.collapse')
+                $(collapse).collapse('hide');
+            });
         },
 
         registerFinish: function($wrapper) {
@@ -809,7 +838,7 @@
         addToWishlist: function(data, $action) {
             let productId = parseInt(data[this.options.input.id]),
                 childId = parseInt(data[this.options.input.childId]),
-                qty =  parseInt(data[this.options.input.quantity]);
+                qty =  parseFloat(data[this.options.input.quantity]);
             if (childId > 0) {
                 productId = childId;
             }
@@ -971,7 +1000,9 @@
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
-                    data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
+                    data[this.options.input.quantity] = $('input[data-product-id="' + data.a + '"]').val()
+                        || $('#buy_form_'+data.a+' '+this.options.selector.quantity).val()
+                        || $('#quantity').val();
                     if ($action.hasClass('on-list')) {
                         $action.removeClass("on-list");
                         $action.next().removeClass("press");
@@ -1128,6 +1159,7 @@
 
         variationRefreshAll: function($wrapper) {
             $('.variations select', $wrapper).selectpicker('refresh');
+            $.evo.initSliders()
         },
 
         getConfigGroupQuantity: function (groupId) {
@@ -1172,6 +1204,7 @@
 
             if (this.isSingleArticle()) {
                 $('#product-offer .price', $wrapper).html(fmtPrice);
+                $('#product-offer meta[itemprop="price"]', $wrapper).attr('content',price);
                 if (priceLabel.length > 0) {
                     $('#product-offer .price_label', $wrapper).html(priceLabel);
                 }
@@ -1271,7 +1304,11 @@
                     }
                 );
             } else if (this.isSingleArticle()) {
-                $.evo.extended().loadContent(url, function (content) {
+                if($('#opc-startmenu').length > 0) {
+                    return this.redirectToArticle(id, variation, url, variations, wrapper);
+                }
+
+                $.evo.extended().loadContent(url, () => {
                     $.evo.extended().register();
                     $.evo.article().register(wrapper);
 
@@ -1280,6 +1317,7 @@
                     });
 
                     if (document.location.href !== url) {
+                        this.incrementProductVisitCount();
                         history.pushState({a: id, a2: variation, url: url, variations: variations}, "", url);
                     }
                     $.evo.extended().stopSpinner();
@@ -1314,6 +1352,17 @@
             }
         },
 
+        redirectToArticle: function(id, variation, url, variations, wrapper) {
+            var $wrapper  = this.getWrapper(wrapper),
+                listStyle = $('#product-list-type').val();
+
+            $.evo.extended().startSpinner($wrapper);
+
+            window.open(url, '_top');
+
+            $.evo.extended().stopSpinner($wrapper);
+        },
+
         variationResetAll: function(wrapper) {
             var $wrapper = this.getWrapper(wrapper);
 
@@ -1346,6 +1395,13 @@
                 $item    = $('[data-value="' + value + '"].variation', $wrapper);
 
             $item.removeClass('not-available swatches-sold-out swatches-not-in-stock');
+        },
+
+        showGalleryVariation: function(key, wrapper) {
+            var $wrapper = this.getWrapper(wrapper),
+                $item    = $('.variation-' + key, $wrapper);
+
+            $item.collapse();
         },
 
         variationActive: function(key, value, def, wrapper) {
@@ -1461,6 +1517,7 @@
                     value    = $current.data('value'),
                     io       = $.evo.io(),
                     args     = io.getFormValues(formID),
+                    layout   = $('#product-list-type').val(),
                     $wrapper = this.getWrapper(wrapper);
 
                 if (animation) {
@@ -1471,6 +1528,7 @@
 
                 $('.tooltip.show').remove();
                 args.wrapper = wrapper;
+                args.layout  = layout;
 
                 $.evo.article()
                     .variationDispose(wrapper);

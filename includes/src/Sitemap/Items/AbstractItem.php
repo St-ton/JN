@@ -14,27 +14,27 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @var string|null
      */
-    protected $lastModificationTime;
+    protected ?string $lastModificationTime = null;
 
     /**
      * @var string|null
      */
-    protected $changeFreq;
+    protected ?string $changeFreq = null;
 
     /**
      * @var string|null
      */
-    protected $image;
+    protected ?string $image = null;
 
     /**
      * @var string
      */
-    protected $location;
+    protected string $location;
 
     /**
      * @var string|null
      */
-    protected $priority;
+    protected ?string $priority = null;
 
     /**
      * @var mixed
@@ -42,39 +42,24 @@ abstract class AbstractItem implements ItemInterface
     protected $data;
 
     /**
-     * @var array
+     * @var int|null
      */
-    protected $config;
+    protected ?int $languageID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $baseURL;
+    protected ?string $languageCode = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $baseImageURL;
-
-    /**
-     * @var int
-     */
-    protected $languageID;
-
-    /**
-     * @var string
-     */
-    protected $languageCode;
-
-    /**
-     * @var string
-     */
-    protected $languageCode639;
+    protected ?string $languageCode639 = null;
 
     /**
      * @var int
      */
-    protected $primaryKeyID = 0;
+    protected int $primaryKeyID = 0;
 
     /**
      * AbstractItem constructor.
@@ -82,11 +67,8 @@ abstract class AbstractItem implements ItemInterface
      * @param string $baseURL
      * @param string $baseImageURL
      */
-    public function __construct(array $config, string $baseURL, string $baseImageURL)
+    public function __construct(protected array $config, protected string $baseURL, protected string $baseImageURL)
     {
-        $this->config       = $config;
-        $this->baseURL      = $baseURL;
-        $this->baseImageURL = $baseImageURL;
     }
 
     /**
@@ -223,13 +205,13 @@ abstract class AbstractItem implements ItemInterface
      */
     public function setLanguageData(array $languages, int $currentLangID): void
     {
-        $lang = first($languages, static function ($e) use ($currentLangID) {
-            return $e->kSprache === $currentLangID;
+        $lang = first($languages, static function (LanguageModel $e) use ($currentLangID): bool {
+            return $e->getId() === $currentLangID;
         });
         /** @var LanguageModel $lang */
         if ($lang !== null) {
-            $this->setLanguageCode($lang->iso);
-            $this->setLanguageID($lang->id);
+            $this->setLanguageCode($lang->getCode());
+            $this->setLanguageID($lang->getId());
             $this->setLanguageCode639($lang->getIso639());
         }
     }

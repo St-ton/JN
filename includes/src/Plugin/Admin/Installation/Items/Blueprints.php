@@ -37,7 +37,7 @@ class Blueprints extends AbstractItem
             $this->plugin->nVersion . '/' . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($this->getNode() as $i => $blueprint) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -63,7 +63,7 @@ class Blueprints extends AbstractItem
      * @param array  $instanceData
      * @throws \Exception
      */
-    protected function copyBlueprintImages($base, &$instanceData)
+    protected function copyBlueprintImages(string $base, array &$instanceData): void
     {
         $class   = $instanceData['class'];
         $portlet = Shop::Container()->getOPC()->createPortletInstance($class);
@@ -82,7 +82,7 @@ class Blueprints extends AbstractItem
                         $instanceData['properties'][$name] = $newname;
                     }
                 } elseif ($prop['type'] === InputType::IMAGE_SET) {
-                    foreach ($instanceData['properties'][$name] as $i => &$image) {
+                    foreach ($instanceData['properties'][$name] as &$image) {
                         if (\is_file($base . $image['url'])) {
                             $oldname = $image['url'];
                             $newname = $this->plugin->cVerzeichnis . '_' . $oldname;

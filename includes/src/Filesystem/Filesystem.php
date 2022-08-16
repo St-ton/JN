@@ -8,8 +8,6 @@ use JTL\Shop;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\MountManager;
-use League\Flysystem\ZipArchive\FilesystemZipArchiveProvider;
-use League\Flysystem\ZipArchive\ZipArchiveAdapter;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Throwable;
@@ -97,7 +95,7 @@ class Filesystem extends \League\Flysystem\Filesystem
             }
 
             // Directories are identified by trailing slash
-            if (\substr($info['name'], -1) === '/') {
+            if (\str_ends_with($info['name'], '/')) {
                 continue;
             }
             $contents = $zipArchive->getFromIndex($index);
@@ -120,13 +118,14 @@ class Filesystem extends \League\Flysystem\Filesystem
      */
     public function zip(Finder $finder, string $archive, callable $callback = null): bool
     {
-        $manager = new MountManager([
+        $provider = new JTLZipArchiveProvider($archive);
+        $manager  = new MountManager([
             'root' => Shop::Container()->get(LocalFilesystem::class),
-            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+            'zip'  => new Filesystem(new JTLZipArchiveAdapter($provider))
         ]);
-        $count   = $finder->count();
-        $index   = 0;
-        foreach ($finder->files() as $file) {
+        $count    = $finder->count();
+        $index    = 0;
+        foreach ($finder as $file) {
             /** @var SplFileInfo $file */
             $path = $file->getPathname();
             $pos  = \strpos($path, \PFAD_ROOT);
@@ -140,6 +139,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                     $manager->copy('root://' . $path, 'zip://' . $path);
                 }
             } catch (Throwable $e) {
+                // @todo!!! - handle this error better
                 echo $e->getMessage() . \PHP_EOL;
             }
             if (\is_callable($callback)) {
@@ -147,6 +147,7 @@ class Filesystem extends \League\Flysystem\Filesystem
                 ++$index;
             }
         }
+        $provider->createZipArchive()->close();
 
         return true;
     }
@@ -160,14 +161,14 @@ class Filesystem extends \League\Flysystem\Filesystem
     {
         $realSource = \realpath($source);
         if ($realSource === false
-            || \strpos($archive, '.zip') === false
-            || \strpos($realSource, \realpath(\PFAD_ROOT)) !== 0
+            || !\str_contains($archive, '.zip')
+            || !\str_starts_with($realSource, \realpath(\PFAD_ROOT))
         ) {
             return false;
         }
         $manager = new MountManager([
             'root' => new Filesystem(new LocalFilesystemAdapter($realSource)),
-            'zip'  => new Filesystem(new ZipArchiveAdapter(new FilesystemZipArchiveProvider($archive)))
+            'zip'  => new Filesystem(new JTLZipArchiveAdapter(new JTLZipArchiveProvider($archive)))
         ]);
         foreach ($manager->listContents('root:///', true) as $item) {
             $path   = $item->path();

@@ -3,7 +3,7 @@
     {
         var bCheck = confirm('{__('sureResetLangVar')}');
         if (bCheck) {
-            window.location.href = 'pluginverwaltung.php?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
+            window.location.href = '{$adminURL}{$route}?pluginverwaltung_sprachvariable=1&kPlugin=' + kPlugin +
                 '&kPluginSprachvariable=' + kPluginSprachvariable + '&token={$smarty.session.jtl_token}';
         }
     }
@@ -11,7 +11,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc')}
 <div id="content">
     {if $plugin->getLocalization()->getLangVars()->count() > 0}
-        <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
+        <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_sprachvariable" value="1" />
             <input type="hidden" name="kPlugin" value="{$kPlugin}" />
@@ -69,7 +69,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="pluginverwaltung.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

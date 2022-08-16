@@ -5,14 +5,15 @@ namespace JTL\Plugin\Admin;
 use Parsedown;
 
 /**
- * Class Extension
+ * Class Markdown
+ * @package JTL\Plugin\Admin
  */
 class Markdown extends Parsedown
 {
     /**
      * @var string|null
      */
-    private $imagePrefixURL;
+    private ?string $imagePrefixURL = null;
 
     /**
      * @param string $url
@@ -33,8 +34,8 @@ class Markdown extends Parsedown
             return null;
         }
         if ($this->imagePrefixURL === null
-            || \strpos($image['element']['attributes']['src'], 'http') === 0
-            || \strpos($image['element']['attributes']['src'], '/') === 0
+            || \str_starts_with($image['element']['attributes']['src'], 'http')
+            || \str_starts_with($image['element']['attributes']['src'], '/')
         ) {
             return $image;
         }

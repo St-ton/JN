@@ -18,42 +18,35 @@ class TwoFA
     /**
      * TwoFactorAuth-object
      *
-     * @var PHPGangsta_GoogleAuthenticator
+     * @var PHPGangsta_GoogleAuthenticator|null
      */
-    private $authenticator;
+    private ?PHPGangsta_GoogleAuthenticator $authenticator;
 
     /**
      * user-account data
      *
-     * @var stdClass
+     * @var stdClass|null
      */
-    private $userTuple;
+    private ?stdClass $userTuple;
 
     /**
      * the name of the current shop
      *
      * @var string
      */
-    private $shopName;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    private string $shopName = '';
 
     /**
      * TwoFA constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db                        = $db;
         $this->userTuple                 = new stdClass();
         $this->userTuple->kAdminlogin    = 0;
         $this->userTuple->cLogin         = '';
         $this->userTuple->b2FAauth       = false;
         $this->userTuple->c2FAauthSecret = '';
-        $this->shopName                  = '';
     }
 
     /**
@@ -120,10 +113,9 @@ class TwoFA
         // codes with a length over 6 chars are emergency-codes
         if (6 < \mb_strlen($code)) {
             // try to find this code in the emergency-code-pool
-            $twoFAEmergency = new TwoFAEmergency($this->db);
-
-            return $twoFAEmergency->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
+            return (new TwoFAEmergency($this->db))->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
         }
+
         return $this->authenticator->verifyCode($this->userTuple->c2FAauthSecret, $code);
     }
 
@@ -224,7 +216,7 @@ class TwoFA
      *
      * @return string - object-data
      */
-    public function __toString()
+    public function __toString(): string
     {
         return \print_r($this->userTuple, true);
     }

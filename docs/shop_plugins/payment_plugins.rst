@@ -764,3 +764,51 @@ Diese Methode muss überschrieben werden, wenn weitere oder eigene E-Mail-Templa
 
         return $this;
     }
+
+
+Template-Selectoren (JTL PayPal Checkout)
+-----------------------------------------
+
+Nachfolgende Selectoren werden im "*JTL PayPal Checkout*"-Plugin verwendet. |br|
+Bitte stellen Sie sicher, dass diese Selektoren im Template enthalten sind und die adäquaten Bereiche
+wie im NOVA-Template referenzieren, um eine korrekte Funktion des "JTL PayPal Checkout"-Plugins zu gewährleisten.
+
+Selectoren in der: **CheckoutPage.php** (phpQuery)
+
+.. code-block:: php
+
+    - \*_phpqSelector
+    - #complete-order-button
+    - body
+    - .checkout-payment-method
+    - .checkout-shipping-form
+    - #fieldset-payment
+    - #result-wrapper
+    - meta[itemprop="price"]
+
+
+
+Selectoren in der: **CheckoutPage.php** (phpQuery)
+
+
+.. code-block:: php
+
+    - #miniCart-ppc-paypal-standalone-button
+    - #cart-ppc-paypal-standalone-button
+    - #\*-ppc-\*-standalone-button
+    - #productDetails-ppc-paypal-standalone-button
+    - #cart-checkout-btn
+    - #add-to-cart button[name="inWarenkorb"]
+    - meta[itemprop="price"]
+    - #buy_form
+    - #complete-order-button
+    - #paypal-button-container
+    - #complete_order
+    - #comment
+    - #comment-hidden
+    - form#complete_order
+    - .checkout-payment-method
+    - #za_ppc_\*_input
+    - input[type=radio][name=Zahlungsart]
+    - #fieldset-payment .jtl-spinner
+

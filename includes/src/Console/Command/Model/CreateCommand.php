@@ -3,6 +3,7 @@
 namespace JTL\Console\Command\Model;
 
 use DateTime;
+use Exception;
 use JTL\Console\Command\Command;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -29,8 +30,7 @@ class CreateCommand extends Command
         $this->setName('model:create')
             ->setDescription('Create a new model for given table    ')
             ->addArgument('table', InputArgument::REQUIRED, 'Name of the table for that model')
-            ->addArgument('target-dir', InputArgument::OPTIONAL, 'Shop installation dir', \PFAD_ROOT)
-            ->addArgument('author', InputArgument::OPTIONAL, 'Author');
+            ->addArgument('target-dir', InputArgument::OPTIONAL, 'Shop installation dir', \PFAD_ROOT);
     }
 
     /**
@@ -39,16 +39,11 @@ class CreateCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $tableName = \trim($input->getArgument('table') ?? '');
-        $author    = \trim($input->getArgument('author') ?? '');
         $targetDir = \trim($input->getArgument('target-dir') ?? '');
         while ($tableName === null || \strlen($tableName) < 3) {
             $tableName = $this->getIO()->ask('Name of the table for that model');
         }
         $input->setArgument('table', $tableName);
-        if (\strlen($author) < 2) {
-            $author = $this->getIO()->ask('Author');
-            $input->setArgument('author', $author);
-        }
         if (\strlen($targetDir) < 2) {
             $targetDir = $this->getIO()->ask('target-dir');
             $input->setArgument('target-dir', $targetDir);
@@ -58,27 +53,30 @@ class CreateCommand extends Command
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io        = $this->getIO();
         $targetDir = $input->getArgument('target-dir') ?? \PFAD_ROOT;
         $tableName = $input->getArgument('table');
-        $author    = $input->getArgument('author') ?? '';
-        $modelName = $this->writeDataModel($targetDir, $tableName, $author);
+        try {
+            $modelName = $this->writeDataModel($targetDir, $tableName);
+        } catch (Exception $e) {
+            $io->error('Error: ' . $e->getMessage());
 
-        $io->writeln("<info>Created DataModel:</info> <comment>'{$modelName}'</comment>");
+            return Command::FAILURE;
+        }
+        $io->writeln(\sprintf('<info>Created DataModel:</info> <comment>%s</comment>', $modelName));
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     /**
-     * @param string      $targetDir
-     * @param string      $table
-     * @param string|null $author
+     * @param string $targetDir
+     * @param string $table
      * @return string
      * @throws \SmartyException
      */
-    protected function writeDataModel(string $targetDir, string $table, string $author = null): string
+    protected function writeDataModel(string $targetDir, string $table): string
     {
         $smartyCli = Shop::Smarty(true, ContextType::CLI);
         $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
@@ -99,11 +97,10 @@ class CreateCommand extends Command
         ];
 
         foreach ($attribs as $attrib) {
-            $dataType    = \preg_match('/^([a-zA-Z0-9]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
+            $dataType    = \preg_match('/^([a-zA-Z\d]+)/', $attrib['Type'], $hits) ? $hits[1] : $attrib['Type'];
             $tableDesc[] = (object)[
-                'name'         => "'{$attrib['Field']}'",
-                'phpName'      => $attrib['Field'],
-                'dataType'     => "'{$dataType}'",
+                'name'         => $attrib['Field'],
+                'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
                     if (!isset($carry) && \preg_match("/{$item}/", $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
@@ -112,7 +109,7 @@ class CreateCommand extends Command
                     return $carry;
                 }),
                 'default'      => isset($attrib['Default'])
-                    ? "self::cast('{$attrib['Default']}', '{$dataType}')"
+                    ? "self::cast('" . $attrib['Default'] . "', '" . $dataType . "')"
                     : 'null',
                 'nullable'     => $attrib['Null'] === 'YES' ? 'true' : 'false',
                 'isPrimaryKey' => $attrib['Key'] === 'PRI' ? 'true' : 'false',
@@ -124,7 +121,6 @@ class CreateCommand extends Command
         );
         $content    = $smartyCli->assign('tableName', $table)
             ->assign('modelName', $modelName)
-            ->assign('author', $author)
             ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('tableDesc', $tableDesc)
             ->fetch(__DIR__ . '/Template/model.class.tpl');

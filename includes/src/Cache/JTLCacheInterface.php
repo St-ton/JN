@@ -4,7 +4,7 @@ namespace JTL\Cache;
 
 /**
  * Interface JTLCacheInterface
- * @package Cache
+ * @package JTL\Cache
  */
 interface JTLCacheInterface
 {
@@ -54,64 +54,35 @@ interface JTLCacheInterface
     public function getOptions(): array;
 
     /**
-     * set redis authentication parameters
-     *
-     * @param string      $host
-     * @param int         $port
-     * @param null|string $pass
-     * @param null|int    $database
-     * @return JTLCacheInterface
-     */
-    public function setRedisCredentials($host, $port, $pass = null, $database = null): JTLCacheInterface;
-
-    /**
-     * set memcache authentication parameters
-     *
-     * @param string $host
-     * @param int    $port
-     * @return JTLCacheInterface
-     */
-    public function setMemcacheCredentials($host, $port): JTLCacheInterface;
-
-    /**
-     * set memcache authentication parameters
-     *
-     * @param string $host
-     * @param int    $port
-     * @return JTLCacheInterface
-     */
-    public function setMemcachedCredentials($host, $port): JTLCacheInterface;
-
-    /**
      * retrieve value from cache
      *
-     * @param string        $cacheID
+     * @param string|int    $cacheID
      * @param null|callable $callback
      * @param null|mixed    $customData
      * @return mixed
      */
-    public function get($cacheID, $callback = null, $customData = null);
+    public function get($cacheID, ?callable $callback = null, $customData = null);
 
     /**
      * store value to cache
      *
-     * @param string     $cacheID
+     * @param string|int     $cacheID
      * @param mixed      $content
-     * @param null|array $tags
+     * @param null|array|string $tags
      * @param null|int   $expiration
      * @return bool
      */
-    public function set($cacheID, $content, $tags = null, $expiration = null): bool;
+    public function set($cacheID, $content, $tags = null, ?int $expiration = null): bool;
 
     /**
      * store multiple values to multiple cache IDs at once
      *
      * @param array      $keyValue
      * @param array|null $tags
-     * @param array|null $expiration
+     * @param int|null   $expiration
      * @return bool
      */
-    public function setMulti($keyValue, $tags = null, $expiration = null): bool;
+    public function setMulti(array $keyValue, ?array $tags = null, ?int $expiration = null): bool;
 
     /**
      * get multiple values from cache
@@ -140,7 +111,7 @@ interface JTLCacheInterface
      * add cache tag to cache value by ID
      *
      * @param array|string $tags
-     * @param string       $cacheID
+     * @param string|int   $cacheID
      * @return bool
      */
     public function setCacheTag($tags, $cacheID): bool;
@@ -171,9 +142,9 @@ interface JTLCacheInterface
     /**
      * remove single ID from cache or group or remove whole group
      *
-     * @param string|null $cacheID
-     * @param array|null  $tags
-     * @param array|null  $hookInfo
+     * @param string|int|null   $cacheID
+     * @param array|string|null $tags
+     * @param array|null        $hookInfo
      * @return bool|int
      */
     public function flush($cacheID = null, $tags = null, $hookInfo = null);
@@ -262,19 +233,19 @@ interface JTLCacheInterface
      * @return string
      */
     public function getBaseID(
-        $hash = false,
+        bool $hash = false,
         $customerID = false,
         $customerGroup = true,
         $languageID = true,
         $currencyID = true,
-        $sslStatus = true
+        bool $sslStatus = true
     ): string;
 
     /**
      * simple benchmark for different caching methods
      *
      * @param string|array $methods
-     * @param string       $testData
+     * @param string|mixed $testData
      * @param int          $runCount
      * @param int          $repeat
      * @param bool         $echo
@@ -284,10 +255,10 @@ interface JTLCacheInterface
     public function benchmark(
         $methods = 'all',
         $testData = 'simple string',
-        $runCount = 1000,
-        $repeat = 1,
-        $echo = true,
-        $format = false
+        int $runCount = 1000,
+        int $repeat = 1,
+        bool $echo = true,
+        bool $format = false
     ): array;
 
     /**
@@ -297,7 +268,6 @@ interface JTLCacheInterface
 
     /**
      * @param string $error
-     * @return JTLCacheInterface
      */
-    public function setError(string $error);
+    public function setError(string $error): void;
 }

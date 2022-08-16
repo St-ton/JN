@@ -2,6 +2,7 @@
 
 use JTL\Catalog\Product\Artikel;
 use JTL\Extensions\Upload\File;
+use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
@@ -29,11 +30,6 @@ if (!Form::validateToken() || !Nice::getInstance()->checkErweiterung(SHOP_ERWEIT
 if (Form::reachedUploadLimitPerHour(Shop::getSettingValue(CONF_ARTIKELDETAILS, 'upload_modul_limit'))) {
     retCode(false, 403, 'reached_limit_per_hour');
 }
-$uploadProtect            = new stdClass();
-$uploadProtect->cIP       = Request::getRealIP();
-$uploadProtect->dErstellt = 'NOW()';
-$uploadProtect->cTyp      = 'upload';
-Shop::Container()->getDB()->insert('tfloodprotect', $uploadProtect);
 
 if (!empty($_FILES)) {
     $blacklist = [
@@ -88,7 +84,7 @@ if (!empty($_FILES)) {
     }
     if (isset($fileData['error'], $fileData['name'])
         && (int)$fileData['error'] === UPLOAD_ERR_OK
-        && mb_strpos($realPath, realpath(PFAD_UPLOADS)) === 0
+        && str_starts_with($realPath, realpath(PFAD_UPLOADS))
         && move_uploaded_file($tempFile, $targetFile)
     ) {
         $file    = new stdClass();
@@ -133,7 +129,7 @@ if (!empty($_REQUEST['action'])) {
             $realPath   = str_replace('\\', '/', realpath($targetInfo['dirname'] . DIRECTORY_SEPARATOR));
             if (!isset($targetInfo['extension'])
                 && isset($_SESSION['Uploader'][$unique])
-                && mb_strpos($realPath, realpath(PFAD_UPLOADS)) === 0
+                && str_starts_with($realPath, realpath(PFAD_UPLOADS))
             ) {
                 unset($_SESSION['Uploader'][$unique]);
                 if (file_exists($filePath)) {
@@ -147,8 +143,8 @@ if (!empty($_REQUEST['action'])) {
         case 'exists':
             $filePath = PFAD_UPLOADS . $_REQUEST['uniquename'];
             $info     = pathinfo($filePath);
-            $realPath = realpath($info['dirname']) . DIRECTORY_SEPARATOR;
-            if ($realPath !== false && mb_strpos($realPath, realpath(PFAD_UPLOADS)) !== 0) {
+            $realPath = realpath($info['dirname']);
+            if ($realPath !== false && !str_starts_with($realPath . DIRECTORY_SEPARATOR, realpath(PFAD_UPLOADS))) {
                 retCode(false, 403, 'forbidden');
             }
             retCode(!isset($info['extension']) && file_exists(realpath($filePath)));

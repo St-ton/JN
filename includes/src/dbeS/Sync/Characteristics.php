@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -19,11 +19,11 @@ final class Characteristics extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML() as $i => $item) {
+        foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_merkmal.xml') !== false) {
+            if (\str_contains($file, 'del_merkmal.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'merkmal.xml') !== false) {
+            } elseif (\str_contains($file, 'merkmal.xml')) {
                 $this->handleInserts($xml);
             }
         }
@@ -60,7 +60,7 @@ final class Characteristics extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        $defaultLangID = LanguageHelper::getDefaultLanguage()->kSprache ?? -1;
+        $defaultLangID = LanguageHelper::getDefaultLanguage()->getId();
         $charValues    = $this->insertCharacteristics($xml, $defaultLangID);
         $this->insertCharacteristicValues($xml, $charValues, $defaultLangID);
     }
@@ -140,7 +140,7 @@ final class Characteristics extends AbstractSync
                             ]
                         );
                         $loc->cSeo = \trim($loc->cSeo)
-                            ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                            ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                             : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
                         $this->upsert(
                             'tmerkmalwertsprache',
@@ -230,7 +230,7 @@ final class Characteristics extends AbstractSync
                     ]
                 );
                 $loc->cSeo = \trim($loc->cSeo)
-                    ? Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cSeo), true))
+                    ? Seo::checkSeo(Seo::getSeo($loc->cSeo, true))
                     : Seo::checkSeo(Seo::getSeo(Seo::getFlatSeoPath($loc->cWert)));
 
                 $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');
@@ -273,16 +273,14 @@ final class Characteristics extends AbstractSync
      */
     private function addMissingCharacteristicValueSeo(array $characteristics): void
     {
-        $languages = $this->db->getObjects('SELECT kSprache FROM tsprache ORDER BY kSprache');
+        $languages = $this->db->getInts('SELECT kSprache FROM tsprache ORDER BY kSprache', 'kSprache');
         foreach ($characteristics as $characteristic) {
             foreach ($characteristic->oMMW_arr as $characteristicValue) {
                 $characteristicValue->kMerkmalWert = (int)$characteristicValue->kMerkmalWert;
-                foreach ($languages as $language) {
-                    $language->kSprache = (int)$language->kSprache;
-                    foreach ($characteristicValue->kSprache_arr as $languageID) {
-                        $languageID = (int)$languageID;
+                foreach ($languages as $languageID) {
+                    foreach ($characteristicValue->kSprache_arr as $charLanguageID) {
                         // Laufe alle gefüllten Sprachen durch
-                        if ($languageID === $language->kSprache) {
+                        if ($charLanguageID === $languageID) {
                             continue 2;
                         }
                     }
@@ -296,19 +294,19 @@ final class Characteristics extends AbstractSync
                                 AND tseo.kSprache = :lid
                             WHERE tmerkmalwertsprache.kMerkmalWert = :av
                                 AND tmerkmalwertsprache.kSprache = :lid",
-                        ['lid' => (int)$language->kSprache, 'av' => $characteristicValue->kMerkmalWert]
+                        ['lid' => $languageID, 'av' => $characteristicValue->kMerkmalWert]
                     );
                     //@todo: 1062: Duplicate entry '' for key 'PRIMARY'
-                    if ($slug !== '' && $slug !== null) {
+                    if ($slug !== '') {
                         $seo           = new stdClass();
                         $seo->cSeo     = $slug;
                         $seo->cKey     = 'kMerkmalWert';
-                        $seo->kKey     = (int)$characteristicValue->kMerkmalWert;
-                        $seo->kSprache = $language->kSprache;
+                        $seo->kKey     = $characteristicValue->kMerkmalWert;
+                        $seo->kSprache = $languageID;
                         $this->db->insert('tseo', $seo);
                         $localized                   = new stdClass();
                         $localized->kMerkmalWert     = $characteristicValue->kMerkmalWert;
-                        $localized->kSprache         = $language->kSprache;
+                        $localized->kSprache         = $languageID;
                         $localized->cWert            = $characteristicValue->cNameSTD ?? '';
                         $localized->cSeo             = $seo->cSeo ?? '';
                         $localized->cMetaTitle       = $characteristicValue->cMetaTitleSTD ?? '';

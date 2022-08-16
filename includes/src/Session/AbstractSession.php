@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Session;
 
@@ -16,12 +16,12 @@ abstract class AbstractSession
     /**
      * @var JTLHandlerInterface
      */
-    protected static $handler;
+    protected static JTLHandlerInterface $handler;
 
     /**
      * @var string
      */
-    protected static $sessionName;
+    protected static string $sessionName;
 
     /**
      * AbstractSession constructor.
@@ -33,7 +33,7 @@ abstract class AbstractSession
         self::$sessionName = $sessionName;
         \session_name(self::$sessionName);
         self::$handler = (new Storage())->getHandler();
-        $this->initCookie(Shop::getSettings([\CONF_GLOBAL])['global'], $start);
+        $this->initCookie(Shop::getSettingSection(\CONF_GLOBAL), $start);
         self::$handler->setSessionData($_SESSION);
     }
 
@@ -127,7 +127,7 @@ abstract class AbstractSession
         $cookies = [];
         foreach (\headers_list() as $header) {
             // Identify cookie headers
-            if (\strpos($header, 'Set-Cookie:') === 0) {
+            if (\str_starts_with($header, 'Set-Cookie:')) {
                 $cookies[] = $header;
             }
         }
@@ -173,8 +173,7 @@ abstract class AbstractSession
         $quality  = 0;
         foreach ($accepted as $lang) {
             $res = \preg_match(
-                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)' .
-                '(?:;\s*q=(0(?:\.[0-9]{1,3})?|1(?:\.0{1,3})?))?$/i',
+                '/^([a-z]{1,8}(?:-[a-z]{1,8})*)(?:;\s*q=(0(?:\.\d{1,3})?|1(?:\.0{1,3})?))?$/i',
                 $lang,
                 $matches
             );

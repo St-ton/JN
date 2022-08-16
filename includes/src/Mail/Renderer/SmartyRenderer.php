@@ -16,17 +16,11 @@ use JTL\Smarty\MailSmarty;
 class SmartyRenderer implements RendererInterface
 {
     /**
-     * @var MailSmarty|JTLSmarty
-     */
-    private $smarty;
-
-    /**
      * SmartyRenderer constructor.
      * @param MailSmarty|JTLSmarty $smarty
      */
-    public function __construct($smarty)
+    public function __construct(private $smarty)
     {
-        $this->smarty = $smarty;
     }
 
     /**
@@ -67,14 +61,15 @@ class SmartyRenderer implements RendererInterface
             'model'         => $model,
             'Emailvorlage'  => $model
         ]);
-        $html = $type === 'text/html' || $type === 'html' ? $this->renderHTML($tplID) : '';
-        $text = $this->renderText($tplID);
-        $html = $this->renderLegalDataHTML($template, $languageID, $html);
-        $text = $this->renderLegalDataText($template, $languageID, $text);
+        $html    = $type === 'text/html' || $type === 'html' ? $this->renderHTML($tplID) : '';
+        $text    = $this->renderText($tplID);
+        $html    = $this->renderLegalDataHTML($template, $languageID, $html);
+        $text    = $this->renderLegalDataText($template, $languageID, $text);
+        $subject = $this->parseSubject($model->getSubject($languageID));
 
         $template->setHTML($html);
         $template->setText($text);
-        $template->setSubject($this->parseSubject($model->getSubject($languageID)));
+        $template->setSubject($this->getSmarty()->fetch('string:' . $subject));
     }
 
     /**
@@ -190,11 +185,8 @@ class SmartyRenderer implements RendererInterface
      */
     public function renderMail(MailInterface $mail): void
     {
-        $model    = null;
         $template = $mail->getTemplate();
-        if ($template !== null) {
-            $model = $template->getModel();
-        }
+        $model    = $template?->getModel();
         if ($model === null) {
             $mail->setBodyText($this->smarty->fetch('string:' . $mail->getBodyText()));
             $mail->setBodyHTML($this->smarty->fetch('string:' . $mail->getBodyHTML()));

@@ -53,6 +53,11 @@ class CartItemProperty
     /**
      * @var string
      */
+    public $cFreifeldWert;
+
+    /**
+     * @var string
+     */
     public $cAufpreisLocalized;
 
     /**
@@ -107,10 +112,14 @@ class CartItemProperty
             $kWarenkorbPosEigenschaft
         );
         if ($obj !== null) {
-            $members = \array_keys(\get_object_vars($obj));
-            foreach ($members as $member) {
-                $this->$member = $obj->$member;
-            }
+            $this->kWarenkorbPosEigenschaft = (int)$obj->kWarenkorbPosEigenschaft;
+            $this->kWarenkorbPos            = (int)$obj->kWarenkorbPos;
+            $this->kEigenschaft             = (int)$obj->kEigenschaft;
+            $this->kEigenschaftWert         = (int)$obj->kEigenschaftWert;
+            $this->cEigenschaftName         = $obj->cEigenschaftName;
+            $this->cEigenschaftWertName     = $obj->cEigenschaftWertName;
+            $this->cFreifeldWert            = $obj->cFreifeldWert;
+            $this->fAufpreis                = $obj->fAufpreis;
         }
 
         return $this;

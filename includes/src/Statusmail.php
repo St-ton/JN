@@ -4,7 +4,6 @@ namespace JTL;
 
 use DateTime;
 use InvalidArgumentException;
-use JTL\Alert\Alert;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
@@ -24,11 +23,6 @@ use function Functional\map;
 class Statusmail
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var string
      */
     private $dateStart;
@@ -43,9 +37,8 @@ class Statusmail
      *
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**
@@ -105,8 +98,7 @@ class Statusmail
         $startDate = \date('Y-m-d', \strtotime($types[$frequency]['date']));
         $d         = new DateTime($startDate);
         $d->setTime(0, 0);
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_INFO,
+        Shop::Container()->getAlertService()->addInfo(
             \sprintf(\__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Push;
 
@@ -12,17 +12,17 @@ use ZipArchive;
 final class MediaFiles extends AbstractPush
 {
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {
         $xml     = '<?xml version="1.0" ?>' . "\n";
         $xml    .= '<mediafiles url="' . Shop::getURL() . '/' . \PFAD_MEDIAFILES . '">' . "\n";
-        $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, 0);
-        $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, 1);
+        $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, false);
+        $xml    .= $this->getDirContent(\PFAD_ROOT . \PFAD_MEDIAFILES, true);
         $xml    .= '</mediafiles>' . "\n";
         $zip     = \time() . '.jtl';
-        $xmlfile = \fopen(self::TEMP_DIR . self::XML_FILE, 'w');
+        $xmlfile = \fopen(self::TEMP_DIR . self::XML_FILE, 'wb');
         \fwrite($xmlfile, $xml);
         \fclose($xmlfile);
         if (!\file_exists(self::TEMP_DIR . self::XML_FILE)) {
@@ -43,11 +43,11 @@ final class MediaFiles extends AbstractPush
     }
 
     /**
-     * @param string   $dir
-     * @param int|bool $filesOnly
+     * @param string $dir
+     * @param bool   $filesOnly
      * @return string
      */
-    private function getDirContent(string $dir, $filesOnly): string
+    private function getDirContent(string $dir, bool $filesOnly): string
     {
         $xml    = '';
         $handle = \opendir($dir);
@@ -60,8 +60,8 @@ final class MediaFiles extends AbstractPush
             }
             if (!$filesOnly && \is_dir($dir . '/' . $file)) {
                 $xml .= '<dir cName="' . $file . '">' . "\n";
-                $xml .= $this->getDirContent($dir . '/' . $file, 0);
-                $xml .= $this->getDirContent($dir . '/' . $file, 1);
+                $xml .= $this->getDirContent($dir . '/' . $file, false);
+                $xml .= $this->getDirContent($dir . '/' . $file, true);
                 $xml .= "</dir>\n";
             } elseif ($filesOnly && !\is_dir($dir . '/' . $file)) {
                 $xml .= '<file cName="' . $file . '" nSize="' . \filesize($dir . '/' . $file) . '" dTime="' .

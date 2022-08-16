@@ -5,6 +5,7 @@ namespace JTL\Media;
 use Generator;
 use JTL\DB\DbInterface;
 use JTL\Media\Image\StatsItem;
+use stdClass;
 
 /**
  * Interface IMedia
@@ -159,4 +160,11 @@ interface IMedia
      * @return string
      */
     public static function getType(): string;
+
+    /**
+     * @param string $type
+     * @param int    $id
+     * @return stdClass|null
+     */
+    public static function getImageStmt(string $type, int $id): ?stdClass;
 }

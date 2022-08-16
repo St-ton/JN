@@ -14,22 +14,16 @@ use function Functional\map;
 final class LinkList implements LinkListInterface
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var Collection
      */
-    private $links;
+    private Collection $links;
 
     /**
      * LinkList constructor.
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db    = $db;
         $this->links = new Collection();
     }
 

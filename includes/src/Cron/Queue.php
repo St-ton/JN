@@ -16,22 +16,7 @@ class Queue
     /**
      * @var QueueEntry[]
      */
-    private $queueEntries = [];
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JobFactory
-     */
-    private $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private array $queueEntries = [];
 
     /**
      * Queue constructor.
@@ -39,11 +24,8 @@ class Queue
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
-        $this->factory = $factory;
     }
 
     /**
@@ -56,7 +38,7 @@ class Queue
                 FROM tjobqueue
                 WHERE isRunning = 0
                     AND startTime <= NOW()'
-        )->map(static function ($e) {
+        )->map(static function ($e): QueueEntry {
             return new QueueEntry($e);
         })->toArray();
         $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
@@ -75,7 +57,8 @@ class Queue
                 WHERE isRunning = 1
                     AND startTime <= NOW()
                     AND lastStart IS NOT NULL
-                    AND DATE_SUB(CURTIME(), INTERVAL ' . \QUEUE_MAX_STUCK_HOURS . ' Hour) > lastStart'
+                    AND DATE_SUB(CURTIME(), INTERVAL :ntrvl Hour) > lastStart',
+            ['ntrvl' => \QUEUE_MAX_STUCK_HOURS]
         );
     }
 
@@ -119,6 +102,7 @@ class Queue
             $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
         }
         $this->loadQueueFromDB();
+        \shuffle($this->queueEntries);
         foreach ($this->queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));

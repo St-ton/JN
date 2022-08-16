@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Cart;
 
@@ -40,7 +40,7 @@ class PersistentCartItem
     /**
      * @var string
      */
-    public $dHinzugefuegt;
+    public $dHinzugefuegt = 'NOW()';
 
     /**
      * @var string
@@ -55,7 +55,7 @@ class PersistentCartItem
     /**
      * @var string
      */
-    public $cResponsibility;
+    public $cResponsibility = 'core';
 
     /**
      * @var int
@@ -68,7 +68,7 @@ class PersistentCartItem
     public $nPosTyp;
 
     /**
-     * @var array
+     * @var PersistentCartItemProperty[]
      */
     public $oWarenkorbPersPosEigenschaft_arr = [];
 
@@ -106,7 +106,6 @@ class PersistentCartItem
         $this->kArtikel        = $productID;
         $this->cArtikelName    = $productName;
         $this->fAnzahl         = $qty;
-        $this->dHinzugefuegt   = 'NOW()';
         $this->kWarenkorbPers  = $cartItemID;
         $this->cUnique         = $unique;
         $this->cResponsibility = !empty($responsibility) ? $responsibility : 'core';

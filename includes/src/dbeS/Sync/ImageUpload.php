@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\dbeS\Sync;
 
@@ -17,9 +17,9 @@ final class ImageUpload extends AbstractSync
      */
     public function handle(Starter $starter)
     {
-        foreach ($starter->getXML(true) as $i => $item) {
+        foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'images.xml') !== false) {
+            if (\str_contains($file, 'images.xml')) {
                 $this->handleInserts(\pathinfo($file)['dirname'] . '/', $xml);
                 return null;
             }
@@ -32,7 +32,7 @@ final class ImageUpload extends AbstractSync
      * @param string            $tmpDir
      * @param SimpleXMLElement $xml
      */
-    private function handleInserts($tmpDir, SimpleXMLElement $xml): void
+    private function handleInserts(string $tmpDir, SimpleXMLElement $xml): void
     {
         $items = $this->getArray($xml);
         foreach ($items as $item) {

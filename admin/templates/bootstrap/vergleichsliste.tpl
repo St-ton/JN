@@ -24,7 +24,7 @@
         </nav>
         <div class="tab-content">
             <div id="letztenvergleiche" class="tab-pane fade {if $cTab === '' || $cTab === 'letztenvergleiche'} active show{/if}">
-                {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
+                {if $Letzten20Vergleiche && $Letzten20Vergleiche|count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
                     <div class="settings table-responsive">
                         <table class="table table-striped table-align-top">
@@ -41,7 +41,7 @@
                                     <td class="text-center">{$oVergleichsliste20->kVergleichsliste}</td>
                                     <td class="">
                                         {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
-                                            <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
+                                            <a href="{$shopURL}/?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
                                             <br />
                                         {/foreach}
                                     </td>
@@ -58,7 +58,7 @@
             </div>
             <div id="topartikel" class="tab-pane fade {if $cTab === 'topartikel'} active show{/if}">
                 <div>
-                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="vergleichsliste.php">
+                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
                         <input type="hidden" name="tab" value="topartikel" />
@@ -105,7 +105,7 @@
                     <hr class="mb-3">
                 </div>
                 <div>
-                    {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
+                    {if isset($TopVergleiche) && $TopVergleiche|count > 0}
                         <div class="settings table-responsive">
                             <table class="bottom table table-striped table-align-top">
                                 <thead>
@@ -118,7 +118,7 @@
                                 {foreach $TopVergleiche as $oVergleichslistePosTop}
                                     <tr>
                                         <td>
-                                            <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
+                                            <a href="{$shopURL}/?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                         </td>
                                         <td class="text-center">{$oVergleichslistePosTop->nAnzahl}</td>
                                     </tr>
@@ -132,7 +132,14 @@
                 </div>
             </div>
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
-                {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=__('saveWithIcon') title=__('settings') tab='einstellungen'}
+                {include
+                    file='tpl_inc/config_section.tpl'
+                    name='einstellen'
+                    action=$adminURL|cat:$route
+                    buttonCaption=__('saveWithIcon')
+                    title=__('settings')
+                    tab='einstellungen'
+                }
             </div>
         </div>
     </div>

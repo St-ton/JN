@@ -1,18 +1,18 @@
 <?php
 
-use JTL\Alert\Alert;
-use JTL\Cart\CartItem;
+use JTL\Cart\Cart;
+use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
+use JTL\Checkout\CouponValidator;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
-use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
-use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
-use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
+use JTL\Customer\Registration\Form as RegistrationForm;
+use JTL\Customer\Registration\Validator\AbstractValidator;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -30,17 +30,16 @@ use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
+use JTL\Smarty\JTLSmarty;
 use JTL\Staat;
 use JTL\VerificationVAT\VATCheck;
-use function Functional\none;
-
-require_once __DIR__ . '/bestellvorgang_inc.deprecated.php';
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function pruefeBestellungMoeglich()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php') .
         '?fillOut=' . Frontend::getCart()->istBestellungMoeglich(), true, 303);
     exit;
@@ -51,9 +50,11 @@ function pruefeBestellungMoeglich()
  * @param int  $formValues
  * @param bool $bMsg
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     $nReturnValue = versandartKorrekt($shippingMethod, $formValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
@@ -65,11 +66,7 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
         return true;
     }
     if ($bMsg) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
-            Shop::Lang()->get('fillShipping', 'checkout'),
-            'fillShipping'
-        );
+        Shop::Container()->getAlertService()->addNotice(Shop::Lang()->get('fillShipping', 'checkout'), 'fillShipping');
     }
     $step = 'Versand';
 
@@ -79,14 +76,16 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
 /**
  * @param array $post
  * @return int
+ * @deprecated since 5.2.0
  */
 function pruefeUnregistriertBestellen($post): int
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step, $Kunde, $Lieferadresse;
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-         ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
+        ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
     $Kunde              = getKundendaten($post, 0);
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
@@ -113,7 +112,7 @@ function pruefeUnregistriertBestellen($post): int
         // compatibility with older template
         pruefeLieferdaten($post, $missingInput);
     }
-    $nReturnValue = angabenKorrekt($missingInput);
+    $nReturnValue = Form::hasNoMissingData($missingInput);
 
     executeHook(HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
@@ -137,7 +136,7 @@ function pruefeUnregistriertBestellen($post): int
             && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
             if (isset($_SESSION['Lieferadresse']) && (int)$_SESSION['Bestellung']->kLieferadresse === 0) {
-                setzeLieferadresseAusRechnungsadresse();
+                Lieferadresse::createFromShippingAddress();
             }
             Tax::setTaxRates();
             $cart->gibGesamtsummeWarenLocalized();
@@ -152,7 +151,7 @@ function pruefeUnregistriertBestellen($post): int
         $_SESSION['Bestellung']->kLieferadresse = isset($post['kLieferadresse'])
             ? (int)$post['kLieferadresse']
             : -1;
-        $Lieferadresse                          = getLieferdaten($post['register']['shipping_address']);
+        $Lieferadresse                          = Lieferadresse::createFromPost($post['register']['shipping_address']);
         $_SESSION['Lieferadresse']              = $Lieferadresse;
     }
 
@@ -166,14 +165,15 @@ function pruefeUnregistriertBestellen($post): int
 /**
  * Gibt mögliche fehlende Felder aus Formulareingaben zurück.
  *
- * @param array              $post
- * @param int|null           $customerGroupId
- * @param \JTL\CheckBox|null $checkBox
- *
+ * @param array         $post
+ * @param int|null      $customerGroupId
+ * @param CheckBox|null $checkBox
  * @return array
+ * @deprecated since 5.2.0
  */
 function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $checkBox = null): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $missingInput    = checkKundenFormular(0);
     $customerGroupId = $customerGroupId ?? Frontend::getCustomerGroup()->getID();
     $checkBox        = $checkBox ?? new CheckBox();
@@ -191,126 +191,49 @@ function getMissingInput(array $post, ?int $customerGroupId = null, ?CheckBox $c
  *
  * @param array      $post
  * @param array|null $missingInput
+ * @deprecated since 5.2.0
  */
 function checkNewShippingAddress(array $post, ?array $missingInput = null): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $missingInput = $missingInput ?? getMissingInput($post);
     pruefeLieferdaten($post['register']['shipping_address'], $missingInput);
 }
 
 /**
- * @param array $post
+ * @param array      $post
  * @param array|null $missingData
+ * @deprecated since 5.2.0
  */
 function pruefeLieferdaten($post, &$missingData = null): void
 {
-    global $Lieferadresse;
-    unset($_SESSION['Lieferadresse']);
-    if (!isset($_SESSION['Bestellung'])) {
-        $_SESSION['Bestellung'] = new stdClass();
-    }
-    $_SESSION['Bestellung']->kLieferadresse = isset($post['kLieferadresse'])
-        ? (int)$post['kLieferadresse']
-        : -1;
-    Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
-    unset($_SESSION['Versandart']);
-    // neue lieferadresse
-    if (!isset($post['kLieferadresse']) || (int)$post['kLieferadresse'] === -1) {
-        $missingData               = array_merge($missingData, checkLieferFormularArray($post));
-        $Lieferadresse             = getLieferdaten($post);
-        $ok                        = angabenKorrekt($missingData);
-        $_SESSION['Lieferadresse'] = $Lieferadresse;
-
-        $_SESSION['preferredDeliveryCountryCode'] = $_SESSION['Lieferadresse']->cLand;
-        Tax::setTaxRates();
-        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE_PLAUSI, [
-            'nReturnValue'    => &$ok,
-            'fehlendeAngaben' => &$missingData
-        ]);
-        if ($ok) {
-            // Anrede mappen
-            if ($Lieferadresse->cAnrede === 'm') {
-                $Lieferadresse->cAnredeLocalized = Shop::Lang()->get('salutationM');
-            } elseif ($Lieferadresse->cAnrede === 'w') {
-                $Lieferadresse->cAnredeLocalized = Shop::Lang()->get('salutationW');
-            }
-            executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE);
-            pruefeVersandkostenfreiKuponVorgemerkt();
-        }
-    } elseif ((int)$post['kLieferadresse'] > 0) {
-        // vorhandene lieferadresse
-        $addressData = Shop::Container()->getDB()->getSingleObject(
-            'SELECT kLieferadresse
-                FROM tlieferadresse
-                WHERE kKunde = :cid
-                    AND kLieferadresse = :daid',
-            ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
-        );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
-            $_SESSION['Lieferadresse'] = $deliveryAddress;
-
-            executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
-        }
-    } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {
-        // lieferadresse gleich rechnungsadresse
-        setzeLieferadresseAusRechnungsadresse($post);
-
-        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_RECHNUNGLIEFERADRESSE);
-    }
-    Tax::setTaxRates();
-    // lieferland hat sich geändert und versandart schon gewählt?
-    if (isset($_SESSION['Lieferadresse'], $_SESSION['Versandart'])
-        && $_SESSION['Lieferadresse']
-        && $_SESSION['Versandart']
-    ) {
-        $delShip = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
-        // ist die plz im zuschlagsbereich?
-        if ((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
-            $_SESSION['Lieferadresse']->cPLZ,
-            $_SESSION['Lieferadresse']->cLand
-        ) !== null
-        ) {
-            $delShip = true;
-        }
-        if ($delShip) {
-            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                                 ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
-            unset($_SESSION['Versandart'], $_SESSION['Zahlungsart']);
-        } else {
-            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
-        }
-    }
-    plausiGuthaben($post);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Customer\Registration\Form::pruefeLieferdaten() instead.',
+        E_USER_DEPRECATED
+    );
+    (new RegistrationForm())->pruefeLieferdaten($post, $missingData);
 }
 
 /**
  * @param array $post
+ * @deprecated since 5.2.0
  */
 function plausiGuthaben($post): void
 {
-    if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-        || (isset($post['guthabenVerrechnen']) && (int)$post['guthabenVerrechnen'] === 1)
-    ) {
-        if (!isset($_SESSION['Bestellung'])) {
-            $_SESSION['Bestellung'] = new stdClass();
-        }
-        $_SESSION['Bestellung']->GuthabenNutzen   = 1;
-        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
-
-        executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABENVERRECHNEN);
-    }
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Order::checkBalance() instead.',
+        E_USER_DEPRECATED
+    );
+    Order::checkBalance($post);
 }
 
 /**
- *
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeVersandkostenStep(): void
+function pruefeVersandkostenStep(): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'])) {
         $cart = Frontend::getCart();
@@ -331,24 +254,32 @@ function pruefeVersandkostenStep(): void
         }
         $step = 'Versand';
     }
+
+    return $step;
 }
 
 /**
- *
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeZahlungStep(): void
+function pruefeZahlungStep(): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'])) {
         $step = 'Zahlung';
     }
+
+    return $step;
 }
 
 /**
- *
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeBestaetigungStep(): void
+function pruefeBestaetigungStep(): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     if (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])) {
         $step = 'Bestaetigung';
@@ -361,13 +292,18 @@ function pruefeBestaetigungStep(): void
             $step = 'Zahlung';
         }
     }
+
+    return $step;
 }
 
 /**
  * @param array $get
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeRechnungsadresseStep($get): void
+function pruefeRechnungsadresseStep(array $get): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
     if (!empty(Frontend::getCustomer()->cOrt)
@@ -426,20 +362,31 @@ function pruefeRechnungsadresseStep($get): void
     if (pruefeFehlendeAngaben()) {
         $step = isset($_SESSION['Kunde']) ? 'edit_customer_address' : 'accountwahl';
     }
+
+    return $step;
 }
 
 /**
- * @param array $get
+ * @param array       $get
+ * @param string|null $currentStep
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeLieferadresseStep($get): void
+function pruefeLieferadresseStep(array $get, ?string $currentStep = null): string
 {
-    global $step, $Lieferadresse;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    if ($currentStep === null) {
+        global $step;
+    } else {
+        $step = $currentStep;
+    }
+    global $Lieferadresse;
     //sondersteps Lieferadresse ändern
     if (!empty($_SESSION['Lieferadresse'])) {
         $Lieferadresse = $_SESSION['Lieferadresse'];
-        if (isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1
-            || isset($_SESSION['preferredDeliveryCountryCode'])
-            && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand
+        if ((isset($get['editLieferadresse']) && (int)$get['editLieferadresse'] === 1)
+            || (isset($_SESSION['preferredDeliveryCountryCode'])
+                && $_SESSION['preferredDeliveryCountryCode'] !== $Lieferadresse->cLand)
         ) {
             Kupon::resetNewCustomerCoupon();
             unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
@@ -449,6 +396,8 @@ function pruefeLieferadresseStep($get): void
     if (pruefeFehlendeAngaben('shippingAddress')) {
         $step = isset($_SESSION['Kunde']) ? 'Lieferadresse' : 'accountwahl';
     }
+
+    return $step;
 }
 
 /**
@@ -456,88 +405,85 @@ function pruefeLieferadresseStep($get): void
  * wird dieser nach Eingabe der Lieferadresse gesetzt (falls Kriterien erfüllt)
  *
  * @return array
+ * @deprecated since 5.2.0
  */
 function pruefeVersandkostenfreiKuponVorgemerkt(): array
 {
-    if ((isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
-        || (isset($_SESSION['oVersandfreiKupon']) && $_SESSION['oVersandfreiKupon']->cKuponTyp === Kupon::TYPE_SHIPPING)
-    ) {
-        Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-        unset($_SESSION['Kupon']);
-    }
-    $errors = [];
-    if (isset($_SESSION['oVersandfreiKupon']->kKupon) && $_SESSION['oVersandfreiKupon']->kKupon > 0) {
-        // Wurde im WK ein Versandfreikupon eingegeben?
-        $errors = Kupon::checkCoupon($_SESSION['oVersandfreiKupon']);
-        if (angabenKorrekt($errors)) {
-            Kupon::acceptCoupon($_SESSION['oVersandfreiKupon']);
-            Shop::Smarty()->assign('KuponMoeglich', Kupon::couponsAvailable());
-        } else {
-            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON, true);
-            Kupon::mapCouponErrorMessage($errors['ungueltig']);
-        }
-    }
-
-    return $errors;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Cart\CartHelper::applyShippingFreeCoupon() instead.',
+        E_USER_DEPRECATED
+    );
+    return CartHelper::applyShippingFreeCoupon();
 }
 
 /**
  * @param array $get
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeVersandartStep($get): void
+function pruefeVersandartStep(array $get): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     // sondersteps Versandart ändern
     if (isset($get['editVersandart'], $_SESSION['Versandart']) && (int)$get['editVersandart'] === 1) {
         Kupon::resetNewCustomerCoupon();
         Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR);
         unset($_SESSION['Zahlungsart'], $_SESSION['Versandart']);
 
         $step = 'Versand';
         pruefeZahlungsartStep(['editZahlungsart' => 1]);
     }
+
+    return $step;
 }
 
 /**
  * @param array $get
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeZahlungsartStep($get): void
+function pruefeZahlungsartStep(array $get): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     // sondersteps Zahlungsart ändern
     if (isset($_SESSION['Zahlungsart'], $get['editZahlungsart']) && (int)$get['editZahlungsart'] === 1) {
         Kupon::resetNewCustomerCoupon();
         Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                             ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+            ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
         unset($_SESSION['Zahlungsart']);
         $step = 'Zahlung';
-        pruefeVersandartStep(['editVersandart' => 1]);
+        $step = pruefeVersandartStep(['editVersandart' => 1], $step);
     }
 
     if (isset($get['nHinweis']) && (int)$get['nHinweis'] > 0) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             mappeBestellvorgangZahlungshinweis((int)$get['nHinweis']),
             'paymentNote'
         );
     }
+
+    return $step;
 }
 
 /**
  * @param array $post
- * @return int|null
+ * @return string
+ * @deprecated since 5.2.0
  */
-function pruefeZahlungsartwahlStep($post)
+function pruefeZahlungsartwahlStep(array $post): string
 {
-    global $zahlungsangaben, $step;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    global $step, $zahlungsangaben;
     if (!isset($post['zahlungsartwahl']) || (int)$post['zahlungsartwahl'] !== 1) {
         if (isset($_SESSION['Zahlungsart'])
             && Request::getInt('editRechnungsadresse') !== 1
@@ -545,7 +491,7 @@ function pruefeZahlungsartwahlStep($post)
         ) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {
-            return null;
+            return $step;
         }
     } else {
         $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
@@ -554,45 +500,42 @@ function pruefeZahlungsartwahlStep($post)
 
     switch ($zahlungsangaben) {
         case 0:
-            Shop::Container()->getAlertService()->addAlert(
-                Alert::TYPE_NOTE,
+            Shop::Container()->getAlertService()->addNotice(
                 Shop::Lang()->get('fillPayment', 'checkout'),
                 'fillPayment'
             );
             $step = 'Zahlung';
-
-            return 0;
+            break;
         case 1:
             $step = 'ZahlungZusatzschritt';
-
-            return 1;
+            break;
         case 2:
             $step = 'Bestaetigung';
-
-            return 2;
+            break;
         default:
-            return null;
+            break;
     }
+
+    return $step;
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function pruefeGuthabenNutzen(): void
 {
-    if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen) {
-        $_SESSION['Bestellung']->fGuthabenGenutzt = Order::getOrderCredit($_SESSION['Bestellung']);
-    }
-
-    executeHook(HOOK_BESTELLVORGANG_PAGE_STEPBESTAETIGUNG_GUTHABEN_PLAUSI);
+    trigger_error(__FUNCTION__ . ' is deprecated. Use JTL\Helpers\Order::setUsedBalance() instead.', E_USER_DEPRECATED);
+    Order::setUsedBalance();
 }
 
 /**
  * @param string|null $context
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeFehlendeAngaben($context = null): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $missingData = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
     if (!$context) {
         return !empty($missingData);
@@ -604,10 +547,11 @@ function pruefeFehlendeAngaben($context = null): bool
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
-function gibStepAccountwahl(): void
+function gibStepAccountwahl(?JTLSmarty $smarty = null): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     // Einstellung global_kundenkonto_aktiv ist auf 'A'
     // und Kunde wurde nach der Registrierung zurück zur Accountwahl geleitet
     if (isset($_REQUEST['reg'])
@@ -615,30 +559,28 @@ function gibStepAccountwahl(): void
         && Shop::getSettingValue(CONF_GLOBAL, 'global_kundenkonto_aktiv') === 'A'
         && empty(Shop::Smarty()->getTemplateVars('fehlendeAngaben'))
     ) {
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('accountCreated') . '. ' . Shop::Lang()->get('activateAccountDesc'),
             'accountCreatedLoginNotActivated'
         );
-        Shop::Container()->getAlertService()->addAlert(
-            Alert::TYPE_NOTE,
+        Shop::Container()->getAlertService()->addNotice(
             Shop::Lang()->get('continueAfterActivation', 'messages'),
             'continueAfterActivation'
         );
     }
-    Shop::Smarty()
-        ->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()))
+    $smarty = $smarty ?? Shop::Smarty();
+    $smarty->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()))
         ->assign('one_step_wk', Request::verifyGPCDataInt('wk'));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
-function gibStepUnregistriertBestellen(): void
+function gibStepUnregistriertBestellen(?JTLSmarty $smarty = null): void
 {
-    /** @var Customer $Kunde */
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $Kunde;
     $origins         = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -655,7 +597,8 @@ function gibStepUnregistriertBestellen(): void
     } else {
         $customerAttributes = getKundenattribute($_POST);
     }
-    Shop::Smarty()->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
+    $smarty = $smarty ?? Shop::Smarty();
+    $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
         ->assign('herkunfte', $origins)
         ->assign('Kunde', $Kunde ?? null)
         ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
@@ -669,26 +612,31 @@ function gibStepUnregistriertBestellen(): void
 }
 
 /**
- * fix für /jtl-shop/issues#219
+ * @deprecated since 5.2.0
  */
 function validateCouponInCheckout()
 {
-    if (isset($_SESSION['Kupon'])) {
-        $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
-        if (count($checkCouponResult) !== 0) {
-            Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-            $_SESSION['checkCouponResult'] = $checkCouponResult;
-            unset($_SESSION['Kupon']);
-            header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
-            exit(0);
-        }
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    if (!isset($_SESSION['Kupon'])) {
+        return;
+    }
+    $checkCouponResult = Kupon::checkCoupon($_SESSION['Kupon']);
+    if (count($checkCouponResult) !== 0) {
+        Frontend::getCart()->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+        $_SESSION['checkCouponResult'] = $checkCouponResult;
+        unset($_SESSION['Kupon']);
+        header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('warenkorb.php', true));
+        exit(0);
     }
 }
+
 /**
  * @return mixed
+ * @deprecated since 5.2.0
  */
 function gibStepLieferadresse()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $Lieferadresse;
 
     $smarty          = Shop::Smarty();
@@ -710,9 +658,9 @@ function gibStepLieferadresse()
         $customerGroupID = Frontend::getCustomer()->getGroupID();
     }
     $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
-           ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
-           ->assign('Kunde', $_SESSION['Kunde'] ?? null)
-           ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
+        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
+        ->assign('Kunde', $_SESSION['Kunde'] ?? null)
+        ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
         $smarty->assign('Lieferadresse', $Lieferadresse);
     }
@@ -722,10 +670,11 @@ function gibStepLieferadresse()
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function gibStepZahlung()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
     $cart       = Frontend::getCart();
     $smarty     = Shop::Smarty();
@@ -793,15 +742,15 @@ function gibStepZahlung()
             }
         );
         $smarty->assign('Zahlungsarten', $selectablePayments)
-               ->assign('Versandarten', $shippingMethods)
-               ->assign('Verpackungsarten', $packagings)
-               ->assign('AktiveVersandart', $shippingMethod)
-               ->assign('AktiveZahlungsart', $paymentMethod)
-               ->assign('AktiveVerpackung', $packaging)
-               ->assign('Kunde', Frontend::getCustomer())
-               ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
-               ->assign('OrderAmount', Frontend::getCart()->gibGesamtsummeWaren(true))
-               ->assign('ShopCreditAmount', Frontend::getCustomer()->fGuthaben);
+            ->assign('Versandarten', $shippingMethods)
+            ->assign('Verpackungsarten', $packagings)
+            ->assign('AktiveVersandart', $shippingMethod)
+            ->assign('AktiveZahlungsart', $paymentMethod)
+            ->assign('AktiveVerpackung', $packaging)
+            ->assign('Kunde', Frontend::getCustomer())
+            ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
+            ->assign('OrderAmount', Frontend::getCart()->gibGesamtsummeWaren(true))
+            ->assign('ShopCreditAmount', Frontend::getCustomer()->fGuthaben);
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
 
@@ -821,9 +770,11 @@ function gibStepZahlung()
 
 /**
  * @param array $post
+ * @deprecated since 5.2.0
  */
-function gibStepZahlungZusatzschritt($post): void
+function gibStepZahlungZusatzschritt(array $post): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $paymentID     = $post['Zahlungsart'] ?? $_SESSION['Zahlungsart']->kZahlungsart;
     $paymentMethod = gibZahlungsart((int)$paymentID);
     $smarty        = Shop::Smarty();
@@ -840,17 +791,19 @@ function gibStepZahlungZusatzschritt($post): void
         $smarty->assign('ZahlungsInfo', gibPostZahlungsInfo());
     }
     $smarty->assign('Zahlungsart', $paymentMethod)
-           ->assign('Kunde', Frontend::getCustomer())
-           ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
+        ->assign('Kunde', Frontend::getCustomer())
+        ->assign('Lieferadresse', $_SESSION['Lieferadresse']);
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNGZUSATZSCHRITT);
 }
 
 /**
  * @param array $get
+ * @deprecated since 5.2.0
  */
 function gibStepBestaetigung($get)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $linkHelper = Shop::Container()->getLinkService();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
     if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt((int)$_SESSION['Versandart']->kVersandart)) {
@@ -858,7 +811,7 @@ function gibStepBestaetigung($get)
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
     if (isset($_SESSION['Zahlungsart'])
-        && in_array($_SESSION['Zahlungsart']->cModulId, ['za_lastschrift_jtl', 'za_kreditkarte_jtl'], true)
+        && $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
         && (empty($_SESSION['Zahlungsart']->ZahlungsInfo) || !is_object($_SESSION['Zahlungsart']->ZahlungsInfo))
     ) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
@@ -901,12 +854,13 @@ function gibStepBestaetigung($get)
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function gibStepVersand(): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step;
-    pruefeVersandkostenfreiKuponVorgemerkt();
+    CartHelper::applyShippingFreeCoupon();
     $cart            = Frontend::getCart();
     $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$deliveryCountry) {
@@ -963,125 +917,53 @@ function gibStepVersand(): void
 /**
  * @param array $post
  * @return array|int
+ * @deprecated since 5.2.0
  */
-function plausiKupon($post)
+function plausiKupon(array $post)
 {
-    $errors = [];
-    if (isset($post['Kuponcode'])
-        && (isset($_SESSION['Bestellung']->lieferadresseGleich) || $_SESSION['Lieferadresse'])
-    ) {
-        $coupon = new Kupon();
-        $coupon = $coupon->getByCode($_POST['Kuponcode']);
-        if ($coupon !== false && $coupon->kKupon > 0) {
-            $errors = Kupon::checkCoupon($coupon);
-            if (angabenKorrekt($errors)) {
-                Kupon::acceptCoupon($coupon);
-                if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) { // Versandfrei Kupon
-                    $_SESSION['oVersandfreiKupon'] = $coupon;
-                }
-            }
-        } else {
-            $errors['ungueltig'] = 11;
-        }
-        Kupon::mapCouponErrorMessage($errors['ungueltig'] ?? 0);
-    }
-    plausiNeukundenKupon();
-
-    return (count($errors) > 0)
-        ? $errors
-        : 0;
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CouponValidator::validateCoupon() instead.', E_USER_DEPRECATED);
+    return CouponValidator::validateCoupon($post, Frontend::getCustomer());
 }
 
 /**
- *
+ * @deprecated since 5.2.0
  */
 function plausiNeukundenKupon()
 {
-    if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen'] === true) {
-        return;
-    }
-    $customer = Frontend::getCustomer();
-    if ((!isset($_SESSION['Kupon']->cKuponTyp) || $_SESSION['Kupon']->cKuponTyp !== 'standard')
-        && !empty($customer->cMail)
-    ) {
-        $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-        if ($customer->getID() <= 0 && $conf['kaufabwicklung']['bestellvorgang_unregneukundenkupon_zulassen'] === 'N') {
-            //unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
-            return;
-        }
-        // not for already registered customers with order(s)
-        if ($customer->getID() > 0) {
-            $order = Shop::Container()->getDB()->getSingleObject(
-                'SELECT kBestellung
-                    FROM tbestellung
-                    WHERE kKunde = :customerID
-                    LIMIT 1',
-                ['customerID' => $customer->getID()]
-            );
-            if ($order !== null) {
-                return;
-            }
-        }
-
-        $coupons = (new Kupon())->getNewCustomerCoupon();
-        if (!empty($coupons) && !Kupon::newCustomerCouponUsed($customer->cMail)) {
-            foreach ($coupons as $coupon) {
-                if (angabenKorrekt(Kupon::checkCoupon($coupon))) {
-                    Kupon::acceptCoupon($coupon);
-                    break;
-                }
-            }
-        }
-    }
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use CouponValidator::validateNewCustomerCoupon() instead.',
+        E_USER_DEPRECATED
+    );
+    return CouponValidator::validateNewCustomerCoupon(Frontend::getCustomer());
 }
 
 /**
  * @param Zahlungsart|object $paymentMethod
  * @return array
+ * @deprecated since 5.2.0
  */
 function checkAdditionalPayment($paymentMethod): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     foreach (['iban', 'bic'] as $dataKey) {
         if (!empty($_POST[$dataKey])) {
             $_POST[$dataKey] = mb_convert_case($_POST[$dataKey], MB_CASE_UPPER);
         }
     }
 
-    $conf   = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
     $post   = Text::filterXSS($_POST);
     $errors = [];
     switch ($paymentMethod->cModulId) {
-        case 'za_kreditkarte_jtl':
-            if (empty($post['kreditkartennr'])) {
-                $errors['kreditkartennr'] = 1;
-            }
-            if (empty($post['gueltigkeit'])) {
-                $errors['gueltigkeit'] = 1;
-            }
-            if (empty($post['cvv'])) {
-                $errors['cvv'] = 1;
-            }
-            if (empty($post['kartentyp'])) {
-                $errors['kartentyp'] = 1;
-            }
-            if (empty($post['inhaber'])) {
-                $errors['inhaber'] = 1;
-            }
-            break;
-
         case 'za_lastschrift_jtl':
-            if (empty($post['bankname'])
-                && $conf['zahlungsarten']['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y'
-            ) {
+            $conf = Shop::getSettingSection(CONF_ZAHLUNGSARTEN);
+            if (empty($post['bankname']) && $conf['zahlungsart_lastschrift_kreditinstitut_abfrage'] === 'Y') {
                 $errors['bankname'] = 1;
             }
-            if (empty($post['inhaber'])
-                && $conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y'
-            ) {
+            if (empty($post['inhaber']) && $conf['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y') {
                 $errors['inhaber'] = 1;
             }
             if (empty($post['bic'])) {
-                if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
+                if ($conf['zahlungsart_lastschrift_bic_abfrage'] === 'Y') {
                     $errors['bic'] = 1;
                 }
             } elseif (!checkBIC($post['bic'])) {
@@ -1093,6 +975,8 @@ function checkAdditionalPayment($paymentMethod): array
                 $errors['iban'] = 2;
             }
             break;
+        default:
+            break;
     }
 
     return $errors;
@@ -1101,63 +985,44 @@ function checkAdditionalPayment($paymentMethod): array
 /**
  * @param string $bic
  * @return bool
+ * @deprecated since 5.2.0
  */
 function checkBIC($bic): bool
 {
-    return preg_match('/^[A-Z]{6}[A-Z\d]{2}([A-Z\d]{3})?$/i', $bic) === 1;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Text::checkBIC() instead.',
+        E_USER_DEPRECATED
+    );
+    return Text::checkBIC($bic);
 }
 
 /**
  * @param string $iban
  * @return bool|mixed
+ * @deprecated since 5.2.0
  */
 function plausiIban($iban)
 {
-    if ($iban === '' || mb_strlen($iban) < 6) {
-        return false;
-    }
-    $iban  = str_replace(' ', '', $iban);
-    $iban1 = mb_substr($iban, 4)
-        . (string)(mb_ord($iban[0]) - 55)
-        . (string)(mb_ord($iban[1]) - 55)
-        . mb_substr($iban, 2, 2);
-    $len   = mb_strlen($iban1);
-    for ($i = 0; $i < $len; $i++) {
-        if (mb_ord($iban1[$i]) > 64 && mb_ord($iban1[$i]) < 91) {
-            $iban1 = mb_substr($iban1, 0, $i) . (string)(mb_ord($iban1[$i]) - 55) . mb_substr($iban1, $i + 1);
-        }
-    }
-
-    $rest = 0;
-    $len  = mb_strlen($iban1);
-    for ($pos = 0; $pos < $len; $pos += 7) {
-        $part = (string)$rest . mb_substr($iban1, $pos, 7);
-        $rest = (int)$part % 97;
-    }
-
-    return mb_substr($iban, 2, 2) === '00'
-        ? substr_replace($iban, sprintf('%02d', 98 - $rest), 2, 2)
-        : $rest === 1;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Helpers\Text::checkIBAN() instead.',
+        E_USER_DEPRECATED
+    );
+    return Text::checkIBAN($iban);
 }
 
 /**
  * @return stdClass
+ * @deprecated since 5.2.0
  */
 function gibPostZahlungsInfo(): stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $info = new stdClass();
 
-    $info->cKartenNr    = isset($_POST['kreditkartennr'])
-        ? Text::htmlentities(stripslashes($_POST['kreditkartennr']), ENT_QUOTES)
-        : null;
-    $info->cGueltigkeit = isset($_POST['gueltigkeit'])
-        ? Text::htmlentities(stripslashes($_POST['gueltigkeit']), ENT_QUOTES)
-        : null;
-    $info->cCVV         = isset($_POST['cvv'])
-        ? Text::htmlentities(stripslashes($_POST['cvv']), ENT_QUOTES) : null;
-    $info->cKartenTyp   = isset($_POST['kartentyp'])
-        ? Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES)
-        : null;
+    $info->cKartenNr    = null;
+    $info->cGueltigkeit = null;
+    $info->cCVV         = null;
+    $info->cKartenTyp   = null;
     $info->cBankName    = isset($_POST['bankname'])
         ? Text::htmlentities(stripslashes(trim($_POST['bankname'])), ENT_QUOTES)
         : null;
@@ -1183,16 +1048,18 @@ function gibPostZahlungsInfo(): stdClass
 /**
  * @param int $paymentMethodID
  * @return int
+ * @deprecated since 5.2.0
  */
 function zahlungsartKorrekt(int $paymentMethodID): int
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $cart   = Frontend::getCart();
     $zaInfo = $_SESSION['Zahlungsart']->ZahlungsInfo ?? null;
     unset($_SESSION['Zahlungsart']);
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-         ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-         ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+        ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+        ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+        ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
     if ($paymentMethodID > 0
         && isset($_SESSION['Versandart']->kVersandart)
         && (int)$_SESSION['Versandart']->kVersandart > 0
@@ -1278,36 +1145,6 @@ function zahlungsartKorrekt(int $paymentMethodID): int
                 case 'za_null_jtl':
                     // the null-paymentMethod did not has any additional-steps
                     break;
-                case 'za_kreditkarte_jtl':
-                    $fehlendeAngaben = checkAdditionalPayment($paymentMethod);
-
-                    if (count($fehlendeAngaben) === 0) {
-                        $info->cKartenNr      = Text::htmlentities(
-                            stripslashes($_POST['kreditkartennr']),
-                            ENT_QUOTES
-                        );
-                        $info->cGueltigkeit   = Text::htmlentities(
-                            stripslashes($_POST['gueltigkeit']),
-                            ENT_QUOTES
-                        );
-                        $info->cCVV           = Text::htmlentities(
-                            stripslashes($_POST['cvv']),
-                            ENT_QUOTES
-                        );
-                        $info->cKartenTyp     = Text::htmlentities(
-                            stripslashes($_POST['kartentyp']),
-                            ENT_QUOTES
-                        );
-                        $info->cInhaber       = Text::htmlentities(
-                            stripslashes($_POST['inhaber']),
-                            ENT_QUOTES
-                        );
-                        $additionalInfoExists = true;
-                    } elseif ($zaInfo !== null && isset($zaInfo->cKartenNr)) {
-                        $info                 = $zaInfo;
-                        $additionalInfoExists = true;
-                    }
-                    break;
                 case 'za_lastschrift_jtl':
                     $fehlendeAngaben = checkAdditionalPayment($paymentMethod);
 
@@ -1365,30 +1202,32 @@ function zahlungsartKorrekt(int $paymentMethodID): int
 
 /**
  * @param object $paymentMethod
+ * @deprecated since 5.2.0
  */
 function getPaymentSurchageDiscount($paymentMethod)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (!isset($paymentMethod->fAufpreis) || $paymentMethod->fAufpreis == 0) {
         return;
     }
     $cart = Frontend::getCart();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
-         ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
+        ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR);
     $paymentMethod->cPreisLocalized = Preise::getLocalizedPriceString($paymentMethod->fAufpreis);
     $surcharge                      = $paymentMethod->fAufpreis;
     if ($paymentMethod->cAufpreisTyp === 'prozent') {
         $fGuthaben = $_SESSION['Bestellung']->fGuthabenGenutzt ?? 0;
         $surcharge = (($cart->gibGesamtsummeWarenExt(
             [
-                C_WARENKORBPOS_TYP_ARTIKEL,
-                C_WARENKORBPOS_TYP_VERSANDPOS,
-                C_WARENKORBPOS_TYP_KUPON,
-                C_WARENKORBPOS_TYP_GUTSCHEIN,
-                C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
-                C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
-                C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
-                C_WARENKORBPOS_TYP_VERPACKUNG
-            ],
+                            C_WARENKORBPOS_TYP_ARTIKEL,
+                            C_WARENKORBPOS_TYP_VERSANDPOS,
+                            C_WARENKORBPOS_TYP_KUPON,
+                            C_WARENKORBPOS_TYP_GUTSCHEIN,
+                            C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
+                            C_WARENKORBPOS_TYP_NEUKUNDENKUPON,
+                            C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
+                            C_WARENKORBPOS_TYP_VERPACKUNG
+                        ],
             true
         ) - $fGuthaben) * $paymentMethod->fAufpreis) / 100.0;
 
@@ -1450,6 +1289,7 @@ function getPaymentSurchageDiscount($paymentMethod)
  */
 function gibPluginZahlungsart($moduleID)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $pluginID = PluginHelper::getIDByModuleID($moduleID);
     if ($pluginID > 0) {
         $loader = PluginHelper::getLoaderByPluginID($pluginID);
@@ -1466,23 +1306,25 @@ function gibPluginZahlungsart($moduleID)
 /**
  * @param int $paymentMethodID
  * @return mixed
+ * @deprecated since 5.2.0
  */
 function gibZahlungsart(int $paymentMethodID)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $method = Shop::Container()->getDB()->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
     foreach (Frontend::getLanguages() as $language) {
-        $localized                                = Shop::Container()->getDB()->select(
+        $localized                                     = Shop::Container()->getDB()->select(
             'tzahlungsartsprache',
             'kZahlungsart',
             $paymentMethodID,
             'cISOSprache',
-            $language->cISO,
+            $language->getCode(),
             null,
             null,
             false,
             'cName'
         );
-        $method->angezeigterName[$language->cISO] = $localized->cName ?? null;
+        $method->angezeigterName[$language->getCode()] = $localized->cName ?? null;
     }
     $confData = Shop::Container()->getDB()->getObjects(
         'SELECT *
@@ -1506,9 +1348,11 @@ function gibZahlungsart(int $paymentMethodID)
 /**
  * @param null|int $customerID
  * @return object|bool
+ * @deprecated since 5.2.0
  */
 function gibKundenKontodaten(?int $customerID)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (empty($customerID)) {
         return false;
     }
@@ -1545,9 +1389,11 @@ function gibKundenKontodaten(?int $customerID)
  * @param int $shippingMethodID
  * @param int $customerGroupID
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $taxRate = 0.0;
     $methods = [];
     if ($shippingMethodID > 0) {
@@ -1564,7 +1410,8 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
             ['sid' => $shippingMethodID, 'cgid' => $customerGroupID]
         );
     }
-    $valid = [];
+    $valid    = [];
+    $currency = Frontend::getCurrency();
     foreach ($methods as $method) {
         if (!$method->kZahlungsart) {
             continue;
@@ -1618,7 +1465,7 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
         if ($method->cAufpreisTyp === 'festpreis') {
             $method->fAufpreis *= ((100 + $taxRate) / 100);
         }
-        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis);
+        $method->cPreisLocalized = Preise::getLocalizedPriceString($method->fAufpreis, $currency);
         if ($method->cAufpreisTyp === 'prozent') {
             $method->cPreisLocalized  = ($method->fAufpreis < 0) ? ' ' : '+ ';
             $method->cPreisLocalized .= $method->fAufpreis . '%';
@@ -1637,15 +1484,17 @@ function gibZahlungsarten(int $shippingMethodID, int $customerGroupID)
 /**
  * @param object[] $shippingMethods
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAktiveVersandart($shippingMethods)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (isset($_SESSION['Versandart'])) {
         $_SESSION['AktiveVersandart'] = (int)$_SESSION['Versandart']->kVersandart;
     } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
-            return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
+                return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
         }, 0) !== (int)$_SESSION['AktiveVersandart']) {
             $_SESSION['AktiveVersandart'] = ShippingMethod::getFirstShippingMethod(
                 $shippingMethods,
@@ -1665,15 +1514,17 @@ function gibAktiveVersandart($shippingMethods)
 /**
  * @param object[] $shippingMethods
  * @return int
+ * @deprecated since 5.2.0
  */
 function gibAktiveZahlungsart($shippingMethods)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (isset($_SESSION['Zahlungsart'])) {
         $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
     } elseif (!empty($_SESSION['AktiveZahlungsart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveZahlungsart'];
         if (array_reduce($shippingMethods, static function ($carry, $item) use ($active) {
-            return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
+                return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
         }, 0) !== (int)$_SESSION['AktiveZahlungsart']) {
             $_SESSION['AktiveZahlungsart'] = $shippingMethods[0]->kZahlungsart;
         }
@@ -1687,9 +1538,11 @@ function gibAktiveZahlungsart($shippingMethods)
 /**
  * @param object[] $packagings
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibAktiveVerpackung(array $packagings): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (isset($_SESSION['Verpackung']) && count($_SESSION['Verpackung']) > 0) {
         $_SESSION['AktiveVerpackung'] = [];
         foreach ($_SESSION['Verpackung'] as $packaging) {
@@ -1698,8 +1551,8 @@ function gibAktiveVerpackung(array $packagings): array
     } elseif (!empty($_SESSION['AktiveVerpackung']) && count($packagings) > 0) {
         foreach (array_keys($_SESSION['AktiveVerpackung']) as $active) {
             if (array_reduce($packagings, static function ($carry, $item) use ($active) {
-                $kVerpackung = (int)$item->kVerpackung;
-                return $kVerpackung === $active ? $kVerpackung : $carry;
+                    $kVerpackung = (int)$item->kVerpackung;
+                    return $kVerpackung === $active ? $kVerpackung : $carry;
             }, 0) === 0) {
                 unset($_SESSION['AktiveVerpackung'][$active]);
             }
@@ -1714,9 +1567,11 @@ function gibAktiveVerpackung(array $packagings): array
 /**
  * @param Zahlungsart|stdClass $paymentMethod
  * @return bool
+ * @deprecated since 5.2.0
  */
 function zahlungsartGueltig($paymentMethod): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
@@ -1759,88 +1614,54 @@ function zahlungsartGueltig($paymentMethod): bool
 /**
  * @param int $minOrders
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMinBestellungen(int $minOrders): bool
 {
-    if ($minOrders <= 0) {
-        return true;
-    }
-    if (Frontend::getCustomer()->getID() <= 0) {
-        Shop::Container()->getLogService()->debug('pruefeZahlungsartMinBestellungen erhielt keinen kKunden');
-
-        return false;
-    }
-    $count = Shop::Container()->getDB()->getSingleObject(
-        'SELECT COUNT(*) AS anz
-            FROM tbestellung
-            WHERE kKunde = :cid
-                AND (cStatus = :s1 OR cStatus = :s2)',
-        [
-            'cid' => Frontend::getCustomer()->getID(),
-            's1'  => BESTELLUNG_STATUS_BEZAHLT,
-            's2'  => BESTELLUNG_STATUS_VERSANDT
-        ]
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use  JTL\Helpers\PaymentMethod::checkMinOrders() instead.',
+        E_USER_DEPRECATED
     );
-    if ($count !== null && $count->anz < $minOrders) {
-        Shop::Container()->getLogService()->debug(
-            'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl '
-            . (int)$count->anz . ' < ' . $minOrders
-        );
-
-        return false;
-    }
-
-    return true;
+    return Helper::checkMinOrders($minOrders, Frontend::getCustomer()->getID());
 }
 
 /**
  * @param float|string $minOrderValue
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMinBestellwert($minOrderValue): bool
 {
-    if ($minOrderValue > 0
-        && Frontend::getCart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true) < $minOrderValue
-    ) {
-        Shop::Container()->getLogService()->debug(
-            'pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' .
-            Frontend::getCart()->gibGesamtsummeWaren(true) . ' < ' . $minOrderValue
-        );
-
-        return false;
-    }
-
-    return true;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use  JTL\Helpers\PaymentMethod::checkMinOrderValue() instead.',
+        E_USER_DEPRECATED
+    );
+    return Helper::checkMinOrderValue($minOrderValue);
 }
 
 /**
  * @param float|string $maxOrderValue
  * @return bool
+ * @deprecated since 5.2.0
  */
 function pruefeZahlungsartMaxBestellwert($maxOrderValue): bool
 {
-    if ($maxOrderValue > 0
-        && Frontend::getCart()->gibGesamtsummeWarenOhne([C_WARENKORBPOS_TYP_VERSANDPOS], true)
-        >= $maxOrderValue
-    ) {
-        Shop::Container()->getLogService()->debug(
-            'pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' .
-            Frontend::getCart()->gibGesamtsummeWaren(true) . ' > ' . $maxOrderValue
-        );
-
-        return false;
-    }
-
-    return true;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use  JTL\Helpers\PaymentMethod::checkMaxOrderValue() instead.',
+        E_USER_DEPRECATED
+    );
+    return Helper::checkMaxOrderValue($maxOrderValue);
 }
 
 /**
  * @param int       $shippingMethodID
  * @param int|array $formValues
  * @return bool
+ * @deprecated since 5.2.0
  */
 function versandartKorrekt(int $shippingMethodID, $formValues = 0)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $cart                   = Frontend::getCart();
     $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
         ? $_POST['kVerpackung']
@@ -1934,7 +1755,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         [
             'iso' => '%' . $countryCode . '%',
             'dep' => $depending,
-            'scl' => '^([0-9 -]* )?' . $shippingClasses,
+            'scl' => '^([0-9 -]* )?' . $shippingClasses . ' ',
             'sid' => $shippingMethodID
         ]
     );
@@ -1942,8 +1763,13 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     if ($shippingMethod === null || $shippingMethod->kVersandart <= 0) {
         return false;
     }
-    $shippingMethod->Zuschlag  = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
-    $shippingMethod->fEndpreis = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
+    $shippingMethod->kVersandart        = (int)$shippingMethod->kVersandart;
+    $shippingMethod->kVersandberechnung = (int)$shippingMethod->kVersandberechnung;
+    $shippingMethod->nSort              = (int)$shippingMethod->nSort;
+    $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
+    $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
+    $shippingMethod->Zuschlag           = ShippingMethod::getAdditionalFees($shippingMethod, $countryCode, $poCode);
+    $shippingMethod->fEndpreis          = ShippingMethod::calculateShippingFees($shippingMethod, $countryCode, null);
     if ($shippingMethod->fEndpreis == -1) {
         return false;
     }
@@ -1988,7 +1814,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
         true,
         $taxItem
     );
-    pruefeVersandkostenfreiKuponVorgemerkt();
+    CartHelper::applyShippingFreeCoupon();
     $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG);
     if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
         $specialItem->cName = [];
@@ -2025,12 +1851,12 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
 /**
  * @param array $missingData
  * @return int
+ * @deprecated since 5.2.0
  */
 function angabenKorrekt(array $missingData): int
 {
-    return (int)none($missingData, static function ($e) {
-        return $e > 0;
-    });
+    trigger_error(__FUNCTION__ . ' is deprecated. Use JTL\Helpers\Form::hasNoMissingData() instead.', E_USER_DEPRECATED);
+    return Form::hasNoMissingData($missingData);
 }
 
 /**
@@ -2038,246 +1864,23 @@ function angabenKorrekt(array $missingData): int
  * @param int   $kundenaccount
  * @param int   $checkpass
  * @return array
+ * @deprecated since 5.2.0
  */
 function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
 {
-    $ret  = [];
-    $conf = Shop::getSettings([CONF_KUNDEN, CONF_KUNDENFELD, CONF_GLOBAL]);
-
-    foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
-        $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-
-        if (!$data[$dataKey]) {
-            $ret[$dataKey] = 1;
-        }
-    }
-
-    foreach ([
-                'kundenregistrierung_abfragen_anrede'       => 'anrede',
-                'kundenregistrierung_pflicht_vorname'       => 'vorname',
-                'kundenregistrierung_abfragen_firma'        => 'firma',
-                'kundenregistrierung_abfragen_firmazusatz'  => 'firmazusatz',
-                'kundenregistrierung_abfragen_titel'        => 'titel',
-                'kundenregistrierung_abfragen_adresszusatz' => 'adresszusatz',
-                'kundenregistrierung_abfragen_www'          => 'www',
-                'kundenregistrierung_abfragen_bundesland'   => 'bundesland',
-                'kundenregistrierung_abfragen_geburtstag'   => 'geburtstag',
-                'kundenregistrierung_abfragen_fax'          => 'fax',
-                'kundenregistrierung_abfragen_tel'          => 'tel',
-                'kundenregistrierung_abfragen_mobil'        => 'mobil'
-             ] as $confKey => $dataKey) {
-        if ($conf['kunden'][$confKey] === 'Y') {
-            $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-
-            if (!$data[$dataKey]) {
-                $ret[$dataKey] = 1;
-            }
-        }
-    }
-
-    if (!empty($data['www']) && !Text::filterURL($data['www'], true, true)) {
-        $ret['www'] = 2;
-    }
-
-    if (isset($ret['email']) && $ret['email'] === 1) {
-        // email is empty
-    } elseif (Text::filterEmailAddress($data['email']) === false) {
-        $ret['email'] = 2;
-    } elseif (SimpleMail::checkBlacklist($data['email'])) {
-        $ret['email'] = 3;
-    } elseif (isset($conf['kunden']['kundenregistrierung_pruefen_email'])
-        && $conf['kunden']['kundenregistrierung_pruefen_email'] === 'Y'
-        && !checkdnsrr(mb_substr($data['email'], mb_strpos($data['email'], '@') + 1))
-    ) {
-        $ret['email'] = 4;
-    }
-
-    if (empty($_SESSION['check_plzort'])
-        && empty($_SESSION['check_liefer_plzort'])
-        && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y'
-    ) {
-        if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']               = 2;
-            $ret['ort']               = 2;
-            $_SESSION['check_plzort'] = 1;
-        }
-    } else {
-        unset($_SESSION['check_plzort']);
-    }
-
-    foreach ([
-             'kundenregistrierung_abfragen_tel' => 'tel',
-             'kundenregistrierung_abfragen_mobil' => 'mobil',
-             'kundenregistrierung_abfragen_fax' => 'fax'
-             ] as $confKey => $dataKey) {
-        if (isset($data[$dataKey])
-            && ($errCode = Text::checkPhoneNumber($data[$dataKey], $conf['kunden'][$confKey] === 'Y')) > 0
-        ) {
-            $ret[$dataKey] = $errCode;
-        }
-    }
-
-    $deliveryCountry = ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N')
-        ? Shop::Container()->getCountryService()->getCountry($data['land'])
-        : null;
-
-    if (isset($deliveryCountry)
-        && !$deliveryCountry->isEU()
-        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-    ) {
-        //skip
-    } elseif (empty($data['ustid']) && $conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
-        $ret['ustid'] = 1;
-    } elseif (isset($data['ustid'])
-        && $data['ustid'] !== ''
-        && $conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N'
-    ) {
-        if (!isset(Frontend::getCustomer()->cUSTID)
-            || (isset(Frontend::getCustomer()->cUSTID)
-                && Frontend::getCustomer()->cUSTID !== $data['ustid'])
-        ) {
-            $analizeCheck   = false;
-            $resultVatCheck = null;
-            if ($conf['kunden']['shop_ustid_bzstpruefung'] === 'Y') {
-                $vatCheck       = new VATCheck(trim($data['ustid']));
-                $resultVatCheck = $vatCheck->doCheckID();
-                $analizeCheck   = true;
-            }
-            if ($analizeCheck === true && $resultVatCheck['success'] === true) {
-                $ret['ustid'] = 0;
-            } elseif (isset($resultVatCheck)) {
-                switch ($resultVatCheck['errortype']) {
-                    case 'vies':
-                        // vies-error: the ID is invalid according to the VIES-system
-                        $ret['ustid'] = $resultVatCheck['errorcode']; // (old value 5)
-                        break;
-                    case 'parse':
-                        // parse-error: the ID-string is misspelled in any way
-                        if ($resultVatCheck['errorcode'] === 1) {
-                            $ret['ustid'] = 1; // parse-error: no id was given
-                        } elseif ($resultVatCheck['errorcode'] > 1) {
-                            $ret['ustid'] = 2; // parse-error: with the position of error in given ID-string
-                            switch ($resultVatCheck['errorcode']) {
-                                case 120:
-                                    // build a string with error-code and error-information
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                        mb_substr($data['ustid'], 0, $resultVatCheck['errorinfo']) .
-                                        '<span style="color:red;">'.
-                                        mb_substr($data['ustid'], $resultVatCheck['errorinfo']) .
-                                        '</span>';
-                                    break;
-                                case 130:
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' .
-                                        $resultVatCheck['errorinfo'];
-                                    break;
-                                default:
-                                    $ret['ustid_err'] = $resultVatCheck['errorcode'];
-                                    break;
-                            }
-                        }
-                        break;
-                    case 'time':
-                        // according to the backend-setting:
-                        // "Einstellungen -> (Formular)einstellungen -> UstID-Nummer"-check active
-                        if ($conf['kunden']['shop_ustid_force_remote_check'] === 'Y') {
-                            // parsing ok, but the remote-service is in a down slot and unreachable
-                            $ret['ustid']     = 4;
-                            $ret['ustid_err'] = $resultVatCheck['errorcode'] . ',' . $resultVatCheck['errorinfo'];
-                        }
-                        break;
-                    case 'core':
-                        // if we have problems like "no module php_soap" we create a log entry
-                        // (use case: the module and the vat-check was formerly activated yet
-                        // but the php-module is disabled now)
-                        Shop::Container()->getLogService()->warning($resultVatCheck['errorinfo']);
-                        break;
-                }
-            }
-        }
-    }
-    if (isset($data['geburtstag'])) {
-        $enDate = DateTime::createFromFormat('Y-m-d', $data['geburtstag']);
-        if (($errCode = Text::checkDate(
-            $enDate === false ? $data['geburtstag'] : $enDate->format('d.m.Y'),
-            $conf['kunden']['kundenregistrierung_abfragen_geburtstag'] === 'Y'
-        )) > 0) {
-            $ret['geburtstag'] = $errCode;
-        }
-    }
-    if ($kundenaccount === 1) {
-        if ($checkpass) {
-            if ($data['pass'] !== $data['pass2']) {
-                $ret['pass_ungleich'] = 1;
-            }
-            if (mb_strlen($data['pass']) < $conf['kunden']['kundenregistrierung_passwortlaenge']) {
-                $ret['pass_zu_kurz'] = 1;
-            }
-            if (mb_strlen($data['pass']) > 255) {
-                $ret['pass_zu_lang'] = 1;
-            }
-        }
-        //existiert diese email bereits?
-        if (!isset($ret['email']) && !isEmailAvailable($data['email'], Frontend::getCustomer()->kKunde ?? 0)) {
-            if (!(isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)) {
-                $ret['email_vorhanden'] = 1;
-            }
-            $ret['email'] = 5;
-        }
-    }
-    // Selbstdef. Kundenfelder
-    if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $customerFields = new CustomerFields(Shop::getLanguageID());
-        /** @var CustomerField $customerField */
-        foreach ($customerFields as $customerField) {
-            // Kundendaten ändern?
-            $customerFieldIdx = 'custom_' . $customerField->getID();
-            if (isset($data[$customerFieldIdx])
-                && ($check = $customerField->validate($data[$customerFieldIdx])) !== CustomerField::VALIDATE_OK
-            ) {
-                $ret['custom'][$customerField->getID()] = $check;
-            }
-        }
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_ort'])
-        && $conf['kunden']['kundenregistrierung_pruefen_ort'] === 'Y'
-        && preg_match('#[0-9]+#', $data['ort'])
-    ) {
-        $ret['ort'] = 3;
-    }
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_name'])
-        && $conf['kunden']['kundenregistrierung_pruefen_name'] === 'Y'
-        && preg_match('#[0-9]+#', $data['nachname'])
-    ) {
-        $ret['nachname'] = 2;
-    }
-
-    if (isset($conf['kunden']['kundenregistrierung_pruefen_zeit'], $data['editRechnungsadresse'])
-        && (int)$data['editRechnungsadresse'] !== 1
-        && $conf['kunden']['kundenregistrierung_pruefen_zeit'] === 'Y'
-    ) {
-        $regTime = $_SESSION['dRegZeit'] ?? 0;
-        if (!($regTime + 5 < time())) {
-            $ret['formular_zeit'] = 1;
-        }
-    }
-
-    if (isset($conf['kunden']['registrieren_captcha'])
-        && $conf['kunden']['registrieren_captcha'] !== 'N'
-        && !Form::validateCaptcha($data)
-    ) {
-        $ret['captcha'] = 2;
-    }
-
-    return $ret;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return (new RegistrationForm())->checkKundenFormularArray($data, (bool)$kundenaccount, (bool)$checkpass);
 }
 
 /**
  * @param int $customerAccount
  * @param int $checkpass
  * @return array
+ * @deprecated since 5.2.0
  */
 function checkKundenFormular(int $customerAccount, $checkpass = 1): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $data = Text::filterXSS($_POST); // create a copy
 
     return checkKundenFormularArray($data, $customerAccount, $checkpass);
@@ -2286,166 +1889,77 @@ function checkKundenFormular(int $customerAccount, $checkpass = 1): array
 /**
  * @param array $data
  * @return array
+ * @deprecated since 5.2.0
  */
 function checkLieferFormularArray($data): array
 {
-    $ret  = [];
-    $conf = Shop::getSettings([CONF_KUNDEN]);
-
-    foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land'] as $dataKey) {
-        $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-        if (!isset($data[$dataKey]) || !$data[$dataKey]) {
-            $ret[$dataKey] = 1;
-        }
-    }
-
-    foreach ([
-             'lieferadresse_abfragen_titel' => 'titel',
-             'lieferadresse_abfragen_adresszusatz' => 'adresszusatz',
-             'lieferadresse_abfragen_bundesland' => 'bundesland',
-             ] as $confKey => $dataKey) {
-        if ($conf['kunden'][$confKey] === 'Y') {
-            $data[$dataKey] = isset($data[$dataKey]) ? trim($data[$dataKey]) : null;
-
-            if (!$data[$dataKey]) {
-                $ret[$dataKey] = 1;
-            }
-        }
-    }
-
-    if ($conf['kunden']['lieferadresse_abfragen_email'] !== 'N') {
-        $data['email'] = trim($data['email']);
-
-        if (empty($data['email'])) {
-            if ($conf['kunden']['lieferadresse_abfragen_email'] === 'Y') {
-                $ret['email'] = 1;
-            }
-        } elseif (Text::filterEmailAddress($data['email']) === false) {
-            $ret['email'] = 2;
-        }
-    }
-
-    foreach (['tel', 'mobil', 'fax'] as $telType) {
-        if ($conf['kunden']['lieferadresse_abfragen_' . $telType] !== 'N') {
-            $result = Text::checkPhoneNumber($data[$telType]);
-            if ($result === 1 && $conf['kunden']['lieferadresse_abfragen_' . $telType] === 'Y') {
-                $ret[$telType] = 1;
-            } elseif ($result > 1) {
-                $ret[$telType] = $result;
-            }
-        }
-    }
-
-    if (empty($_SESSION['check_liefer_plzort']) && $conf['kunden']['kundenregistrierung_abgleichen_plz'] === 'Y') {
-        if (!valid_plzort($data['plz'], $data['ort'], $data['land'])) {
-            $ret['plz']                      = 2;
-            $ret['ort']                      = 2;
-            $_SESSION['check_liefer_plzort'] = 1;
-        }
-    } else {
-        unset($_SESSION['check_liefer_plzort']);
-    }
-
-    return !empty($ret) ? ['shippingAddress' => $ret] : $ret;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Customer\Registration\Form::checkLieferFormularArray() instead.',
+        E_USER_DEPRECATED
+    );
+    return (new RegistrationForm())->checkLieferFormularArray($data);
 }
 
 /**
  * liefert Gesamtsumme der Artikel im Warenkorb, welche dem Kupon zugeordnet werden können
  *
  * @param Kupon|object $coupon
- * @param array $cartItems
+ * @param array        $cartItems
  * @return float
+ * @deprecated since 5.2.0
  */
 function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartItems)
 {
-    $total = 0;
-    foreach ($cartItems as $item) {
-        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && warenkorbKuponFaehigArtikel($coupon, [$item])
-            && warenkorbKuponFaehigHersteller($coupon, [$item])
-            && warenkorbKuponFaehigKategorien($coupon, [$item])
-        ) {
-            $total += $item->fPreis
-                * $item->nAnzahl
-                * ((100 + CartItem::getTaxRate($item)) / 100);
-        }
-    }
-
-    return round($total, 2);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use CartHelper::getCouponProductsTotal() instead.',
+        E_USER_DEPRECATED
+    );
+    return CartHelper::getCouponProductsTotal($coupon, $cartItems);
 }
 
 /**
  * @param Kupon|object $coupon
- * @param array $items
+ * @param array        $items
  * @return bool
+ * @deprecated since 5.2.0
  */
 function warenkorbKuponFaehigArtikel($coupon, array $items): bool
 {
-    if (empty($coupon->cArtikel)) {
-        return true;
-    }
-    foreach ($items as $item) {
-        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($item->Artikel->cArtNr, '/') . ';/i', $coupon->cArtikel)
-        ) {
-            return true;
-        }
-    }
-
-    return false;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use CartHelper::cartHasCouponValidProducts() instead.',
+        E_USER_DEPRECATED
+    );
+    return CartHelper::cartHasCouponValidProducts($coupon, $items);
 }
 
 /**
  * @param Kupon|object $coupon
- * @param array $items
+ * @param array        $items
  * @return bool
+ * @deprecated since 5.2.0
  */
 function warenkorbKuponFaehigHersteller($coupon, array $items): bool
 {
-    if (empty($coupon->cHersteller) || (int)$coupon->cHersteller === -1) {
-        return true;
-    }
-    foreach ($items as $item) {
-        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && preg_match('/;' . preg_quote($item->Artikel->kHersteller, '/') . ';/i', $coupon->cHersteller)
-        ) {
-            return true;
-        }
-    }
-
-    return false;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use CartHelper::cartHasCouponValidManufacturers() instead.',
+        E_USER_DEPRECATED
+    );
+    return CartHelper::cartHasCouponValidManufacturers($coupon, $items);
 }
 
 /**
  * @param Kupon|object $coupon
- * @param array $items
+ * @param array        $items
  * @return bool
+ * @deprecated since 5.2.0
  */
 function warenkorbKuponFaehigKategorien($coupon, array $items): bool
 {
-    if (empty($coupon->cKategorien) || (int)$coupon->cKategorien === -1) {
-        return true;
-    }
-    $products = [];
-    foreach ($items as $item) {
-        if (empty($item->Artikel)) {
-            continue;
-        }
-        $products[] = $item->Artikel->kVaterArtikel !== 0 ? $item->Artikel->kVaterArtikel : $item->Artikel->kArtikel;
-    }
-    if (count($products) === 0) {
-        return false;
-    }
-    // check if at least one product is in at least one category valid for this coupon
-    $category = Shop::Container()->getDB()->getSingleObject(
-        'SELECT kKategorie
-            FROM tkategorieartikel
-              WHERE kArtikel IN (' . implode(',', $products) . ')
-                AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')
-                LIMIT 1'
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use CartHelper::cartHasCouponValidCategories instead',
+        E_USER_DEPRECATED
     );
-
-    return $category !== null;
+    return CartHelper::cartHasCouponValidCategories($coupon, $items);
 }
 
 /**
@@ -2453,9 +1967,11 @@ function warenkorbKuponFaehigKategorien($coupon, array $items): bool
  * @param int   $customerAccount
  * @param int   $htmlentities
  * @return Customer
+ * @deprecated since 5.2.0
  */
 function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $mapping = [
         'anrede'         => 'cAnrede',
         'vorname'        => 'cVorname',
@@ -2514,101 +2030,48 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
 /**
  * @param array $post
  * @return CustomerAttributes
+ * @deprecated since 5.2.0
  */
 function getKundenattribute(array $post): CustomerAttributes
 {
-    $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
-    /** @var CustomerAttribute $customerAttribute */
-    foreach ($customerAttributes as $customerAttribute) {
-        if ($customerAttribute->isEditable()) {
-            $idx = 'custom_' . $customerAttribute->getCustomerFieldID();
-            $customerAttribute->setValue(isset($post[$idx]) ? Text::filterXSS($post[$idx]) : null);
-        }
-    }
-
-    return $customerAttributes;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Customer\Registration::getCustomerAttributes() instead.',
+        E_USER_DEPRECATED
+    );
+    return (new RegistrationForm())->getCustomerAttributes($post);
 }
 
 /**
  * @param array $post
  * @return Lieferadresse
+ * @deprecated since 5.2.0
  */
 function getLieferdaten(array $post)
 {
-    $post = Text::filterXSS($post);
-    //erstelle neue Lieferadresse
-    $shippingAddress                  = new Lieferadresse();
-    $shippingAddress->cAnrede         = $post['anrede'] ?? null;
-    $shippingAddress->cVorname        = $post['vorname'];
-    $shippingAddress->cNachname       = $post['nachname'];
-    $shippingAddress->cStrasse        = $post['strasse'];
-    $shippingAddress->cHausnummer     = $post['hausnummer'];
-    $shippingAddress->cPLZ            = $post['plz'];
-    $shippingAddress->cOrt            = $post['ort'];
-    $shippingAddress->cLand           = $post['land'];
-    $shippingAddress->cMail           = $post['email'] ?? '';
-    $shippingAddress->cTel            = $post['tel'] ?? null;
-    $shippingAddress->cFax            = $post['fax'] ?? null;
-    $shippingAddress->cFirma          = $post['firma'] ?? null;
-    $shippingAddress->cZusatz         = $post['firmazusatz'] ?? null;
-    $shippingAddress->cTitel          = $post['titel'] ?? null;
-    $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
-    $shippingAddress->cMobil          = $post['mobil'] ?? null;
-    $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
-    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
-
-    if (!empty($shippingAddress->cBundesland)) {
-        $region = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
-        if (is_object($region)) {
-            $shippingAddress->cBundesland = $region->cName;
-        }
-    }
-
-    return $shippingAddress;
+    trigger_error(__FUNCTION__ . ' is deprecated. Use Lieferadresse::createFromPost() instead.', E_USER_DEPRECATED);
+    return Lieferadresse::createFromPost($post);
 }
 
 /**
  * @return bool
+ * @deprecated since 5.2.0
  */
 function guthabenMoeglich(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return (Frontend::getCustomer()->fGuthaben > 0
-            && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
+        && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
 }
 
 /**
+ * @param Cart|null $cart
  * @return bool
+ * @deprecated since 5.2.0
  */
-function freeGiftStillValid(): bool
+function freeGiftStillValid(Cart $cart = null): bool
 {
-    $cart  = Frontend::getCart();
-    $valid = true;
-    foreach ($cart->PositionenArr as $item) {
-        if ($item->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-            continue;
-        }
-        // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-        $gift = Shop::Container()->getDB()->getSingleObject(
-            'SELECT kArtikel
-                FROM tartikelattribut
-                WHERE kArtikel = :pid
-                   AND cName = :attr
-                   AND CAST(cWert AS DECIMAL) <= :sum',
-            [
-                'pid'  => $item->kArtikel,
-                'attr' => FKT_ATTRIBUT_GRATISGESCHENK,
-                'sum'  => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
-            ]
-        );
-
-        if ($gift === null || empty($gift->kArtikel)) {
-            $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            $valid = false;
-        }
-        break;
-    }
-
-    return $valid;
+    trigger_error(__FUNCTION__ . ' is deprecated. Use CartHelper::freeGiftStillValid() instead.', E_USER_DEPRECATED);
+    return CartHelper::freeGiftStillValid($cart ?? Frontend::getCart());
 }
 
 /**
@@ -2616,36 +2079,27 @@ function freeGiftStillValid(): bool
  * @param string $city
  * @param string $country
  * @return bool
+ * @deprecated since 5.2.0
  */
 function valid_plzort(string $poCode, string $city, string $country): bool
 {
-    // Länder die wir mit Ihren Postleitzahlen in der Datenbank haben
-    $supportedCountryCodes = ['DE', 'AT', 'CH'];
-    if (!in_array(mb_convert_case($country, MB_CASE_UPPER), $supportedCountryCodes, true)) {
-        return true;
-    }
-    $obj = Shop::Container()->getDB()->getSingleObject(
-        'SELECT kPLZ
-            FROM tplz
-            WHERE cPLZ = :plz
-                AND INSTR(cOrt COLLATE utf8_german2_ci, :ort)
-                AND cLandISO = :land',
-        [
-            'plz'  => $poCode,
-            'ort'  => $city,
-            'land' => $country
-        ]
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. '
+        . 'Use JTL\Customer\Registration\Validator::AbstractValidator::isValidAddress() instead.',
+        E_USER_DEPRECATED
     );
 
-    return $obj !== null && $obj->kPLZ > 0;
+    return AbstractValidator::isValidAddress($poCode, $city, $country);
 }
 
 /**
  * @param string $step
  * @return array
+ * @deprecated since 5.2.0
  */
 function gibBestellschritt(string $step)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $res    = [];
     $res[1] = 3;
     $res[2] = 3;
@@ -2705,40 +2159,24 @@ function gibBestellschritt(string $step)
 /**
  * @param array|null $post
  * @return Lieferadresse
+ * @deprecated since 5.2.0
  */
 function setzeLieferadresseAusRechnungsadresse(?array $post = null): Lieferadresse
 {
-    $customer                         = isset($post['land']) ? getKundendaten($post, 0) : Frontend::getCustomer();
-    $shippingAddress                  = new Lieferadresse();
-    $shippingAddress->kKunde          = $customer->kKunde;
-    $shippingAddress->cAnrede         = $customer->cAnrede;
-    $shippingAddress->cVorname        = $customer->cVorname;
-    $shippingAddress->cNachname       = $customer->cNachname;
-    $shippingAddress->cStrasse        = $customer->cStrasse;
-    $shippingAddress->cHausnummer     = $customer->cHausnummer;
-    $shippingAddress->cPLZ            = $customer->cPLZ;
-    $shippingAddress->cOrt            = $customer->cOrt;
-    $shippingAddress->cLand           = $customer->cLand;
-    $shippingAddress->cMail           = $customer->cMail;
-    $shippingAddress->cTel            = $customer->cTel;
-    $shippingAddress->cFax            = $customer->cFax;
-    $shippingAddress->cFirma          = $customer->cFirma;
-    $shippingAddress->cZusatz         = $customer->cZusatz;
-    $shippingAddress->cTitel          = $customer->cTitel;
-    $shippingAddress->cAdressZusatz   = $customer->cAdressZusatz;
-    $shippingAddress->cMobil          = $customer->cMobil;
-    $shippingAddress->cBundesland     = $customer->cBundesland;
-    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
-    $_SESSION['Lieferadresse']        = $shippingAddress;
-
-    return $shippingAddress;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Checkout\Lieferadresse::createFromShippingAddress() instead.',
+        E_USER_DEPRECATED
+    );
+    return Lieferadresse::createFromShippingAddress($post);
 }
 
 /**
  * @return int
+ * @deprecated since 5.2.0
  */
 function pruefeAjaxEinKlick(): int
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     if (($customerID = Frontend::getCustomer()->getID()) <= 0) {
         return 0;
     }
@@ -2770,15 +2208,16 @@ function pruefeAjaxEinKlick(): int
     }
     // Hat der Kunde eine Lieferadresse angegeben?
     if ($lastOrder->kLieferadresse > 0) {
-        $addressData = Shop::Container()->getDB()->getSingleObject(
+        $addressID = Shop::Container()->getDB()->getSingleInt(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = :cid
                     AND kLieferadresse = :daid',
+            'kLieferadresse',
             ['cid' => $customerID, 'daid' => (int)$lastOrder->kLieferadresse]
         );
-        if ($addressData !== null && $addressData->kLieferadresse > 0) {
-            $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
+        if ($addressID > 0) {
+            $addressData               = new Lieferadresse($addressID);
             $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();
@@ -2787,9 +2226,9 @@ function pruefeAjaxEinKlick(): int
             Shop::Smarty()->assign('Lieferadresse', $addressData);
         }
     } else {
-        Shop::Smarty()->assign('Lieferadresse', setzeLieferadresseAusRechnungsadresse());
+        Shop::Smarty()->assign('Lieferadresse', Lieferadresse::createFromShippingAddress());
     }
-    pruefeVersandkostenfreiKuponVorgemerkt();
+    CartHelper::applyShippingFreeCoupon();
     Tax::setTaxRates();
     // Prüfe Versandart, falls korrekt --> laden
     if (empty($lastOrder->kVersandart)) {
@@ -2823,11 +2262,13 @@ function pruefeAjaxEinKlick(): int
 }
 
 /**
- * @param array $missingData
+ * @param array       $missingData
  * @param string|null $context
+ * @deprecated since 5.2.0
  */
 function setzeFehlendeAngaben(array $missingData, $context = null)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $all = Shop::Smarty()->getTemplateVars('fehlendeAngaben');
     if (!is_array($all)) {
         $all = [];
@@ -2847,9 +2288,11 @@ function setzeFehlendeAngaben(array $missingData, $context = null)
  * @param int $noteCode
  * @return string
  * @todo: check if this is only used by the old EOS payment method
+ * @deprecated since 5.2.0
  */
 function mappeBestellvorgangZahlungshinweis(int $noteCode)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $note = '';
     if ($noteCode > 0) {
         switch ($noteCode) {
@@ -2880,17 +2323,16 @@ function mappeBestellvorgangZahlungshinweis(int $noteCode)
 
 /**
  * @param string $email
- * @param int $customerID
+ * @param int    $customerID
  * @return bool
+ * @deprecated since 5.2.0
  */
 function isEmailAvailable(string $email, int $customerID = 0): bool
 {
-    return Shop::Container()->getDB()->getSingleObject(
-        'SELECT *
-            FROM tkunde
-            WHERE cmail = :email
-              AND nRegistriert = 1
-            AND kKunde != :customerID',
-        ['email' => $email, 'customerID' => $customerID]
-    ) === null;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. '
+        . 'Use JTL\Customer\Registration\Validator\AbstractValidator::isEmailAvailable() instead.',
+        E_USER_DEPRECATED
+    );
+    return AbstractValidator::isEmailAvailable($email, $customerID);
 }

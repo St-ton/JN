@@ -3,10 +3,9 @@
 namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
-use JTL\Console\ConsoleIO;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use Less_Parser;
+use JTL\Template\Compiler;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +33,7 @@ class LESSCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io               = $this->getIO();
+        $compiler         = new Compiler();
         $themeParam       = $this->getOption('theme');
         $templateDirParam = $this->getOption('templateDir');
         $templateDir      = $templateDirParam === null
@@ -46,49 +46,28 @@ class LESSCommand extends Command
                 if (\basename($themeFolder->path()) === 'base') {
                     continue;
                 }
-                if (!$this->compileLess(\PFAD_ROOT . $themeFolder->path(), \basename($themeFolder->path()), $io)) {
+                if (!$compiler->compileLess(\basename($themeFolder->path()), $templateDir)) {
+                    $io->error($compiler->getErrors());
+
                     return Command::FAILURE;
                 }
                 ++$compiled;
             }
-            if ($compiled > 0) {
-                $io->writeln('...');
-                $io->writeln('<info>Theme files were compiled successfully.</info>');
-            } else {
+            if ($compiled === 0) {
+                $io->error($compiler->getErrors());
                 $io->writeln('<info>No files were compiled.</info>');
+
+                return Command::FAILURE;
             }
-        } elseif ($this->compileLess(\PFAD_ROOT . $templateDir . $themeParam, $themeParam, $io)) {
-            $io->writeln('...');
-            $io->writeln('<info>Theme ' . $themeParam . ' was compiled successfully.</info>');
+            $io->listing($compiler->getCompiled());
+        } elseif ($compiler->compileLess($themeParam, $templateDir)) {
+            $io->listing($compiler->getCompiled());
         } else {
-            $io->writeln('<info>Theme ' . $themeParam . ' could not be compiled.</info>');
+            $io->error(\__(\sprintf('Theme %s could not be compiled.', $themeParam)));
+
             return Command::FAILURE;
         }
 
         return Command::SUCCESS;
-    }
-
-    /**
-     * @param string    $path
-     * @param string    $themeName
-     * @param ConsoleIO $io
-     * @return bool
-     */
-    private function compileLess(string $path, string $themeName, ConsoleIO $io): bool
-    {
-        $parser = new Less_Parser();
-        try {
-            $parser->parseFile($path . '/less/theme.less', '/');
-            $css = $parser->getCss();
-            \file_put_contents($path . '/bootstrap.css', $css);
-            $io->writeln('<info>compiled ' . $themeName . ' theme </info>');
-            unset($parser);
-
-            return true;
-        } catch (\Exception $e) {
-            $io->error($e->getMessage());
-
-            return false;
-        }
     }
 }

@@ -149,7 +149,13 @@ final class Model extends DataModel
             $this->enabled = $res !== null;
         }
         if ($this->languageID > 0) {
-            $this->language = Shop::Lang()->getLanguageByID($this->languageID);
+            try {
+                $this->language = Shop::Lang()->getLanguageByID($this->languageID);
+            } catch (Exception) {
+                $this->setHasError(1);
+                $this->language   = Shop::Lang()->getDefaultLanguage();
+                $this->languageID = 0;
+            }
         }
         if ($this->currencyID > 0) {
             $this->currency = new Currency($this->currencyID);
@@ -182,7 +188,7 @@ final class Model extends DataModel
         $base = \realpath(\PFAD_ROOT . \PFAD_EXPORT) . '/';
         $abs  = $base . $this->getFilename();
         $real = \realpath(\pathinfo($abs, \PATHINFO_DIRNAME)) . '/';
-        if (\strpos($real, $base) !== 0) {
+        if (!\str_starts_with($real, $base)) {
             throw new Exception(\sprintf(\__('Directory traversal detected for export %d.'), $this->getId()));
         }
 

@@ -218,20 +218,20 @@ class Updater
             $api              = Shop::Container()->get(JTLApi::class);
             $availableUpdates = $api->getAvailableVersions(true) ?? [];
 
-            //Add Version-Obj to array to compare versions
+            //Add Version Obj to array to compare Versions
             foreach ($availableUpdates as $key => $availVersion) {
                 try {
-                    $availableUpdates[$key]['referenceVersion'] = Version::parse($availVersion['reference']);
-                } catch (\Exception $e) {
+                    $availVersion->referenceVersion = Version::parse($availVersion->reference);
+                } catch (Exception $e) {
                     unset($availableUpdates[$key]);
                 }
             }
             //Sort versions ascending
             \usort($availableUpdates, static function ($x, $y) {
                 /** @var Version $versionX */
-                $versionX = $x['referenceVersion'];
+                $versionX = $x->referenceVersion;
                 /** @var Version $versionY */
-                $versionY = $y['referenceVersion'];
+                $versionY = $y->referenceVersion;
 
                 if ($versionX->smallerThan($versionY)) {
                     return -1;
@@ -248,13 +248,13 @@ class Updater
 
             foreach ($availableUpdates as $availableUpdate) {
                 /** @var Version $referenceVersion */
-                $referenceVersion = $availableUpdate['referenceVersion'];
-                if ($availableUpdate['isPublic'] === 0
+                $referenceVersion = $availableUpdate->referenceVersion;
+                if ($availableUpdate->isPublic === 0
                     && $referenceVersion->equals($this->getCurrentFileVersion()) === false
                 ) {
                     continue;
                 }
-                $versionCollection->append($availableUpdate['reference']);
+                $versionCollection->append($availableUpdate->reference);
 
             }
 
@@ -263,10 +263,10 @@ class Updater
                 : $version;
 
             /*
-             * if targetversion is greater than file-version: set fileversion as targetversion to avoid
-             * mistakes with missing versions in the versionlist from the API (fallback)
+             * if target version is greater than file version: set file version as target version to avoid
+             * mistakes with missing versions in the version list from the API (fallback)
             */
-            if ($targetVersion->greaterThan($this->getCurrentFileVersion())) {
+            if ($targetVersion !== null && $targetVersion->greaterThan($this->getCurrentFileVersion())) {
                 $targetVersion = $this->getCurrentFileVersion();
             }
 

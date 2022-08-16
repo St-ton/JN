@@ -60,9 +60,11 @@ final class JTLApi
     }
 
     /**
-     * @return array|null
+     * @param bool $includingDev
+     *
+     * @return stdClass[]|null
      */
-    public function getAvailableVersions(bool $includingDev = false)
+    public function getAvailableVersions(bool $includingDev = false): ?array
     {
         if (!isset($this->session['rs']['versions'])) {
             $url = self::URI_VERSION . '/versions';

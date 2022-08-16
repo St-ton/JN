@@ -45,7 +45,7 @@ msgid "checkHead"
 msgstr "Überprüfe Kopfzeile… "
 
 msgid "errorFormatNotFound"
-msgstr " Format wurde nicht erkannt."
+msgstr "Format wurde nicht erkannt."
 
 msgid "importPending"
 msgstr "Importiere…"

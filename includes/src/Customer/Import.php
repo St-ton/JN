@@ -94,6 +94,11 @@ class Import
     private int $importedRowsCount = 0;
 
     /**
+     * @var int[]
+     */
+    private array $noPasswordCustomerIds = [];
+
+    /**
      * Import constructor.
      * @param DbInterface $db
      * @param array|null  $format
@@ -113,8 +118,9 @@ class Import
      */
     public function processFile(string $filename): bool
     {
-        $this->errors            = [];
-        $this->importedRowsCount = 0;
+        $this->errors                = [];
+        $this->importedRowsCount     = 0;
+        $this->noPasswordCustomerIds = [];
 
         $file = \fopen($filename, 'rb');
         if ($file === false) {
@@ -138,13 +144,14 @@ class Import
 
         $index = 1;
         while (($data = \fgetcsv($file, null, $delimiter)) !== false) {
-            $this->processLine($index, $format, $data);
+            if ($this->processLine($index, $format, $data)) {
+                $this->importedRowsCount ++;
+            }
             $index ++;
-            $this->importedRowsCount ++;
         }
 
         \fclose($file);
-        return \count($this->errors) > 0;
+        return \count($this->errors) === 0;
     }
 
     /**
@@ -171,11 +178,11 @@ class Import
      * @param int $index
      * @param array $format
      * @param array $values
-     * @return void
+     * @return bool
      * @throws \PHPMailer\PHPMailer\Exception
      * @throws \SmartyException
      */
-    protected function processLine(int $index, array $format, array $values)
+    protected function processLine(int $index, array $format, array $values): bool
     {
         $customer = $this->getCustomer();
         foreach ($format as $i => $fieldName) {
@@ -187,26 +194,26 @@ class Import
         if (Text::filterEmailAddress($customer->cMail) === false) {
             $this->errors[] = \__('row') . ' ' . $index . ': '
                 . \sprintf(\__('errorInvalidEmail'), $customer->cMail);
-            return;
+            return false;
         }
 
         if ($this->usePasswordsFromCsv === true
             && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoPassword');
-            return;
+            return false;
         }
 
         if (!$customer->cNachname) {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoSurname');
-            return;
+            return false;
         }
 
         $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
             $this->errors[] = \__('row') . ' ' . $index . ': '
                 . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
-            return;
+            return false;
         }
 
         if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'frau') {
@@ -232,12 +239,15 @@ class Import
 
         if ($customer->insertInDB() === 0) {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorImportRecord');
-            return;
+            return false;
         }
 
         if ($this->usePasswordsFromCsv === false) {
-            $this->notifyCustomer($customer);
+//            $this->notifyCustomer($customer);
+            $this->noPasswordCustomerIds[] = $customer->kKunde;
         }
+
+        return true;
     }
 
     protected function initDefaultCountry(): void
@@ -359,5 +369,13 @@ class Import
     public function getImportedRowsCount(): int
     {
         return $this->importedRowsCount;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getNoPasswordCustomerIds(): array
+    {
+        return $this->noPasswordCustomerIds;
     }
 }

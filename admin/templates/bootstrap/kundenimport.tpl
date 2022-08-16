@@ -1,4 +1,18 @@
 {include file='tpl_inc/header.tpl'}
+
+{if !empty($noPasswordCustomerIds)}
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <i class="fal fa-exclamation-triangle mr-2"></i>
+            Einige importierte Kunden müssen ein neues Passwort setzen!
+            Sollen diese Kunden jetzt per E-Mail benachrichtigt werden?
+        </p>
+        <button type="submit" value="notify" class="btn btn-secondary">
+            Ja, Kunden jetzt per E-Mail auffordern, ein neues Passwort zu setzen
+        </button>
+    </div>
+{/if}
+
 {include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
 <div id="content">
     <form name="kundenimporter" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
@@ -55,7 +69,6 @@
                         <button type="submit" value="{__('import')}" class="btn btn-primary btn-block">{__('import')}</button>
                     </div>
                 </div>
-
             </div>
         </div>
     </form>

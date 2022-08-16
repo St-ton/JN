@@ -35,12 +35,17 @@ class CustomerImportController extends AbstractBackendController
             $importer->setLanguageID(Request::postInt('kSprache'));
 
             if ($importer->processFile($_FILES['csv']['tmp_name']) === false) {
-                $this->alertService->addError(\implode('<br>', $importer->getErrors()), 'importNotice');
-            } else {
+                $this->alertService->addError(\implode('<br>', $importer->getErrors()), 'importError');
+            }
+
+            if ($importer->getImportedRowsCount() > 0) {
                 $this->alertService->addSuccess(
                     \sprintf(\__('successImportCustomerCsv'), $importer->getImportedRowsCount()),
-                    'importNotice'
+                    'importSuccess',
+                    ['dismissable' => true, 'fadeOut' => 0]
                 );
+
+                $smarty->assign('noPasswordCustomerIds', $importer->getNoPasswordCustomerIds());
             }
         }
 

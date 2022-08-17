@@ -74,7 +74,9 @@ final class JTLApi
             $this->session['rs']['versions'] = $this->call($url);
         }
 
-        return $this->session['rs']['versions'];
+        return $this->session['rs']['versions'] === null
+            ? null
+            : (array)$this->session['rs']['versions'];
     }
 
     /**

@@ -234,6 +234,7 @@ class ListingItem
             TemplateValidator::RES_XML_PARSE_ERROR        => \__('errorXmlParse'),
             TemplateValidator::RES_NAME_NOT_FOUND         => \__('errorNameNotFound'),
             TemplateValidator::RES_INVALID_VERSION        => \__('errorInvalidVersion'),
+            TemplateValidator::RES_INVALID_NAMESPACE      => \__('errorInvalidNamespace'),
             default                                       => \__('errorUnknown'),
         };
         $this->setErrorMessage($msg);

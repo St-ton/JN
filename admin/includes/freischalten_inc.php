@@ -1,54 +1,52 @@
 <?php declare(strict_types=1);
 
-use JTL\DB\SqlObject;
+/**
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
+ * @return stdClass[]
+ * @deprecated since 5.2.0
+ */
+function gibBewertungFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
+{
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return [];
+}
 
 /**
  * @param string   $sql
- * @param SqlObject $searchSQL
- * @param bool $checkLanguage
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  * @deprecated since 5.2.0
  */
-function gibBewertungFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+function gibSuchanfrageFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param string    $sql
- * @param SqlObject $searchSQL
- * @param bool      $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  * @deprecated since 5.2.0
  */
-function gibSuchanfrageFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+function gibNewskommentarFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param string    $sql
- * @param SqlObject $searchSQL
- * @param bool      $checkLanguage
+ * @param string   $sql
+ * @param stdClass $searchSQL
+ * @param bool     $checkLanguage
  * @return stdClass[]
  * @deprecated since 5.2.0
  */
-function gibNewskommentarFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
-{
-    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return [];
-}
-
-/**
- * @param string    $sql
- * @param SqlObject $searchSQL
- * @param bool      $checkLanguage
- * @return stdClass[]
- * @deprecated since 5.2.0
- */
-function gibNewsletterEmpfaengerFreischalten(string $sql, SqlObject $searchSQL, bool $checkLanguage = true): array
+function gibNewsletterEmpfaengerFreischalten(string $sql, stdClass $searchSQL, bool $checkLanguage = true): array
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return [];

@@ -1156,16 +1156,16 @@ class LanguageHelper
                     $currency->setURLFull($url);
                     continue;
                 }
-                if ($specialPage !== null) {
-                    $specialPage->createBySlug($specialPage->getID(), $additional);
-                    $url = $specialPage->getURL($currentLangID);
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
                     continue;
                 }
-                if ($page !== null) {
-                    $page->createBySlug($page->getID(), $additional);
-                    $url = $page->getURL($currentLangID);
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
                     continue;

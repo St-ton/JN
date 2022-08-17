@@ -29,7 +29,6 @@ class GlobalMetaDataController extends AbstractBackendController
         if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
             $this->actionSaveConfig(Text::filterXSS($_POST));
         }
-
         $meta     = $this->db->selectAll(
             'tglobalemetaangaben',
             ['kSprache', 'kEinstellungenSektion'],
@@ -61,24 +60,18 @@ class GlobalMetaDataController extends AbstractBackendController
             ['kSprache', 'kEinstellungenSektion'],
             [$this->currentLanguageID, \CONF_METAANGABEN]
         );
-        $globalMetaData                        = new stdClass();
-        $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $this->currentLanguageID;
-        $globalMetaData->cName                 = 'Title';
-        $globalMetaData->cWertName             = $title;
-        $this->db->insert('tglobalemetaangaben', $globalMetaData);
-        $globalMetaData                        = new stdClass();
-        $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $this->currentLanguageID;
-        $globalMetaData->cName                 = 'Meta_Description';
-        $globalMetaData->cWertName             = $desc;
-        $this->db->insert('tglobalemetaangaben', $globalMetaData);
-        $globalMetaData                        = new stdClass();
-        $globalMetaData->kEinstellungenSektion = \CONF_METAANGABEN;
-        $globalMetaData->kSprache              = $this->currentLanguageID;
-        $globalMetaData->cName                 = 'Meta_Description_Praefix';
-        $globalMetaData->cWertName             = $metaDescr;
-        $this->db->insert('tglobalemetaangaben', $globalMetaData);
+        $ins                        = new stdClass();
+        $ins->kEinstellungenSektion = \CONF_METAANGABEN;
+        $ins->kSprache              = $this->currentLanguageID;
+        $ins->cName                 = 'Title';
+        $ins->cWertName             = $title;
+        $this->db->insert('tglobalemetaangaben', $ins);
+        $ins->cName     = 'Meta_Description';
+        $ins->cWertName = $desc;
+        $this->db->insert('tglobalemetaangaben', $ins);
+        $ins->cName     = 'Meta_Description_Praefix';
+        $ins->cWertName = $metaDescr;
+        $this->db->insert('tglobalemetaangaben', $ins);
         $this->cache->flushAll();
         $this->alertService->addSuccess(\__('successConfigSave'), 'successConfigSave');
     }

@@ -23,6 +23,7 @@ use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use League\Route\Http\Exception\NotFoundException;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -108,6 +109,22 @@ class NewsController extends AbstractController
         $seo->kSprache = (int)$seo->kSprache;
 
         return $this->updateState($seo, $slug);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $route->get('/' . \ROUTE_PREFIX_NEWS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_NEWS_BY_ID' . $dynName);
+        $route->get('/' . \ROUTE_PREFIX_NEWS . '[/{' . $name . '}]', [$this, 'getResponse'])
+            ->setName('ROUTE_NEWS_BY_NAME' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_NEWS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_NEWS_BY_ID' . $dynName . 'POST');
+        $route->post('/' . \ROUTE_PREFIX_NEWS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_NEWS_BY_NAME' . $dynName . 'POST');
     }
 
     /**

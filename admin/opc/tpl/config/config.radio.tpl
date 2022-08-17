@@ -9,6 +9,9 @@
         {/if}
     </label>
     <div class="radio" id="config-{$propname}">
+        {$propdesc.options =
+            $propdesc.options|default:
+            ['undefined' => 'No \'options\' defined for property \''|cat:{$propname}|cat:'\'']}
         {foreach $propdesc.options as $value => $name}
             <div>
                 <input type="radio" name="{$propname}" value="{$value}" id="config-{$propname}-{$name@index}"

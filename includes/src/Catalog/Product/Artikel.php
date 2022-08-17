@@ -51,529 +51,531 @@ class Artikel implements RoutableInterface
     use MultiSizeImage;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kArtikel;
+    public ?int $kArtikel = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kHersteller;
+    public ?int $kHersteller = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kLieferstatus;
+    public ?int $kLieferstatus = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kSteuerklasse;
+    public ?int $kSteuerklasse = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kEinheit;
+    public ?int $kEinheit = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kVersandklasse;
+    public ?int $kVersandklasse = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kStueckliste;
+    public ?int $kStueckliste = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kMassEinheit;
+    public ?int $kMassEinheit = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kGrundpreisEinheit;
+    public ?int $kGrundpreisEinheit = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kWarengruppe;
+    public ?int $kWarengruppe = null;
 
     /**
-     * @var int Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wieder.
+     * @var int|null - Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wider.
      * Darf nur dann berücksichtigt werden, wenn $nAutomatischeLiefertageberechnung == 0 (also fixe Beschaffungszeit)
      */
-    public $nLiefertageWennAusverkauft;
+    public ?int $nLiefertageWennAusverkauft = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $nAutomatischeLiefertageberechnung;
+    public ?int $nAutomatischeLiefertageberechnung = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $nBearbeitungszeit;
+    public ?int $nBearbeitungszeit = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fLagerbestand;
+    public string|null|float $fLagerbestand = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fMindestbestellmenge;
+    public string|null|float $fMindestbestellmenge = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fPackeinheit;
+    public string|null|float $fPackeinheit = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fAbnahmeintervall;
+    public string|null|float $fAbnahmeintervall = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fGewicht;
+    public string|null|float $fGewicht = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fUVP;
+    public string|null|float $fUVP = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fUVPBrutto;
+    public string|null|float $fUVPBrutto = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fVPEWert;
+    public string|null|float $fVPEWert = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fZulauf = 0.0;
+    public string|null|float $fZulauf = 0.0;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fMassMenge;
+    public string|null|float $fMassMenge = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fGrundpreisMenge;
+    public string|null|float $fGrundpreisMenge = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fBreite;
+    public string|null|float $fBreite = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fHoehe;
+    public string|null|float $fHoehe = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fLaenge;
+    public string|null|float $fLaenge = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cSeo;
+    public ?string $cSeo = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBeschreibung;
+    public ?string $cBeschreibung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cAnmerkung;
+    public ?string $cAnmerkung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cArtNr;
+    public ?string $cArtNr = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cURL;
+    public ?string $cURL = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cURLFull;
+    public ?string $cURLFull = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cVPE;
+    public ?string $cVPE = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cVPEEinheit;
+    public ?string $cVPEEinheit = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cSuchbegriffe;
+    public ?string $cSuchbegriffe = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cTeilbar;
+    public ?string $cTeilbar = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBarcode;
+    public ?string $cBarcode = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLagerBeachten;
+    public ?string $cLagerBeachten = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLagerKleinerNull;
+    public ?string $cLagerKleinerNull = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLagerVariation;
+    public ?string $cLagerVariation = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cKurzBeschreibung;
+    public ?string $cKurzBeschreibung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cMwstVersandText;
+    public ?string $cMwstVersandText = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLieferstatus;
+    public ?string $cLieferstatus = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cVorschaubild;
+    public ?string $cVorschaubild = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cVorschaubildURL;
-    /**
-     * @var string
-     */
-    public $cHerstellerMetaTitle;
+    public ?string $cVorschaubildURL = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cHerstellerMetaKeywords;
+    public ?string $cHerstellerMetaTitle = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cHerstellerMetaDescription;
+    public ?string $cHerstellerMetaKeywords = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cHerstellerBeschreibung;
+    public ?string $cHerstellerMetaDescription = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dZulaufDatum;
+    public ?string $cHerstellerBeschreibung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dMHD;
+    public ?string $dZulaufDatum = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $dErscheinungsdatum;
+    public ?string $dMHD = null;
 
     /**
-     * string 'Y'/'N'
+     * @var string|null
      */
-    public $cTopArtikel;
+    public ?string $dErscheinungsdatum = null;
 
     /**
-     * string 'Y'/'N'
+     * string|null 'Y'/'N'
      */
-    public $cNeu;
+    public ?string $cTopArtikel = null;
 
     /**
-     * @var Preise
+     * string|null 'Y'/'N'
      */
-    public $Preise;
+    public ?string $cNeu = null;
+
+    /**
+     * @var Preise|null
+     */
+    public ?Preise $Preise = null;
 
     /**
      * @var stdClass[]
      */
-    public $Bilder = [];
-
-    /**
-     * @var array
-     */
-    public $FunktionsAttribute;
-
-    /**
-     * @var array
-     */
-    public $Attribute;
-
-    /**
-     * @var array
-     */
-    public $AttributeAssoc;
-
-    /**
-     * @var array
-     */
-    public $Variationen = [];
-
-    /**
-     * @var array
-     */
-    public $Sonderpreise;
-
-    /**
-     * @var array
-     */
-    public $bSuchspecial_arr;
-
-    /**
-     * @var Image\Overlay
-     */
-    public $oSuchspecialBild;
-
-    /**
-     * @var int
-     */
-    public $bIsBestseller;
-
-    /**
-     * @var int
-     */
-    public $bIsTopBewertet;
-
-    /**
-     * @var array
-     */
-    public $oProduktBundle_arr = [];
-
-    /**
-     * @var array
-     */
-    public $oMedienDatei_arr = [];
-
-    /**
-     * @var array
-     */
-    public $cMedienTyp_arr = [];
-
-    /**
-     * @var int
-     */
-    public $nVariationsAufpreisVorhanden;
-
-    /**
-     * @var string
-     */
-    public $cMedienDateiAnzeige;
-
-    /**
-     * @var array
-     */
-    public $oVariationKombi_arr = [];
-
-    /**
-     * @var array
-     */
-    public $VariationenOhneFreifeld = [];
-
-    /**
-     * @var array
-     */
-    public $oVariationenNurKind_arr = [];
-
-    /**
-     * @var stdClass|null
-     */
-    public $Lageranzeige;
-
-    /**
-     * @var int
-     */
-    public $kEigenschaftKombi;
-
-    /**
-     * @var int
-     */
-    public $kVaterArtikel;
-
-    /**
-     * @var int
-     */
-    public $nIstVater;
-
-    /**
-     * @var string
-     */
-    public $cVaterVKLocalized;
-
-    /**
-     * @var array
-     */
-    public $oKategorie_arr;
-
-    /**
-     * @var array
-     */
-    public $oKonfig_arr;
-
-    /**
-     * @var bool
-     */
-    public $bHasKonfig;
-
-    /**
-     * @var Merkmal[]
-     */
-    public $oMerkmale_arr;
-
-    /**
-     * @var array
-     */
-    public $cMerkmalAssoc_arr;
-
-    /**
-     * @var string
-     */
-    public $cVariationKombi;
-
-    /**
-     * @var array
-     */
-    public $kEigenschaftKombi_arr;
-
-    /**
-     * @var null
-     */
-    public $oVariationKombiVorschauText;
-
-    /**
-     * @var array
-     */
-    public $oVariationDetailPreisKind_arr;
-
-    /**
-     * @var array
-     */
-    public $oVariationDetailPreis_arr;
-
-    /**
-     * @var Artikel|null
-     */
-    public $oProduktBundleMain;
-
-    /**
-     * @var stdClass|null
-     */
-    public $oProduktBundlePrice;
-
-    /**
-     * @var int
-     */
-    public $inWarenkorbLegbar;
-
-    /**
-     * @var array
-     */
-    public $oVariBoxMatrixBild_arr;
-
-    /**
-     * @var array
-     */
-    public $oVariationKombiVorschau_arr;
-
-    /**
-     * @var bool|null
-     */
-    public $cVariationenbilderVorhanden;
-
-    /**
-     * @var int
-     */
-    public $nVariationenVerfuegbar;
-
-    /**
-     * @var int
-     */
-    public $nVariationAnzahl;
-
-    /**
-     * @var int
-     */
-    public $nVariationOhneFreifeldAnzahl = 0;
-
-    /**
-     * @var Bewertung|null
-     */
-    public $Bewertungen;
-
-    /**
-     * @var float
-     */
-    public $fDurchschnittsBewertung;
-
-    /**
-     * @var Bewertung|null
-     */
-    public $HilfreichsteBewertung;
+    public array $Bilder = [];
 
     /**
      * @var array|null
      */
-    public $similarProducts;
+    public ?array $FunktionsAttribute = null;
 
     /**
-     * @var string
+     * @var array|null
      */
-    public $cacheID;
+    public ?array $Attribute = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $AttributeAssoc = null;
+
+    /**
+     * @var array
+     */
+    public array $Variationen = [];
+
+    /**
+     * @var array|null
+     */
+    public ?array $Sonderpreise = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $bSuchspecial_arr = null;
+
+    /**
+     * @var Image\Overlay|null
+     */
+    public ?Image\Overlay $oSuchspecialBild = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $bIsBestseller = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $bIsTopBewertet = null;
+
+    /**
+     * @var array
+     */
+    public array $oProduktBundle_arr = [];
+
+    /**
+     * @var array
+     */
+    public array $oMedienDatei_arr = [];
+
+    /**
+     * @var array
+     */
+    public array $cMedienTyp_arr = [];
+
+    /**
+     * @var int|null
+     */
+    public ?int $nVariationsAufpreisVorhanden = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMedienDateiAnzeige = null;
+
+    /**
+     * @var array
+     */
+    public array $oVariationKombi_arr = [];
+
+    /**
+     * @var array
+     */
+    public array $VariationenOhneFreifeld = [];
+
+    /**
+     * @var array
+     */
+    public array $oVariationenNurKind_arr = [];
+
+    /**
+     * @var stdClass|null
+     */
+    public ?stdClass $Lageranzeige = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kEigenschaftKombi = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kVaterArtikel = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $nIstVater = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $cVaterVKLocalized = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oKategorie_arr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oKonfig_arr = null;
+
+    /**
+     * @var bool
+     */
+    public bool $bHasKonfig = false;
+
+    /**
+     * @var Merkmal[]|null
+     */
+    public ?array $oMerkmale_arr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $cMerkmalAssoc_arr = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cVariationKombi = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $kEigenschaftKombi_arr = null;
+
+    /**
+     * @var string|null
+     * @deprecated since 5.2.0
+     */
+    public ?string $oVariationKombiVorschauText = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oVariationDetailPreisKind_arr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oVariationDetailPreis_arr = null;
+
+    /**
+     * @var Artikel|null
+     */
+    public ?Artikel $oProduktBundleMain = null;
+
+    /**
+     * @var stdClass|null
+     */
+    public ?stdClass $oProduktBundlePrice = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $inWarenkorbLegbar = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oVariBoxMatrixBild_arr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oVariationKombiVorschau_arr = null;
+
+    /**
+     * @var bool|null
+     */
+    public ?bool $cVariationenbilderVorhanden = null;
+
+    /**
+     * @var int
+     */
+    public int $nVariationenVerfuegbar = 0;
+
+    /**
+     * @var int
+     */
+    public int $nVariationAnzahl = 0;
+
+    /**
+     * @var int
+     */
+    public int $nVariationOhneFreifeldAnzahl = 0;
+
+    /**
+     * @var Bewertung|null
+     */
+    public ?Bewertung $Bewertungen = null;
+
+    /**
+     * @var float|string|null
+     */
+    public string|null|float $fDurchschnittsBewertung = null;
+
+    /**
+     * @var Bewertung|null
+     */
+    public ?Bewertung $HilfreichsteBewertung = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $similarProducts = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cacheID = null;
 
     /**
      * @var Versandart|null
      */
-    public $oFavourableShipping;
+    public ?Versandart $oFavourableShipping = null;
 
     /**
      * @var int|null
@@ -581,494 +583,494 @@ class Artikel implements RoutableInterface
     public ?int $favourableShippingID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cCachedCountryCode;
+    public ?string $cCachedCountryCode = null;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fLieferantenlagerbestand = 0.0;
+    public string|null|float $fLieferantenlagerbestand = 0.0;
 
     /**
-     * @var float
+     * @var float|string|null
      */
-    public $fLieferzeit = 0.0;
-
-    /**
-     * @var string
-     */
-    public $cEstimatedDelivery;
-
-    /**
-     * @var int
-     */
-    public $kVPEEinheit;
-
-    /**
-     * @var float
-     */
-    public $fMwSt;
-
-    /**
-     * @var float
-     */
-    public $fArtikelgewicht;
-
-    /**
-     * @var int
-     */
-    public $nSort;
-
-    /**
-     * @var string
-     */
-    public $dErstellt;
-
-    /**
-     * @var string
-     */
-    public $dErstellt_de;
-
-    /**
-     * @var string
-     */
-    public $dLetzteAktualisierung;
-
-    /**
-     * @var string
-     */
-    public $cSerie;
-
-    /**
-     * @var string
-     */
-    public $cISBN;
-
-    /**
-     * @var string
-     */
-    public $cASIN;
-
-    /**
-     * @var string
-     */
-    public $cHAN;
-
-    /**
-     * @var string
-     */
-    public $cUNNummer;
-
-    /**
-     * @var string
-     */
-    public $cGefahrnr;
-
-    /**
-     * @var string
-     */
-    public $cTaric;
-
-    /**
-     * @var string
-     */
-    public $cUPC;
-
-    /**
-     * @var string
-     */
-    public $cHerkunftsland;
-
-    /**
-     * @var string
-     */
-    public $cEPID;
-
-    /**
-     * @var array
-     */
-    public $oStueckliste_arr = [];
-
-    /**
-     * @var int
-     */
-    public $nErscheinendesProdukt;
-
-    /**
-     * @var int
-     */
-    public $nMinDeliveryDays;
-
-    /**
-     * @var int
-     */
-    public $nMaxDeliveryDays;
-
-    /**
-     * @var string
-     */
-    public $cEinheit = '';
-
-    /**
-     * @var string
-     */
-    public $Erscheinungsdatum_de;
-
-    /**
-     * @var string
-     */
-    public $cVersandklasse;
-
-    /**
-     * @var float
-     */
-    public $fNettoPreis;
-
-    /**
-     * @var string
-     */
-    public $cAktivSonderpreis;
-
-    /**
-     * @var string
-     */
-    public $dSonderpreisStart_en;
-
-    /**
-     * @var string
-     */
-    public $dSonderpreisEnde_en;
-
-    /**
-     * @var string
-     */
-    public $dSonderpreisStart_de;
-
-    /**
-     * @var string
-     */
-    public $dSonderpreisEnde_de;
-
-    /**
-     * @var string
-     */
-    public $dZulaufDatum_de;
-
-    /**
-     * @var string
-     */
-    public $dMHD_de;
-
-    /**
-     * @var string
-     */
-    public $cBildpfad_thersteller;
-
-    /**
-     * @var string
-     */
-    public $cHersteller;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerSeo;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerURL;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerHomepage;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerBildKlein;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerBildNormal;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerBildURLKlein;
-
-    /**
-     * @var string
-     */
-    public $cHerstellerBildURLNormal;
-
-    /**
-     * @var int
-     */
-    public $cHerstellerSortNr;
-
-    /**
-     * @var array
-     */
-    public $oDownload_arr;
-
-    /**
-     * @var array
-     */
-    public $oVariationKombiKinderAssoc_arr;
-
-    /**
-     * @var array
-     */
-    public $oWarenlager_arr = [];
-
-    /**
-     * @var array
-     */
-    public $cLocalizedVPE;
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE1 = [];
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE2 = [];
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE3 = [];
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE4 = [];
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE5 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE1 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE2 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE3 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE4 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE5 = [];
-
-    /**
-     * @var array
-     */
-    public $fStaffelpreisVPE_arr = [];
-
-    /**
-     * @var array
-     */
-    public $cStaffelpreisLocalizedVPE_arr = [];
-
-    /**
-     * @var string
-     */
-    public $cGewicht;
-
-    /**
-     * @var string
-     */
-    public $cArtikelgewicht;
-
-    /**
-     * @var array
-     */
-    public $cSprachURL_arr = [];
-
-    /**
-     * @var string
-     */
-    public $cUVPLocalized;
-
-    /**
-     * @var int
-     */
-    public $verfuegbarkeitsBenachrichtigung;
-
-    /**
-     * @var int
-     */
-    public $kArtikelVariKombi;
-
-    /**
-     * @var int
-     */
-    public $kVariKindArtikel;
-
-    /**
-     * @var string
-     */
-    public $cMasseinheitCode;
-
-    /**
-     * @var string
-     */
-    public $cMasseinheitName;
-
-    /**
-     * @var string
-     */
-    public $cGrundpreisEinheitCode;
-
-    /**
-     * @var string
-     */
-    public $cGrundpreisEinheitName;
-
-    /**
-     * @var bool
-     */
-    public $isSimpleVariation = false;
-
-    /**
-     * @var string
-     */
-    public $metaKeywords;
-
-    /**
-     * @var string
-     */
-    public $metaTitle;
-
-    /**
-     * @var string
-     */
-    public $metaDescription;
-
-    /**
-     * @var array
-     */
-    public $staffelPreis_arr = [];
-
-    /**
-     * @var array
-     */
-    public $taxData = [];
-
-    /**
-     * @var string
-     */
-    public $cMassMenge = '';
-
-    /**
-     * @var bool
-     */
-    public $cacheHit = false;
-
-    /**
-     * @var string
-     */
-    public $cKurzbezeichnung = '';
-
-    /**
-     * @var string
-     */
-    public $originalName = '';
-
-    /**
-     * @var string
-     */
-    public $originalSeo = '';
+    public string|null|float $fLieferzeit = 0.0;
 
     /**
      * @var string|null
      */
-    public $customImgName;
-
-    /**
-     * @var int
-     */
-    private $kSprache;
-
-    /**
-     * @var int
-     */
-    private $kKundengruppe;
-
-    /**
-     * @var array
-     */
-    protected $conf;
-
-    /**
-     * @var stdClass
-     */
-    protected $options;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var stdClass|null
-     */
-    public $SieSparenX;
-
-    /**
-     * @var string|null
-     */
-    public $cVaterURL;
-
-    /**
-     * @var array|null
-     */
-    public $VaterFunktionsAttribute;
-
-    /**
-     * @var float|null
-     */
-    public $fAnzahl_stueckliste;
-
-    /**
-     * @var string|null
-     */
-    public $cURLDEL;
-
-    /**
-     * @var string|null
-     */
-    public $cBestellwert;
+    public ?string $cEstimatedDelivery = null;
 
     /**
      * @var int|null
      */
-    public $nGGAnzahl;
+    public ?int $kVPEEinheit = null;
+
+    /**
+     * @var float|string|null
+     */
+    public string|null|float $fMwSt = null;
+
+    /**
+     * @var float|string|null
+     */
+    public string|null|float $fArtikelgewicht = null;
+
+    /**
+     * @var int
+     */
+    public int $nSort = 0;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dErstellt = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dErstellt_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dLetzteAktualisierung = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cSerie = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cISBN = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cASIN = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHAN = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cUNNummer = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cGefahrnr = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cTaric = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cUPC = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerkunftsland = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cEPID = null;
+
+    /**
+     * @var array
+     */
+    public array $oStueckliste_arr = [];
+
+    /**
+     * @var int
+     */
+    public int $nErscheinendesProdukt = 0;
+
+    /**
+     * @var int|null
+     */
+    public ?int $nMinDeliveryDays = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $nMaxDeliveryDays = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cEinheit = '';
+
+    /**
+     * @var string|null
+     */
+    public ?string $Erscheinungsdatum_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cVersandklasse = null;
+
+    /**
+     * @var float|string|null
+     */
+    public string|null|float $fNettoPreis = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cAktivSonderpreis = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dSonderpreisStart_en = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dSonderpreisEnde_en = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string  $dSonderpreisStart_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dSonderpreisEnde_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dZulaufDatum_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $dMHD_de = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cBildpfad_thersteller = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHersteller = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerSeo = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerURL = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerHomepage = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerBildKlein = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerBildNormal = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerBildURLKlein = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cHerstellerBildURLNormal = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $cHerstellerSortNr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oDownload_arr = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $oVariationKombiKinderAssoc_arr = null;
+
+    /**
+     * @var array
+     */
+    public array $oWarenlager_arr = [];
+
+    /**
+     * @var array|null
+     */
+    public ?array $cLocalizedVPE = null;
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE1 = [];
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE2 = [];
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE3 = [];
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE4 = [];
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE5 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE1 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE2 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE3 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE4 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE5 = [];
+
+    /**
+     * @var array
+     */
+    public array $fStaffelpreisVPE_arr = [];
+
+    /**
+     * @var array
+     */
+    public array $cStaffelpreisLocalizedVPE_arr = [];
+
+    /**
+     * @var string|null
+     */
+    public ?string $cGewicht = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cArtikelgewicht = null;
+
+    /**
+     * @var array
+     */
+    public array $cSprachURL_arr = [];
+
+    /**
+     * @var string|null
+     */
+    public ?string $cUVPLocalized = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $verfuegbarkeitsBenachrichtigung = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kArtikelVariKombi = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $kVariKindArtikel = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMasseinheitCode = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cMasseinheitName = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cGrundpreisEinheitCode = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cGrundpreisEinheitName = null;
+
+    /**
+     * @var bool
+     */
+    public bool $isSimpleVariation = false;
+
+    /**
+     * @var string|null
+     */
+    public ?string $metaKeywords = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $metaTitle = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $metaDescription = null;
+
+    /**
+     * @var array
+     */
+    public array $staffelPreis_arr = [];
+
+    /**
+     * @var array
+     */
+    public array $taxData = [];
+
+    /**
+     * @var string|mixed
+     */
+    public mixed $cMassMenge = '';
+
+    /**
+     * @var bool
+     */
+    public bool $cacheHit = false;
+
+    /**
+     * @var string
+     */
+    public string $cKurzbezeichnung = '';
+
+    /**
+     * @var string
+     */
+    public string $originalName = '';
+
+    /**
+     * @var string
+     */
+    public string $originalSeo = '';
+
+    /**
+     * @var string|null
+     */
+    public ?string $customImgName = null;
+
+    /**
+     * @var int|null
+     */
+    private ?int $kSprache = null;
+
+    /**
+     * @var int|null
+     */
+    private ?int $kKundengruppe = null;
+
+    /**
+     * @var array|null
+     */
+    protected ?array $conf = null;
+
+    /**
+     * @var stdClass|null
+     */
+    protected ?stdClass $options = null;
+
+    /**
+     * @var DbInterface|null
+     */
+    private ?DbInterface $db = null;
+
+    /**
+     * @var stdClass|null
+     */
+    public ?stdClass $SieSparenX = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cVaterURL = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $VaterFunktionsAttribute = null;
+
+    /**
+     * @var float|string|null
+     */
+    public string|null|float $fAnzahl_stueckliste = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cURLDEL = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $cBestellwert = null;
+
+    /**
+     * @var int|null
+     */
+    public ?int $nGGAnzahl = null;
 
     /**
      * @var bool|null
      */
-    public $isKonfigItem;
+    public ?bool $isKonfigItem = null;
 
     /**
      * @var Currency
@@ -1884,7 +1886,7 @@ class Artikel implements RoutableInterface
             $mediaFile->oMedienDateiAttribut_arr = $this->getDB()->selectAll(
                 'tmediendateiattribut',
                 ['kMedienDatei', 'kSprache'],
-                [(int)$mediaFile->kMedienDatei, $this->kSprache]
+                [$mediaFile->kMedienDatei, $this->kSprache]
             );
             // pruefen, ob ein Attribut mit "tab" gesetzt wurde => falls ja, den Reiter anlegen
             $mediaFile->cAttributTab = '';
@@ -2517,14 +2519,12 @@ class Artikel implements RoutableInterface
         // Ausverkauft aus Varkombis mit mehr als 1 Variation entfernen
         if (($this->kVaterArtikel > 0 || $this->nIstVater === 1) && \count($this->VariationenOhneFreifeld) > 1) {
             foreach ($this->VariationenOhneFreifeld as $i => $oVariationenOhneFreifeld) {
-                if (\is_array($oVariationenOhneFreifeld->Werte)) {
-                    foreach ($this->VariationenOhneFreifeld[$i]->Werte as $j => $oVariationsWert) {
-                        $this->VariationenOhneFreifeld[$i]->Werte[$j]->cName = \str_replace(
-                            $outOfStock,
-                            '',
-                            $this->VariationenOhneFreifeld[$i]->Werte[$j]->cName
-                        );
-                    }
+                foreach ($oVariationenOhneFreifeld->Werte as $j => $oVariationsWert) {
+                    $oVariationenOhneFreifeld->Werte[$j]->cName = \str_replace(
+                        $outOfStock,
+                        '',
+                        $oVariationenOhneFreifeld->Werte[$j]->cName
+                    );
                 }
             }
         }
@@ -3343,9 +3343,6 @@ class Artikel implements RoutableInterface
         }
         $this->holPreise($customerGroupID, $tmpProduct);
         $this->initLanguageID($this->kSprache, LanguageHelper::getIsoFromLangID($this->kSprache)->cISO);
-        //$this->cURL     = URL::buildURL($this, \URLART_ARTIKEL);
-        //$this->cURLFull = URL::buildURL($this, \URLART_ARTIKEL, true);
-
         if ($this->getOption('nArtikelAttribute', 0) === 1) {
             $this->holArtikelAttribute();
         }
@@ -3411,7 +3408,7 @@ class Artikel implements RoutableInterface
         }
         $this->getSearchSpecialOverlay();
         $this->isSimpleVariation = false;
-        if ($this->Variationen !== null && \count($this->Variationen) > 0) {
+        if (\count($this->Variationen) > 0) {
             $this->isSimpleVariation = $this->kVaterArtikel === 0 && $this->nIstVater === 0;
         }
         $this->metaKeywords    = $this->getMetaKeywords();
@@ -3525,7 +3522,7 @@ class Artikel implements RoutableInterface
         $maxDiscount = $this->getDiscount($customerGroupID, $this->kArtikel);
         if ((int)$this->conf['global']['global_sichtbarkeit'] === 2
             && $this->Preise !== null
-            && $this->Preise->fVKNetto === 0
+            && (int)$this->Preise->fVKNetto === 0
             && Frontend::getCustomerGroup()->mayViewPrices()
         ) {
             // zero-ed prices were saved to cache
@@ -4040,15 +4037,11 @@ class Artikel implements RoutableInterface
             return $this;
         }
         $specials = [
-            \SEARCHSPECIALS_BESTSELLER       => $this->isBestseller(),
-            \SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
-            \SEARCHSPECIALS_NEWPRODUCTS      => false,
-            \SEARCHSPECIALS_TOPOFFERS        => $this->cTopArtikel === 'Y',
-            \SEARCHSPECIALS_UPCOMINGPRODUCTS => false,
-            \SEARCHSPECIALS_TOPREVIEWS       => false,
-            \SEARCHSPECIALS_OUTOFSTOCK       => false,
-            \SEARCHSPECIALS_ONSTOCK          => false,
-            \SEARCHSPECIALS_PREORDER         => false
+            \SEARCHSPECIALS_BESTSELLER    => $this->isBestseller(),
+            \SEARCHSPECIALS_SPECIALOFFERS => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
+            \SEARCHSPECIALS_NEWPRODUCTS   => false,
+            \SEARCHSPECIALS_TOPOFFERS     => $this->cTopArtikel === 'Y',
+            \SEARCHSPECIALS_PREORDER      => false
         ];
 
         $now = new DateTime();
@@ -4090,11 +4083,8 @@ class Artikel implements RoutableInterface
             $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
                 && $this->cLagerBeachten === 'Y'
                 && $this->cLagerKleinerNull !== 'Y')
-                || ($this->inWarenkorbLegbar !== null
-                    && (
-                        $this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
-                        || $this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
-                    )
+                || ($this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGER
+                    || $this->inWarenkorbLegbar === \INWKNICHTLEGBAR_LAGERVAR
                 );
         }
         // Auf Lager
@@ -4832,7 +4822,7 @@ class Artikel implements RoutableInterface
         $stockLevel = null,
         ?string $languageISO = null,
         ?int $shippingID = null
-    ) {
+    ): string {
         if (!isset($_SESSION['cISOSprache'])) {
             $defaultLanguage = LanguageHelper::getDefaultLanguage();
             if ($languageISO !== null) {
@@ -4855,7 +4845,7 @@ class Artikel implements RoutableInterface
         if (!\is_numeric($purchaseQuantity) || $purchaseQuantity <= 0) {
             $purchaseQuantity = 1;
         }
-        $stockLevel  = ($stockLevel !== null && \is_numeric($stockLevel)) ? (float)$stockLevel : $this->fLagerbestand;
+        $stockLevel  = \is_numeric($stockLevel) ? (float)$stockLevel : $this->fLagerbestand;
         $favShipping = $this->getFavourableShipping($countryCode, $shippingID);
         if ($favShipping === null || $this->inWarenkorbLegbar <= 0) {
             return '';
@@ -5298,15 +5288,11 @@ class Artikel implements RoutableInterface
      */
     public function getDiscount(int $customerGroupID = 0, int $productID = 0)
     {
-        if (!$productID) {
-            $productID = (int)$this->kArtikel;
-        }
-        if (!$customerGroupID) {
-            $customerGroupID = $this->kKundengruppe ?? $this->customerGroup->getID();
-        }
-        $discounts   = [];
-        $maxDiscount = 0;
-        $cacheID     = 'checkCategoryDiscount' . $customerGroupID;
+        $productID       = $productID ?: $this->kArtikel;
+        $customerGroupID = $customerGroupID ?: ($this->kKundengruppe ?? $this->customerGroup->getID());
+        $discounts       = [];
+        $maxDiscount     = 0;
+        $cacheID         = 'checkCategoryDiscount' . $customerGroupID;
         if (!Shop::has($cacheID)) {
             Shop::set(
                 $cacheID,
@@ -5329,9 +5315,6 @@ class Artikel implements RoutableInterface
                     'kKundengruppe',
                     $customerGroupID
                 );
-                if ($categoryDiscount !== null && $categoryDiscount->kArtikel > 0) {
-                    $discounts[] = $categoryDiscount->fRabatt;
-                }
             } else {
                 $categoryDiscount = $this->getDB()->select(
                     'tartikelkategorierabatt',
@@ -5340,9 +5323,9 @@ class Artikel implements RoutableInterface
                     'kKundengruppe',
                     $customerGroupID
                 );
-                if ($categoryDiscount !== null && $categoryDiscount->kArtikel > 0) {
-                    $discounts[] = $categoryDiscount->fRabatt;
-                }
+            }
+            if ($categoryDiscount !== null && $categoryDiscount->kArtikel > 0) {
+                $discounts[] = $categoryDiscount->fRabatt;
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
@@ -5531,7 +5514,7 @@ class Artikel implements RoutableInterface
      */
     private function calculateDaysBetween(string $date1, string $date2)
     {
-        $match = '/^\d{4}-\d{1,2}\-\d{1,2}$/';
+        $match = '/^\d{4}-\d{1,2}-\d{1,2}$/';
         if (!\preg_match($match, $date1) || !\preg_match($match, $date2)) {
             return 0;
         }
@@ -5949,7 +5932,7 @@ class Artikel implements RoutableInterface
      */
     public function getChildVariations(): array
     {
-        return ($this->oVariationKombi_arr !== null && \count($this->oVariationKombi_arr) > 0)
+        return \count($this->oVariationKombi_arr) > 0
             ? $this->keyValueVariations($this->oVariationKombi_arr)
             : [];
     }

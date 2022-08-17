@@ -2,11 +2,9 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Link\SpecialPageNotFoundException;
 use JTL\Router\ControllerFactory;
-use JTL\Router\State;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,6 +14,15 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RootController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $route->get('/', [$this, 'getResponse'])->setName('ROUTE_ROOT' . $dynName);
+        $route->post('/', [$this, 'getResponse'])->setName('ROUTE_ROOTPOST' . $dynName);
+    }
+
     /**
      * @inheritdoc
      */

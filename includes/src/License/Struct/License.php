@@ -26,27 +26,27 @@ class License
     /**
      * @var string
      */
-    private $key;
+    private string $key;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var DateTime
      */
-    private $created;
+    private DateTime $created;
 
     /**
      * @var DateTime|null
      */
-    private $validUntil;
+    private ?DateTime $validUntil = null;
 
     /**
      * @var Subscription
      */
-    private $subscription;
+    private Subscription $subscription;
 
     /**
      * @var bool
@@ -137,7 +137,7 @@ class License
      * @param DateTime|string $created
      * @throws \Exception
      */
-    public function setCreated($created): void
+    public function setCreated(DateTime|string $created): void
     {
         $this->created = \is_a($created, DateTime::class) ? $created : new DateTime($created);
     }
@@ -170,7 +170,7 @@ class License
      * @param DateTime|string|null $validUntil
      * @throws \Exception
      */
-    public function setValidUntil($validUntil): void
+    public function setValidUntil(DateTime|string|null $validUntil): void
     {
         if ($validUntil !== null) {
             $this->validUntil = \is_a($validUntil, DateTime::class)

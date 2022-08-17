@@ -311,14 +311,14 @@ class PaymentMethodsController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param array $filteredPost
+     * @return void
+     */
     private function actionSaveConfig(array $filteredPost): void
     {
         $this->step    = 'uebersicht';
-        $paymentMethod = $this->db->select(
-            'tzahlungsart',
-            'kZahlungsart',
-            Request::postInt('kZahlungsart')
-        );
+        $paymentMethod = $this->db->select('tzahlungsart', 'kZahlungsart', Request::postInt('kZahlungsart'));
         if ($paymentMethod !== null) {
             $paymentMethod->kZahlungsart        = (int)$paymentMethod->kZahlungsart;
             $paymentMethod->nSort               = (int)$paymentMethod->nSort;
@@ -401,7 +401,6 @@ class PaymentMethodsController extends AbstractBackendController
     /**
      * @param int $paymentMethodID
      * @return array
-     * @former getNames()
      */
     private function getNames(int $paymentMethodID): array
     {
@@ -420,7 +419,6 @@ class PaymentMethodsController extends AbstractBackendController
     /**
      * @param int $paymentMethodID
      * @return array
-     * @former getshippingTimeNames()
      */
     private function getshippingTimeNames(int $paymentMethodID): array
     {
@@ -428,8 +426,7 @@ class PaymentMethodsController extends AbstractBackendController
         if (!$paymentMethodID) {
             return $res;
         }
-        $items = $this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
-        foreach ($items as $item) {
+        foreach ($this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID) as $item) {
             $res[$item->cISOSprache] = $item->cGebuehrname;
         }
 
@@ -447,12 +444,7 @@ class PaymentMethodsController extends AbstractBackendController
         if (!$paymentMethodID) {
             return $messages;
         }
-        $localizations = $this->db->selectAll(
-            'tzahlungsartsprache',
-            'kZahlungsart',
-            $paymentMethodID
-        );
-        foreach ($localizations as $localization) {
+        foreach ($this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID) as $localization) {
             $messages[$localization->cISOSprache] = $localization->cHinweisText;
         }
 

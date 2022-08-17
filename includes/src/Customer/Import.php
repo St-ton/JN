@@ -9,7 +9,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Services\JTL\PasswordServiceInterface;
 use JTL\Shop;
-use stdClass;
+use PHPMailer\PHPMailer\Exception;
 
 /**
  * Class Import
@@ -17,7 +17,7 @@ use stdClass;
  */
 class Import
 {
-    const DEFAULT_ACCEPTED_FIELDS = [
+    protected const DEFAULT_ACCEPTED_FIELDS = [
         'cKundenNr',
         'cPasswort',
         'cAnrede',
@@ -49,11 +49,6 @@ class Import
     ];
 
     /**
-     * @var array
-     */
-    private array $acceptedFields;
-
-    /**
      * @var int
      */
     private int $customerGroupID = 1;
@@ -81,7 +76,7 @@ class Import
     /**
      * @var string|null
      */
-    private $defaultCountryCode;
+    private ?string $defaultCountryCode = null;
 
     /**
      * @var string[]
@@ -101,11 +96,10 @@ class Import
     /**
      * Import constructor.
      * @param DbInterface $db
-     * @param array|null  $format
+     * @param array       $acceptedFields
      */
-    public function __construct(private DbInterface $db, array $acceptedFields = self::DEFAULT_ACCEPTED_FIELDS)
+    public function __construct(private DbInterface $db, private array $acceptedFields = self::DEFAULT_ACCEPTED_FIELDS)
     {
-        $this->acceptedFields  = $acceptedFields;
         $this->passwordService = Shop::Container()->getPasswordService();
         $this->mailer          = Shop::Container()->get(Mailer::class);
         $this->initDefaultCountry();
@@ -158,7 +152,7 @@ class Import
      * @param string[] $head
      * @return string[]|false
      */
-    protected function validateHead(array $head)
+    protected function validateHead(array $head): array|bool
     {
         if (!\in_array('cMail', $head, true)) {
             return false;
@@ -166,7 +160,7 @@ class Import
         if (\in_array('cPasswort', $head, true)) {
             $this->usePasswordsFromCsv = true;
         }
-        return array_map(
+        return \array_map(
             function ($field) {
                 return \in_array($field, $this->acceptedFields, true) ? $field : false;
             },
@@ -179,7 +173,7 @@ class Import
      * @param array $format
      * @param array $values
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      * @throws \SmartyException
      */
     protected function processLine(int $index, array $format, array $values): bool
@@ -187,7 +181,7 @@ class Import
         $customer = $this->getCustomer();
         foreach ($format as $i => $fieldName) {
             if ($fieldName !== false) {
-                $customer->{$fieldName} = $values[$i];
+                $customer->{$fieldName} = $values[$i] ?? null;
             }
         }
 
@@ -211,8 +205,7 @@ class Import
 
         $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
         if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
-            $this->errors[] = \__('row') . ' ' . $index . ': '
-                . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
+            $this->errors[] = \__('row') . ' ' . $index . ': ' . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
             return false;
         }
 
@@ -281,10 +274,10 @@ class Import
     /**
      * @param int[] $customerIds
      * @return void
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      * @throws \SmartyException
      */
-    public function notifyCustomers(array $customerIds)
+    public function notifyCustomers(array $customerIds): void
     {
         foreach ($customerIds as $customerId) {
             $customer = new Customer($customerId);
@@ -295,7 +288,7 @@ class Import
     /**
      * @param Customer $customer
      * @return bool
-     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws Exception
      * @throws \SmartyException
      */
     private function notifyCustomer(Customer $customer): bool

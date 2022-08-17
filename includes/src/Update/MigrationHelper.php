@@ -7,8 +7,7 @@ use Exception;
 use JTL\DB\ReturnType;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use JTL\Smarty\ContextType;
-use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\CLISmarty;
 use Throwable;
 
 /**
@@ -255,9 +254,7 @@ class MigrationHelper
             throw new Exception('Cannot create migrations path!');
         }
 
-        $smartyCli  = new JTLSmarty(true, ContextType::CLI);
-        $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
-        $content = $smartyCli->assign('description', $description)
+        $content = (new CLISmarty())->assign('description', $description)
             ->assign('author', $author)
             ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('timestamp', $timestamp)

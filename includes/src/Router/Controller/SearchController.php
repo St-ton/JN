@@ -2,9 +2,9 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Router\DefaultParser;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -25,6 +25,17 @@ class SearchController extends ProductListController
         }
 
         return $this->updateProductFilter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $route->get('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCH' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCH' . $dynName . 'POST');
     }
 
     /**

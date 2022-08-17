@@ -77,6 +77,7 @@
 
 <div class="slides-container" id="{$propname}-slides-container">
     <div id="{$propname}-slides">
+        {$propval = $propval|default:[]}
         {foreach $propval as $slideData}
             {if empty($slideData.action)}
                 {$slideData.action = 'lightbox'}

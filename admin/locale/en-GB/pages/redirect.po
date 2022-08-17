@@ -46,3 +46,15 @@ msgstr "Could not carry out import. Please check the CSV file."
 
 msgid "successImport"
 msgstr "Import carried out successfully."
+
+msgid "Parameter handling"
+msgstr "Parameter handling"
+
+msgid "exact match"
+msgstr "exact match"
+
+msgid "ignore GET parameters"
+msgstr "ignore GET parameters"
+
+msgid "append GET parameters"
+msgstr "append GET parameters"

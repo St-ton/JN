@@ -243,7 +243,6 @@ class Import
         }
 
         if ($this->usePasswordsFromCsv === false) {
-//            $this->notifyCustomer($customer);
             $this->noPasswordCustomerIds[] = $customer->kKunde;
         }
 
@@ -277,6 +276,20 @@ class Import
         $customer->dErstellt     = 'NOW()';
 
         return $customer;
+    }
+
+    /**
+     * @param int[] $customerIds
+     * @return void
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \SmartyException
+     */
+    public function notifyCustomers(array $customerIds)
+    {
+        foreach ($customerIds as $customerId) {
+            $customer = new Customer($customerId);
+            $this->notifyCustomer($customer);
+        }
     }
 
     /**

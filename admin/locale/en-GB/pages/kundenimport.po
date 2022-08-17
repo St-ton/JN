@@ -49,3 +49,10 @@ msgstr " Format not recognised."
 
 msgid "importPending"
 msgstr "Importing…"
+
+msgid "notifyCustomersInfo"
+msgstr "Some imported customers need to set a new password! "
+"Should these customers be notified by e-mail now?"
+
+msgid "notifyCustomersButton"
+msgstr "Yes, request customers via e-mail now to set a new password for their account"

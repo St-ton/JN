@@ -6,12 +6,15 @@
             <div class="col">
                 <p>
                     <i class="fal fa-exclamation-triangle mr-2"></i>
-                    Einige importierte Kunden müssen ein neues Passwort setzen!
-                    Sollen diese Kunden jetzt per E-Mail benachrichtigt werden?
+                    {__('notifyCustomersInfo')}
                 </p>
-                <button type="submit" value="notify" class="btn btn-secondary">
-                    Ja, Kunden jetzt per E-Mail auffordern, ein neues Passwort zu setzen
-                </button>
+                <form method="post" action="{$adminURL}{$route}">
+                    {$jtl_token}
+                    <input type="hidden" name="noPasswordCustomerIds" value="{$noPasswordCustomerIds|json_encode}">
+                    <button type="submit" name="action" value="notify-customers" class="btn btn-secondary">
+                        {__('notifyCustomersButton')}
+                    </button>
+                </form>
             </div>
             <div class="col-auto ml-auto">
                 <div class="close">&times;</div>
@@ -20,11 +23,11 @@
     </div>
 {/if}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc') cDokuURL=__('customerImportURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('customerImport') cBeschreibung=__('customerImportDesc')
+    cDokuURL=__('customerImportURL')}
 <div id="content">
-    <form name="kundenimporter" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
+    <form method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
-        <input type="hidden" name="kundenimport" value="1" />
         <div class="settings card">
             <div class="card-header">
                 <div class="subheading1">{__('customerImport')}</div>
@@ -73,7 +76,10 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="submit" value="{__('import')}" class="btn btn-primary btn-block">{__('import')}</button>
+                        <button type="submit" name="action" value="import-customers"
+                                class="btn btn-primary btn-block">
+                            {__('import')}
+                        </button>
                     </div>
                 </div>
             </div>

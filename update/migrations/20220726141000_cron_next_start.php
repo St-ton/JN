@@ -20,14 +20,14 @@ class Migration_20220726141000 extends Migration implements IMigration
         $this->execute(
             'UPDATE tcron
                 SET nextStart = DATE_ADD(
-                    DATE_ADD(
+                    COALESCE(DATE_ADD(
                         DATE(tcron.lastStart),
                         INTERVAL tcron.frequency * CEIL(
                             TIME_TO_SEC(
                                 TIMEDIFF(TIME(tcron.lastStart), tcron.startTime)
                             ) / tcron.frequency / 3600
                         ) HOUR
-                    ),
+                    ), DATE(tcron.startDate)),
                     INTERVAL TIME_TO_SEC(tcron.startTime) SECOND
                 )'
         );

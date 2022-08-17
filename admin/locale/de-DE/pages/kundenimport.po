@@ -51,8 +51,14 @@ msgid "importPending"
 msgstr "Importiere…"
 
 msgid "notifyCustomersInfo"
-msgstr "Einige importierte Kunden müssen ein neues Passwort setzen! "
-"Sollen diese Kunden jetzt per E-Mail benachrichtigt werden?"
+msgstr "Einige zuletzt importierte Kundenkonten benötigen ein neues Passwort! "
+"Möchten Sie die Kunden jetzt per E-Mail auffordern, ein neues Passwort festzulegen?"
 
 msgid "notifyCustomersButton"
-msgstr "Ja, Kunden jetzt per E-Mail auffordern, ein neues Passwort für ihr Konto zu setzen"
+msgstr "Ja, Kunden jetzt per E-Mail benachrichtigen"
+
+msgid "customersNotified"
+msgstr "Kunden benachrichtigt"
+
+msgid "customersNotifiedOK"
+msgstr "Benachrichtigungen wurden versandt"

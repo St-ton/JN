@@ -1,20 +1,44 @@
 {include file='tpl_inc/header.tpl'}
 
 {if !empty($noPasswordCustomerIds)}
+    <script>
+        let noPasswordCustomerIds = {$noPasswordCustomerIds|json_encode};
+        let totalCustomerIds      = noPasswordCustomerIds.length;
+        let numCustomersProcessed = 0;
+
+        function notifyCustomers()
+        {
+            let notifyCustomersBtn  = $('#notifyCustomersBtn');
+            let notifyCustomersInfo = $('#notifyCustomersInfo');
+            let chunk = noPasswordCustomerIds.splice(0, 10);
+            notifyCustomersBtn.prop('disabled', true);
+
+            notifyCustomersInfo.html(
+                '{__('customersNotified')}: ' + numCustomersProcessed + ' {__('of')} ' + totalCustomerIds
+            );
+
+            if (chunk.length > 0) {
+                ioCall('notifyImportedCustomers', [chunk], () => {
+                    numCustomersProcessed += chunk.length;
+                    notifyCustomers();
+                });
+            } else {
+                notifyCustomersBtn.html('{__('customersNotifiedOK')}');
+            }
+        }
+    </script>
     <div class="alert alert-warning align-items-center" data-fade-out="0" data-key="importNotifyModal">
         <div class="row mr-0">
             <div class="col">
                 <p>
                     <i class="fal fa-exclamation-triangle mr-2"></i>
-                    {__('notifyCustomersInfo')}
+                    <span id="notifyCustomersInfo">{__('notifyCustomersInfo')}</span>
                 </p>
-                <form method="post" action="{$adminURL}{$route}">
-                    {$jtl_token}
-                    <input type="hidden" name="noPasswordCustomerIds" value="{$noPasswordCustomerIds|json_encode}">
-                    <button type="submit" name="action" value="notify-customers" class="btn btn-secondary">
-                        {__('notifyCustomersButton')}
-                    </button>
-                </form>
+                <button id="notifyCustomersBtn" type="submit" name="action" value="notify-customers"
+                        class="btn btn-secondary"
+                        onclick="notifyCustomers()">
+                    {__('notifyCustomersButton')}
+                </button>
             </div>
             <div class="col-auto ml-auto">
                 <div class="close">&times;</div>

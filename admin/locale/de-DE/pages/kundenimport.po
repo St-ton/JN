@@ -38,17 +38,8 @@ msgstr "Zeile konnte nicht importiert werden. Bitte sehen Sie sich die Log-Datei
 msgid "successImportCustomerCsv"
 msgstr "Erfolgreich importierte Kundendatensätze: %s"
 
-msgid "successImportRecord"
-msgstr "Datensatz OK. Importiere: "
-
-msgid "checkHead"
-msgstr "Überprüfe Kopfzeile… "
-
 msgid "errorFormatNotFound"
 msgstr "Format wurde nicht erkannt."
-
-msgid "importPending"
-msgstr "Importiere…"
 
 msgid "notifyCustomersInfo"
 msgstr "Einige zuletzt importierte Kundenkonten benötigen ein neues Passwort! "

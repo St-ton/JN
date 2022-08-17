@@ -38,17 +38,8 @@ msgstr "The row could not be imported. Please have a look at the log file (Root/
 msgid "successImportCustomerCsv"
 msgstr "Successfully imported customer datasets: %s"
 
-msgid "successImportRecord"
-msgstr "Data set OK. Import of: "
-
-msgid "checkHead"
-msgstr "Checking header… "
-
 msgid "errorFormatNotFound"
-msgstr " Format not recognised."
-
-msgid "importPending"
-msgstr "Importing…"
+msgstr "Format not recognised."
 
 msgid "notifyCustomersInfo"
 msgstr "Some recently imported customer accounts require a new password! "

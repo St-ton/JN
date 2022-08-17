@@ -34,6 +34,14 @@ class MailSmarty extends JTLSmarty
     }
 
     /**
+     * @inheritdoc
+     */
+    protected function initTemplate(): ?string
+    {
+        return null;
+    }
+
+    /**
      * @param array     $params
      * @param JTLSmarty $smarty
      * @return string

@@ -25,4 +25,12 @@ final class ExportSmarty extends JTLSmarty
             $this->activateBackendSecurityMode();
         }
     }
+
+    /**
+     * @inheritdoc
+     */
+    protected function initTemplate(): ?string
+    {
+        return null;
+    }
 }

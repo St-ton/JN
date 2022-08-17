@@ -17,23 +17,20 @@ class Migration_20220726141000 extends Migration implements IMigration
     public function up()
     {
         $this->execute('ALTER TABLE `tcron` ADD COLUMN `nextStart` DATETIME NULL DEFAULT NULL AFTER `lastStart`');
-        foreach ($this->getDB()->getObjects('SELECT * FROM tcron') as $cron) {
-            if (!empty($cron->lastFinish)) {
-                $this->getDB()->queryPrepared(
-                    'UPDATE tcron 
-                        SET nextStart = DATE_ADD(ADDTIME(DATE(lastFinish), startTime), INTERVAL frequency HOUR) 
-                    WHERE cronID = :id',
-                    ['id' => (int)$cron->cronID]
-                );
-            } else {
-                $this->getDB()->queryPrepared(
-                    'UPDATE tcron 
-                        SET nextStart = DATE_ADD(ADDTIME(DATE(startDate), startTime), INTERVAL frequency HOUR) 
-                    WHERE cronID = :id',
-                    ['id' => (int)$cron->cronID]
-                );
-            }
-        }
+        $this->execute(
+            'UPDATE tcron
+                SET nextStart = DATE_ADD(
+                    DATE_ADD(
+                        DATE(tcron.lastStart),
+                        INTERVAL tcron.frequency * CEIL(
+                            TIME_TO_SEC(
+                                TIMEDIFF(TIME(tcron.lastStart), tcron.startTime)
+                            ) / tcron.frequency / 3600
+                        ) HOUR
+                    ),
+                    INTERVAL TIME_TO_SEC(tcron.startTime) SECOND
+                )'
+        );
     }
 
     /**

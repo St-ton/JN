@@ -77,9 +77,7 @@ class SyncCronjob extends NetSyncHandler
             "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
             DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
             DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
-            DATE_FORMAT(DATE_ADD(ADDTIME(DATE(tcron.lastStart), tcron.startTime),
-                INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i')
-            AS dNaechsterStart_de
+            DATE_FORMAT(tcron.nextStart, '%d.%m.%Y %H:%i') AS dNaechsterStart_de
             FROM texportformat
             JOIN tcron 
                 ON tcron.jobType = 'exportformat'

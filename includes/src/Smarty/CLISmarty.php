@@ -2,8 +2,6 @@
 
 namespace JTL\Smarty;
 
-use JTL\DB\DbInterface;
-
 /**
  * Class CLISmarty
  * @package JTL\Smarty

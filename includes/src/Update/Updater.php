@@ -268,8 +268,8 @@ class Updater
             if ($targetVersion !== null && $targetVersion->greaterThan($this->getCurrentFileVersion())) {
                 $targetVersion = $this->getCurrentFileVersion();
             }
-
         }
+
         return $targetVersion ?? Version::parse(\APPLICATION_VERSION);
     }
 

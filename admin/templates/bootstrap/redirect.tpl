@@ -157,6 +157,10 @@
                                                        data-placement="bottom" title="{$oRedirect->cFromUrl}"{/if}>
                                                         {$oRedirect->cFromUrl|truncate:50}
                                                     </a>
+                                                    <button type="button" class="btn btn-link px-2"
+                                                            title="{if $oRedirect->paramHandling === 0}{__('exact match')}{elseif $oRedirect->paramHandling === 1}{__('ignore GET parameters')}{else}{__('append GET parameters')}{/if}" data-toggle="tooltip">
+                                                        <span class="fas fa-info-circle font-size-lg"></span>
+                                                    </button>
                                                 </label>
                                             </td>
                                             <td>
@@ -234,7 +238,7 @@
                                                                             {/if}
                                                                         </td>
                                                                         <td>
-                                                                            {$oRedirectReferer->dDate|date_format:'d.m.Y - H:M:S'}
+                                                                            {$oRedirectReferer->dDate|date_format:'d.m.Y - H:m:i'}
                                                                         </td>
                                                                     </tr>
                                                                 {/foreach}

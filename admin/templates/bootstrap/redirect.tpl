@@ -84,7 +84,7 @@
         var $refTr  = $('#referer-tr-' + kRedirect);
         var $refDiv = $('#referer-div-' + kRedirect);
 
-        if(!$refTr.is(':visible')) {
+        if (!$refTr.is(':visible')) {
             $refTr.show();
             $refDiv.slideDown();
         } else {
@@ -320,6 +320,17 @@
                                 )
                             </script>
                         </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="paramHandline">{__('Parameter handling')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="paramHandling" name="paramHandling">
+                                    <option value="0">{__('exact match')}</option>
+                                    <option value="1">{__('ignore GET parameters')}</option>
+                                    <option value="2">{__('append GET parameters')}</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="save-wrapper">
                         <div class="row">

@@ -1,5 +1,4 @@
 <script type="text/javascript">
-{literal}
 $(document).ready(function() {
     $('#tmp_check').on('change', function() {
         if ($(this).is(':checked')) {
@@ -9,7 +8,7 @@ $(document).ready(function() {
         }
     });
     $('#dGueltigBis').datetimepicker({
-        locale: '{/literal}{$language|mb_substr:0:2}{literal}',
+        locale: '{$language|mb_substr:0:2}',
         format: 'DD.MM.YYYY HH:mm:ss',
         useCurrent: false,
         icons: {
@@ -44,8 +43,8 @@ $(document).ready(function() {
 
     // avatar upload usability
     $('#useAvatar').on('change', function() {
-        var useUploadDetails   = $('#useUploadDetails');
-        if($(this).val() === 'N') {
+        var useUploadDetails = $('#useUploadDetails');
+        if ($(this).val() === 'N') {
             useUploadDetails.addClass('d-none');
         } else {
             useUploadDetails.removeClass('d-none');
@@ -108,7 +107,6 @@ $(document).ready(function() {
         background-color: #fff;
     }
 </style>
-{/literal}
 
 {assign var=cTitel value=__('newUserTitle')}
 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
@@ -161,7 +159,6 @@ $(document).ready(function() {
                     </div>
                 </div>
             </div>
-
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('logindata')}</div>
@@ -199,31 +196,30 @@ $(document).ready(function() {
                         </div>
                     </div>
                     <div id="tmp-date-wrapper" style="display: none;">
-                            <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <span class="input-group-checkbox-wrap">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if isset($oAccount->dGueltigBis)} checked="checked"{/if} />
-                                            <label class="custom-control-label" for="tmp_check"></label>
-                                        </div>
-                                    </span>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <div class="input-group-checkbox-wrap">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if isset($oAccount->dGueltigBis)} checked="checked"{/if} />
+                                        <label class="custom-control-label" for="tmp_check"></label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="item" {if empty($oAccount->dGueltigBis)}style="display: none;"{/if} id="tmp_date">
-                            <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}:</label>
-                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                    <input class="form-control datetimepicker-inpu"
-                                           type="text"
-                                           name="dGueltigBis"
-                                           value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'d.m.Y H:M:S'}{/if}"
-                                           id="dGueltigBis"
-                                           data-target="#dGueltigBis"
-                                           data-toggle="datetimepicker"/>
-                                </div>
+                    <div class="item" {if empty($oAccount->dGueltigBis)}style="display: none;"{/if} id="tmp_date">
+                        <div class="form-group form-row align-items-center{if !empty($cError_arr.dGueltigBis)} form-error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control datetimepicker-inpu"
+                                       type="text"
+                                       name="dGueltigBis"
+                                       value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'d.m.Y H:M:S'}{/if}"
+                                       id="dGueltigBis"
+                                       data-target="#dGueltigBis"
+                                       data-toggle="datetimepicker"/>
                             </div>
                         </div>
                     </div>
@@ -246,24 +242,23 @@ $(document).ready(function() {
                             </div>
                         </div>
 
-                        {literal}
                         <script>
                             function createNewSecret() {
                                 if('' === $('[id$=cLogin]').val()) {
-                                    alert('{/literal}{__('errorUsernameMissing')}{literal}');
-                                    return(false);
+                                    alert('{__('errorUsernameMissing')}');
+                                    return false;
                                 }
 
-                                if(confirm('{/literal}{__('warningAuthSecretOverwrite')}{literal}')) {
+                                if(confirm('{__('warningAuthSecretOverwrite')}')) {
                                     var userName = $('#cLogin').val();
-                                    $('#QRcode').html('<img src="templates/bootstrap/gfx/widgets/ajax-loader.gif">');
+                                    $('#QRcode').html('<img src="{$adminURL}/templates/bootstrap/gfx/widgets/ajax-loader.gif">');
                                     ioCall('getNewTwoFA', [userName], function (data) {
                                         // display the new RQ-code
                                         $('#QRcode').html(data.szQRcode);
                                         $('#c2FAsecret').val(data.szSecret);
 
                                         // toggle code-canvas
-                                        if('none' === $('#QRcodeCanvas').css('display')) {
+                                        if ($('#QRcodeCanvas').css('display') === 'none') {
                                             $('#QRcodeCanvas').css('display', 'block');
                                         }
                                     });
@@ -275,9 +270,9 @@ $(document).ready(function() {
                                 ioCall('genTwoFAEmergencyCodes', [userName], function (data) {
                                     var iframeHtml = '';
 
-                                    iframeHtml += '<h4>{/literal}{__('shopEmergencyCodes')}{literal}</h4>';
-                                    iframeHtml += '{/literal}{__('account')}{literal}: <b>' + data.loginName + '</b><br>';
-                                    iframeHtml += '{/literal}{__('shop')}{literal}: <b>' + data.shopName + '</b><br><br>';
+                                    iframeHtml += '<h4>{__('shopEmergencyCodes')}</h4>';
+                                    iframeHtml += '{__('account')}: <b>' + data.loginName + '</b><br>';
+                                    iframeHtml += '{__('shop')}: <b>' + data.shopName + '</b><br><br>';
                                     iframeHtml += '<pre>';
 
                                     data.vCodes.forEach(function (code, i) {
@@ -295,7 +290,6 @@ $(document).ready(function() {
                             }
 
                         </script>
-                        {/literal}
                         <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid {if isset($cError_arr.c2FAsecret)}red{else}lightgrey{/if};padding:10px;">
                             <div id="QRcodeCanvas" style="display:{if '' !== $QRcodeString }block{else}none{/if}">
                                 <div class="alert alert-danger" role="alert">
@@ -432,7 +426,7 @@ $(document).ready(function() {
                         </div>
                     </div>
                     <div class="item">
-                        <label for="useVita">{__('resume')}:</label>
+                        <label for="selectVitaLang">{__('resume')}:</label>
                         <select class="form-control custom-select" id="selectVitaLang">
                             {foreach $availableLanguages as $language}
                                 <option value="{$language->cISO}"{if $language->cShopStandard === 'Y'} selected="selected"{/if}>{$language->getLocalizedName()} {if $language->cShopStandard === 'Y'}({__('standard')}){/if}</option>

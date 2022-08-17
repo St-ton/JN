@@ -78,7 +78,7 @@ class CreateCommand extends Command
      */
     protected function writeDataModel(string $targetDir, string $table): string
     {
-        $smartyCli = Shop::Smarty(true, ContextType::CLI);
+        $smartyCli = new JTLSmarty(true, ContextType::CLI);
         $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $datetime  = new DateTime('NOW');
         $table     = \strtolower($table);

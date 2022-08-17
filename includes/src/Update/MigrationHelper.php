@@ -255,7 +255,7 @@ class MigrationHelper
             throw new Exception('Cannot create migrations path!');
         }
 
-        $smartyCli  = Shop::Smarty(true, ContextType::CLI);
+        $smartyCli  = new JTLSmarty(true, ContextType::CLI);
         $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $content = $smartyCli->assign('description', $description)
             ->assign('author', $author)

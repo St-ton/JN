@@ -391,7 +391,7 @@ class NewsletterController extends AbstractBackendController
                     ORDER BY cName'
             );
             $this->getAdminSectionSettings(\CONF_NEWSLETTER);
-            $smarty->assign('kundengruppen', $customerGroupsByName)
+            $this->smarty->assign('kundengruppen', $customerGroupsByName)
                 ->assign('oNewsletterQueue_arr', $queue)
                 ->assign('oNewsletterVorlage_arr', $templates)
                 ->assign('oNewslettervorlageStd_arr', $defaultData)
@@ -412,7 +412,7 @@ class NewsletterController extends AbstractBackendController
             $this->alertService->addError(\__('errorFillRequired'), 'plausiErrorFillRequired');
         }
 
-        return $smarty->assign('step', $step)
+        return $this->smarty->assign('step', $step)
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nRand', \time())
             ->assign('route', $this->route)

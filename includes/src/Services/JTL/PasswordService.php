@@ -16,7 +16,7 @@ class PasswordService implements PasswordServiceInterface
     /**
      * The highest allowed ascii character in decimal representation
      */
-    public const ASCII_MAX = 127;
+    public const ASCII_MAX = 126;
 
     /**
      * PasswordService constructor.

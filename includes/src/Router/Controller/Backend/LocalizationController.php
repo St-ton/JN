@@ -27,13 +27,10 @@ class LocalizationController extends AbstractBackendController
         $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/localizationcheck');
 
-        $action    = Request::postVar('action');
         $type      = Request::postVar('type');
         $languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
-
-        if ($action === 'deleteExcess' && $type !== null && Form::validateToken()) {
-            $factory = new LocalizationCheckFactory($this->db, $languages);
-            $check   = $factory->getCheckByClassName($type);
+        if ($type !== null && Request::postVar('action') === 'deleteExcess' && Form::validateToken()) {
+            $check = (new LocalizationCheckFactory($this->db, $languages))->getCheckByClassName($type);
             if ($check === null) {
                 $this->alertService->addWarning('No check found', 'clearerr');
             }

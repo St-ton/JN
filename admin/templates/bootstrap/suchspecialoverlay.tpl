@@ -118,7 +118,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nPosition">{__('position')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <select name="nPosition" id="nPosition" class="combo custom-select {if !empty($isDeprecated)} disabled="disabled"{/if}>
+                                <select name="nPosition" id="nPosition" class="combo custom-select"{if !empty($isDeprecated)} disabled="disabled"{/if}>
                                     <option value="1"{if $oSuchspecialOverlay->getPosition() === 1} selected{/if}>
                                         {__('topLeft')}
                                     </option>

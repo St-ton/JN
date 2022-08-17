@@ -142,7 +142,7 @@ class LivesearchController extends AbstractBackendController
                     'mapped' => $query->cSuche,
                 ]
             );
-            if ((int)($mappedSearch->kSuchanfrage ?? 0) <= 0 || (int)($mappedSearch->isEqual ?? 0) !== 0) {
+            if ($mappedSearch === null || (int)($mappedSearch->isEqual ?? 0) !== 0) {
                 if ((int)($mappedSearch->isEqual ?? 0) === 1) {
                     $this->alertService->addError(
                         \sprintf(\__('errorSearchMapLoop'), $query->cSuche, $mapping),
@@ -162,10 +162,7 @@ class LivesearchController extends AbstractBackendController
             $queryMapping->cSucheNeu      = $mapping;
             $queryMapping->nAnzahlGesuche = $query->nAnzahlGesuche;
 
-            $mappingID = $this->db->insert(
-                'tsuchanfragemapping',
-                $queryMapping
-            );
+            $mappingID = $this->db->insert('tsuchanfragemapping', $queryMapping);
             if ($mappingID > 0) {
                 $this->db->queryPrepared(
                     'UPDATE tsuchanfrage
@@ -178,11 +175,7 @@ class LivesearchController extends AbstractBackendController
                         'sid' => $mappedSearch->kSuchanfrage
                     ]
                 );
-                $this->db->delete(
-                    'tsuchanfrage',
-                    'kSuchanfrage',
-                    (int)$query->kSuchanfrage
-                );
+                $this->db->delete('tsuchanfrage', 'kSuchanfrage', (int)$query->kSuchanfrage);
                 $this->db->queryPrepared(
                     "UPDATE tseo
                         SET kKey = :kid
@@ -223,11 +216,7 @@ class LivesearchController extends AbstractBackendController
                 return;
             }
             foreach ($queryIDs as $queryID) {
-                $this->db->delete(
-                    'tsuchanfrageerfolglos',
-                    'kSuchanfrageErfolglos',
-                    (int)$queryID
-                );
+                $this->db->delete('tsuchanfrageerfolglos', 'kSuchanfrageErfolglos', (int)$queryID);
             }
             $this->alertService->addSuccess(\__('successSearchDeleteMultiple'), 'successSearchDeleteMultiple');
         }
@@ -329,11 +318,9 @@ class LivesearchController extends AbstractBackendController
                     );
                 }
             } elseif (Request::postInt('nErfolglosEditieren') === 1) {
-                $idx = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
-
+                $idx                 = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
                 $failedQuery->cSuche = Text::filterXSS($_POST[$idx]);
-                $upd                 = new stdClass();
-                $upd->cSuche         = $failedQuery->cSuche;
+                $upd                 = (object)['cSuche' => $failedQuery->cSuche];
                 $this->db->update(
                     'tsuchanfrageerfolglos',
                     'kSuchanfrageErfolglos',
@@ -350,9 +337,8 @@ class LivesearchController extends AbstractBackendController
      */
     private function actionBlacklist(int $languageID): void
     {
-        $blacklist = $_POST['suchanfrageblacklist'];
         $this->db->delete('tsuchanfrageblacklist', 'kSprache', $languageID);
-        foreach (\explode(';', $blacklist) as $item) {
+        foreach (\explode(';', $_POST['suchanfrageblacklist']) as $item) {
             if (!empty($item)) {
                 $ins           = new stdClass();
                 $ins->cSuche   = $item;
@@ -375,11 +361,7 @@ class LivesearchController extends AbstractBackendController
             return;
         }
         foreach (\array_map('\intval', $data) as $mappingID) {
-            $queryMapping = $this->db->select(
-                'tsuchanfragemapping',
-                'kSuchanfrageMapping',
-                $mappingID
-            );
+            $queryMapping = $this->db->select('tsuchanfragemapping', 'kSuchanfrageMapping', $mappingID);
             if (isset($queryMapping->cSuche) && \mb_strlen($queryMapping->cSuche) > 0) {
                 $this->db->delete(
                     'tsuchanfragemapping',
@@ -399,20 +381,21 @@ class LivesearchController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param int $languageID
+     * @return void
+     */
     private function actionUpdate(int $languageID): void
     {
         if (GeneralObject::hasCount('kSuchanfrageAll', $_POST)) {
             foreach ($_POST['kSuchanfrageAll'] as $searchQueryID) {
-                if (\mb_strlen($_POST['nAnzahlGesuche_' . $searchQueryID]) > 0
-                    && (int)$_POST['nAnzahlGesuche_' . $searchQueryID] > 0
-                ) {
-                    $_upd                 = new stdClass();
-                    $_upd->nAnzahlGesuche = (int)$_POST['nAnzahlGesuche_' . $searchQueryID];
-                    $this->db->update('tsuchanfrage', 'kSuchanfrage', (int)$searchQueryID, $_upd);
+                $value = $_POST['nAnzahlGesuche_' . $searchQueryID] ?? '';
+                if ((int)$value > 0) {
+                    $upd = (object)['nAnzahlGesuche' => (int)$value];
+                    $this->db->update('tsuchanfrage', 'kSuchanfrage', (int)$searchQueryID, $upd);
                 }
             }
         }
-        // Eintragen in die Mapping Tabelle
         $searchQueries = $this->db->selectAll(
             'tsuchanfrage',
             'kSprache',
@@ -488,7 +471,7 @@ class LivesearchController extends AbstractBackendController
                             'mapped' => $mapping->cSuche,
                         ]
                     );
-                    if ((int)($mappedSearch->kSuchanfrage ?? 0) > 0 && (int)($mappedSearch->isEqual ?? 0) === 0) {
+                    if ($mappedSearch !== null && (int)($mappedSearch->isEqual ?? 0) === 0) {
                         $this->db->insert('tsuchanfragemapping', $mapping);
                         $this->db->queryPrepared(
                             'UPDATE tsuchanfrage
@@ -501,18 +484,12 @@ class LivesearchController extends AbstractBackendController
                                 'src' => $_POST[$index]
                             ]
                         );
-                        $this->db->delete(
-                            'tsuchanfrage',
-                            'kSuchanfrage',
-                            (int)$searchQuery->kSuchanfrage
-                        );
-                        $upd       = new stdClass();
-                        $upd->kKey = (int)$mappedSearch->kSuchanfrage;
+                        $this->db->delete('tsuchanfrage', 'kSuchanfrage', (int)$searchQuery->kSuchanfrage);
                         $this->db->update(
                             'tseo',
                             ['cKey', 'kKey'],
                             ['kSuchanfrage', (int)$searchQuery->kSuchanfrage],
-                            $upd
+                            (object)['kKey' => (int)$mappedSearch->kSuchanfrage]
                         );
 
                         $succesMapMessage .= \sprintf(
@@ -545,12 +522,11 @@ class LivesearchController extends AbstractBackendController
         $liveSearchSQL = new SqlObject();
         $liveSearchSQL->setOrder(' tsuchanfrage.nAnzahlGesuche DESC ');
         if (\mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
-            $cSuche = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
-
-            if (\mb_strlen($cSuche) > 0) {
+            $query = $this->db->escape(Text::filterXSS(Request::verifyGPDataString('cSuche')));
+            if (\mb_strlen($query) > 0) {
                 $liveSearchSQL->setWhere(' AND tsuchanfrage.cSuche LIKE :srch');
-                $liveSearchSQL->addParam('srch', '%' . $cSuche . '%');
-                $this->smarty->assign('cSuche', $cSuche);
+                $liveSearchSQL->addParam('srch', '%' . $query . '%');
+                $this->smarty->assign('cSuche', $query);
             } else {
                 $this->alertService->addError(\__('errorSearchTermMissing'), 'errorSearchTermMissing');
             }
@@ -582,24 +558,27 @@ class LivesearchController extends AbstractBackendController
             $this->smarty->assign('nSort', -1);
         }
 
-        $queryCount        = (int)$this->db->getSingleObject(
+        $queryCount        = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfrage
                 WHERE kSprache = :lid' . $liveSearchSQL->getWhere(),
+            'cnt',
             \array_merge(['lid' => $languageID], $liveSearchSQL->getParams())
-        )->cnt;
-        $failedQueryCount  = (int)$this->db->getSingleObject(
+        );
+        $failedQueryCount  = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfrageerfolglos
                 WHERE kSprache = :lid',
+            'cnt',
             ['lid' => $languageID]
-        )->cnt;
-        $mappingCount      = (int)$this->db->getSingleObject(
+        );
+        $mappingCount      = $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tsuchanfragemapping
                 WHERE kSprache = :lid',
+            'cnt',
             ['lid' => $languageID]
-        )->cnt;
+        );
         $paginationQueries = (new Pagination('suchanfragen'))
             ->setItemCount($queryCount)
             ->assemble();
@@ -636,8 +615,7 @@ class LivesearchController extends AbstractBackendController
                 LIMIT ' . $paginationMapping->getLimitSQL(),
             ['lid' => $languageID]
         );
-
-        $searchQueries = $this->db->getObjects(
+        $searchQueries  = $this->db->getObjects(
             "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
                 FROM tsuchanfrage
                 LEFT JOIN tseo 

@@ -255,7 +255,6 @@ class Updater
                     continue;
                 }
                 $versionCollection->append($availableUpdate->reference);
-
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
@@ -271,7 +270,6 @@ class Updater
             }
 
         }
-
         return $targetVersion ?? Version::parse(\APPLICATION_VERSION);
     }
 

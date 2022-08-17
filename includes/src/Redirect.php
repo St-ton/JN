@@ -42,6 +42,11 @@ class Redirect
     public int $nCount = 0;
 
     /**
+     * @var int
+     */
+    public int $paramHandling = 0;
+
+    /**
      * @var DbInterface
      */
     protected DbInterface $db;
@@ -65,11 +70,12 @@ class Redirect
     {
         $obj = $this->db->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
-            $this->kRedirect  = (int)$obj->kRedirect;
-            $this->nCount     = (int)$obj->nCount;
-            $this->cFromUrl   = $obj->cFromUrl;
-            $this->cToUrl     = $obj->cToUrl;
-            $this->cAvailable = $obj->cAvailable;
+            $this->kRedirect     = (int)$obj->kRedirect;
+            $this->nCount        = (int)$obj->nCount;
+            $this->paramHandling = (int)$obj->paramHandling;
+            $this->cFromUrl      = $obj->cFromUrl;
+            $this->cToUrl        = $obj->cToUrl;
+            $this->cAvailable    = $obj->cAvailable;
         }
 
         return $this;
@@ -332,6 +338,7 @@ class Redirect
         );
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
+            $redirect->paramHandling        = (int)$redirect->paramHandling;
             $redirect->nCount               = (int)$redirect->nCount;
             $redirect->cFromUrl             = Text::filterXSS($redirect->cFromUrl);
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);

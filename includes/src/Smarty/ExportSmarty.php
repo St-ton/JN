@@ -18,9 +18,9 @@ final class ExportSmarty extends JTLSmarty
     {
         parent::__construct(true, ContextType::EXPORT);
         $this->setCaching(JTLSmarty::CACHING_OFF)
-             ->setTemplateDir(\PFAD_TEMPLATES)
-             ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
-             ->registerResource('db', new SmartyResourceNiceDB($db, ContextType::EXPORT));
+            ->setTemplateDir(\PFAD_TEMPLATES)
+            ->setCompileDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR)
+            ->registerResource('db', new SmartyResourceNiceDB($db, ContextType::EXPORT));
         if (\EXPORTFORMAT_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         }

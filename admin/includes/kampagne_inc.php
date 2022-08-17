@@ -1249,10 +1249,6 @@ function loescheGewaehlteKampagnen(array $campaignIDs)
         return 0;
     }
     foreach (array_map('\intval', $campaignIDs) as $campaignID) {
-        if ($campaignID < 1000) {
-            // Nur externe Kampagnen sind löschbar
-            continue;
-        }
         (new Campaign($campaignID))->deleteInDB();
     }
     Shop::Container()->getCache()->flush('campaigns');

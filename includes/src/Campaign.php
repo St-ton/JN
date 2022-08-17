@@ -142,12 +142,13 @@ class Campaign
         if ($this->kKampagne <= 0) {
             return false;
         }
+        // Nur externe Kampagnen sind löschbar
         Shop::Container()->getDB()->queryPrepared(
             'DELETE tkampagne, tkampagnevorgang
                 FROM tkampagne
                 LEFT JOIN tkampagnevorgang 
                     ON tkampagnevorgang.kKampagne = tkampagne.kKampagne
-                WHERE tkampagne.kKampagne = :cid',
+                WHERE tkampagne.kKampagne = :cid AND tkampagne.nInternal = 0',
             ['cid' => (int)$this->kKampagne]
         );
 

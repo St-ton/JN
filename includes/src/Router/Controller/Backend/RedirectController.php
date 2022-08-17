@@ -174,7 +174,9 @@ class RedirectController extends AbstractBackendController
         $redirect = new Redirect();
         if ($redirect->saveExt(
             Request::verifyGPDataString('cFromUrl'),
-            Request::verifyGPDataString('cToUrl')
+            Request::verifyGPDataString('cToUrl'),
+            false,
+            Request::verifyGPCDataInt('paramHandling')
         )) {
             $this->alertService->addSuccess(\__('successRedirectSave'), 'successRedirectSave');
         } else {

@@ -302,7 +302,7 @@
                                         <th class="text-left">{__('values')}</th>
                                         <th class="th-6 text-center">{__('headingKundenfeldEdit')}</th>
                                         <th class="th-7">{__('sorting')}</th>
-                                        <th class="th-8 min-w-sm"</th>
+                                        <th class="th-8 min-w-sm"></th>
                                     </tr>
                                     </thead>
                                     <tbody>

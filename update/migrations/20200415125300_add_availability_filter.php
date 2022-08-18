@@ -6,8 +6,8 @@
  * @created Wed, 15 Apr 2020 12:53:00 +0100
  */
 
-use JTL\Boxes\Admin\BoxAdmin;
 use JTL\DB\ReturnType;
+use JTL\Router\Controller\Backend\BoxController;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -60,8 +60,7 @@ class Migration_20200415125300 extends Migration implements IMigration
             'cTitel' => 'Filter (Verfügbarkeit)',
             'ePosition' => 'left'
         ]);
-        $boxes = (new BoxAdmin($this->getDB()))->getValidPageTypes();
-        foreach ($boxes as $box) {
+        foreach (BoxController::getValidPageTypes() as $box) {
             $this->execute("INSERT INTO `tboxensichtbar` VALUES ('" . $id . "', '" . $box . "', '6', '1', '')");
         }
 

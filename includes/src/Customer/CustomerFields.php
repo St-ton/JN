@@ -20,12 +20,12 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     /**
      * @var CustomerFields[][]
      */
-    private static $fields = [];
+    private static array $fields = [];
 
     /**
      * @var int
      */
-    private $langID = 0;
+    private int $langID = 0;
 
     /**
      * CustomerFields constructor.
@@ -33,10 +33,7 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
      */
     public function __construct(int $langID = 0)
     {
-        if ($langID === 0) {
-            $langID = Shop::getLanguageID();
-        }
-
+        $langID = $langID ?: Shop::getLanguageID();
         if ($langID > 0) {
             $this->load($langID);
         }
@@ -50,17 +47,22 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
     {
         $this->langID = $langID;
         if (!isset(self::$fields[$langID])) {
-            self::$fields[$langID] = Shop::Container()->getDB()->getCollection(
-                'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
-                    FROM tkundenfeld
-                    WHERE kSprache = :langID
-                    ORDER BY nSort',
-                ['langID' => $langID]
-            )->map(static function ($e) {
-                return new CustomerField($e);
-            })->keyBy(static function (CustomerField $field) {
-                return $field->getID();
-            })->toArray();
+            $cacheID = 'cstmrflds_' . $langID;
+            if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $data = Shop::Container()->getDB()->getCollection(
+                    'SELECT kKundenfeld, kSprache, cName, cWawi, cTyp, nSort, nPflicht, nEditierbar
+                        FROM tkundenfeld
+                        WHERE kSprache = :langID
+                        ORDER BY nSort',
+                    ['langID' => $langID]
+                )->map(static function ($e): CustomerField {
+                    return new CustomerField($e);
+                })->keyBy(static function (CustomerField $field): int {
+                    return $field->getID();
+                })->toArray();
+                Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_OBJECT]);
+            }
+            self::$fields[$langID] = $data;
         }
 
         return $this;

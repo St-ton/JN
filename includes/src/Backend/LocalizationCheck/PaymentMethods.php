@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class PaymentMethods
+ * Class PaymentMethods
  * @package JTL\Backend\LocalizationCheck
  */
 class PaymentMethods extends AbstractLocalizationCheck
@@ -32,7 +32,7 @@ class PaymentMethods extends AbstractLocalizationCheck
         if ($this->getActiveLanguageCodes()->count() === 0) {
             return 0;
         }
-        $codes = $this->getActiveLanguageCodes()->map(static function ($e) {
+        $codes = $this->getActiveLanguageCodes()->map(static function ($e): string {
             return "'" . $e . "'";
         })->implode(',');
 
@@ -72,6 +72,6 @@ class PaymentMethods extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationPaymentMethods');
+        return \__('locationPaymentMethods');
     }
 }

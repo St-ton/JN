@@ -21,16 +21,6 @@ final class Listing
     private const TEMPLATE_DIR = \PFAD_ROOT . \PFAD_TEMPLATES;
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $validator;
-
-    /**
      * @var Collection
      */
     private Collection $items;
@@ -40,11 +30,9 @@ final class Listing
      * @param DbInterface        $db
      * @param ValidatorInterface $validator
      */
-    public function __construct(DbInterface $db, ValidatorInterface $validator)
+    public function __construct(private DbInterface $db, private ValidatorInterface $validator)
     {
-        $this->db        = $db;
-        $this->validator = $validator;
-        $this->items     = new Collection();
+        $this->items = new Collection();
     }
 
     /**
@@ -91,16 +79,13 @@ final class Listing
         $preview = null;
         try {
             $active = $this->getActiveTemplate();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $active = new Model($this->db);
             $active->setTemplate('no-template');
         }
         try {
-            $tpl = $this->getPreviewTemplate();
-            if ($tpl !== null) {
-                $preview = $tpl->getTemplate();
-            }
-        } catch (Exception $e) {
+            $preview = $this->getPreviewTemplate()?->getTemplate();
+        } catch (Exception) {
         }
         $gettext = Shop::Container()->getGetText();
         foreach (new DirectoryIterator($templateDir) as $fileinfo) {
@@ -151,7 +136,7 @@ final class Listing
      */
     private function sort(): void
     {
-        $this->items = $this->items->sortBy(static function (ListingItem $item) {
+        $this->items = $this->items->sortBy(static function (ListingItem $item): string {
             return \mb_convert_case($item->getName(), \MB_CASE_LOWER);
         });
     }

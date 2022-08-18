@@ -9,10 +9,11 @@ use JTL\IO\IOFile;
 use JTL\L10n\GetText;
 use JTL\Plugin\Admin\Installation\MigrationManager as PluginMigrationManager;
 use JTL\Plugin\PluginLoader;
+use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
-use JTLShop\SemVer\Version;
 use JTL\Smarty\JTLSmarty;
+use JTLShop\SemVer\Version;
 use SmartyException;
 
 /**
@@ -22,18 +23,12 @@ use SmartyException;
 class UpdateIO
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * UpdateIO constructor.
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(DbInterface $db, GetText $getText)
+    public function __construct(private DbInterface $db, GetText $getText)
     {
-        $this->db = $db;
         $getText->loadAdminLocale('pages/dbupdater');
     }
 
@@ -93,7 +88,7 @@ class UpdateIO
             $updater->createSqlDump($file);
             $file   = \basename($file);
             $params = \http_build_query(['action' => 'download', 'file' => $file], '', '&');
-            $url    = Shop::getAdminURL() . '/dbupdater.php?' . $params;
+            $url    = Shop::getAdminURL() . '/' . Route::DBUPDATER . '?' . $params;
 
             return [
                 'url'  => $url,
@@ -111,7 +106,7 @@ class UpdateIO
      */
     public function download($file)
     {
-        if (!\preg_match('/^([0-9_a-z]+).sql.gz$/', $file, $m)) {
+        if (!\preg_match('/^([\d_a-z]+).sql.gz$/', $file, $m)) {
             return new IOError('Wrong download request');
         }
         $filePath = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . $file;
@@ -139,7 +134,7 @@ class UpdateIO
         $updatesAvailable       = $updater->hasPendingUpdates();
         $updateError            = $updater->error();
         if (ADMIN_MIGRATION === true) {
-            if ($pluginID !== null && \is_numeric($pluginID)) {
+            if (\is_numeric($pluginID)) {
                 $loader           = new PluginLoader($this->db, Shop::Container()->getCache());
                 $plugin           = $loader->init($pluginID);
                 $manager          = new PluginMigrationManager(
@@ -149,8 +144,10 @@ class UpdateIO
                     $plugin->getMeta()->getSemVer()
                 );
                 $updatesAvailable = \count($manager->getPendingMigrations()) > 0;
-                $smarty->assign('migrationURL', 'plugin.php')
-                    ->assign('pluginID', $pluginID);
+                $smarty->assign(
+                    'migrationURL',
+                    Shop::getAdminURL() . '/' . Route::PLUGIN . '/' . $pluginID
+                )->assign('pluginID', $pluginID);
             } else {
                 $manager = new MigrationManager($this->db);
             }
@@ -164,6 +161,7 @@ class UpdateIO
                 ->equals(Version::parse($currentFileVersion)))
             ->assign('version', $version)
             ->assign('updateError', $updateError)
+            ->assign('route', Route::DBUPDATER)
             ->assign('currentTemplateFileVersion', $template->getFileVersion() ?? '1.0.0')
             ->assign('currentTemplateDatabaseVersion', $template->getVersion());
 

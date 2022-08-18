@@ -10,7 +10,7 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class NoPathTraversal
+ * Class InPath
  * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates that there is no path traversal in the specified path
@@ -48,7 +48,7 @@ class InPath implements RuleInterface
         }
         try {
             $path = $path->toAbsolute();
-        } catch (InvalidPathStateException $ex) {
+        } catch (InvalidPathStateException) {
             return new RuleResult(false, 'invalid path state', $value);
         }
 

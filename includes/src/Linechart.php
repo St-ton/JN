@@ -84,7 +84,7 @@ class Linechart extends Chartdata
         }
 
         //Sanitize $color if "#" is provided
-        if (\strpos($color, '#') === 0) {
+        if (\str_starts_with($color, '#')) {
             $color = \substr($color, 1);
         }
 

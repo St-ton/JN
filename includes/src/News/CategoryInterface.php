@@ -12,14 +12,14 @@ use Illuminate\Support\Collection;
 interface CategoryInterface
 {
     /**
-     * @return ItemListInterface|Collection
+     * @return Collection
      */
-    public function getItems();
+    public function getItems(): Collection;
 
     /**
-     * @param ItemListInterface|Collection $items
+     * @param Collection $items
      */
-    public function setItems($items): void;
+    public function setItems(Collection $items): void;
 
     /**
      * @param int|null $idx

@@ -21,21 +21,6 @@ abstract class AbstractPush
     protected const TEMP_DIR = \PFAD_ROOT . \PFAD_DBES . \PFAD_SYNC_TMP;
 
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected LoggerInterface $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
      * @var Mapper
      */
     protected Mapper $mapper;
@@ -46,11 +31,11 @@ abstract class AbstractPush
      * @param JTLCacheInterface $cache
      * @param LoggerInterface   $logger
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache, LoggerInterface $logger)
-    {
-        $this->db     = $db;
-        $this->cache  = $cache;
-        $this->logger = $logger;
+    public function __construct(
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected LoggerInterface $logger
+    ) {
         $this->mapper = new Mapper();
     }
 

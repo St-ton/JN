@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <form name="wxportformat_erstellen" method="post" action="{$adminURL}/exportformate.php">
+    <form name="wxportformat_erstellen" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         {if $exportID > 0}
             <input type="hidden" name="action" value="create" />
@@ -219,7 +219,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-3 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformate.php">
+                    <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                         {__('cancelWithIcon')}
                     </a>
                 </div>
@@ -257,7 +257,7 @@
         });
     });
     function testrun(tplID) {
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'testExport',
@@ -269,7 +269,7 @@
         });
     }
     function validateTemplateSyntax(tplID) {
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'exportformatSyntaxCheck',

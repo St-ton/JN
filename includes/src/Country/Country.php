@@ -17,7 +17,7 @@ class Country
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'nEU'        => 'EU',
         'cDeutsch'   => 'Name',
         'cEnglisch'  => 'Name',
@@ -29,54 +29,54 @@ class Country
     /**
      * @var string
      */
-    private $ISO;
+    private string $iso;
 
     /**
      * @var int
      */
-    private $EU;
+    private int $eu = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $continent;
+    private ?string $continent = null;
 
     /**
      * @var array
      */
-    private $names;
+    private array $names = [];
 
     /**
      * for backwards compatibility cDeutsch
-     * @var string
+     * @var string|null
      */
-    private $nameDE;
+    private ?string $nameDE = null;
 
     /**
      * for backwards compatibility cEnglisch
-     * @var string
+     * @var string|null
      */
-    private $nameEN;
+    private ?string $nameEN = null;
 
     /**
      * @var bool
      */
-    private $shippingAvailable = false;
+    private bool $shippingAvailable = false;
 
     /**
      * @var bool
      */
-    private $permitRegistration;
+    private bool $permitRegistration = false;
 
     /**
      * @var bool
      */
-    private $requireStateDefinition;
+    private bool $requireStateDefinition = false;
 
     /**
      * @var array
      */
-    private $states = [];
+    private array $states = [];
 
     /**
      * Country constructor.
@@ -106,15 +106,15 @@ class Country
             return;
         }
         $this->setContinent($countryData->cKontinent)
-             ->setEU($countryData->nEU)
+             ->setEU((int)$countryData->nEU)
              ->setNameDE($countryData->cDeutsch)
              ->setNameEN($countryData->cEnglisch)
              ->setPermitRegistration((int)$countryData->bPermitRegistration === 1)
              ->setRequireStateDefinition((int)$countryData->bRequireStateDefinition === 1)
              ->setShippingAvailable($db->getSingleObject(
                  'SELECT COUNT(*) AS cnt 
-                    FROM tversandart
-                    WHERE cLaender LIKE :iso',
+                      FROM tversandart
+                      WHERE cLaender LIKE :iso',
                  ['iso' => '%' . $this->getISO() . '%']
              )->cnt > 0);
     }
@@ -141,16 +141,16 @@ class Country
      */
     public function getISO(): string
     {
-        return $this->ISO;
+        return $this->iso;
     }
 
     /**
-     * @param string $ISO
+     * @param string $iso
      * @return Country
      */
-    public function setISO(string $ISO): self
+    public function setISO(string $iso): self
     {
-        $this->ISO = $ISO;
+        $this->iso = $iso;
 
         return $this;
     }
@@ -160,16 +160,16 @@ class Country
      */
     public function getEU(): int
     {
-        return $this->EU;
+        return $this->eu;
     }
 
     /**
-     * @param int $EU
+     * @param int $eu
      * @return Country
      */
-    public function setEU(int $EU): self
+    public function setEU(int $eu): self
     {
-        $this->EU = $EU;
+        $this->eu = $eu;
 
         return $this;
     }
@@ -179,7 +179,9 @@ class Country
      */
     public function getContinent(): string
     {
-        return isset($_SESSION['AdminAccount']) ? \__($this->continent) : Shop::Lang()->get($this->continent);
+        $name = $this->continent ?? '';
+
+        return isset($_SESSION['AdminAccount']) ? \__($name) : Shop::Lang()->get($name);
     }
 
     /**
@@ -199,11 +201,9 @@ class Country
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
         return isset($_SESSION['AdminAccount']->language)
             ? $this->getNameForLangISO($_SESSION['AdminAccount']->language)
-            : $this->names[$idx] ?? '';
+            : $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**

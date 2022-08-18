@@ -124,14 +124,14 @@
                                     {/if}
 
                                     {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
-                                        {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                        {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
                                             {block name='basket-cart-items-product-data-attributes'}
                                                 <li class="characteristic">
-                                                    <strong>{$oMerkmale_arr->cName}</strong>:
+                                                    <strong>{$characteristic->getName()}</strong>:
                                                     <span class="values">
-                                                        {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                            {if !$oWert@first}, {/if}
-                                                            {$oWert->cWert}
+                                                        {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                            {if !$characteristicValue@first}, {/if}
+                                                            {$characteristicValue->getValue()}
                                                         {/foreach}
                                                     </span>
                                                 </li>
@@ -259,7 +259,7 @@
                                     <div class="qty-wrapper max-w-sm">
                                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                         {link class="btn btn-outline-secondary configurepos btn-block btn-sm"
-                                        href="{get_static_route id='index.php'}?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
+                                        href="{$ShopURL}/?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <i class="fa fa-cogs icon-mr-2"></i>{lang key='configure'}
                                         {/link}
                                     </div>

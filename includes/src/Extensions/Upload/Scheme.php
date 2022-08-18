@@ -13,44 +13,44 @@ use stdClass;
 final class Scheme
 {
     /**
-     * @var int
+     * @var int|null
      */
-    public $kUploadSchema;
+    public ?int $kUploadSchema = null;
 
     /**
      * @var int
      */
-    public $kCustomID;
+    public int $kCustomID = 0;
 
     /**
      * @var int
      */
-    public $nTyp;
+    public int $nTyp = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBeschreibung;
+    public ?string $cBeschreibung = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cDateiTyp;
+    public ?string $cDateiTyp = null;
 
     /**
      * @var int
      */
-    public $nPflicht;
+    public int $nPflicht = 0;
 
     /**
      * @var bool
      */
-    private $licenseOK;
+    private bool $licenseOK;
 
     /**
      * Scheme constructor.
@@ -85,14 +85,20 @@ final class Scheme
                 LEFT JOIN tuploadschemasprache
                     ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                     AND tuploadschemasprache.kSprache = :lid
-                WHERE kUploadSchema =  :uid',
+                WHERE kUploadSchema = :uid',
             [
                 'lid' => Shop::getLanguageID(),
                 'uid' => $id
             ]
         );
-        if ($upload !== null && (int)$upload->kUploadSchema > 0) {
-            $this->copyMembers($upload);
+        if ($upload !== null && $upload->kUploadSchema > 0) {
+            $this->kUploadSchema = (int)$upload->kUploadSchema;
+            $this->kCustomID     = (int)$upload->kCustomID;
+            $this->nTyp          = (int)$upload->nTyp;
+            $this->nPflicht      = (int)$upload->nPflicht;
+            $this->cName         = $upload->cName;
+            $this->cBeschreibung = $upload->cBeschreibung;
+            $this->cDateiTyp     = $upload->cDateiTyp;
         }
     }
 
@@ -132,22 +138,5 @@ final class Scheme
                 ['tpe' => $type, 'lid' => Shop::getLanguageID()]
             )
         );
-    }
-
-    /**
-     * @param stdClass $from
-     * @return $this
-     */
-    private function copyMembers(stdClass $from): self
-    {
-        foreach (\array_keys(\get_object_vars($from)) as $member) {
-            $this->$member = $from->$member;
-        }
-        $this->kUploadSchema = (int)$this->kUploadSchema;
-        $this->kCustomID     = (int)$this->kCustomID;
-        $this->nTyp          = (int)$this->nTyp;
-        $this->nPflicht      = (int)$this->nPflicht;
-
-        return $this;
     }
 }

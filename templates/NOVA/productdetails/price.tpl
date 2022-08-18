@@ -46,12 +46,7 @@
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
                         {/if}
-                        {if $Artikel->Preise->oPriceRange->isRange()}
-                            {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}
-                        {else}
-                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
-                        {/if}
-                        <meta itemprop="price" content="{$priceNoCurr}">
+                        <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
                         <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">

@@ -20,8 +20,8 @@ final class TopSeller extends Job
     {
         parent::start($queueEntry);
 
-        $maxDays  = Shop::getConfigValue(\CONF_GLOBAL, 'global_bestseller_tage') ?? 90;
-        $minCount = Shop::getConfigValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10;
+        $maxDays  = Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_tage') ?? 90;
+        $minCount = Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10;
         $params   = [];
         $where    = '';
         $having   = '';

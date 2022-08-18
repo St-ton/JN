@@ -27,31 +27,13 @@ class ValidationService implements ValidationServiceInterface
     protected $classDefinitions = [];
 
     /**
-     * @var array
-     */
-    protected $get;
-
-    /**
-     * @var array
-     */
-    protected $post;
-
-    /**
-     * @var array
-     */
-    protected $cookie;
-
-    /**
      * ValidationService constructor.
      * @param array $get
      * @param array $post
      * @param array $cookie
      */
-    public function __construct(array $get, array $post, array $cookie)
+    public function __construct(protected array $get, protected array $post, protected array $cookie)
     {
-        $this->get    = $get;
-        $this->post   = $post;
-        $this->cookie = $cookie;
     }
 
     /**

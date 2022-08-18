@@ -12,15 +12,13 @@ class ValidationResult implements ValidationResultInterface
 {
     protected $ruleResults = [];
     protected $value;
-    protected $unfilteredValue;
 
     /**
      * ValidationResult constructor.
      * @param mixed $unfilteredValue
      */
-    public function __construct($unfilteredValue)
+    public function __construct(protected $unfilteredValue)
     {
-        $this->unfilteredValue = $unfilteredValue;
     }
 
     /**

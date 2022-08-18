@@ -15,7 +15,7 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'cAllePreisspannen' => 'PriceRanges',
         'cAlleBewertungen'  => 'Ratings',
         'cAlleTags'         => 'Tags',
@@ -31,52 +31,52 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var string
      */
-    private $priceRanges = '';
+    private string $priceRanges = '';
 
     /**
      * @var string
      */
-    private $ratings = '';
+    private string $ratings = '';
 
     /**
      * @var string
      */
-    private $tags = '';
+    private string $tags = '';
 
     /**
      * @var string
      */
-    private $searchSpecials = '';
+    private string $searchSpecials = '';
 
     /**
      * @var string
      */
-    private $categories = '';
+    private string $categories = '';
 
     /**
      * @var string
      */
-    private $manufacturers = '';
+    private string $manufacturers = '';
 
     /**
      * @var array
      */
-    private $characteristics = [];
+    private array $characteristics = [];
 
     /**
      * @var array
      */
-    private $characteristicValues = [];
+    private array $characteristicValues = [];
 
     /**
      * @var array
      */
-    private $searchFilters = [];
+    private array $searchFilters = [];
 
     /**
      * @var string
      */
-    private $unsetAll = '';
+    private string $unsetAll = '';
 
     /**
      * @inheritdoc

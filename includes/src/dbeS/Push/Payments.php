@@ -9,7 +9,7 @@ namespace JTL\dbeS\Push;
 final class Payments extends AbstractPush
 {
     /**
-     * @return array|string
+     * @inheritdoc
      */
     public function getData()
     {

@@ -21,7 +21,7 @@ class Session
     /**
      * @var stdClass|null
      */
-    private ?stdClass $oldSession;
+    private ?stdClass $oldSession = null;
 
     /**
      * @var Currency
@@ -68,7 +68,7 @@ class Session
         Tax::setTaxRates();
         $net       = $db->select('tkundengruppe', 'kKundengruppe', $model->getCustomerGroupID());
         $languages = Shop::Lang()->gibInstallierteSprachen();
-        $langISO   = first($languages, static function (LanguageModel $l) use ($languageID) {
+        $langISO   = first($languages, static function (LanguageModel $l) use ($languageID): bool {
             return $l->getId() === $languageID;
         });
 

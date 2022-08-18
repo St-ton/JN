@@ -20,7 +20,7 @@ final class NewsItem extends AbstractFactory
      */
     public function getCollection(array $languages, array $customerGroups): Generator
     {
-        $languageIDs = map($languages, static function (LanguageModel $e) {
+        $languageIDs = map($languages, static function (LanguageModel $e): int {
             return $e->getId();
         });
         $res         = $this->db->getPDOStatement(

@@ -210,7 +210,7 @@ final class Customer extends AbstractSync
         $customerAttributes = $this->getCustomerAttributes($source);
         $customer->cAnrede  = $this->mapSalutation($customer->cAnrede);
 
-        $lang = $this->db->select('tsprache', 'kSprache', (int)$customer->kSprache);
+        $lang = $this->db->select('tsprache', 'kSprache', $customer->kSprache);
         if (empty($lang->kSprache)) {
             $lang               = $this->db->select('tsprache', 'cShopStandard', 'Y');
             $customer->kSprache = $lang->kSprache;

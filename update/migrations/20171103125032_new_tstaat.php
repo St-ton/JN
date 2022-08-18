@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20171103125032 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 're-create the table tstaat, transfer to valid ISO 3166-2';
+    protected $description = 'Re-create the table tstaat, transfer to valid ISO 3166-2';
 
     /**
      * @inheritDoc

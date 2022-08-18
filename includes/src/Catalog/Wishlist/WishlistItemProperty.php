@@ -14,7 +14,7 @@ class WishlistItemProperty
     /**
      * @var string[]
      */
-    private static $mapping = [
+    protected static array $mapping = [
         'kWunschlistePosEigenschaft' => 'ID',
         'kWunschlistePos'            => 'ItemID',
         'kEigenschaft'               => 'PropertyID',

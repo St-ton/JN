@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
+use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Plugin\Helper as PluginHelper;
@@ -37,6 +38,7 @@ class FormatExporter extends AbstractExporter
     {
         $this->smarty = new ExportSmarty($this->db);
         $this->smarty->assign('URL_SHOP', Shop::getURL())
+            ->assign('ShopURL', Shop::getURL())
             ->assign('Waehrung', Frontend::getCurrency())
             ->assign('Einstellungen', $this->getConfig());
 
@@ -113,7 +115,7 @@ class FormatExporter extends AbstractExporter
         $fileWriterClass = $this->getFileWriterClass();
         $this->writer    = $this->writer ?? new $fileWriterClass($this->model, $this->config, $this->smarty);
         if ($this->model->getPluginID() > 0
-            && \mb_strpos($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false
+            && \str_contains($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE)
         ) {
             $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
             if ($queueEntry->jobQueueID > 0 && empty($queueEntry->cronID)) {
@@ -129,7 +131,7 @@ class FormatExporter extends AbstractExporter
         $output       = '';
         $errorMessage = '';
 
-        if ((int)$this->queue->tasksExecuted === 0) {
+        if ($this->queue->tasksExecuted === 0) {
             $this->writer->deleteOldTempFile();
         }
         try {
@@ -147,37 +149,40 @@ class FormatExporter extends AbstractExporter
 
             return false;
         }
+        $customerGroup   = CustomerGroup::getByID($this->model->getCustomerGroupID());
+        $customerGroupID = $customerGroup->getID();
+        $languageID      = $this->model->getLanguageID();
+        $currency        = $this->model->getCurrency();
 
         $this->logger->notice('Starting exportformat "' . $this->model->getName()
-            . '" for language ' . $this->model->getLanguageID()
-            . ' and customer group ' . $this->model->getCustomerGroupID()
+            . '" for language ' . $languageID
+            . ' and customer group ' . $customerGroupID
             . ' with caching ' . (($this->getCache()->isActive() && $this->model->getUseCache())
                 ? 'enabled'
                 : 'disabled')
             . ' - ' . $queueEntry->tasksExecuted . '/' . $max . ' products exported');
-        if ((int)$this->queue->tasksExecuted === 0) {
+        if ($this->queue->tasksExecuted === 0) {
             $this->writer->writeHeader();
         }
-        $fallback     = (\mb_strpos($this->model->getContent(), '->oKategorie_arr') !== false);
+        $fallback     = \str_contains($this->model->getContent(), '->oKategorie_arr');
         $options      = Product::getExportOptions();
-        $helper       = Category::getInstance($this->model->getLanguageID(), $this->model->getCustomerGroupID());
         $shopURL      = Shop::getURL();
         $imageBaseURL = Shop::getImageBaseURL();
         $res          = $this->db->getPDOStatement($this->getExportSQL());
         while (($productData = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $product = new Product($this->db);
+            $product = new Product($this->db, $customerGroup, $currency);
             $product->fuelleArtikel(
                 (int)$productData->kArtikel,
                 $options,
-                $this->model->getCustomerGroupID(),
-                $this->model->getLanguageID(),
+                $customerGroupID,
+                $languageID,
                 !$this->model->getUseCache()
             );
             if ($product->kArtikel <= 0) {
                 continue;
             }
-            $product->kSprache                 = $this->model->getLanguageID();
-            $product->kKundengruppe            = $this->model->getCustomerGroupID();
+            $product->kSprache                 = $languageID;
+            $product->kKundengruppe            = $customerGroupID;
             $product->kWaehrung                = $this->model->getCurrencyID();
             $product->campaignValue            = $this->model->getCampaignValue();
             $product->currencyConversionFactor = $pseudoSession->getCurrency()->getConversionFactor();
@@ -192,7 +197,7 @@ class FormatExporter extends AbstractExporter
             }
             $product = $product->augmentProduct($this->config, $this->model);
             $product->addCategoryData($fallback);
-            $product->Kategoriepfad = $product->Kategorie->cKategoriePfad ?? $helper->getPath($product->Kategorie);
+            $product->Kategoriepfad = $product->Kategorie->getCategoryPathString($languageID);
             $product->cDeeplink     = $shopURL . '/' . $product->cURL;
             $product->Artikelbild   = $product->Bilder[0]->cPfadGross
                 ? $imageBaseURL . $product->Bilder[0]->cPfadGross
@@ -219,8 +224,9 @@ class FormatExporter extends AbstractExporter
         }
 
         if ($isCron !== false) {
-            $this->finishCronRun($started, (int)$queueEntry->foreignKeyID, $cacheHits, $cacheMisses);
+            $this->finishCronRun($started, $queueEntry->foreignKeyID, $cacheHits, $cacheMisses);
         } else {
+            require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
             $cb = new AsyncCallback();
             $cb->setExportID($this->model->getId())
                 ->setTasksExecuted($this->queue->tasksExecuted)
@@ -228,7 +234,7 @@ class FormatExporter extends AbstractExporter
                 ->setProductCount($max)
                 ->setLastProductID($this->queue->lastProductID)
                 ->setIsFinished(false)
-                ->setIsFirst(((int)$this->queue->tasksExecuted === 0))
+                ->setIsFirst($this->queue->tasksExecuted === 0)
                 ->setCacheHits($cacheHits)
                 ->setCacheMisses($cacheMisses)
                 ->setError($errorMessage);
@@ -262,7 +268,7 @@ class FormatExporter extends AbstractExporter
                 WHERE kExportformat = :eid',
             ['eid' => $this->model->getId()]
         );
-        $this->db->delete('texportqueue', 'kExportqueue', (int)$this->queue->foreignKeyID);
+        $this->db->delete('texportqueue', 'kExportqueue', $this->queue->foreignKeyID);
 
         $this->writer->writeFooter();
         if ($this->writer->finish()) {
@@ -309,7 +315,7 @@ class FormatExporter extends AbstractExporter
             [
                 'nLimitM'        => $this->queue->taskLimit,
                 'nLastArticleID' => $this->queue->lastProductID,
-                'kExportqueue'   => (int)$this->queue->jobQueueID,
+                'kExportqueue'   => $this->queue->jobQueueID,
             ]
         );
         if ($isAsync) {

@@ -13,7 +13,7 @@ class Commerce extends FakerBase
     /**
      * @var array
      */
-    protected static $department = [
+    protected static array $department = [
         'Books', 'Movies', 'Music', 'Games', 'Electronics', 'Computers', 'Home', 'Garden', 'Tools',
         'Grocery', 'Health', 'Beauty', 'Toys', 'Kids', 'Baby', 'Clothing', 'Shoes', 'Jewelery',
         'Sports', 'Outdoors', 'Automotive', 'Industrial',
@@ -22,13 +22,13 @@ class Commerce extends FakerBase
     /**
      * @var array
      */
-    protected static $adjective = [
+    protected static array $adjective = [
         'Small', 'Ergonomic', 'Rustic', 'Intelligent', 'Gorgeous', 'Incredible', 'Fantastic',
         'Practical', 'Sleek', 'Awesome', 'Enormous', 'Mediocre', 'Synergistic', 'Heavy Duty',
         'Lightweight', 'Aerodynamic', 'Durable',
     ];
 
-    protected static $material = [
+    protected static array $material = [
         'Steel', 'Wooden', 'Concrete', 'Plastic', 'Cotton', 'Granite', 'Rubber', 'Leather',
         'Silk', 'Wool', 'Linen', 'Marble', 'Iron', 'Bronze', 'Copper', 'Aluminum', 'Paper',
     ];
@@ -36,7 +36,7 @@ class Commerce extends FakerBase
     /**
      * @var array
      */
-    protected static $product = [
+    protected static array $product = [
         'Chair', 'Car', 'Computer', 'Gloves', 'Pants', 'Shirt', 'Table', 'Shoes', 'Hat', 'Plate', 'Knife',
         'Bottle', 'Coat', 'Lamp', 'Keyboard', 'Bag', 'Bench', 'Clock', 'Watch', 'Wallet',
     ];

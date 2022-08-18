@@ -9,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20180919103846 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'add anonymizing settings';
+    protected $description = 'Add anonymizing settings';
 
     /**
      * @inheritDoc

@@ -15,9 +15,7 @@
         {block name='newsletter-index-include-extension'}
             {include file='snippets/extension.tpl'}
         {/block}
-        {if !isset($cPost_arr)}
-            {assign var=cPost_arr value=array()}
-        {/if}
+        {assign var=cPost_arr value=$cPost_arr|default:[]}
         {block name='newsletter-index-link-content'}
             {if !empty($Link->getContent())}
                 {opcMountPoint id='opc_before_newsletter_content' inContainer=false}

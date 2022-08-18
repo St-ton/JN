@@ -37,7 +37,7 @@ final class Newsletter extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-        $configuredDelay = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
+        $configuredDelay = Shop::getSettingValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
         $lastSending     = $this->db->select(
             'tnewsletter',
             'kNewsletter',
@@ -148,7 +148,7 @@ final class Newsletter extends Job
                 'lmts' => $queueEntry->tasksExecuted,
                 'lmte' => $queueEntry->taskLimit
             ]
-        )->map(static function (stdClass $recipient) {
+        )->map(static function (stdClass $recipient): stdClass {
             $recipient->kKundengruppe         = (int)$recipient->kKundengruppe;
             $recipient->kKunde                = (int)$recipient->kKunde;
             $recipient->kNewsletterEmpfaenger = (int)$recipient->kNewsletterEmpfaenger;

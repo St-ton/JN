@@ -13,89 +13,29 @@ use stdClass;
 class LegacyCron
 {
     /**
-     * @var int
-     */
-    public $kCron;
-
-    /**
-     * @var int
-     */
-    public $kKey;
-
-    /**
-     * @var int
-     */
-    public $nAlleXStd;
-
-    /**
-     * @var string
-     */
-    public $cName;
-
-    /**
-     * @var string
-     */
-    public $cTabelle;
-
-    /**
-     * @var string
-     */
-    public $cKey;
-
-    /**
-     * @var string
-     */
-    public $cJobArt;
-
-    /**
-     * @var string
-     */
-    public $dStart;
-
-    /**
-     * @var string
-     */
-    public $dStartZeit;
-
-    /**
-     * @var string
-     */
-    public $dLetzterStart;
-
-    /**
-     * @param int         $cronID
-     * @param int         $key
-     * @param int         $frequency
-     * @param string      $name
-     * @param string      $jobType
-     * @param string      $table
-     * @param string      $keyName
-     * @param string|null $start
-     * @param string|null $startTime
-     * @param string|null $lastStart
+     * @param int         $kCron
+     * @param int         $kKey
+     * @param int         $nAlleXStd
+     * @param string      $cName
+     * @param string      $cJobArt
+     * @param string      $cTabelle
+     * @param string      $cKey
+     * @param string|null $dStart
+     * @param string|null $dStartZeit
+     * @param string|null $dLetzterStart
      */
     public function __construct(
-        int $cronID = 0,
-        int $key = 0,
-        int $frequency = 0,
-        string $name = '',
-        string $jobType = '',
-        string $table = '',
-        string $keyName = '',
-        string $start = null,
-        string $startTime = null,
-        string $lastStart = null
+        public int    $kCron = 0,
+        public int    $kKey = 0,
+        public int    $nAlleXStd = 0,
+        public string $cName = '',
+        public string $cJobArt = '',
+        public string $cTabelle = '',
+        public string $cKey = '',
+        public ?string $dStart = null,
+        public ?string $dStartZeit = null,
+        public ?string $dLetzterStart = null
     ) {
-        $this->kCron         = $cronID;
-        $this->kKey          = $key;
-        $this->cKey          = $keyName;
-        $this->cTabelle      = $table;
-        $this->cName         = $name;
-        $this->cJobArt       = $jobType;
-        $this->nAlleXStd     = $frequency;
-        $this->dStart        = $start;
-        $this->dStartZeit    = $startTime;
-        $this->dLetzterStart = $lastStart;
     }
 
     /**

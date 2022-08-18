@@ -18,12 +18,12 @@ abstract class AbstractItemRenderer implements RendererInterface
     /**
      * @var ItemInterface[]
      */
-    protected $queue = [];
+    protected array $queue = [];
 
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @return array

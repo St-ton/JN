@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class ConfigGroups
+ * Class ConfigGroups
  * @package JTL\Backend\LocalizationCheck
  */
 class ConfigGroups extends AbstractLocalizationCheck
@@ -67,6 +67,6 @@ class ConfigGroups extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationConfigGroups');
+        return \__('locationConfigGroups');
     }
 }

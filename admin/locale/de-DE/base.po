@@ -1646,6 +1646,14 @@ msgstr "Batteriegesetzhinweise"
 msgid "WRB-Formular"
 msgstr "Widerrufsformular"
 
+# page type (tspezialseite)
+msgid "Bestellstatus"
+msgstr "Bestellstatus"
+
+# page type (tspezialseite)
+msgid "Bewertung"
+msgstr "Bewertung"
+
 msgid "exception"
 msgstr "Ausnahme"
 

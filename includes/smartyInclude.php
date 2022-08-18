@@ -1,4 +1,1 @@
-<?php
-$smarty = \JTL\Smarty\JTLSmarty::getInstance();
-
-return $smarty;
+<?php declare(strict_types=1); // removed in 5.2.0

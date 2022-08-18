@@ -8,7 +8,7 @@
             </div>
             <div class="card-body">
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                <form name="emailhistory" method="post" action="{$adminURL}/emailhistory.php">
+                <form name="emailhistory" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <script>
                         {literal}

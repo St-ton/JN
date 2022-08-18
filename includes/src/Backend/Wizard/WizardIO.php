@@ -15,29 +15,9 @@ use JTL\Shop;
 class WizardIO
 {
     /**
-     * @var Controller
+     * @var Controller|null
      */
-    private $wizardController;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected $alertService;
-
-    /**
-     * @var GetText
-     */
-    protected $gettext;
+    private ?Controller $wizardController = null;
 
     /**
      * WizardIO constructor.
@@ -47,15 +27,11 @@ class WizardIO
      * @param GetText $getText
      */
     public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        AlertServiceInterface $alertService,
-        GetText $getText
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected AlertServiceInterface $alertService,
+        protected GetText $getText
     ) {
-        $this->db           = $db;
-        $this->cache        = $cache;
-        $this->alertService = $alertService;
-        $this->gettext      = $getText;
     }
 
     /**
@@ -84,10 +60,10 @@ class WizardIO
     {
         $wizardFactory          = new DefaultFactory(
             $this->db,
-            $this->gettext,
+            $this->getText,
             $this->alertService,
             Shop::Container()->getAdminAccount()
         );
-        $this->wizardController = new Controller($wizardFactory, $this->db, $this->cache, $this->gettext);
+        $this->wizardController = new Controller($wizardFactory, $this->db, $this->cache, $this->getText);
     }
 }

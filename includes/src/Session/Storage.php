@@ -17,7 +17,7 @@ class Storage
     /**
      * @var JTLHandlerInterface
      */
-    protected $handler;
+    protected JTLHandlerInterface $handler;
 
     /**
      * Storage constructor.

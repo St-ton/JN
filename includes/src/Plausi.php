@@ -11,12 +11,12 @@ class Plausi
     /**
      * @var array
      */
-    protected $xPostVar_arr = [];
+    protected array $xPostVar_arr = [];
 
     /**
      * @var array
      */
-    protected $xPlausiVar_arr = [];
+    protected array $xPlausiVar_arr = [];
 
     /**
      * @return array

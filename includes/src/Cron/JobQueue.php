@@ -15,62 +15,35 @@ class JobQueue
     /**
      * @var int
      */
-    public $kJobQueue;
+    public int $nLastArticleID = 0;
 
     /**
-     * @var int
+     * @param int|null    $kJobQueue
+     * @param int         $kCron
+     * @param int         $kKey
+     * @param int         $nLimitN
+     * @param int         $nLimitM
+     * @param int         $nInArbeit
+     * @param string      $cJobArt
+     * @param string      $cTabelle
+     * @param string      $cKey
+     * @param string      $dStartZeit
+     * @param string|null $dZuletztGelaufen
      */
-    public $kCron;
-
-    /**
-     * @var int
-     */
-    public $kKey;
-
-    /**
-     * @var int
-     */
-    public $nLimitN;
-
-    /**
-     * @var int
-     */
-    public $nLimitM;
-
-    /**
-     * @var int
-     */
-    public $nLastArticleID;
-
-    /**
-     * @var int
-     */
-    public $nInArbeit;
-
-    /**
-     * @var string
-     */
-    public $cJobArt;
-
-    /**
-     * @var string
-     */
-    public $cTabelle;
-
-    /**
-     * @var string
-     */
-    public $cKey;
-
-    /**
-     * @var string
-     */
-    public $dStartZeit;
-
-    /**
-     * @var string
-     */
-    public $dZuletztGelaufen;
+    public function __construct(
+        public ?int $kJobQueue = null,
+        public int $kCron = 0,
+        public int $kKey = 0,
+        public int $nLimitN = 0,
+        public int $nLimitM = 0,
+        public int $nInArbeit = 0,
+        public $cJobArt = '',
+        public $cTabelle = '',
+        public $cKey = '',
+        public $dStartZeit = 'NOW()',
+        public $dZuletztGelaufen = null
+    ) {
+    }
 
     /**
      * @return int|null
@@ -295,46 +268,6 @@ class JobQueue
         $this->dZuletztGelaufen = $dZuletztGelaufen;
 
         return $this;
-    }
-
-    /**
-     * @param int|null    $kJobQueue
-     * @param int         $kCron
-     * @param int         $kKey
-     * @param int         $nLimitN
-     * @param int         $nLimitM
-     * @param int         $nInArbeit
-     * @param string      $cJobArt
-     * @param string      $cTabelle
-     * @param string      $cKey
-     * @param string      $dStartZeit
-     * @param string|null $dZuletztGelaufen
-     */
-    public function __construct(
-        int $kJobQueue = null,
-        int $kCron = 0,
-        int $kKey = 0,
-        int $nLimitN = 0,
-        int $nLimitM = 0,
-        int $nInArbeit = 0,
-        $cJobArt = '',
-        $cTabelle = '',
-        $cKey = '',
-        $dStartZeit = 'NOW()',
-        $dZuletztGelaufen = null
-    ) {
-        $this->kJobQueue        = $kJobQueue;
-        $this->kCron            = $kCron;
-        $this->kKey             = $kKey;
-        $this->nLimitN          = $nLimitN;
-        $this->nLimitM          = $nLimitM;
-        $this->nLastArticleID   = 0;
-        $this->nInArbeit        = $nInArbeit;
-        $this->cJobArt          = $cJobArt;
-        $this->cTabelle         = $cTabelle;
-        $this->cKey             = $cKey;
-        $this->dStartZeit       = $dStartZeit;
-        $this->dZuletztGelaufen = $dZuletztGelaufen;
     }
 
     /**

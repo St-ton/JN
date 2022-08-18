@@ -16,17 +16,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class Type implements RuleInterface
 {
     /**
-     * @var string
-     */
-    protected $expected;
-
-    /**
      * Type constructor.
      * @param string $expected
      */
-    public function __construct(string $expected)
+    public function __construct(protected string $expected)
     {
-        $this->expected = $expected;
     }
 
     /**

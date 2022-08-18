@@ -343,4 +343,17 @@ class Form
 
         return $msg;
     }
+
+    /**
+     * @param array $missingData
+     * @return int
+     * @former angabenKorrekt()
+     * @since 5.2.0
+     */
+    public static function hasNoMissingData(array $missingData): int
+    {
+        return (int)none($missingData, static function ($e) {
+            return $e > 0;
+        });
+    }
 }

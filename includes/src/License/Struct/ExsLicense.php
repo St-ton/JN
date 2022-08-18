@@ -24,85 +24,85 @@ class ExsLicense
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $exsid;
+    private string $exsid;
 
     /**
      * @var Vendor
      */
-    private $vendor;
+    private Vendor $vendor;
 
     /**
      * @var License
      */
-    private $license;
+    private License $license;
 
     /**
      * @var Releases
      */
-    private $releases;
+    private Releases $releases;
 
     /**
      * @var Link[]
      */
-    private $links;
+    private array $links;
 
     /**
      * @var DateTime
      */
-    private $queryDate;
+    private DateTime $queryDate;
 
     /**
      * @var int
      */
-    private $state = self::STATE_UNBOUND;
+    private int $state = self::STATE_UNBOUND;
 
     /**
      * @var ReferencedItemInterface|null
      */
-    private $referencedItem;
+    private ?ReferencedItemInterface $referencedItem = null;
 
     /**
      * @var InAppParent
      */
-    private $parent;
+    private InAppParent $parent;
 
     /**
      * @var bool
      */
-    private $isInApp = false;
+    private bool $isInApp = false;
 
     /**
      * @var bool
      */
-    private $hasSubscription = false;
+    private bool $hasSubscription = false;
 
     /**
      * @var bool
      */
-    private $hasLicense = false;
+    private bool $hasLicense = false;
 
     /**
      * @var bool
      */
-    private $canBeUsed = true;
+    private bool $canBeUsed = true;
 
     /**
-     * ExsLicenseData constructor.
+     * ExsLicense constructor.
      * @param stdClass|null $json
      */
     public function __construct(?stdClass $json = null)
@@ -309,7 +309,7 @@ class ExsLicense
      * @param DateTime|string $queryDate
      * @throws \Exception
      */
-    public function setQueryDate($queryDate): void
+    public function setQueryDate(DateTime|string $queryDate): void
     {
         $this->queryDate = \is_a($queryDate, DateTime::class) ? $queryDate : new DateTime($queryDate);
     }

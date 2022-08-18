@@ -17,7 +17,7 @@
     </script>
 {/literal}
 <div id="content" class="container-fluid2">
-    <form name="exportformat_queue" method="post" action="{$adminURL}/exportformat_queue.php">
+    <form name="exportformat_queue" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         {$cronID = $oCron->cronID|default:0}
         <input type="hidden" name="erstellen_eintragen" value="1" />
@@ -48,7 +48,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="dStart">{__('exportformatStart')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'d.m.Y H:i'}{/if}" />
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -85,7 +85,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}/exportformat_queue.php">
+                            <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                                 {__('cancelWithIcon')}
                             </a>
                         </div>

@@ -19,7 +19,7 @@ final class XMLVersion extends AbstractItem
         if (!isset($baseNode['XMLVersion'])) {
             return InstallCode::INVALID_XML_VERSION;
         }
-        \preg_match('/[0-9]{3}/', $baseNode['XMLVersion'], $hits);
+        \preg_match('/\d{3}/', $baseNode['XMLVersion'], $hits);
         if (\count($hits) === 0
             || (\mb_strlen($hits[0]) !== \mb_strlen($baseNode['XMLVersion']) && (int)$baseNode['XMLVersion'] >= 100)
         ) {

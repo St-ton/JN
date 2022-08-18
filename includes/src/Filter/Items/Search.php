@@ -27,12 +27,12 @@ class Search extends AbstractFilter
      * @var int
      * @former kSuchCache
      */
-    private $searchCacheID = 0;
+    private int $searchCacheID = 0;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $error;
+    private ?string $error = null;
 
     /**
      * @var int
@@ -43,12 +43,12 @@ class Search extends AbstractFilter
     /**
      * @var bool
      */
-    public $bExtendedJTLSearch = false;
+    public bool $bExtendedJTLSearch = false;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'kSuchanfrage' => 'Value',
         'cSuche'       => 'Name',
         'Fehler'       => 'Error'
@@ -108,8 +108,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @param int $value
-     * @return $this
+     * @inheritdoc
      */
     public function setValue($value): FilterInterface
     {
@@ -119,7 +118,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return int|string|null
+     * @inheritdoc
      */
     public function getValue()
     {
@@ -173,7 +172,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getPrimaryKeyRow(): string
     {
@@ -181,7 +180,7 @@ class Search extends AbstractFilter
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getTableName(): string
     {

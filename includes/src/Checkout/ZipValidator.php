@@ -13,7 +13,7 @@ class ZipValidator
     /**
      * @var array
      */
-    private static $patternHashList = [
+    private static array $patternHashList = [
         'AC' => 'ASCN 1ZZ',
         'AD' => 'AD[1-7]0\\d',
         'AF' => '\\d{4}',
@@ -201,20 +201,13 @@ class ZipValidator
     /**
      * @var string
      */
-    private $iso;
+    private string $errorString = '';
 
     /**
-     * @var string
+     * @param string $iso
      */
-    private $errorString;
-
-    /**
-     * @param string $cISO
-     */
-    public function __construct($cISO)
+    public function __construct(private string $iso)
     {
-        $this->iso         = $cISO;
-        $this->errorString = '';
     }
 
     /**

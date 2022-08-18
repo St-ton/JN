@@ -29,6 +29,6 @@ class ProductInquiry extends ProductTemplate
         }
         $data = $this->useOriginalName($data);
         $smarty->assign('Nachricht', $data->tnachricht)
-               ->assign('Artikel', $data->tartikel);
+            ->assign('Artikel', $data->tartikel);
     }
 }

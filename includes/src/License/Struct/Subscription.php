@@ -16,17 +16,17 @@ class Subscription
     /**
      * @var DateTime|null
      */
-    private $validUntil;
+    private ?DateTime $validUntil = null;
 
     /**
      * @var bool
      */
-    private $expired = false;
+    private bool $expired = false;
 
     /**
      * @var bool
      */
-    private $canBeUsed = true;
+    private bool $canBeUsed = true;
 
     /**
      * Subscription constructor.
@@ -62,7 +62,7 @@ class Subscription
      * @param DateTime|string|null $validUntil
      * @throws \Exception
      */
-    public function setValidUntil($validUntil): void
+    public function setValidUntil(DateTime|string|null $validUntil): void
     {
         $this->validUntil = null;
         if ($validUntil !== null) {

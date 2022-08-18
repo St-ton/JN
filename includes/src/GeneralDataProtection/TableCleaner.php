@@ -22,17 +22,17 @@ class TableCleaner
      *
      * @var DateTime
      */
-    private $now;
+    private DateTime $now;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    private ?LoggerInterface $logger;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * anonymize methods
@@ -40,7 +40,7 @@ class TableCleaner
      *
      * @var array
      */
-    private $methods = [
+    private array $methods = [
         ['name' => 'AnonymizeIps'                      , 'intervalDays' => 7],
         ['name' => 'AnonymizeDeletedCustomer'          , 'intervalDays' => 7],
         ['name' => 'CleanupCustomerRelicts'            , 'intervalDays' => 0],
@@ -59,7 +59,7 @@ class TableCleaner
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->logger = null;
         }
         $this->db  = Shop::Container()->getDB();

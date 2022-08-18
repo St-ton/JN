@@ -20,7 +20,7 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneCreate')}
 {/if}
 
-<form method="post" action="{$adminURL}/kampagne.php">
+<form method="post" action="{$adminURL}{$route}">
     {$jtl_token}
     <input type="hidden" name="tab" value="uebersicht">
     <input type="hidden" name="erstellen_speichern" value="1">
@@ -79,7 +79,7 @@
         <div class="card-footer">
             <div class=row>
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a href="{$adminURL}/kampagne.php?tab=uebersicht" class="button btn btn-outline-primary btn-block mb-2">
+                    <a href="{$adminURL}{$route}?tab=uebersicht" class="button btn btn-outline-primary btn-block mb-2">
                         {__('cancelWithIcon')}
                     </a>
                 </div>

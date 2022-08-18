@@ -55,7 +55,7 @@ class ConfigGroup extends AbstractImage
                 WHERE a.kKonfiggruppe = :cid
                 AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()]
-        )->map(static function ($item) {
+        )->map(static function ($item): string {
             return self::getCustomName($item);
         })->toArray();
     }

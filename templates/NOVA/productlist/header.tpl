@@ -58,6 +58,7 @@
                 item=$navData
                 square=false
                 lazy=false
+                sizes="{if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}(min-width: 992px) 67vw, (min-width: 1300px) 75vw, 100vw{/if} "
                 alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}
@@ -119,6 +120,7 @@
                                                 srcset="{$subCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
                                                         {$subCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
                                                         {$subCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
+                                                sizes="(min-width: 992px) 25vw, 33vw"
                                             }
                                         </div>
                                     {/link}

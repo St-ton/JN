@@ -35,9 +35,10 @@ class Migration_20220609113400 extends Migration implements IMigration
             (object)[
                 'cBeschreibung' => '',
                 'inputOptions'  => [
-                    'F' => 'Flach (Standard)',
-                    'L' => 'Mit Locale',
-                    'P' => 'Mit Locale und Präfix',
+                    'F'  => 'Flach (Standard)',
+                    'L'  => 'Mit Locale',
+                    'P'  => 'Mit Präfix',
+                    'LP' => 'Mit Locale und Präfix',
                 ]
             ]
         );
@@ -51,9 +52,10 @@ class Migration_20220609113400 extends Migration implements IMigration
             (object)[
                 'cBeschreibung' => '',
                 'inputOptions'  => [
-                    'F' => 'Flach (Standard)',
-                    'L' => 'Mit Locale',
-                    'P' => 'Mit Locale und Präfix',
+                    'F'  => 'Flach (Standard)',
+                    'L'  => 'Mit Locale',
+                    'P'  => 'Mit Präfix',
+                    'LP' => 'Mit Locale und Präfix',
                 ]
             ]
         );

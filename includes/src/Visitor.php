@@ -150,8 +150,7 @@ class Visitor
      */
     public static function analyzeReferer(int $visitorID, string $referer): void
     {
-        \trigger_error(__METHOD__ . ' is deprecated. Use JTL\Customer\Visitor class instead.', \E_USER_DEPRECATED);
-        self::getInstance()->analyzeReferer($visitorID, $referer);
+        \trigger_error(__METHOD__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     }
 
     /**

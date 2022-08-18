@@ -7,6 +7,7 @@ use JTL\IO\IOMethods;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,6 +17,15 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class IOController extends AbstractController
 {
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $route->get('/io', [$this, 'getResponse'])->setName('ROUTE_IO' . $dynName);
+        $route->post('/io', [$this, 'getResponse'])->setName('ROUTE_IOPOST' . $dynName);
+    }
+
     /**
      * @inheritdoc
      */

@@ -86,12 +86,8 @@ class Category
      */
     public static function getInstance(int $languageID = 0, int $customerGroupID = 0): self
     {
-        $languageID      = $languageID === 0
-            ? Shop::getLanguageID()
-            : $languageID;
-        $customerGroupID = $customerGroupID === 0
-            ? Frontend::getCustomerGroup()->getID()
-            : $customerGroupID;
+        $languageID      = $languageID ?: Shop::getLanguageID();
+        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE, \CONF_NAVIGATIONSFILTER]);
         if (self::$instance !== null && self::$languageID !== $languageID) {
             // reset cached categories when language or depth was changed
@@ -151,12 +147,11 @@ class Category
      */
     private function getCacheTree(int $categoryID): ?array
     {
-        $cacheID = self::$cacheID . '_' . $categoryID;
+        $cacheID = self::$cacheID . '_cid_' . $categoryID;
         $item    = Shop::Container()->getCache()->get($cacheID);
         if ($item === false) {
             $item = $_SESSION['oKategorie_arr_new_' . $cacheID] ?? null;
         }
-
         if (\is_array($item)) {
             self::$limitReached = $item['limitReached'];
             self::$depth        = $item['depth'];
@@ -173,7 +168,7 @@ class Category
      */
     private function setCacheTree(int $categoryID, array $tree): void
     {
-        $cacheID = self::$cacheID . '_' . $categoryID;
+        $cacheID = self::$cacheID . '_cid_' . $categoryID;
         $cache   = Shop::Container()->getCache();
         $item    = [
             'tree'         => $tree,
@@ -212,9 +207,15 @@ class Category
             }
             $prefix = Shop::getURL() . '/';
             $nodes  = $this->getNodes($startCat, $startLevel);
+            $locale = null;
+            foreach (LanguageHelper::getAllLanguages() as $language) {
+                if ($language->getId() === self::$languageID) {
+                    $locale = $language->getIso639();
+                }
+            }
             foreach ($nodes as $cat) {
                 $id = $cat->getID();
-                $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true, $prefix));
+                $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true, $prefix, $locale));
                 $cat->setFunctionalAttributes($functionAttributes[$id] ?? []);
                 $cat->setAttributes($localizedAttributes[$id] ?? []);
                 $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
@@ -322,6 +323,7 @@ class Category
         }
 
         return \array_map(function (stdClass $data): MenuItem {
+            $data->languageID       = self::$languageID;
             $data->bUnterKategorien = false;
             $data->Unterkategorien  = [];
 
@@ -840,7 +842,6 @@ class Category
         }
         $instance = self::getInstance();
         $category = $instance->getCategoryById($categoryID, $left, $right);
-
         if ($category !== null
             && ((self::$limitReached && $category->getLevel() % self::$depth < 2) || self::isLostCategory($categoryID))
         ) {
@@ -852,7 +853,7 @@ class Category
             }
         }
 
-        return $category === null ? [] : $category->getChildren();
+        return $category?->getChildren() ?? [];
     }
 
 

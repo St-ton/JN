@@ -3075,6 +3075,9 @@ msgid "routing_default_language_value(L)"
 msgstr "With locale"
 
 msgid "routing_default_language_value(P)"
+msgstr "With prefix"
+
+msgid "routing_default_language_value(LP)"
 msgstr "With locale and prefix"
 
 msgid "routing_scheme_value(F)"
@@ -3084,4 +3087,7 @@ msgid "routing_scheme_value(L)"
 msgstr "With locale"
 
 msgid "routing_scheme_value(P)"
+msgstr "With prefix"
+
+msgid "routing_scheme_value(LP)"
 msgstr "With locale and prefix"

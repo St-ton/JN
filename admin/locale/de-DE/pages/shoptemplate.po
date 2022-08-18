@@ -95,6 +95,9 @@ msgstr "XML-Knoten „Name“ konnte nicht gefunden werden."
 msgid "errorInvalidVersion"
 msgstr "Keine gültige SemVer."
 
+msgid "errorInvalidNamespace"
+msgstr "Kein gültiger Namespace."
+
 msgid "errorUnknown"
 msgstr "Unbekannter Fehler."
 

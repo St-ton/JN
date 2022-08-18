@@ -35,14 +35,21 @@ msgstr "A customer with this email address already exists: %s. Data set was skip
 msgid "errorImportRecord"
 msgstr "The row could not be imported. Please have a look at the log file (Root/logs/) and correct the respective errors in the CSV file."
 
-msgid "successImportRecord"
-msgstr "Data set OK. Import of: "
-
-msgid "checkHead"
-msgstr "Checking header… "
+msgid "successImportCustomerCsv"
+msgstr "Successfully imported customer datasets: %s"
 
 msgid "errorFormatNotFound"
-msgstr " Format not recognised."
+msgstr "Format not recognised."
 
-msgid "importPending"
-msgstr "Importing…"
+msgid "notifyCustomersInfo"
+msgstr "Some recently imported customer accounts require a new password! "
+"Do you like to ask these customers via email now to reset their password?"
+
+msgid "notifyCustomersButton"
+msgstr "Yes, notify customers via email now"
+
+msgid "customersNotified"
+msgstr "Customers notified"
+
+msgid "customersNotifiedOK"
+msgstr "Notifications have been sent"

@@ -16308,11 +16308,17 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
     display: none;
   }
 }
-.breadcrumb-arrow::before {
-  content: '\f104' !important;
+.breadcrumb-arrow:first-child::before {
+  content: '\f053' !important;
   font-family: "Font Awesome 5 Free" !important;
   font-weight: 900;
   margin-right: 6px;
+}
+.breadcrumb-arrow:not(:first-child) {
+  padding-left: 0;
+}
+.breadcrumb-arrow:not(:first-child)::before {
+  content: none;
 }
 .breadcrumb-back {
   padding-right: 1rem;
@@ -16343,12 +16349,10 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   font-weight: 900;
   margin-right: 6px;
 }
-@media (min-width: 768px) {
-  .breadcrumb-backtolist::after {
-    content: "|";
-    margin-left: 6px;
-    margin-right: 6px;
-  }
+.breadcrumb-backtolist::after {
+  content: "|";
+  margin-left: 6px;
+  margin-right: 6px;
 }
 .btn {
   text-decoration: none;
@@ -20772,6 +20776,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 .cfg-group .config-item {
   cursor: pointer;
+  display: block;
   padding: 0.75rem;
   border: 2px solid #f8f8f8;
   margin-bottom: 2rem;

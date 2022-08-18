@@ -39,7 +39,7 @@
                                 {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
                                 {if is_object($oLinkGruppe->oLink_arr)}
                                     <li id="dropdown-header-{$entryName}"
-                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active{/if}">
+                                        class="nav-item {if $oLinkGruppe->key === $currentMenuPath[1]}active current-item{/if}">
                                         <a class="nav-link" href="{$oLinkGruppe->oLink_arr->cURL}"
                                             {if !empty($oLinkGruppe->oLink_arr->target)}
                                                 target="{$oLinkGruppe->oLink_arr->target}"{/if}>
@@ -62,7 +62,7 @@
                                             id="collapse-{$entryName}"
                                             data-parent="#sidebar">
                                             {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                <li class="nav-item {if $oLink->key === $currentMenuPath[2]}active{/if}">
+                                                <li class="nav-item {if $oLink->key === $currentMenuPath[2]}active current-item{/if} ">
                                                     <a class="nav-link" href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                 </li>
                                             {/foreach}
@@ -82,4 +82,11 @@
         </ul>
     </div>
     <div class="opaque-background"></div>
+    <script>
+        let curItem = $('.current-item');
+
+        if(curItem.length) {
+            curItem[0].scrollIntoView();
+        }
+    </script>
 </div>

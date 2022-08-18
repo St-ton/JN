@@ -14,19 +14,21 @@ $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
 
 if (Form::validateToken()) {
     if (isset($_FILES['csv']['tmp_name'])
-        && Request::postInt('kundenimport') === 1
-        && mb_strlen($_FILES['csv']['tmp_name']) > 0
+        && Request::postVar('action') === 'import-customers'
+        && \mb_strlen($_FILES['csv']['tmp_name']) > 0
     ) {
-        $importer = new Import(Shop::Container()->getDB());
+        $alertService = Shop::Container()->getAlertService();
+        $importer     = new Import(Shop::Container()->getDB());
         $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
         $importer->setLanguageID(Request::postInt('kSprache'));
 
         if ($importer->processFile($_FILES['csv']['tmp_name']) === false) {
-            $this->alertService->addError(\implode('<br>', $importer->getErrors()), 'importError');
+            $alertService->addAlert(Alert::TYPE_ERROR, \implode('<br>', $importer->getErrors()), 'importError');
         }
 
         if ($importer->getImportedRowsCount() > 0) {
-            $this->alertService->addSuccess(
+            $alertService->addAlert(
+                Alert::TYPE_SUCCESS,
                 \sprintf(\__('successImportCustomerCsv'), $importer->getImportedRowsCount()),
                 'importSuccess',
                 ['dismissable' => true, 'fadeOut' => 0]
@@ -34,10 +36,6 @@ if (Form::validateToken()) {
 
             $smarty->assign('noPasswordCustomerIds', $importer->getNoPasswordCustomerIds());
         }
-    } elseif (Request::postVar('action') === 'notify-customers') {
-        $noPasswordCustomerIds = \json_decode(Request::postVar('noPasswordCustomerIds', '[]'));
-        $importer              = new Import($this->db);
-        $importer->notifyCustomers($noPasswordCustomerIds);
     }
 }
 

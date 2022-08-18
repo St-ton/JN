@@ -34,9 +34,7 @@
                     <i class="fal fa-exclamation-triangle mr-2"></i>
                     <span id="notifyCustomersInfo">{__('notifyCustomersInfo')}</span>
                 </p>
-                <button id="notifyCustomersBtn" type="submit" name="action" value="notify-customers"
-                        class="btn btn-secondary"
-                        onclick="notifyCustomers()">
+                <button id="notifyCustomersBtn" class="btn btn-secondary" onclick="notifyCustomers()">
                     {__('notifyCustomersButton')}
                 </button>
             </div>

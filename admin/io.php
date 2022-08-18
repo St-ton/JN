@@ -6,6 +6,7 @@ use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\TwoFA;
 use JTL\Backend\Wizard\WizardIO;
+use JTL\Customer\Import;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Helpers\Form;
 use JTL\IO\IOError;
@@ -29,16 +30,23 @@ if (!Form::validateToken()) {
     AdminIO::getInstance()->respondAndExit(new IOError('CSRF validation failed.', 403));
 }
 
-$db           = Shop::Container()->getDB();
-$gettext      = Shop::Container()->getGetText();
-$cache        = Shop::Container()->getCache();
-$alertService = Shop::Container()->getAlertService();
-$jsonApi      = JSONAPI::getInstance();
-$io           = AdminIO::getInstance()->setAccount($oAccount);
-$images       = new Manager($db, $gettext);
-$updateIO     = new UpdateIO($db, $gettext);
-$wizardIO     = new WizardIO($db, $cache, $alertService, $gettext);
-$settings     = new SettingsManager($db, Shop::Smarty(), Shop::Container()->getAdminAccount(), $gettext, $alertService);
+$db             = Shop::Container()->getDB();
+$gettext        = Shop::Container()->getGetText();
+$cache          = Shop::Container()->getCache();
+$alertService   = Shop::Container()->getAlertService();
+$jsonApi        = JSONAPI::getInstance();
+$io             = AdminIO::getInstance()->setAccount($oAccount);
+$images         = new Manager($db, $gettext);
+$updateIO       = new UpdateIO($db, $gettext);
+$wizardIO       = new WizardIO($db, $cache, $alertService, $gettext);
+$settings       = new SettingsManager(
+    $db,
+    Shop::Smarty(),
+    Shop::Container()->getAdminAccount(),
+    $gettext,
+    $alertService
+);
+$customerImport = new Import($db);
 
 try {
     Shop::Container()->getOPC()->registerAdminIOFunctions($io);
@@ -58,7 +66,14 @@ $dbcheckInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php'
 $versandartenInc    = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 
 try {
-    $io->register('getPages', [$jsonApi, 'getPages'])
+    $io
+       ->register(
+           'notifyImportedCustomers',
+           [$customerImport, 'notifyCustomers'],
+           null,
+           'IMPORT_CUSTOMER_VIEW'
+       )
+       ->register('getPages', [$jsonApi, 'getPages'])
        ->register('getCategories', [$jsonApi, 'getCategories'])
        ->register('getProducts', [$jsonApi, 'getProducts'])
        ->register('getManufacturers', [$jsonApi, 'getManufacturers'])

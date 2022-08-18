@@ -205,7 +205,7 @@ class Form
                     $deliveryAddress->cAnredeLocalized = Shop::Lang()->get('salutationW');
                 }
                 \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_NEUELIEFERADRESSE);
-                CartHelper::applyShippingFreeCoupon()();
+                CartHelper::applyShippingFreeCoupon();
             }
         } elseif ((int)$post['kLieferadresse'] > 0) {
             // vorhandene lieferadresse

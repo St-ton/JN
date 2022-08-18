@@ -120,7 +120,7 @@ class Import
     /**
      * @param string $filename
      * @return bool
-     * @throws InvalidArgumentException
+     * @throws \Exception
      */
     public function processFile(string $filename): bool
     {

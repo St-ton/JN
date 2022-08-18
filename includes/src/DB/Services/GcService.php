@@ -16,9 +16,7 @@ class GcService implements GcServiceInterface
     protected array $definition = [
         'tbesucherarchiv'                  => [
             'cDate'     => 'dZeit',
-            'cSubTable' => [
-                'tbesuchersuchausdruecke' => 'kBesucher'
-            ],
+            'cSubTable' => null,
             'cInterval' => '180'
         ],
         'tcheckboxlogging'                 => [

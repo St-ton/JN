@@ -16,6 +16,7 @@ use JTL\Checkout\ShippingSurcharge;
 use JTL\Checkout\ShippingSurchargeArea;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\ZipValidator;
+use JTL\Customer\Import;
 use JTL\Export\SyntaxChecker as ExportSyntaxChecker;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Helpers\Form;
@@ -63,11 +64,12 @@ class IOController extends AbstractBackendController
 
         $jsonApi = JSONAPI::getInstance($this->db, $this->cache);
         $io->setAccount($this->account);
-        $images   = new Manager($this->db, $this->getText);
-        $updateIO = new UpdateIO($this->db, $this->getText);
-        $wizardIO = new WizardIO($this->db, $this->cache, $this->alertService, $this->getText);
-        $settings = new SettingsManager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
-        $widgets  = new Controller($this->db, $this->cache, $this->getText, $smarty, $this->account);
+        $images         = new Manager($this->db, $this->getText);
+        $updateIO       = new UpdateIO($this->db, $this->getText);
+        $wizardIO       = new WizardIO($this->db, $this->cache, $this->alertService, $this->getText);
+        $settings       = new SettingsManager($this->db, $smarty, $this->account, $this->getText, $this->alertService);
+        $widgets        = new Controller($this->db, $this->cache, $this->getText, $smarty, $this->account);
+        $customerImport = new Import($this->db);
 
         $searchController = new SearchController(
             $this->db,
@@ -85,7 +87,14 @@ class IOController extends AbstractBackendController
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }
         try {
-            $io->register('getPages', [$jsonApi, 'getPages'])
+            $io
+                ->register(
+                    'notifyImportedCustomers',
+                    [$customerImport, 'notifyCustomers'],
+                    null,
+                    'IMPORT_CUSTOMER_VIEW'
+                )
+                ->register('getPages', [$jsonApi, 'getPages'])
                 ->register('getCategories', [$jsonApi, 'getCategories'])
                 ->register('getProducts', [$jsonApi, 'getProducts'])
                 ->register('getManufacturers', [$jsonApi, 'getManufacturers'])

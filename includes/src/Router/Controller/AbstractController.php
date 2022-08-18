@@ -38,6 +38,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -332,8 +333,8 @@ abstract class AbstractController implements ControllerInterface
 
         $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
-        $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-        $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
+        $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -580,5 +581,12 @@ abstract class AbstractController implements ControllerInterface
         }
 
         return $default;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
     }
 }

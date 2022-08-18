@@ -25,20 +25,33 @@ class CustomerImportController extends AbstractBackendController
         $this->checkPermissions(Permissions::IMPORT_CUSTOMER_VIEW);
         $this->getText->loadAdminLocale('pages/kundenimport');
 
-        if (isset($_FILES['csv']['tmp_name'])
-            && Request::postInt('kundenimport') === 1
-            && Form::validateToken()
-            && \mb_strlen($_FILES['csv']['tmp_name']) > 0
-        ) {
-            $importer = new Import($this->db);
-            $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
-            $importer->setLanguageID(Request::postInt('kSprache'));
-            $result = $importer->processFile($_FILES['csv']['tmp_name']);
-            $notice = '';
-            foreach ($result as $item) {
-                $notice .= $item . '<br>';
+        if (Form::validateToken()) {
+            if (isset($_FILES['csv']['tmp_name'])
+                && Request::postVar('action') === 'import-customers'
+                && \mb_strlen($_FILES['csv']['tmp_name']) > 0
+            ) {
+                $importer = new Import($this->db);
+                $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
+                $importer->setLanguageID(Request::postInt('kSprache'));
+
+                if ($importer->processFile($_FILES['csv']['tmp_name']) === false) {
+                    $this->alertService->addError(\implode('<br>', $importer->getErrors()), 'importError');
+                }
+
+                if ($importer->getImportedRowsCount() > 0) {
+                    $this->alertService->addSuccess(
+                        \sprintf(\__('successImportCustomerCsv'), $importer->getImportedRowsCount()),
+                        'importSuccess',
+                        ['dismissable' => true, 'fadeOut' => 0]
+                    );
+
+                    $smarty->assign('noPasswordCustomerIds', $importer->getNoPasswordCustomerIds());
+                }
+            } elseif (Request::postVar('action') === 'notify-customers') {
+                $noPasswordCustomerIds = \json_decode(Request::postVar('noPasswordCustomerIds', '[]'));
+                $importer              = new Import($this->db);
+                $importer->notifyCustomers($noPasswordCustomerIds);
             }
-            $this->alertService->addNotice($notice, 'importNotice');
         }
 
         return $smarty->assign('kundengruppen', $this->db->getObjects(

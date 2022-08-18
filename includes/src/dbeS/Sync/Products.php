@@ -11,7 +11,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\XML;
 use stdClass;
-use function Functional\flatten;
 use function Functional\map;
 
 /**
@@ -66,7 +65,7 @@ final class Products extends AbstractSync
                 );
             }
         }
-        $productIDs = \array_unique(flatten($productIDs));
+        $productIDs = $this->flattenTags($productIDs);
         $this->db->query('COMMIT');
         $this->clearProductCaches($productIDs);
 

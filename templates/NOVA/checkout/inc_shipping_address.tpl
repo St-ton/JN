@@ -91,7 +91,7 @@
                         </label>
                     {/block}
                     {block name='checkout-inc-shipping-address-fieldset-register'}
-                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1}} show{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
+                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
                             {block name='checkout-inc-shipping-address-legend-register'}
                                 <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
                             {/block}

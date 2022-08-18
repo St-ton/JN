@@ -11,7 +11,7 @@
             {foreach $checkResults as $result}
                 {$failed = $result->hasPassed() === false}
                 <div class="card collapsed{if !$failed} text-white bg-success{/if}">
-                    <div class="card-header{if $failed} accordion-toggle" data-toggle="collapse" data-target="#check-{$result@index}" style="cursor:pointer"{else}"{/if}>
+                    <div {if $failed}class="card-header accordion-toggle" data-toggle="collapse" data-target="#check-{$result@index}" style="cursor:pointer"{else}class="card-header"{/if}>
                     <div class="card-title">
                         {if $failed}
                             <i class="fa fas fa-plus"></i>
@@ -76,7 +76,7 @@
                         {/if}
                     </div>
                 {/if}
-            </div>
+                </div>
             {/foreach}
         {else}
             <div class="alert alert-info">{__('infoNoOrphanedCats')}</div>

@@ -125,6 +125,7 @@ interface DefaultServicesInterface extends ContainerInterface
 
     /**
      * @return NewsServiceInterface
+     * @deprecated since 5.2.0
      */
     public function getNewsService(): NewsServiceInterface;
 

@@ -4,6 +4,7 @@ namespace JTL\OPC;
 
 use JTL\Plugin\Plugin;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
 
 /**
  * Trait PortletHtml
@@ -73,7 +74,6 @@ trait PortletHtml
     final public function getBasePath(): string
     {
         $plugin = $this->getPlugin();
-
         if ($plugin !== null) {
             /** @var Plugin $plugin */
             return $plugin->getPaths()->getPortletsPath() . $this->getClass() . '/';
@@ -88,7 +88,6 @@ trait PortletHtml
     final public function getBaseUrl(): string
     {
         $plugin = $this->getPlugin();
-
         if ($plugin !== null) {
             /** @var Plugin $plugin */
             return $plugin->getPaths()->getPortletsUrl() . $this->getClass() . '/';
@@ -130,20 +129,12 @@ trait PortletHtml
         bool $isPreview,
         bool $inContainer = true
     ): string {
-        if (\function_exists('\getFrontendSmarty')) {
-            $smarty = \getFrontendSmarty();
-        } else {
-            $smarty = Shop::Smarty();
-        }
-
         $tplPath = $this->getBasePath() . $this->getClass() . '.tpl';
-
         if (\file_exists($tplPath) === false) {
             $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/Portlets/GenericPortlet/GenericPortlet.tpl';
         }
 
-        return $smarty
-            ->assign('isPreview', $isPreview)
+        return Shop::Smarty(false, ContextType::FRONTEND)->assign('isPreview', $isPreview)
             ->assign('portlet', $this)
             ->assign('instance', $instance)
             ->assign('inContainer', $inContainer)
@@ -172,7 +163,6 @@ trait PortletHtml
     {
         $desc = $this->getPropertyDesc();
         $tabs = $this->getPropertyTabs();
-
         foreach ($tabs as $tabname => $propnames) {
             if (\is_string($propnames)) {
                 if ($propnames === 'styles') {

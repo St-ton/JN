@@ -16,7 +16,7 @@
                     <td>{$section->getName()}</td>
                     <td>{$section->getConfigCount()} {__('settings')}</td>
                     <td>
-                        <a href="{$adminURL}/einstellungen.php?kSektion={$section->getID()}" class="btn btn-primary">{__('configure')}</a>
+                        <a href="{$adminURL}{$route}/{$section->getID()}" class="btn btn-primary">{__('configure')}</a>
                     </td>
                 </tr>
             {/foreach}

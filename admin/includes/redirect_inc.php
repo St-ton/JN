@@ -1,20 +1,12 @@
 <?php declare(strict_types=1);
 
-use JTL\Redirect;
-use JTL\Shop;
-
 /**
- * Update and return the availability of a redirect
- *
  * @param int $redirectID
  * @return bool
+ * @deprecated since 5.2.0
  */
 function updateRedirectState(int $redirectID): bool
 {
-    $url       = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $redirectID)->cToUrl;
-    $available = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
-
-    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $redirectID, (object)['cAvailable' => $available]);
-
-    return $available === 'y';
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return false;
 }

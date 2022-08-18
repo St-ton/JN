@@ -95,6 +95,9 @@ msgstr "XML node \"Name\" not found."
 msgid "errorInvalidVersion"
 msgstr "No valid SemVer."
 
+msgid "errorInvalidNamespace"
+msgstr "Invalid namespace."
+
 msgid "errorUnknown"
 msgstr "Unknown error."
 

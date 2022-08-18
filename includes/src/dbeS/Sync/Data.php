@@ -18,9 +18,9 @@ final class Data extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'ack_verfuegbarkeitsbenachrichtigungen.xml') !== false) {
+            if (\str_contains($file, 'ack_verfuegbarkeitsbenachrichtigungen.xml')) {
                 $this->handleAvailabilityMessages($xml);
-            } elseif (\strpos($file, 'ack_uploadqueue.xml') !== false) {
+            } elseif (\str_contains($file, 'ack_uploadqueue.xml')) {
                 $this->handleUploadQueueAck($xml);
             }
         }

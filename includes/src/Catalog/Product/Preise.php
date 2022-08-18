@@ -3,6 +3,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Currency;
+use JTL\DB\DbInterface;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -17,22 +18,22 @@ class Preise
     /**
      * @var int
      */
-    public $kKundengruppe;
+    public int $kKundengruppe;
 
     /**
      * @var int
      */
-    public $kArtikel;
+    public int $kArtikel;
 
     /**
      * @var int
      */
-    public $kKunde;
+    public int $kKunde;
 
     /**
      * @var array
      */
-    public $cVKLocalized;
+    public array $cVKLocalized = [];
 
     /**
      * @var float
@@ -117,42 +118,42 @@ class Preise
     /**
      * @var array
      */
-    public $alterVKLocalized;
+    public array $alterVKLocalized = [];
 
     /**
      * @var array
      */
-    public $fVK;
+    public array $fVK = [];
 
     /**
      * @var array
      */
-    public $nAnzahl_arr = [];
+    public array $nAnzahl_arr = [];
 
     /**
      * @var array
      */
-    public $fPreis_arr = [];
+    public array $fPreis_arr = [];
 
     /**
      * @var array
      */
-    public $fStaffelpreis_arr = [];
+    public array $fStaffelpreis_arr = [];
 
     /**
      * @var array
      */
-    public $cPreisLocalized_arr = [];
+    public array $cPreisLocalized_arr = [];
 
     /**
      * @var bool|int
      */
-    public $Sonderpreis_aktiv = false;
+    public bool $Sonderpreis_aktiv = false;
 
     /**
      * @var bool
      */
-    public $Kundenpreis_aktiv = false;
+    public bool $Kundenpreis_aktiv = false;
 
     /**
      * @var PriceRange
@@ -182,28 +183,39 @@ class Preise
     /**
      * @var array
      */
-    public $cAufpreisLocalized = [];
+    public array $cAufpreisLocalized = [];
 
     /**
      * @var array
      */
-    public $cPreisVPEWertInklAufpreis = [];
+    public array $cPreisVPEWertInklAufpreis = [];
 
     /**
      * @var array - probably a typo? but it is used in templates..
      */
-    public $PreisecPreisVPEWertInklAufpreis = [];
+    public array $PreisecPreisVPEWertInklAufpreis = [];
+
+    /**
+     * @var DbInterface|null
+     */
+    private ?DbInterface $db = null;
 
     /**
      * Preise constructor.
-     * @param int $customerGroupID
-     * @param int $productID
-     * @param int $customerID
-     * @param int $taxClassID
+     * @param int              $customerGroupID
+     * @param int              $productID
+     * @param int              $customerID
+     * @param int              $taxClassID
+     * @param DbInterface|null $db
      */
-    public function __construct(int $customerGroupID, int $productID, int $customerID = 0, int $taxClassID = 0)
-    {
-        $db             = Shop::Container()->getDB();
+    public function __construct(
+        int $customerGroupID,
+        int $productID,
+        int $customerID = 0,
+        int $taxClassID = 0,
+        ?DbInterface $db = null
+    ) {
+        $this->db       = $db ?? Shop::Container()->getDB();
         $customerFilter = ' AND p.kKundengruppe = :cgid';
         if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
             $customerFilter = ' AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
@@ -217,7 +229,7 @@ class Preise
         $this->kKundengruppe = $customerGroupID;
         $this->kKunde        = $customerID;
 
-        $prices = $db->getObjects(
+        $prices = $this->db->getObjects(
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
@@ -227,21 +239,16 @@ class Preise
         );
         if (\count($prices) > 0) {
             if ($taxClassID === 0) {
-                $tax        = $db->select(
-                    'tartikel',
-                    'kArtikel',
-                    $productID,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    'kSteuerklasse'
+                $taxClassID = $this->db->getSingleInt(
+                    'SELECT kSteuerklasse
+                        FROM kArtikel
+                        WHERE kArtikel = :pid',
+                    'kSteuerklasse',
+                    ['pid' => $productID]
                 );
-                $taxClassID = (int)$tax->kSteuerklasse;
             }
             $this->fUst        = Tax::getSalesTax($taxClassID);
-            $tmp               = $db->select(
+            $tmp               = $this->db->select(
                 'tartikel',
                 'kArtikel',
                 $productID,
@@ -266,7 +273,7 @@ class Preise
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
-                    $specialPrice   = $db->getSingleObject(
+                    $specialPrice   = $this->db->getSingleObject(
                         "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
@@ -326,7 +333,7 @@ class Preise
         }
 
         $this->berechneVKs();
-        $this->oPriceRange = new PriceRange($productID, $customerGroupID, $customerID);
+        $this->oPriceRange = new PriceRange($productID, $customerGroupID, $customerID, $this->db);
         \executeHook(\HOOK_PRICES_CONSTRUCT, [
             'customerGroupID' => $customerGroupID,
             'customerID'      => $customerID,
@@ -334,6 +341,18 @@ class Preise
             'taxClassID'      => $taxClassID,
             'prices'          => $this
         ]);
+    }
+
+    /**
+     * @return DbInterface
+     */
+    public function getDB(): DbInterface
+    {
+        if ($this->db === null || $this->db->isConnected() === false) {
+            $this->db = Shop::Container()->getDB();
+        }
+
+        return $this->db;
     }
 
     /**
@@ -378,7 +397,7 @@ class Preise
             return false;
         }
 
-        return Shop::Container()->getDB()->getSingleObject(
+        return $this->getDB()->getSingleObject(
             'SELECT COUNT(kPreis) AS cnt 
                 FROM tpreis
                 WHERE kKunde = :cid 
@@ -398,7 +417,7 @@ class Preise
         }
         $cacheID = 'custprice_' . $customerID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->getSingleObject(
+            $data = $this->getDB()->getSingleObject(
                 'SELECT COUNT(kPreis) AS nAnzahl 
                     FROM tpreis
                     WHERE kKunde = :cid',
@@ -450,11 +469,12 @@ class Preise
     }
 
     /**
+     * @param Currency|null $currency
      * @return $this
      */
-    public function localizePreise(): self
+    public function localizePreise(?Currency $currency = null): self
     {
-        $currency                  = Frontend::getCurrency();
+        $currency                  = self::getCurrency($currency);
         $this->cPreisLocalized_arr = [];
         foreach ($this->fPreis_arr as $price) {
             $this->cPreisLocalized_arr[] = [

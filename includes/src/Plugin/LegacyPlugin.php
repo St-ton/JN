@@ -96,7 +96,7 @@ class LegacyPlugin extends PluginBC
             foreach (\get_object_vars($res) as $k => $v) {
                 $this->$k = $v;
             }
-        } catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException) {
             return null;
         }
 

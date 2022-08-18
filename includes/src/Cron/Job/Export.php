@@ -73,7 +73,7 @@ final class Export extends Job
                 false,
                 true
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
         }
         $this->updateExportformatQueueBearbeitet($queueEntry);
         $this->setFinished($finished);

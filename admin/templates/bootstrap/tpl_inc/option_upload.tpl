@@ -2,7 +2,7 @@
 {include file='tpl_inc/fileupload.tpl'
     fileID="tpl-upload-{$iteration}"
     fileName="upload-{$iteration}"
-    fileDeleteUrl="{$adminURL}/shoptemplate.php?token={$smarty.session.jtl_token}"
+    fileDeleteUrl="{$adminURL}/template?token={$smarty.session.jtl_token}"
     fileExtraData='{id:1}'
     fileMaxSize="{if !empty($setting->rawAttributes.maxFileSize)}{$setting->rawAttributes.maxFileSize}{else}1000{/if}"
     fileAllowedExtensions="{if !empty($setting->rawAttributes.allowedFileExtensions)}{$setting->rawAttributes.allowedFileExtensions}{/if}"
@@ -12,7 +12,7 @@
     {/if}
     ]"
     fileInitialPreviewConfig="[{
-        url: '{$adminURL}/shoptemplate.php',
+        url: '{$adminURL}/template',
         extra: {
                 upload: '{$template->getDir()}/{$setting->rawAttributes.target}{$setting->value}',
                 id:     'upload-{$iteration}',

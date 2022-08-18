@@ -9,7 +9,7 @@ use JTL\Update\Migration;
 class Migration_20210914080323 extends Migration implements IMigration
 {
     protected $author      = 'cr';
-    protected $description = 'reset_fallback_payment';
+    protected $description = 'Reset fallback payment';
 
     /**
      * @inheritDoc

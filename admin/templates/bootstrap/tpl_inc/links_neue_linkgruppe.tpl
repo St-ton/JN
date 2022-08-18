@@ -6,7 +6,7 @@
 
 <div id="content">
 
-    <form name="linkgruppe_erstellen" method="post" action="{$adminURL}/links.php">
+    <form name="linkgruppe_erstellen" method="post" action="{$adminURL}{$route}">
         <div class="card">
             <div class="card-body">
                 {$jtl_token}
@@ -41,7 +41,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}/links.php">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

@@ -13,46 +13,40 @@ use JTL\Smarty\JTLSmarty;
 class Smarty extends DataCollector implements Renderable
 {
     /**
-     * @var JTLSmarty
-     */
-    protected $smarty;
-
-    /**
-     * SmartyCollector constructor.
+     * Smarty constructor.
      * @param JTLSmarty $smarty
      */
-    public function __construct(JTLSmarty $smarty)
+    public function __construct(protected JTLSmarty $smarty)
     {
-        $this->smarty = $smarty;
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function collect()
+    public function collect(): array
     {
-        $data = [];
-        $vars = $this->smarty->getTemplateVars();
-
+        $data      = [];
+        $vars      = $this->smarty->getTemplateVars();
+        $formatter = $this->getDataFormatter();
         foreach ($vars as $idx => $var) {
-            $data[$idx] = $this->getDataFormatter()->formatVar($var);
+            $data[$idx] = $formatter->formatVar($var);
         }
 
         return $data;
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getName()
+    public function getName(): string
     {
         return 'smarty';
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    public function getWidgets()
+    public function getWidgets(): array
     {
         return [
             'smarty' => [

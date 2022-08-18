@@ -1,8 +1,12 @@
 {$description = $description|default:null}
 {$enctype = $enctype|default:null}
-{$action = $action|default:($shopURL|cat:$smarty.server.PHP_SELF)}
+{if isset($route)}
+    {$default = $adminURL|cat:$route}
+{else}
+    {$default = $shopURL|cat:$smarty.server.PHP_SELF}
+{/if}
+{$action = $action|default:$default}
 {$method = $method|default:'post'}
-
 {$cancel = $cancel|default:true}
 {$delete = $delete|default:false}
 {$save = $save|default:true}

@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20181221105338 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'add conf min stock for availability notifictaion';
+    protected $description = 'Add conf min stock for availability notifictaion';
 
     /**
      * @inheritDoc

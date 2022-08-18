@@ -3,8 +3,12 @@
 namespace JTL\Checkout;
 
 use JTL\Customer\Customer;
+use JTL\Customer\Registration\Form as RegistrationForm;
+use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Staat;
 
 /**
  * Class Lieferadresse
@@ -13,24 +17,24 @@ use JTL\Shop;
 class Lieferadresse extends Adresse
 {
     /**
-     * @var int
+     * @var int|null
      */
-    public $kLieferadresse;
+    public ?int $kLieferadresse = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kKunde;
+    public ?int $kKunde = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cAnredeLocalized;
+    public ?string $cAnredeLocalized = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $angezeigtesLand;
+    public ?string $angezeigtesLand = null;
 
     /**
      * Lieferadresse constructor.
@@ -121,5 +125,83 @@ class Lieferadresse extends Adresse
         return $this->kLieferadresse > 0
             ? $this->toArray()
             : [];
+    }
+
+    /**
+     * @param array $post
+     * @return Lieferadresse
+     * @former getLieferdaten()
+     * @since 5.2.0
+     */
+    public static function createFromPost(array $post): self
+    {
+        $post                             = Text::filterXSS($post);
+        $shippingAddress                  = new self();
+        $shippingAddress->cAnrede         = $post['anrede'] ?? null;
+        $shippingAddress->cVorname        = $post['vorname'];
+        $shippingAddress->cNachname       = $post['nachname'];
+        $shippingAddress->cStrasse        = $post['strasse'];
+        $shippingAddress->cHausnummer     = $post['hausnummer'];
+        $shippingAddress->cPLZ            = $post['plz'];
+        $shippingAddress->cOrt            = $post['ort'];
+        $shippingAddress->cLand           = $post['land'];
+        $shippingAddress->cMail           = $post['email'] ?? '';
+        $shippingAddress->cTel            = $post['tel'] ?? null;
+        $shippingAddress->cFax            = $post['fax'] ?? null;
+        $shippingAddress->cFirma          = $post['firma'] ?? null;
+        $shippingAddress->cZusatz         = $post['firmazusatz'] ?? null;
+        $shippingAddress->cTitel          = $post['titel'] ?? null;
+        $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
+        $shippingAddress->cMobil          = $post['mobil'] ?? null;
+        $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
+        $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
+
+        if (!empty($shippingAddress->cBundesland)) {
+            $region = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
+            if ($region !== null) {
+                $shippingAddress->cBundesland = $region->cName;
+            }
+        }
+
+        return $shippingAddress;
+    }
+
+    /**
+     * @param array|null $post
+     * @return Lieferadresse
+     * @former setzeLieferadresseAusRechnungsadresse()
+     * @since 5.2.0
+     */
+    public static function createFromShippingAddress(?array $post = null): Lieferadresse
+    {
+        if (isset($post['land'])) {
+            $form     = new RegistrationForm();
+            $customer = $form->getCustomerData($post, false);
+        } else {
+            $customer = Frontend::getCustomer();
+        }
+        $shippingAddress                  = new self();
+        $shippingAddress->kKunde          = $customer->getID();
+        $shippingAddress->cAnrede         = $customer->cAnrede;
+        $shippingAddress->cVorname        = $customer->cVorname;
+        $shippingAddress->cNachname       = $customer->cNachname;
+        $shippingAddress->cStrasse        = $customer->cStrasse;
+        $shippingAddress->cHausnummer     = $customer->cHausnummer;
+        $shippingAddress->cPLZ            = $customer->cPLZ;
+        $shippingAddress->cOrt            = $customer->cOrt;
+        $shippingAddress->cLand           = $customer->cLand;
+        $shippingAddress->cMail           = $customer->cMail;
+        $shippingAddress->cTel            = $customer->cTel;
+        $shippingAddress->cFax            = $customer->cFax;
+        $shippingAddress->cFirma          = $customer->cFirma;
+        $shippingAddress->cZusatz         = $customer->cZusatz;
+        $shippingAddress->cTitel          = $customer->cTitel;
+        $shippingAddress->cAdressZusatz   = $customer->cAdressZusatz;
+        $shippingAddress->cMobil          = $customer->cMobil;
+        $shippingAddress->cBundesland     = $customer->cBundesland;
+        $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
+        $_SESSION['Lieferadresse']        = $shippingAddress;
+
+        return $shippingAddress;
     }
 }

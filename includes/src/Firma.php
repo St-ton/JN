@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use stdClass;
@@ -13,117 +14,117 @@ use stdClass;
 class Firma
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public $cName;
+    public ?string $cName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cUnternehmer;
+    public ?string $cUnternehmer = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cStrasse;
+    public ?string $cStrasse = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cHausnummer;
+    public ?string $cHausnummer = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cPLZ;
+    public ?string $cPLZ = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cOrt;
+    public ?string $cOrt = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cLand;
+    public ?string $cLand = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cTel;
+    public ?string $cTel = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cFax;
+    public ?string $cFax = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cEMail;
+    public ?string $cEMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cWWW;
+    public ?string $cWWW = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cKontoinhaber;
+    public ?string $cKontoinhaber = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBLZ;
+    public ?string $cBLZ = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cKontoNr;
+    public ?string $cKontoNr = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBank;
+    public ?string $cBank = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cUSTID;
+    public ?string $cUSTID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cSteuerNr;
+    public ?string $cSteuerNr = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cIBAN;
+    public ?string $cIBAN = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBIC;
+    public ?string $cBIC = null;
 
     /**
-     * @var Country
+     * @var Country|null
      */
-    public $country;
+    public ?Country $country = null;
 
     /**
-     * @var DbInterface
+     * @param bool                   $load
+     * @param DbInterface|null       $db
+     * @param JTLCacheInterface|null $cache
      */
-    private $db;
-
-    /**
-     * @param bool             $load
-     * @param DbInterface|null $db
-     */
-    public function __construct(bool $load = true, DbInterface $db = null)
-    {
-        $this->db = $db ?? Shop::Container()->getDB();
+    public function __construct(
+        bool                       $load = true,
+        private ?DbInterface       $db = null,
+        private ?JTLCacheInterface $cache = null
+    ) {
+        $this->db    = $db ?? Shop::Container()->getDB();
+        $this->cache = $this->cache ?? Shop::Container()->getCache();
         if ($load) {
             $this->loadFromDB();
         }
@@ -134,8 +135,9 @@ class Firma
      */
     public function loadFromDB(): self
     {
-        $cache = Shop::Container()->getCache();
-        if (($company = $cache->get('jtl_company')) !== false) {
+        $cached = false;
+        if (($company = $this->cache->get('jtl_company')) !== false) {
+            $cached = true;
             foreach (\get_object_vars($company) as $k => $v) {
                 $this->$k = $v;
             }
@@ -147,13 +149,14 @@ class Firma
                     $this->$k = $v;
                 }
             }
-            $iso           = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
-            $this->country = $iso !== null
-                ? $countryHelper->getCountry($iso)
-                : null;
-            $cache->set('jtl_company', $this, [\CACHING_GROUP_CORE]);
+            $iso = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
+            if ($iso !== null) {
+                $this->country = $countryHelper->getCountry($iso);
+                $obj->country  = $this->country;
+            }
+            $this->cache->set('jtl_company', $obj, [\CACHING_GROUP_CORE]);
         }
-        \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
+        \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this, 'cached' => $cached]);
 
         return $this;
     }

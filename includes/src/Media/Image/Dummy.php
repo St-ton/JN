@@ -11,7 +11,7 @@ class Dummy extends AbstractImage
     /**
      * @inheritdoc
      */
-    public function handle(string $request)
+    public function handle(string $request): bool
     {
         return false;
     }

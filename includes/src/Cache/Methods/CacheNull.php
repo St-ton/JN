@@ -16,19 +16,14 @@ class CacheNull implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheNull|null
-     */
-    public static $instance;
-
-    /**
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $this->isInitialized = true;
-        $this->options       = $options;
-        $this->journalID     = 'null_journal';
-        self::$instance      = $this;
+        $this->setIsInitialized(true);
+        $this->setJournalID('null_journal');
+        $this->setOptions($options);
+        self::$instance = $this;
     }
 
     /**
@@ -85,6 +80,14 @@ class CacheNull implements ICachingMethod
     public function flushAll(): bool
     {
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function flushTags($tags): int
+    {
+        return 0;
     }
 
     /**

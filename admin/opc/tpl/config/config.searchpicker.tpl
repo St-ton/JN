@@ -121,7 +121,7 @@
             let formData = new FormData();
             formData.append("jtl_token", JTL_TOKEN);
             formData.append("io", JSON.stringify({ name: name, params : args }));
-            let result = await fetch("./io.php", { method: "POST", body: formData });
+            let result = await fetch("./io", { method: "POST", body: formData });
             return await result.json();
         }
     </script>

@@ -696,19 +696,6 @@ INSERT INTO `tbesucherbot` VALUES (1,'Google','','',NULL,'2010-05-11 14:40:42'),
 /*!40000 ALTER TABLE `tbesucherbot` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tbesuchersuchausdruecke` (
-  `kBesucher` int(10) unsigned NOT NULL,
-  `cSuchanfrage` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cRohdaten` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  KEY `cSuchanfrage` (`cSuchanfrage`),
-  KEY `kBesucher` (`kBesucher`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40000 ALTER TABLE `tbesuchersuchausdruecke` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tbesuchersuchausdruecke` ENABLE KEYS */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tbesucherzaehler` (
   `nZaehler` int(10) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

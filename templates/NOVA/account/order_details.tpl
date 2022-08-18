@@ -50,7 +50,7 @@
                                                             && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
                                                             && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
                                                             && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                                                                {link href="{get_static_route id='bestellab_again.php'}?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                                                                {link href="{get_static_route id='bestellabschluss.php'}?payAgain=1&kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
                                                         {else}
                                                             {lang key='notPayedYet' section='login'}
                                                         {/if}
@@ -199,7 +199,7 @@
                                 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
                                     <tr>
                                         <td>{link data=["toggle"=>"modal", "target"=>"#shipping-order-{$oLieferschein->getLieferschein()}"] id=$oLieferschein->getLieferschein() href="#" title=$oLieferschein->getLieferscheinNr()}{$oLieferschein->getLieferscheinNr()}{/link}</td>
-                                        <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
+                                        <td>{$oLieferschein->getErstellt()|date_format:'d.m.Y H:i'}</td>
                                         <td class="text-right-util">
                                             {foreach $oLieferschein->oVersand_arr as $oVersand}
                                                 {if $oVersand->getIdentCode()}
@@ -224,7 +224,7 @@
                             {block name='account-order-details-delivery-note-popup-heading'}
                                 <div class="shipping-order-modal-mb">
                                     <strong>{lang key='shippingOrder' section='order'}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
-                                    <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />
+                                    <strong>{lang key='shippedOn' section='login'}</strong>: {$oLieferschein->getErstellt()|date_format:'d.m.Y H:i'}<br />
                                 </div>
                             {/block}
                             {if $oLieferschein->getHinweis()|strlen > 0}
@@ -280,13 +280,13 @@
                                                     {/if}
 
                                                     {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oLieferscheinpos->oPosition->Artikel->oMerkmale_arr)}
-                                                        {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                                        {foreach $oLieferscheinpos->oPosition->Artikel->oMerkmale_arr as $characteristic}
                                                             <li class="characteristic">
-                                                                <strong>{$oMerkmale_arr->cName}</strong>:
+                                                                <strong>{$characteristic->getName()}</strong>:
                                                                 <span class="values">
-                                                                    {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                        {if !$oWert@first}, {/if}
-                                                                        {$oWert->cWert}
+                                                                    {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                                        {if !$characteristicValue@first}, {/if}
+                                                                        {$characteristicValue->getValue()}
                                                                     {/foreach}
                                                                 </span>
                                                             </li>

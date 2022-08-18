@@ -11,34 +11,24 @@ use JTL\Filter\ProductFilter;
 class Pagination
 {
     /**
-     * @var ProductFilter
-     */
-    private $productFilter;
-
-    /**
-     * @var ItemFactory
-     */
-    private $factory;
-
-    /**
      * @var array
      */
-    private $pages = [];
+    private array $pages = [];
 
     /**
      * @var Item
      */
-    private $prev;
+    private Item $prev;
 
     /**
      * @var Item
      */
-    private $next;
+    private Item $next;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'zurueck' => 'Prev',
         'vor'     => 'Next',
     ];
@@ -48,12 +38,10 @@ class Pagination
      * @param ProductFilter $productFilter
      * @param ItemFactory   $factory
      */
-    public function __construct(ProductFilter $productFilter, ItemFactory $factory)
+    public function __construct(private ProductFilter $productFilter, private ItemFactory $factory)
     {
-        $this->productFilter = $productFilter;
-        $this->factory       = $factory;
-        $this->prev          = $this->factory->create();
-        $this->next          = $this->factory->create();
+        $this->prev = $this->factory->create();
+        $this->next = $this->factory->create();
     }
 
     /**
@@ -66,7 +54,7 @@ class Pagination
             return $this->pages;
         }
         $naviURL = $this->productFilter->getFilterURL()->getURL();
-        $sep     = \mb_strpos($naviURL, '?') === false
+        $sep     = !\str_contains($naviURL, '?')
             ? \SEP_SEITE
             : '&amp;seite=';
         $active  = $pages->getCurrentPage();

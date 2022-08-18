@@ -6,7 +6,7 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class WhitelistStrict
+ * Class InArrayStrict
  * @package JTL\Services\JTL\Validation\Rules
  *
  * Validates, that $value is in a specified list of items
@@ -14,17 +14,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class InArrayStrict implements RuleInterface
 {
     /**
-     * @var array|mixed[]
-     */
-    protected $whitelist;
-
-    /**
      * WhitelistStrict constructor.
      * @param mixed[] $whitelist
      */
-    public function __construct(array $whitelist)
+    public function __construct(protected array $whitelist)
     {
-        $this->whitelist = $whitelist;
     }
 
     /**

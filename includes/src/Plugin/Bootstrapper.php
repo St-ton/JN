@@ -32,32 +32,17 @@ abstract class Bootstrapper implements BootstrapperInterface
     private array $notifications = [];
 
     /**
-     * @var PluginInterface
-     */
-    private PluginInterface $plugin;
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Bootstrapper constructor.
      * @param PluginInterface   $plugin
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    final public function __construct(PluginInterface $plugin, DbInterface $db, JTLCacheInterface $cache)
-    {
-        $this->plugin   = $plugin;
+    final public function __construct(
+        private PluginInterface $plugin,
+        private DbInterface $db,
+        private JTLCacheInterface $cache
+    ) {
         $this->pluginID = $plugin->getPluginID();
-        $this->db       = $db;
-        $this->cache    = $cache;
     }
 
     /**

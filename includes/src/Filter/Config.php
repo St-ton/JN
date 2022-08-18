@@ -16,27 +16,27 @@ class Config implements ConfigInterface
     /**
      * @var int
      */
-    private $langID = 0;
+    private int $langID = 0;
 
     /**
      * @var array
      */
-    private $languages = [];
+    private array $languages = [];
 
     /**
      * @var array
      */
-    private $config = [];
+    private array $config = [];
 
     /**
      * @var int
      */
-    private $customerGroupID = 0;
+    private int $customerGroupID = 0;
 
     /**
      * @var string
      */
-    private $baseURL = '';
+    private string $baseURL = '';
 
     /**
      * @inheritdoc
@@ -45,7 +45,7 @@ class Config implements ConfigInterface
     {
         $config = new self();
         $config->setLanguageID(Shop::getLanguageID());
-        $config->setLanguages(LanguageHelper::getInstance()->getLangArray());
+        $config->setLanguages(LanguageHelper::getAllLanguages());
         $config->setConfig(Shopsetting::getInstance()->getAll());
         $config->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
         $config->setBaseURL(Shop::getURL() . '/');

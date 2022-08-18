@@ -22,7 +22,7 @@ class ImageProvider extends Base
      *
      * https://docs.google.com/spreadsheets/d/1DhLdGhV4Fv_amgIbi5o2UFYZkkdp_TQNQcL6Of3LbCk/pub?output=html
      */
-    private static $colors = [
+    private static array $colors = [
         '#5b5b95', '#C79810', '#c69d18', '#6BBA70', '#ff6600', '#1393c0', '#4CADD4', '#ff0000',
         '#277fba', '#57A9FD', '#B71313', '#9AC65C', '#0e63fd', '#99cc33', '#3775e2', '#8dbb01',
         '#ffb640', '#1b5891', '#356AA0', '#e24602', '#4caae4', '#ffcc00', '#cf5700', '#D15600',
@@ -119,7 +119,7 @@ class ImageProvider extends Base
      */
     private static function hexColor(string $color): string
     {
-        if (\preg_match('/^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color, $rgb)) {
+        if (\preg_match('/^#?([A-Fa-f\d]{6}|[A-Fa-f\d]{3})$/', $color, $rgb)) {
             return '#' . $rgb[1];
         }
         throw new \InvalidArgumentException(\sprintf('Unrecognized hexcolor "%s"', $color));

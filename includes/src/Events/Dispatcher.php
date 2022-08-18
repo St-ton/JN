@@ -50,12 +50,24 @@ final class Dispatcher
     {
         foreach ((array)$eventNames as $event) {
             $item = (object)['listener' => $listener, 'priority' => $priority];
-            if (\mb_strpos($event, '*') !== false) {
+            if (\str_contains($event, '*')) {
                 $this->wildcards[$event][] = $item;
             } else {
                 $this->listeners[$event][] = $item;
             }
         }
+    }
+
+    /**
+     * @param int      $hookID
+     * @param callable $listener
+     * @param int      $priority
+     * @return void
+     * @since 5.2.0
+     */
+    public function hookInto(int $hookID, callable $listener, int $priority = 5): void
+    {
+        $this->listeners['shop.hook.' . $hookID][] = (object)['listener' => $listener, 'priority' => $priority];
     }
 
     /**

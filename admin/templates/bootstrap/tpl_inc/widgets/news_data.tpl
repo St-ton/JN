@@ -5,7 +5,7 @@
                 <li>
                     <p>
                         <a class="" href="{$oNews->link|urldecode}" target="_blank" rel="noopener">
-                            <span class="date label label-default pull-right">{$oNews->pubDate|date_format:'%d.%m.%Y'}</span>{$oNews->title}
+                            <span class="date label label-default pull-right">{$oNews->pubDate|date_format:'d.m.Y'}</span>{$oNews->title}
                         </a>
                     </p>
                 </li>

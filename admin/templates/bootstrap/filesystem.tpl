@@ -4,12 +4,21 @@
 
 <div id="content">
     <div id="settings">
+        {capture name=testButton}
+            <div class="ml-auto col-sm-6 col-xl-auto">
+                <button name="test" type="submit" value="1" class="btn btn-default btn-block">
+                    <i class="fal fa-play-circle"></i> {__('methodTest')}
+                </button>
+            </div>
+        {/capture}
         {include file='tpl_inc/config_section.tpl'
-                    name='einstellen'
-                    a='saveSettings'
-                    action='filesystem.php'
-                    title=__('settings')
-                    tab='einstellungen'}
+            name='einstellen'
+            a='saveSettings'
+            action=$adminURL|cat:$route
+            title=__('settings')
+            additionalButtons=$smarty.capture.testButton
+            tab='einstellungen'
+        }
     </div>
 </div>
 

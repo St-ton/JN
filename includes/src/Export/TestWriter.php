@@ -12,21 +12,6 @@ use JTL\Smarty\ExportSmarty;
 class TestWriter implements ExportWriterInterface
 {
     /**
-     * @var Model
-     */
-    private Model $model;
-
-    /**
-     * @var array
-     */
-    private array $config;
-
-    /**
-     * @var ExportSmarty|null
-     */
-    private ?ExportSmarty $smarty;
-
-    /**
      * @var string
      */
     private string $header = '';
@@ -44,11 +29,8 @@ class TestWriter implements ExportWriterInterface
     /**
      * @inheritdoc
      */
-    public function __construct(Model $model, array $config, ExportSmarty $smarty = null)
+    public function __construct(private Model $model, private array $config, private ?ExportSmarty $smarty = null)
     {
-        $this->model  = $model;
-        $this->config = $config;
-        $this->smarty = $smarty;
     }
 
     public function start(): void

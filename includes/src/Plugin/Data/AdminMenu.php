@@ -53,7 +53,7 @@ class AdminMenu
      */
     public function removeItem(int $menuID): void
     {
-        $this->items = $this->items->reject(static function ($value, $key) use ($menuID) {
+        $this->items = $this->items->reject(static function ($value, $key) use ($menuID): bool {
             return $value->kPluginAdminMenu === $menuID;
         });
     }

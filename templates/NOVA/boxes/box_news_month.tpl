@@ -25,7 +25,7 @@
                     {nav vertical=true class="box-nav-item"}
                         {foreach $oBox->getItems() as $newsMonth}
                             {block name='boxes-box-news-month-news-link'}
-                                {navitem href=$newsMonth->cURL  title=$newsMonth->cName router-class="box-link-wrapper"}
+                                {navitem href=$newsMonth->cURLFull title=$newsMonth->cName router-class="box-link-wrapper"}
                                     <i class="far fa-newspaper snippets-filter-item-icon-right"></i>
                                     {$newsMonth->cName}
                                     {badge variant="outline-secondary"}{$newsMonth->nAnzahl}{/badge}

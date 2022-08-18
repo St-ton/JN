@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20181117133311 extends Migration implements IMigration
 {
     protected $author      = 'aj';
-    protected $description = 'add plugin store id';
+    protected $description = 'Add plugin store id';
 
     /**
      * @inheritDoc

@@ -35,8 +35,8 @@ class Hooks extends AbstractItem
         if ($count === 1) {
             foreach ($node[0]['Hook'] as $i => $hook) {
                 $i = (string)$i;
-                \preg_match('/[0-9]+\sattr/', $i, $hits1);
-                \preg_match('/[0-9]+/', $i, $hits2);
+                \preg_match('/\d+\sattr/', $i, $hits1);
+                \preg_match('/\d+/', $i, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                     $nHookID   = (int)$hook['id'];
                     $nPriority = isset($hook['priority']) ? (int)$hook['priority'] : 5;

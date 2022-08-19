@@ -20,17 +20,7 @@ final class Controller
     /**
      * @var Collection
      */
-    private $steps;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private Collection $steps;
 
     /**
      * Controller constructor.
@@ -39,13 +29,14 @@ final class Controller
      * @param JTLCacheInterface $cache
      * @param GetText $getText
      */
-    public function __construct(DefaultFactory $factory, DbInterface $db, JTLCacheInterface $cache, GetText $getText)
-    {
+    public function __construct(
+        DefaultFactory $factory,
+        private DbInterface $db,
+        private JTLCacheInterface $cache,
+        GetText $getText
+    ) {
         $getText->loadAdminLocale('pages/pluginverwaltung');
-
         $this->steps = $factory->getSteps();
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -135,7 +126,7 @@ final class Controller
         if (\is_array($post[0])) {
             $postTMP = [];
             foreach ($post as $postItem) {
-                if (\mb_strpos($postItem['name'], '[]') !== false) {
+                if (\str_contains($postItem['name'], '[]')) {
                     $postTMP[\explode('[]', $postItem['name'])[0]][] = $postItem['value'];
                 } else {
                     $postTMP[$postItem['name']] = $postItem['value'];

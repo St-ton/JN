@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170331100500 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'changes free gift descriptions to clarify free gifts are based on the value of goods';
+    protected $description = 'Change free gift descriptions to clarify free gifts are based on the value of goods';
 
     /**
      * @inheritDoc

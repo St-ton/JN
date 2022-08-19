@@ -23,11 +23,6 @@ use function Functional\map;
 class Statusmail
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * @var string
      */
     private $dateStart;
@@ -42,9 +37,8 @@ class Statusmail
      *
      * @param DbInterface $db
      */
-    public function __construct(DbInterface $db)
+    public function __construct(private DbInterface $db)
     {
-        $this->db = $db;
     }
 
     /**

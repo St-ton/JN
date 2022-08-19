@@ -52,10 +52,10 @@
                                                         <dt class="col-6">{lang key='characteristics' section='comparelist'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
                                                             {block name='productdetails-pushed-success-characteristics'}
-                                                                {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
-                                                                    {$oMerkmal->cName}
-                                                                    {if $oMerkmal@index === 10 && !$oMerkmal@last}&hellip;{break}{/if}
-                                                                    {if !$oMerkmal@last}, {/if}
+                                                                {foreach $pushedArtikel->oMerkmale_arr as $characteristic}
+                                                                    {$characteristic->getName()}
+                                                                    {if $characteristic@index === 10 && !$characteristic@last}&hellip;{break}{/if}
+                                                                    {if !$characteristic@last}, {/if}
                                                                 {/foreach}
                                                             {/block}
                                                         </dd>
@@ -93,6 +93,7 @@
                             {col cols=12 md=6}
                                 {link href="#" attribs=["onclick"=>"$.evo.article().navigateBackToList()"]
                                     class="btn btn-outline-primary btn-block continue-shopping"
+                                    data=["dismiss"=>"{if !$card}modal{/if}"]
                                     aria=["label"=>"Close"]}
                                     <i class="fa fa-arrow-circle-left"></i> {lang key='continueShopping' section='checkout'}
                                 {/link}

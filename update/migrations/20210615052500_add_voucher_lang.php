@@ -21,8 +21,7 @@ class Migration_20210615052500 extends Migration implements IMigration
     }
 
     /**
-     * @return mixed|void
-     * @throws Exception
+     * @inheritdoc
      */
     public function down()
     {

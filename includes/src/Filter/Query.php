@@ -11,36 +11,37 @@ class Query implements QueryInterface
     /**
      * @var string
      */
-    private $type = '=';
+    private string $type = '=';
 
     /**
      * @var string
      */
-    private $table = '';
+    private string $table = '';
 
     /**
      * @var string
      */
-    private $comment = '';
+    private string $comment = '';
 
     /**
      * @var string
      */
-    private $on = '';
-    /**
-     * @var string
-     */
-    private $origin = '';
+    private string $on = '';
 
     /**
      * @var string
      */
-    private $where = '';
+    private string $origin = '';
+
+    /**
+     * @var string
+     */
+    private string $where = '';
 
     /**
      * @var array
      */
-    private $params = [];
+    private array $params = [];
 
     /**
      * @inheritdoc

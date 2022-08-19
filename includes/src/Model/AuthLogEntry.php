@@ -13,17 +13,17 @@ class AuthLogEntry
     /**
      * @var string
      */
-    private $ip = '0.0.0.0';
+    private string $ip = '0.0.0.0';
 
     /**
      * @var string
      */
-    private $user = 'Unknown user';
+    private string $user = 'Unknown user';
 
     /**
      * @var int
      */
-    public $code = AdminLoginStatus::ERROR_UNKNOWN;
+    public int $code = AdminLoginStatus::ERROR_UNKNOWN;
 
     /**
      * @return array

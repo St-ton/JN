@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20180904114800 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'changes optional fill out hint';
+    protected $description = 'Change optional fill out hint';
 
     /**
      * @inheritDoc

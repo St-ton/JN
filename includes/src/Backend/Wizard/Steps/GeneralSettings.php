@@ -12,7 +12,7 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 
 /**
- * Class GlobalSettings
+ * Class GeneralSettings
  * @package JTL\Backend\Wizard\Steps
  */
 final class GeneralSettings extends AbstractStep
@@ -36,7 +36,7 @@ final class GeneralSettings extends AbstractStep
         $question->setDescription(\__('shopNameDesc'));
         $question->setValue(Shop::getSettingValue(\CONF_GLOBAL, 'global_shopname'));
         $question->setType(QuestionType::TEXT);
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('global_shopname', $question->getValue());
         });
         $this->addQuestion($question);
@@ -49,7 +49,7 @@ final class GeneralSettings extends AbstractStep
         $question->setDescription(\__('secureDefaultSettingsDesc'));
         $question->setSummaryText(\__('secureDefaultSettings'));
         $question->setType(QuestionType::BOOL);
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             if ($question->getValue() === true
                 && ((isset($_SERVER['HTTPS']) && \strtolower($_SERVER['HTTPS']) === 'on')
                     || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'))
@@ -67,7 +67,7 @@ final class GeneralSettings extends AbstractStep
                 $question->updateConfig('global_cookie_httponly', 'S');
             }
         });
-        $question->setValidation(function (QuestionInterface $question) {
+        $question->setValidation(function (QuestionInterface $question): int {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkSSL();
 
@@ -83,10 +83,10 @@ final class GeneralSettings extends AbstractStep
         $question->setIsRequired(false);
         $question->setValue(Shop::getSettingValue(\CONF_KUNDEN, 'shop_ustid'));
         $question->setType(QuestionType::TEXT);
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('shop_ustid', $question->getValue());
         });
-        $question->setValidation(function (QuestionInterface $question) {
+        $question->setValidation(function (QuestionInterface $question): int {
             $questionValidation = new QuestionValidation($question);
             $questionValidation->checkVAT();
 
@@ -103,7 +103,7 @@ final class GeneralSettings extends AbstractStep
         $question->setType(QuestionType::BOOL);
         $question->setIsRequired(false);
         $question->setValue(false);
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             if ($question->getValue() === true) {
                 $question->updateConfig('global_ust_auszeichnung', 'endpreis');
                 $question->updateConfig('global_steuerpos_anzeigen', 'N');
@@ -156,7 +156,7 @@ final class GeneralSettings extends AbstractStep
         $option->setName(\__('customerGroupB2C'));
         $option->setValue('b2c');
         $question->addOption($option);
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $value = $question->getValue();
             $b2b   = $value === 'b2b' || (\is_array($value) && \in_array('b2b', $value, true));
             $b2c   = $value === 'b2c' || (\is_array($value) && \in_array('b2c', $value, true));
@@ -183,7 +183,7 @@ final class GeneralSettings extends AbstractStep
         $question->setType(QuestionType::TEXT);
         $question->setIsRequired(false);
         $question->setValue(Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_bestellnummer_praefix'));
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('bestellabschluss_bestellnummer_praefix', $question->getValue());
         });
         $this->addQuestion($question);
@@ -195,7 +195,7 @@ final class GeneralSettings extends AbstractStep
         $question->setType(QuestionType::TEXT);
         $question->setIsRequired(false);
         $question->setValue(Shop::getSettingValue(\CONF_KAUFABWICKLUNG, 'bestellabschluss_bestellnummer_suffix'));
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('bestellabschluss_bestellnummer_suffix', $question->getValue());
         });
 
@@ -210,7 +210,7 @@ final class GeneralSettings extends AbstractStep
             \CONF_KAUFABWICKLUNG,
             'bestellabschluss_bestellnummer_anfangsnummer'
         ));
-        $question->setOnSave(function (QuestionInterface $question) {
+        $question->setOnSave(function (QuestionInterface $question): void {
             $question->updateConfig('bestellabschluss_bestellnummer_anfangsnummer', $question->getValue());
         });
         $this->addQuestion($question);

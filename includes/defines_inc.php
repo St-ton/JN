@@ -226,6 +226,9 @@ const LINKTYP_BESTELLABSCHLUSS        = 33;
 const LINKTYP_WUNSCHLISTE             = 34;
 const LINKTYP_VERGLEICHSLISTE         = 35;
 const LINKTYP_REFERENZ                = 36;
+const LINKTYP_WARTUNG                 = 37;
+const LINKTYP_BESTELLSTATUS           = 38;
+const LINKTYP_BEWERTUNG               = 39;
 // Artikel
 const INWKNICHTLEGBAR_LAGER              = -1;
 const INWKNICHTLEGBAR_LAGERVAR           = -2;
@@ -389,7 +392,7 @@ const PAGE_NEWSLETTER     = 8; // Newsletter
 const PAGE_LOGIN          = 9; // Login
 const PAGE_REGISTRIERUNG  = 10; // Registrierung
 const PAGE_BESTELLVORGANG = 11; // Bestellvorgang
-const PAGE_BEWERTUNG      = 12; // Bewertung [NEIN]
+const PAGE_BEWERTUNG      = 12; // Bewertung
 /**
  * @deprecated
  */

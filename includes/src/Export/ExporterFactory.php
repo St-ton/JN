@@ -15,41 +15,17 @@ use Psr\Log\LoggerInterface;
 class ExporterFactory
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
-     * @var ExportWriterInterface|null
-     */
-    private ?ExportWriterInterface $writer;
-
-    /**
      * @param DbInterface                $db
      * @param LoggerInterface            $logger
      * @param JTLCacheInterface          $cache
      * @param ExportWriterInterface|null $writer
      */
     public function __construct(
-        DbInterface $db,
-        LoggerInterface $logger,
-        JTLCacheInterface $cache,
-        ?ExportWriterInterface $writer = null
+        private DbInterface $db,
+        private LoggerInterface $logger,
+        private JTLCacheInterface $cache,
+        private ?ExportWriterInterface $writer = null
     ) {
-        $this->db     = $db;
-        $this->logger = $logger;
-        $this->cache  = $cache;
-        $this->writer = $writer;
     }
 
     /**
@@ -61,7 +37,7 @@ class ExporterFactory
         $exporter = new FormatExporter($this->db, $this->logger, $this->cache, $this->writer);
         try {
             $model = Model::load(['id' => $exportID], $this->db, Model::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             throw new InvalidArgumentException('Cannot find export with id ' . $exportID);
         }
 

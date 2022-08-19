@@ -39,7 +39,7 @@ class CustomerAttribute
     private $editable = true;
 
     /** @var array */
-    public static $mapping = [
+    public static array $mapping = [
         'kKundenAttribut' => 'ID',
         'kKunde'          => 'CustomerID',
         'kKundenfeld'     => 'CustomerFieldID',

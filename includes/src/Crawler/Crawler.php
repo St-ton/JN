@@ -10,13 +10,12 @@ use JTL\MagicCompatibilityTrait;
  */
 class Crawler
 {
-
     use MagicCompatibilityTrait;
 
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kBesucherBot'  => 'ID',
         'cName'         => 'Name',
         'cUserAgent'    => 'UserAgent',

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Extensions\Config;
 
@@ -13,24 +13,24 @@ use JTL\Shop;
 class ItemLocalization
 {
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kKonfigitem;
+    protected ?int $kKonfigitem = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kSprache;
-
-    /**
-     * @var string
-     */
-    protected $cName = '';
+    protected ?int $kSprache = null;
 
     /**
      * @var string
      */
-    protected $cBeschreibung = '';
+    protected string $cName = '';
+
+    /**
+     * @var string
+     */
+    protected string $cBeschreibung = '';
 
     /**
      * ItemLocalization constructor.
@@ -101,9 +101,10 @@ class ItemLocalization
         }
 
         if (isset($item->kKonfigitem, $item->kSprache) && $item->kKonfigitem > 0 && $item->kSprache > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
+            $this->cName         = $item->cName;
+            $this->cBeschreibung = $item->cBeschreibung;
+            $this->kKonfigitem   = (int)$item->kKonfigitem;
+            $this->kSprache      = (int)$item->kSprache;
         }
     }
 
@@ -156,7 +157,7 @@ class ItemLocalization
      */
     public function getKonfigitem(): int
     {
-        return (int)$this->kKonfigitem;
+        return $this->kKonfigitem ?? 0;
     }
 
     /**
@@ -164,7 +165,7 @@ class ItemLocalization
      */
     public function getSprache(): int
     {
-        return (int)$this->kSprache;
+        return $this->kSprache ?? 0;
     }
 
     /**

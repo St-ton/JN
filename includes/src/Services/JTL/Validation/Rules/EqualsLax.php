@@ -6,23 +6,17 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class Equals
+ * Class EqualsLax
  * @package JTL\Services\JTL\Validation\Rules
  */
 class EqualsLax implements RuleInterface
 {
     /**
-     * @var mixed
-     */
-    protected $expected;
-
-    /**
      * Equals constructor.
      * @param mixed $expected
      */
-    public function __construct($expected)
+    public function __construct(protected $expected)
     {
-        $this->expected = $expected;
     }
 
     /**

@@ -28,7 +28,7 @@ final class LicenseCheck extends Job
             if ($res <= 0) {
                 return $this;
             }
-        } catch (RequestException | AuthException $e) {
+        } catch (RequestException | AuthException) {
             return $this;
         }
         $checker = new Checker($this->logger, $this->db, $this->cache);

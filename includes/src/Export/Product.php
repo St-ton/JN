@@ -17,79 +17,79 @@ use JTL\Model\DataModelInterface;
 class Product extends Artikel
 {
     /**
-     * @var string
+     * @var string|null
      */
-    public $cBeschreibungHTML;
+    public ?string $cBeschreibungHTML = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cKurzBeschreibungHTML;
+    public ?string $cKurzBeschreibungHTML = null;
 
     /**
-     * @var float
+     * @var float|string|int|null
      */
-    public $fUst;
+    public string|int|null|float $fUst = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $Lieferbar;
+    public ?string $Lieferbar = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $Lieferbar_01;
+    public ?int $Lieferbar_01 = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kKundengruppe;
+    public ?int $kKundengruppe = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $campaignValue;
+    public ?string $campaignValue = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kWaehrung;
+    public ?int $kWaehrung = null;
 
     /**
-     * @var float|int|string
+     * @var float|int|string|null
      */
-    public $Versandkosten;
+    public string|int|null|float $Versandkosten = null;
 
     /**
-     * @var float
+     * @var float|null
      */
-    public $currencyConversionFactor;
+    public ?float $currencyConversionFactor = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    public $kSprache;
+    public ?int $kSprache = null;
 
     /**
-     * @var Kategorie
+     * @var Kategorie|null
      */
-    public $Kategorie;
+    public ?Kategorie $Kategorie = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $Kategoriepfad;
+    public ?string $Kategoriepfad = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $cDeeplink;
+    public ?string $cDeeplink = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    public $Artikelbild;
+    public ?string $Artikelbild = null;
 
     /**
      * @param array      $config
@@ -98,10 +98,45 @@ class Product extends Artikel
      */
     public function augmentProduct(array $config, ?DataModelInterface $model = null): self
     {
+        $this->cleanupWhitespace($config);
+        $this->fUst              = Tax::getSalesTax($this->kSteuerklasse);
+        $this->Preise->fVKBrutto = Tax::getGross(
+            $this->Preise->fVKNetto * $this->currencyConversionFactor,
+            $this->fUst
+        );
+        $this->Preise->fVKNetto  = \round($this->Preise->fVKNetto, 2);
+        $this->Versandkosten     = ShippingMethod::getLowestShippingFees(
+            $config['exportformate_lieferland'] ?? '',
+            $this,
+            false,
+            $this->kKundengruppe
+        );
+        if ($this->Versandkosten !== -1) {
+            $price = Currency::convertCurrency($this->Versandkosten, null, $this->kWaehrung);
+            if ($price !== false) {
+                $this->Versandkosten = $price;
+            }
+        }
+        if ($model !== null && !empty($model->getCampaignParameter())) {
+            $sep         = (\str_contains($this->cURL, '.php')) ? '&' : '?';
+            $this->cURL .= $sep . $model->getCampaignParameter() . '=' . $model->getCampaignValue();
+        }
+        $this->Lieferbar    = $this->fLagerbestand <= 0 ? 'N' : 'Y';
+        $this->Lieferbar_01 = $this->fLagerbestand <= 0 ? 0 : 1;
+
+        return $this;
+    }
+
+    /**
+     * @param array $config
+     * @return void
+     */
+    private function cleanupWhitespace(array $config): void
+    {
         $findTwo    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
         $replaceTwo = [' ', ' ', ' ', ' ', ''];
 
-        if (isset($config['exportformate_quot']) && $config['exportformate_quot'] !== 'N') {
+        if (($config['exportformate_quot'] ?? 'N') !== 'N') {
             $findTwo[] = '"';
             if ($config['exportformate_quot'] === 'q' || $config['exportformate_quot'] === 'bq') {
                 $replaceTwo[] = '\"';
@@ -111,7 +146,7 @@ class Product extends Artikel
                 $replaceTwo[] = $config['exportformate_quot'];
             }
         }
-        if (isset($config['exportformate_quot']) && $config['exportformate_equot'] !== 'N') {
+        if (($config['exportformate_equot'] ?? 'N') !== 'N') {
             $findTwo[] = "'";
             if ($config['exportformate_equot'] === 'q' || $config['exportformate_equot'] === 'bq') {
                 $replaceTwo[] = '"';
@@ -119,7 +154,7 @@ class Product extends Artikel
                 $replaceTwo[] = $config['exportformate_equot'];
             }
         }
-        if (isset($config['exportformate_semikolon']) && $config['exportformate_semikolon'] !== 'N') {
+        if (($config['exportformate_semikolon'] ?? 'N') !== 'N') {
             $findTwo[]    = ';';
             $replaceTwo[] = $config['exportformate_semikolon'];
         }
@@ -158,38 +193,9 @@ class Product extends Artikel
             \str_replace(
                 $findTwo,
                 $replaceTwo,
-                Text::unhtmlentities(
-                    \strip_tags(\str_replace($find, $replace, $this->cKurzBeschreibung))
-                )
+                Text::unhtmlentities(\strip_tags(\str_replace($find, $replace, $this->cKurzBeschreibung)))
             )
         );
-        $this->fUst                  = Tax::getSalesTax($this->kSteuerklasse);
-        $this->Preise->fVKBrutto     = Tax::getGross(
-            $this->Preise->fVKNetto * $this->currencyConversionFactor,
-            $this->fUst
-        );
-        $this->Preise->fVKNetto      = \round($this->Preise->fVKNetto, 2);
-        $this->Versandkosten         = ShippingMethod::getLowestShippingFees(
-            $config['exportformate_lieferland'] ?? '',
-            $this,
-            false,
-            $this->kKundengruppe
-        );
-        if ($this->Versandkosten !== -1) {
-            $price = Currency::convertCurrency($this->Versandkosten, null, $this->kWaehrung);
-            if ($price !== false) {
-                $this->Versandkosten = $price;
-            }
-        }
-        // Kampagne URL
-        if ($model !== null && !empty($model->getCampaignParameter())) {
-            $sep         = (\mb_strpos($this->cURL, '.php') !== false) ? '&' : '?';
-            $this->cURL .= $sep . $model->getCampaignParameter() . '=' . $model->getCampaignValue();
-        }
-        $this->Lieferbar    = $this->fLagerbestand <= 0 ? 'N' : 'Y';
-        $this->Lieferbar_01 = $this->fLagerbestand <= 0 ? 0 : 1;
-
-        return $this;
     }
 
     /**
@@ -207,7 +213,9 @@ class Product extends Artikel
                 $categories[] = new Kategorie(
                     (int)$categoryID,
                     $this->kSprache,
-                    $this->kKundengruppe
+                    $this->kKundengruppe,
+                    false,
+                    $this->getDB()
                 );
             }
             $this->oKategorie_arr = $categories;
@@ -215,7 +223,9 @@ class Product extends Artikel
         $this->Kategorie = new Kategorie(
             $productCategoryID,
             $this->kSprache,
-            $this->kKundengruppe
+            $this->kKundengruppe,
+            false,
+            $this->getDB()
         );
     }
 }

@@ -3,11 +3,9 @@
 namespace JTL\Console\Command\Compile;
 
 use JTL\Console\Command\Command;
-use JTL\Console\ConsoleIO;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Template\Compiler;
-use Less_Parser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

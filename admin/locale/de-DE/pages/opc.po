@@ -6,7 +6,7 @@ msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
 
 msgid "dbUpdateNeeded"
-msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich, um den OnPage Composer nutzen zu können.<br><br>Bitte führen Sie das Update im <a href=\"%s/admin/dbupdater.php\" target=\"_blank\">Admin-Backend</a> durch!"
+msgstr "Ein Datenbank-Update Ihres JTL-Shops ist erforderlich, um den OnPageComposer nutzen zu können.<br><br>Bitte führen Sie das Update im <a href=\"%s/dbupdater\" target=\"_blank\">Admin-Backend</a> durch!"
 
 # OPC GUI
 

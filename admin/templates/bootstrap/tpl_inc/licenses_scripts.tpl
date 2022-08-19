@@ -24,10 +24,9 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$adminURL}/licenses.php',
+            url: '{$adminURL}{$route}',
             data: $(e.target).serialize()
-        }).done(function (r) {
-            const result = JSON.parse(r);
+        }).done(function (result) {
             if (result.id && result.html) {
                 let itemID = '#' + result.id;
                 if (result.notification) {
@@ -58,10 +57,9 @@
         btn.find('i').addClass('fa-spin');
         $.ajax({
             method: 'POST',
-            url: '{$adminURL}/licenses.php',
+            url: '{$adminURL}{$route}',
             data: $(e.target).serialize()
-        }).done(function (r) {
-            const result = JSON.parse(r);
+        }).done(function (result) {
             if (result.status === 'OK' && result.redirect !== null) {
                 window.location = result.redirect;
                 return false;
@@ -81,11 +79,9 @@
     $(document).ready(function () {
         $('#content_wrapper').on('submit', '#bound-licenses .update-item-form', function (e) {
             return dlCallback($(e.target).find('.update-item'), e);
-        });
-        $('#content_wrapper').on('submit', '#bound-licenses .install-item-form', function (e) {
+        }).on('submit', '#bound-licenses .install-item-form', function (e) {
             return dlCallback($(e.target).find('.install-item'), e);
-        });
-        $('#content_wrapper').on('click', '#bound-licenses #update-all', function (e) {
+        }).on('click', '#bound-licenses #update-all', function (e) {
             const forms = $('#bound-licenses .update-item-form');
             if (forms.length === 0) {
                 return false;
@@ -95,8 +91,7 @@
             formCount = forms.length;
             forms.submit();
             return false;
-        });
-        $('#content_wrapper').on('click', '#bound-licenses #install-all', function (e) {
+        }).on('click', '#bound-licenses #install-all', function (e) {
             const forms = $('#bound-licenses .install-item-form');
             if (forms.length === 0) {
                 return false;
@@ -106,17 +101,13 @@
             formCount = forms.length;
             forms.submit();
             return false;
-        });
-        $('#content_wrapper').on('submit', '#unbound-licenses .set-binding-form', function (e) {
+        }).on('submit', '#unbound-licenses .set-binding-form', function (e) {
             return bindCallback($(e.target).find('.set-binding'), e);
-        });
-        $('#content_wrapper').on('submit', '.clear-binding-form', function (e) {
+        }).on('submit', '.clear-binding-form', function (e) {
             return bindCallback($(e.target).find('.clear-binding'), e);
-        });
-        $('#content_wrapper').on('submit', '.extend-license-form', function (e) {
+        }).on('submit', '.extend-license-form', function (e) {
             return bindCallback($(e.target).find('.extend-license'), e);
-        });
-        $('#content_wrapper').on('submit', '.upgrade-license-form', function (e) {
+        }).on('submit', '.upgrade-license-form', function (e) {
             return bindCallback($(e.target).find('.upgrade-license'), e);
         });
     });

@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20180831090330 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'add lang var termsAndConditionsNotice';
+    protected $description = 'Add lang var termsAndConditionsNotice';
 
     /**
      * @inheritDoc

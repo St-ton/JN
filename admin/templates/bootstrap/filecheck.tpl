@@ -7,7 +7,7 @@
 {$alertList->displayAlertByKey('zipArchiveError')}
 
 <div class="card collapsed">
-    <div class="card-header{if $modifiedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}"{/if}>
+    <div {if $modifiedFiles|count > 0}class="card-header accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}class="card-header"{/if}>
         <div class="card-title">
             {if $modifiedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
             {__('fileCheckNumberModifiedFiles')}: {$modifiedFiles|count}
@@ -15,9 +15,9 @@
     </div>
     {if $modifiedFiles|count > 0}
         <div class="card-body collapse" id="pageCheckModifiedFiles">
-            <p class="small text-muted">{__('fileCheckModifiedFilesNote')}</p>
+            <p class="alert alert-warning">{__('fileCheckModifiedFilesNote')}</p>
             <div id="contentModifiedFilesCheck">
-                <table class="table table-sm table-borderless req">
+                <table class="table table-sm table-borderless req table-striped">
                     <thead>
                     <tr>
                         <th class="text-left">{__('file')}</th>
@@ -43,10 +43,10 @@
         </div>
     </div>
     {if $orphanedFiles|count > 0}
-        <div class="card-body  collapse" id="pageCheckOrphanedFiles">
+        <div class="card-body collapse" id="pageCheckOrphanedFiles">
             <p class="alert alert-info">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
-                <table class="table table-sm table-borderless req">
+                <table class="table table-sm table-borderless req table-striped">
                     <thead>
                         <tr>
                             <th class="text-left">{__('file')}</th>

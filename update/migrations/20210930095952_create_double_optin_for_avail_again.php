@@ -40,10 +40,9 @@ class Migration_20210930095952 extends Migration implements IMigration
                     AND (vfb.dBenachrichtigtAm IS NULL)',
             ReturnType::ARRAY_OF_OBJECTS
         );
+        $options                             = Artikel::getDefaultOptions();
+        $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($subscriptions as $subscription) {
-            $options                             = Artikel::getDefaultOptions();
-            $options->nKeineSichtbarkeitBeachten = 1;
-
             $product = (new Artikel($this->db))->fuelleArtikel((int)$subscription->kArtikel, $options);
             if ($product === null || empty($subscription->cMail)) {
                 continue;
@@ -68,7 +67,7 @@ class Migration_20210930095952 extends Migration implements IMigration
                 'kOptinCode'  => 'Migration_20210930095952_' . $subscription->kVerfuegbarkeitsbenachrichtigung,
                 'kOptinClass' => OptinAvailAgain::class,
                 'cMail'       => $subscription->cMail,
-                'cRefData'    => \serialize($refData),
+                'cRefData'    => serialize($refData),
                 'dCreated'   => 'now()',
                 'dActivated' => 'now()',
             ]);

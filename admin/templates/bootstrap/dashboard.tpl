@@ -6,7 +6,7 @@
     function addWidget(kWidget) {
         ioCall(
             'addWidget', [kWidget], function () {
-                window.location.href='index.php?kWidget=' + kWidget;
+                window.location.href = '{$adminURL}/?kWidget=' + kWidget;
             }
         );
     }

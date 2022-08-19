@@ -13,42 +13,42 @@ class Variation
     /**
      * @var array
      */
-    public $Werte = [];
+    public array $Werte = [];
 
     /**
      * @var int
      */
-    public $kEigenschaft;
+    public int $kEigenschaft;
 
     /**
      * @var int
      */
-    public $kArtikel;
+    public int $kArtikel;
 
     /**
      * @var string
      */
-    public $cWaehlbar;
+    public string $cWaehlbar;
 
     /**
      * @var string
      */
-    public $cTyp;
+    public string $cTyp;
 
     /**
      * @var int
      */
-    public $nSort;
+    public int $nSort;
 
     /**
      * @var string
      */
-    public $cName;
+    public string $cName;
 
     /**
      * @var int
      */
-    public $nLieferbareVariationswerte = 0;
+    public int $nLieferbareVariationswerte = 0;
 
     /**
      * @param stdClass $data

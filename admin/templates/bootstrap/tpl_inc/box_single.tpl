@@ -9,7 +9,7 @@
         <td></td>
     {else}
         <td class="{if !$isActive} inactive text-muted{/if}{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            {$oBox->getTitle()}
+            {$oBox->getTitle()|escape}
         </td>
         <td class="{if !$isActive} inactive text-muted{/if}">
             {$oBox->getType()|ucfirst}
@@ -70,17 +70,17 @@
     </td>
     <td class="text-center">
         <div class="btn-group">
-            <a href="{$adminURL}/boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+            <a href="{$adminURL}{$route}?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('remove')}"
                class="btn btn-link px-2 delete-confirm {if $disabled}disabled{/if}"
-               data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}"}"
+               data-modal-body="{__('confirmDeleteBox')|sprintf:"{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()|escape|htmlentities}{/if}"}"
                data-toggle="tooltip">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>
                     <span class="fas fa-trash-alt"></span>
                 </span>
             </a>
-            <a href="{$adminURL}/boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+            <a href="{$adminURL}{$route}?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('edit')}"
                data-toggle="tooltip"
                class="btn btn-link px-2{if $disabled || empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">

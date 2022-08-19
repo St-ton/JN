@@ -23,6 +23,6 @@ class ProductAvailable extends ProductTemplate
         }
         $data = $this->useOriginalName($data);
         $smarty->assign('Benachrichtigung', $data->tverfuegbarkeitsbenachrichtigung)
-               ->assign('Artikel', $data->tartikel);
+            ->assign('Artikel', $data->tartikel);
     }
 }

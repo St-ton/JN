@@ -26,7 +26,7 @@ final class ExtendedTemplates extends AbstractItem
             return InstallCode::MISSING_EXTENDED_TEMPLATE;
         }
         foreach ($node as $template) {
-            \preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $template, $hits3);
+            \preg_match('/[a-zA-Z\d\/_\-]+\.tpl/', $template, $hits3);
             if (\mb_strlen($hits3[0]) !== \mb_strlen($template)) {
                 return InstallCode::INVALID_EXTENDED_TEMPLATE_FILE_NAME;
             }

@@ -3,6 +3,7 @@
 namespace JTL\Export;
 
 use DateTime;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -72,9 +73,13 @@ class AsyncCallback
      */
     public function __construct()
     {
-        $this->url = Shop::getAdminURL() . '/do_export.php';
+        $this->url = Shop::getAdminURL() . '/' . Route::EXPORT_START;
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     public function output(): void
     {
         $callback                 = new stdClass();
@@ -91,7 +96,7 @@ class AsyncCallback
         $callback->lastCreated    = (new DateTime())->format('Y-m-d H:i:s');
         $callback->errorMessage   = $this->getError() ?? '';
 
-        echo \json_encode($callback);
+        echo \json_encode($callback, \JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -11,7 +11,7 @@ class LessParser
     /**
      * @var array
      */
-    private $stack = [];
+    private array $stack = [];
 
     /**
      * @param string $file

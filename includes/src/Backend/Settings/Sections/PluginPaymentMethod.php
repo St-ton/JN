@@ -5,7 +5,7 @@ namespace JTL\Backend\Settings\Sections;
 use JTL\Backend\Settings\Item;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
-use Shop;
+use JTL\Shop;
 use stdClass;
 
 /**

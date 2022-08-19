@@ -19,24 +19,19 @@ use JTL\Shop;
 class Sort extends AbstractFilter
 {
     /**
-     * @var Factory
+     * @var Factory|null
      */
-    private $factory;
+    private ?Factory $factory = null;
 
     /**
      * @var Collection
      */
-    private $sortingOptions;
-
-    /**
-     * @var SortingOptionInterface
-     */
-    protected $activeSorting;
+    private Collection $sortingOptions;
 
     /**
      * @var int
      */
-    protected $activeSortingType;
+    protected int $activeSortingType;
 
     /**
      * Sort constructor.
@@ -126,7 +121,7 @@ class Sort extends AbstractFilter
         if ($this->factory === null) {
             throw new \LogicException('Factory has to be set first.');
         }
-        $this->sortingOptions = $this->factory->getAll()->sortByDesc(static function (SortingOptionInterface $i) {
+        $this->sortingOptions = $this->factory->getAll()->sortByDesc(static function (SortingOptionInterface $i): int {
             return $i->getPriority();
         });
     }

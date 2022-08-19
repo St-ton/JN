@@ -13,12 +13,12 @@ class Releases
     /**
      * @var Release|null
      */
-    private $latest;
+    private ?Release $latest = null;
 
     /**
      * @var Release|null
      */
-    private $available;
+    private ?Release $available = null;
 
     /**
      * Link constructor.

@@ -55,7 +55,7 @@ class Category extends AbstractImage
                     AND atr.cName = :atr
                 WHERE pic.kKategorie = :cid',
             ['cid' => $req->getID(), 'atr' => \KAT_ATTRIBUT_BILDNAME]
-        )->map(static function ($item) {
+        )->map(static function ($item): string {
             return self::getCustomName($item);
         })->toArray();
     }

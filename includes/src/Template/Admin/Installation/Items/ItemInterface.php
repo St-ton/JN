@@ -13,19 +13,6 @@ use SimpleXMLElement;
 interface ItemInterface
 {
     /**
-     * @param DbInterface           $db
-     * @param SimpleXMLElement      $xml
-     * @param SimpleXMLElement|null $parentXML
-     * @param Model|null            $model
-     */
-    public function __construct(
-        DbInterface $db,
-        SimpleXMLElement $xml,
-        ?SimpleXMLElement $parentXML,
-        ?Model $model = null
-    );
-
-    /**
      * @return SimpleXMLElement|null
      */
     public function getNode(): ?SimpleXMLElement;

@@ -11,7 +11,7 @@ use JTL\Smarty\ExportSmarty;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class FormatExporter
+ * Interface ExporterInterface
  * @package JTL\Export
  */
 interface ExporterInterface

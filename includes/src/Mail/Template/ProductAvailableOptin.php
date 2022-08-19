@@ -23,8 +23,8 @@ class ProductAvailableOptin extends ProductTemplate
         }
         $data = $this->useOriginalName($data);
         $smarty->assign('Benachrichtigung', $data->tverfuegbarkeitsbenachrichtigung)
-               ->assign('Artikel', $data->tartikel)
-               ->assign('Optin', $data->optin)
-               ->assign('Receiver', $data->mailReceiver);
+            ->assign('Artikel', $data->tartikel)
+            ->assign('Optin', $data->optin)
+            ->assign('Receiver', $data->mailReceiver);
     }
 }

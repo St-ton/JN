@@ -8,7 +8,7 @@ use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
- * Class ExsLicense
+ * Class ExpiredExsLicense
  * @package JTL\License
  */
 class ExpiredExsLicense extends ExsLicense

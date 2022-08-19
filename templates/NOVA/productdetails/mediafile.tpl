@@ -32,7 +32,8 @@
                                     {/if}
                                 {/foreach}
                             {/if}
-                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}" title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
+                            {card class="mediafiles-image" img-src="{if !empty($oMedienDatei->cPfad)}{$ShopURL}/{$smarty.const.PFAD_MEDIAFILES}{$oMedienDatei->cPfad}{elseif !empty($oMedienDatei->cURL)}{$oMedienDatei->cURL}{/if}"
+                                title-text="{$oMedienDatei->cName}" img-top=true img-alt="{$cMediaAltAttr}"}
                                 <p>{$oMedienDatei->cBeschreibung}</p>
                             {/card}
                         {/block}

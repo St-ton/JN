@@ -19,11 +19,7 @@ final class Name extends AbstractItem
         if (!isset($baseNode['Name'])) {
             return InstallCode::INVALID_NAME;
         }
-        \preg_match(
-            '/[\w()\- ]+/u',
-            $baseNode['Name'],
-            $hits
-        );
+        \preg_match('/[\w()\- ]+/u', $baseNode['Name'], $hits);
 
         return !isset($hits[0]) || \mb_strlen($hits[0]) !== \mb_strlen($baseNode['Name'])
             ? InstallCode::INVALID_NAME

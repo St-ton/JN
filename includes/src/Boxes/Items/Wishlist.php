@@ -16,7 +16,7 @@ final class Wishlist extends AbstractBox
     /**
      * @var int
      */
-    private $wishListID = 0;
+    private int $wishListID = 0;
 
     /**
      * Wishlist constructor.
@@ -47,7 +47,10 @@ final class Wishlist extends AbstractBox
             }
             $additionalParams = Text::filterXSS($additionalParams);
             foreach ($wishlistItems as $wishlistItem) {
-                $product                   = $wishlistItem->getProduct();
+                $product = $wishlistItem->getProduct();
+                if ($product === null) {
+                    continue;
+                }
                 $additionalParams['wlplo'] = $wishlistItem->getID();
                 $wishlistItem->setURL($shopURL . \http_build_query($additionalParams));
                 if (Frontend::getCustomerGroup()->isMerchant()) {

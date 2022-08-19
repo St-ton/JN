@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class ShippingMethods
+ * Class ShippingMethods
  * @package JTL\Backend\LocalizationCheck
  */
 class ShippingMethods extends AbstractLocalizationCheck
@@ -72,6 +72,6 @@ class ShippingMethods extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationShippingMethods');
+        return \__('locationShippingMethods');
     }
 }

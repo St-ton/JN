@@ -8,7 +8,7 @@ use JTL\GeneralDataProtection\IpAnonymizer;
  * Class OptinRefData
  * @package JTL\Optin
  */
-class OptinRefData
+class OptinRefData implements \Serializable
 {
     /**
      * @var string
@@ -21,9 +21,9 @@ class OptinRefData
     private int $languageID;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $customerID;
+    private ?int $customerID = null;
 
     /**
      * @var string
@@ -51,9 +51,45 @@ class OptinRefData
     private string $realIP = '';
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $productID;
+    private ?int $productID = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function serialize()
+    {
+        return \serialize([
+            $this->optinClass,
+            $this->languageID,
+            $this->customerID,
+            $this->salutation,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->realIP,
+            $this->productID
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function unserialize(string $data)
+    {
+        [
+            $this->optinClass,
+            $this->languageID,
+            $this->customerID,
+            $this->salutation,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->realIP,
+            $this->productID
+        ] = \unserialize($data, ['OptinRefData']);
+    }
 
     /**
      * @return array
@@ -268,10 +304,20 @@ class OptinRefData
     }
 
     /**
-     * @return false|mixed|string
+     * @return string
      */
     public function __toString()
     {
-        return $this->serialize();
+        return \serialize([
+            $this->optinClass,
+            $this->languageID,
+            $this->customerID,
+            $this->salutation,
+            $this->firstName,
+            $this->lastName,
+            $this->email,
+            $this->realIP,
+            $this->productID
+        ]);
     }
 }

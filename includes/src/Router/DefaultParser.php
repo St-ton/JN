@@ -4,6 +4,7 @@ namespace JTL\Router;
 
 use JTL\DB\DbInterface;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class DefaultParser
@@ -22,6 +23,28 @@ class DefaultParser
      */
     public function __construct(protected DbInterface $db, protected State $state)
     {
+    }
+
+    /**
+     * @param array $hierarchy
+     * @return stdClass|null
+     */
+    protected function validateCategoryHierarchy(array $hierarchy): ?stdClass
+    {
+        $seo = null;
+        foreach ($hierarchy as $item) {
+            $seo = $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    WHERE cSeo = :slg',
+                ['slg' => $item]
+            );
+            if ($seo === null) {
+                break;
+            }
+        }
+
+        return $seo;
     }
 
     /**
@@ -330,6 +353,11 @@ class DefaultParser
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_SEITE . $arr[1];
             }
+        } elseif (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($slug, '/')) {
+            $valid = $this->validateCategoryHierarchy(\explode('/', $slug));
+            if ($valid !== null) {
+                $slug = $valid->cSeo;
+            }
         } else {
             $slug = $categories[0];
         }
@@ -385,8 +413,7 @@ class DefaultParser
         // split attribute/attribute value
         $attributes = \explode(\SEP_MM_MMW, $slug);
         if (\is_array($attributes) && \count($attributes) > 1) {
-            $slug = $attributes[1];
-            //$mmseo = $oMerkmal_arr[0];
+            return $attributes[1];
         }
 
         return $slug;

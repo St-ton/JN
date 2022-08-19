@@ -35,6 +35,11 @@ class DeliveryAddressTemplate extends Adresse
     public $angezeigtesLand;
 
     /**
+     * @var int
+     */
+    public int $nIstStandardLieferadresse = 0;
+
+    /**
      * @param DbInterface $db
      * @param int         $id
      */
@@ -73,14 +78,13 @@ class DeliveryAddressTemplate extends Adresse
         $this->cMobil                    = $data->cMobil;
         $this->cFax                      = $data->cFax;
         $this->cMail                     = $data->cMail;
+        $this->kLieferadresse            = $id;
         $this->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse;
         $this->cAnredeLocalized          = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
-        if ($this->kLieferadresse > 0) {
-            $this->decrypt();
-        }
+        $this->decrypt();
 
         \executeHook(\HOOK_LIEFERADRESSE_CLASS_LOADFROMDB, ['address' => $this]);
 
@@ -207,6 +211,7 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil        = $data->cMobil ?? null;
         $address->cFax          = $data->cFax ?? null;
         $address->cMail         = $data->cMail ?? null;
+        $address->kLieferadresse = -1;
 
         return $address;
     }
@@ -235,6 +240,7 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil        = $this->cMobil ?? null;
         $address->cFax          = $this->cFax ?? null;
         $address->cMail         = $this->cMail ?? null;
+        $address->kLieferadresse = -1;
 
         return $address;
     }

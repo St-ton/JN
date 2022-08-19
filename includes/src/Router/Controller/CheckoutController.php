@@ -163,7 +163,6 @@ class CheckoutController extends RegistrationController
             $_POST['form']     = 1;
             $this->saveCustomer($_POST);
         }
-
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
             $this->checkPaymentMethod($paymentMethodID);
         }
@@ -241,7 +240,6 @@ class CheckoutController extends RegistrationController
         // sondersteps Zahlungsart aendern
         $this->checkStepPaymentMethod(Text::filterXSS($_GET));
         $this->checkStepPaymentMethodSelection(Text::filterXSS($_POST));
-
         if ($this->step === 'accountwahl') {
             $this->checkStepAccountSelection();
             $this->getStepGuestCheckout();

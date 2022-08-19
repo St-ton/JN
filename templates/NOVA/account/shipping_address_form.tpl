@@ -50,42 +50,42 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {foreach $Lieferadressen as $adresse}
+                        {foreach $Lieferadressen as $address}
                             <tr>
                                 <td></td>
                                 <td>
-                                    {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                    <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
-                                    {$adresse->cStrasse} {$adresse->cHausnummer}<br />
-                                    {$adresse->cPLZ} {$adresse->cOrt}<br />
+                                    {if $address->cFirma}{$address->cFirma}<br />{/if}
+                                    <strong>{$address->cVorname} {$address->cNachname}</strong><br />
+                                    {$address->cStrasse} {$address->cHausnummer}<br />
+                                    {$address->cPLZ} {$address->cOrt}<br />
                                 </td>
                                 <td>
-                                    {$adresse->cTitel}
+                                    {$address->cTitel}
                                 </td>
                                 <td>
-                                    {$adresse->cBundesland}
+                                    {$address->cBundesland}
                                 </td>
                                 <td>
-                                    {$adresse->cAdressZusatz}
+                                    {$address->cAdressZusatz}
                                 </td>
                                 <td style="max-width: 40px" class="text-right">
-                                    {if $adresse->nIstStandardLieferadresse !== 1}
-                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$adresse->kLieferadresse}]}'">
+                                    {if $address->nIstStandardLieferadresse !== 1}
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
                                             <span class="fas fa-star"></span>
                                         </button>
                                     {/if}
 
-                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}]}'">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$address->kLieferadresse}]}'">
                                         <span class="fas fa-pencil-alt"></span>
                                     </button>
 
-                                    <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$adresse->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
+                                    <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$address->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
                                         <span class="fas fa-times"></span>
                                     </button>
                                 </td>
                                 <td>
                                     <span class="invisible">
-                                        {$adresse->nIstStandardLieferadresse}
+                                        {$address->nIstStandardLieferadresse}
                                     </span>
                                 </td>
                             </tr>

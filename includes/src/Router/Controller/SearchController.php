@@ -23,7 +23,7 @@ class SearchController extends ProductListController
         $query                    = $args['query'] ?? null;
         $this->state->searchQuery = $query !== null
             ? \urldecode($query)
-            : (Request::getVar('qs') ?? Request::getVar('suchausdruck')  ?? Request::getVar('suche') ?? ' ');
+            : (Request::getVar('qs') ?? Request::getVar('suchausdruck') ?? Request::getVar('suche') ?? ' ');
 
         return $this->updateProductFilter();
     }

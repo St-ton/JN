@@ -93,7 +93,7 @@
                     <div class="subheading1">{__('kampagneExtern')}</div>
                     <hr class="mb-3">
                     <form name="kampagnen" method="post" action="{$adminURL}{$route}">
-                        {if isset($nGroessterKey) && $nGroessterKey >= 1000}
+                        {if empty($oKampagne->nInternal)}
                             {$jtl_token}
                             <input type="hidden" name="tab" value="uebersicht" />
                             <input type="hidden" name="delete" value="1" />

@@ -268,7 +268,7 @@ class AccountController
             $this->getCustomerFields();
         }
         if ($step === 'lieferadressen') {
-            $this->getLieferadressen();
+            $this->getDeliveryAddresses();
         }
         $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
@@ -1050,7 +1050,7 @@ class AccountController
     /**
      * @return void
      */
-    private function getLieferadressen(): void
+    private function getDeliveryAddresses(): void
     {
         $customer   = Frontend::getCustomer();
         $customerID = $customer->getID();
@@ -1118,19 +1118,19 @@ class AccountController
         $updateLieferAdresse                 = new DeliveryAddressTemplate($this->db);
         $updateLieferAdresse->kLieferadresse = (int)$postData['updateAddress'];
         $updateLieferAdresse->kKunde         = $customer->kKunde;
-        $updateLieferAdresse->cAnrede        = $shipping_address['anrede'];
-        $updateLieferAdresse->cTitel         = $shipping_address['titel'];
-        $updateLieferAdresse->cVorname       = $shipping_address['vorname'];
-        $updateLieferAdresse->cNachname      = $shipping_address['nachname'];
-        $updateLieferAdresse->cFirma         = $shipping_address['firma'];
-        $updateLieferAdresse->cZusatz        = $shipping_address['firmazusatz'];
-        $updateLieferAdresse->cStrasse       = $shipping_address['strasse'];
-        $updateLieferAdresse->cHausnummer    = $shipping_address['hausnummer'];
-        $updateLieferAdresse->cAdressZusatz  = $shipping_address['adresszusatz'];
-        $updateLieferAdresse->cLand          = $shipping_address['land'];
-        $updateLieferAdresse->cBundesland    = $shipping_address['bundesland'];
-        $updateLieferAdresse->cPLZ           = $shipping_address['plz'];
-        $updateLieferAdresse->cOrt           = $shipping_address['ort'];
+        $updateLieferAdresse->cAnrede        = $shipping_address['anrede'] ?? '';
+        $updateLieferAdresse->cTitel         = $shipping_address['titel'] ?? '';
+        $updateLieferAdresse->cVorname       = $shipping_address['vorname'] ?? '';
+        $updateLieferAdresse->cNachname      = $shipping_address['nachname'] ?? '';
+        $updateLieferAdresse->cFirma         = $shipping_address['firma'] ?? '';
+        $updateLieferAdresse->cZusatz        = $shipping_address['firmazusatz'] ?? '';
+        $updateLieferAdresse->cStrasse       = $shipping_address['strasse'] ?? '';
+        $updateLieferAdresse->cHausnummer    = $shipping_address['hausnummer'] ?? '';
+        $updateLieferAdresse->cAdressZusatz  = $shipping_address['adresszusatz'] ?? '';
+        $updateLieferAdresse->cLand          = $shipping_address['land'] ?? '';
+        $updateLieferAdresse->cBundesland    = $shipping_address['bundesland'] ?? '';
+        $updateLieferAdresse->cPLZ           = $shipping_address['plz'] ?? '';
+        $updateLieferAdresse->cOrt           = $shipping_address['ort'] ?? '';
         if (isset($postData['isDefault']) && (int)$postData['isDefault'] === 1) {
             $updateLieferAdresse->nIstStandardLieferadresse = 1;
         }
@@ -1165,18 +1165,18 @@ class AccountController
         $shipping_address                 = $postData['register']['shipping_address'];
         $saveLieferAdresse                = new DeliveryAddressTemplate($this->db);
         $saveLieferAdresse->kKunde        = $customer->kKunde;
-        $saveLieferAdresse->cTitel        = $shipping_address['titel'];
-        $saveLieferAdresse->cVorname      = $shipping_address['vorname'];
-        $saveLieferAdresse->cNachname     = $shipping_address['nachname'];
-        $saveLieferAdresse->cFirma        = $shipping_address['firma'];
-        $saveLieferAdresse->cZusatz       = $shipping_address['firmazusatz'];
-        $saveLieferAdresse->cStrasse      = $shipping_address['strasse'];
-        $saveLieferAdresse->cHausnummer   = $shipping_address['hausnummer'];
-        $saveLieferAdresse->cAdressZusatz = $shipping_address['adresszusatz'];
-        $saveLieferAdresse->cLand         = $shipping_address['land'];
-        $saveLieferAdresse->cBundesland   = $shipping_address['bundesland'];
-        $saveLieferAdresse->cPLZ          = $shipping_address['plz'];
-        $saveLieferAdresse->cOrt          = $shipping_address['ort'];
+        $saveLieferAdresse->cTitel        = $shipping_address['titel'] ?? '';
+        $saveLieferAdresse->cVorname      = $shipping_address['vorname'] ?? '';
+        $saveLieferAdresse->cNachname     = $shipping_address['nachname'] ?? '';
+        $saveLieferAdresse->cFirma        = $shipping_address['firma'] ?? '';
+        $saveLieferAdresse->cZusatz       = $shipping_address['firmazusatz'] ?? '';
+        $saveLieferAdresse->cStrasse      = $shipping_address['strasse'] ?? '';
+        $saveLieferAdresse->cHausnummer   = $shipping_address['hausnummer'] ?? '';
+        $saveLieferAdresse->cAdressZusatz = $shipping_address['adresszusatz'] ?? '';
+        $saveLieferAdresse->cLand         = $shipping_address['land'] ?? '';
+        $saveLieferAdresse->cBundesland   = $shipping_address['bundesland'] ?? '';
+        $saveLieferAdresse->cPLZ          = $shipping_address['plz'] ?? '';
+        $saveLieferAdresse->cOrt          = $shipping_address['ort'] ?? '';
         $saveStatus                       = $saveLieferAdresse->persist();
         if ($saveStatus) {
             $this->alertService->addAlert(

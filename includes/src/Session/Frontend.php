@@ -10,7 +10,6 @@ use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
-use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\Firma;

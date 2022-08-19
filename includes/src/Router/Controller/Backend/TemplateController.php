@@ -7,6 +7,7 @@ use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -40,11 +41,6 @@ class TemplateController extends AbstractBackendController
     private Config $config;
 
     /**
-     * @var string
-     */
-    private string $jumpToSection = '';
-
-    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -64,7 +60,6 @@ class TemplateController extends AbstractBackendController
     {
         $action                   = Request::verifyGPDataString('action');
         $valid                    = Form::validateToken();
-        $this->jumpToSection      = Request::verifyGPDataString('section');
         $this->currentTemplateDir = \basename(Request::verifyGPDataString('dir'));
         if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $this->currentTemplateDir)) {
             $this->currentTemplateDir = null;
@@ -339,7 +334,8 @@ class TemplateController extends AbstractBackendController
         }
         $service       = Shop::Container()->getTemplateService();
         $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
-        $jumpToSection = $this->jumpToSection;
+        $jumpToSection = Text::filterXSS(Request::verifyGPDataString('section'));
+        $jumpToSection = \is_string($jumpToSection) ? $jumpToSection : '';
         $parentFolder  = null;
         $this->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
@@ -349,11 +345,10 @@ class TemplateController extends AbstractBackendController
         $preview        = $this->getPreview($templateConfig);
 
         return $this->smarty->assign('template', $current)
-            ->assign('jumpToSection', $this->jumpToSection)
+            ->assign('jumpToSection', $jumpToSection)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)
-            ->assign('jumpToSection', $jumpToSection)
             ->getResponse('shoptemplate.tpl');
     }
 

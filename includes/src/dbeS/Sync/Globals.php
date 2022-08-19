@@ -19,9 +19,9 @@ final class Globals extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_globals.xml') !== false) {
+            if (\str_contains($file, 'del_globals.xml')) {
                 $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'globals.xml') !== false) {
+            } elseif (\str_contains($file, 'globals.xml')) {
                 $this->handleInserts($xml);
             }
         }

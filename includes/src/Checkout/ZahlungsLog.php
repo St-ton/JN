@@ -13,21 +13,15 @@ use stdClass;
 class ZahlungsLog
 {
     /**
-     * @var string
-     */
-    public $cModulId;
-
-    /**
      * @var bool
      */
-    public $hasError = false;
+    public bool $hasError = false;
 
     /**
-     * @param string $moduleID
+     * @param string $cModulId
      */
-    public function __construct(string $moduleID)
+    public function __construct(public string $cModulId)
     {
-        $this->cModulId = $moduleID;
     }
 
     /**
@@ -54,7 +48,7 @@ class ZahlungsLog
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 ' . (\count($limits) === 2 ? 'LIMIT :lmt, :lmte' : 'LIMIT :lmt'),
             $params
-        )->map(static function (stdClass $log) {
+        )->map(static function (stdClass $log): stdClass {
             $log->cLog     = Text::filterXSS($log->cLog);
             $log->cModulId = Text::filterXSS($log->cModulId);
             $log->cLogData = Text::filterXSS($log->cLogData ?? '');
@@ -148,7 +142,7 @@ class ZahlungsLog
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 LIMIT :lmts, :lmte',
             $prep
-        )->map(static function (stdClass $log) {
+        )->map(static function (stdClass $log): stdClass {
             $log->cLog     = Text::filterXSS($log->cLog);
             $log->cModulId = Text::filterXSS($log->cModulId);
             $log->cLogData = Text::filterXSS($log->cLogData ?? '');

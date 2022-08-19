@@ -7,7 +7,7 @@ include __DIR__ . '/../config.JTL-Shop.ini.php';
  * @param int    $sec
  * @return resource
  */
-function erstelleCaptcha($font, $text, $sec)
+function erstelleCaptcha(string $font, string $text, int $sec)
 {
     $font = PFAD_ROOT . 'includes/captcha/' . $font;
     $text = mb_convert_case($text, MB_CASE_UPPER);
@@ -18,11 +18,11 @@ function erstelleCaptcha($font, $text, $sec)
         for ($i = 0; $i < 8; $i++) {
             imageline(
                 $im,
-                rand(0, 200),
-                rand(0, 60),
-                rand(0, 200),
-                rand(0, 60),
-                imagecolorallocate($im, rand(0, 230), rand(0, 230), rand(0, 230))
+                random_int(0, 200),
+                random_int(0, 60),
+                random_int(0, 200),
+                random_int(0, 60),
+                imagecolorallocate($im, random_int(0, 230), random_int(0, 230), random_int(0, 230))
             );
         }
     }
@@ -30,40 +30,40 @@ function erstelleCaptcha($font, $text, $sec)
     imagettftext(
         $im,
         35,
-        rand(-20, 20),
+        random_int(-20, 20),
         20,
         40,
-        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        imagecolorallocate($im, random_int(0, 215), random_int(0, 215), random_int(0, 215)),
         $font,
         $text[0]
     );
     imagettftext(
         $im,
         35,
-        rand(-20, 20),
+        random_int(-20, 20),
         70,
         40,
-        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        imagecolorallocate($im, random_int(0, 215), random_int(0, 215), random_int(0, 215)),
         $font,
         $text[1]
     );
     imagettftext(
         $im,
         35,
-        rand(-20, 20),
+        random_int(-20, 20),
         110,
         40,
-        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        imagecolorallocate($im, random_int(0, 215), random_int(0, 215), random_int(0, 215)),
         $font,
         $text[2]
     );
     imagettftext(
         $im,
         35,
-        rand(-20, 20),
+        random_int(-20, 20),
         150,
         40,
-        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        imagecolorallocate($im, random_int(0, 215), random_int(0, 215), random_int(0, 215)),
         $font,
         $text[3]
     );
@@ -72,11 +72,11 @@ function erstelleCaptcha($font, $text, $sec)
         for ($i = 0; $i < 8; $i++) {
             imageline(
                 $im,
-                rand(0, 200),
-                rand(0, 60),
-                rand(0, 200),
-                rand(0, 60),
-                imagecolorallocate($im, rand(0, 250), rand(0, 250), rand(0, 250))
+                random_int(0, 200),
+                random_int(0, 60),
+                random_int(0, 200),
+                random_int(0, 60),
+                imagecolorallocate($im, random_int(0, 250), random_int(0, 250), random_int(0, 250))
             );
         }
     }
@@ -97,7 +97,7 @@ $folder->close();
  * @param string $encoded
  * @return string
  */
-function decodeCode($encoded)
+function decodeCode(string $encoded): string
 {
     $encoded = (string)$encoded;
     if (!$encoded) {
@@ -117,5 +117,5 @@ function decodeCode($encoded)
 }
 
 header('Content-type: image/png');
-$im = erstelleCaptcha('ttf/' . $fonts[array_rand($fonts)], decodeCode($_GET['c']), $_GET['s']);
+$im = erstelleCaptcha('ttf/' . $fonts[array_rand($fonts)], decodeCode((string)$_GET['c']), (int)$_GET['s']);
 imagepng($im);

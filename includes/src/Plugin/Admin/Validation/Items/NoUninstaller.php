@@ -5,7 +5,7 @@ namespace JTL\Plugin\Admin\Validation\Items;
 use JTL\Plugin\InstallCode;
 
 /**
- * Class Uninstaller
+ * Class NoUninstaller
  * @package JTL\Plugin\Admin\Validation\Items
  */
 final class NoUninstaller extends AbstractItem

@@ -52,10 +52,10 @@
                                                         <dt class="col-6">{lang key='characteristics' section='comparelist'}:</dt>
                                                         <dd class="col-6 attr-characteristic">
                                                             {block name='productdetails-pushed-success-characteristics'}
-                                                                {foreach $pushedArtikel->oMerkmale_arr as $oMerkmal}
-                                                                    {$oMerkmal->cName}
-                                                                    {if $oMerkmal@index === 10 && !$oMerkmal@last}&hellip;{break}{/if}
-                                                                    {if !$oMerkmal@last}, {/if}
+                                                                {foreach $pushedArtikel->oMerkmale_arr as $characteristic}
+                                                                    {$characteristic->getName()}
+                                                                    {if $characteristic@index === 10 && !$characteristic@last}&hellip;{break}{/if}
+                                                                    {if !$characteristic@last}, {/if}
                                                                 {/foreach}
                                                             {/block}
                                                         </dd>

@@ -28,7 +28,7 @@ final class Exports extends AbstractItem
         $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_EXPORTFORMAT;
         foreach ($node as $i => $export) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }

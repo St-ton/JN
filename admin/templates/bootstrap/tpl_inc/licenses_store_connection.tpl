@@ -52,7 +52,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="text-center">
-                                    <h2>{$lastUpdate|date_format:"%d.%m.%Y %H:%M:%S"}</h2>
+                                    <h2>{$lastUpdate|date_format:"d.m.Y H:i:s"}</h2>
                                     <p>{__('last update')}</p>
                                     <button class="btn btn-default btn-block" id="recheck" name="action" value="recheck">
                                         <i class="fas fa-refresh"></i> {__('Refresh')}

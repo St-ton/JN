@@ -72,7 +72,7 @@ final class GlobalSetting
         if ($this->settings === null || $this->settings->isEmpty()) {
             $this->settings = $this->cache->get(
                 self::CACHE_ID,
-                function ($cache, $id, &$content, &$tags) {
+                function ($cache, $id, &$content, &$tags): bool {
                     $content = $this->loadSettings();
                     $tags    = [\CACHING_GROUP_OPTION];
 
@@ -93,17 +93,12 @@ final class GlobalSetting
     {
         $value = $this->getSettings()->get($valueName, $default);
 
-        switch (\gettype($default)) {
-            case 'boolean':
-                return (bool)$value;
-            case 'integer':
-                return (int)$value;
-            case 'double':
-                return (float)$value;
-            case 'string':
-                return (string)$value;
-        }
-
-        return $value;
+        return match (\gettype($default)) {
+            'boolean' => (bool)$value,
+            'integer' => (int)$value,
+            'double'  => (float)$value,
+            'string'  => (string)$value,
+            default   => $value,
+        };
     }
 }

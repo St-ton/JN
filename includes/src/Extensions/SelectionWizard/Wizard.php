@@ -434,9 +434,7 @@ class Wizard
                     $wizard->setNextSelection($kMerkmalWert);
                 }
                 $wizard->filter();
-                if ($smarty !== null) {
-                    $smarty->assign('AWA', $wizard);
-                }
+                $smarty?->assign('AWA', $wizard);
 
                 return $wizard;
             }
@@ -451,5 +449,13 @@ class Wizard
     public static function getLinks(): array
     {
         return Shop::Container()->getDB()->selectAll('tlink', 'nLinkart', \LINKTYP_AUSWAHLASSISTENT);
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->kSprache;
     }
 }

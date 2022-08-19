@@ -28,8 +28,8 @@
                                             <td class="vcenter">{$oUpload->cName}</td>
                                             <td class="vcenter">{$oUpload->cGroesse}</td>
                                             <td class="vcenter">
-                                                <span class="infocur" title="{$oUpload->dErstellt|date_format:'%d.%m.%Y - %H:%M:%S'}">
-                                                    {$oUpload->dErstellt|date_format:'%d.%m.%Y'}
+                                                <span class="infocur" title="{$oUpload->dErstellt|date_format:'d.m.Y - H:i:s'}">
+                                                    {$oUpload->dErstellt|date_format:'d.m.Y'}
                                                 </span>
                                             </td>
                                             <td>

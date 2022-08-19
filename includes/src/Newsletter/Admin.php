@@ -24,16 +24,6 @@ use stdClass;
  */
 final class Admin
 {
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    private AlertServiceInterface $alertService;
-
     private int $currentId = 0;
 
     /**
@@ -41,10 +31,8 @@ final class Admin
      * @param DbInterface $db
      * @param AlertServiceInterface $alertService
      */
-    public function __construct(DbInterface $db, AlertServiceInterface $alertService)
+    public function __construct(private DbInterface $db, private AlertServiceInterface $alertService)
     {
-        $this->db           = $db;
-        $this->alertService = $alertService;
     }
 
     /**
@@ -99,16 +87,12 @@ final class Admin
      */
     public function mapFileType(string $type): string
     {
-        switch ($type) {
-            case 'image/gif':
-                return '.gif';
-            case 'image/png':
-                return '.png';
-            case 'image/bmp':
-                return '.bmp';
-            default:
-                return '.jpg';
-        }
+        return match ($type) {
+            'image/gif' => '.gif',
+            'image/png' => '.png',
+            'image/bmp' => '.bmp',
+            default     => '.jpg',
+        };
     }
 
     /**
@@ -776,7 +760,7 @@ final class Admin
         try {
             (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
-        } catch (EmptyResultSetException $e) {
+        } catch (EmptyResultSetException) {
             // suppress exception, because an optin implementation class is not needed here
         }
 
@@ -832,7 +816,7 @@ final class Admin
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()
             )
-        )->map(static function (stdClass $item) {
+        )->map(static function (stdClass $item): stdClass {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);
             $item->cEmail    = Text::filterXSS($item->cEmail);

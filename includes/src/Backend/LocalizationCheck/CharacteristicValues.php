@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class CharacteristicValues
+ * Class CharacteristicValues
  * @package JTL\Backend\LocalizationCheck
  */
 class CharacteristicValues extends AbstractLocalizationCheck
@@ -68,6 +68,6 @@ class CharacteristicValues extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationCharacteristicValues');
+        return \__('locationCharacteristicValues');
     }
 }

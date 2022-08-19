@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20181220104200 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'remove Google Analytics';
+    protected $description = 'Remove Google Analytics';
 
     /**
      * @inheritDoc

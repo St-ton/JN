@@ -210,7 +210,7 @@ class ListingItem
             $this->addChecksums();
             try {
                 $this->version = Version::parse($version);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 $xml['cFehlercode'] = TemplateValidator::RES_SHOP_VERSION_NOT_FOUND;
             }
         }
@@ -226,32 +226,17 @@ class ListingItem
      */
     private function generateErrorMessage(int $code): void
     {
-        switch ($code) {
-            case TemplateValidator::RES_OK:
-                $msg = '';
-                break;
-            case TemplateValidator::RES_PARENT_NOT_FOUND:
-                $msg = \__('errorParentNotFound');
-                break;
-            case TemplateValidator::RES_SHOP_VERSION_NOT_FOUND:
-                $msg = \__('errorShopVersionNotFound');
-                break;
-            case TemplateValidator::RES_XML_NOT_FOUND:
-                $msg = \__('errorXmlNotFound');
-                break;
-            case TemplateValidator::RES_XML_PARSE_ERROR:
-                $msg = \__('errorXmlParse');
-                break;
-            case TemplateValidator::RES_NAME_NOT_FOUND:
-                $msg = \__('errorNameNotFound');
-                break;
-            case TemplateValidator::RES_INVALID_VERSION:
-                $msg = \__('errorInvalidVersion');
-                break;
-            default:
-                $msg = \__('errorUnknown');
-                break;
-        }
+        $msg = match ($code) {
+            TemplateValidator::RES_OK                     => '',
+            TemplateValidator::RES_PARENT_NOT_FOUND       => \__('errorParentNotFound'),
+            TemplateValidator::RES_SHOP_VERSION_NOT_FOUND => \__('errorShopVersionNotFound'),
+            TemplateValidator::RES_XML_NOT_FOUND          => \__('errorXmlNotFound'),
+            TemplateValidator::RES_XML_PARSE_ERROR        => \__('errorXmlParse'),
+            TemplateValidator::RES_NAME_NOT_FOUND         => \__('errorNameNotFound'),
+            TemplateValidator::RES_INVALID_VERSION        => \__('errorInvalidVersion'),
+            TemplateValidator::RES_INVALID_NAMESPACE      => \__('errorInvalidNamespace'),
+            default                                       => \__('errorUnknown'),
+        };
         $this->setErrorMessage($msg);
     }
 

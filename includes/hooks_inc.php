@@ -823,6 +823,7 @@ const HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB = 117;
  *
  * @file Firma.php
  * @param JTL\Firma instance - since 5.0.0
+ * @param bool cached - since 5.2.0
  */
 const HOOK_FIRMA_CLASS_LOADFROMDB = 118;
 
@@ -1978,8 +1979,13 @@ const HOOK_CARTHELPER_ADD_PRODUCT_ID_TO_CART = 355;
 const HOOK_NEWS_ITEM_MAPPED = 360;
 
 /**
- * @since 5.2.0
  * @param JTL\Template\TemplateServiceInterface service
  * @param array arguments
  */
 const HOOK_TPL_LOAD_PRE = 361;
+
+/**
+ * @since 5.2.0
+ * @param JTL\Router\Router router
+ */
+const HOOK_ROUTER_PRE_DISPATCH = 400;

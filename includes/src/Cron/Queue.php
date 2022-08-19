@@ -19,31 +19,13 @@ class Queue
     private array $queueEntries = [];
 
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JobFactory
-     */
-    private JobFactory $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * Queue constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
-        $this->factory = $factory;
     }
 
     /**
@@ -56,7 +38,7 @@ class Queue
                 FROM tjobqueue
                 WHERE isRunning = 0
                     AND startTime <= NOW()'
-        )->map(static function ($e) {
+        )->map(static function ($e): QueueEntry {
             return new QueueEntry($e);
         })->toArray();
         $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));

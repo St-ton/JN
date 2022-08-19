@@ -15,27 +15,27 @@ class Info
     /**
      * @var int
      */
-    private $currentPage = 0;
+    private int $currentPage = 0;
 
     /**
      * @var int
      */
-    private $totalPages = 0;
+    private int $totalPages = 0;
 
     /**
      * @var int
      */
-    private $minPage = 0;
+    private int $minPage = 0;
 
     /**
      * @var int
      */
-    private $maxPage = 0;
+    private int $maxPage = 0;
 
     /**
      * @var array
      */
-    public static $mapping = [
+    public static array $mapping = [
         'AktuelleSeite' => 'CurrentPage',
         'MaxSeiten'     => 'TotalPages',
         'minSeite'      => 'MinPage',

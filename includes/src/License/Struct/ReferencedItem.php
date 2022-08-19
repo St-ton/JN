@@ -13,57 +13,57 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var bool
      */
-    private $installed = false;
+    private bool $installed = false;
 
     /**
      * @var Version|null
      */
-    private $installedVersion;
+    private ?Version $installedVersion = null;
 
     /**
      * @var Version|null
      */
-    private $maxInstallableVersion;
+    private ?Version $maxInstallableVersion = null;
 
     /**
      * @var bool
      */
-    private $hasUpdate = false;
+    private bool $hasUpdate = false;
 
     /**
      * @var bool
      */
-    private $canBeUpdated = true;
+    private bool $canBeUpdated = true;
 
     /**
      * @var bool
      */
-    private $active = false;
+    private bool $active = false;
 
     /**
      * @var int
      */
-    private $internalID = 0;
+    private int $internalID = 0;
 
     /**
      * @var bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
     /**
      * @var string|null
      */
-    private $dateInstalled;
+    private ?string $dateInstalled = null;
 
     /**
      * @var bool
      */
-    private $filesMissing = false;
+    private bool $filesMissing = false;
 
     /**
      * @inheritDoc

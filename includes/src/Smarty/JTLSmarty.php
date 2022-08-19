@@ -9,8 +9,12 @@ use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\phpQuery\phpQuery;
 use JTL\Plugin\Helper;
+use JTL\Profiler;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Template\BootChecker;
+use Laminas\Diactoros\Response;
+use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
 
 /**
@@ -35,11 +39,6 @@ class JTLSmarty extends BC
     private static array $instance = [];
 
     /**
-     * @var string
-     */
-    public string $context;
-
-    /**
      * @var bool
      */
     public static bool $isChildTemplate = false;
@@ -47,7 +46,7 @@ class JTLSmarty extends BC
     /**
      * @var string
      */
-    private string $templateDir;
+    protected string $templateDir;
 
     /**
      * @var array
@@ -60,7 +59,7 @@ class JTLSmarty extends BC
      * @param bool   $fast - set to true when init from backend to avoid setting session data
      * @param string $context
      */
-    public function __construct(bool $fast = false, string $context = ContextType::FRONTEND)
+    public function __construct(bool $fast = false, public string $context = ContextType::FRONTEND)
     {
         parent::__construct();
         self::$_CHARSET = \JTL_CHARSET;
@@ -68,10 +67,8 @@ class JTLSmarty extends BC
             ->setForceCompile(\SMARTY_FORCE_COMPILE)
             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
             ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
-        $this->context = $context;
-        $this->config  = Shop::getSettings([\CONF_TEMPLATE, \CONF_CACHING, \CONF_GLOBAL]);
-
-        $parent = $this->initTemplate();
+        $this->config = Shopsetting::getInstance()->getAll();
+        $parent       = $this->initTemplate();
         if ($fast === false) {
             $this->init($parent);
         }
@@ -86,57 +83,41 @@ class JTLSmarty extends BC
     /**
      * @return string|null
      */
-    private function initTemplate(): ?string
+    protected function initTemplate(): ?string
     {
-        $parent = null;
-        if ($this->context !== ContextType::BACKEND) {
-            $container = Shop::Container();
-            $model     = $container->getTemplateService()->getActiveTemplate();
-            if ($model->getTemplate() === null) {
-                throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
-            }
-            $paths      = $model->getPaths();
-            $tplDir     = $model->getDir();
-            $parent     = $model->getParent();
-            $compileDir = $paths->getCompileDir();
-            if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
-                throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
-            }
-            $this->template_dir = [];
-            $this->setCompileDir($compileDir)
-                ->setCacheDir($paths->getCacheDir())
-                ->setPluginsDir(\SMARTY_PLUGINS_DIR)
-                ->assign('tplDir', $paths->getBaseDir())
-                ->assign('parentTemplateDir', null);
-            if ($parent !== null) {
-                self::$isChildTemplate = true;
-                $this->assign('tplDir', $paths->getParentDir())
-                    ->assign('parent_template_path', $paths->getParentDir())
-                    ->assign('parentTemplateDir', $paths->getParentRelDir())
-                    ->addTemplateDir($paths->getParentRelDir(), $parent);
-            }
-            $this->addTemplateDir($paths->getBaseDir(), $this->context);
-            foreach (Helper::getTemplatePaths() as $moduleId => $path) {
-                $templateKey = 'plugin_' . $moduleId;
-                $this->addTemplateDir($path, $templateKey);
-            }
-            if (($bootstrapper = BootChecker::bootstrap($tplDir) ?? BootChecker::bootstrap($parent)) !== null) {
-                $bootstrapper->setSmarty($this);
-                $bootstrapper->setTemplate($model);
-                $bootstrapper->boot();
-            }
-        } else {
-            $tplDir     = 'bootstrap';
-            $compileDir = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR;
-            if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
-                throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
-            }
-            $this->setCaching(self::CACHING_OFF)
-                ->setDebugging(\SMARTY_DEBUG_CONSOLE)
-                ->setTemplateDir([$this->context => \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir])
-                ->setCompileDir($compileDir)
-                ->setConfigDir(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $tplDir . '/lang/')
-                ->setPluginsDir(\SMARTY_PLUGINS_DIR);
+        $model = Shop::Container()->getTemplateService()->getActiveTemplate();
+        if ($model->getTemplate() === null) {
+            throw new RuntimeException('Cannot load template ' . ($model->getName() ?? ''));
+        }
+        $paths      = $model->getPaths();
+        $tplDir     = $model->getDir();
+        $parent     = $model->getParent();
+        $compileDir = $paths->getCompileDir();
+        if (!\is_dir($compileDir) && !\mkdir($compileDir) && !\is_dir($compileDir)) {
+            throw new RuntimeException(\sprintf('Directory "%s" could not be created', $compileDir));
+        }
+        $this->template_dir = [];
+        $this->setCompileDir($compileDir)
+            ->setCacheDir($paths->getCacheDir())
+            ->setPluginsDir(\SMARTY_PLUGINS_DIR)
+            ->assign('tplDir', $paths->getBaseDir())
+            ->assign('parentTemplateDir', null);
+        if ($parent !== null) {
+            self::$isChildTemplate = true;
+            $this->assign('tplDir', $paths->getParentDir())
+                ->assign('parent_template_path', $paths->getParentDir())
+                ->assign('parentTemplateDir', $paths->getParentRelDir())
+                ->addTemplateDir($paths->getParentRelDir(), $parent);
+        }
+        $this->addTemplateDir($paths->getBaseDir(), $this->context);
+        foreach (Helper::getTemplatePaths() as $moduleId => $path) {
+            $templateKey = 'plugin_' . $moduleId;
+            $this->addTemplateDir($path, $templateKey);
+        }
+        if (($bootstrapper = BootChecker::bootstrap($tplDir) ?? BootChecker::bootstrap($parent)) !== null) {
+            $bootstrapper->setSmarty($this);
+            $bootstrapper->setTemplate($model);
+            $bootstrapper->boot();
         }
         $this->templateDir = $tplDir;
 
@@ -147,7 +128,7 @@ class JTLSmarty extends BC
      * @param string|null $parent
      * @throws \SmartyException
      */
-    private function init(?string $parent = null): void
+    protected function init(?string $parent = null): void
     {
         $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
@@ -159,13 +140,11 @@ class JTLSmarty extends BC
             ->registerPlugin(self::PLUGIN_MODIFIER, 'truncate', [$pluginCollection, 'truncate'])
             ->registerPlugin(self::PLUGIN_BLOCK, 'inline_script', [$pluginCollection, 'inlineScript']);
 
-        if ($this->context !== ContextType::BACKEND) {
-            $this->cache_lifetime = 86400;
-            $this->template_class = \SHOW_TEMPLATE_HINTS > 0
-                ? JTLSmartyTemplateHints::class
-                : JTLSmartyTemplateClass::class;
-            $this->setCachingParams($this->config);
-        }
+        $this->cache_lifetime = 86400;
+        $this->template_class = \SHOW_TEMPLATE_HINTS > 0
+            ? JTLSmartyTemplateHints::class
+            : JTLSmartyTemplateClass::class;
+        $this->setCachingParams($this->config);
         $tplDir = $this->getTemplateDir($this->context);
         global $smarty;
         $smarty = $this;
@@ -286,7 +265,7 @@ class JTLSmarty extends BC
         }
         try {
             $res = (new \Minify_HTML($html, $options))->process();
-        } catch (UnterminatedStringException $e) {
+        } catch (UnterminatedStringException) {
             $res = $html;
         }
 
@@ -343,15 +322,34 @@ class JTLSmarty extends BC
     /**
      * @inheritDoc
      */
-    public function display($template = null, $cacheID = null, $compileID = null, $parent = null)
+    public function display($template = null, $cacheID = null, $compileID = null, $parent = null): void
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
         }
         parent::display($this->getResourceName($template), $cacheID, $compileID, $parent);
-        if ($this->context === ContextType::BACKEND) {
-            require \PFAD_ROOT . \PFAD_INCLUDES . 'profiler_inc.php';
+    }
+
+    /**
+     * @param string $template
+     * @return ResponseInterface
+     */
+    public function getResponse(string $template): ResponseInterface
+    {
+        if ($this->context === ContextType::FRONTEND) {
+            $this->registerFilter('output', [$this, 'outputFilter']);
+            /** @var JTLSmartyTemplateClass $template */
+            $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
+
+            $template->noOutputFilter = false;
         }
+
+        $res = parent::fetch($template);
+        Profiler::finalize();
+        $response = new Response();
+        $response->getBody()->write($res);
+
+        return $response;
     }
 
     /**
@@ -528,7 +526,7 @@ class JTLSmarty extends BC
 
     /**
      * @param string $name
-     * @param $value
+     * @param        $value
      * @param string $version
      * @return JTLSmarty
      */

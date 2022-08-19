@@ -14,8 +14,6 @@ use stdClass;
 interface LoaderInterface
 {
     /**
-     * LoaderInterface constructor.
-     *
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */

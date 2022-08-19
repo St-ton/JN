@@ -21,11 +21,6 @@ class Config
     public const TYPE_DYNAMIC = 'M';
 
     /**
-     * @var string
-     */
-    private string $adminPath;
-
-    /**
      * @var Collection
      */
     private Collection $options;
@@ -34,10 +29,9 @@ class Config
      * Config constructor.
      * @param string $adminPath
      */
-    public function __construct(string $adminPath)
+    public function __construct(private string $adminPath)
     {
-        $this->adminPath = $adminPath;
-        $this->options   = new Collection();
+        $this->options = new Collection();
     }
 
     /**
@@ -119,7 +113,7 @@ class Config
      */
     public function getOption(string $name): ?stdClass
     {
-        return $this->options->first(static function (stdClass $item) use ($name) {
+        return $this->options->first(static function (stdClass $item) use ($name): bool {
             return $item->valueID === $name;
         });
     }
@@ -130,7 +124,7 @@ class Config
      */
     public function getValue(string $name)
     {
-        $item = $this->options->first(static function (stdClass $item) use ($name) {
+        $item = $this->options->first(static function (stdClass $item) use ($name): bool {
             return $item->valueID === $name;
         });
 

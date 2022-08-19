@@ -136,7 +136,7 @@ trait MultiSizeImage
         );
         try {
             Image::render($req);
-        } catch (Exception $e) {
+        } catch (Exception) {
         }
 
         return $class::getThumbByRequest($req);

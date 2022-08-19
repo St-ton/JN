@@ -56,16 +56,16 @@
                 <div class="card-body">
                     <table class="table table-striped text-x1 last-child">
                         <tbody>
-                        {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more=$adminURL|cat:'/dbcheck.php'}
-                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/filecheck.php'}
-                        {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more=$adminURL|cat:'/permissioncheck.php'}
-                        {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more=$adminURL|cat:'/dbupdater.php'}
+                        {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more=$adminURL|cat:'/'|cat:JTL\Router\Route::DBCHECK}
+                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more=$adminURL|cat:'/'|cat:JTL\Router\Route::FILECHECK}
+                        {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more=$adminURL|cat:'/'|cat:JTL\Router\Route::PERMISSIONCHECK}
+                        {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more=$adminURL|cat:'/'|cat:JTL\Router\Route::DBUPDATER}
                         {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
-                        {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more=$adminURL|cat:'/profiler.php'}
-                        {render_item title=__('server') val=$status->hasValidEnvironment() more=$adminURL|cat:'/systemcheck.php'}
-                        {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/categorycheck.php'}
-                        {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more=$adminURL|cat:'/pluginverwaltung.php'}
-                        {render_item title=__('Localizations') val=!$status->getLocalizationProblems() more=$adminURL|cat:'/localizationcheck.php'}
+                        {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more=$adminURL|cat:'/'|cat:JTL\Router\Route::PROFILER}
+                        {render_item title=__('server') val=$status->hasValidEnvironment() more=$adminURL|cat:'/'|cat:JTL\Router\Route::SYSTEMCHECK}
+                        {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more=$adminURL|cat:'/'|cat:JTL\Router\Route::CATEGORYCHECK}
+                        {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more=$adminURL|cat:'/'|cat:JTL\Router\Route::PLUGIN_MANAGER}
+                        {render_item title=__('Localizations') val=!$status->getLocalizationProblems() more=$adminURL|cat:'/'|cat:JTL\Router\Route::LOCALIZATION_CHECK}
                         </tbody>
                     </table>
                 </div>
@@ -84,8 +84,8 @@
                                 {__('details')} <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li class="dropdown-item"><a href="{$adminURL}/cache.php">{__('systemCache')}</a></li>
-                                <li class="dropdown-item"><a href="{$adminURL}/bilderverwaltung.php">{__('imageCache')}</a></li>
+                                <li class="dropdown-item"><a href="{$adminURL}/cache">{__('systemCache')}</a></li>
+                                <li class="dropdown-item"><a href="{$adminURL}/imagemanagement">{__('imageCache')}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -233,7 +233,7 @@
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">
-                                        <a class="btn btn-default text-uppercase" href="{$adminURL}/zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
+                                        <a class="btn btn-default text-uppercase" href="{$adminURL}/paymentmethods?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -290,7 +290,7 @@
                         <div class="subheading1">{__('server')}</div>
                     </div>
                     <div class="heading-right">
-                        <a href="{$adminURL}/systemcheck.php" class="btn btn-primary text-uppercase">{__('details')}</a>
+                        <a href="{$adminURL}/systemcheck" class="btn btn-primary text-uppercase">{__('details')}</a>
                     </div>
                     <hr class="mb-n3">
                 </div>

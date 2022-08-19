@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\VerificationVAT;
 
@@ -19,7 +19,7 @@ class VATCheckEU extends AbstractVATCheck
     /**
      * @var string
      */
-    private $viesWSDL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    private string $viesWSDL = 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * At this moment, the VIES-system, does not return any information other than "valid" or "invalid"
@@ -28,7 +28,7 @@ class VATCheckEU extends AbstractVATCheck
      *
      * @var array
      */
-    private $miasAnswerStrings = [
+    private array $miasAnswerStrings = [
         0  => 'MwSt-Nummer gültig.',
         10 => 'MwSt-Nummer ungültig.', // (D.h. die eingegebene Nummer ist zumindest an dem angegebenen Tag ungültig)
         20 => 'Bearbeitung derzeit nicht möglich. Bitte wiederholen Sie Ihre Anfrage später.',

@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20181112145700 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'changes agb wrb notices, adds delete from compare list var';
+    protected $description = 'Change agb wrb notices, adds delete from compare list var';
 
     /**
      * @inheritDoc

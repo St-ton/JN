@@ -14,33 +14,33 @@ class IOResponse implements JsonSerializable
     /**
      * @var array
      */
-    private $domAssigns = [];
+    private array $domAssigns = [];
 
     /**
      * @var array
      */
-    private $varAssigns = [];
+    private array $varAssigns = [];
 
     /**
      * @var array
      * @deprecated since 5.0.0
      */
-    private $scripts = [];
+    private array $scripts = [];
 
     /**
      * @var array[]
      */
-    private $debugLogLines = [];
+    private array $debugLogLines = [];
 
     /**
      * @var null|string
      */
-    private $windowLocationHref;
+    private ?string $windowLocationHref = null;
 
     /**
      * @var array
      */
-    private $evoProductFunctionCalls = [];
+    private array $evoProductFunctionCalls = [];
 
     /**
      * @param string $target

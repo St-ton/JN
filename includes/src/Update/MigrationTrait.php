@@ -16,7 +16,7 @@ trait MigrationTrait
     /**
      * @var DbInterface
      */
-    protected $db;
+    protected DbInterface $db;
 
     /**
      * executes query and returns misc data

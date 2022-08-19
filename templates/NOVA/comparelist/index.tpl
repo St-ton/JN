@@ -56,10 +56,10 @@
                                             {/col}
                                         {/if}
                                         {if $row['key'] === 'Merkmale'}
-                                            {foreach $oMerkmale_arr as $oMerkmale}
+                                            {foreach $oMerkmale_arr as $characteristic}
                                                 {col cols=6 md=4 lg=3 xl=2 class="comparelist-checkbox-wrapper"}
-                                                    {checkbox checked=true data=['id' => "attr-{$oMerkmale->cName}"] class='comparelist-checkbox'}
-                                                        <div class="text-truncate">{$oMerkmale->cName}</div>
+                                                    {checkbox checked=true data=['id' => "attr-{$characteristic->getName()}"] class='comparelist-checkbox'}
+                                                        <div class="text-truncate">{$characteristic->getName()}</div>
                                                     {/checkbox}
                                                 {/col}
                                             {/foreach}
@@ -224,18 +224,18 @@
                                     </tr>
                                 {elseif $row['key'] === 'Merkmale'}
                                     {block name='comparelist-index-characteristics'}
-                                        {foreach $oMerkmale_arr as $oMerkmale}
-                                            <tr class="comparelist-row" data-id="row-attr-{$oMerkmale->cName}">
+                                        {foreach $oMerkmale_arr as $characteristic}
+                                            <tr class="comparelist-row" data-id="row-attr-{$characteristic->getName()}">
                                                 <td class="comparelist-label">
-                                                    {$oMerkmale->cName|truncate:20}
+                                                    {$characteristic->getName()|truncate:20}
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
                                                     <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
-                                                                {if $oMerkmale->cName == $oMerkmaleArtikel->cName}
-                                                                    {foreach $oMerkmaleArtikel->oMerkmalWert_arr as $oMerkmalWert}
-                                                                        {$oMerkmalWert->cWert}{if !$oMerkmalWert@last}, {/if}
+                                                                {if $characteristic->getName() === $oMerkmaleArtikel->getName()}
+                                                                    {foreach $oMerkmaleArtikel->getCharacteristicValues() as $characteristicValue}
+                                                                        {$characteristicValue->getValue()}{if !$characteristicValue@last}, {/if}
                                                                     {/foreach}
                                                                 {/if}
                                                             {/foreach}

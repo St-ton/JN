@@ -13,7 +13,7 @@ class MediaImageRequest
     /**
      * @var string
      */
-    public $type = Image::TYPE_PRODUCT;
+    public string $type = Image::TYPE_PRODUCT;
 
     /**
      * @var int
@@ -58,7 +58,7 @@ class MediaImageRequest
     /**
      * @var array
      */
-    protected static $cache = [];
+    protected static array $cache = [];
 
     /**
      * @param array|object $mixed

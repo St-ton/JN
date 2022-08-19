@@ -2,11 +2,13 @@
 
 namespace JTL\Backend\Settings;
 
+use JTL\Backend\Menu;
 use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
+use JTL\Router\Route;
 use JTL\Shop;
 use stdClass;
 
@@ -35,30 +37,12 @@ class Search
     public string $title = '';
 
     /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var Manager
-     */
-    protected Manager $manager;
-
-    /**
      * @param DbInterface $db
-     * @param GetText     $gettext
+     * @param GetText     $getText
      * @param Manager     $manager
      */
-    public function __construct(DbInterface $db, GetText $gettext, Manager $manager)
+    public function __construct(protected DbInterface $db, protected GetText $getText, protected Manager $manager)
     {
-        $this->db      = $db;
-        $this->getText = $gettext;
-        $this->manager = $manager;
     }
 
     /**
@@ -71,7 +55,7 @@ class Search
         $where    = "(ec.cModulId IS NULL OR ec.cModulId = '')
             AND ec.kEinstellungenSektion != " . \CONF_EXPORTFORMATE . ' ';
         $idList   = \explode(',', $query);
-        $isIdList = count($idList) > 1;
+        $isIdList = \count($idList) > 1;
         if ($isIdList) {
             foreach ($idList as $i => $item) {
                 $idList[$i] = (int)$item;
@@ -88,7 +72,7 @@ class Search
             $this->title = \sprintf(\__('searchForID'), \implode(', ', $idList));
         } else {
             $rangeList = \explode('-', $query);
-            $isIdRange = count($rangeList) === 2;
+            $isIdRange = \count($rangeList) === 2;
             if ($isIdRange) {
                 $rangeList[0] = (int)$rangeList[0];
                 $rangeList[1] = (int)$rangeList[1];
@@ -115,8 +99,8 @@ class Search
                 foreach ($configTranslations->getIterator() as $translation) {
                     $orig  = $translation->getOriginal();
                     $trans = $translation->getTranslation();
-                    if ((mb_stripos($trans, $query) !== false || mb_stripos($trans, $queryEnt) !== false)
-                        && mb_substr($orig, -5) === '_name'
+                    if ((\mb_stripos($trans, $query) !== false || \mb_stripos($trans, $queryEnt) !== false)
+                        && \mb_substr($orig, -5) === '_name'
                     ) {
                         $valueName    = \preg_replace('/(_name|_desc)$/', '', $orig);
                         $valueNames[] = "'" . $valueName . "'";
@@ -149,25 +133,24 @@ class Search
         $configIDs  = \array_unique(\array_map('\intval', $data->pluck('kEinstellungenConf')->toArray()));
         $factory    = new SectionFactory();
         $sections   = [];
-        $urlPrefix  = Shop::getAdminURL() . '/einstellungen.php?einstellungen_suchen=1&cSuche=';
+        $urlPrefix  = Shop::getAdminURL() . '/' . Route::CONFIG . '?einstellungen_suchen=1&cSuche=';
+        $menu       = new Menu($this->db, Shop::Container()->getAdminAccount(), $this->getText);
+        $structure  = $menu->getStructure();
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();
             foreach ($section->getSubsections() as $subsection) {
                 $subsection->setShow(false);
                 foreach ($subsection->getItems() as $idx => $item) {
-                    $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $item->getValueName());
-                    $isSpecial = $menuEntry->specialSetting ?? false;
-                    if ($isSpecial !== false) {
-                        $url = ($menuEntry->url ?? '') . ($menuEntry->settingsAnchor ?? '');
-                    } else {
-                        $url = $urlPrefix . $item->getID();
-                    }
+                    $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $structure);
+                    $url       = ($menuEntry->specialSetting ?? false) === false
+                        ? $urlPrefix . $item->getID()
+                        : ($menuEntry->link ?? '') . ($menuEntry->settingsAnchor ?? '');
                     $item->setURL($url);
                     if (\in_array($item->getID(), $configIDs, true)) {
                         $subsection->setShow(true);
                         $subsection->setPath($menuEntry->path ?? '');
-                        $subsection->setURL($menuEntry->url ?? '');
+                        $subsection->setURL($menuEntry->link ?? '');
                         $item->setHighlight(true);
                     } elseif ($this->mode !== self::SEARCH_MODE_ID) {
                         $subsection->removeItemAtIndex($idx);
@@ -181,20 +164,26 @@ class Search
     }
 
     /**
-     * @param int    $sectionID
-     * @param string $groupName
+     * @param int   $sectionID
+     * @param array $structure
      * @return stdClass
      */
-    private function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
+    private function mapConfigSectionToMenuEntry(int $sectionID, array $structure): stdClass
     {
-        global $sectionMenuMapping;
-
-        if (isset($sectionMenuMapping[$sectionID])) {
-            if (!isset($sectionMenuMapping[$sectionID][$groupName])) {
-                $groupName = 'all';
+        foreach ($structure as $item) {
+            if (!isset($item->items)) {
+                continue;
             }
-
-            return $sectionMenuMapping[$sectionID][$groupName];
+            foreach ($item->items as $sub) {
+                if (!\is_array($sub)) {
+                    continue;
+                }
+                foreach ($sub as $sec) {
+                    if (isset($sec->section) && $sec->section === $sectionID) {
+                        return $sec;
+                    }
+                }
+            }
         }
 
         return (object)[];

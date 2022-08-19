@@ -14,7 +14,7 @@ trait MagicCompatibilityTrait
     /**
      * @var array
      */
-    private $data = [];
+    private array $data = [];
 
     /**
      * @param string $value

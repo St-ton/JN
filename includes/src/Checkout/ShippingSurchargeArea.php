@@ -3,7 +3,7 @@
 namespace JTL\Checkout;
 
 /**
- * Class SurchargeArea
+ * Class ShippingSurchargeArea
  * @package JTL\Checkout
  */
 class ShippingSurchargeArea
@@ -99,7 +99,7 @@ class ShippingSurchargeArea
      */
     private function getNumber($zip): int
     {
-        \preg_match('/[\d]+/', $zip, $number);
+        \preg_match('/\d+/', $zip, $number);
 
         return (int)($number[0] ?? 0);
     }

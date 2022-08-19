@@ -133,7 +133,7 @@ class Helper
 
             try {
                 return $loader->init((int)$plugin->kPlugin, false, $langID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
         }
@@ -165,7 +165,7 @@ class Helper
                 'cPluginID, cVerzeichnis, nVersion, bExtension',
                 'nPrio'
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin

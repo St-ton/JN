@@ -15,17 +15,11 @@ class Shopinfo extends AbstractWidget
      */
     public function init()
     {
-        $strTplVersion   = Shop::Container()->getTemplateService()->getActiveTemplate()->getVersion();
-        $strFileVersion  = Shop::getApplicationVersion();
-        $strDBVersion    = Shop::getShopDatabaseVersion();
-        $strUpdated      = \date_format(\date_create(\getJTLVersionDB(true)), 'd.m.Y, H:i:m');
-        $strMinorVersion = \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '';
-
-        $this->oSmarty->assign('strFileVersion', $strFileVersion)
-            ->assign('strDBVersion', $strDBVersion)
-            ->assign('strTplVersion', $strTplVersion)
-            ->assign('strUpdated', $strUpdated)
-            ->assign('strMinorVersion', $strMinorVersion);
+        $this->oSmarty->assign('strFileVersion', \APPLICATION_VERSION)
+            ->assign('strDBVersion', Shop::getShopDatabaseVersion())
+            ->assign('strTplVersion', Shop::Container()->getTemplateService()->getActiveTemplate()->getVersion())
+            ->assign('strUpdated', \date_format(\date_create($this->getLastMigrationDate()), 'd.m.Y, H:i:m'))
+            ->assign('strMinorVersion', \APPLICATION_BUILD_SHA === '#DEV#' ? 'DEV' : '');
 
         $this->setPermission('DIAGNOSTIC_VIEW');
     }
@@ -37,5 +31,13 @@ class Shopinfo extends AbstractWidget
     public function getContent()
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/shopinfo.tpl');
+    }
+
+    /**
+     * @return string
+     */
+    private function getLastMigrationDate(): string
+    {
+        return $this->getDB()->getSingleObject('SELECT MAX(dExecuted) AS date FROM tmigration')->date ?? '';
     }
 }

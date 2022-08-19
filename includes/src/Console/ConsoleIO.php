@@ -34,17 +34,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @var bool
      */
-    protected $overwrite = true;
-
-    /**
-     * @var InputInterface
-     */
-    private $input;
-
-    /**
-     * @var OutputInterface
-     */
-    private $output;
+    protected bool $overwrite = true;
 
     /**
      * @var SymfonyQuestionHelper|null
@@ -59,17 +49,12 @@ class ConsoleIO extends OutputStyle
     /**
      * @var int
      */
-    private $lineLength;
+    private int $lineLength;
 
     /**
      * @var BufferedOutput
      */
-    private $bufferedOutput;
-
-    /**
-     * @var HelperSet
-     */
-    private $helperSet;
+    private BufferedOutput $bufferedOutput;
 
     /**
      * ConsoleIO constructor.
@@ -77,16 +62,15 @@ class ConsoleIO extends OutputStyle
      * @param OutputInterface $output
      * @param HelperSet|null  $helperSet
      */
-    public function __construct(InputInterface $input, OutputInterface $output, HelperSet $helperSet = null)
-    {
+    public function __construct(
+        private InputInterface $input,
+        private OutputInterface $output,
+        private ?HelperSet $helperSet = null
+    ) {
         $formatter = null;
         if ($output->getFormatter() !== null) {
             $formatter = clone $output->getFormatter();
         }
-
-        $this->input          = $input;
-        $this->output         = $output;
-        $this->helperSet      = $helperSet;
         $this->bufferedOutput = new BufferedOutput($output->getVerbosity(), false, $formatter);
         $this->lineLength     = $this->getTerminalWidth() - (int)(\DIRECTORY_SEPARATOR === '\\');
 
@@ -120,7 +104,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isQuiet()
+    public function isQuiet(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_QUIET;
     }
@@ -128,7 +112,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return bool
      */
-    public function isNormal()
+    public function isNormal(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_NORMAL;
     }
@@ -136,7 +120,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isVerbose()
+    public function isVerbose(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE;
     }
@@ -144,7 +128,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isVeryVerbose()
+    public function isVeryVerbose(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE;
     }
@@ -152,7 +136,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritDoc
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->getVerbosity() >= OutputInterface::VERBOSITY_DEBUG;
     }
@@ -288,7 +272,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @return bool
      */
-    public function isInteractive()
+    public function isInteractive(): bool
     {
         return $this->getInput()->hasOption('no-interaction') === false;
     }
@@ -413,7 +397,7 @@ class ConsoleIO extends OutputStyle
         $this->autoPrependText();
 
         $elements = \array_map(
-            static function ($element) {
+            static function ($element): string {
                 return \sprintf(' * %s', $element);
             },
             $elements
@@ -514,7 +498,7 @@ class ConsoleIO extends OutputStyle
             'style' => 'symfony-style-guide'
         ], $options);
         $headers = \array_map(
-            static function ($value) {
+            static function ($value): string {
                 return \sprintf('<info>%s</info>', $value);
             },
             $headers
@@ -538,7 +522,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function ask(string $question, string $default = null, callable $validator = null)
+    public function ask(string $question, string $default = null, callable $validator = null): mixed
     {
         $instance = new Question($question, $default);
         $instance->setValidator($validator);
@@ -549,7 +533,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function askHidden(string $question, callable $validator = null)
+    public function askHidden(string $question, callable $validator = null): mixed
     {
         $instance = new Question($question);
 
@@ -562,7 +546,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function confirm(string $question, bool $default = true)
+    public function confirm(string $question, bool $default = true): bool
     {
         return $this->askQuestion(new ConfirmationQuestion($question, $default));
     }
@@ -570,7 +554,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function choice(string $question, array $choices, $default = null)
+    public function choice(string $question, array $choices, $default = null): mixed
     {
         if ($default !== null) {
             $values  = \array_flip($choices);
@@ -614,9 +598,10 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritdoc
+     * @param int $max
+     * @return ProgressBar
      */
-    public function createProgressBar(int $max = 0)
+    public function createProgressBar(int $max = 0): ProgressBar
     {
         $progressBar = parent::createProgressBar($max);
 
@@ -732,7 +717,7 @@ class ConsoleIO extends OutputStyle
         $fetched = $this->bufferedOutput->fetch();
 
         //Prepend new line if last char isn't EOL:
-        if (\substr($fetched, -1) !== "\n") {
+        if (!\str_ends_with($fetched, "\n")) {
             $this->newLine();
         }
 
@@ -743,12 +728,12 @@ class ConsoleIO extends OutputStyle
      * @param array|mixed $messages
      * @return array
      */
-    private function reduceBuffer($messages)
+    private function reduceBuffer($messages): array
     {
         // We need to know if the two last chars are PHP_EOL
         // Preserve the last 4 chars inserted (PHP_EOL on windows is two chars) in the history buffer
         return \array_map(
-            static function ($value) {
+            static function ($value): string {
                 return \substr($value, -4);
             },
             \array_merge([$this->bufferedOutput->fetch()], (array)$messages)

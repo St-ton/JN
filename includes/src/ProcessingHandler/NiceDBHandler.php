@@ -13,19 +13,13 @@ use Monolog\Logger;
 class NiceDBHandler extends AbstractProcessingHandler
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * NiceDBHandler constructor.
      * @param DbInterface $db
      * @param int         $level
      * @param bool        $bubble
      */
-    public function __construct(DbInterface $db, int $level = Logger::DEBUG, bool $bubble = true)
+    public function __construct(private DbInterface $db, int $level = Logger::DEBUG, bool $bubble = true)
     {
-        $this->db = $db;
         parent::__construct($level, $bubble);
     }
 
@@ -37,6 +31,9 @@ class NiceDBHandler extends AbstractProcessingHandler
         $context = isset($record['context'][0]) && \is_numeric($record['context'][0])
             ? (int)$record['context'][0]
             : 0;
+        if (!$this->db->isConnected()) {
+            $this->db->reInit();
+        }
 
         $this->db->insert(
             'tjtllog',

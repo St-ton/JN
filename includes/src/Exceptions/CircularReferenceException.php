@@ -11,17 +11,11 @@ use Psr\Container\ContainerExceptionInterface;
 class CircularReferenceException extends \Exception implements ContainerExceptionInterface
 {
     /**
-     * @var string
-     */
-    protected $interface;
-
-    /**
      * CircularReferenceException constructor.
      * @param string $interface
      */
-    public function __construct($interface)
+    public function __construct(protected $interface)
     {
-        $this->interface = $interface;
         parent::__construct('Circular reference for "' . $interface .'" detected.');
     }
 }

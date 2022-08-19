@@ -87,7 +87,7 @@ class CookieConfig
             $this->path = $config['global_cookie_path'];
         }
         $this->secure = $this->secure && ($config['kaufabwicklung_ssl_nutzen'] === 'P'
-                || \mb_strpos(\URL_SHOP, 'https://') === 0);
+                || \str_starts_with(\URL_SHOP, 'https://'));
     }
 
     /**
@@ -106,7 +106,7 @@ class CookieConfig
                 continue;
             }
             $localized = \constant('URL_SHOP_' . $code);
-            if (\mb_strpos($localized, $host) !== false && \defined('COOKIE_DOMAIN_' . $code)) {
+            if (\str_contains($localized, $host) && \defined('COOKIE_DOMAIN_' . $code)) {
                 return \constant('COOKIE_DOMAIN_' . $code);
             }
         }

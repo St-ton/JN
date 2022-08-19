@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class Packagings
+ * Class Packagings
  * @package JTL\Backend\LocalizationCheck
  */
 class Packagings extends AbstractLocalizationCheck
@@ -32,7 +32,7 @@ class Packagings extends AbstractLocalizationCheck
         if ($this->getActiveLanguageCodes()->count() === 0) {
             return 0;
         }
-        $codes = $this->getActiveLanguageCodes()->map(static function ($e) {
+        $codes = $this->getActiveLanguageCodes()->map(static function ($e): string {
             return "'" . $e . "'";
         })->implode(',');
 
@@ -72,6 +72,6 @@ class Packagings extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationPackagings');
+        return \__('locationPackagings');
     }
 }

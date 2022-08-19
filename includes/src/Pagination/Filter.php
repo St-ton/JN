@@ -11,27 +11,27 @@ class Filter
     /**
      * @var string
      */
-    protected $id = 'Filter';
+    protected string $id = 'Filter';
 
     /**
      * @var array
      */
-    protected $fields = [];
+    protected array $fields = [];
 
     /**
      * @var string
      */
-    protected $whereSQL = '';
+    protected string $whereSQL = '';
 
     /**
      * @var string
      */
-    protected $action = '';
+    protected mixed $action = '';
 
     /**
      * @var array
      */
-    protected $sessionData = [];
+    protected array $sessionData = [];
 
     /**
      * Filter constructor.

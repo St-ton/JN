@@ -25,20 +25,14 @@ final class JTLApi
     private array $session;
 
     /**
-     * @var Nice
-     */
-    private Nice $nice;
-
-    /**
      * JTLApi constructor.
      *
      * @param array $session
      * @param Nice  $nice
      */
-    public function __construct(array &$session, Nice $nice)
+    public function __construct(array &$session, private Nice $nice)
     {
         $this->session = &$session;
-        $this->nice    = $nice;
     }
 
     /**
@@ -108,7 +102,7 @@ final class JTLApi
             return \APPLICATION_BUILD_SHA === '#DEV#'
                 ? false
                 : $this->getLatestVersion()->greaterThan(Version::parse(\APPLICATION_VERSION));
-        } catch (Exception $e) {
+        } catch (Exception) {
             return false;
         }
     }

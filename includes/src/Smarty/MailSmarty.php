@@ -19,18 +19,26 @@ class MailSmarty extends JTLSmarty
     public function __construct(protected DbInterface $db, string $context = ContextType::MAIL)
     {
         parent::__construct(true, $context);
-        $this->registerResource('db', new SmartyResourceNiceDB($db, $context))
-             ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
-             ->registerPlugin(\Smarty::PLUGIN_MODIFIER, 'maskPrivate', [$this, 'maskPrivate'])
-             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
-             ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES)
-             ->setDebugging(false)
-             ->setCaching(JTLSmarty::CACHING_OFF);
+        $this->setCaching(JTLSmarty::CACHING_OFF)
+            ->setDebugging(false)
+            ->registerResource('db', new SmartyResourceNiceDB($db, $context))
+            ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
+            ->registerPlugin(\Smarty::PLUGIN_MODIFIER, 'maskPrivate', [$this, 'maskPrivate'])
+            ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
+            ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES);
         if ($context === ContextType::MAIL && \MAILTEMPLATE_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         } elseif ($context === ContextType::NEWSLETTER && \NEWSLETTER_USE_SECURITY) {
             $this->activateBackendSecurityMode();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function initTemplate(): ?string
+    {
+        return null;
     }
 
     /**

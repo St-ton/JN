@@ -99,11 +99,6 @@ class Adresse
     public $cZusatz;
 
     /**
-     * @var int
-     */
-    public $nIstStandardLieferadresse = 0;
-
-    /**
      * @var array
      */
     protected static array $encodedProperties = [

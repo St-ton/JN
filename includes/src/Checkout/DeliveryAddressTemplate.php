@@ -211,7 +211,6 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil        = $data->cMobil ?? null;
         $address->cFax          = $data->cFax ?? null;
         $address->cMail         = $data->cMail ?? null;
-        $address->kLieferadresse = -1;
 
         return $address;
     }
@@ -240,7 +239,6 @@ class DeliveryAddressTemplate extends Adresse
         $address->cMobil        = $this->cMobil ?? null;
         $address->cFax          = $this->cFax ?? null;
         $address->cMail         = $this->cMail ?? null;
-        $address->kLieferadresse = -1;
 
         return $address;
     }

@@ -149,11 +149,11 @@ class Firma
                     $this->$k = $v;
                 }
             }
-            $iso           = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
-            $this->country = $iso !== null
-                ? $countryHelper->getCountry($iso)
-                : null;
-            $obj->country  = $this->country;
+            $iso = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
+            if ($iso !== null) {
+                $this->country = $countryHelper->getCountry($iso);
+                $obj->country  = $this->country;
+            }
             $this->cache->set('jtl_company', $obj, [\CACHING_GROUP_CORE]);
         }
         \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this, 'cached' => $cached]);

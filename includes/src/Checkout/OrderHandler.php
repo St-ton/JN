@@ -115,7 +115,7 @@ class OrderHandler
         }
         $this->cart->kLieferadresse = 0; //=rechnungsadresse
         if (isset($_SESSION['Bestellung']->kLieferadresse)
-            && $_SESSION['Bestellung']->kLieferadresse == -1
+            && $_SESSION['Bestellung']->kLieferadresse === -1
             && !$deliveryAddress->kLieferadresse
         ) {
             $deliveryAddress->kKunde = $this->cart->kKunde;

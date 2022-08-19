@@ -87,7 +87,7 @@ msgid "Filter immer ausgeklappt"
 msgstr "Filter immer ausklappen"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
-msgstr "Zusatzinfos zu Artikeln beim Hovern / Antippen anzeigen"
+msgstr "Zusatzinfos zu Artikeln beim Hovern anzeigen"
 
 msgid "Footer-Einstellungen"
 msgstr "Footer"
@@ -126,16 +126,16 @@ msgid "Skype-Link"
 msgstr "Skype-Link"
 
 msgid "Variationsauswahl anzeigen"
-msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen. Die Galerieansicht ist auf max. zwei Variationen begrenzt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span></span>"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Es werden maximal zwei Variationen angezeigt. Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Es werden maximal zwei Variationen angezeigt, sofern diese vom Typ „Dropdown“ oder „Select“ sind . Nur in Verbindung mit Zusatzinfos beim Hovern\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Weitere Optionen können dennoch eingeblendet werden\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches"
-msgstr "Anzahl der möglichen Variationswerte für Radio und Swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit „Variationsauswahl anzeigen“\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der möglichen Variationswerte für Radio und Swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit „Variationsauswahl anzeigen“. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "keine Beschränkung"

@@ -129,7 +129,7 @@ msgid "Variationsauswahl anzeigen"
 msgstr "Show available variations <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Only effective if additional item information for hovering/tapping is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Show a maximum of two variations. Only effective if additional item information for hovering/tapping is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Show available variations in gallery view <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Show a maximum of two variations. Only effective if additional item information for hovering/tapping is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Number of visible filter options in boxes <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Additional options can still be viewed\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"

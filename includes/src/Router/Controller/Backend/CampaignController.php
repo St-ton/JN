@@ -1475,10 +1475,6 @@ class CampaignController extends AbstractBackendController
             return false;
         }
         foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
-            if ($campaignID < 1000) {
-                // Nur externe Kampagnen sind löschbar
-                continue;
-            }
             (new Campaign($campaignID))->deleteInDB();
         }
         $this->cache->flush('campaigns');

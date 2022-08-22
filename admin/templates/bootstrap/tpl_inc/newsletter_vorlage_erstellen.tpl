@@ -321,7 +321,7 @@ function checkNewsletterSend() {ldelim}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <input type="hidden" name="section" value="" />
-                            {include file='../snippets/buttons/saveAndContinueButton.tpl'}
+                            {include file='snippets/buttons/saveAndContinueButton.tpl'}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>

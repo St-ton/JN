@@ -76,6 +76,10 @@ class TemplateController extends AbstractBackendController
         if (!$valid) {
             return $this->displayOverview();
         }
+        if (isset($_POST['speichern_und_weiter_bearbeiten'])) {
+            $this->saveConfig();
+            return $this->displayTemplateSettings();
+        }
         switch ($action) {
             case 'config':
                 return $this->displayTemplateSettings();
@@ -97,9 +101,6 @@ class TemplateController extends AbstractBackendController
                     : $this->displayOverview();
             case 'upload':
                 return $this->upload($_FILES['template-install-upload']);
-            case 'save-config-continue':
-                $this->saveConfig();
-                return $this->displayTemplateSettings();
             default:
                 return $this->displayOverview();
         }

@@ -127,7 +127,7 @@ class DefaultController extends AbstractController
                 SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
                 default                              => Router::TYPE_PAGE
             };
-            $test = Shop::getRouter()->getURLByType($type, [
+            $test  = Shop::getRouter()->getURLByType($type, [
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);

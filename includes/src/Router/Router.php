@@ -193,10 +193,7 @@ class Router
                 foreach ($controllers as $controller) {
                     $controller->register($route, $dynName);
                 }
-                $scheme = $this->config['global']['routing_default_language'] ?? 'F';
-                if ($scheme === 'F' || $scheme === 'L') {
-                    $this->defaultController->register($route, $dynName);
-                }
+                $this->defaultController->register($route, $dynName);
             })->setHost($host)->setName($locale
                 . '_grp'
                 . ($data['localized'] ? '_LOCALIZED' : '')

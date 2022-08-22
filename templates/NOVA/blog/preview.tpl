@@ -10,7 +10,6 @@
                             <div class="newsbox-image">
                                 {include file='snippets/image.tpl'
                                     item =$newsItem
-                                    lazy = false
                                     square = false
                                     sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 38vw, (min-width: 768px) 55vw, 100vw'
                                     alt="{$title} - {$newsItem->getMetaTitle()|escape:'quotes'}"}

@@ -12,21 +12,33 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
 
-if (isset($_FILES['csv']['tmp_name'])
-    && Request::postInt('kundenimport') === 1
-    && Form::validateToken()
-    && mb_strlen($_FILES['csv']['tmp_name']) > 0
-) {
-    $importer = new Import(Shop::Container()->getDB());
-    $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
-    $importer->setLanguageID(Request::postInt('kSprache'));
-    $result = $importer->processFile($_FILES['csv']['tmp_name']);
-    $notice = '';
-    foreach ($result as $item) {
-        $notice .= $item . '<br>';
+if (Form::validateToken()) {
+    if (isset($_FILES['csv']['tmp_name'])
+        && Request::postVar('action') === 'import-customers'
+        && \mb_strlen($_FILES['csv']['tmp_name']) > 0
+    ) {
+        $alertService = Shop::Container()->getAlertService();
+        $importer     = new Import(Shop::Container()->getDB());
+        $importer->setCustomerGroupID(Request::postInt('kKundengruppe'));
+        $importer->setLanguageID(Request::postInt('kSprache'));
+
+        if ($importer->processFile($_FILES['csv']['tmp_name']) === false) {
+            $alertService->addAlert(Alert::TYPE_ERROR, \implode('<br>', $importer->getErrors()), 'importError');
+        }
+
+        if ($importer->getImportedRowsCount() > 0) {
+            $alertService->addAlert(
+                Alert::TYPE_SUCCESS,
+                \sprintf(\__('successImportCustomerCsv'), $importer->getImportedRowsCount()),
+                'importSuccess',
+                ['dismissable' => true, 'fadeOut' => 0]
+            );
+
+            $smarty->assign('noPasswordCustomerIds', $importer->getNoPasswordCustomerIds());
+        }
     }
-    Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $notice, 'importNotice');
 }
+
 $smarty->assign('kundengruppen', Shop::Container()->getDB()->getObjects(
     'SELECT * FROM tkundengruppe ORDER BY cName'
 ))

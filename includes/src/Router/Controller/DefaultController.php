@@ -131,6 +131,10 @@ class DefaultController extends AbstractController
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
+            $query = $request->getUri()->getQuery();
+            if (\mb_strlen($query) > 0) {
+                $test .= '?' . $query;
+            }
 
             return new RedirectResponse($test, 301);
         }

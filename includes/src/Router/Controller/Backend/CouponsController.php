@@ -51,6 +51,7 @@ class CouponsController extends AbstractBackendController
         $languages = LanguageHelper::getAllLanguages(0, true);
         $coupon    = null;
         $importer  = Request::verifyGPDataString('importcsv');
+
         if (Form::validateToken()) {
             if ($importer !== '') {
                 $import = new Import($this->db);
@@ -146,7 +147,7 @@ class CouponsController extends AbstractBackendController
         if ($action === 'bearbeiten') {
             $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
             $coupon   = $couponID > 0 ? $this->getCoupon($couponID) : $this->createNewCoupon($_REQUEST['cKuponTyp']);
-        } elseif ($action === 'speichern') {
+        } elseif ($action === 'speichern' || $action === 'save-and-continue') {
             $coupon       = $this->createCouponFromInput();
             $couponErrors = $coupon->validate();
             if (\count($couponErrors) > 0) {
@@ -159,7 +160,7 @@ class CouponsController extends AbstractBackendController
                 $action        = 'bearbeiten';
                 $this->alertService->addError($errorMessage, 'errorCheckInput');
                 $coupon->augment();
-            } elseif ($this->saveCoupon($coupon, $languages) !== 0) {// Validierung erfolgreich => Kupon speichern
+            } elseif (($couponId = $this->saveCoupon($coupon, $languages)) !== 0) {// Validierung erfolgreich => Kupon speichern
                 // erfolgreich gespeichert => evtl. Emails versenden
                 if (isset($_POST['informieren'])
                     && $_POST['informieren'] === 'Y'
@@ -169,6 +170,9 @@ class CouponsController extends AbstractBackendController
                     $this->informCouponCustomers($coupon);
                 }
                 $this->alertService->addSuccess(\__('successCouponSave'), 'successCouponSave');
+                if ($action === 'save-and-continue') {
+                    $coupon = $this->getCoupon(\is_int($couponId) ? $couponId : $couponId[0]);
+                }
             } else {
                 $this->alertService->addError(\__('errorCouponSave'), 'errorCouponSave');
             }
@@ -185,7 +189,8 @@ class CouponsController extends AbstractBackendController
                 $this->alertService->addError(\__('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
             }
         }
-        if ($action === 'bearbeiten') {
+        if ($action === 'bearbeiten' || ($action === 'save-and-continue' && $coupon instanceof Kupon)) {
+            $action      = 'bearbeiten';
             $taxClasses  = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
             $customerIDs = \array_filter(
                 Text::parseSSKint($coupon->cKunden),

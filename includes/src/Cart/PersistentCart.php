@@ -451,8 +451,12 @@ class PersistentCart
                 $value                       = new stdClass();
                 $value->kEigenschaftWert     = $wkpe->kEigenschaftWert;
                 $value->kEigenschaft         = $wkpe->kEigenschaft;
-                $value->cEigenschaftName     = $wkpe->cEigenschaftName[$_SESSION['cISOSprache']];
-                $value->cEigenschaftWertName = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                $value->cEigenschaftName     = \is_array($wkpe->cEigenschaftName)
+                    ? $wkpe->cEigenschaftName[$_SESSION['cISOSprache']]
+                    : (string)$wkpe->cEigenschaftName;
+                $value->cEigenschaftWertName = \is_array($wkpe->cEigenschaftWertName)
+                    ? $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']]
+                    : (string)$wkpe->cEigenschaftWertName;
                 if ($wkpe->cTyp === 'FREIFELD' || $wkpe->cTyp === 'PFLICHT-FREIFELD') {
                     $value->cFreifeldWert = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
                 }

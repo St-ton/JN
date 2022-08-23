@@ -35,7 +35,7 @@
         "ifsnop/mysqldump-php": "^2.1",
         "jtlshop/shop5-systemcheck": "^3.0",
         "jtlshop/sccbs3": "1.0.*",
-        "jtlshop/scc": "1.0.*",
+        "jtlshop/scc": "1.1.*",
         "jtlshop/phpquery": "^2.0",
         "jtlshop/xtea": "1.0.*",
         "smarty/smarty": "^4.0",

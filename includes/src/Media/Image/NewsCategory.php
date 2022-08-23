@@ -84,9 +84,9 @@ class NewsCategory extends AbstractImage
             ['cid' => $id]
         )->path ?? null;
 
-        return empty($item->path)
+        return empty($item)
             ? null
-            : \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item->path);
+            : \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $item);
     }
 
     /**

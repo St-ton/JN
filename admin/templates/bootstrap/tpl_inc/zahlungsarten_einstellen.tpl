@@ -1,6 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
 <div id="content">
-    einstellen!!!!!!!!!!!!!!!
     <form name="einstellen" method="post" action="{$adminURL}{$route}" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />

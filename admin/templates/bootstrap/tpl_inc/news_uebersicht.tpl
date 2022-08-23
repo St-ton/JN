@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="1" class="hidden-soft">
                                         <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
@@ -159,7 +159,6 @@
                 <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_loeschen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
                     <div>
                         <div class="subheading1">{__('newsOverview')}</div>
@@ -241,7 +240,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -253,11 +251,11 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <input name="news_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                                    <button name="news_erstellen" type="submit" value="1" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
                                 </div>
                             </div>
                         </div>
@@ -274,7 +272,6 @@
                 <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_kategorie_loeschen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
                     <div>
                         <div class="subheading1">{__('newsCatOverview')}</div>
@@ -337,7 +334,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -349,13 +345,13 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
+                                    <input name="news_kategorie_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_kategorie_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary btn-block">
+                                    <button name="news_kategorie_erstellen" type="submit" value="1" class="btn btn-primary btn-block">
                                         <i class="fa fa-share"></i> {__('newsCatCreate')}
                                     </button>
                                 </div>

@@ -736,7 +736,7 @@ class AccountController
                         $item->cResponsibility
                     );
                 } elseif ($item->kKonfigitem > 0 && $item->kArtikel === 0) {
-                    $configItem          = new Item($item->kKonfigitem);
+                    $configItem = new Item($item->kKonfigitem);
                     $cart->erstelleSpezialPos(
                         $configItem->getName(),
                         $item->fAnzahl,

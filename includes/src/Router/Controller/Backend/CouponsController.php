@@ -46,11 +46,12 @@ class CouponsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/kupons');
         $this->checkPermissions(Permissions::ORDER_COUPON_VIEW);
 
-        $action    = Request::verifyGPDataString('action');
-        $tab       = Kupon::TYPE_STANDARD;
-        $languages = LanguageHelper::getAllLanguages(0, true);
-        $coupon    = null;
-        $importer  = Request::verifyGPDataString('importcsv');
+        $action        = Request::verifyGPDataString('action');
+        $tab           = Kupon::TYPE_STANDARD;
+        $languages     = LanguageHelper::getAllLanguages(0, true);
+        $coupon        = null;
+        $importer      = Request::verifyGPDataString('importcsv');
+        $jumpToSection = '';
 
         if (Form::validateToken()) {
             if ($importer !== '') {
@@ -191,9 +192,11 @@ class CouponsController extends AbstractBackendController
             }
         }
         if ($action === 'bearbeiten' || ($action === 'save-and-continue' && $coupon instanceof Kupon)) {
-            $action      = 'bearbeiten';
-            $taxClasses  = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
-            $customerIDs = \array_filter(
+            $action        = 'bearbeiten';
+            $jumpToSection = Text::filterXSS(Request::verifyGPDataString('section'));
+            $jumpToSection = \is_string($jumpToSection) ? $jumpToSection : '';
+            $taxClasses    = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
+            $customerIDs   = \array_filter(
                 Text::parseSSKint($coupon->cKunden),
                 static function ($customerID) {
                     return (int)$customerID > 0;
@@ -216,7 +219,8 @@ class CouponsController extends AbstractBackendController
                 ->assign('categories', $this->getCategories($coupon->cKategorien))
                 ->assign('customerIDs', $customerIDs)
                 ->assign('couponNames', $names)
-                ->assign('oKupon', $coupon);
+                ->assign('oKupon', $coupon)
+                ->assign('jumpToSection', $jumpToSection);
         } else {
             // Seite: Uebersicht
             if (Request::hasGPCData('tab')) {

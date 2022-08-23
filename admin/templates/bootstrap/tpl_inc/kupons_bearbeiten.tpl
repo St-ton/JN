@@ -43,7 +43,7 @@
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
         <div class="card settings">
             <div class="card-header">
-                <div class="subheading1">{__('names')}</div>
+                <div id="names" class="subheading1">{__('names')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
@@ -70,7 +70,7 @@
         {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== $couponTypes.newCustomer}
             <div class="card settings">
                 <div class="card-header">
-                    <div class="subheading1">
+                    <div id="massCreate" class="subheading1">
                         <label>
                             <div class="custom-control custom-checkbox">
                                 <input class="custom-control-input" type="checkbox" name="couponCreation"
@@ -165,7 +165,7 @@
         {/if}
         <div class="card settings">
             <div class="card-header">
-                <div class="subheading1">{__('general')}</div>
+                <div id="prizing" class="subheading1">{__('general')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
@@ -297,7 +297,7 @@
         </div>
         <div class="card settings">
             <div class="card-header">
-                <div class="subheading1">{__('validityPeriod')}</div>
+                <div id="validDate" class="subheading1">{__('validityPeriod')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
@@ -351,7 +351,7 @@
         </div>
         <div class="card settings">
             <div class="card-header">
-                <div class="subheading1">{__('restrictions')}</div>
+                <div id="restrictions" class="subheading1">{__('restrictions')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">
@@ -533,6 +533,7 @@
                         {__('cancelWithIcon')}
                     </a>
                 </div>
+                <input type="hidden" name="section" value="" />
                 <div class="col-sm-6 col-xl-auto">
                     {include file='snippets/buttons/saveAndContinueButton.tpl' name='action' value='save-and-continue'}
                 </div>

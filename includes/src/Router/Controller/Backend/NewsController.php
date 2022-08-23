@@ -589,7 +589,22 @@ class NewsController extends AbstractBackendController
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'] ?? '';
         $oldPreview   = null;
+        $error        = false;
         $flag         = \ENT_COMPAT | \ENT_HTML401;
+
+        $category   = $this->createCategoryFromPost($post, $languages);
+        $validation = $this->validateNewsCategory($category, $languages);
+        if (\count($validation) > 0) {
+            $this->setStep('news_kategorie_erstellen');
+            $this->smarty->assign('cPostVar_arr', $post)
+                ->assign('cPlausiValue_arr', $validation)
+                ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                ->assign('oNewsKategorie', $category);
+            $this->errorMsg .= \__('errorFillRequired');
+
+            return $category;
+        }
+
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
         $newsCategory->kParent               = $parentID;
@@ -597,7 +612,6 @@ class NewsController extends AbstractBackendController
         $newsCategory->nAktiv                = $active;
         $newsCategory->dLetzteAktualisierung = (new DateTime())->format('Y-m-d H:i:s');
         $newsCategory->cPreviewImage         = $previewImage;
-
         if ($update === true) {
             $oldPreview = $this->db->select('tnewskategorie', 'kNewsKategorie', $categoryID)->cPreviewImage ?? null;
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
@@ -652,8 +666,7 @@ class NewsController extends AbstractBackendController
         foreach ($affected as $id) {
             $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
         }
-        $error = false;
-        $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
+        $dir = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
             $this->setErrorMsg(\__('errorDirCreate') . $dir);
@@ -777,6 +790,61 @@ class NewsController extends AbstractBackendController
             if (!empty($post['cName_' . $lang->getIso()])) {
                 unset($validation['cBetreff']);
                 break;
+            }
+        }
+
+        return $validation;
+    }
+
+    /**
+     * @param array $post
+     * @param LanguageModel[] $languages
+     * @return CategoryInterface
+     */
+    private function createCategoryFromPost(array $post, array $languages): CategoryInterface
+    {
+        $category    = new Category($this->db);
+        $languageIDs = [];
+        foreach ($languages as $language) {
+            $iso           = $language->getCode();
+            $langID        = $language->getId();
+            $languageIDs[] = $langID;
+            $category->setName($post['cName_' . $iso] ?? '', $langID);
+            $category->setMetaDescription($post['cMetaDescription_' . $iso] ?? '', $langID);
+            $category->setMetaTitle($post['cMetaTitle_' . $iso] ?? '', $langID);
+            $category->setDescription($post['cBeschreibung_' . $iso] ?? '', $langID);
+            $category->setSEO($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setSlug($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setPreviewImage($post['cPreviewImage'] ?? '', $langID);
+            $category->setDateLastModified(\date_create());
+            $category->setIsActive((bool)($post['nAktiv'] ?? false));
+            $category->setSort((int)($post['nSort'] ?? 0));
+            $category->setParentID((int)($post['kParent'] ?? 0));
+            $category->setLevel((int)($post['lvl'] ?? 0));
+            $category->setLft((int)($post['lft'] ?? 0));
+            $category->setRght((int)($post['rght'] ?? 0));
+        }
+        $category->setLanguageIDs($languageIDs);
+
+        return $category;
+    }
+
+    /**
+     * @param CategoryInterface $category
+     * @param array             $languages
+     * @return array
+     */
+    private function validateNewsCategory(CategoryInterface $category, array $languages): array
+    {
+        $validation = [];
+        foreach ($languages as $language) {
+            $id  = $language->getId();
+            $seo = $category->getSEO($id);
+            if (empty($seo) || empty(Seo::checkSeo($seo))) {
+                $validation['cSeo'] = 1;
+            }
+            if (empty($category->getName($id))) {
+                $validation['cName'] = 1;
             }
         }
 

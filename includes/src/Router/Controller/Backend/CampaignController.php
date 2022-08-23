@@ -135,14 +135,14 @@ class CampaignController extends AbstractBackendController
         } elseif (Request::verifyGPCDataInt('nStamp') === -1 || Request::verifyGPCDataInt('nStamp') === 1) {
             // Vergangenheit
             if (Request::verifyGPCDataInt('nStamp') === -1) {
-                $_SESSION['Kampagne']->cStamp = $this->gibStamp(
+                $_SESSION['Kampagne']->cStamp = $this->getStamp(
                     $_SESSION['Kampagne']->cStamp,
                     -1,
                     $_SESSION['Kampagne']->nAnsicht
                 );
             } elseif (Request::verifyGPCDataInt('nStamp') === 1) {
                 // Zukunft
-                $_SESSION['Kampagne']->cStamp = $this->gibStamp(
+                $_SESSION['Kampagne']->cStamp = $this->getStamp(
                     $_SESSION['Kampagne']->cStamp,
                     1,
                     $_SESSION['Kampagne']->nAnsicht
@@ -162,7 +162,7 @@ class CampaignController extends AbstractBackendController
         }
         if ($step === 'kampagne_uebersicht') {
             $campaigns   = self::getCampaigns(true, false, $this->db);
-            $definitions = $this->holeAlleKampagnenDefinitionen();
+            $definitions = $this->getDefinitions();
             $maxKey      = 0;
             if (\count($campaigns) > 0) {
                 $members = \array_keys($campaigns);
@@ -172,7 +172,7 @@ class CampaignController extends AbstractBackendController
             $smarty->assign('nGroessterKey', $maxKey)
                 ->assign('oKampagne_arr', $campaigns)
                 ->assign('oKampagneDef_arr', $definitions)
-                ->assign('oKampagneStat_arr', $this->holeKampagneGesamtStats($campaigns, $definitions));
+                ->assign('oKampagneStat_arr', $this->getStats($campaigns, $definitions));
         } elseif ($step === 'kampagne_erstellen') { // Erstellen / Editieren
             if ($campaignID > 0) {
                 $smarty->assign('oKampagne', new Campaign($campaignID));
@@ -180,14 +180,14 @@ class CampaignController extends AbstractBackendController
         } elseif ($step === 'kampagne_detail') { // Detailseite
             if ($campaignID > 0) {
                 $campaigns   = self::getCampaigns(true, false, $this->db);
-                $definitions = $this->holeAlleKampagnenDefinitionen();
+                $definitions = $this->getDefinitions();
                 if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
                     $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
                 }
                 $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDef_arr = $definitions;
                 $_SESSION['nDiagrammTyp']                                     = 5;
 
-                $stats = $this->holeKampagneDetailStats($campaignID, $definitions);
+                $stats = $this->getDetailStats($campaignID, $definitions);
                 // Highchart
                 $charts = [];
                 for ($i = 1; $i <= 10; $i++) {
@@ -208,12 +208,12 @@ class CampaignController extends AbstractBackendController
             }
 
             if ($campaignID > 0 && $definitionID > 0 && \mb_strlen($stamp) > 0) {
-                $definition = $this->holeKampagneDef($definitionID);
+                $definition = $this->getDefinition($definitionID);
                 $members    = [];
                 $stampText  = '';
                 $select     = '';
                 $where      = '';
-                $this->baueDefDetailSELECTWHERE($select, $where, $stamp);
+                $this->generateDetailSelectWhere($select, $where, $stamp);
 
                 $stats = $this->db->getObjects(
                     'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
@@ -226,7 +226,7 @@ class CampaignController extends AbstractBackendController
                 $paginationDefinitionDetail = (new Pagination('defdetail'))
                     ->setItemCount(\count($stats))
                     ->assemble();
-                $campaignStats              = $this->holeKampagneDefDetailStats(
+                $campaignStats              = $this->getDefDetailStats(
                     $campaignID,
                     $definition,
                     $stamp,
@@ -287,13 +287,13 @@ class CampaignController extends AbstractBackendController
      * @return stdClass[]
      * @former holeAlleKampagnenDefinitionen()
      */
-    private function holeAlleKampagnenDefinitionen(): array
+    public function getDefinitions(): array
     {
         return reindex(
             $this->db->getObjects(
                 'SELECT *
-                FROM tkampagnedef
-                ORDER BY kKampagneDef'
+                    FROM tkampagnedef
+                    ORDER BY kKampagneDef'
             ),
             static function ($e) {
                 return (int)$e->kKampagneDef;
@@ -306,7 +306,7 @@ class CampaignController extends AbstractBackendController
      * @return stdClass|null
      * @former holeKampagneDef()
      */
-    private function holeKampagneDef(int $definitionID): ?stdClass
+    private function getDefinition(int $definitionID): ?stdClass
     {
         return $this->db->select('tkampagnedef', 'kKampagneDef', $definitionID);
     }
@@ -317,7 +317,7 @@ class CampaignController extends AbstractBackendController
      * @return array
      * @former holeKampagneGesamtStats()
      */
-    private function holeKampagneGesamtStats(array $campaigns, array $definitions): array
+    private function getStats(array $campaigns, array $definitions): array
     {
         $stats = [];
         $sql   = '';
@@ -362,9 +362,9 @@ class CampaignController extends AbstractBackendController
                 }
             }
             if ($_SESSION['Kampagne']->cSort === 'ASC') {
-                \uasort($sort, [$this, 'kampagneSortASC']);
+                \uasort($sort, [$this, 'sortAsc']);
             } else {
-                \uasort($sort, [$this, 'kampagneSortDESC']);
+                \uasort($sort, [$this, 'sortDesc']);
             }
             $tmpStats = [];
             foreach ($sort as $i => $tmp) {
@@ -385,7 +385,7 @@ class CampaignController extends AbstractBackendController
      * @return int
      * @former kampagneSortDESC()
      */
-    private function kampagneSortDESC($a, $b): int
+    private function sortDesc($a, $b): int
     {
         if ($a == $b) {
             return 0;
@@ -399,7 +399,7 @@ class CampaignController extends AbstractBackendController
      * @param int $b
      * @return int
      */
-    private function kampagneSortASC($a, $b): int
+    private function sortAsc($a, $b): int
     {
         if ($a == $b) {
             return 0;
@@ -414,7 +414,7 @@ class CampaignController extends AbstractBackendController
      * @return array
      * @former holeKampagneDetailStats()
      */
-    private function holeKampagneDetailStats(int $campaignID, array $definitions): array
+    public function getDetailStats(int $campaignID, array $definitions): array
     {
         // Zeitraum
         $whereSQL     = '';
@@ -424,9 +424,9 @@ class CampaignController extends AbstractBackendController
                 0,
                 0,
                 0,
-                $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                (int)$_SESSION['Kampagne']->cFromDate_arr['nMonat'],
                 1,
-                $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+                (int)$_SESSION['Kampagne']->cFromDate_arr['nJahr']
             )
         );
         // Int String Work Around
@@ -500,7 +500,7 @@ class CampaignController extends AbstractBackendController
                 return [];
         }
         // Zeitraum
-        $timeSpans = $this->gibDetailDatumZeitraum();
+        $timeSpans = $this->getDetailTimespan();
         $stats     = $this->db->getObjects(
             'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, ' . $selectSQL . '
             FROM tkampagnevorgang
@@ -542,7 +542,6 @@ class CampaignController extends AbstractBackendController
         }
         $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $statsAssoc;
         $_SESSION['Kampagne']->oKampagneDetailGraph->nGraphMaxAssoc_arr       = $graphMax;
-
         // Maximal 31 Einträge pro Graph
         if (\count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) > 31) {
             $key     = \count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) - 31;
@@ -583,7 +582,7 @@ class CampaignController extends AbstractBackendController
      * @return array
      * @former holeKampagneDefDetailStats()
      */
-    private function holeKampagneDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
+    private function getDefDetailStats(int $campaignID, $definition, $cStamp, &$text, &$members, $sql): array
     {
         $cryptoService = Shop::Container()->getCryptoService();
         $currency      = Frontend::getCurrency();
@@ -594,7 +593,7 @@ class CampaignController extends AbstractBackendController
         }
         $select = '';
         $where  = '';
-        $this->baueDefDetailSELECTWHERE($select, $where, $cStamp);
+        $this->generateDetailSelectWhere($select, $where, $cStamp);
 
         $stats = $this->db->getObjects(
             'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
@@ -1147,7 +1146,7 @@ class CampaignController extends AbstractBackendController
      * @param string $stamp
      * @former baueDefDetailSELECTWHERE()
      */
-    private function baueDefDetailSELECTWHERE(&$select, &$where, $stamp): void
+    private function generateDetailSelectWhere(&$select, &$where, $stamp): void
     {
         $stamp = $this->db->escape($stamp);
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
@@ -1176,7 +1175,7 @@ class CampaignController extends AbstractBackendController
      * @return array
      * @former gibDetailDatumZeitraum()
      */
-    private function gibDetailDatumZeitraum(): array
+    private function getDetailTimespan(): array
     {
         $timeSpan               = [];
         $timeSpan['cDatum']     = [];
@@ -1360,7 +1359,7 @@ class CampaignController extends AbstractBackendController
      * @return string
      * @former gibStamp()
      */
-    private function gibStamp($stamp, int $direction, int $view): string
+    private function getStamp($stamp, int $direction, int $view): string
     {
         if (\mb_strlen($stamp) === 0 || !\in_array($direction, [1, -1], true) || !\in_array($view, [1, 2, 3], true)) {
             return $stamp;
@@ -1476,10 +1475,6 @@ class CampaignController extends AbstractBackendController
             return false;
         }
         foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
-            if ($campaignID < 1000) {
-                // Nur externe Kampagnen sind löschbar
-                continue;
-            }
             (new Campaign($campaignID))->deleteInDB();
         }
         $this->cache->flush('campaigns');

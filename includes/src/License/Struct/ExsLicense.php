@@ -24,47 +24,47 @@ class ExsLicense
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $exsid;
+    private string $exsid;
 
     /**
      * @var Vendor
      */
-    private $vendor;
+    private Vendor $vendor;
 
     /**
      * @var License
      */
-    private $license;
+    private License $license;
 
     /**
      * @var Releases
      */
-    private $releases;
+    private Releases $releases;
 
     /**
      * @var Link[]
      */
-    private $links;
+    private array $links;
 
     /**
      * @var DateTime
      */
-    private $queryDate;
+    private DateTime $queryDate;
 
     /**
      * @var int
@@ -74,12 +74,12 @@ class ExsLicense
     /**
      * @var ReferencedItemInterface|null
      */
-    private $referencedItem;
+    private ?ReferencedItemInterface $referencedItem = null;
 
     /**
      * @var InAppParent
      */
-    private $parent;
+    private InAppParent $parent;
 
     /**
      * @var bool
@@ -102,7 +102,7 @@ class ExsLicense
     private bool $canBeUsed = true;
 
     /**
-     * ExsLicenseData constructor.
+     * ExsLicense constructor.
      * @param stdClass|null $json
      */
     public function __construct(?stdClass $json = null)
@@ -309,7 +309,7 @@ class ExsLicense
      * @param DateTime|string $queryDate
      * @throws \Exception
      */
-    public function setQueryDate($queryDate): void
+    public function setQueryDate(DateTime|string $queryDate): void
     {
         $this->queryDate = \is_a($queryDate, DateTime::class) ? $queryDate : new DateTime($queryDate);
     }

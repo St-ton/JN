@@ -401,7 +401,7 @@ class Text
     {
         $convert = false;
         if (!self::is_utf8($data)) {
-            //with non-utf8 input this function would return an empty string
+            // with non-utf8 input this function would return an empty string
             $convert = true;
             $data    = self::convertUTF8($data);
         }

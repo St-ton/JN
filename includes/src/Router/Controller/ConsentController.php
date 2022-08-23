@@ -5,6 +5,9 @@ namespace JTL\Router\Controller;
 use JTL\Consent\ManagerInterface;
 use JTL\Helpers\Form;
 use JTL\Shop;
+use Laminas\Diactoros\ResponseFactory;
+use League\Route\RouteGroup;
+use League\Route\Strategy\JsonStrategy;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -13,6 +16,18 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ConsentController
 {
+    /**
+     * @param RouteGroup $route
+     * @param string     $dynName
+     * @return void
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $route->post('/_updateconsent', [$this, 'getResponse'])
+            ->setName('ROUTE_UPDATE_CONSENTPOST' . $dynName)
+            ->setStrategy(new JsonStrategy(new ResponseFactory()));
+    }
+
     /**
      * @param ServerRequestInterface $request
      * @param array                  $args

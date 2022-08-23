@@ -23,32 +23,32 @@ class Release
     /**
      * @var Version
      */
-    private $version;
+    private Version $version;
 
     /**
      * @var string
      */
-    private $type;
+    private string $type;
 
     /**
      * @var DateTime
      */
-    private $releaseDate;
+    private DateTime $releaseDate;
 
     /**
      * @var string
      */
-    private $shortDescription;
+    private string $shortDescription;
 
     /**
      * @var string
      */
-    private $downloadUrl;
+    private string $downloadUrl;
 
     /**
      * @var string - sha1 checksum
      */
-    private $checksum;
+    private string $checksum;
 
     /**
      * @var bool
@@ -124,7 +124,7 @@ class Release
      * @param DateTime|string $releaseDate
      * @throws \Exception
      */
-    public function setReleaseDate($releaseDate): void
+    public function setReleaseDate(DateTime|string $releaseDate): void
     {
         $this->releaseDate = \is_a($releaseDate, DateTime::class)
             ? $releaseDate

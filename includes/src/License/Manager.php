@@ -54,7 +54,7 @@ class Manager
     public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
         $this->client = new Client();
-        $this->domain = \parse_url(\URL_SHOP)['host'];
+        $this->domain = \parse_url(\URL_SHOP, \PHP_URL_HOST);
         $this->token  = AuthToken::getInstance($this->db)->get();
     }
 

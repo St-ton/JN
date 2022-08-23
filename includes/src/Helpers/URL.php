@@ -406,30 +406,35 @@ class URL
      * @param int         $type
      * @param bool        $full
      * @param string|null $prefix
+     * @param string|null $locale
      * @return string
      * @former baueURL()
      * @since 5.0.0
-     * @todo: allow overriding locale?
      */
-    public static function buildURL($obj, int $type, bool $full = false, ?string $prefix = null): string
-    {
+    public static function buildURL(
+        $obj,
+        int $type,
+        bool $full = false,
+        ?string $prefix = null,
+        ?string $locale = null
+    ): string {
         if ($obj instanceof LinkInterface) {
             return $obj->getURL();
         }
-        $prefix     = $prefix ?? ($full === false ? '' : (Shop::getURL() . '/'));
-        $router     = Shop::getRouter();
-        $localeCode = Text::convertISO2ISO639(Shop::getLanguageCode());
+        $prefix = $prefix ?? ($full === false ? '' : (Shop::getURL() . '/'));
+        $router = Shop::getRouter();
+        $locale = $locale ?? Text::convertISO2ISO639(Shop::getLanguageCode());
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, ['obj' => &$obj, 'art' => &$type]);
         switch ($type) {
             case \URLART_ARTIKEL:
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_PRODUCT,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
+                        ['lang' => $locale, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
                     )
                     : $router->getPathByType(
                         Router::TYPE_PRODUCT,
-                        ['lang' => $localeCode, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
+                        ['lang' => $locale, 'name' => $obj->cSeo ?? null, 'id' => $obj->kArtikel ?? null]
                     );
 
             case \URLART_KATEGORIE:
@@ -439,32 +444,34 @@ class URL
                     $slug = $obj->getURL();
                 } elseif (!empty($obj->cSeo)) {
                     $slug = $obj->cSeo;
-                    $id   = $obj?->getID() ?? $obj->kHersteller ?? null;
+                    $id   = \method_exists($obj, 'getID')
+                        ? $obj->getID()
+                        : $obj->kKategorie ?? null;
                 }
                 if ($slug !== null) {
                     return $full
                         ? $router->getURLByType(
                             Router::TYPE_CATEGORY,
-                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                            ['lang' => $locale, 'name' => $slug, 'id' => $id]
                         )
                         : $router->getPathByType(
                             Router::TYPE_CATEGORY,
-                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                            ['lang' => $locale, 'name' => $slug, 'id' => $id]
                         );
                 }
 
-                return $prefix . '?k=' . $obj->kHersteller . self::getLocalizedFallback();
+                return $prefix . '?k=' . $obj->kKategorie . self::getLocalizedFallback();
 
             case \URLART_SEITE:
                 if (!empty($obj->cSeo)) {
                     return $full
                         ? $router->getURLByType(
                             Router::TYPE_PAGE,
-                            ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
+                            ['lang' => $locale, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
                         )
                         : $router->getPathByType(
                             Router::TYPE_PAGE,
-                            ['lang' => $localeCode, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
+                            ['lang' => $locale, 'name' => $obj->cSeo, 'id' => $obj->kLink ?? null]
                         );
                 }
                 if (isset($_SESSION['cISOSprache'], $obj->cLocalizedSeo[$_SESSION['cISOSprache']])
@@ -483,11 +490,11 @@ class URL
                     return $full
                         ? $router->getURLByType(
                             Router::TYPE_MANUFACTURER,
-                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $locale]
                         )
                         : $router->getPathByType(
                             Router::TYPE_MANUFACTURER,
-                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $localeCode]
+                            ['id' => $obj->kHersteller, 'name' => $obj->cSeo, 'lang' => $locale]
                         );
                 }
 
@@ -497,11 +504,11 @@ class URL
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_SEARCH_QUERY,
-                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     )
                     : $router->getPathByType(
                         Router::TYPE_SEARCH_QUERY,
-                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kSuchanfrage, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     );
 
             case \URLART_MERKMAL:
@@ -517,11 +524,11 @@ class URL
                     return $full
                         ? $router->getURLByType(
                             Router::TYPE_CHARACTERISTIC_VALUE,
-                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                            ['lang' => $locale, 'name' => $slug, 'id' => $id]
                         )
                         : $router->getPathByType(
                             Router::TYPE_CHARACTERISTIC_VALUE,
-                            ['lang' => $localeCode, 'name' => $slug, 'id' => $id]
+                            ['lang' => $locale, 'name' => $slug, 'id' => $id]
                         );
                 }
 
@@ -537,44 +544,44 @@ class URL
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     )
                     : $router->getPathByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNews, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     );
 
             case \URLART_NEWSMONAT:
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     )
                     : $router->getPathByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNewsMonatsUebersicht, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     );
 
             case \URLART_NEWSKATEGORIE:
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     )
                     : $router->getPathByType(
                         Router::TYPE_NEWS,
-                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kNewsKategorie, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     );
 
             case \URLART_SEARCHSPECIALS:
                 return $full
                     ? $router->getURLByType(
                         Router::TYPE_SEARCH_SPECIAL,
-                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     )
                     : $router->getPathByType(
                         Router::TYPE_SEARCH_SPECIAL,
-                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $localeCode]
+                        ['id' => $obj->kSuchspecial, 'name' => $obj->cSeo ?? null, 'lang' => $locale]
                     );
             case \URLART_NEWSLETTER:
                 try {

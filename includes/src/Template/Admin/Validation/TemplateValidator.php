@@ -31,13 +31,15 @@ class TemplateValidator implements ValidatorInterface
 
     public const RES_INVALID_VERSION = 8;
 
+    public const RES_INVALID_NAMESPACE = 9;
+
     /**
      * @var string
      */
     protected string $dir;
 
     /**
-     * AbstractValidator constructor.
+     * TemplateValidator constructor.
      * @param DbInterface $db
      */
     public function __construct(protected DbInterface $db)
@@ -87,6 +89,24 @@ class TemplateValidator implements ValidatorInterface
         $infoXML = $this->dir . '/' . \TEMPLATE_XML;
         if (!\file_exists($infoXML)) {
             return self::RES_XML_NOT_FOUND;
+        }
+        if (\file_exists($this->dir . '/Bootstrap.php')) {
+            $code  = \file_get_contents($this->dir . '/Bootstrap.php');
+            $start = false;
+            foreach (\token_get_all($code) as $token) {
+                if (\is_array($token)) {
+                    if ($token[0] === T_NAMESPACE) {
+                        $start = true;
+                    }
+                    if ($start === true && $token[0] === T_NAME_QUALIFIED) {
+                        $base = \pathinfo($path, \PATHINFO_BASENAME);
+                        if ($token[1] !== 'Template\\' . $base) {
+                            return self::RES_INVALID_NAMESPACE;
+                        }
+                        break;
+                    }
+                }
+            }
         }
 
         return self::RES_OK;

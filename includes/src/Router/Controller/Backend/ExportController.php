@@ -325,14 +325,14 @@ class ExportController extends AbstractBackendController
         $queue->dZuBearbeiten  = 'NOW()';
 
         $queueID = $this->db->insert('texportqueue', $queue);
-
-        $redir = $this->baseURL . '/'
+        $redir   = $this->baseURL . '/'
             . Route::EXPORT_START
             . '?&back=admin&token=' . $_SESSION['jtl_token']
             . '&e=' . $queueID;
         if ($async) {
             $redir .= '&ajax';
         }
+
         return new RedirectResponse($redir);
     }
 }

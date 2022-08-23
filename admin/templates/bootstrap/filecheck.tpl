@@ -7,7 +7,7 @@
 {$alertList->displayAlertByKey('zipArchiveError')}
 
 <div class="card collapsed">
-    <div class="card-header{if $modifiedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}"{/if}>
+    <div {if $modifiedFiles|count > 0}class="card-header accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}class="card-header"{/if}>
         <div class="card-title">
             {if $modifiedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
             {__('fileCheckNumberModifiedFiles')}: {$modifiedFiles|count}

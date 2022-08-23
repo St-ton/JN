@@ -352,7 +352,7 @@ class Download
                 // Check Anzahl
                 if ($download->getAnzahl() > 0) {
                     $history = History::getOrderHistory($customerID, $orderID);
-                    if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
+                    if (\count($history[$download->kDownload] ?? []) >= $download->getAnzahl()) {
                         return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                     }
                 }

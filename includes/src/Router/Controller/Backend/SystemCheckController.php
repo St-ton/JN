@@ -32,12 +32,10 @@ class SystemCheckController extends AbstractBackendController
             $content = \ob_get_clean();
             $phpInfo = \pq('body', phpQuery::newDocumentHTML($content, \JTL_CHARSET))->html();
         }
-
         $systemcheck = new Environment();
-        $platform    = new Hosting();
 
         return $smarty->assign('tests', $systemcheck->executeTestGroup('Shop5'))
-            ->assign('platform', $platform)
+            ->assign('platform', new Hosting())
             ->assign('passed', $systemcheck->getIsPassed())
             ->assign('phpinfo', $phpInfo)
             ->getResponse('systemcheck.tpl');

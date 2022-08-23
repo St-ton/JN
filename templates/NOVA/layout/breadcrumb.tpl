@@ -8,10 +8,17 @@
                     {block name='layout-breadcrumb-sm-back'}
                         {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
                         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
-                            {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
-                                class="breadcrumb-backtolist" href="#"}
-                                {lang key='goBackToList'}
-                            {/breadcrumbitem}
+                            {/strip}<script>(function(){
+                                if (window.should_render_backtolist_link) {
+                                    // render back-to-list-link if allowed
+                                    document.write(`
+                                        {breadcrumbitem attribs=["onclick" => "$.evo.article().navigateBackToList()"]
+                                            class="breadcrumb-backtolist" href="#"}
+                                            {lang key='goBackToList'}
+                                        {/breadcrumbitem}
+                                    `);
+                                }
+                            })();</script>{strip}
                         {/if}
                         {if $parent !== null}
                             {breadcrumbitem class="breadcrumb-arrow"
@@ -19,11 +26,6 @@
                                 title={sanitizeTitle title=$parent->getName()}
                             }
                                 <span itemprop="name">{$parent->getName()}</span>
-                                {inline_script}<script>
-                                    if (!$.evo.article().isBackToListDisabled()) {
-                                        $('.breadcrumb-arrow').remove();
-                                    }
-                                </script>{/inline_script}
                             {/breadcrumbitem}
                         {/if}
                     {/block}

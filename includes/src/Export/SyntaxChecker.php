@@ -201,18 +201,26 @@ class SyntaxChecker
             'kArtikel'
         );
         if ($productID > 0) {
-            $product = new Product($this->db);
+            $confData = $this->db->selectAll(
+                'texportformateinstellungen',
+                'kExportformat',
+                $this->id
+            );
+            $config   = [];
+            foreach ($confData as $conf) {
+                $config[$conf->cName] = $conf->cWert;
+            }
+            $product = new Product($this->db, $_SESSION['Kundengruppe'], $_SESSION['Waehrung']);
             $product->fuelleArtikel($productID, Product::getExportOptions());
-            $product->cDeeplink             = '';
-            $product->Artikelbild           = '';
-            $product->Lieferbar             = 'N';
-            $product->Lieferbar_01          = 0;
-            $product->cBeschreibungHTML     = '';
-            $product->cKurzBeschreibungHTML = '';
-            $product->fUst                  = 0.00;
-            $product->Kategorie             = new Kategorie();
-            $product->Kategoriepfad         = '';
-            $product->Versandkosten         = -1;
+            $product->kSprache                 = $model->getLanguageID();
+            $product->kKundengruppe            = $model->getCustomerGroupID();
+            $product->kWaehrung                = $model->getCurrencyID();
+            $product->campaignValue            = $model->getCampaignValue();
+            $product->currencyConversionFactor = $_SESSION['Waehrung']->getConversionFactor();
+            $product->cDeeplink                = '';
+            $product->Artikelbild              = '';
+            $product->augmentProduct($config, $model);
+            $product->addCategoryData();
         }
         try {
             $this->smarty->setErrorReporting(\E_ALL & ~\E_NOTICE & ~\E_STRICT & ~\E_DEPRECATED);

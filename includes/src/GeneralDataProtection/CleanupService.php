@@ -15,9 +15,7 @@ class CleanupService extends Method implements MethodInterface
         'tbesucherarchiv'              => [
             'cDate'     => 'dZeit',
             'cDateType' => 'DATETIME',
-            'cSubTable' => [
-                'tbesuchersuchausdruecke' => 'kBesucher'
-            ],
+            'cSubTable' => null,
             'cInterval' => '2920' // anonymized after 7 days, removed after 8 years (former 180 days)
         ],
         'tcheckboxlogging'             => [

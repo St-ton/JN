@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shoplogouploader') cBeschreibung=__('shoplogouploaderDesc') cDokuURL=__('shoplogouploaderURL')}
 <div id="content">
-    <form name="uploader" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data" class="hide-fileinput-remove"">
+    <form name="uploader" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data" class="hide-fileinput-remove">
         {$jtl_token}
         <div class="card shoplogouploader">
             <div class="card-header">

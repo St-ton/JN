@@ -2,9 +2,10 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Router\DefaultParser;
+use JTL\Helpers\Request;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,12 +20,23 @@ class SearchController extends ProductListController
      */
     public function getStateFromSlug(array $args): State
     {
-        $query = $args['query'] ?? null;
-        if ($query !== null) {
-            $this->state->searchQuery = \urldecode($query);
-        }
+        $query                    = $args['query'] ?? null;
+        $this->state->searchQuery = $query !== null
+            ? \urldecode($query)
+            : (Request::getVar('qs') ?? Request::getVar('suchausdruck') ?? Request::getVar('suche') ?? ' ');
 
         return $this->updateProductFilter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $route->get('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCH' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_SEARCH . '[/{query:.+}]', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCH' . $dynName . 'POST');
     }
 
     /**

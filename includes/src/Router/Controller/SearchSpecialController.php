@@ -4,6 +4,7 @@ namespace JTL\Router\Controller;
 
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -26,6 +27,22 @@ class SearchSpecialController extends ProductListController
         $this->state->is404 = true;
 
         return $this->updateProductFilter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $route->get('/' . \ROUTE_PREFIX_SEARCHSPECIALS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName);
+        $route->get('/' . \ROUTE_PREFIX_SEARCHSPECIALS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_SEARCHSPECIALS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCHSPECIAL_BY_ID' . $dynName . 'POST');
+        $route->post('/' . \ROUTE_PREFIX_SEARCHSPECIALS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_SEARCHSPECIAL_BY_NAME' . $dynName . 'POST');
     }
 
     /**

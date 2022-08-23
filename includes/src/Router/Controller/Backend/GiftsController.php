@@ -181,12 +181,13 @@ class GiftsController extends AbstractBackendController
      */
     private function getActiveCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM tartikelattribut
                 WHERE cName = :nm',
+            'cnt',
             ['nm' => \ART_ATTRIBUT_GRATISGESCHENKAB]
-        )->cnt;
+        );
     }
 
     /**
@@ -195,12 +196,13 @@ class GiftsController extends AbstractBackendController
      */
     private function getCommonCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(DISTINCT(kArtikel)) AS cnt
                 FROM twarenkorbpos
                 WHERE nPosTyp = :tp',
+            'cnt',
             ['tp' => \C_WARENKORBPOS_TYP_GRATISGESCHENK]
-        )->cnt;
+        );
     }
 
     /**
@@ -209,12 +211,13 @@ class GiftsController extends AbstractBackendController
      */
     private function getRecentCount(): int
     {
-        return (int)$this->db->getSingleObject(
+        return $this->db->getSingleInt(
             'SELECT COUNT(*) AS cnt
                 FROM twarenkorbpos
                 WHERE nPosTyp = :tp
                 LIMIT 100',
+            'cnt',
             ['tp' => \C_WARENKORBPOS_TYP_GRATISGESCHENK]
-        )->cnt;
+        );
     }
 }

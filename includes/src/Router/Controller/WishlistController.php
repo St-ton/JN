@@ -259,7 +259,7 @@ class WishlistController extends AbstractController
                 $wishlistID = $wishlist->getID();
             }
             if (!$wishlistID) {
-                return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
+                return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '?r=' . \R_LOGIN_WUNSCHLISTE);
             }
         }
         $link = ($this->state->linkID > 0) ? $linkHelper->getPageLink($this->state->linkID) : null;
@@ -275,7 +275,7 @@ class WishlistController extends AbstractController
                 );
             }
         } elseif ($wishlist->getID() === 0) {
-            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '&r=' . \R_LOGIN_WUNSCHLISTE);
+            return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '?r=' . \R_LOGIN_WUNSCHLISTE);
         }
         $wishListItems = $wishlist->getItems();
 

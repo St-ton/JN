@@ -26,7 +26,8 @@ class PasswordController extends AbstractBackendController
 
         $step = 'prepare';
         $this->alertService->addWarning(
-            \__('warningPasswordResetAuth'), 'warningPasswordResetAuth',
+            \__('warningPasswordResetAuth'),
+            'warningPasswordResetAuth',
             ['dismissable' => false]
         );
         if (isset($_POST['mail']) && Form::validateToken()) {

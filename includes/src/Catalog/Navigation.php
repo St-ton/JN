@@ -215,16 +215,11 @@ class Navigation
         if ($this->productFilter->hasSearchSpecial()) {
             return $this->productFilter->getSearchSpecial()->getName() ?? '';
         }
-        $name = '';
         if ($this->productFilter->hasSearch()) {
-            $name = $this->productFilter->getSearch()->getName();
-        } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
-            $name = $this->productFilter->getSearchQuery()->getName();
+            return Shop::Lang()->get('for') . ' ' .  $this->productFilter->getSearch()->getName();
         }
-        if (!empty($this->productFilter->getSearch()->getName())
-            || !empty($this->productFilter->getSearchQuery()->getName())
-        ) {
-            return Shop::Lang()->get('for') . ' ' . $name;
+        if ($this->productFilter->getSearchQuery()->isInitialized()) {
+            return Shop::Lang()->get('for') . ' ' .  $this->productFilter->getSearchQuery()->getName();
         }
 
         return '';

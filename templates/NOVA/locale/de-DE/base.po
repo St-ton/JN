@@ -129,7 +129,7 @@ msgid "Variationsauswahl anzeigen"
 msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen. Die Galerieansicht ist auf max. zwei Variationen begrenzt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span></span>"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Es werden maximal zwei Variationen angezeigt, sofern diese vom Typ „Dropdown“ oder „Select“ sind . Nur in Verbindung mit Zusatzinfos beim Hovern\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Es werden maximal zwei Variationen angezeigt, sofern diese vom Typ „Dropdown“, „Swatch“ oder „Textbox“ sind . Nur in Verbindung mit Zusatzinfos beim Hovern\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Weitere Optionen können dennoch eingeblendet werden\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"

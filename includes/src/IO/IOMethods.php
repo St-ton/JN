@@ -1189,6 +1189,8 @@ class IOMethods
         $combinations   = [];
         $i              = 0;
         foreach ($selectedVariationValues as $id => $value) {
+            $id    = (int)$id;
+            $value = (int)$value;
             if ($i++ === 0) {
                 $variationID    = $id;
                 $variationValue = $value;

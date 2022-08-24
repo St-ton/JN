@@ -719,6 +719,7 @@ class AccountController
                 $tmpProduct->fuelleArtikel($item->kArtikel, (int)$item->kKonfigitem === 0
                     ? Artikel::getDefaultOptions()
                     : Artikel::getDefaultConfigOptions());
+                $tmpProduct->isKonfigItem = ($item->kKonfigitem > 0);
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,

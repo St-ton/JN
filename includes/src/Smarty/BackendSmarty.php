@@ -35,7 +35,7 @@ class BackendSmarty extends JTLSmarty
     }
 
     /**
-     * @return string|null
+     * @inheritdoc
      */
     protected function initTemplate(): ?string
     {

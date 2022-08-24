@@ -6,8 +6,7 @@ use DateTime;
 use Exception;
 use JTL\Console\Command\Command;
 use JTL\Shop;
-use JTL\Smarty\ContextType;
-use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\CLISmarty;
 use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -78,8 +77,6 @@ class CreateCommand extends Command
      */
     protected function writeDataModel(string $targetDir, string $table): string
     {
-        $smartyCli = Shop::Smarty(true, ContextType::CLI);
-        $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $datetime  = new DateTime('NOW');
         $table     = \strtolower($table);
         $modelName = 'T' . \ucfirst(\ltrim($table, 't')) . 'Model';
@@ -119,7 +116,7 @@ class CreateCommand extends Command
             new LocalFilesystemAdapter($targetDir),
             [Config::OPTION_DIRECTORY_VISIBILITY => Visibility::PUBLIC]
         );
-        $content    = $smartyCli->assign('tableName', $table)
+        $content    = (new CLISmarty())->assign('tableName', $table)
             ->assign('modelName', $modelName)
             ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('tableDesc', $tableDesc)

@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Helpers\Request;
 use JTL\Router\State;
 use JTL\Smarty\JTLSmarty;
 use League\Route\RouteGroup;
@@ -19,10 +20,10 @@ class SearchController extends ProductListController
      */
     public function getStateFromSlug(array $args): State
     {
-        $query = $args['query'] ?? null;
-        if ($query !== null) {
-            $this->state->searchQuery = \urldecode($query);
-        }
+        $query                    = $args['query'] ?? null;
+        $this->state->searchQuery = $query !== null
+            ? \urldecode($query)
+            : (Request::getVar('qs') ?? Request::getVar('suchausdruck') ?? Request::getVar('suche') ?? ' ');
 
         return $this->updateProductFilter();
     }

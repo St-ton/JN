@@ -444,7 +444,9 @@ class URL
                     $slug = $obj->getURL();
                 } elseif (!empty($obj->cSeo)) {
                     $slug = $obj->cSeo;
-                    $id   = $obj?->getID() ?? $obj->kHersteller ?? null;
+                    $id   = \method_exists($obj, 'getID')
+                        ? $obj->getID()
+                        : $obj->kKategorie ?? null;
                 }
                 if ($slug !== null) {
                     return $full
@@ -458,7 +460,7 @@ class URL
                         );
                 }
 
-                return $prefix . '?k=' . $obj->kHersteller . self::getLocalizedFallback();
+                return $prefix . '?k=' . $obj->kKategorie . self::getLocalizedFallback();
 
             case \URLART_SEITE:
                 if (!empty($obj->cSeo)) {

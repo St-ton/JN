@@ -865,6 +865,8 @@ function getArticleByVariations($parentProductID, $selectedVariationValues)
         $combinations = [];
         $i            = 0;
         foreach ($selectedVariationValues as $id => $value) {
+            $id    = (int)$id;
+            $value = (int)$value;
             if (0 === $i++) {
                 $variationID    = $id;
                 $variationValue = $value;

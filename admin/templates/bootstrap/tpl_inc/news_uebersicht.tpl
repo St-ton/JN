@@ -289,27 +289,27 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNewsKategorie_arr|count}
-                                    {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                        <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
+                                {if $newsCategories|count > 0}
+                                    {foreach $newsCategories as $category}
+                                        <tr scope="row" class="tab_bg{$category@iteration % 2}{if $category->getLevel() > 1} hidden-soft{/if}" data-level="{$category->getLevel()}">
                                             <th class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
-                                                    <label class="custom-control-label" for="newscat-{$oNewsKategorie->getID()}"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$category->getName()}" value="{$category->getID()}" id="newscat-{$category->getID()}" />
+                                                    <label class="custom-control-label" for="newscat-{$category->getID()}"></label>
                                                 </div>
                                             </th>
-                                            <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                                <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
-                                                <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
+                                            <td class="TD2{if $category->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
+                                                <i class="fa fa-caret-right nav-toggle{if $category->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
+                                                <label for="newscat-{$category->getID()}">{$category->getName()|default:'???'}</label>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getSort()}</td>
+                                            <td class="text-center">{$category->getSort()}</td>
                                             <td class="text-center">
-                                                <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                                <i class="fal fa-{if $category->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
+                                            <td class="text-center">{$category->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$category->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -321,7 +321,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
+                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$category->getChildren() level=$category->getLevel()}
                                     {/foreach}
                                 {else}
                                     <tr>

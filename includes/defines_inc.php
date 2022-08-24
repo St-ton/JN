@@ -1,7 +1,7 @@
 <?php
 
 // Version
-define('APPLICATION_VERSION', '5.0.5');
+define('APPLICATION_VERSION', '5.0.6');
 define('APPLICATION_BUILD_SHA', '#DEV#');
 define('JTL_MIN_WAWI_VERSION', 100000);
 define('JTL_MIN_SHOP_UPDATE_VERSION', '4.2.0');

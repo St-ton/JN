@@ -136,6 +136,7 @@ class Frontend extends AbstractSession
         }
         $this->checkCustomerUpdate();
         $this->initLanguageURLs();
+        Shop::Container()->getAlertService()->initFromSession();
 
         return $this;
     }

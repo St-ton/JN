@@ -93,7 +93,7 @@
                     <div class="subheading1">{__('kampagneExtern')}</div>
                     <hr class="mb-3">
                     <form name="kampagnen" method="post" action="{$adminURL}{$route}">
-                        {if isset($nGroessterKey) && $nGroessterKey >= 1000}
+                        {if empty($oKampagne->nInternal)}
                             {$jtl_token}
                             <input type="hidden" name="tab" value="uebersicht" />
                             <input type="hidden" name="delete" value="1" />
@@ -165,12 +165,10 @@
                                         <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                     </div>
                                 </div>
-                                {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                    </div>
-                                {/if}
-                                <div class="{if !(isset($nGroessterKey) && $nGroessterKey >= 1000)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
                                     <a href="{$adminURL}{$route}?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary btn-block">{__('kampagneNewBTN')}</a>
                                 </div>
                             </div>

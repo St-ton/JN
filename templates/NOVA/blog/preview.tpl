@@ -9,8 +9,9 @@
                         {link href=$newsItem->getURL() title=$title}
                             <div class="newsbox-image">
                                 {include file='snippets/image.tpl'
-                                    item=$newsItem
-                                    square=false
+                                    item =$newsItem
+                                    square = false
+                                    sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 38vw, (min-width: 768px) 55vw, 100vw'
                                     alt="{$title} - {$newsItem->getMetaTitle()|escape:'quotes'}"}
                             </div>
                             <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}">

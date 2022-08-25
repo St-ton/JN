@@ -124,7 +124,7 @@ class NewsController extends AbstractBackendController
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNewsCat'));
             } elseif (Request::getInt('newskategorie_editieren') === 1) {
-                $this->actionEditCategory();
+                $category = $this->actionEditCategory();
             } elseif (!isset($_POST['kommentareloeschenSubmit'])
                 && Request::postInt('newskommentar_freischalten') > 0
             ) {
@@ -159,8 +159,8 @@ class NewsController extends AbstractBackendController
         if ($this->getStep() === 'news_uebersicht') {
             $this->actionOverview();
         } elseif ($this->getStep() === 'news_kategorie_erstellen') {
-            $this->smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                ->assign('oNewsKategorie', $category);
+            $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
+                ->assign('category', $category);
         }
         $this->alertService->addNotice($this->getMsg(), 'newsMessage');
         $this->alertService->addError($this->getErrorMsg(), 'newsError');
@@ -368,8 +368,8 @@ class NewsController extends AbstractBackendController
             $newsItem   = new Item($this->db, $this->cache);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
-                ->assign('cPlausiValue_arr', $validation)
-                ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                ->assign('validation', $validation)
+                ->assign('newsCategories', $this->getAllNewsCategories())
                 ->assign('oNews', $newsItem);
             $this->errorMsg .= \__('errorFillRequired');
 
@@ -589,7 +589,22 @@ class NewsController extends AbstractBackendController
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'] ?? '';
         $oldPreview   = null;
+        $error        = false;
         $flag         = \ENT_COMPAT | \ENT_HTML401;
+
+        $category   = $this->createCategoryFromPost($post, $languages);
+        $validation = $this->validateNewsCategory($category, $languages);
+        if (\count($validation) > 0) {
+            $this->setStep('news_kategorie_erstellen');
+            $this->smarty->assign('cPostVar_arr', $post)
+                ->assign('validation', $validation)
+                ->assign('newsCategories', $this->getAllNewsCategories())
+                ->assign('category', $category);
+            $this->errorMsg .= \__('errorFillRequired');
+
+            return $category;
+        }
+
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
         $newsCategory->kParent               = $parentID;
@@ -597,7 +612,6 @@ class NewsController extends AbstractBackendController
         $newsCategory->nAktiv                = $active;
         $newsCategory->dLetzteAktualisierung = (new DateTime())->format('Y-m-d H:i:s');
         $newsCategory->cPreviewImage         = $previewImage;
-
         if ($update === true) {
             $oldPreview = $this->db->select('tnewskategorie', 'kNewsKategorie', $categoryID)->cPreviewImage ?? null;
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
@@ -652,8 +666,7 @@ class NewsController extends AbstractBackendController
         foreach ($affected as $id) {
             $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
         }
-        $error = false;
-        $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
+        $dir = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
             $this->setErrorMsg(\__('errorDirCreate') . $dir);
@@ -777,6 +790,69 @@ class NewsController extends AbstractBackendController
             if (!empty($post['cName_' . $lang->getIso()])) {
                 unset($validation['cBetreff']);
                 break;
+            }
+        }
+
+        return $validation;
+    }
+
+    /**
+     * @param array           $post
+     * @param LanguageModel[] $languages
+     * @return CategoryInterface
+     */
+    private function createCategoryFromPost(array $post, array $languages): CategoryInterface
+    {
+        $category    = new Category($this->db);
+        $languageIDs = [];
+        foreach ($languages as $language) {
+            $iso           = $language->getCode();
+            $langID        = $language->getId();
+            $languageIDs[] = $langID;
+            $category->setName($post['cName_' . $iso] ?? '', $langID);
+            $category->setMetaDescription($post['cMetaDescription_' . $iso] ?? '', $langID);
+            $category->setMetaTitle($post['cMetaTitle_' . $iso] ?? '', $langID);
+            $category->setDescription($post['cBeschreibung_' . $iso] ?? '', $langID);
+            $category->setSEO($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setSlug($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setPreviewImage($post['cPreviewImage'] ?? '', $langID);
+            $category->setDateLastModified(\date_create());
+            $category->setIsActive((bool)($post['nAktiv'] ?? false));
+            $category->setSort((int)($post['nSort'] ?? 0));
+            $category->setParentID((int)($post['kParent'] ?? 0));
+            $category->setLevel((int)($post['lvl'] ?? 0));
+            $category->setLft((int)($post['lft'] ?? 0));
+            $category->setRght((int)($post['rght'] ?? 0));
+        }
+        $category->setLanguageIDs($languageIDs);
+        $category->setID((int)($post['kNewsKategorie'] ?? -1));
+
+        return $category;
+    }
+
+    /**
+     * @param CategoryInterface $category
+     * @param array             $languages
+     * @return array
+     */
+    private function validateNewsCategory(CategoryInterface $category, array $languages): array
+    {
+        $validation = [];
+        foreach ($languages as $language) {
+            $id       = $language->getId();
+            $seo      = $category->getSEO($id);
+            $hasError = false;
+            if (empty($seo) || empty(Seo::checkSeo($seo))) {
+                $hasError                                   = true;
+                $validation['cSeo_' . $language->getCode()] = 1;
+            }
+            if (empty($category->getName($id))) {
+                $validation['cName_' . $language->getCode()] = 1;
+                $hasError                                    = true;
+            }
+            if ($hasError === true) {
+                $validation['lang']   = $validation['lang'] ?? [];
+                $validation['lang'][] = $language->getCode();
             }
         }
 
@@ -1287,7 +1363,7 @@ class NewsController extends AbstractBackendController
         $this->getAdminSectionSettings(\CONF_NEWS);
         $this->smarty->assign('comments', $commentPagination->getPageItems())
             ->assign('oNews_arr', $itemPagination->getPageItems())
-            ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
+            ->assign('newsCategories', $categoryPagination->getPageItems())
             ->assign('oNewsMonatsPraefix_arr', $prefixes)
             ->assign('oPagiKommentar', $commentPagination)
             ->assign('oPagiNews', $itemPagination)
@@ -1304,7 +1380,7 @@ class NewsController extends AbstractBackendController
         if (\count($newsCategories) > 0) {
             $newsItem = new Item($this->db, $this->cache);
             $this->setStep('news_erstellen');
-            $this->smarty->assign('oNewsKategorie_arr', $newsCategories)
+            $this->smarty->assign('newsCategories', $newsCategories)
                 ->assign('oNews', $newsItem)
                 ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
         } else {
@@ -1402,7 +1478,7 @@ class NewsController extends AbstractBackendController
             }
         }
         if ($newsItemID > 0 && \count($newsCategories) > 0) {
-            $this->smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+            $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
                 ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
                 ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
             $this->setStep('news_editieren');
@@ -1413,7 +1489,7 @@ class NewsController extends AbstractBackendController
                 if ($this->hasOPCContent($languages, $newsItem->getID())) {
                     $this->setMsg(\__('OPC content available'));
                 }
-                $this->smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
                     ->assign('files', $this->getNewsImages($newsItem->getID(), self::UPLOAD_DIR))
                     ->assign('oNews', $newsItem);
             }
@@ -1450,9 +1526,9 @@ class NewsController extends AbstractBackendController
     }
 
     /**
-     * @return void
+     * @return Category
      */
-    private function actionEditCategory(): void
+    private function actionEditCategory(): Category
     {
         if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($this->deleteNewsImage(
@@ -1465,19 +1541,22 @@ class NewsController extends AbstractBackendController
                 $this->setErrorMsg(\__('errorNewsImageDelete'));
             }
         }
-        if (Request::getInt('kNewsKategorie') > 0) {
-            $this->setStep('news_kategorie_erstellen');
-            $category = new Category($this->db);
-            $category->load(Request::getInt('kNewsKategorie'), false);
-            if ($category->getID() > 0) {
-                $this->smarty->assign('oNewsKategorie', $category)
-                    ->assign('files', $this->getCategoryImages($category->getID()));
-            } else {
-                $this->setStep('news_uebersicht');
-                $this->setErrorMsg(
-                    \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
-                );
-            }
+        $category = new Category($this->db);
+        if (Request::getInt('kNewsKategorie') <= 0) {
+            return $category;
         }
+        $this->setStep('news_kategorie_erstellen');
+        $category->load(Request::getInt('kNewsKategorie'), false);
+        if ($category->getID() > 0) {
+            $this->smarty->assign('category', $category)
+                ->assign('files', $this->getCategoryImages($category->getID()));
+        } else {
+            $this->setStep('news_uebersicht');
+            $this->setErrorMsg(
+                \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
+            );
+        }
+
+        return $category;
     }
 }

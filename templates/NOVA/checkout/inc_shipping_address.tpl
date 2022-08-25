@@ -20,7 +20,7 @@
     {block name='checkout-inc-shipping-address-shipping-address'}
         <div id="select_shipping_address" class="collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
             {block name='checkout-inc-shipping-address-shipping-address-body'}
-                {if JTL\Session\Frontend::getCustomer()->getID() > 0&& isset($Lieferadressen) && $Lieferadressen|count > 0}
+                {if JTL\Session\Frontend::getCustomer()->getID() > 0 && isset($Lieferadressen) && $Lieferadressen|count > 0}
                     {row}
                     {col cols=12 md=4}
                     {block name='checkout-inc-shipping-address-legend-address'}
@@ -91,7 +91,7 @@
                         </label>
                     {/block}
                     {block name='checkout-inc-shipping-address-fieldset-register'}
-                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1}} show{/if}" aria-expanded="{if $kLieferadresse == -1}}true{else}false{/if}">
+                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
                             {block name='checkout-inc-shipping-address-legend-register'}
                                 <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
                             {/block}

@@ -15,7 +15,6 @@ use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
-use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\DB\DbInterface;
 use JTL\Extensions\Config\Item;
@@ -203,24 +202,25 @@ class AccountController
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
             $step = 'lieferadressen';
         }
-        if (Request::verifyGPCDataInt('editLieferadresse') > 0 &&
-            Request::verifyGPDataString('editAddress') === 'neu') {
-            $this->saveShippingAddress();
+        if (Request::verifyGPCDataInt('editLieferadresse') > 0
+            && Request::verifyGPDataString('editAddress') === 'neu'
+        ) {
+            $this->saveShippingAddress($customer);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('editAddress') > 0) {
-            $this->loadShippingAddress();
+            $this->loadShippingAddress($customer);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::postInt('updateAddress') > 0) {
-            $this->updateShippingAddress();
+            $this->updateShippingAddress($customer);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('deleteAddress') > 0) {
-            $this->deleteShippingAddress();
+            $this->deleteShippingAddress($customer);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 && Request::getInt('setAddressAsDefault') > 0) {
-            $this->setShippingAddressAsDefault();
+            $this->setShippingAddressAsDefault($customer);
         }
         if ($valid && Request::postInt('edit') === 1) {
-            $this->changeCustomerData();
+            $customer = $this->changeCustomerData($customer);
         }
         if ($valid && Request::postInt('pass_aendern') > 0) {
             $step = $this->changePassword($customerID);
@@ -265,10 +265,10 @@ class AccountController
                 ->assign('compareList', new ComparisonList());
         }
         if ($step === 'rechnungsdaten') {
-            $this->getCustomerFields();
+            $this->getCustomerFields($customer);
         }
         if ($step === 'lieferadressen') {
-            $this->getLieferadressen();
+            $this->getDeliveryAddresses();
         }
         $currency = Frontend::getCurrency();
         if ($step === 'bewertungen') {
@@ -934,8 +934,9 @@ class AccountController
                 $this->alertService->addError(Download::mapGetFileErrorCode($returnCode), 'downloadError');
             }
         }
-        $step                               = 'bestellung';
-        $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
+        $step                      = 'bestellung';
+        $customer                  = Frontend::getCustomer();
+        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
             ->assign('Lieferadresse', $order->Lieferadresse ?? null)
@@ -1050,7 +1051,7 @@ class AccountController
     /**
      * @return void
      */
-    private function getLieferadressen(): void
+    private function getDeliveryAddresses(): void
     {
         $customer   = Frontend::getCustomer();
         $customerID = $customer->getID();
@@ -1077,29 +1078,25 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function loadShippingAddress(): void
+    private function loadShippingAddress(Customer $customer): void
     {
-        $customer = Frontend::getCustomer();
-        $getData  = Text::filterXSS($_GET);
-        $data     = $this->db->selectSingleRow(
+        $getData = Text::filterXSS($_GET);
+        $data    = $this->db->selectSingleRow(
             'tlieferadressevorlage',
             'kLieferadresse',
             (int)$getData['editAddress'],
             'kKunde',
             $customer->getID()
         );
-
         if ($data === null) {
             \header('Location: '
-                . Shop::Container()->getLinkService()->getStaticRoute('jtl.php').'?editLieferadresse=1');
+                . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') . '?editLieferadresse=1');
             exit;
         }
-
-        $lieferAdresse = new DeliveryAddressTemplate($this->db, (int)$data->kLieferadresse);
-
-        $this->smarty->assign('Lieferadresse', $lieferAdresse)
+        $this->smarty->assign('Lieferadresse', new DeliveryAddressTemplate($this->db, (int)$data->kLieferadresse))
             ->assign('laender', ShippingMethod::getPossibleShippingCountries(
                 $customer->getGroupID(),
                 false,
@@ -1108,37 +1105,34 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function updateShippingAddress(): void
+    private function updateShippingAddress(Customer $customer): void
     {
-        $customer                            = $_SESSION['Kunde'];
-        $postData                            = Text::filterXSS($_POST);
-        $shipping_address                    = $postData['register']['shipping_address'];
-        $updateLieferAdresse                 = new DeliveryAddressTemplate($this->db);
-        $updateLieferAdresse->kLieferadresse = (int)$postData['updateAddress'];
-        $updateLieferAdresse->kKunde         = $customer->kKunde;
-        $updateLieferAdresse->cAnrede        = $shipping_address['anrede'];
-        $updateLieferAdresse->cTitel         = $shipping_address['titel'];
-        $updateLieferAdresse->cVorname       = $shipping_address['vorname'];
-        $updateLieferAdresse->cNachname      = $shipping_address['nachname'];
-        $updateLieferAdresse->cFirma         = $shipping_address['firma'];
-        $updateLieferAdresse->cZusatz        = $shipping_address['firmazusatz'];
-        $updateLieferAdresse->cStrasse       = $shipping_address['strasse'];
-        $updateLieferAdresse->cHausnummer    = $shipping_address['hausnummer'];
-        $updateLieferAdresse->cAdressZusatz  = $shipping_address['adresszusatz'];
-        $updateLieferAdresse->cLand          = $shipping_address['land'];
-        $updateLieferAdresse->cBundesland    = $shipping_address['bundesland'];
-        $updateLieferAdresse->cPLZ           = $shipping_address['plz'];
-        $updateLieferAdresse->cOrt           = $shipping_address['ort'];
+        $postData                 = Text::filterXSS($_POST);
+        $shipping_address         = $postData['register']['shipping_address'];
+        $template                 = new DeliveryAddressTemplate($this->db);
+        $template->kLieferadresse = (int)$postData['updateAddress'];
+        $template->kKunde         = $customer->kKunde;
+        $template->cAnrede        = $shipping_address['anrede'] ?? '';
+        $template->cTitel         = $shipping_address['titel'] ?? '';
+        $template->cVorname       = $shipping_address['vorname'] ?? '';
+        $template->cNachname      = $shipping_address['nachname'] ?? '';
+        $template->cFirma         = $shipping_address['firma'] ?? '';
+        $template->cZusatz        = $shipping_address['firmazusatz'] ?? '';
+        $template->cStrasse       = $shipping_address['strasse'] ?? '';
+        $template->cHausnummer    = $shipping_address['hausnummer'] ?? '';
+        $template->cAdressZusatz  = $shipping_address['adresszusatz'] ?? '';
+        $template->cLand          = $shipping_address['land'] ?? '';
+        $template->cBundesland    = $shipping_address['bundesland'] ?? '';
+        $template->cPLZ           = $shipping_address['plz'] ?? '';
+        $template->cOrt           = $shipping_address['ort'] ?? '';
         if (isset($postData['isDefault']) && (int)$postData['isDefault'] === 1) {
-            $updateLieferAdresse->nIstStandardLieferadresse = 1;
+            $template->nIstStandardLieferadresse = 1;
         }
-
-        $updateStatus = $updateLieferAdresse->update();
-        if ($updateStatus) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+        if ($template->update()) {
+            $this->alertService->addSuccess(
                 Shop::Lang()->get('updateAddressSuccessful', 'account data'),
                 'updateAddressSuccessful'
             );
@@ -1146,7 +1140,8 @@ class AccountController
 
         if (isset($postData['backToCheckout'])) {
             \header('Location: '
-                . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') . '?editRechnungsadresse=1');
+                . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php')
+                . '?editRechnungsadresse=1');
             exit;
         }
         \header('Location: '
@@ -1156,31 +1151,30 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function saveShippingAddress(): void
+    private function saveShippingAddress(Customer $customer): void
     {
-        $customer                         = $_SESSION['Kunde'];
-        $postData                         = Text::filterXSS($_POST);
-        $shipping_address                 = $postData['register']['shipping_address'];
-        $saveLieferAdresse                = new DeliveryAddressTemplate($this->db);
-        $saveLieferAdresse->kKunde        = $customer->kKunde;
-        $saveLieferAdresse->cTitel        = $shipping_address['titel'];
-        $saveLieferAdresse->cVorname      = $shipping_address['vorname'];
-        $saveLieferAdresse->cNachname     = $shipping_address['nachname'];
-        $saveLieferAdresse->cFirma        = $shipping_address['firma'];
-        $saveLieferAdresse->cZusatz       = $shipping_address['firmazusatz'];
-        $saveLieferAdresse->cStrasse      = $shipping_address['strasse'];
-        $saveLieferAdresse->cHausnummer   = $shipping_address['hausnummer'];
-        $saveLieferAdresse->cAdressZusatz = $shipping_address['adresszusatz'];
-        $saveLieferAdresse->cLand         = $shipping_address['land'];
-        $saveLieferAdresse->cBundesland   = $shipping_address['bundesland'];
-        $saveLieferAdresse->cPLZ          = $shipping_address['plz'];
-        $saveLieferAdresse->cOrt          = $shipping_address['ort'];
-        $saveStatus                       = $saveLieferAdresse->persist();
+        $postData                = Text::filterXSS($_POST);
+        $addressData             = $postData['register']['shipping_address'];
+        $template                = new DeliveryAddressTemplate($this->db);
+        $template->kKunde        = $customer->kKunde;
+        $template->cTitel        = $addressData['titel'] ?? '';
+        $template->cVorname      = $addressData['vorname'] ?? '';
+        $template->cNachname     = $addressData['nachname'] ?? '';
+        $template->cFirma        = $addressData['firma'] ?? '';
+        $template->cZusatz       = $addressData['firmazusatz'] ?? '';
+        $template->cStrasse      = $addressData['strasse'] ?? '';
+        $template->cHausnummer   = $addressData['hausnummer'] ?? '';
+        $template->cAdressZusatz = $addressData['adresszusatz'] ?? '';
+        $template->cLand         = $addressData['land'] ?? '';
+        $template->cBundesland   = $addressData['bundesland'] ?? '';
+        $template->cPLZ          = $addressData['plz'] ?? '';
+        $template->cOrt          = $addressData['ort'] ?? '';
+        $saveStatus              = $template->persist();
         if ($saveStatus) {
-            $this->alertService->addAlert(
-                Alert::TYPE_SUCCESS,
+            $this->alertService->addSuccess(
                 Shop::Lang()->get('saveAddressSuccessful', 'account data'),
                 'saveAddressSuccessful'
             );
@@ -1190,19 +1184,17 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function deleteShippingAddress(): void
+    private function deleteShippingAddress(Customer $customer): void
     {
-        $customer                = $_SESSION['Kunde'];
-        $getData                 = Text::filterXSS($_GET);
-        $address                 = new DeliveryAddressTemplate($this->db);
-        $address->kLieferadresse = (int)$getData['deleteAddress'];
-        $address->kKunde         = $customer->kKunde;
-        $deleteStatus            = $address->delete();
-        if ($deleteStatus) {
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
+        $getData                  = Text::filterXSS($_GET);
+        $template                 = new DeliveryAddressTemplate($this->db);
+        $template->kLieferadresse = (int)$getData['deleteAddress'];
+        $template->kKunde         = $customer->kKunde;
+        if ($template->delete()) {
+            $this->alertService->addNotice(
                 Shop::Lang()->get('deleteAddressSuccessful', 'account data'),
                 'deleteAddressSuccessful'
             );
@@ -1212,11 +1204,11 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function setShippingAddressAsDefault(): void
+    private function setShippingAddressAsDefault(Customer $customer): void
     {
-        $customer                                   = $_SESSION['Kunde'];
         $getData                                    = Text::filterXSS($_GET);
         $resetAllDefault                            = new stdClass();
         $resetAllDefault->nIstStandardLieferadresse = 0;
@@ -1236,11 +1228,11 @@ class AccountController
     }
 
     /**
+     * @param Customer $customer
      * @return void
      */
-    private function getCustomerFields(): void
+    private function getCustomerFields(Customer $customer): void
     {
-        $customer = $_SESSION['Kunde'];
         if (Request::postInt('edit') === 1) {
             $form               = new CustomerForm();
             $customer           = $form->getCustomerData($_POST, false, false);
@@ -1249,8 +1241,7 @@ class AccountController
             $customerAttributes = $customer->getCustomerAttributes();
         }
 
-        $this->smarty->assign('Kunde', $customer)
-            ->assign('customerAttributes', $customerAttributes)
+        $this->smarty->assign('customerAttributes', $customerAttributes)
             ->assign('laender', ShippingMethod::getPossibleShippingCountries(
                 $customer->getGroupID(),
                 false,
@@ -1292,9 +1283,11 @@ class AccountController
     }
 
     /**
-     * @return void
+     * @param Customer $customer
+     * @return Customer
+     * @throws Exception
      */
-    private function changeCustomerData(): void
+    private function changeCustomerData(Customer $customer): Customer
     {
         $postData = Text::filterXSS($_POST);
         $this->smarty->assign('cPost_arr', $postData);
@@ -1322,10 +1315,9 @@ class AccountController
                 $postData,
                 ['oKunde' => $customerData]
             )->checkLogging(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true);
-            DataHistory::saveHistory($_SESSION['Kunde'], $customerData, DataHistory::QUELLE_MEINKONTO);
+            DataHistory::saveHistory($customer, $customerData, DataHistory::QUELLE_MEINKONTO);
             $customerAttributes->save();
             $customerData->getCustomerAttributes()->load($customerData->getID());
-            $_SESSION['Kunde'] = $customerData;
             $this->alertService->addNotice(Shop::Lang()->get('dataEditSuccessful', 'login'), 'dataEditSuccessful');
             Tax::setTaxRates();
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
@@ -1333,8 +1325,12 @@ class AccountController
             ) {
                 Frontend::getCart()->gibGesamtsummeWarenLocalized();
             }
+            $customer = $customerData;
+            Frontend::getInstance()->setCustomer($customer);
         } else {
             $this->smarty->assign('fehlendeAngaben', $missingData);
         }
+
+        return $customer;
     }
 }

@@ -48,7 +48,7 @@
                                                         srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                  {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                  {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
+                                                        sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, 50vw'
                                                         data=["id"  => $imgcounter]
                                                         class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
                                                         fluid=true
@@ -69,7 +69,7 @@
                                                         srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                                  {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                                  {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
-                                                        sizes="auto"
+                                                        sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, 50vw'
                                                         data=["id"  => $imgcounter|cat:"_2nd"]
                                                         class='second'
                                                     }

@@ -81,6 +81,10 @@
   </FilesMatch>
 </IfModule>
 
+<IfModule mod_negotiation.c>
+  Options -Multiviews
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine on
 

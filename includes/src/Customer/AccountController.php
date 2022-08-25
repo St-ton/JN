@@ -700,6 +700,7 @@ class AccountController
                     $customerGroupID,
                     $languageID
                 );
+                $tmpProduct->isKonfigItem = ($item->kKonfigitem > 0);
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
@@ -715,6 +716,21 @@ class AccountController
                         null,
                         true,
                         $item->cResponsibility
+                    );
+                } elseif ($item->kKonfigitem > 0 && $item->kArtikel === 0) {
+                    $configItem = new Item($item->kKonfigitem);
+                    $cart->erstelleSpezialPos(
+                        $configItem->getName(),
+                        $item->fAnzahl,
+                        $configItem->getPreis(),
+                        $configItem->getSteuerklasse(),
+                        \C_WARENKORBPOS_TYP_ARTIKEL,
+                        false,
+                        !Frontend::getCustomerGroup()->isMerchant(),
+                        '',
+                        $item->cUnique,
+                        $configItem->getKonfigitem(),
+                        $configItem->getArtikelKey()
                     );
                 } else {
                     Shop::Container()->getAlertService()->addWarning(

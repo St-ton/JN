@@ -11,8 +11,11 @@
                                 {if !empty($oPosition->Artikel->cVorschaubildURL)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                            {image webp=true fluid=true lazy=true
-                                                src=$oPosition->Artikel->cVorschaubildURL
+                                            {include file='snippets/image.tpl'
+                                                item=$oPosition->Artikel
+                                                sizes='(min-width: 992px) 10vw, (min-width: 768px) 17vw, 25vw'
+                                                lazy=!$oPosition@first
+                                                square=false
                                                 alt=$oPosition->cName|trans|escape:'html'
                                             }
                                         {/link}

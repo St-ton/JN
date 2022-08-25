@@ -196,3 +196,6 @@ msgstr "Key"
 
 msgid "Invalid token."
 msgstr "Invalid token."
+
+msgid "Changelog"
+msgstr "Changelog"

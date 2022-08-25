@@ -87,6 +87,7 @@
                     {block name='blog-details-image'}
                         {include file='snippets/image.tpl'
                             item=$newsItem
+                            lazy=false
                             square=false
                             center=true
                             class="blog-details-image"

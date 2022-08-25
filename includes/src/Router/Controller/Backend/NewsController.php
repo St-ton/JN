@@ -80,11 +80,13 @@ class NewsController extends AbstractBackendController
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
 
-        $author    = Author::getInstance($this->db);
-        $category  = new Category($this->db);
-        $languages = LanguageHelper::getAllLanguages(0, true, true);
-        $valid     = Form::validateToken();
-        $tab       = Request::verifyGPDataString('tab');
+        $jumpToSection = Text::filterXSS(Request::verifyGPDataString('section'));
+        $jumpToSection = \is_string($jumpToSection) ? $jumpToSection : '';
+        $author        = Author::getInstance($this->db);
+        $category      = new Category($this->db);
+        $languages     = LanguageHelper::getAllLanguages(0, true, true);
+        $valid         = Form::validateToken();
+        $tab           = Request::verifyGPDataString('tab');
         $this->handleTab($tab);
         if ($valid && Request::postInt('einstellungen') === 1) {
             $this->actionConfig($languages);
@@ -112,8 +114,12 @@ class NewsController extends AbstractBackendController
                     return $this->newsRedirect('aktiv', $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
-            } elseif (Request::postInt('news_kategorie_speichern') === 1) {
+            } elseif (Request::postInt('news_kategorie_speichern') === 1
+                      && Request::postVar('speichern_und_weiter_bearbeiten_kategorie') === null) {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
+            } elseif (Request::postInt('speichern_und_weiter_bearbeiten_kategorie') === 1) {
+                $category = $this->createOrUpdateCategory($_POST, $languages);
+                $category = $this->actionEditCategory($category);
             } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
                 $this->setStep('news_uebersicht');
                 if (isset($_POST['kNewsKategorie'])) {
@@ -164,11 +170,12 @@ class NewsController extends AbstractBackendController
         }
         $this->alertService->addNotice($this->getMsg(), 'newsMessage');
         $this->alertService->addError($this->getErrorMsg(), 'newsError');
-
+    //dd($jumpToSection);
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
             ->assign('step', $this->getStep())
             ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
+            ->assign('jumpToSection', $jumpToSection)
             ->getResponse('news.tpl');
     }
 
@@ -1528,7 +1535,7 @@ class NewsController extends AbstractBackendController
     /**
      * @return Category
      */
-    private function actionEditCategory(): Category
+    private function actionEditCategory(?Category $category = null): Category
     {
         if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($this->deleteNewsImage(
@@ -1541,12 +1548,17 @@ class NewsController extends AbstractBackendController
                 $this->setErrorMsg(\__('errorNewsImageDelete'));
             }
         }
-        $category = new Category($this->db);
-        if (Request::getInt('kNewsKategorie') <= 0) {
-            return $category;
+
+        if ($category === null) {
+            $category = new Category($this->db);
+            if (Request::getInt('kNewsKategorie') <= 0) {
+                return $category;
+            }
         }
+        $categoryId = $category->getID() > 0 ? $category->getID() : Request::getInt('kNewsKategorie');
         $this->setStep('news_kategorie_erstellen');
-        $category->load(Request::getInt('kNewsKategorie'), false);
+        $category->load($categoryId, false);
+
         if ($category->getID() > 0) {
             $this->smarty->assign('category', $category)
                 ->assign('files', $this->getCategoryImages($category->getID()));

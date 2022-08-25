@@ -45,7 +45,6 @@
 <div id="content">
     <form name="news" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
-        kNewsKategorie: {$category->getID()}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_kategorie_speichern" value="1" />
         <input type="hidden" name="tab" value="kategorien" />
@@ -59,7 +58,7 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{if $category->getID() > 0}{__('newsCatEdit')} ({__('id')} {$category->getID()}){else}{__('newsCatCreate')}{/if}</div>
+                    <div id="katEdit" class="subheading1">{if $category->getID() > 0}{__('newsCatEdit')} ({__('id')} {$category->getID()}){else}{__('newsCatCreate')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
@@ -151,7 +150,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="card">
                         <div class="card-header">
-                            <div class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <div id="katSeo" class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
                             <hr class="mb-n3">
                         </div>
                         <div class="table-responsive">
@@ -199,6 +198,9 @@
                                     <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                                         <i class="fa fa-exclamation"></i> {__('Cancel')}
                                     </a>
+                                </div>
+                                <div class=" col-sm-6 col-xl-auto">
+                                    {include file='snippets/buttons/saveAndContinueButton.tpl' name='speichern_und_weiter_bearbeiten_kategorie' value=1}
                                 </div>
                                 <div class=" col-sm-6 col-xl-auto">
                                     <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">

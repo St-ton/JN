@@ -162,7 +162,7 @@ class Hersteller implements RoutableInterface
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false): self
+    public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false)
     {
         // noCache param to avoid problem with de-serialization of class properties with jtl search
         $this->currentLanguageID = $languageID > 0 ? $languageID : Shop::getLanguageID();

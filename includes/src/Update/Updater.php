@@ -256,7 +256,7 @@ class Updater
              * mistakes with missing versions in the version list from the API (fallback)
             */
             if ($targetVersion !== null && $targetVersion->greaterThan($this->getCurrentFileVersion())) {
-                $targetVersion = $this->getCurrentFileVersion();
+                $targetVersion = Version::parse($this->getCurrentFileVersion());
             }
         }
 

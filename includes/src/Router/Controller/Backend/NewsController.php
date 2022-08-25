@@ -170,7 +170,7 @@ class NewsController extends AbstractBackendController
         }
         $this->alertService->addNotice($this->getMsg(), 'newsMessage');
         $this->alertService->addError($this->getErrorMsg(), 'newsError');
-    //dd($jumpToSection);
+
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
             ->assign('step', $this->getStep())
@@ -323,7 +323,8 @@ class NewsController extends AbstractBackendController
                 } else {
                     $monthOverview           = new stdClass();
                     $monthOverview->kSprache = $langID;
-                    $monthOverview->cName    = \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
+                    $monthOverview->cName    =
+                        \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
                     $monthOverview->nMonat   = $month;
                     $monthOverview->nJahr    = $year;
 
@@ -363,7 +364,7 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (isset($post['continue']) && $post['continue'] === '1') {
+            if (Request::postInt('speichern_und_weiter_bearbeiten_news') === 1) {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {

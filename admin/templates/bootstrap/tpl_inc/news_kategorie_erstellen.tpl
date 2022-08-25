@@ -150,7 +150,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="card">
                         <div class="card-header">
-                            <div id="katSeo" class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <div id="katSeo_{$cISO}" class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
                             <hr class="mb-n3">
                         </div>
                         <div class="table-responsive">

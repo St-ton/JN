@@ -18,7 +18,7 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="subheading1">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
+                    <div id="newsEdit" class="subheading1">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
@@ -204,7 +204,7 @@
                         <div id="iso_{$cISO}" class="iso_wrapper">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                                    <div id="newsSeo_{$cISO}" class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
                                     <hr class="mb-n3">
                                 </div>
                                 <div class="card-body">
@@ -285,13 +285,9 @@
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>
-                    {if $oNews->getID() > 0}
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
-                                <i class="fal fa-save"></i> {__('saveAndContinue')}
-                            </button>
-                        </div>
-                    {/if}
+                    <div class="col-sm-6 col-xl-auto">
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' name='speichern_und_weiter_bearbeiten_news' value=1}
+                    </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}

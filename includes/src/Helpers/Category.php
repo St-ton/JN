@@ -504,7 +504,7 @@ class Category
         $prefix = Shop::getURL() . '/';
         $nodes  = \array_map(
             static function ($item) use ($functionAttributes, $localizedAttributes, $prefix) {
-                $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true, $prefix);
+                $item->cURL                = URL::buildURL($item, \URLART_KATEGORIE, true, $prefix);
                 $item->functionAttributes  = $functionAttributes;
                 $item->localizedAttributes = $localizedAttributes;
 

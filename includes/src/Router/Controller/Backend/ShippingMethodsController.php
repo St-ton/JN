@@ -64,6 +64,8 @@ class ShippingMethodsController extends AbstractBackendController
         $this->defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
         $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
         $this->countryService  = Shop::Container()->getCountryService();
+        $jumpToSection         = Text::filterXSS(Request::verifyGPDataString('section'));
+        $jumpToSection         = \is_string($jumpToSection) ? $jumpToSection : '';
 
         $postData                   = Text::filterXSS($_POST);
         $manager                    = new Manager(
@@ -124,6 +126,11 @@ class ShippingMethodsController extends AbstractBackendController
 
             if (Request::postInt('neueVersandart') > 0) {
                 $this->shippingMethod = $this->createOrUpdate($postData, $manager);
+                if (($this->shippingMethod->methodID ?? 0) > 0
+                    && Request::postVar('speichern_und_weiter_bearbeiten')
+                ) {
+                    $this->shippingType = $this->actionEdit($this->shippingMethod->methodID);
+                }
             }
             $this->cache->flush(CountryService::CACHE_ID);
         }
@@ -155,6 +162,7 @@ class ShippingMethodsController extends AbstractBackendController
                 : null)
             ->assign('step', $this->step)
             ->assign('route', $this->route)
+            ->assign('jumpToSection', $jumpToSection)
             ->getResponse('versandarten.tpl');
     }
 
@@ -734,10 +742,11 @@ class ShippingMethodsController extends AbstractBackendController
     /**
      * @return array|mixed
      */
-    private function actionEdit()
+    private function actionEdit(?int $shippingId = null)
     {
+        $shippingId           = $shippingId ?? Request::postInt('edit');
         $this->step           = 'neue Versandart';
-        $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', Request::postInt('edit'));
+        $this->shippingMethod = $this->db->select('tversandart', 'kVersandart', $shippingId);
         $mappedMethods        = $this->db->selectAll(
             'tversandartzahlungsart',
             'kVersandart',
@@ -916,6 +925,7 @@ class ShippingMethodsController extends AbstractBackendController
                 )
             );
             if ($methodID > 0) {
+                $this->shippingMethod->methodID = $methodID;
                 foreach ($mappedMethods as $mappedMethod) {
                     $mappedMethod->kVersandart = $methodID;
                     $this->db->insert('tversandartzahlungsart', $mappedMethod);
@@ -992,6 +1002,7 @@ class ShippingMethodsController extends AbstractBackendController
                     Request::postInt('kVersandart')
                 );
             }
+
             $this->smarty->assign(
                 'VersandartZahlungsarten',
                 $this->reorganizeObjectArray($mappedMethods, 'kZahlungsart')

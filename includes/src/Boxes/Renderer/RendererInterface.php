@@ -3,7 +3,7 @@
 namespace JTL\Boxes\Renderer;
 
 use JTL\Boxes\Items\BoxInterface;
-use JTL\Smarty\JTLSmartyTemplateClass;
+use Smarty_Internal_TemplateBase;
 
 /**
  * Interface RendererInterface
@@ -13,10 +13,10 @@ interface RendererInterface
 {
     /**
      * RendererInterface constructor.
-     * @param JTLSmartyTemplateClass $smarty
-     * @param BoxInterface|null      $box
+     * @param Smarty_Internal_TemplateBase $smarty
+     * @param BoxInterface|null            $box
      */
-    public function __construct($smarty, BoxInterface $box = null);
+    public function __construct(Smarty_Internal_TemplateBase $smarty, BoxInterface $box = null);
 
     /**
      * @return BoxInterface

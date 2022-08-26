@@ -3,6 +3,7 @@
 namespace JTL\News;
 
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -40,10 +41,10 @@ class Author
      * @param int|null $authorID
      * @return int|bool
      */
-    public function setAuthor(string $realm, int $contentID, int $authorID = null)
+    public function setAuthor(string $realm, int $contentID, int $authorID = null): bool|int
     {
         if ($authorID === null || $authorID === 0) {
-            $account = $GLOBALS['oAccount']->account();
+            $account = Shop::Container()->getAdminAccount()->account();
             if ($account !== false) {
                 $authorID = $account->kAdminlogin;
             }
@@ -53,7 +54,8 @@ class Author
                 'INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES (:realm, :aid, :cid)
                     ON DUPLICATE KEY UPDATE kAdminlogin = :aid',
-                ['realm' => $realm, 'aid' => $authorID, 'cid' => $contentID]
+                ['realm' => $realm, 'aid' => $authorID, 'cid' => $contentID],
+                ReturnType::LAST_INSERTED_ID
             );
         }
 

@@ -157,7 +157,7 @@
                 <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Variationsauswahl in Liste anzeigen" Key="variation_select_productlist_list" Type="select" Value="3">
-                <Option Value="N"><![CDATA[Nein]]></Option>
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
                 <Option Value="3"><![CDATA[max. 3]]></Option>
@@ -172,7 +172,7 @@
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
             <Setting Description="Variationsvorschau in Galerie anzeigen" Key="variation_select_productlist_gallery" Type="select" Value="2">
-                <Option Value="N"><![CDATA[Nein]]></Option>
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
             </Setting>

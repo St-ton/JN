@@ -78,13 +78,13 @@ msgid "Listen- und Gallerieansicht"
 msgstr "Listen- und Gallerieansicht"
 
 msgid "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
-msgstr "Filterposition"
+msgstr "Filterposition <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, ob Filtermöglichkeiten links in der Seitenleiste angezeigt oder in einem eigenen Fenster dargestellt werden.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
-msgid "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
-msgstr "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
+msgid "Artikel über die Artikelübersicht (Liste) in den Warenkorb legen"
+msgstr "Artikel aus Listenansicht heraus in Warenkorb legen <span data-html=\"true\" data-toggle=\"tooltip\" title=\" Blendet die Warenkorb-Schaltfläche in der Artikelvorschau der Listenansicht ein.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Filter immer ausgeklappt"
-msgstr "Filter immer ausklappen"
+msgstr "Filter immer ausklappen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, ob immer alle Filteroptionen der einzelnen Filterkategorien sichtbar sind oder diese erst ausgeklappt werden müssen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
 msgstr "Zusatzinfos zu Artikeln beim Hovern anzeigen"
@@ -125,20 +125,26 @@ msgstr "Pinterest-Link"
 msgid "Skype-Link"
 msgstr "Skype-Link"
 
-msgid "Variationsauswahl anzeigen"
-msgstr "Variationsauswahl anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Nur in Verbindung mit Zusatzinfos beim Hovern/Antippen. Die Galerieansicht ist auf max. zwei Variationen begrenzt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span></span>"
+msgid "Variationsauswahl in Liste anzeigen"
+msgstr "Anzahl der möglichen Variationen in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Listenansicht maximal angezeigt werden. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsauswahl in Galerie anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Es werden maximal zwei Variationen angezeigt, sofern diese vom Typ „Dropdown“, „Swatch“ oder „Textbox“ sind . Nur in Verbindung mit Zusatzinfos beim Hovern\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsvorschau in Galerieansicht anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
-msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Weitere Optionen können dennoch eingeblendet werden\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
-msgid "Anzahl der möglichen Variationswerte für Radio und Swatches"
-msgstr "Anzahl der möglichen Variationswerte für Radio und Swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"nur in Verbindung mit „Variationsauswahl anzeigen“. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Listenansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Galerieansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Galerieansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "keine Beschränkung"
+
+msgid "0 - Keine Auswahl anzeigen"
+msgstr "0 - Keine Auswahl anzeigen"
 
 msgid "max. 1"
 msgstr "max. 1"
@@ -204,7 +210,7 @@ msgid "Auf allen Seiten"
 msgstr "Auf allen Seiten"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
-msgstr "Suchfeld in Filtern anzeigen ab x Einträgen"
+msgstr "Suchfeld in Filtern anzeigen ab X Einträgen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Erlaubt die Suche nach dem gewünschten Filter, wenn mindestens so viele Filtermöglichkeiten wie hier angegeben vorliegen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
 msgstr "Menü in aktueller Kategorie öffnen <i class=\"fas fa-mobile-alt\"></i> "
@@ -348,4 +354,4 @@ msgid "Artikeldetailseite"
 msgstr "Artikeldetailseite"
 
 msgid "Slider für Swatches anzeigen, ab x Elementen"
-msgstr "Slider für Swatches anzeigen, ab x Elementen"
+msgstr "Slider für Swatches ab X Elementen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, ab wie vielen Elementen Swatches im Onlineshop über einen Slider dargestellt werden.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"

@@ -31,17 +31,38 @@ class DefaultParser
      */
     protected function validateCategoryHierarchy(array $hierarchy): ?stdClass
     {
-        $seo = null;
+        $seo   = null;
+        $left  = [];
+        $right = [];
         foreach ($hierarchy as $item) {
             $seo = $this->db->getSingleObject(
                 'SELECT *
                     FROM tseo
-                    WHERE cSeo = :slg',
-                ['slg' => $item]
+                    JOIN tkategorie
+                        ON tseo.cKey = :keyname
+                        AND tseo.kKey = tkategorie.kKategorie
+                    WHERE tseo.cSeo = :slg',
+                ['slg' => $item, 'keyname' => 'kKategorie']
             );
             if ($seo === null) {
                 break;
             }
+            $left[]  = (int)$seo->lft;
+            $right[] = (int)$seo->rght;
+        }
+        if ($seo === null) {
+            return null;
+        }
+        $test = \array_values($left);
+        \sort($test, \SORT_NUMERIC);
+        if ($test !== $left) {
+            return null;
+        }
+        $test = \array_values($right);
+        \sort($test, \SORT_NUMERIC);
+        $test = \array_reverse($test);
+        if ($test !== $right) {
+            return null;
         }
 
         return $seo;

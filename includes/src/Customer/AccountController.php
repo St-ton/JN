@@ -723,7 +723,10 @@ class AccountController
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
-                    $item->oWarenkorbPersPosEigenschaft_arr
+                    $item->oWarenkorbPersPosEigenschaft_arr,
+                    2,
+                    null,
+                    $item->cUnique
                 )) === 0) {
                     CartHelper::addProductIDToCart(
                         $item->kArtikel,

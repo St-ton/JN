@@ -533,7 +533,6 @@
                         {__('cancelWithIcon')}
                     </a>
                 </div>
-                <input type="hidden" name="section" value="" />
                 <div class="col-sm-6 col-xl-auto">
                     {include file='snippets/buttons/saveAndContinueButton.tpl' name='action' value='save-and-continue'}
                 </div>

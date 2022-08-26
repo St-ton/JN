@@ -97,19 +97,14 @@
         ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
     });
 
-    $( document ).scroll(function() {
-        $('#content_wrapper .subheading1').each(function(){
-            if( $(this).isOnScreen() ){
-                $('[name="section"]').val($(this).attr('id'));
-                return false;
-            }
-        });
+    $( document ).scroll(function () {
+        $('[name="scrollPosition"]').val(window.scrollY);
     });
 
-    {if $jumpToSection != ''}
-    var section = '{$jumpToSection}';
+    {if $scrollPosition != ''}
+    var scrollPosition = '{$scrollPosition}';
     $('html, body').animate({
-        scrollTop: $("#"+section).offset().top - 100
+        scrollTop: $("html").offset().top + scrollPosition
     }, 1000);
     {/if}
 </script>

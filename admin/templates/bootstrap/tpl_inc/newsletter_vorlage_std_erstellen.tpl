@@ -371,7 +371,6 @@
                         {/if}
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <input type="hidden" name="section" value="" />
                         {include file='snippets/buttons/saveAndContinueButton.tpl' name="speichern_und_weiter_bearbeiten_std"}
                     </div>
                     <div class="col-sm-6 col-xl-auto">

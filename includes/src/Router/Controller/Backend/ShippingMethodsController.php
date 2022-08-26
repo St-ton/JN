@@ -64,8 +64,8 @@ class ShippingMethodsController extends AbstractBackendController
         $this->defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
         $taxRateKeys           = \array_keys($_SESSION['Steuersatz']);
         $this->countryService  = Shop::Container()->getCountryService();
-        $jumpToSection         = Text::filterXSS(Request::verifyGPDataString('section'));
-        $jumpToSection         = \is_string($jumpToSection) ? $jumpToSection : '';
+        $scrollPosition        = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition        = \is_string($scrollPosition) ? $scrollPosition : '';
 
         $postData                   = Text::filterXSS($_POST);
         $manager                    = new Manager(
@@ -162,7 +162,7 @@ class ShippingMethodsController extends AbstractBackendController
                 : null)
             ->assign('step', $this->step)
             ->assign('route', $this->route)
-            ->assign('jumpToSection', $jumpToSection)
+            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('versandarten.tpl');
     }
 

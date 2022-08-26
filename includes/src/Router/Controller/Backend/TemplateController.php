@@ -333,11 +333,11 @@ class TemplateController extends AbstractBackendController
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $service       = Shop::Container()->getTemplateService();
-        $current       = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
-        $jumpToSection = Text::filterXSS(Request::verifyGPDataString('section'));
-        $jumpToSection = \is_string($jumpToSection) ? $jumpToSection : '';
-        $parentFolder  = null;
+        $service        = Shop::Container()->getTemplateService();
+        $current        = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
+        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+        $parentFolder   = null;
         $this->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
@@ -346,7 +346,7 @@ class TemplateController extends AbstractBackendController
         $preview        = $this->getPreview($templateConfig);
 
         return $this->smarty->assign('template', $current)
-            ->assign('jumpToSection', $jumpToSection)
+            ->assign('scrollPosition', $scrollPosition)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)

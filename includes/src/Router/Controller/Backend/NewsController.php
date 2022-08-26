@@ -80,13 +80,13 @@ class NewsController extends AbstractBackendController
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
 
-        $jumpToSection = Text::filterXSS(Request::verifyGPDataString('section'));
-        $jumpToSection = \is_string($jumpToSection) ? $jumpToSection : '';
-        $author        = Author::getInstance($this->db);
-        $category      = new Category($this->db);
-        $languages     = LanguageHelper::getAllLanguages(0, true, true);
-        $valid         = Form::validateToken();
-        $tab           = Request::verifyGPDataString('tab');
+        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+        $author         = Author::getInstance($this->db);
+        $category       = new Category($this->db);
+        $languages      = LanguageHelper::getAllLanguages(0, true, true);
+        $valid          = Form::validateToken();
+        $tab            = Request::verifyGPDataString('tab');
         $this->handleTab($tab);
         if ($valid && Request::postInt('einstellungen') === 1) {
             $this->actionConfig($languages);
@@ -175,7 +175,7 @@ class NewsController extends AbstractBackendController
             ->assign('route', $this->route)
             ->assign('step', $this->getStep())
             ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
-            ->assign('jumpToSection', $jumpToSection)
+            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('news.tpl');
     }
 

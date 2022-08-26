@@ -243,7 +243,7 @@ class Updater
             // if target version is greater than file version: set file version as target version to avoid
             // mistakes with missing versions in the version list from the API (fallback)
             if ($targetVersion?->greaterThan($this->getCurrentFileVersion()) ?? false) {
-                $targetVersion = $this->getCurrentFileVersion();
+                $targetVersion = Version::parse($this->getCurrentFileVersion());
             }
         }
 

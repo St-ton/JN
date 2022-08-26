@@ -750,7 +750,7 @@ class ShippingMethodsController extends AbstractBackendController
         $mappedMethods        = $this->db->selectAll(
             'tversandartzahlungsart',
             'kVersandart',
-            Request::postInt('edit'),
+            $shippingId,
             '*',
             'kZahlungsart'
         );

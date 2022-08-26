@@ -89,7 +89,7 @@
             <div class="col-12 col-xl-6 settings">
                 <div class="card">
                     <div class="card-header">
-                        <div id="shippingGeneral" class="subheading1">{__('general')}</div>
+                        <div class="subheading1">{__('general')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
@@ -248,7 +248,7 @@
                 <div class="card">
                     <div class="card-body">
                     {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                        <div id="shippingPriceScale" class="subheading1">{__('priceScale')}</div>
+                        <div class="subheading1">{__('priceScale')}</div>
                         <hr class="mb-3">
                         <ul class="jtl-list-group">
                             <li class="input-group">
@@ -310,7 +310,7 @@
                         </div>
                         <hr class="mb-3">
                     {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                        <div id="shippingPrice" class="subheading1">{__('shippingPrice')}</div>
+                        <div class="subheading1">{__('shippingPrice')}</div>
                         <hr class="mb-3">
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">
@@ -354,7 +354,7 @@
                             </div>
                         </div>
                         <div class="mt-7">
-                            <div id="shippingClasses" class="subheading1">{__('validOnShippingClasses')} {getHelpDesc cDesc=__('shippingclassDesc')}</div>
+                            <div class="subheading1">{__('validOnShippingClasses')} {getHelpDesc cDesc=__('shippingclassDesc')}</div>
                             <hr class="mb-3">
                             <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
                             <div id="ulVK" class="jtl-list-group">
@@ -454,7 +454,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <div id="shippingPaymentMethods" class="subheading1">{__('acceptedPaymentMethods')} {getHelpDesc cDesc=__('acceptedPaymentMethodsDesc')}</div>
+                        <div class="subheading1">{__('acceptedPaymentMethods')} {getHelpDesc cDesc=__('acceptedPaymentMethodsDesc')}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
@@ -497,7 +497,7 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <div id="shippingCountries" class="subheading1">{__('shipToCountries')}</div>
+                <div class="subheading1">{__('shipToCountries')}</div>
                 <hr class="mb-n3">
             </div>
             <div class="card-body">

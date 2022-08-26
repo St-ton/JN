@@ -58,7 +58,7 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div id="katEdit" class="subheading1">{if $category->getID() > 0}{__('newsCatEdit')} ({__('id')} {$category->getID()}){else}{__('newsCatCreate')}{/if}</div>
+                    <div class="subheading1">{if $category->getID() > 0}{__('newsCatEdit')} ({__('id')} {$category->getID()}){else}{__('newsCatCreate')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
@@ -150,7 +150,7 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="card">
                         <div class="card-header">
-                            <div id="katSeo_{$cISO}" class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <div class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
                             <hr class="mb-n3">
                         </div>
                         <div class="table-responsive">

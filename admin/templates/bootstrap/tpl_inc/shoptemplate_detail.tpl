@@ -33,7 +33,7 @@
         {foreach $templateConfig as $section}
             <div class="card">
                 <div class="card-header">
-                    <div id="{__($section->key)}" class="subheading1">{__($section->name)}</div>
+                    <div class="subheading1">{__($section->name)}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">

@@ -18,7 +18,7 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div id="newsEdit" class="subheading1">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
+                    <div class="subheading1">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
@@ -204,7 +204,7 @@
                         <div id="iso_{$cISO}" class="iso_wrapper">
                             <div class="card">
                                 <div class="card-header">
-                                    <div id="newsSeo_{$cISO}" class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                                    <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
                                     <hr class="mb-n3">
                                 </div>
                                 <div class="card-body">

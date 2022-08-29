@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.1\n"
+"X-Generator: Poedit 3.1.1\n"
 
 msgid "Allgemein"
 msgstr "Allgemein"
@@ -84,7 +84,7 @@ msgid "Artikel über die Artikelübersicht (Liste) in den Warenkorb legen"
 msgstr "Artikel aus Listenansicht heraus in Warenkorb legen <span data-html=\"true\" data-toggle=\"tooltip\" title=\" Blendet die Warenkorb-Schaltfläche in der Artikelvorschau der Listenansicht ein.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Filter immer ausgeklappt"
-msgstr "Filter immer ausklappen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, ob immer alle Filteroptionen der einzelnen Filterkategorien sichtbar sind oder diese erst ausgeklappt werden müssen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Filter initial immer ausklappen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, ob immer alle Filteroptionen der einzelnen Filterkategorien sichtbar sind oder diese erst ausgeklappt werden müssen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
 msgstr "Zusatzinfos zu Artikeln beim Hovern anzeigen"
@@ -132,13 +132,13 @@ msgid "Variationsauswahl in Galerie anzeigen"
 msgstr "Variationsvorschau in Galerieansicht anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
-msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der initial sichtbaren Filteroptionen je Filter <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig pro Filter angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste"
-msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Listenansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Listenansicht maximal für Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie"
-msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Galerieansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Galerieansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Galerieansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Galerieansicht maximal für Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "keine Beschränkung"
@@ -210,7 +210,7 @@ msgid "Auf allen Seiten"
 msgstr "Auf allen Seiten"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
-msgstr "Suchfeld in Filtern anzeigen ab X Einträgen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Erlaubt die Suche nach dem gewünschten Filter, wenn mindestens so viele Filtermöglichkeiten wie hier angegeben vorliegen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Filtersuche ab X Filteroptionen anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Erlaubt die Suche nach der gewünschten Filteroption, wenn mindestens so viele Filteroptionen wie hier angegeben vorliegen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
 msgstr "Menü in aktueller Kategorie öffnen <i class=\"fas fa-mobile-alt\"></i> "

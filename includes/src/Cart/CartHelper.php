@@ -892,6 +892,9 @@ class CartHelper
             }
             if ($price <= 0) {
                 $redirectParam[] = \R_UNVERKAEUFLICH;
+            } else {
+                $product->Preise->fVKNetto = Tax::getNet($price, $product->Preise->fUst, 4);
+                $product->Preise->berechneVKs();
             }
         }
         // Preis auf Anfrage

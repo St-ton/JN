@@ -64,6 +64,11 @@ class QueueEntry
     /**
      * @var DateTime
      */
+    public DateTime $cronStartTime;
+
+    /**
+     * @var DateTime
+     */
     public DateTime $startTime;
 
     /**
@@ -75,6 +80,16 @@ class QueueEntry
      * @var DateTime
      */
     public DateTime $lastFinish;
+
+    /**
+     * @var DateTime
+     */
+    public DateTime $nextStart;
+
+    /**
+     * @var int
+     */
+    public int $frequency;
 
     /**
      * compatibility only
@@ -104,11 +119,14 @@ class QueueEntry
         $this->tasksExecuted = (int)$data->tasksExecuted;
         $this->nLimitM       = (int)$data->taskLimit;
         $this->lastProductID = (int)$data->lastProductID;
+        $this->frequency     = (int)($data->frequency ?? 0);
         $this->jobType       = $data->jobType;
         $this->tableName     = $data->tableName;
         $this->foreignKey    = $data->foreignKey;
+        $this->cronStartTime = new DateTime($data->cronStartTime ?? '');
         $this->startTime     = new DateTime($data->startTime ?? '');
         $this->lastStart     = new DateTime($data->lastStart ?? '');
         $this->lastFinish    = new DateTime($data->lastFinish ?? '');
+        $this->nextStart     = new DateTime($data->nextStart ?? '');
     }
 }

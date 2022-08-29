@@ -1,10 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL;
 
 use DateTime;
 use InvalidArgumentException;
-use JTL\Cron\LegacyCron;
+use JTL\Cron\Job\Statusmail as StatusCron;
+use JTL\Cron\JobHydrator;
+use JTL\Cron\Type;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -102,19 +104,23 @@ class Statusmail
             \sprintf(\__('nextStatusMail'), $types[$frequency]['name'], $d->format('d.m.Y')),
             'nextStatusMail' . $frequency
         );
-        $cron = new LegacyCron(
-            0,
-            $id,
-            $frequency,
-            'statusemail',
-            'statusemail',
-            'tstatusemail',
-            'id',
-            $d->format('Y-m-d H:i:s'),
-            $d->format('H:i:s')
+        $job = new StatusCron(
+            $this->db,
+            Shop::Container()->getLogService(),
+            new JobHydrator(),
+            Shop::Container()->getCache()
         );
+        $job->setType(Type::STATUSMAIL);
+        $job->setFrequency($frequency);
+        $job->setStartDate($d->format('Y-m-d H:i:s'));
+        $job->setStartTime($d->format('H:i:s'));
+        $job->setNextStartDate($d->format('Y-m-d H:i:s'));
+        $job->setTableName('tstatusemail');
+        $job->setName('statusemail');
+        $job->setForeignKeyID($id);
+        $job->setForeignKey('id');
 
-        return $cron->speicherInDB() !== false;
+        return $job->insert() > 0;
     }
 
     /**

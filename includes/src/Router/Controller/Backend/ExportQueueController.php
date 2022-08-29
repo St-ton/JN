@@ -6,9 +6,11 @@ use Exception;
 use JTL\Backend\Permissions;
 use JTL\Catalog\Currency;
 use JTL\Cron\Checker;
+use JTL\Cron\Job\Export;
 use JTL\Cron\JobFactory;
-use JTL\Cron\LegacyCron;
+use JTL\Cron\JobHydrator;
 use JTL\Cron\Queue;
+use JTL\Cron\Type;
 use JTL\Customer\CustomerGroup;
 use JTL\Export\ExporterFactory;
 use JTL\Helpers\Form;
@@ -82,8 +84,7 @@ class ExportQueueController extends AbstractBackendController
             "SELECT texportformat.*, tcron.cronID, tcron.frequency, tcron.startDate, 
             DATE_FORMAT(tcron.startDate, '%d.%m.%Y %H:%i') AS dStart_de, tcron.lastStart, 
             DATE_FORMAT(tcron.lastStart, '%d.%m.%Y %H:%i') AS dLetzterStart_de,
-            DATE_FORMAT(DATE_ADD(ADDTIME(DATE(tcron.lastStart), tcron.startTime),
-                INTERVAL tcron.frequency HOUR), '%d.%m.%Y %H:%i')
+            DATE_FORMAT(COALESCE(tcron.nextStart, tcron.startDate), '%d.%m.%Y %H:%i')
             AS dNaechsterStart_de
             FROM texportformat
             JOIN tcron 
@@ -200,8 +201,9 @@ class ExportQueueController extends AbstractBackendController
 
     /**
      * @return stdClass[]
+     * @former holeAlleExportformate()
      */
-    private function holeAlleExportformate(): array
+    private function getExports(): array
     {
         $formats = $this->db->selectAll(
             'texportformat',
@@ -248,24 +250,24 @@ class ExportQueueController extends AbstractBackendController
             // Editieren
             $this->db->queryPrepared(
                 'DELETE tcron, tjobqueue
-                FROM tcron
-                LEFT JOIN tjobqueue 
-                    ON tjobqueue.cronID = tcron.cronID
-                WHERE tcron.cronID = :id',
+                    FROM tcron
+                    LEFT JOIN tjobqueue 
+                        ON tjobqueue.cronID = tcron.cronID
+                    WHERE tcron.cronID = :id',
                 ['id' => $cronID]
             );
-            $cron = new LegacyCron(
-                $cronID,
-                $exportID,
-                $freq,
-                $start . '_' . $exportID,
-                'exportformat',
-                'texportformat',
-                'kExportformat',
-                $this->formatDate($start),
-                $this->formatDate($start, true)
-            );
-            $cron->speicherInDB();
+            $job = new Export($this->db, Shop::Container()->getLogService(), new JobHydrator(), $this->cache);
+            $job->setID($cronID);
+            $job->setName('export' . $start . '_' . $exportID);
+            $job->setFrequency($freq);
+            $job->setStartDate($this->formatDate($start));
+            $job->setStartTime($this->formatDate($start, true));
+            $job->setForeignKey('kExportformat');
+            $job->setForeignKeyID($exportID);
+            $job->setTableName('texportformat');
+            $job->setNextStartDate($this->formatDate($start));
+            $job->setType(Type::EXPORT);
+            $job->insert();
 
             return 1;
         }
@@ -280,18 +282,17 @@ class ExportQueueController extends AbstractBackendController
         if (isset($cron->cronID) && $cron->cronID > 0) {
             return -1;
         }
-        $cron = new LegacyCron(
-            0,
-            $exportID,
-            $freq,
-            $start . '_' . $exportID,
-            'exportformat',
-            'texportformat',
-            'kExportformat',
-            $this->formatDate($start),
-            $this->formatDate($start, true)
-        );
-        $cron->speicherInDB();
+        $job = new Export($this->db, Shop::Container()->getLogService(), new JobHydrator(), $this->cache);
+        $job->setName('export' . $start . '_' . $exportID);
+        $job->setFrequency($freq);
+        $job->setStartDate($this->formatDate($start));
+        $job->setStartTime($this->formatDate($start, true));
+        $job->setForeignKey('kExportformat');
+        $job->setForeignKeyID($exportID);
+        $job->setTableName('texportformat');
+        $job->setNextStartDate($this->formatDate($start));
+        $job->setType(Type::EXPORT);
+        $job->insert();
 
         return 1;
     }
@@ -391,7 +392,7 @@ class ExportQueueController extends AbstractBackendController
      */
     private function stepCreate(JTLSmarty $smarty): string
     {
-        $smarty->assign('oExportformat_arr', $this->holeAlleExportformate());
+        $smarty->assign('oExportformat_arr', $this->getExports());
 
         return 'erstellen';
     }
@@ -409,7 +410,7 @@ class ExportQueueController extends AbstractBackendController
         if (\is_object($cron) && $cron->cronID > 0) {
             $step = 'erstellen';
             $smarty->assign('oCron', $cron)
-                ->assign('oExportformat_arr', $this->holeAlleExportformate());
+                ->assign('oExportformat_arr', $this->getExports());
         } else {
             $messages['error'] .= \__('errorWrongQueue');
             $step               = 'uebersicht';
@@ -597,7 +598,7 @@ class ExportQueueController extends AbstractBackendController
                     $freq = (int)($_SESSION['exportformatQueue.nStunden'] ?? 24);
                     $smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
                         ->assign('oExportformatQueueBearbeitet_arr', $this->getQueues($freq))
-                        ->assign('oExportformat_arr', $this->holeAlleExportformate())
+                        ->assign('oExportformat_arr', $this->getExports())
                         ->assign('nStunden', $freq);
                 }
                 break;

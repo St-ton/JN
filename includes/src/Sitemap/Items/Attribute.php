@@ -3,6 +3,8 @@
 namespace JTL\Sitemap\Items;
 
 use JTL\Helpers\URL;
+use JTL\Media\Image;
+use JTL\Media\Image\CharacteristicValue as CharacteristicValueImage;
 
 /**
  * Class Attribute
@@ -21,7 +23,15 @@ final class Attribute extends AbstractItem
         if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_MERKMALWERTBILDER_NORMAL . $this->data->image);
+        $image = CharacteristicValueImage::getThumb(
+            Image::TYPE_CHARACTERISTIC_VALUE,
+            (int)$this->data->kMerkmalWert,
+            $this->data,
+            Image::SIZE_LG
+        );
+        if (\mb_strlen($image) > 0) {
+            $this->setImage($this->baseImageURL . $image);
+        }
     }
 
     /**
@@ -37,6 +47,8 @@ final class Attribute extends AbstractItem
      */
     public function generateData($data, array $languages): void
     {
+        $data->val   = $data->cWert ?? null;
+        $data->image = $data->cBildpfad ?? null;
         $this->setData($data);
         $this->setPrimaryKeyID($data->kMerkmalWert);
         $this->setLanguageData($languages, $data->langID);

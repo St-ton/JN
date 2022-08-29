@@ -17,12 +17,12 @@ abstract class Job implements JobInterface
     /**
      * @var string
      */
-    private $type;
+    private string $type = '';
 
     /**
      * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @var int
@@ -47,32 +47,37 @@ abstract class Job implements JobInterface
     /**
      * @var int|null
      */
-    private $foreignKeyID;
+    private ?int $foreignKeyID = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $foreignKey = '';
+    private ?string $foreignKey = '';
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateLastStarted;
+    private ?DateTime $dateLastStarted = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $dateLastFinished;
+    private ?DateTime $dateLastFinished = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $startTime;
+    private ?DateTime $startTime = null;
 
     /**
-     * @var DateTime
+     * @var DateTime|null
      */
-    private $startDate;
+    private ?DateTime $startDate = null;
+
+    /**
+     * @var DateTime|null
+     */
+    private ?DateTime $nextStart = null;
 
     /**
      * @var string|null
@@ -85,9 +90,9 @@ abstract class Job implements JobInterface
     private bool $finished = false;
 
     /**
-     * @var bool|int
+     * @var int
      */
-    private $running = false;
+    private int $running = 0;
 
     /**
      * @var int
@@ -119,16 +124,19 @@ abstract class Job implements JobInterface
         $ins->frequency    = $this->getFrequency();
         $ins->startDate    = $this->getStartDate() === null
             ? '_DBNULL_'
-            : $this->getStartDate()->format('Y-m-d H:i');
+            : $this->getStartDate()->format('Y-m-d H:i:s');
         $ins->startTime    = $this->getStartTime() === null
             ? '_DBNULL_'
             : $this->getStartTime()->format('H:i:s');
         $ins->lastStart    = $this->getDateLastStarted() === null
             ? '_DBNULL_'
-            : $this->getDateLastStarted()->format('Y-m-d H:i');
+            : $this->getDateLastStarted()->format('Y-m-d H:i:s');
         $ins->lastFinish   = $this->getDateLastFinished() === null
             ? '_DBNULL_'
             : $this->getDateLastFinished()->format('Y-m-d H:i');
+        $ins->nextStart    = $this->getNextStartDate() === null
+            ? '_DBNULL_'
+            : $this->getNextStartDate()->format('Y-m-d H:i:s');
 
         $this->setCronID($this->db->insert('tcron', $ins));
 
@@ -330,6 +338,24 @@ abstract class Job implements JobInterface
     /**
      * @inheritdoc
      */
+    public function getNextStartDate(): ?DateTime
+    {
+        return $this->nextStart;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNextStartDate($date): void
+    {
+        $this->nextStart = \is_string($date)
+            ? new DateTime($date)
+            : $date;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getForeignKeyID(): ?int
     {
         return $this->foreignKeyID;
@@ -450,7 +476,7 @@ abstract class Job implements JobInterface
      */
     public function isRunning(): bool
     {
-        return (int)$this->running === 1;
+        return $this->running === 1;
     }
 
     /**

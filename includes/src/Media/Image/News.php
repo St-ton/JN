@@ -83,7 +83,7 @@ class News extends AbstractImage
                 $id = (int)$exp[0];
             }
         }
-        $req   = static::getRequest($type, $id, $source, $size, $number, $source);
+        $req   = static::getRequest($type, $id, $mixed, $size, $number, $source);
         $thumb = $req->getThumb($size);
         $raw   = $req->getRaw();
         if (!\file_exists(\PFAD_ROOT . $thumb) && ($raw === null || !\file_exists($raw))) {
@@ -117,16 +117,16 @@ class News extends AbstractImage
      */
     public function getPathByID($id, int $number = null): ?string
     {
-        $item = $this->db->getSingleObject(
+        $path = $this->db->getSingleObject(
             'SELECT cPreviewImage AS path
                 FROM tnews
                 WHERE kNews = :cid LIMIT 1',
             ['cid' => $id]
         )->path ?? null;
 
-        return empty($item->path)
+        return empty($path)
             ? null
-            : \str_replace(\PFAD_NEWSBILDER, '', $item->path);
+            : \str_replace(\PFAD_NEWSBILDER, '', $path);
     }
 
     /**

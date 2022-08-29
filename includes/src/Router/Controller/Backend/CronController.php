@@ -2,7 +2,7 @@
 
 namespace JTL\Router\Controller\Backend;
 
-use DateTime;
+use DateTimeImmutable;
 use JTL\Backend\Permissions;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
@@ -114,10 +114,11 @@ class CronController extends AbstractBackendController
         } catch (\InvalidArgumentException) {
             return -1;
         }
+        $startDate = new DateTimeImmutable($post['date']);
+        $startTime = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
         if ($class === Statusmail::class) {
-            $jobs  = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
             $count = 0;
-            foreach ($jobs as $job) {
+            foreach ($this->db->selectAll('tstatusemail', 'nAktiv', 1) as $job) {
                 $ins               = new stdClass();
                 $ins->frequency    = (int)$job->nInterval * 24;
                 $ins->jobType      = $post['type'];
@@ -125,8 +126,9 @@ class CronController extends AbstractBackendController
                 $ins->tableName    = 'tstatusemail';
                 $ins->foreignKey   = 'id';
                 $ins->foreignKeyID = (int)$job->id;
-                $ins->startTime    = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-                $ins->startDate    = (new DateTime($post['date']))->format('Y-m-d H:i:s');
+                $ins->startTime    = $startTime;
+                $ins->startDate    = $startDate->format('Y-m-d H:i:s');
+                $ins->nextStart    = $startDate->format('Y-m-d') . ' ' . $startTime;
                 $this->db->insert('tcron', $ins);
                 ++$count;
             }
@@ -137,8 +139,9 @@ class CronController extends AbstractBackendController
         $ins->frequency = (int)$post['frequency'];
         $ins->jobType   = $post['type'];
         $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
-        $ins->startTime = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-        $ins->startDate = (new DateTime($post['date']))->format('Y-m-d H:i:s');
+        $ins->startTime = $startTime;
+        $ins->startDate = $startDate->format('Y-m-d H:i:s');
+        $ins->nextStart = $startDate->format('Y-m-d') . ' ' . $startTime;
 
         return $this->db->insert('tcron', $ins);
     }

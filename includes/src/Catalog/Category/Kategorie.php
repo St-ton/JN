@@ -102,7 +102,7 @@ class Kategorie implements RoutableInterface
     private bool $hasImage = false;
 
     /**
-     * @var array[]
+     * @var array
      */
     private array $categoryFunctionAttributes = [];
 
@@ -216,7 +216,7 @@ class Kategorie implements RoutableInterface
     {
         $customerGroupID = $customerGroupID
             ?: Frontend::getCustomerGroup()->getID()
-            ?: CustomerGroup::getDefaultGroupID();
+                ?: CustomerGroup::getDefaultGroupID();
         $languageID      = $languageID ?: $this->currentLanguageID;
         $cacheID         = \CACHING_GROUP_CATEGORY . '_' . $id . '_cg_' . $customerGroupID;
         if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
@@ -329,22 +329,11 @@ class Kategorie implements RoutableInterface
             ['cid' => $this->getID()]
         )->groupBy('kSprache')->toArray();
 
-        if (\array_key_exists('-1', $attributes)) {
-            foreach ($attributes as $langID => &$localizedAttributes) {
-                $langID = (int)$langID;
-                if ($langID === -1) {
-                    continue;
-                }
-                foreach ($attributes['-1'] as $attribute) {
-                    $localizedAttributes[] = $attribute;
-                }
-            }
-            unset($localizedAttributes, $attributes['-1']);
-        }
         foreach ($attributes as $langID => $localizedAttributes) {
-            $langID                                    = (int)$langID;
-            $this->categoryFunctionAttributes[$langID] = [];
-            $this->categoryAttributes[$langID]         = [];
+            $langID = (int)$langID;
+            if ($langID > 0) {
+                $this->categoryAttributes[$langID] = [];
+            }
             foreach ($localizedAttributes as $attribute) {
                 $attribute->nSort                 = (int)$attribute->nSort;
                 $attribute->bIstFunktionsAttribut = (int)$attribute->bIstFunktionsAttribut;
@@ -359,7 +348,7 @@ class Kategorie implements RoutableInterface
                 }
                 $idx = \mb_convert_case($attribute->cName, \MB_CASE_LOWER);
                 if ($attribute->bIstFunktionsAttribut) {
-                    $this->categoryFunctionAttributes[$langID][$idx] = $attribute->cWert;
+                    $this->categoryFunctionAttributes[$idx] = $attribute->cWert;
                 } else {
                     $this->categoryAttributes[$langID][$idx] = $attribute;
                 }
@@ -696,11 +685,32 @@ class Kategorie implements RoutableInterface
     /**
      * @param string   $name
      * @param int|null $idx
-     * @return string|null
+     * @return stdClass|null
      */
-    public function getCategoryAttribute(string $name, int $idx = null): ?string
+    public function getCategoryAttribute(string $name, int $idx = null): ?stdClass
     {
         return $this->categoryAttributes[$idx ?? $this->currentLanguageID][$name] ?? null;
+    }
+
+    /**
+     * @param string   $name
+     * @param stdClass $attribute
+     * @param int|null $idx
+     * @return void
+     */
+    public function setCategoryAttribute(string $name, stdClass $attribute, int $idx = null): void
+    {
+        $this->categoryAttributes[$idx ?? $this->currentLanguageID][$name] = $attribute;
+    }
+
+    /**
+     * @param array    $attributes
+     * @param int|null $idx
+     * @return void
+     */
+    public function setCategoryAttributes(array $attributes, int $idx = null): void
+    {
+        $this->categoryAttributes[$idx ?? $this->currentLanguageID] = $attributes;
     }
 
     /**
@@ -719,36 +729,43 @@ class Kategorie implements RoutableInterface
      */
     public function getCategoryAttributes(int $idx = null): array
     {
-        return $this->categoryAttributes[$idx ?? $this->currentLanguageID];
+        return $this->categoryAttributes[$idx ?? $this->currentLanguageID] ?? [];
     }
 
     /**
-     * @param string   $name
-     * @param int|null $idx
+     * @param string $name
      * @return string|null
      */
-    public function getCategoryFunctionAttribute(string $name, int $idx = null): ?string
+    public function getCategoryFunctionAttribute(string $name): ?string
     {
-        return $this->categoryFunctionAttributes[$idx ?? $this->currentLanguageID][$name] ?? null;
+        return $this->categoryFunctionAttributes[$name] ?? null;
     }
 
     /**
-     * @param string   $name
-     * @param int|null $idx
-     * @return string|null
-     */
-    public function getCategoryFunctionAttributeValue(string $name, int $idx = null): ?string
-    {
-        return $this->categoryFunctionAttributes[$idx ?? $this->currentLanguageID][$name]->cWert ?? null;
-    }
-
-    /**
-     * @param int|null $idx
      * @return array
      */
-    public function getCategoryFunctionAttributes(int $idx = null): array
+    public function getCategoryFunctionAttributes(): array
     {
-        return $this->categoryFunctionAttributes[$idx ?? $this->currentLanguageID];
+        return $this->categoryFunctionAttributes;
+    }
+
+    /**
+     * @param string $name
+     * @param string $attribute
+     * @return void
+     */
+    public function setCategoryFunctionAttribute(string $name, string $attribute): void
+    {
+        $this->categoryFunctionAttributes[$name] = $attribute;
+    }
+
+    /**
+     * @param array $attributes
+     * @return array
+     */
+    public function setCategoryFunctionAttributes(array $attributes): array
+    {
+        return $this->categoryFunctionAttributes = $attributes;
     }
 
     /**

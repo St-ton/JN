@@ -492,7 +492,7 @@ class MenuItem
         if (isset($data->customImgName)) {
             $this->customImgName = $data->customImgName;
         }
-        $this->setURL($data->cSeo ?? '');
+        $this->setURL($data->cURL ?? $data->cSeo ?? '');
         $this->setSeo($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);

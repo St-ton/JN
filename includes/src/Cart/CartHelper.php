@@ -819,13 +819,20 @@ class CartHelper
      * @param array          $attributes
      * @param int            $accuracy
      * @param string|null    $token
+     * @param string|null    $itemUnique
      * @return array
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      * @former pruefeFuegeEinInWarenkorb()
      */
-    public static function addToCartCheck($product, $qty, $attributes, int $accuracy = 2, ?string $token = null): array
-    {
+    public static function addToCartCheck(
+        $product,
+        $qty,
+        $attributes,
+        int $accuracy = 2,
+        ?string $token = null,
+        ?string $itemUnique = null
+    ): array {
         $cart          = Frontend::getCart();
         $productID     = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
@@ -880,8 +887,14 @@ class CartHelper
         }
         if (isset($product->FunktionsAttribute[\FKT_ATTRIBUT_VOUCHER_FLEX])) {
             $price = (float)Request::postVar(\FKT_ATTRIBUT_VOUCHER_FLEX . 'Value');
+            if ($price <= 0 && $itemUnique !== null) {
+                $price = (float)Frontend::get('customCalculated_' . $itemUnique, $price);
+            }
             if ($price <= 0) {
                 $redirectParam[] = \R_UNVERKAEUFLICH;
+            } else {
+                $product->Preise->fVKNetto = Tax::getNet($price, $product->Preise->fUst, 4);
+                $product->Preise->berechneVKs();
             }
         }
         // Preis auf Anfrage
@@ -1482,7 +1495,7 @@ class CartHelper
         if ((int)$qty !== $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
         }
-        $redirectParam = self::addToCartCheck($product, $qty, $attrValues);
+        $redirectParam = self::addToCartCheck($product, $qty, $attrValues, 2, null, $unique);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen
         // wenn 'Preis auf Anfrage' eingestellt ist
         if (!empty($configItemID) && isset($redirectParam[0]) && $redirectParam[0] === \R_AUFANFRAGE) {

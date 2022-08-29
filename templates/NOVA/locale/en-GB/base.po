@@ -125,20 +125,26 @@ msgstr "Pinterest link"
 msgid "Skype-Link"
 msgstr "Skype link"
 
-msgid "Variationsauswahl anzeigen"
-msgstr "Show available variations <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Only effective if additional item information for hovering/tapping is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgid "Variationsauswahl in Liste anzeigen"
+msgstr "Anzahl der möglichen Variationen in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Listenansicht maximal angezeigt werden. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Show available variations in gallery view <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Show a maximum of two variations. Only effective if additional item information for hovering/tapping is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Variationsvorschau in Galerieansicht anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
-msgstr "Number of visible filter options in boxes <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Additional options can still be viewed\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
-msgid "Anzahl der möglichen Variationswerte für Radio und Swatches"
-msgstr "Number of possible variation values for radio buttons and swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"only effective when \"Show available variations\" is active\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Listenansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie"
+msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Galerieansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Galerieansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "no restriction"
+
+msgid "0 - Keine Auswahl anzeigen"
+msgstr "0 - Keine Auswahl anzeigen"
 
 msgid "max. 1"
 msgstr "max. of 1"

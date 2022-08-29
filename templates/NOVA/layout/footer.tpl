@@ -3,17 +3,15 @@
     {block name='layout-footer-content-all-closingtags'}
 
         {block name='layout-footer-aside'}
-            {if ($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp || $Einstellungen.template.theme.left_sidebar === 'Y')
-                && !$bExclusive
-                && $boxesLeftActive
-            }
+            {if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim)
+                && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
                 {block name='layout-footer-content-productlist-col-closingtag'}
                     </div>{* /col *}
-                {/block}
-                {block name='layout-footer-sidepanel-left'}
-                    <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-lg-0 dropdown-full-width">
-                        {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
-                    </aside>
+                    {block name='layout-footer-sidepanel-left'}
+                         <aside id="sidepanel_left" class="sidepanel-left d-print-none col-12 col-lg-4 col-xl-3 order-last order-lg-first dropdown-full-width">
+                             {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
+                         </aside>
+                    {/block}
                 {/block}
                 {block name='layout-footer-content-productlist-row-closingtag'}
                     </div>{* /row *}

@@ -315,7 +315,9 @@
                     buttonCaption=__('save')
                     title=__('settings')
                     tab='einstellungen'
-                    showNonConf=true}
+                    showNonConf=true
+                    saveAndContinue=true
+                }
             </div>
         </div>
     </div>

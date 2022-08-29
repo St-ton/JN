@@ -30,6 +30,8 @@ class BoxController extends AbstractBackendController
      */
     private ?array $visibility = null;
 
+    private ?int $currentBoxID = null;
+
     /**
      * @var array
      */
@@ -86,6 +88,9 @@ class BoxController extends AbstractBackendController
 
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_BOXEN, $_POST);
+            if (Request::postVar('speichern_und_weiter_bearbeiten_einstellungen')) {
+                $this->smarty->assign('cTab', 'einstellungen');
+            }
         } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
             switch ($_REQUEST['action']) {
                 case 'delete-invisible':
@@ -141,6 +146,9 @@ class BoxController extends AbstractBackendController
         $this->alertService->addWarning(\__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
         $this->getAdminSectionSettings(\CONF_BOXEN);
 
+        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+
         return $smarty->assign('validPageTypes', self::getMappedValidPageTypes())
             ->assign('bBoxenAnzeigen', $this->getVisibility($pageID))
             ->assign('oBoxenLeft_arr', $boxList['left'] ?? [])
@@ -154,6 +162,7 @@ class BoxController extends AbstractBackendController
             ->assign('nPage', $pageID)
             ->assign('invisibleBoxes', $this->getInvisibleBoxes())
             ->assign('route', $this->route)
+            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('boxen.tpl');
     }
 
@@ -221,6 +230,10 @@ class BoxController extends AbstractBackendController
         } else {
             $this->alertService->addError(\__('errorBoxCreate'), 'errorBoxCreate');
         }
+
+        if ($this->currentBoxID > 0 && Request::postVar('speichern_und_weiter_bearbeiten')) {
+            $this->actionEditMode($this->currentBoxID);
+        }
     }
 
     /**
@@ -254,6 +267,7 @@ class BoxController extends AbstractBackendController
                 return $e->isSpecial() === false;
             }
         );
+
         $this->smarty->assign('oEditBox', $box)
             ->assign('revisionData', $revisionData)
             ->assign('oLink_arr', $links);
@@ -301,6 +315,10 @@ class BoxController extends AbstractBackendController
             $this->alertService->addSuccess(\__('successBoxEdit'), 'successBoxEdit');
         } else {
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
+        }
+
+        if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+            $this->actionEditMode($boxID);
         }
     }
 
@@ -500,7 +518,8 @@ class BoxController extends AbstractBackendController
             ? (int)$template->kCustomID
             : 0;
 
-        $boxID = $this->db->insert('tboxen', $box);
+        $boxID              = $this->db->insert('tboxen', $box);
+        $this->currentBoxID = $boxID;
         if ($boxID) {
             $visibility       = new stdClass();
             $visibility->kBox = $boxID;

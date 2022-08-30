@@ -231,7 +231,10 @@ class BoxController extends AbstractBackendController
             $this->alertService->addError(\__('errorBoxCreate'), 'errorBoxCreate');
         }
 
-        if ($this->currentBoxID > 0 && Request::postVar('speichern_und_weiter_bearbeiten')) {
+        if ($this->currentBoxID !== null
+            && $this->currentBoxID > 0
+            && Request::postVar('speichern_und_weiter_bearbeiten')
+        ) {
             $this->actionEditMode($this->currentBoxID);
         }
     }

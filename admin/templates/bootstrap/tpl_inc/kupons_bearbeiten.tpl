@@ -77,7 +77,9 @@
                                        id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if}
                                        value="1" data-toggle="collapse" data-target="#massCreationCouponsBody"
                                        aria-expanded="{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1}true{else}false{/if}"
-                                       aria-controls="massCreationCouponsBody"/>
+                                       aria-controls="massCreationCouponsBody"
+                                       onchange="document.getElementById('saveAndContinueButton').disabled = this.checked;"
+                                />
                                 <label class="custom-control-label" for="couponCreation">{__('couponsCreation')}</label>
                             </div>
                         </label>
@@ -534,7 +536,12 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
-                    {include file='snippets/buttons/saveAndContinueButton.tpl' name='action' value='save-and-continue'}
+                    {include
+                        file='snippets/buttons/saveAndContinueButton.tpl'
+                        id='saveAndContinueButton'
+                        name='action'
+                        value='save-and-continue'
+                    }
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="speichern">

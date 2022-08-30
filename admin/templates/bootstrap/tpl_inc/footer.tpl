@@ -101,7 +101,7 @@
         $('[name="scrollPosition"]').val(window.scrollY);
     });
 
-    {if $scrollPosition != ''}
+    {if isset($scrollPosition) && $scrollPosition != ''}
     var scrollPosition = '{$scrollPosition}';
     $('html, body').animate({
         scrollTop: $("html").offset().top + scrollPosition

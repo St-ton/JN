@@ -3,12 +3,15 @@
 namespace JTL\Template;
 
 use Exception;
-use JTL\Shop;
 use Less_Parser;
 use RuntimeException;
 use ScssPhp\ScssPhp\OutputStyle;
 use ScssPhp\ScssPhp\Compiler as BaseCompiler;
 
+/**
+ * Class Compiler
+ * @package JTL\Template
+ */
 class Compiler
 {
     /**
@@ -92,7 +95,7 @@ class Compiler
             throw new Exception(\sprintf(\__('Cannot write to file %s.'), $target));
         }
         $baseDir  = $directory . 'sass/';
-        $critical = \strpos($file, '_crit') !== false;
+        $critical = \str_contains($file, '_crit');
         $compiler = new BaseCompiler();
         if ($critical === true) {
             $compiler->setOutputStyle(OutputStyle::COMPRESSED);
@@ -106,12 +109,12 @@ class Compiler
         }
         $compiler->addImportPath($baseDir);
         $content = \file_get_contents($file);
-        if (\mb_strpos($content, '//#customVariables#') !== false) {
+        if (\str_contains($content, '//#customVariables#')) {
             $content = \str_replace('//#customVariables#', $this->customVariables, $content);
         } else {
             $content = $this->customVariables . "\n" . $content;
         }
-        if (\mb_strpos($content, '//#customContent#') !== false) {
+        if (\str_contains($content, '//#customContent#')) {
             $content = \str_replace('//#customContent#', $this->customContent, $content);
         } else {
             $content .= "\n" . $this->customContent;
@@ -163,7 +166,7 @@ class Compiler
     {
         $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme);
         $compareDir = \str_replace(['/', '\\'], \DIRECTORY_SEPARATOR, \realpath(\PFAD_ROOT . \PFAD_TEMPLATES));
-        if ($directory === false || \strpos($directory . '/', $compareDir) !== 0) {
+        if ($directory === false || !\str_starts_with($directory . '/', $compareDir)) {
             throw new Exception(\sprintf(\__('Theme %s does not exist.'), $theme));
         }
 

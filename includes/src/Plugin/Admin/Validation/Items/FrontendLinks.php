@@ -29,8 +29,8 @@ final class FrontendLinks extends AbstractItem
         }
         foreach ($node as $i => $link) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -43,11 +43,7 @@ final class FrontendLinks extends AbstractItem
             ) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
-            \preg_match(
-                '/[\w\- ]+/u',
-                $link['Name'],
-                $hits1
-            );
+            \preg_match('/[\w\- ]+/u', $link['Name'], $hits1);
             $len = \mb_strlen($link['Name']);
             if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                 return InstallCode::INVALID_FRONTEND_LINK_NAME;
@@ -64,7 +60,7 @@ final class FrontendLinks extends AbstractItem
                 if (!isset($link['Template']) || \mb_strlen($link['Template']) === 0) {
                     return InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
                 }
-                \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['Template'], $hits1);
+                \preg_match('/[a-zA-Z\d\/_\-.]+.tpl/', $link['Template'], $hits1);
                 if (\mb_strlen($hits1[0]) === \mb_strlen($link['Template'])) {
                     if (!\file_exists($tplDir . $link['Template'])) {
                         return InstallCode::MISSING_FRONTEND_LINK_TEMPLATE;
@@ -77,7 +73,7 @@ final class FrontendLinks extends AbstractItem
                 if (\mb_strlen($link['FullscreenTemplate']) === 0) {
                     return InstallCode::INVALID_FRONTEND_LINK_TEMPLATE_FULLSCREEN_TEMPLATE;
                 }
-                \preg_match('/[a-zA-Z0-9\/_\-.]+.tpl/', $link['FullscreenTemplate'], $hits1);
+                \preg_match('/[a-zA-Z\d\/_\-.]+.tpl/', $link['FullscreenTemplate'], $hits1);
                 if (\mb_strlen($hits1[0]) === \mb_strlen($link['FullscreenTemplate'])) {
                     if (!\file_exists($tplDir . $link['FullscreenTemplate'])) {
                         return InstallCode::MISSING_FULLSCREEN_TEMPLATE_FILE;
@@ -104,8 +100,8 @@ final class FrontendLinks extends AbstractItem
             foreach ($link['LinkLanguage'] as $l => $localized) {
                 $l         = (string)$l;
                 $localized = $this->sanitizeLocalizationData($localized);
-                \preg_match('/[0-9]+\sattr/', $l, $hits1);
-                \preg_match('/[0-9]+/', $l, $hits2);
+                \preg_match('/\d+\sattr/', $l, $hits1);
+                \preg_match('/\d+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                     $len = \mb_strlen($localized['iso']);
@@ -113,52 +109,32 @@ final class FrontendLinks extends AbstractItem
                         return InstallCode::INVALID_FRONEND_LINK_ISO;
                     }
                 } elseif (\mb_strlen($hits2[0]) === \mb_strlen($l)) {
-                    \preg_match('/[a-zA-Z0-9- ]+/', $localized['Seo'], $hits1);
+                    \preg_match('/[a-zA-Z\d\- ]+/', $localized['Seo'], $hits1);
                     $len = \mb_strlen($localized['Seo']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_SEO;
                     }
-                    \preg_match(
-                        '/[\w\- ]+/u',
-                        $localized['Name'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\- ]+/u', $localized['Name'], $hits1);
                     $len = \mb_strlen($localized['Name']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_NAME;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['Title'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['Title'], $hits1);
                     $len = \mb_strlen($localized['Title']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_TITLE;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['MetaTitle'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['MetaTitle'], $hits1);
                     $len = \mb_strlen($localized['MetaTitle']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
-                    \preg_match(
-                        '/[\w,\- ]+/u',
-                        $localized['MetaKeywords'],
-                        $hits1
-                    );
+                    \preg_match('/[\w,\- ]+/u', $localized['MetaKeywords'], $hits1);
                     $len = \mb_strlen($localized['MetaKeywords']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_KEYWORDS;
                     }
-                    \preg_match(
-                        '/[\w\,\.\;\- ]+/u',
-                        $localized['MetaDescription'],
-                        $hits1
-                    );
+                    \preg_match('/[\w\,\.\;\- ]+/u', $localized['MetaDescription'], $hits1);
                     $len = \mb_strlen($localized['MetaDescription']);
                     if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_DESCRIPTION;

@@ -1,6 +1,7 @@
 <?php
 
 use JTL\Checkout\Bestellung;
+use JTL\Checkout\OrderHandler;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
@@ -12,11 +13,12 @@ use JTL\Shopsetting;
 require_once __DIR__ . '/../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 
-define('NO_MODE', 0);
-define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
+const NO_MODE = 0;
+const NO_PFAD = PFAD_LOGFILES . 'notify.log';
 
 $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
+$order               = null;
 $Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
 $conf                = Shopsetting::getInstance()->getAll();
 $cEditZahlungHinweis = '';
@@ -86,7 +88,8 @@ if (strlen($cSh) > 0) {
         ?? '---');
     if (!isset($paymentSession->kBestellung) || !$paymentSession->kBestellung) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
-        $order         = fakeBestellung();
+        $orderHandler  = new OrderHandler(Shop::Container()->getDB(), Frontend::getCustomer(), Frontend::getCart());
+        $order         = $orderHandler->fakeOrder();
         $paymentMethod = isset($_SESSION['Zahlungsart']->cModulId)
             ? LegacyMethod::create($_SESSION['Zahlungsart']->cModulId)
             : null;
@@ -103,7 +106,7 @@ if (strlen($cSh) > 0) {
 
             if ($paymentMethod->finalizeOrder($order, $sessionHash, $_REQUEST)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab finalizeOrder passed');
-                $order = finalisiereBestellung($order->cBestellNr ?? '');
+                $order = $orderHandler->finalizeOrder($order->cBestellNr ?? '');
                 $session->cleanUp();
 
                 if ($order->kBestellung > 0) {
@@ -111,7 +114,7 @@ if (strlen($cSh) > 0) {
                     $upd               = new stdClass();
                     $upd->nBezahlt     = 1;
                     $upd->dZeitBezahlt = 'NOW()';
-                    $upd->kBestellung  = (int)$order->kBestellung;
+                    $upd->kBestellung  = $order->kBestellung;
                     Shop::Container()->getDB()->update('tzahlungsession', 'cZahlungsID', $sessionHash, $upd);
                     $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
                     if ($paymentMethod->redirectOnPaymentSuccess() === true) {

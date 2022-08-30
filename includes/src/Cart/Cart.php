@@ -12,6 +12,7 @@ use JTL\Checkout\Versandart;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
+use JTL\Helpers\Form;
 use JTL\Helpers\Order;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -26,7 +27,7 @@ use function Functional\select;
 use function Functional\some;
 
 /**
- * Class Warenkorb
+ * Class Cart
  * @package JTL\Cart
  */
 class Cart
@@ -84,12 +85,12 @@ class Cart
     /**
      * @var array
      */
-    public static $updatedPositions = [];
+    public static array $updatedPositions = [];
 
     /**
      * @var array
      */
-    public static $deletedPositions = [];
+    public static array $deletedPositions = [];
 
     /**
      * @var array
@@ -109,7 +110,7 @@ class Cart
      */
     public function __sleep()
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'config';
         });
     }
@@ -480,7 +481,7 @@ class Cart
                             $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    static function ($item) use ($propertyValueID) {
+                                    static function ($item) use ($propertyValueID): bool {
                                         return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
@@ -1260,7 +1261,7 @@ class Cart
      */
     public function posTypEnthalten(int $type): bool
     {
-        return some($this->PositionenArr, static function ($e) use ($type) {
+        return some($this->PositionenArr, static function ($e) use ($type): bool {
             return (int)$e->nPosTyp === $type;
         });
     }
@@ -1496,7 +1497,7 @@ class Cart
             }
             try {
                 $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 continue;
             }
             CartItem::setEstimatedDelivery(
@@ -1616,7 +1617,7 @@ class Cart
             if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
                 $Kupon = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                     $this->updateCouponValue();
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
                     $isValid = true;
@@ -1638,7 +1639,7 @@ class Cart
                 $Kupon   = Shop::Container()->getDB()->select('tkupon', 'kKupon', (int)$_SESSION['Kupon']->kKupon);
                 $isValid = false;
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === Kupon::TYPE_STANDARD) {
-                    $isValid = (\angabenKorrekt(Kupon::checkCoupon($Kupon)) === 1);
+                    $isValid = (Form::hasNoMissingData(Kupon::checkCoupon($Kupon)) === 1);
                 }
             }
             if ($isValid === false) {
@@ -1673,9 +1674,9 @@ class Cart
             $maxPreisKupon = $this->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
         if ((int)$coupon->nGanzenWKRabattieren === 0
-            && $coupon->fWert > \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr)
+            && $coupon->fWert > CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr)
         ) {
-            $maxPreisKupon = \gibGesamtsummeKuponartikelImWarenkorb($coupon, $this->PositionenArr);
+            $maxPreisKupon = CartHelper::getCouponProductsTotal($coupon, $this->PositionenArr);
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];

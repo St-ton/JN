@@ -82,9 +82,9 @@ class Helper
             // Es war min. einmal der Seiten Link Plugin Handler enthalten um einen Frontend Link anzusteuern
             if ($exists) {
                 $plugin                                = new stdClass();
-                $plugin->kPlugin                       = (int)$hook->kPlugin;
+                $plugin->kPlugin                       = $hook->kPlugin;
                 $plugin->nVersion                      = $hook->nVersion;
-                $plugin->nPriority                     = (int)$hook->nPriority;
+                $plugin->nPriority                     = $hook->nPriority;
                 $plugin->cDateiname                    = \PLUGIN_SEITENHANDLER;
                 $hooks[\HOOK_SEITE_PAGE_IF_LINKART][0] = $plugin;
             }
@@ -133,7 +133,7 @@ class Helper
 
             try {
                 return $loader->init((int)$plugin->kPlugin, false, $langID);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
         }
@@ -165,7 +165,7 @@ class Helper
                 'cPluginID, cVerzeichnis, nVersion, bExtension',
                 'nPrio'
             );
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $plugins = Shop::Container()->getDB()->getObjects(
                 'SELECT cPluginID, cVerzeichnis, nVersion, 0 AS bExtension
                     FROM tplugin
@@ -298,9 +298,7 @@ class Helper
      */
     public static function getIDByPluginID(string $pluginID): int
     {
-        $plugin = Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID);
-
-        return (int)($plugin->kPlugin ?? 0);
+        return (int)(Shop::Container()->getDB()->select('tplugin', 'cPluginID', $pluginID)->kPlugin ?? 0);
     }
 
     /**
@@ -459,7 +457,7 @@ class Helper
         if (!isset(self::$bootstrapper[$id])) {
             try {
                 $plugin = $loader->init($id);
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
                 return null;
             }
             if ($plugin->isBootstrap() === false) {

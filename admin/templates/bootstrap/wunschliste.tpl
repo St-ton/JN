@@ -47,7 +47,7 @@
                                 <tr>
                                     <td>
                                         {if $CWunschliste->nOeffentlich == 1}
-                                            <a href="{$shopURL}/index.php?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
+                                            <a href="{$shopURL}/?wlid={$CWunschliste->cURLID}" rel="external">{$CWunschliste->cName}</a>
                                         {else}
                                             <span>{$CWunschliste->cName}</span>
                                         {/if}
@@ -57,7 +57,7 @@
                                     <td class="text-center">{$CWunschliste->Datum}</td>
                                     <td class="text-center">
                                         <span {if $CWunschliste->isOnline}data-toggle="tooltip" title="{__('wishlistCustomerOnline')}{/if}">
-                                            <a href="{$adminURL}/wunschliste.php?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
+                                            <a href="{$adminURL}{$route}?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
                                                class="btn btn-link px-2 delete-confirm {if $CWunschliste->isOnline} disabled {/if}"
                                                data-modal-body="{__('wishlistDelete')|sprintf:$CWunschliste->cName:$name}"
                                                data-toggle="tooltip"
@@ -95,7 +95,7 @@
                             {foreach $CWunschlistePos_arr as $CWunschlistePos}
                                 <tr>
                                     <td>
-                                        <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
+                                        <a href="{$shopURL}/?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
                                     </td>
                                     <td class="text-center">{$CWunschlistePos->Anzahl}</td>
                                     <td class="text-center">{$CWunschlistePos->Datum}</td>
@@ -127,7 +127,7 @@
                             {foreach $CWunschlisteVersand_arr as $CWunschlisteVersand}
                                 <tr>
                                     <td>
-                                        <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
+                                        <a href="{$shopURL}/?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
                                     </td>
                                     <td>{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
                                     <td class="text-center">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>
@@ -147,7 +147,7 @@
                 {include
                     file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action='wunschliste.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

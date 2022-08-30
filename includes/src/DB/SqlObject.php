@@ -11,37 +11,37 @@ class SqlObject
     /**
      * @var string
      */
-    private $statement = '';
+    private string $statement = '';
 
     /**
      * @var array
      */
-    private $params = [];
+    private array $params = [];
 
     /**
      * @var string
      */
-    private $select = '';
+    private string $select = '';
 
     /**
      * @var string
      */
-    private $join = '';
+    private string $join = '';
 
     /**
      * @var string
      */
-    private $where = '';
+    private string $where = '';
 
     /**
      * @var string
      */
-    private $order = '';
+    private string $order = '';
 
     /**
      * @var string
      */
-    private $groupBy = '';
+    private string $groupBy = '';
 
     /**
      * @return string
@@ -81,7 +81,7 @@ class SqlObject
      */
     public function addParam(string $param, $value): void
     {
-        if (\strpos($param, ':') !== 0) {
+        if (!\str_starts_with($param, ':')) {
             $param = ':' . $param;
         }
         $this->params[$param] = $value;

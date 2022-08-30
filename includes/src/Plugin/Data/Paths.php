@@ -54,6 +54,11 @@ class Paths
     private string $adminURL;
 
     /**
+     * @var string
+     */
+    private string $backendURL;
+
+    /**
      * @var string|null
      */
     private ?string $licencePath = null;
@@ -220,6 +225,22 @@ class Paths
     public function setAdminURL(string $adminURL): void
     {
         $this->adminURL = $adminURL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendURL(): string
+    {
+        return $this->backendURL;
+    }
+
+    /**
+     * @param string $backendURL
+     */
+    public function setBackendURL(string $backendURL): void
+    {
+        $this->backendURL = $backendURL;
     }
 
     /**

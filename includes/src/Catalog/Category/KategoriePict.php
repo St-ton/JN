@@ -8,6 +8,7 @@ use JTL\Shop;
 /**
  * Class KategoriePict
  * @package JTL\Catalog\Category
+ * @deprecated since 5.2.0
  */
 class KategoriePict
 {
@@ -37,6 +38,7 @@ class KategoriePict
      */
     public function __construct(int $id = 0)
     {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
         if ($id > 0) {
             $this->loadFromDB($id);
         }

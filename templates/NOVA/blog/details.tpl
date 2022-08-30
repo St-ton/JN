@@ -46,13 +46,13 @@
                             {block name='blog-details-sub-news'}
                                 <span class="news-categorylist">
                                     {if $newsItem->getAuthor() === null}/{/if}
-                                    {foreach $oNewsKategorie_arr as $oNewsKategorie}
+                                    {foreach $oNewsKategorie_arr as $newsCategory}
                                         {link itemprop="articleSection"
-                                            href="{$oNewsKategorie->cURLFull}"
-                                            title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}"
-                                            class="{if !$oNewsKategorie@last}mr-1{/if} d-inline-block"
+                                            href="{$newsCategory->getURL()}"
+                                            title="{$newsCategory->getDescription()|strip_tags|escape:'html'|truncate:60}"
+                                            class="{if !$newsCategory@last}mr-1{/if} d-inline-block"
                                         }
-                                            {$oNewsKategorie->cName}
+                                            {$newsCategory->getName()}
                                         {/link}
                                     {/foreach}
                                 </span>
@@ -87,6 +87,7 @@
                     {block name='blog-details-image'}
                         {include file='snippets/image.tpl'
                             item=$newsItem
+                            lazy=false
                             square=false
                             center=true
                             class="blog-details-image"

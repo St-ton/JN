@@ -42,27 +42,24 @@
                         {if $hasItems}
                             {block name='snippets-categories-recursive-categories-has-items'}
                                 <li class="nav-item {if $hasItems}dropdown{/if} {if $category->getID() == $activeId
-                                    || ((isset($activeParent)
-                                            && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->getID())}active{/if}">
+                                    || (isset($activeParent)
+                                        && $activeParent->getID() === $category->getID())}active{/if}">
                                     {block name='snippets-categories-recursive-categories-has-items-link'}
                                         <span class="nav-link {if $i !== 0}snippets-categories-nav-link-child{/if} dropdown-toggle"
                                               role="button"
                                               data-toggle="collapse"
                                               data-target="#category_box_{$category->getID()}_{$i}-{$id}"
                                               aria-expanded="{if $category->getID() == $activeId
-                                                   || ((isset($activeParent)
-                                                   && isset($activeParent->kKategorie))
-                                                   && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
+                                                   || (isset($activeParent)
+                                                   && $activeParent->getID() === $category->getID())}true{else}false{/if}">
                                             <a href="{$category->getURL()}" onclick="event.stopPropagation();">{$category->getShortName()}</a>
                                         </span>
                                     {/block}
                                     {block name='snippets-categories-recursive-categories-has-items-nav'}
                                         {collapse id="category_box_{$category->getID()}_{$i}-{$id}"
                                              class="snippets-categories-collapse {if $category->getID() == $activeId
-                                                || ((isset($activeParent)
-                                                && isset($activeParent->kKategorie))
-                                                && $activeParent->kKategorie == $category->getID())}show{/if}"}
+                                                || (isset($activeParent)
+                                                && $activeParent->getID() === $category->getID())}show{/if}"}
                                             {nav vertical=true}
                                                 {block name='snippets-categories-recursive-include-categories-recursive'}
                                                     {if $category->hasChildren()}
@@ -92,9 +89,8 @@
                         {else}
                             {block name='snippets-categories-recursive-has-not-items'}
                                 {navitem class="{if $category->getID() == $activeId
-                                        || ((isset($activeParent)
-                                            && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->getID())} active{/if}"
+                                        || (isset($activeParent)
+                                        && $activeParent->getID() === $category->getID())} active{/if}"
                                     href=$category->getURL()
                                     router-class="{if $i !== 0}snippets-categories-nav-link-child{/if}"
                                 }

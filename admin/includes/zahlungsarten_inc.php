@@ -6,9 +6,11 @@ use JTL\Shop;
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getNames(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $res = [];
     if (!$paymentMethodID) {
         return $res;
@@ -24,9 +26,11 @@ function getNames(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getshippingTimeNames(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $res = [];
     if (!$paymentMethodID) {
         return $res;
@@ -42,9 +46,11 @@ function getshippingTimeNames(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getHinweisTexte(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $messages = [];
     if (!$paymentMethodID) {
         return $messages;
@@ -64,9 +70,11 @@ function getHinweisTexte(int $paymentMethodID): array
 /**
  * @param int $paymentMethodID
  * @return array
+ * @deprecated since 5.2.0
  */
 function getHinweisTexteShop(int $paymentMethodID): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $messages = [];
     if (!$paymentMethodID) {
         return $messages;
@@ -86,9 +94,11 @@ function getHinweisTexteShop(int $paymentMethodID): array
 /**
  * @param stdClass|Zahlungsart $paymentMethod
  * @return array
+ * @deprecated since 5.2.0
  */
 function getGesetzteKundengruppen($paymentMethod): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     $ret = [];
     if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
         $ret[0] = true;
@@ -105,33 +115,10 @@ function getGesetzteKundengruppen($paymentMethod): array
 /**
  * @param string $query
  * @return array
+ * @deprecated since 5.2.0
  */
 function getPaymentMethodsByName(string $query): array
 {
-    $paymentMethodsByName = [];
-    foreach (explode(',', $query) as $string) {
-        // Leerzeichen löschen
-        $string = trim($string);
-        // Nur Eingaben mit mehr als 2 Zeichen
-        if (mb_strlen($string) > 2) {
-            $data = Shop::Container()->getDB()->getObjects(
-                'SELECT za.kZahlungsart, za.cName
-                    FROM tzahlungsart AS za
-                    LEFT JOIN tzahlungsartsprache AS zs 
-                        ON zs.kZahlungsart = za.kZahlungsart
-                        AND zs.cName LIKE :search
-                    WHERE za.cName LIKE :search 
-                    OR zs.cName LIKE :search
-                    GROUP BY za.kZahlungsart',
-                ['search' => '%' . $string . '%']
-            );
-            foreach ($data as $paymentMethodByName) {
-                $paymentMethodByName->kZahlungsart = (int)$paymentMethodByName->kZahlungsart;
-
-                $paymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;
-            }
-        }
-    }
-
-    return $paymentMethodsByName;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return [];
 }

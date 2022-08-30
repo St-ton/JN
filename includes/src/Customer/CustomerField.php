@@ -7,7 +7,7 @@ use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
- * Class CustomerFields
+ * Class CustomerField
  * @package JTL\Customer
  */
 class CustomerField
@@ -53,7 +53,7 @@ class CustomerField
     private $values = [];
 
     /** @var array */
-    public static $mapping = [
+    public static array $mapping = [
         'kKundenfeld'         => 'ID',
         'kSprache'            => 'LangID',
         'cName'               => 'Label',

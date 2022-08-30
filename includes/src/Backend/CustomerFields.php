@@ -24,11 +24,6 @@ class CustomerFields
     protected array $customerFields = [];
 
     /**
-     * @var int
-     */
-    protected int $langID;
-
-    /**
      * @var DbInterface
      */
     private DbInterface $db;
@@ -39,10 +34,9 @@ class CustomerFields
      * @param int              $langID
      * @param DbInterface|null $db
      */
-    public function __construct(int $langID, DbInterface $db = null)
+    public function __construct(protected int $langID, DbInterface $db = null)
     {
-        $this->langID = $langID;
-        $this->db     = $db ?? Shop::Container()->getDB();
+        $this->db = $db ?? Shop::Container()->getDB();
         $this->loadFields($langID);
     }
 

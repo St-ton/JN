@@ -13,37 +13,37 @@ class StateSQL implements StateSQLInterface
     /**
      * @var array
      */
-    protected $having = [];
+    protected array $having = [];
 
     /**
      * @var array
      */
-    protected $conditions = [];
+    protected array $conditions = [];
 
     /**
      * @var array
      */
-    protected $joins = [];
+    protected array $joins = [];
 
     /**
      * @var array
      */
-    protected $select = ['tartikel.kArtikel'];
+    protected array $select = ['tartikel.kArtikel'];
 
     /**
      * @var string|null
      */
-    private $orderBy = '';
+    private ?string $orderBy = '';
 
     /**
      * @var string
      */
-    private $limit = '';
+    private string $limit = '';
 
     /**
      * @var array
      */
-    private $groupBy = ['tartikel.kArtikel'];
+    private array $groupBy = ['tartikel.kArtikel'];
 
     /**
      * StateSQL constructor.

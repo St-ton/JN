@@ -56,79 +56,74 @@ class LanguageHelper
      *
      * @var int
      */
-    public $kSprachISO = 0;
+    public int $kSprachISO = 0;
 
     /**
      * compatibility only
      *
      * @var string
      */
-    public $cISOSprache = '';
-
-    /**
-     * @var array
-     */
-    protected static $mappings;
+    public string $cISOSprache = '';
 
     /**
      * @var string
      */
-    private $currentISOCode = '';
+    private string $currentISOCode = '';
 
     /**
      * @var int
      */
-    public $currentLanguageID = 0;
+    public int $currentLanguageID = 0;
 
     /**
      * @var array
      */
-    public $langVars = [];
+    public array $langVars = [];
 
     /**
      * @var string
      */
-    public $cacheID = 'cr_lng_dta';
+    public string $cacheID = 'cr_lng_dta';
 
     /**
      * @var stdClass[]
      */
-    public $availableLanguages;
+    public array $availableLanguages;
 
     /**
      * @var array
      */
-    public $byISO = [];
+    public array $byISO = [];
 
     /**
      * @var array
      */
-    public $byLangID = [];
+    public array $byLangID = [];
 
     /**
      * @var int
      */
-    public $kSprache;
+    public int $kSprache = 0;
 
     /**
-     * @var LanguageHelper
+     * @var LanguageHelper|null
      */
-    private static $instance;
+    private static ?LanguageHelper $instance;
 
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * @var JTLCacheInterface
      */
-    private $cache;
+    private JTLCacheInterface $cache;
 
     /**
      * @var array
      */
-    private static $mapping = [
+    private static array $mapping = [
         'gibWert'                     => 'getTranslation',
         'get'                         => 'getTranslation',
         'set'                         => 'setzeWert',
@@ -321,7 +316,7 @@ class LanguageHelper
 
     private function initLangData(): void
     {
-        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags) {
+        $data = $this->cache->get('lng_dta_lst', function ($cache, $cacheID, &$content, &$tags): bool {
             $content = $this->db->getCollection(
                 'SELECT tsprache.*, tsprachiso.kSprachISO FROM tsprache 
                     LEFT JOIN tsprachiso
@@ -333,11 +328,11 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function (stdClass $e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e): stdClass {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
+        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)[
@@ -347,7 +342,7 @@ class LanguageHelper
             ];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -438,7 +433,7 @@ class LanguageHelper
         if ($this->currentLanguageID === 0) {
             return '';
         }
-        if ($this->langVars === null) {
+        if ($this->langVars) {
             $this->langVars = $this->loadLangVars();
         }
         $save = false;
@@ -470,7 +465,7 @@ class LanguageHelper
                 if ($res !== false) { // php < 8.0
                     $value = $res;
                 }
-            } catch (\ValueError $e) {
+            } catch (\ValueError) {
             }
         }
 
@@ -616,12 +611,9 @@ class LanguageHelper
      */
     public function gibInstallierteSprachen(): array
     {
-        return \array_filter(
-            LanguageModel::loadAll($this->db, [], [])->toArray(),
-            function (LanguageModel $l) {
-                return $this->mappekISO($l->getIso()) > 0 && $l->getActive() === 1;
-            }
-        );
+        return LanguageModel::loadAll($this->db, [], [])->filter(function (LanguageModel $model): bool {
+            return $model->getActive() === 1 && $this->mappekISO($model->getIso()) > 0;
+        })->toArray();
     }
 
     /**
@@ -997,21 +989,16 @@ class LanguageHelper
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();
         }
-        switch ($returnType) {
-            case 2:
-                return reindex($languages, static function (LanguageModel $e) {
-                    return $e->getCode();
-                });
 
-            case 1:
-                return reindex($languages, static function (LanguageModel $e) {
-                    return $e->getId();
-                });
-
-            case 0:
-            default:
-                return $languages;
-        }
+        return match ($returnType) {
+            2 => reindex($languages, static function (LanguageModel $e): string {
+                return $e->getCode();
+            }),
+            1 => reindex($languages, static function (LanguageModel $e): int {
+                return $e->getId();
+            }),
+            default => $languages,
+        };
     }
 
     /**
@@ -1072,35 +1059,36 @@ class LanguageHelper
      */
     public function generateLanguageAndCurrencyLinks(): void
     {
-        global $oZusatzFilter, $AktuellerArtikel;
+        global $AktuellerArtikel;
         $linkID        = Shop::$kLink;
         $pageID        = Shop::$kSeite;
         $shopURL       = Shop::getURL() . '/';
-        $helper        = Shop::Container()->getLinkService();
+        $linkService   = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
         $pageType      = Shop::getPageType();
         if ($pageID !== null && $pageID > 0 && $pageType !== \PAGE_ARTIKELLISTE) {
             $linkID = $pageID;
         }
-        $ls     = Shop::Container()->getLinkService();
         $mapper = new PageTypeToLinkType();
         $mapped = $mapper->map($pageType);
         try {
-            $specialPage = $mapped > 0 ? $ls->getSpecialPage($mapped) : null;
-        } catch (SpecialPageNotFoundException $e) {
+            $specialPage = $mapped > 0 ? $linkService->getSpecialPage($mapped) : null;
+        } catch (SpecialPageNotFoundException) {
             $specialPage = null;
         }
-        $page = $linkID > 0 ? $ls->getPageLink($linkID) : null;
-        if (\count(Frontend::getLanguages()) > 1) {
-            foreach (Frontend::getLanguages() as $lang) {
+        $page       = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
+        $languages  = Frontend::getLanguages();
+        $currencies = Frontend::getCurrencies();
+        if (\count($languages) > 1) {
+            foreach ($languages as $lang) {
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
                 if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
-                    $lang->setUrl(Shop::getURL(false, $langID)  . '/'. $AktuellerArtikel->cSprachURL_arr[$langISO]);
+                    $lang->setUrl($AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
-                    if (\mb_strpos($url, '/?s=') !== false) {
+                    if (\str_contains($url, '/?s=')) {
                         $lang->setUrl(\rtrim($shopURL, '/') . $url);
                     } else {
                         $lang->setUrl($url);
@@ -1118,13 +1106,13 @@ class LanguageHelper
                             $newsCategory->load(Shop::$kNewsKategorie);
                             $url = $newsCategory->getURL($langID);
                         } else {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
+                            $url = $linkService->getStaticRoute($specialPage->getFileName(), false, false, $langISO);
                             // check if there is a SEO link for the given file
                             if ($url === $specialPage->getFileName()) {
                                 // no SEO link - fall back to php file with GET param
                                 $url = $shopURL . $specialPage->getFileName() . '?lang=' . $langISO;
                             } else { //there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
+                                $url = $linkService->getStaticRoute($specialPage->getFileName(), true, false, $langISO);
                             }
                         }
                     } else {
@@ -1138,12 +1126,12 @@ class LanguageHelper
                     $originalBase     = $config->getBaseURL();
                     $config->setLanguageID($langID);
                     $config->setBaseURL(Shop::getURL(false, $langID) . '/');
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+                    $url = $productFilter->getFilterURL()->getURL();
                     // reset
                     $config->setLanguageID($originalLanguage);
                     $config->setBaseURL($originalBase);
                     if ($productFilter->getPage() > 1) {
-                        if (\mb_strpos($url, '?') !== false || \mb_strpos($url, 'navi.php') !== false) {
+                        if (\str_contains($url, '?') || \str_contains($url, 'navi.php')) {
                             $url .= '&amp;seite=' . $productFilter->getPage();
                         } else {
                             $url .= \SEP_SEITE . $productFilter->getPage();
@@ -1153,46 +1141,48 @@ class LanguageHelper
                 }
             }
         }
-        if (\count(Frontend::getCurrencies()) > 1) {
+        if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangCode     = Shop::getLanguageCode();
-            foreach (Frontend::getCurrencies() as $currency) {
-                if (isset($AktuellerArtikel->cSprachURL_arr[$currentLangCode])) {
-                    $url = $AktuellerArtikel->cSprachURL_arr[$currentLangCode];
-                } elseif ($specialPage !== null) {
-                    $url = $specialPage->getURL();
-                    if (empty($url)) {
-                        if ($pageType === \PAGE_STARTSEITE) {
-                            $url = '';
-                        } elseif ($specialPage->getFileName() !== null) {
-                            $url = $helper->getStaticRoute($specialPage->getFileName(), false);
-                            // check if there is a SEO link for the given file
-                            if ($url === $specialPage->getFileName()) {
-                                // no SEO link - fall back to php file with GET param
-                                $url = $shopURL . $specialPage->getFileName();
-                            } else {
-                                // there is a SEO link - make it a full URL
-                                $url = $helper->getStaticRoute($specialPage->getFileName());
-                            }
-                        }
-                    }
-                } elseif ($page !== null) {
-                    $url = $page->getURL();
-                } else {
-                    $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
+            $currentLangID       = Shop::getLanguageID();
+            foreach ($currencies as $currency) {
+                $code       = $currency->getCode();
+                $additional = $currency->getID() === $currentCurrencyCode
+                    ? []
+                    : ['currency' => $code];
+                if (isset($AktuellerArtikel)) {
+                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
+                    $url = $AktuellerArtikel->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
                 }
-                if ($currency->getID() !== $currentCurrencyCode) {
-                    $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                $url = $productFilter->getFilterURL()->getURL(null, false, $additional);
+                if ($currency->getID() !== $currentCurrencyCode && !\str_contains($url, '/' . $code . '/')) {
+                    $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $code;
                 }
                 $currency->setURL($url);
-                $currency->setURLFull(\mb_strpos($url, Shop::getURL()) === false
+                $currency->setURLFull(!\str_contains($url, Shop::getURL())
                     ? ($shopURL . $url)
                     : $url);
             }
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
             'oNaviFilter'       => &$productFilter,
-            'oZusatzFilter'     => &$oZusatzFilter,
+            'oZusatzFilter'     => null,
             'cSprachURL'        => [],
             'oAktuellerArtikel' => &$AktuellerArtikel,
             'kSeite'            => &$pageID,

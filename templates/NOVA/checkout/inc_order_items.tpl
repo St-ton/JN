@@ -101,14 +101,14 @@
                                         {/if}
 
                                         {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
-                                            {foreach $oPosition->Artikel->oMerkmale_arr as $oMerkmale_arr}
+                                            {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
                                                 {block name='checkout-inc-order-items-product-data-attribute'}
                                                     <li class="characteristic">
-                                                        <strong>{$oMerkmale_arr->cName}</strong>:
+                                                        <strong>{$characteristic->getName()}</strong>:
                                                         <span class="values">
-                                                            {foreach $oMerkmale_arr->oMerkmalWert_arr as $oWert}
-                                                                {if !$oWert@first}, {/if}
-                                                                {$oWert->cWert}
+                                                            {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                                {if !$characteristicValue@first}, {/if}
+                                                                {$characteristicValue->getValue()}
                                                             {/foreach}
                                                         </span>
                                                     </li>

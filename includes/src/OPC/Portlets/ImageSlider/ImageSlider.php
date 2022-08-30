@@ -31,7 +31,7 @@ class ImageSlider extends Portlet
             }
         }
 
-        if (count($effects) === 0) {
+        if (\count($effects) === 0) {
             $effects[] = self::EFFECT_LIST[7];
         }
 

@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class ConfigItems
+ * Class ConfigItems
  * @package JTL\Backend\LocalizationCheck
  */
 class ConfigItems extends AbstractLocalizationCheck
@@ -19,7 +19,7 @@ class ConfigItems extends AbstractLocalizationCheck
             'SELECT A.kKonfigitem AS id, A.kSprache AS langID, A.cName AS name
                 FROM tkonfigitemsprache A
                 JOIN tkonfigitem
-	                ON tkonfigitem.kKonfigitem = A.kKonfigitem
+                    ON tkonfigitem.kKonfigitem = A.kKonfigitem
                 WHERE tkonfigitem.kArtikel > 0
                     AND kSprache NOT IN (' . $this->getActiveLanguageIDs()->implode(',') . ')'
         )->mapInto(Item::class);
@@ -70,6 +70,6 @@ class ConfigItems extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationConfigItems');
+        return \__('locationConfigItems');
     }
 }

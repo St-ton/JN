@@ -17,7 +17,7 @@ class AlertService implements AlertServiceInterface
     private Collection $alertList;
 
     /**
-     * Alertservice constructor.
+     * AlertService constructor.
      */
     public function __construct()
     {
@@ -105,7 +105,7 @@ class AlertService implements AlertServiceInterface
      */
     public function getAlert(string $key): ?Alert
     {
-        return $this->getAlertList()->first(static function (Alert $alert) use ($key) {
+        return $this->getAlertList()->first(static function (Alert $alert) use ($key): bool {
             return $alert->getKey() === $key;
         });
     }
@@ -133,7 +133,7 @@ class AlertService implements AlertServiceInterface
      */
     public function alertTypeExists(string $type): bool
     {
-        return \count($this->getAlertList()->filter(static function (Alert $alert) use ($type) {
+        return \count($this->getAlertList()->filter(static function (Alert $alert) use ($type): bool {
             return $alert->getType() === $type;
         })) > 0;
     }
@@ -143,7 +143,7 @@ class AlertService implements AlertServiceInterface
      */
     public function removeAlertByKey(string $key): void
     {
-        $id = $this->getAlertList()->search(static function (Alert $alert) use ($key) {
+        $id = $this->getAlertList()->search(static function (Alert $alert) use ($key): bool {
             return $alert->getKey() === $key;
         });
         if ($id !== false) {

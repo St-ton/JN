@@ -13,7 +13,7 @@ use JTL\Update\Migration;
 class Migration_20190403174900 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'removed old exports';
+    protected $description = 'Remove old exports';
 
     /**
      * @inheritDoc

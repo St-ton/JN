@@ -3,7 +3,7 @@
     <div class="card">
         <div class="card-body">
             <div class="form-group">
-                <form method="post" action="{$adminURL}/kuponstatistik.php" class="form-inline">
+                <form method="post" action="{$adminURL}{$route}" class="form-inline">
                     {$jtl_token}
                     <div class="row">
                         <div class="col-sm-6 col-xl-auto mb-3">
@@ -85,7 +85,7 @@
                         <tr>
                             <td>
                                 {if $usedCouponOrder.kKupon}
-                                    <a href="{$adminURL}/kupons.php?&kKupon={$usedCouponOrder.kKupon}&token={$smarty.session.jtl_token}">{$usedCouponOrder.cName}</a>
+                                    <a href="{$adminURL}{$route}?&kKupon={$usedCouponOrder.kKupon}&token={$smarty.session.jtl_token}">{$usedCouponOrder.cName}</a>
                                 {else}
                                     {$usedCouponOrder.cName}
                                 {/if}
@@ -94,7 +94,7 @@
                             <td class="text-center">{$usedCouponOrder.cBestellNr}</td>
                             <td class="text-center">{$usedCouponOrder.nCouponValue}</td>
                             <td class="text-center">{$usedCouponOrder.nShoppingCartAmount}</td>
-                            <td>{$usedCouponOrder.dErstellt|date_format:'%d.%m.%Y %H:%M:%S'}</td>
+                            <td>{$usedCouponOrder.dErstellt|date_format:'d.m.Y H:i:s'}</td>
                             <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-link" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}">

@@ -2,8 +2,8 @@
 
 namespace JTL;
 
-use DbInterface;
 use Exception;
+use JTL\DB\DbInterface;
 use stdClass;
 
 /**
@@ -55,7 +55,7 @@ class Emailhistory
     /**
      * @var DbInterface
      */
-    private $db;
+    private DbInterface $db;
 
     /**
      * Emailhistory constructor.

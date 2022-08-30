@@ -12,23 +12,11 @@ use JTL\DB\DbInterface;
 class LocalizationCheckFactory
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var Collection
-     */
-    private Collection $activeLanguages;
-
-    /**
      * @param DbInterface $db
      * @param Collection  $activeLanguages
      */
-    public function __construct(DbInterface $db, Collection $activeLanguages)
+    public function __construct(private DbInterface $db, private Collection $activeLanguages)
     {
-        $this->db              = $db;
-        $this->activeLanguages = $activeLanguages;
     }
 
     /**

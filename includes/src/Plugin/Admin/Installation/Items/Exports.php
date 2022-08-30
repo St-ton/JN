@@ -36,7 +36,7 @@ class Exports extends AbstractItem
         $defaultCurrencyID      = Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits);
+            \preg_match('/\d+/', $i, $hits);
             if (\mb_strlen($hits[0]) !== \mb_strlen($i)) {
                 continue;
             }

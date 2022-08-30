@@ -37,7 +37,7 @@ class Blueprints extends AbstractItem
             $this->plugin->nVersion . '/' . \PFAD_PLUGIN_BLUEPRINTS;
         foreach ($this->getNode() as $i => $blueprint) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }

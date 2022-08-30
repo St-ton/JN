@@ -2,7 +2,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterMail') cBeschreibung=__('newsletterMailDesc') cDokuURL=__('newsletterURL')}
 <div id="content">
     <div class="card">
-        <form name="kundenimporter" method="post" action="{$adminURL}/newsletterimport.php" enctype="multipart/form-data">
+        <form method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
             <div class="card-body">
                 {$jtl_token}
                 <input type="hidden" name="newsletterimport" value="1" />

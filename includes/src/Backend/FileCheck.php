@@ -127,7 +127,7 @@ class FileCheck
         $zipFinder->append($files);
         try {
             $fs->zip($zipFinder, $backupFile);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return -1;
         }
         foreach ($finder as $file) {
@@ -140,7 +140,7 @@ class FileCheck
                 }
                 unset($orphanedFiles[$count]);
                 ++$count;
-            } catch (Exception $e) {
+            } catch (Exception) {
             }
         }
 

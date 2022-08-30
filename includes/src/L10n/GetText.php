@@ -23,26 +23,24 @@ class GetText
     /**
      * @var string
      */
-    private $langTag;
+    private string $langTag = 'de-DE';
 
     /**
      * @var Translations[]
      */
-    private $translations;
+    private array $translations = [];
 
     /**
      * @var Translator
      */
-    private $translator;
+    private Translator $translator;
 
     /**
      * GetText constructor.
      */
     public function __construct()
     {
-        $this->langTag      = $this->getDefaultLanguage();
-        $this->translations = [];
-        $this->translator   = new Translator();
+        $this->translator = new Translator();
         TranslatorFunctions::register($this->translator);
         $this->setLanguage()->loadAdminLocale('base');
     }
@@ -134,12 +132,13 @@ class GetText
      */
     public function loadLocaleFile(string $path): self
     {
-        if (!\array_key_exists($path, $this->translations)) {
-            $this->translations[$path] = null;
-            if (\file_exists($path)) {
-                $this->translations[$path] = (new MoLoader())->loadFile($path);
-                $this->translator->addTranslations((new ArrayGenerator())->generateArray($this->translations[$path]));
-            }
+        if (\array_key_exists($path, $this->translations)) {
+            return $this;
+        }
+        $this->translations[$path] = null;
+        if (\file_exists($path)) {
+            $this->translations[$path] = (new MoLoader())->loadFile($path);
+            $this->translator->addTranslations((new ArrayGenerator())->generateArray($this->translations[$path]));
         }
 
         return $this;
@@ -235,22 +234,20 @@ class GetText
      */
     public function setLanguage(?string $langTag = null): self
     {
-        $langTag = $langTag
-            ?? $_SESSION['AdminAccount']->language
-            ?? $this->langTag;
-
-        if ($this->langTag !== $langTag) {
-            $oldLangTag         = $this->langTag;
-            $oldTranslations    = $this->translations;
-            $this->langTag      = $langTag;
-            $this->translations = [];
-            $this->translator   = new Translator();
-            TranslatorFunctions::register($this->translator);
-            if (!empty($oldLangTag)) {
-                foreach ($oldTranslations as $path => $trans) {
-                    $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
-                    $this->loadLocaleFile($newPath);
-                }
+        $langTag = $langTag ?? $_SESSION['AdminAccount']->language ?? $this->langTag;
+        if ($this->langTag === $langTag) {
+            return $this;
+        }
+        $oldLangTag         = $this->langTag;
+        $oldTranslations    = $this->translations;
+        $this->langTag      = $langTag;
+        $this->translations = [];
+        $this->translator   = new Translator();
+        TranslatorFunctions::register($this->translator);
+        if (!empty($oldLangTag)) {
+            foreach ($oldTranslations as $path => $trans) {
+                $newPath = \str_replace('/' . $oldLangTag . '/', '/' . $langTag . '/', $path);
+                $this->loadLocaleFile($newPath);
             }
         }
 
@@ -262,10 +259,8 @@ class GetText
      */
     public function getAdminLanguages(): array
     {
-        $languages  = [];
-        $localeDirs = \scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING);
-
-        foreach ($localeDirs as $dir) {
+        $languages = [];
+        foreach (\scandir(\PFAD_ROOT . \PFAD_ADMIN . 'locale/', \SCANDIR_SORT_ASCENDING) as $dir) {
             if ($dir !== '.' && $dir !== '..') {
                 $languages[$dir] = \Locale::getDisplayLanguage($dir, $dir);
             }
@@ -283,11 +278,9 @@ class GetText
         $this->loadAdminLocale('configs/configs')
             ->loadAdminLocale('configs/values')
             ->loadAdminLocale('configs/groups');
-
         if ($withGroups) {
             $this->loadAdminLocale('configs/groups');
         }
-
         if ($withSections) {
             $this->loadAdminLocale('configs/sections');
         }
@@ -301,7 +294,6 @@ class GetText
         if ($config->isConfigurable()) {
             $config->setName(\__($config->getValueName() . '_name'));
             $config->setDescription(\__($config->getValueName() . '_desc'));
-
             if ($config->getDescription() === $config->getValueName() . '_desc') {
                 $config->setDescription('');
             }

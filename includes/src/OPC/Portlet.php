@@ -17,34 +17,24 @@ class Portlet implements \JsonSerializable
     use PortletAnimations;
 
     /**
-     * @var int
+     * @var PluginInterface|null
      */
-    protected $id = 0;
-
-    /**
-     * @var PluginInterface
-     */
-    protected $plugin;
+    protected ?PluginInterface $plugin = null;
 
     /**
      * @var string
      */
-    protected $title = '';
+    protected string $title = '';
 
     /**
      * @var string
      */
-    protected $class = '';
-
-    /**
-     * @var string
-     */
-    protected $group = '';
+    protected string $group = '';
 
     /**
      * @var bool
      */
-    protected $active = false;
+    protected bool $active = false;
 
     /**
      * Portlet constructor.
@@ -52,11 +42,8 @@ class Portlet implements \JsonSerializable
      * @param int    $id
      * @param int    $pluginId
      */
-    final public function __construct(string $class, int $id, int $pluginId)
+    final public function __construct(protected string $class, protected int $id, int $pluginId)
     {
-        $this->class = $class;
-        $this->id    = $id;
-
         if ($pluginId > 0) {
             $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
             $this->plugin = $loader->init($pluginId);
@@ -75,16 +62,13 @@ class Portlet implements \JsonSerializable
     final public function getDefaultProps(): array
     {
         $defProps = [];
-
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $defProps[$name] = $propDesc['default'] ?? '';
-
             if (isset($propDesc['children'])) {
                 foreach ($propDesc['children'] as $childName => $childPropDesc) {
                     $defProps[$childName] = $childPropDesc['default'] ?? '';
                 }
             }
-
             if (isset($propDesc['childrenFor'])) {
                 foreach ($propDesc['childrenFor'] as $optionalPropDescs) {
                     foreach ($optionalPropDescs as $childName => $childPropDesc) {
@@ -111,16 +95,13 @@ class Portlet implements \JsonSerializable
     public function getDeepPropertyDesc(): array
     {
         $deepDesc = [];
-
         foreach ($this->getPropertyDesc() as $name => $propDesc) {
             $deepDesc[$name] = $propDesc;
-
             if (isset($propDesc['children'])) {
                 foreach ($propDesc['children'] as $childName => $childPropDesc) {
                     $deepDesc[$childName] = $childPropDesc;
                 }
             }
-
             if (isset($propDesc['childrenFor'])) {
                 foreach ($propDesc['childrenFor'] as $optionalPropDescs) {
                     foreach ($optionalPropDescs as $childName => $childPropDesc) {

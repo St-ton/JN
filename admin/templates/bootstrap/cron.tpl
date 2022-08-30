@@ -43,6 +43,7 @@
                                         <th>{__('headingType')}</th>
                                         <th class="text-center">{__('headingStartTime')}</th>
                                         <th class="text-center">{__('headingLastStarted')}</th>
+                                        <th class="text-center">{__('headingNextStart')}</th>
                                         <th class="text-center">{__('headingFrequency')}</th>
                                         <th class="text-center">{__('headingRunning')}</th>
                                         <th class="text-center">{__('action')}</th>
@@ -54,6 +55,7 @@
                                             <td>{__($job->getType())}{if $job->getName() !== null} {$job->getName()}{/if}</td>
                                             <td class="text-center">{$job->getStartTime()->format('H:i')}</td>
                                             <td class="text-center">{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
+                                            <td class="text-center">{if $job->getNextStartDate() === null}&dash;{else}{$job->getNextStartDate()->format('d.m.Y H:i')}{/if}</td>
                                             <td class="text-center">{$job->getFrequency()}h</td>
                                             <td class="text-center">{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
                                             <td class="text-center">
@@ -142,7 +144,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start-date">{__('headingStartDate')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'%Y-%m-%d'}" required>
+                                <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'Y-m-d'}" required>
                             </div>
                         </div>
                         <div class="save-wrapper">
@@ -161,7 +163,7 @@
 
         <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' name='einstellen' a='saveSettings'
-            action=$adminURL|cat:'/cron.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
+            action=$adminURL|cat:$route buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
         </div>
     </div>
 </div>

@@ -22,24 +22,12 @@ use stdClass;
 final class Controller
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * Manager constructor.
+     * Controller constructor.
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(DbInterface $db, array $config)
+    public function __construct(private DbInterface $db, private array $config)
     {
-        $this->db     = $db;
-        $this->config = $config;
     }
 
     /**
@@ -179,10 +167,11 @@ final class Controller
                             && empty($_SESSION['Kunde']->kKunde))
                         || $this->config['newsletter']['newsletter_doubleopt'] === 'A'
                     ) {
-                        $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                        $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
-                            $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
+                        $nlBase = Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')
+                            . '?lang=' . $_SESSION['cISOSprache'];
+
+                        $recipient->cLoeschURL     = $nlBase . '&lc=' . $recipient->cLoeschCode;
+                        $recipient->cFreischaltURL = $nlBase . '&fc=' . $recipient->cOptCode;
                         $obj                       = new stdClass();
                         $obj->tkunde               = $_SESSION['Kunde'] ?? null;
                         $obj->NewsletterEmpfaenger = $recipient;

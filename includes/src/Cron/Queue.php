@@ -4,6 +4,7 @@ namespace JTL\Cron;
 
 use DateTime;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -14,36 +15,13 @@ use stdClass;
 class Queue
 {
     /**
-     * @var QueueEntry[]
-     */
-    private array $queueEntries = [];
-
-    /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JobFactory
-     */
-    private JobFactory $factory;
-
-    /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * Queue constructor.
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JobFactory $factory)
+    public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
     {
-        $this->db      = $db;
-        $this->logger  = $logger;
-        $this->factory = $factory;
     }
 
     /**
@@ -51,17 +29,19 @@ class Queue
      */
     public function loadQueueFromDB(): array
     {
-        $this->queueEntries = $this->db->getCollection(
-            'SELECT *
+        $queueEntries = $this->db->getCollection(
+            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency
                 FROM tjobqueue
-                WHERE isRunning = 0
-                    AND startTime <= NOW()'
-        )->map(static function ($e) {
+                JOIN tcron
+                    ON tcron.cronID = tjobqueue.cronID
+                WHERE tjobqueue.isRunning = 0
+                    AND tjobqueue.startTime <= NOW()'
+        )->map(static function ($e): QueueEntry {
             return new QueueEntry($e);
         })->toArray();
-        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($this->queueEntries)));
+        $this->logger->debug(\sprintf('Loaded %d existing job(s).', \count($queueEntries)));
 
-        return $this->queueEntries;
+        return $queueEntries;
     }
 
     /**
@@ -119,9 +99,9 @@ class Queue
         if ($affected > 0) {
             $this->logger->debug(\sprintf('Unstuck %d job(s).', $affected));
         }
-        $this->loadQueueFromDB();
-        \shuffle($this->queueEntries);
-        foreach ($this->queueEntries as $i => $queueEntry) {
+        $queueEntries = $this->loadQueueFromDB();
+        \shuffle($queueEntries);
+        foreach ($queueEntries as $i => $queueEntry) {
             if ($i >= \JOBQUEUE_LIMIT_JOBS) {
                 $this->logger->debug(\sprintf('Job limit reached after %d jobs.', \JOBQUEUE_LIMIT_JOBS));
                 break;
@@ -132,15 +112,28 @@ class Queue
             $queueEntry->isRunning     = 1;
             $this->logger->notice('Got job ' . \get_class($job)
                 . ' (ID = ' . $job->getCronID()
-                . ', type = ' . $job->getType() . ')');
+                . ', type = ' . $job->getType()
+                . ', frequency = ' . $job->getFrequency() . ')');
             $job->start($queueEntry);
+
             $queueEntry->isRunning = 0;
             $queueEntry->lastStart = new DateTime();
+
+            $st        = $queueEntry->cronStartTime;
+            $now       = new DateTime();
+            $nextStart = new DateTime();
+            $nextStart->setTime((int)$st->format('H'), (int)$st->format('i'), (int)$st->format('s'));
+            while ($nextStart <= $now) {
+                $nextStart->modify('+' . $job->getFrequency() . ' hours');
+            }
             $this->db->update(
                 'tcron',
                 'cronID',
                 $job->getCronID(),
-                (object)['lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')]
+                (object)[
+                    'nextStart'  => $nextStart->format('Y-m-d H:i:s'),
+                    'lastFinish' => $queueEntry->lastFinish->format('Y-m-d H:i')
+                ]
             );
             \executeHook(\HOOK_JOBQUEUE_INC_BEHIND_SWITCH, [
                 'oJobQueue' => $queueEntry,
@@ -155,6 +148,6 @@ class Queue
         }
         $checker->unlock();
 
-        return \count($this->queueEntries);
+        return \count($queueEntries);
     }
 }

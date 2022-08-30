@@ -11,30 +11,18 @@ use JTL\Shop;
 use JTL\XMLParser;
 
 /**
- * Class PluginInstaller
+ * Class TemplateInstaller
  * @package JTL\License\Installer
  */
 class TemplateInstaller implements InstallerInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * TemplateInstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -52,7 +40,7 @@ class TemplateInstaller implements InstallerInterface
             return 0;
         }
         $service = Shop::Container()->getTemplateService();
-        $active  = $service->getActiveTemplate(true);
+        $active  = $service->getActiveTemplate();
         $service->reset();
         if ($active->getExsID() === $exsID) {
             $service->setActiveTemplate(\rtrim($installResponse->getDirName(), "/\ \n\r\t\v\0"));

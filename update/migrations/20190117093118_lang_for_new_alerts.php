@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20190117093118 extends Migration implements IMigration
 {
     protected $author      = 'mh';
-    protected $description = 'language vars for new alerts';
+    protected $description = 'Language vars for new alerts';
 
     /**
      * @inheritDoc

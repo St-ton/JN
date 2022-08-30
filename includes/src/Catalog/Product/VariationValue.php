@@ -7,7 +7,6 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MultiSizeImage;
-use JTL\Session\Frontend;
 use stdClass;
 
 /**
@@ -314,9 +313,8 @@ class VariationValue
         if (!isset($this->fAufpreisNetto) || $this->fAufpreisNetto === 0.0) {
             return;
         }
-
         $surcharge                   = $this->fAufpreisNetto;
-        $customerGroupID             = Frontend::getCustomerGroup()->getID();
+        $customerGroupID             = $product->getCustomerGroupID();
         $this->cAufpreisLocalized[0] = Preise::getLocalizedPriceString(
             Tax::getGross($surcharge, $taxRate, 4),
             $currency

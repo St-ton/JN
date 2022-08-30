@@ -137,21 +137,14 @@ class Bewertung
      */
     private function getOrderSQL(int $option): string
     {
-        switch ($option) {
-            case 3:
-                return ' dDatum ASC';
-            case 4:
-                return ' nSterne DESC';
-            case 5:
-                return ' nSterne ASC';
-            case 6:
-                return ' nHilfreich DESC';
-            case 7:
-                return ' nHilfreich ASC';
-            case 2:
-            default:
-                return ' dDatum DESC';
-        }
+        return match ($option) {
+            3       => ' dDatum ASC',
+            4       => ' nSterne DESC',
+            5       => ' nSterne ASC',
+            6       => ' nHilfreich DESC',
+            7       => ' nHilfreich ASC',
+            default => ' dDatum DESC',
+        };
     }
 
     /**
@@ -242,16 +235,15 @@ class Bewertung
             ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
-            $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;
-            $total->nAnzahl         = (int)$total->nAnzahl;
-            $this->oBewertungGesamt = $total;
+            $total->fDurchschnitt = \round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl       = (int)$total->nAnzahl;
         } else {
-            $total                  = new stdClass();
-            $total->fDurchschnitt   = 0;
-            $total->nAnzahl         = 0;
-            $this->oBewertungGesamt = $total;
+            $total                = new stdClass();
+            $total->fDurchschnitt = 0;
+            $total->nAnzahl       = 0;
         }
-        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
+        $this->oBewertungGesamt = $total;
+        $this->nAnzahlSprache   = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

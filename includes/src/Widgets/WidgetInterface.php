@@ -7,7 +7,7 @@ use JTL\Plugin\PluginInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class AbstractWidget
+ * Interface WidgetInterface
  * @package JTL\Widgets
  */
 interface WidgetInterface

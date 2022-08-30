@@ -161,7 +161,7 @@ class Migration_20180801165500 extends Migration implements IMigration
      * @param int         $level
      * @return int
      */
-    private function rebuildCategoryTree($db, int $parent_id, int $left, int $level = 0): int
+    private function rebuildCategoryTree(DbInterface $db, int $parent_id, int $left, int $level = 0): int
     {
         $right  = $left + 1;
         $result = $db->selectAll(

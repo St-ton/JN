@@ -15,7 +15,7 @@ class State
     /**
      * @var array
      */
-    protected static $mapping = [
+    protected static array $mapping = [
         'kStaat'   => 'ID',
         'cLandIso' => 'CountryISO',
         'cName'    => 'Name',

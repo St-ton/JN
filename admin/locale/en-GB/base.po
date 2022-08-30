@@ -1649,6 +1649,14 @@ msgstr "Note on battery law"
 msgid "WRB-Formular"
 msgstr "Withdrawal form"
 
+# page type (tspezialseite)
+msgid "Bestellstatus"
+msgstr "Order status"
+
+# page type (tspezialseite)
+msgid "Bewertung"
+msgstr "Review"
+
 msgid "exception"
 msgstr "Exception"
 

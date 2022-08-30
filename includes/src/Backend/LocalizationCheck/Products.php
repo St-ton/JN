@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class Products
+ * Class Products
  * @package JTL\Backend\LocalizationCheck
  */
 class Products extends AbstractLocalizationCheck
@@ -66,6 +66,6 @@ class Products extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationProducts');
+        return \__('locationProducts');
     }
 }

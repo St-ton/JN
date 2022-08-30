@@ -4,7 +4,7 @@ namespace JTL\Boxes\Renderer;
 
 use Exception;
 use JTL\Boxes\Items\BoxInterface;
-use JTL\Smarty\JTLSmarty;
+use Smarty_Internal_TemplateBase;
 use SmartyException;
 
 /**
@@ -14,19 +14,19 @@ use SmartyException;
 class DefaultRenderer implements RendererInterface
 {
     /**
-     * @var JTLSmarty
+     * @var Smarty_Internal_TemplateBase
      */
-    protected $smarty;
+    protected Smarty_Internal_TemplateBase $smarty;
 
     /**
-     * @var BoxInterface
+     * @var BoxInterface|null
      */
-    protected $box;
+    protected ?BoxInterface $box;
 
     /**
      * @inheritdoc
      */
-    public function __construct($smarty, BoxInterface $box = null)
+    public function __construct(Smarty_Internal_TemplateBase $smarty, BoxInterface $box = null)
     {
         $this->smarty = $smarty;
         $this->box    = $box;

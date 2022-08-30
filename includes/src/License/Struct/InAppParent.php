@@ -13,12 +13,12 @@ class InAppParent
     /**
      * @var string|null
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @var string|null
      */
-    private $exsid;
+    private ?string $exsid = null;
 
     /**
      * InAppParent constructor.

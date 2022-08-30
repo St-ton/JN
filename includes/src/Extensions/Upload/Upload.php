@@ -50,7 +50,7 @@ final class Upload
             $upload->bVorhanden         = \is_file(\PFAD_UPLOADS . $upload->cUnique);
             $upload->prodID             = $productID;
             $file                       = $_SESSION['Uploader'][$upload->cUnique] ?? null;
-            if ($file !== null && \is_object($file)) {
+            if (\is_object($file)) {
                 $upload->cDateiname    = $file->cName;
                 $upload->cDateigroesse = self::formatGroesse($file->nBytes);
             }
@@ -98,9 +98,9 @@ final class Upload
             $attributes = [];
             if (!empty($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attribute) {
-                    $attributes[$attribute->kEigenschaft] = \is_string($attribute->cEigenschaftWertName)
-                        ? $attribute->cEigenschaftWertName
-                        : \reset($attribute->cEigenschaftWertName);
+                    $attributes[$attribute->kEigenschaft] = \is_array($attribute->cEigenschaftWertName)
+                        ? \reset($attribute->cEigenschaftWertName)
+                        : (string)$attribute->cEigenschaftWertName;
                 }
             }
             $upload         = new stdClass();
@@ -168,7 +168,7 @@ final class Upload
             foreach (self::gibWarenkorbUploads($cart) as $scheme) {
                 foreach ($scheme->oUpload_arr as $upload) {
                     $info = $_SESSION['Uploader'][$upload->cUnique] ?? null;
-                    if ($info !== null && \is_object($info)) {
+                    if (\is_object($info)) {
                         self::setzeUploadQueue($orderID, $upload->kCustomID);
                         self::setzeUploadDatei(
                             $orderID,

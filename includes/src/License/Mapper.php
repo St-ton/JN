@@ -14,17 +14,11 @@ use stdClass;
 class Mapper
 {
     /**
-     * @var Manager
-     */
-    private $manager;
-
-    /**
      * Mapper constructor.
-     * @param Manager     $manager
+     * @param Manager $manager
      */
-    public function __construct(Manager $manager)
+    public function __construct(private Manager $manager)
     {
-        $this->manager = $manager;
     }
 
     /**
@@ -75,20 +69,12 @@ class Mapper
             case ExsLicense::TYPE_PLUGIN:
             case ExsLicense::TYPE_PORTLET:
                 $plugin = new ReferencedPlugin();
-                $plugin->initByExsID(
-                    $this->manager->getDB(),
-                    $license,
-                    $esxLicense->getReleases()
-                );
+                $plugin->initByExsID($this->manager->getDB(), $license, $esxLicense->getReleases());
                 $esxLicense->setReferencedItem($plugin);
                 break;
             case ExsLicense::TYPE_TEMPLATE:
                 $template = new ReferencedTemplate();
-                $template->initByExsID(
-                    $this->manager->getDB(),
-                    $license,
-                    $esxLicense->getReleases()
-                );
+                $template->initByExsID($this->manager->getDB(), $license, $esxLicense->getReleases());
                 $esxLicense->setReferencedItem($template);
                 break;
         }

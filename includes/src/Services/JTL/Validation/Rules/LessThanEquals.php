@@ -6,20 +6,17 @@ use JTL\Services\JTL\Validation\RuleInterface;
 use JTL\Services\JTL\Validation\RuleResult;
 
 /**
- * Class LessThan
+ * Class LessThanEquals
  * @package JTL\Services\JTL\Validation\Rules
  */
 class LessThanEquals implements RuleInterface
 {
-    protected $value;
-
     /**
      * LessThan constructor.
      * @param mixed $value
      */
-    public function __construct($value)
+    public function __construct(protected $value)
     {
-        $this->value = $value;
     }
 
     /**

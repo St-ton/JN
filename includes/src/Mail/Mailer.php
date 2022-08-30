@@ -20,24 +20,9 @@ use stdClass;
 class Mailer
 {
     /**
-     * @var RendererInterface
-     */
-    private $renderer;
-
-    /**
-     * @var HydratorInterface
-     */
-    private $hydrator;
-
-    /**
      * @var array
      */
-    private $config;
-
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
+    private array $config;
 
     /**
      * Mailer constructor.
@@ -47,15 +32,12 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        HydratorInterface $hydrator,
-        RendererInterface $renderer,
+        private HydratorInterface $hydrator,
+        private RendererInterface $renderer,
         Shopsetting $settings,
-        ValidatorInterface $validator
+        private ValidatorInterface $validator
     ) {
-        $this->hydrator  = $hydrator;
-        $this->renderer  = $renderer;
-        $this->config    = $settings->getAll();
-        $this->validator = $validator;
+        $this->config = $settings->getAll();
     }
 
     /**

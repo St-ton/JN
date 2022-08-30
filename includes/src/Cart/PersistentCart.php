@@ -14,7 +14,7 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class WarenkorbPers
+ * Class PersistentCart
  * @package JTL\Cart
  */
 class PersistentCart
@@ -460,8 +460,12 @@ class PersistentCart
                 $value                       = new stdClass();
                 $value->kEigenschaftWert     = $wkpe->kEigenschaftWert;
                 $value->kEigenschaft         = $wkpe->kEigenschaft;
-                $value->cEigenschaftName     = $wkpe->cEigenschaftName[$_SESSION['cISOSprache']];
-                $value->cEigenschaftWertName = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                $value->cEigenschaftName     = \is_array($wkpe->cEigenschaftName)
+                    ? $wkpe->cEigenschaftName[$_SESSION['cISOSprache']]
+                    : (string)$wkpe->cEigenschaftName;
+                $value->cEigenschaftWertName = \is_array($wkpe->cEigenschaftWertName)
+                    ? $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']]
+                    : (string)$wkpe->cEigenschaftWertName;
                 if ($wkpe->cTyp === 'FREIFELD' || $wkpe->cTyp === 'PFLICHT-FREIFELD') {
                     $value->cFreifeldWert = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
                 }
@@ -588,7 +592,7 @@ class PersistentCart
                 continue;
             }
             $mainProduct = \array_values(
-                \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item) {
+                \array_filter($this->oWarenkorbPersPos_arr, static function ($persItem) use ($item): bool {
                     return $persItem->kWarenkorbPers === $item->kWarenkorbPers
                         && $persItem->cUnique === $item->cUnique
                         && $persItem->kKonfigitem === 0;
@@ -597,7 +601,7 @@ class PersistentCart
             // if main product not found, remove the child id
             if (\count($mainProduct) === 0) {
                 $ids = \array_values(
-                    \array_filter($ids, static function ($id) use ($item) {
+                    \array_filter($ids, static function ($id) use ($item): bool {
                         return (int)$id !== $item->kWarenkorbPersPos;
                     })
                 );
@@ -618,7 +622,7 @@ class PersistentCart
             );
             if (\count($parents) === 0) {
                 $ids = \array_values(
-                    \array_filter($ids, static function ($id) use ($item, $mainProduct) {
+                    \array_filter($ids, static function ($id) use ($item, $mainProduct): bool {
                         return (int)$id !== $item->kWarenkorbPersPos
                             && (int)$id !== $mainProduct[0]->kWarenkorbPersPos;
                     })

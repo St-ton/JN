@@ -411,7 +411,7 @@
                                                             {assign var=image value=$wlPosition->getProduct()->Bilder[0]}
                                                             {strip}
                                                                 <div>
-                                                                    {link href=$wlPosition->getProduct()->cURLFull}
+                                                                    {link href=$wlPosition->getProduct()->getURL()}
                                                                         {include file='snippets/image.tpl'
                                                                             fluid=false
                                                                             item=$wlPosition->getProduct()
@@ -442,7 +442,7 @@
                                                 {/col}
                                                 {col cols=12}
                                                     {block name='snippets-wishlist-form-basket-name'}
-                                                        {link href=$wlPosition->getProduct()->cURL class="productbox-title text-clamp-2"}
+                                                        {link href=$wlPosition->getProduct()->getURL() class="productbox-title text-clamp-2"}
                                                             {$wlPosition->getProductName()}
                                                         {/link}
                                                     {/block}
@@ -546,7 +546,7 @@
                                                                         {col cols=12 class="wishlist-item-buttons"}
                                                                             {if $wlPosition->getProduct()->bHasKonfig}
                                                                                 {block name='snippets-wishlist-form-basket-has-config'}
-                                                                                    {link href=$wlPosition->getProduct()->cURLFull
+                                                                                    {link href=$wlPosition->getProduct()->getURL()
                                                                                         class="btn btn-primary btn-block"
                                                                                         title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
                                                                                         <span class="fa fa-cogs"></span> {lang key='configure'}

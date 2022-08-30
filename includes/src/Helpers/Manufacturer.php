@@ -3,35 +3,39 @@
 namespace JTL\Helpers;
 
 use JTL\Catalog\Hersteller;
+use JTL\Contracts\RoutableInterface;
 use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
+use JTL\Router\RoutableTrait;
 use JTL\Shop;
 
 /**
  * Class Manufacturer
  * @package JTL\Helpers
  */
-class Manufacturer
+class Manufacturer implements RoutableInterface
 {
+    use RoutableTrait;
+
     /**
-     * @var Manufacturer
+     * @var Manufacturer|null
      */
-    private static $instance;
+    private static ?self $instance = null;
 
     /**
      * @var string
      */
-    public $cacheID;
+    public string $cacheID;
 
     /**
-     * @var array
+     * @var array|null
      */
-    public $manufacturers;
+    public ?array $manufacturers = null;
 
     /**
      * @var int
      */
-    private static $langID;
+    private static int $langID;
 
     /**
      * Manufacturer constructor.
@@ -69,19 +73,18 @@ class Manufacturer
         }
         if (($manufacturers = Shop::Container()->getCache()->get($this->cacheID)) === false) {
             $stockFilter   = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $manufacturers = Shop::Container()->getDB()->getObjects(
+            $manufacturers = Shop::Container()->getDB()->getCollection(
                 'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                         thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                         therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
-                        tseo.cSeo, thersteller.cSeo AS originalSeo
+                        tseo.cSeo, thersteller.cSeo AS originalSeo, therstellersprache.kSprache 
                     FROM thersteller
                     LEFT JOIN therstellersprache 
                         ON therstellersprache.kHersteller = thersteller.kHersteller
-                        AND therstellersprache.kSprache = :lid
                     LEFT JOIN tseo 
                         ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = :skey
-                        AND tseo.kSprache = :lid
+                        AND tseo.kSprache = therstellersprache.kSprache
                     WHERE EXISTS (
                         SELECT 1
                         FROM tartikel
@@ -92,27 +95,17 @@ class Manufacturer
                                     AND tartikelsichtbarkeit.kKundengruppe = :cgid
                                 )
                         )
+                    GROUP BY thersteller.kHersteller, therstellersprache.kSprache
                     ORDER BY thersteller.nSortNr, thersteller.cName',
                 [
                     'skey' => 'kHersteller',
-                    'lid'  => self::$langID,
                     'cgid' => CustomerGroup::getDefaultGroupID()
                 ]
-            );
-            $shopURL       = Shop::getURL() . '/';
-            $imageBaseURL  = Shop::getImageBaseURL();
+            )->groupBy(['kHersteller'])->toArray();
             foreach ($manufacturers as &$manufacturer) {
-                if (!empty($manufacturer->cBildpfad)) {
-                    $manufacturer->cBildpfadKlein  = \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildpfad;
-                    $manufacturer->cBildpfadNormal = \PFAD_HERSTELLERBILDER_NORMAL . $manufacturer->cBildpfad;
-                } else {
-                    $manufacturer->cBildpfadKlein  = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                    $manufacturer->cBildpfadNormal = \BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                }
-                $manufacturer->cBildURLKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
-                $manufacturer->cBildURLNormal = $imageBaseURL . $manufacturer->cBildpfadKlein;
-                $instance                     = new Hersteller();
-                $manufacturer                 = $instance->loadFromObject($manufacturer);
+                $instance = new Hersteller();
+                $instance->map($manufacturer);
+                $manufacturer = $instance;
             }
             unset($manufacturer);
             $cacheTags = [\CACHING_GROUP_MANUFACTURER, \CACHING_GROUP_CORE];

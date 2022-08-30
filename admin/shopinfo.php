@@ -1,1 +1,1 @@
-<?php // removed in 4.06.4
+<?php declare(strict_types=1); // removed in 4.06.4

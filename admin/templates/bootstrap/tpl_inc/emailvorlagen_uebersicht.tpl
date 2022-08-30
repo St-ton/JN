@@ -3,8 +3,8 @@
     <div class="alert alert-info">
         {__('testmailsGoToEmail')}
         <strong>
-            {if $Einstellungen.emails.email_master_absender}
-                {$Einstellungen.emails.email_master_absender}
+            {if $config.emails.email_master_absender}
+                {$config.emails.email_master_absender}
             {else}
                 {__('noMasterEmailSpecified')}
             {/if}
@@ -35,7 +35,7 @@
     }
     function validateTemplateSyntax(tplID, massCheck) {
         $('#tplState_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'mailvorlageSyntaxCheck',

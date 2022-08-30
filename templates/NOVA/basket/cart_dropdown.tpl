@@ -30,7 +30,7 @@
                                                                         item=$oPosition->Artikel
                                                                         square=false
                                                                         srcSize='xs'
-                                                                        sizes='45px'
+                                                                        sizes='50px'
                                                                         class='img-sm'}
                                                                 {/link}
                                                             {/col}

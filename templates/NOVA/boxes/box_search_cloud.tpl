@@ -9,7 +9,7 @@
                     searchcloudTags.push({
                         text:   value.cSuche,
                         weight: value.nAnzahlGesuche,
-                        link:   'index.php?qs=' + value.cSuche
+                        link:   '{$ShopURL}/?qs=' + value.cSuche
                     });
                 });
 

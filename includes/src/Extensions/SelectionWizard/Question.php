@@ -70,6 +70,7 @@ class Question
 
     /**
      * @var object|null - used by old AWA
+     * @deprecated since 5.0.0
      */
     public ?object $oMerkmal = null;
 
@@ -137,7 +138,7 @@ class Question
                 WHERE kAuswahlAssistentGruppe = :gid' . $activeSQL . '
                 ORDER BY nSort',
             ['gid' => $groupID]
-        )->map(static function ($e) use ($activeOnly) {
+        )->map(static function (stdClass $e) use ($activeOnly): self {
             return new self((int)$e->id, $activeOnly);
         })->all();
     }
@@ -187,7 +188,7 @@ class Question
         $this->db->update(
             'tauswahlassistentfrage',
             'kAuswahlAssistentFrage',
-            (int)$this->kAuswahlAssistentFrage,
+            $this->kAuswahlAssistentFrage,
             $upd
         );
 

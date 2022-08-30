@@ -1,6 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 // Charset
+use JTL\Plugin\HookManager;
+
 ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');
@@ -273,10 +275,29 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
 ifndef('SEO_SLUG_LOWERCASE', false);
+ifndef('REDIR_OLD_ROUTES', true);
+ifndef('SLUG_ALLOW_SLASHES', true);
+ifndef('ROUTE_PREFIX_PRODUCTS', 'products');
+ifndef('ROUTE_PREFIX_CHARACTERISTICS', 'characteristics');
+ifndef('ROUTE_PREFIX_CATEGORIES', 'categories');
+ifndef('ROUTE_PREFIX_SEARCHSPECIALS', 'searchspecials');
+ifndef('ROUTE_PREFIX_SEARCHQUERIES', 'searchqueries');
+ifndef('ROUTE_PREFIX_MANUFACTURERS', 'manufacturers');
+ifndef('ROUTE_PREFIX_NEWS', 'news');
+ifndef('ROUTE_PREFIX_SEARCH', 'search');
+ifndef('ROUTE_PREFIX_PAGES', 'pages');
+ifndef('CATEGORIES_SLUG_HIERARCHICALLY', false);
 
-ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(PFAD_ROOT. PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'));
+const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck';
+
+ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
+
+const ADMINGROUP                          = 1;
+const MAX_LOGIN_ATTEMPTS                  = 3;
+const LOCK_TIME                           = 5;
+const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
 
 /**
  * @param string $constant
@@ -285,6 +306,15 @@ ifndef('TRACK_VISITORS', true);
 function ifndef(string $constant, $value)
 {
     defined($constant) || define($constant, $value);
+}
+
+/**
+ * @param int   $hookID
+ * @param array $args_arr
+ */
+function executeHook(int $hookID, array $args_arr = []): void
+{
+    HookManager::getInstance()->executeHook($hookID, $args_arr);
 }
 
 // Static defines (do not edit)

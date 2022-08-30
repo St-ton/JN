@@ -13,7 +13,7 @@ class MissingPortletInstance extends PortletInstance
     /**
      * @var string
      */
-    protected $missingClass = '';
+    protected string $missingClass = '';
 
     /**
      * @param MissingPortlet $portlet

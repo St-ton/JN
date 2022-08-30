@@ -13,36 +13,11 @@ use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class SettingSection
+ * Class Manager
  * @package JTL\Backend\Settings
  */
 class Manager
 {
-    /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var JTLSmarty
-     */
-    protected JTLSmarty $smarty;
-
-    /**
-     * @var AdminAccount
-     */
-    protected AdminAccount $adminAccount;
-
-    /**
-     * @var GetText
-     */
-    protected GetText $getText;
-
-    /**
-     * @var AlertServiceInterface
-     */
-    protected AlertServiceInterface $alertService;
-
     /**
      * @var string[]
      */
@@ -57,20 +32,14 @@ class Manager
      * @param AlertServiceInterface $alertService
      */
     public function __construct(
-        DbInterface $db,
-        JTLSmarty $smarty,
-        AdminAccount $adminAccount,
-        GetText $getText,
-        AlertServiceInterface $alertService
+        protected DbInterface $db,
+        protected JTLSmarty $smarty,
+        protected AdminAccount $adminAccount,
+        protected GetText $getText,
+        protected AlertServiceInterface $alertService
     ) {
         $getText->loadAdminLocale('configs/configs');
         $getText->loadConfigLocales(true, true);
-
-        $this->db           = $db;
-        $this->smarty       = $smarty;
-        $this->adminAccount = $adminAccount;
-        $this->getText      = $getText;
-        $this->alertService = $alertService;
     }
 
     /**
@@ -222,7 +191,7 @@ class Manager
             [
                 'unknown' => \__('unknown'),
             ]
-        )->map(static function ($item) {
+        )->map(static function ($item): Log {
             return (new Log())->init($item);
         });
     }

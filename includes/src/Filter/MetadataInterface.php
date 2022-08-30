@@ -168,10 +168,10 @@ interface MetadataInterface
     public function getMetaStart($searchResults): string;
 
     /**
-     * @param string $cTitle
+     * @param string $title
      * @return string
      */
-    public function truncateMetaTitle($cTitle): string;
+    public function truncateMetaTitle(string $title): string;
 
     /**
      * @return string

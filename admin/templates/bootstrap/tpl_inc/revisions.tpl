@@ -83,8 +83,8 @@
     </div>
 </div>
 <script src="{$templateBaseURL}js/diff_match_patch.js"></script>
-<script src="{$PFAD_CODEMIRROR}addon/merge/merge.js"></script>
-<link rel="stylesheet" type="text/css" href="{$PFAD_CODEMIRROR}addon/merge/merge.css" />
+<script src="{$shopURL}/{$smarty.const.PFAD_CODEMIRROR}/addon/merge/merge.js"></script>
+<link rel="stylesheet" type="text/css" href="{$shopURL}/{$smarty.const.PFAD_CODEMIRROR}/addon/merge/merge.css" />
 
 {literal}
 <script type="text/javascript">

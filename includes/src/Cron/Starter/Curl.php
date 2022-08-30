@@ -11,7 +11,7 @@ class Curl extends AbstractStarter
     /**
      * @var int
      */
-    private $frequency = 1;
+    private int $frequency = 1;
 
     /**
      * @return int

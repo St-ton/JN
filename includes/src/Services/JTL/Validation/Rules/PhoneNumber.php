@@ -15,7 +15,7 @@ use JTL\Services\JTL\Validation\RuleResult;
  */
 class PhoneNumber implements RuleInterface
 {
-    public const REGEX = '/^[0-9\-\(\)\/\+\s]{1,}$/';
+    public const REGEX = '/^[\d\-\(\)\/\+\s]+$/';
 
     /**
      * @inheritdoc

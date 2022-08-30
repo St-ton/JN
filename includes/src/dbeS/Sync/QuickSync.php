@@ -22,7 +22,7 @@ final class QuickSync extends AbstractSync
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'quicksync.xml') !== false) {
+            if (\str_contains($file, 'quicksync.xml')) {
                 $this->handleInserts($xml);
             }
         }

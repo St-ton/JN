@@ -5,7 +5,7 @@
         </div>
         <div class="col-auto ml-auto">
             {if $wizardDone}
-                <a href="{$adminURL}/favs.php" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
+                <a href="{$adminURL}/favs" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
                     <span class="fal fa-star"></span>
                 </a>
             {/if}

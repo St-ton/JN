@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20190311122800 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'remove global html entity config';
+    protected $description = 'Remove global html entity config';
 
     /**
      * @inheritDoc

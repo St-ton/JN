@@ -16,62 +16,62 @@ class Recommendation
     /**
      * @var string
      */
-    private $id;
+    private string $id;
 
     /**
      * @var string
      */
-    private $previewImage;
+    private string $previewImage;
 
     /**
      * @var string
      */
-    private $title;
+    private string $title;
 
     /**
      * @var string
      */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var array
      */
-    private $images;
+    private array $images;
 
     /**
      * @var string
      */
-    private $teaser = '';
+    private string $teaser = '';
 
     /**
      * @var array
      */
-    private $benefits;
+    private array $benefits;
 
     /**
      * @var string
      */
-    private $setupDescription = '';
+    private string $setupDescription = '';
 
     /**
      * @var Manufacturer
      */
-    private $manufacturer;
+    private Manufacturer $manufacturer;
 
     /**
      * @var string
      */
-    private $url;
+    private string $url;
 
     /**
      * @var Link[]
      */
-    private $links = [];
+    private array $links = [];
 
     /**
      * @var Parsedown
      */
-    public $parseDown;
+    public Parsedown $parseDown;
 
     /**
      * Recommendation constructor.

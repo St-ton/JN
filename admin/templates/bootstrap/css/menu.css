@@ -170,7 +170,7 @@ ul#menu {
 	padding: 10px 0 28px 20px;
 }
 
-#menu .menu-link-small > button,#menu .menu-link-small > menu-link-title {
+#menu .menu-link-small > button,#menu .menu-link-small > .menu-link-title {
 	display: none;
 }
 
@@ -262,7 +262,7 @@ ul#menu {
 	height: 78px;
 	border-left: 1px solid #72d4dd;
 	border-right: 1px solid #01a6bb;
-	text-align: center;	
+	text-align: center;
 	padding: 15px 10px 0 10px;
 		-moz-transition: all 0.2s ease;
 	-o-transition: all 0.2s ease;
@@ -285,7 +285,7 @@ ul#menu {
 	font-size: 14px;
 	display: block;
 	width: 100%;
-	text-align: center;	
+	text-align: center;
 }
 
 #topmenu li span {

@@ -14,16 +14,6 @@ use ZipArchive;
 class JTLZipArchiveProvider implements ZipArchiveProvider
 {
     /**
-     * @var string
-     */
-    private string $filename;
-
-    /**
-     * @var int
-     */
-    private int $localDirectoryPermissions;
-
-    /**
      * @var bool
      */
     private bool $parentDirectoryCreated = false;
@@ -34,20 +24,15 @@ class JTLZipArchiveProvider implements ZipArchiveProvider
     private ?ZipArchive $archive = null;
 
     /**
-     * @var int
-     */
-    private int $mode;
-
-    /**
      * @param string $filename
      * @param int    $localDirectoryPermissions
      * @param int    $mode
      */
-    public function __construct(string $filename, int $localDirectoryPermissions = 0700, int $mode = ZipArchive::CREATE)
-    {
-        $this->mode                      = $mode;
-        $this->filename                  = $filename;
-        $this->localDirectoryPermissions = $localDirectoryPermissions;
+    public function __construct(
+        private string $filename,
+        private int $localDirectoryPermissions = 0700,
+        private int $mode = ZipArchive::CREATE
+    ) {
     }
 
     /**

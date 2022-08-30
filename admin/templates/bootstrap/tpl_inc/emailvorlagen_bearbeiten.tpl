@@ -4,7 +4,7 @@
     cTitel=$template|cat: ' - '|cat:{__('name_'|cat:$mailTemplate->getModuleID())}|cat: ' - '|cat:$modify
     cBeschreibung=__('emailTemplateModifyHint')}
 <div id="content">
-    <form name="vorlagen_aendern" method="post" action="{$adminURL}/emailvorlagen.php" enctype="multipart/form-data">
+    <form name="vorlagen_aendern" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="Aendern" value="1" />
         {if $mailTemplate->getPluginID() > 0}
@@ -180,7 +180,7 @@
                             <div class="row mt-4">
                                 <div class="col-sm-auto col-form-label">{__('currentFiles')}:</div>
                                 <div class="col-sm-auto">
-                                    <a href="{$adminURL}/emailvorlagen.php?kEmailvorlage={$mailTemplate->getID()}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if $mailTemplate->getPluginID() > 0}&kPlugin={$mailTemplate->getPluginID()}{/if}"
+                                    <a href="{$adminURL}{$route}?kEmailvorlage={$mailTemplate->getID()}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if $mailTemplate->getPluginID() > 0}&kPlugin={$mailTemplate->getPluginID()}{/if}"
                                        class="btn btn-danger">
                                         {__('deleteAll')}
                                     </a>
@@ -236,7 +236,7 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a href="{$adminURL}/emailvorlagen.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                        <a href="{$adminURL}{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
@@ -261,7 +261,7 @@
 <script>
     {literal}
     function validateTemplateSyntax(tplID) {
-        simpleAjaxCall('io.php', {
+        simpleAjaxCall(BACKEND_URL + 'io', {
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'mailvorlageSyntaxCheck',

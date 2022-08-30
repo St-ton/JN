@@ -21,16 +21,6 @@ use SimpleXMLElement;
 class TemplateService implements TemplateServiceInterface
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * @var Model|null
      */
     private ?Model $activeTemplate = null;
@@ -50,10 +40,8 @@ class TemplateService implements TemplateServiceInterface
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -105,7 +93,7 @@ class TemplateService implements TemplateServiceInterface
                 return false;
             }
             while (($obj = \readdir($dh)) !== false) {
-                if (\mb_strpos($obj, '.') === 0) {
+                if (\str_starts_with($obj, '.')) {
                     continue;
                 }
                 if (!\is_dir(\PFAD_ROOT . \PFAD_COMPILEDIR . $obj)) {
@@ -198,7 +186,7 @@ class TemplateService implements TemplateServiceInterface
         }
         try {
             $template = Model::loadByAttributes($attributes, $this->db);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $template = new Model($this->db);
             $template->setTemplate('no-template');
         }
@@ -214,10 +202,9 @@ class TemplateService implements TemplateServiceInterface
             return $model;
         }
         $template = $this->mergeWithXML($dir, $tplXML, $template, $parentXML);
-        if ($withLicense === true) {
-            $manager    = new Manager($this->db, $this->cache);
-            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
-            if ($exsLicense === null && $template->getExsID() !== null) {
+        if ($withLicense === true && $template->getExsID() !== null) {
+            $exsLicense = (new Manager($this->db, $this->cache))->getLicenseByExsID($template->getExsID());
+            if ($exsLicense === null) {
                 $exsLicense = new ExpiredExsLicense();
                 $exsLicense->initFromTemplateData($template);
             }

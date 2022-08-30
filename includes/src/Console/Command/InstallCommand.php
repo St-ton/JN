@@ -35,7 +35,7 @@ class InstallCommand extends Command
     /**
      * @var array
      */
-    protected static $writeablePaths = [
+    protected static array $writeablePaths = [
         'admin/includes/emailpdfs',
         'admin/templates_c',
         'bilder/brandingbilder',

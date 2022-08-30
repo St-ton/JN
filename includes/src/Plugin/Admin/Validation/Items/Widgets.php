@@ -33,20 +33,16 @@ final class Widgets extends AbstractItem
             }
             $i      = (string)$i;
             $widget = $this->sanitizeWidget($widget);
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            \preg_match(
-                '/[\w\/\-() ]+/u',
-                $widget['Title'],
-                $hits1
-            );
+            \preg_match('/[\w\/\-() ]+/u', $widget['Title'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Title'])) {
                 return InstallCode::INVALID_WIDGET_TITLE;
             }
-            \preg_match('/[a-zA-Z0-9\/_\-.]+/', $widget['Class'], $hits1);
+            \preg_match('/[a-zA-Z\d\/_\-.]+/', $widget['Class'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Class'])) {
                 return InstallCode::INVALID_WIDGET_CLASS;
             }
@@ -56,15 +52,15 @@ final class Widgets extends AbstractItem
             if (!\in_array($widget['Container'], ['center', 'left', 'right'], true)) {
                 return InstallCode::INVALID_WIDGET_CONTAINER;
             }
-            \preg_match('/[0-9]+/', $widget['Pos'], $hits1);
+            \preg_match('/\d+/', $widget['Pos'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Pos'])) {
                 return InstallCode::INVALID_WIDGET_POS;
             }
-            \preg_match('/[0-1]{1}/', $widget['Expanded'], $hits1);
+            \preg_match('/[0-1]/', $widget['Expanded'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Expanded'])) {
                 return InstallCode::INVALID_WIDGET_EXPANDED;
             }
-            \preg_match('/[0-1]{1}/', $widget['Active'], $hits1);
+            \preg_match('/[0-1]/', $widget['Active'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($widget['Active'])) {
                 return InstallCode::INVALID_WIDGET_ACTIVE;
             }

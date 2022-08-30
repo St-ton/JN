@@ -7,7 +7,7 @@ use JTLShop\SemVer\Version;
 use stdClass;
 
 /**
- * Class Plugin
+ * Interface ReferencedItemInterface
  * @package JTL\License\Struct
  */
 interface ReferencedItemInterface

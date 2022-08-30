@@ -24,17 +24,17 @@ class Nice
     /**
      * @var string
      */
-    private $apiKey = '';
+    private string $apiKey = '';
 
     /**
      * @var string
      */
-    private $domain = '';
+    private string $domain = '';
 
     /**
      * @var array
      */
-    private $moduleIDs = [];
+    private array $moduleIDs = [];
 
     /**
      * @return Nice

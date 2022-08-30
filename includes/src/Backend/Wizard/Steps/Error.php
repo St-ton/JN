@@ -11,27 +11,27 @@ class Error
     /**
      * @var int
      */
-    public $questionID;
+    public int $questionID;
 
     /**
      * @var int
      */
-    public $stepID;
+    public int $stepID;
 
     /**
      * @var int
      */
-    public $code;
+    public int $code;
 
     /**
      * @var string
      */
-    public $message;
+    public string $message;
 
     /**
      * @var bool
      */
-    public $critical = false;
+    public bool $critical = false;
 
     /**
      * Error constructor.

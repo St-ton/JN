@@ -7,7 +7,6 @@ use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use stdClass;
-use function Functional\flatten;
 
 /**
  * Class Manufacturers
@@ -24,20 +23,20 @@ final class Manufacturers extends AbstractSync
         $cacheTags = [];
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'del_hersteller.xml') !== false) {
+            if (\str_contains($file, 'del_hersteller.xml')) {
                 $cacheTags[] = $this->handleDeletes($xml);
-            } elseif (\strpos($file, 'hersteller.xml') !== false) {
+            } elseif (\str_contains($file, 'hersteller.xml')) {
                 $cacheTags[] = $this->handleInserts($xml);
             }
         }
-        $this->cache->flushTags(\array_unique(flatten($cacheTags)));
+        $this->cache->flushTags($this->flattenTags($cacheTags));
 
         return null;
     }
 
     /**
      * @param array $xml
-     * @return array
+     * @return string[]
      */
     private function handleDeletes(array $xml): array
     {
@@ -64,12 +63,12 @@ final class Manufacturers extends AbstractSync
             }
         }
 
-        return flatten($cacheTags);
+        return $cacheTags;
     }
 
     /**
      * @param array $xml
-     * @return array
+     * @return string[]
      */
     private function handleInserts(array $xml): array
     {

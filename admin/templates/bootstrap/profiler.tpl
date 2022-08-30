@@ -11,7 +11,7 @@ var pies = [];
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+            <form class="delete-run" action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <input type="hidden" value="y" name="delete-all" />
                 <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
@@ -61,9 +61,10 @@ var pies = [];
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+                                    <form class="delete-run" action="{$adminURL}{$route}" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$profile->runID}" name="run-id" />
+                                        <input type="hidden" value="uebersicht" name="tab" />
                                         <div class="row">
                                             <div class="ml-auto col-sm-6 col-xl-auto">
                                                 <button type="submit" class="btn btn-danger btn-block" name="delete-run-submit">
@@ -123,8 +124,9 @@ var pies = [];
                                         </ul>
                                     </div>
                                     <div class="card-footer save-wrapper">
-                                        <form class="delete-run" action="{$adminURL}/profiler.php" method="post">
+                                        <form class="delete-run" action="{$adminURL}{$route}" method="post">
                                             {$jtl_token}
+                                            <input type="hidden" value="sqlprofiler" name="tab" />
                                             <input type="hidden" value="{$run->runID}" name="run-id" />
                                             <div class="row">
                                                 <div class="ml-auto col-sm-6 col-xl-auto">

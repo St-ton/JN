@@ -15,20 +15,14 @@ class SimpleCaptchaService implements CaptchaServiceInterface
     /**
      * @var bool
      */
-    private $enabled;
-
-    /**
-     * @var bool
-     */
     private $validated;
 
     /**
      * SimpleCaptchaService constructor.
      * @param bool $enabled
      */
-    public function __construct(bool $enabled)
+    public function __construct(private bool $enabled)
     {
-        $this->enabled = $enabled;
     }
 
     /**
@@ -71,7 +65,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
                 $token = $cryptoService->randomString(8);
                 $code  = $cryptoService->randomString(12);
                 $code .= ':' . \time();
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $token = 'token';
                 $code  = \mt_rand() . ':' . \time();
             }

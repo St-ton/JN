@@ -491,7 +491,7 @@ class SimpleMail
             return false;
         }
         foreach (Shop::Container()->getDB()->getObjects('SELECT cEmail FROM temailblacklist') as $item) {
-            if (\mb_strpos($item->cEmail, '*') !== false) {
+            if (\str_contains($item->cEmail, '*')) {
                 \preg_match('/' . \str_replace('*', '[a-z0-9\-\_\.\@\+]*', $item->cEmail) . '/', $mail, $hits);
                 // Blocked
                 if (isset($hits[0]) && \mb_strlen($mail) === \mb_strlen($hits[0])) {

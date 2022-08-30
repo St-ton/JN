@@ -25,24 +25,12 @@ use Throwable;
 final class Uninstaller
 {
     /**
-     * @var DbInterface
-     */
-    private DbInterface $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private JTLCacheInterface $cache;
-
-    /**
      * Uninstaller constructor.
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
-        $this->db    = $db;
-        $this->cache = $cache;
     }
 
     /**
@@ -74,7 +62,7 @@ final class Uninstaller
             : new LegacyPluginLoader($this->db, $this->cache);
         try {
             $plugin = $loader->init($pluginID);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ($update) {
@@ -89,7 +77,7 @@ final class Uninstaller
             if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {
                     include $plugin->getPaths()->getUninstaller();
-                } catch (Exception $exc) {
+                } catch (Exception) {
                 }
             }
             $this->doSQLDelete($pluginID, $update, $newID, $deleteData);
@@ -104,7 +92,7 @@ final class Uninstaller
                     : (\PFAD_PLUGIN . $dir);
                 try {
                     $manager->deleteDirectory('plgn://' . $dirName);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                 }
             }
         }

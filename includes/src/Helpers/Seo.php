@@ -5,7 +5,7 @@ namespace JTL\Helpers;
 use JTL\Shop;
 
 /**
- * Class SeoHelper
+ * Class Seo
  * @package JTL\Helpers
  */
 class Seo
@@ -69,7 +69,7 @@ class Seo
             \trim($str, ' -_')
         );
         $convertedStr = @\iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
-        $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z0-9\s]/', '', $str) : $convertedStr;
+        $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z\d\s]/', '', $str) : $convertedStr;
 
         return $keepUnderscore === false ?
             \preg_replace('/[\-_\s]+/u', '-', \trim($str)) :

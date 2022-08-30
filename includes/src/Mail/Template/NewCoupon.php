@@ -23,6 +23,6 @@ class NewCoupon extends AbstractTemplate
             return;
         }
         $smarty->assign('Kupon', $data->tkupon)
-               ->assign('couponTypes', Kupon::getCouponTypes());
+            ->assign('couponTypes', Kupon::getCouponTypes());
     }
 }

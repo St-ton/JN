@@ -17,7 +17,11 @@
                                 {formrow}
                                     {col md=4 lg=6 xl=3}
                                         {link class="image-wrapper" href=$product->cURLFull}
-                                            {include file='snippets/image.tpl' item=$product srcSize='sm'}
+                                            {include file='snippets/image.tpl'
+                                                item=$product
+                                                srcSize='sm'
+                                                sizes= '(min-width: 1300px) 10vw, (min-width: 992px) 13vw, (min-width: 768px) 34vw, 50vw'
+                                            }
                                         {/link}
                                     {/col}
                                     {col class="col-md"}

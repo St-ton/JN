@@ -2220,7 +2220,7 @@ msgid "bewertung_guthaben_nutzen_name"
 msgstr "Guthabenbonus gewähren"
 
 msgid "bewertung_guthaben_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen. Die Einstellung „Bewertung freischalten“ muss dafür ebenfalls aktiviert sein."
 
 msgid "bewertungserinnerung_versandtage_name"
 msgstr "Tage nach Versand bis zur Erinnerung"
@@ -3046,3 +3046,48 @@ msgstr "Spamschutz aktivieren"
 
 msgid "forgot_password_captcha_desc"
 msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
+
+msgid "configgroup_1_routing"
+msgstr "Routing"
+
+msgid "routing_scheme_name"
+msgstr "Routing-Schema"
+
+msgid "routing_default_language_name"
+msgstr "Routing-Schema für Standardsprache"
+
+msgid "routing_duplicates_name"
+msgstr "Behandlung von Nicht-Standardrouten"
+
+msgid "routing_duplicates_value(R)"
+msgstr "301-Redirect auf Standardroute"
+
+msgid "routing_duplicates_value(I)"
+msgstr "Belassen"
+
+msgid "routing_duplicates_value(F)"
+msgstr "404-Fehler"
+
+msgid "routing_default_language_value(F)"
+msgstr "Flach (Standard)"
+
+msgid "routing_default_language_value(L)"
+msgstr "Mit Locale"
+
+msgid "routing_default_language_value(P)"
+msgstr "Mit Präfix"
+
+msgid "routing_default_language_value(LP)"
+msgstr "Mit Locale und Präfix"
+
+msgid "routing_scheme_value(F)"
+msgstr "Flach (Standard)"
+
+msgid "routing_scheme_value(L)"
+msgstr "Mit Locale"
+
+msgid "routing_scheme_value(P)"
+msgstr "Mit Präfix"
+
+msgid "routing_scheme_value(LP)"
+msgstr "Mit Locale und Präfix"

@@ -16,7 +16,7 @@ use JTL\Update\Migration;
 class Migration_20200214100000 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'adds setting for GTIN display';
+    protected $description = 'Add setting for GTIN display';
 
     /**
      * @inheritDoc

@@ -16,17 +16,11 @@ use JTL\Services\JTL\Validation\RuleResult;
 class GreaterThan implements RuleInterface
 {
     /**
-     * @var mixed
-     */
-    protected $gt;
-
-    /**
      * GreaterThan constructor.
      * @param mixed $gt
      */
-    public function __construct($gt)
+    public function __construct(protected $gt)
     {
-        $this->gt = $gt;
     }
 
     /**

@@ -184,11 +184,14 @@
     border: 1px solid $text-color;
     border-radius: 5px;
     display: block;
-    height: 38px;
     color: inherit;
     padding: 8px;
     text-align: left;
     font-size: 14px;
+
+    &:not(textarea) {
+      height: 38px;
+    }
 
     &:disabled {
       background-color: $light-bg;

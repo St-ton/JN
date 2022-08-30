@@ -13,12 +13,12 @@ class Manufacturer
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $profileURL;
+    private string $profileURL;
 
     /**
      * Manufacturer constructor.

@@ -75,7 +75,7 @@ msgid "newsletterSubscriber"
 msgstr "Newsletter-Abonnent"
 
 msgid "moreDetailsStatistics"
-msgstr "Mehr Details unter <a href=\"statistik.php?s=3\">Statistiken</a>"
+msgstr "Mehr Details unter <a href=\"%s/stats/3\">Statistiken</a>"
 
 msgid "noStatisticsFound"
 msgstr "Keine Statistiken gefunden"

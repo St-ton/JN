@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php declare(strict_types=1); // @deprecated since 5.2.0
 
 use JTL\Helpers\Request;
 use JTL\IO\IO;

@@ -1,7 +1,7 @@
 {block name='snippets-categories-offcanvas'}
     {lang key='view' assign='view_'}
     {block name='snippets-categories-offcanvas-heading'}
-        <div class="h5">{$result->current->cName}</div>
+        <div class="h5">{$result->current->getName()}</div>
     {/block}
     {nav class="categories-offcanvas"}
         {block name='snippets-categories-offcanvas-navitems'}
@@ -14,13 +14,13 @@
                 {/link}
             {/navitem}
             {navitem}
-                {link href=$result->current->cURL class="nav-active"}
-                    {$result->current->cName} {$view_|lower}
+                {link href=$result->current->getURL() class="nav-active"}
+                    {$result->current->getName()} {$view_|lower}
                 {/link}
             {/navitem}
         {/block}
         {block name='snippets-categories-offcanvas-include-categories-recursive'}
-            {include file='snippets/categories_recursive.tpl' i=0 categoryId=$result->current->kKategorie limit=2 caret='right'}
+            {include file='snippets/categories_recursive.tpl' i=0 categoryId=$result->current->getID() limit=2 caret='right'}
         {/block}
     {/nav}
 {/block}

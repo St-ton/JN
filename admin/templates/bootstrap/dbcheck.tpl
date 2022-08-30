@@ -21,7 +21,7 @@
             {else}
                 <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|count}</div>
             {/if}
-            <form action="{$adminURL}/dbcheck.php" method="post">
+            <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
                 <div id="contentCheck" class="card">
                     <div class="card-header">
@@ -76,9 +76,9 @@
                                     {if isset($cDBStruct_arr.$cTable)}
                                         {if $cDBStruct_arr.$cTable->Locked}
                                             <span title="Tabelle in Benutzung"><i class="fa fa-cog fa-spin fa-2x fa-fw"></i></span>
-                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & JTL\Update\DBMigrationHelper::MIGRATE_TABLE) !== JTL\Update\DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="1"><i class="fa fa-cogs"></i></a>
-                                        {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
+                                        {elseif (($cDBStruct_arr.$cTable->Migration & JTL\Update\DBMigrationHelper::MIGRATE_COLUMN) !== JTL\Update\DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default btn-migrate" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {/if}
                                         <div class="custom-control custom-checkbox{if $hasError} d-none{/if}">

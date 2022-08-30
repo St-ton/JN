@@ -11,17 +11,17 @@ class DirManager
     /**
      * @var string
      */
-    public $filename;
+    public string $filename = '';
 
     /**
      * @var bool
      */
-    public $isdir;
+    public bool $isdir = false;
 
     /**
      * @var string
      */
-    public $path;
+    public string $path = '';
 
     /**
      * Userfunc (callback function) must have 1 parameter (array)
@@ -34,14 +34,14 @@ class DirManager
     public function getData(string $path, callable $userfunc = null, array $parameters = null): self
     {
         $islinux = true;
-        if (\mb_strpos($path, '\\') !== false) {
+        if (\str_contains($path, '\\')) {
             $islinux = false;
         }
         if ($islinux) {
-            if (\mb_strpos(\mb_substr($path, \mb_strlen($path) - 1, 1), '/') === false) {
+            if (!\str_contains(\mb_substr($path, \mb_strlen($path) - 1, 1), '/')) {
                 $path .= '/';
             }
-        } elseif (\mb_strpos(\mb_substr($path, \mb_strlen($path) - 1, 1), '\\') === false) {
+        } elseif (!\str_contains(\mb_substr($path, \mb_strlen($path) - 1, 1), '\\')) {
             $path .= '\\';
         }
         if (\is_dir($path)) {
@@ -65,7 +65,7 @@ class DirManager
                         if (\is_dir($path . $file)) {
                             $options['isdir'] = true;
                         }
-                        if ($parameters !== null && \is_array($parameters)) {
+                        if (\is_array($parameters)) {
                             $options = \array_merge($options, $parameters);
                         }
                         if ($userfunc !== null) {
@@ -73,7 +73,6 @@ class DirManager
                         }
                     }
                 }
-
                 @\closedir($dirhandle);
             }
         }

@@ -21,7 +21,7 @@ class Extractor
 {
     private const UNZIP_DIR = \PFAD_ROOT . \PFAD_DBES_TMP;
 
-    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z0-9]{40}))\/(.*)/';
+    private const GIT_REGEX = '/(.*)((-master)|(-[a-zA-Z\d]{40}))\/(.*)/';
 
     private const TAG_REGEX = '/(.*)-v?(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-'
     . '(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]'
@@ -33,11 +33,6 @@ class Extractor
     private InstallationResponse $response;
 
     /**
-     * @var XMLParser
-     */
-    private XMLParser $parser;
-
-    /**
      * @var MountManager
      */
     private MountManager $manager;
@@ -46,9 +41,8 @@ class Extractor
      * Extractor constructor.
      * @param XMLParser $parser
      */
-    public function __construct(XMLParser $parser)
+    public function __construct(private XMLParser $parser)
     {
-        $this->parser   = $parser;
         $jtlFS          = Shop::Container()->get(Filesystem::class);
         $this->response = new InstallationResponse();
         $this->manager  = new MountManager([
@@ -145,13 +139,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('plgn://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'plgn://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $this->manager->delete('plgn://' . $target);
                     $this->manager->move($source, 'plgn://' . $target);
                 }
@@ -163,7 +157,7 @@ class Extractor
         }
         try {
             $this->manager->deleteDirectory('root://' . \PFAD_DBES_TMP . $dirName);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
         if ($ok === true) {
             $this->response->setPath($base . $dirName);
@@ -204,13 +198,13 @@ class Extractor
             if ($item->isDir()) {
                 try {
                     $this->manager->createDirectory('tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $ok = false;
                 }
             } else {
                 try {
                     $this->manager->move($source, 'tpl://' . $target);
-                } catch (Throwable $e) {
+                } catch (Throwable) {
                     $this->manager->delete('tpl://' . $target);
                     $this->manager->move($source, 'tpl://' . $target);
                 }
@@ -218,7 +212,7 @@ class Extractor
         }
         try {
             $this->manager->deleteDirectory('root://' . \PFAD_DBES_TMP . $dirName);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
         }
         if ($ok === true) {
             $this->response->setPath($base . $dirName);
@@ -253,7 +247,7 @@ class Extractor
                     \preg_match(self::TAG_REGEX, $dirName, $hits);
                     if (\count($hits) >= 5) {
                         $dirName = \str_replace($hits[0], $hits[1] . '/', $dirName);
-                    } elseif (\mb_strpos($dirName, '.') === 0) {
+                    } elseif (\str_starts_with($dirName, '.')) {
                         $this->handlExtractionErrors(0, \__('pluginInstallInvalidArchive'));
 
                         return $dirName;

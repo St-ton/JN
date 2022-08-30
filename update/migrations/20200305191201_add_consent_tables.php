@@ -14,7 +14,7 @@ use JTL\Update\Migration;
 class Migration_20200305191201 extends Migration implements IMigration
 {
     protected $author      = 'fm';
-    protected $description = 'add consent tables';
+    protected $description = 'Add consent tables';
 
     /**
      * @inheritDoc

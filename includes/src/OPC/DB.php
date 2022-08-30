@@ -19,33 +19,18 @@ use function Functional\map;
 class DB
 {
     /**
-     * @var DbInterface
-     */
-    protected $shopDB;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * @var array
      */
-    protected $mapping;
+    protected array $mapping;
 
     /**
      * DB constructor.
      * @param DbInterface       $shopDB
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $shopDB, JTLCacheInterface $cache)
+    public function __construct(protected DbInterface $shopDB, protected JTLCacheInterface $cache)
     {
-        $this->shopDB  = $shopDB;
-        $this->cache   = $cache;
-        $this->mapping = $this->cache->get('jtl_opc_mapping');
-        if ($this->mapping === false) {
-            $this->mapping = [];
-        }
+        $this->mapping = ($mapping = $this->cache->get('jtl_opc_mapping')) === false ? [] : $mapping;
     }
 
     /**

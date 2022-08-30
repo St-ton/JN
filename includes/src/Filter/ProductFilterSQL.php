@@ -11,23 +11,17 @@ use function Functional\reduce_left;
 class ProductFilterSQL implements ProductFilterSQLInterface
 {
     /**
-     * @var ProductFilter
-     */
-    private $productFilter;
-
-    /**
      * @var array
      */
-    private $conf;
+    private array $conf;
 
     /**
      * ProductFilterSQL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(ProductFilter $productFilter)
+    public function __construct(private ProductFilter $productFilter)
     {
-        $this->productFilter = $productFilter;
-        $this->conf          = $productFilter->getFilterConfig()->getConfig();
+        $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
 
     /**
@@ -95,7 +89,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
         ]);
         // merge Query-Conditions
         $filterQueryIndices = [];
-        $filterQueries      = \array_filter($conditions, static function ($f) {
+        $filterQueries      = \array_filter($conditions, static function ($f): bool {
             return \is_object($f) && \get_class($f) === Query::class;
         });
         foreach ($filterQueries as $idx => $condition) {

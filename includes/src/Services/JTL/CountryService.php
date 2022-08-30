@@ -22,17 +22,7 @@ class CountryService implements CountryServiceInterface
     /**
      * @var Collection
      */
-    private $countryList;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    private $cache;
+    private Collection $countryList;
 
     public const CACHE_ID = 'serviceCountryList';
 
@@ -41,11 +31,9 @@ class CountryService implements CountryServiceInterface
      * @param DbInterface $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, JTLCacheInterface $cache)
+    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
     {
         $this->countryList = new Collection();
-        $this->db          = $db;
-        $this->cache       = $cache;
         $this->init();
     }
 
@@ -53,7 +41,7 @@ class CountryService implements CountryServiceInterface
     {
         $languageID = Shop::getLanguageID();
         if (($countries = $this->cache->get(self::CACHE_ID)) !== false) {
-            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID) {
+            $this->countryList = $countries->sortBy(static function (Country $country) use ($languageID): string {
                 return Text::replaceUmlauts($country->getName($languageID));
             });
 
@@ -70,22 +58,23 @@ class CountryService implements CountryServiceInterface
                 \explode(' ', $shippingMethod->cLaender)
             ));
         }
+        $languages = Shop::Lang()->getAllLanguages();
         foreach ($countries as $country) {
-            $countryTMP = new Country($country->cISO);
+            $countryTMP = new Country($country->cISO, false, $languages);
             $countryTMP->setEU((int)$country->nEU)
-                       ->setContinent($country->cKontinent)
-                       ->setNameDE($country->cDeutsch)
-                       ->setNameEN($country->cEnglisch)
-                       ->setPermitRegistration((int)$country->bPermitRegistration === 1)
-                       ->setRequireStateDefinition((int)$country->bRequireStateDefinition === 1)
-                       ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
+                ->setContinent($country->cKontinent)
+                ->setNameDE($country->cDeutsch)
+                ->setNameEN($country->cEnglisch)
+                ->setPermitRegistration((int)$country->bPermitRegistration === 1)
+                ->setRequireStateDefinition((int)$country->bRequireStateDefinition === 1)
+                ->setShippingAvailable(\in_array($countryTMP->getISO(), $deliverableCountries, true));
             if (\in_array($countryTMP->getISO(), $possibleStates, true)) {
                 $countryTMP->setStates($this->getStates($countryTMP->getISO()));
             }
             $this->countryList->push($countryTMP);
         }
 
-        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID) {
+        $this->countryList = $this->countryList->sortBy(static function (Country $country) use ($languageID): string {
             return Text::replaceUmlauts($country->getName($languageID));
         });
 
@@ -106,7 +95,7 @@ class CountryService implements CountryServiceInterface
      */
     public function getCountry(string $iso): ?Country
     {
-        return $this->getCountryList()->first(static function (Country $country) use ($iso) {
+        return $this->getCountryList()->first(static function (Country $country) use ($iso): bool {
             return $country->getISO() === \strtoupper($iso);
         });
     }
@@ -123,7 +112,7 @@ class CountryService implements CountryServiceInterface
         }
         $filterItems = \array_map('\strtoupper', $ISOToFilter);
 
-        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems) {
+        return $this->getCountryList()->filter(static function (Country $country) use ($filterItems): bool {
             return \in_array($country->getISO(), $filterItems, true);
         });
     }
@@ -135,7 +124,7 @@ class CountryService implements CountryServiceInterface
     public function getIsoByCountryName(string $countryName): ?string
     {
         $name  = \strtolower($countryName);
-        $match = $this->getCountryList()->first(static function (Country $country) use ($name) {
+        $match = $this->getCountryList()->first(static function (Country $country) use ($name): bool {
             foreach ($country->getNames() as $tmpName) {
                 if (\strtolower($tmpName) === $name || $name === \strtolower($country->getNameDE())) {
                     return true;
@@ -200,28 +189,18 @@ class CountryService implements CountryServiceInterface
      */
     public function getContinentSort(string $continent): int
     {
-        switch ($continent) {
-            case \__('Europa'):
-                return 1;
-            case \__('europeanUnion'):
-                return 2;
-            case \__('notEuropeanUnionEurope'):
-                return 3;
-            case \__('Asien'):
-                return 4;
-            case \__('Afrika'):
-                return 5;
-            case \__('Nordamerika'):
-                return 6;
-            case \__('Suedamerika'):
-                return 7;
-            case \__('Ozeanien'):
-                return 8;
-            case \__('Antarktis'):
-                return 9;
-            default:
-                return 0;
-        }
+        return match ($continent) {
+            \__('Europa')                 => 1,
+            \__('europeanUnion')          => 2,
+            \__('notEuropeanUnionEurope') => 3,
+            \__('Asien')                  => 4,
+            \__('Afrika')                 => 5,
+            \__('Nordamerika')            => 6,
+            \__('Suedamerika')            => 7,
+            \__('Ozeanien')               => 8,
+            \__('Antarktis')              => 9,
+            default                       => 0,
+        };
     }
 
     /**

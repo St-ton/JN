@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use stdClass;
 
 /**
- * class Item
+ * Class Item
  * @package JTL\Backend\LocalizationCheck
  */
 class Item

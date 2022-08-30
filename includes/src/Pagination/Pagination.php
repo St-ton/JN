@@ -13,112 +13,112 @@ class Pagination
     /**
      * @var string
      */
-    private $id = 'pagi';
+    private string $id = 'pagi';
 
     /**
      * @var int
      */
-    private $dispPagesRadius = 2;
+    private int $dispPagesRadius = 2;
 
     /**
      * @var array
      */
-    private $itemsPerPageOptions = [10, 20, 50, 100];
+    private array $itemsPerPageOptions = [10, 20, 50, 100];
 
     /**
      * @var array
      */
-    private $sortByOptions = [];
+    private array $sortByOptions = [];
 
     /**
      * @var int
      */
-    private $itemCount = 0;
+    private int $itemCount = 0;
 
     /**
      * @var int
      */
-    private $itemsPerPage = 10;
+    private int $itemsPerPage = 10;
 
     /**
      * @var bool
      */
-    private $itemsPerPageExplicit = false;
+    private bool $itemsPerPageExplicit = false;
 
     /**
      * @var int
      */
-    private $sortBy = 0;
+    private int $sortBy = 0;
 
     /**
      * @var int
      */
-    private $sortDir = 0;
+    private int $sortDir = 0;
 
     /**
      * @var int
      */
-    private $sortByDir = 0;
+    private int $sortByDir = 0;
 
     /**
      * @var int
      */
-    private $page = 0;
+    private int $page = 0;
 
     /**
      * @var int
      */
-    private $pageCount = 0;
+    private int $pageCount = 0;
 
     /**
      * @var int
      */
-    private $prevPage = 0;
+    private int $prevPage = 0;
 
     /**
      * @var int
      */
-    private $nextPage = 0;
+    private int $nextPage = 0;
 
     /**
      * @var int
      */
-    private $leftRangePage = 0;
+    private int $leftRangePage = 0;
 
     /**
      * @var int
      */
-    private $rightRangePage = 0;
+    private int $rightRangePage = 0;
 
     /**
      * @var int
      */
-    private $firstPageItem = 0;
+    private int $firstPageItem = 0;
 
     /**
      * @var int
      */
-    private $pageItemCount = 0;
+    private int $pageItemCount = 0;
 
     /**
      * @var string
      */
-    private $sortBySQL = '';
+    private string $sortBySQL = '';
 
     /**
      * @var string
      */
-    private $sortDirSQL = '';
+    private string $sortDirSQL = '';
 
     /**
      * @var string
      */
-    private $limitSQL = '';
+    private string $limitSQL = '';
 
     /**
      * @var string
      */
-    private $orderSQL = '';
+    private string $orderSQL = '';
 
     /**
      * @var array|Collection
@@ -133,12 +133,12 @@ class Pagination
     /**
      * @var int
      */
-    private $defaultItemsPerPage = 0;
+    private int $defaultItemsPerPage = 0;
 
     /**
      * @var int
      */
-    private $defaultSortByDir = 0;
+    private int $defaultSortByDir = 0;
 
     /**
      * @var callable|null
@@ -162,7 +162,7 @@ class Pagination
      */
     public function setId($id): self
     {
-        $this->id = $id;
+        $this->id = (string)$id;
 
         return $this;
     }

@@ -3,6 +3,8 @@
 namespace JTL\Sitemap\Items;
 
 use JTL\Helpers\URL;
+use JTL\Media\Image;
+use JTL\Media\Image\NewsCategory as NewsCategoryImage;
 
 /**
  * Class NewsCategory
@@ -21,7 +23,16 @@ final class NewsCategory extends AbstractItem
         if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . $this->data->image);
+        $this->data->image = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $this->data->image);
+        $image             = NewsCategoryImage::getThumb(
+            Image::TYPE_NEWSCATEGORY,
+            (int)$this->data->kNewsKategorie,
+            $this->data,
+            Image::SIZE_LG
+        );
+        if (\mb_strlen($image) > 0) {
+            $this->setImage($this->baseImageURL . $image);
+        }
     }
 
     /**

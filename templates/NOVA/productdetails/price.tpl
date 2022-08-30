@@ -46,12 +46,7 @@
                             <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
                             <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
                         {/if}
-                        {if $Artikel->Preise->oPriceRange->isRange()}
-                            {$priceNoCurr = $Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}
-                        {else}
-                            {$priceNoCurr = $Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}
-                        {/if}
-                        <meta itemprop="price" content="{$priceNoCurr}">
+                        <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
                         <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                         {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
                             <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
@@ -88,6 +83,25 @@
                                 <span class="vat_info">
                                     {include file='snippets/shipping_tax_info.tpl' taxdata=$Artikel->taxData}
                                 </span>
+                            {/block}
+
+                            {block name='productdetails-price-min-value-info'}
+                                {$minOrderValue = $smarty.session.Kundengruppe->getAttribute('mindestbestellwert')}
+                                {if $minOrderValue > 0}
+                                    {if $Artikel->Preise->oPriceRange->isRange() && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
+                                        {if $NettoPreise == 1}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minNettoPrice}
+                                        {else}
+                                            {$minPrice = $Artikel->Preise->oPriceRange->minBruttoPrice}
+                                        {/if}
+                                    {else}
+                                        {$minPrice = $Artikel->Preise->fVK[$NettoPreise]}
+                                    {/if}
+
+                                    {if $minOrderValue > $minPrice}
+                                        <div class="min-value-wrapper">{lang key='minValueInfo' section='productDetails' printf=$minOrderValue|cat:':::'|cat:$smarty.session.Waehrung->getName()}</div>
+                                    {/if}
+                                {/if}
                             {/block}
 
                             {block name='productdetails-price-special-prices-detail'}

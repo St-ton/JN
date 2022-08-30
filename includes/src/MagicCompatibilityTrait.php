@@ -14,7 +14,7 @@ trait MagicCompatibilityTrait
     /**
      * @var array
      */
-    private $data = [];
+    private array $data = [];
 
     /**
      * @param string $value
@@ -35,9 +35,6 @@ trait MagicCompatibilityTrait
         if (\COMPATIBILITY_TRACE_DEPTH > 0 && \error_reporting() >= \E_USER_DEPRECATED) {
             Shop::dbg($name, false, 'Backtrace for', \COMPATIBILITY_TRACE_DEPTH + 1);
         }
-        if (\property_exists($this, $name)) {
-            return $this->$name;
-        }
         if (($mapped = self::getMapping($name)) !== null) {
             if (\is_array($mapped) && \count($mapped) === 2) {
                 $method1 = $mapped[0];
@@ -48,6 +45,9 @@ trait MagicCompatibilityTrait
             $method = 'get' . $mapped;
 
             return $this->$method();
+        }
+        if (\property_exists($this, $name)) {
+            return $this->$name;
         }
 
         return $this->data[$name] ?? null;
@@ -64,11 +64,6 @@ trait MagicCompatibilityTrait
         if (\COMPATIBILITY_TRACE_DEPTH > 0 && \error_reporting() >= \E_USER_DEPRECATED) {
             Shop::dbg($name, false, 'Backtrace for', \COMPATIBILITY_TRACE_DEPTH + 1);
         }
-        if (\property_exists($this, $name)) {
-            $this->$name = $value;
-
-            return $this;
-        }
         if (($mapped = self::getMapping($name)) !== null) {
             if (\is_array($mapped) && \count($mapped) === 2) {
                 $method1 = $mapped[0];
@@ -79,6 +74,11 @@ trait MagicCompatibilityTrait
             $method = 'set' . $mapped;
 
             return $this->$method($value);
+        }
+        if (\property_exists($this, $name)) {
+            $this->$name = $value;
+
+            return $this;
         }
         \trigger_error(__CLASS__ . ': setter could not find property ' . $name, \E_USER_DEPRECATED);
         $this->data[$name] = $value;

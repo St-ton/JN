@@ -13,17 +13,17 @@ class Link
     /**
      * @var string
      */
-    private $href;
+    private string $href;
 
     /**
      * @var string
      */
-    private $rel;
+    private string $rel;
 
     /**
      * @var string
      */
-    private $method = 'GET';
+    private string $method = 'GET';
 
     /**
      * Link constructor.

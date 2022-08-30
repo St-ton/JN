@@ -11,7 +11,7 @@ class MultiJoin extends Join
     /**
      * @var JoinInterface[]
      */
-    private $joinChain = [];
+    private array $joinChain = [];
 
     /**
      * @param JoinInterface $join

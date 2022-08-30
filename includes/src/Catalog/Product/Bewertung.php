@@ -142,21 +142,14 @@ class Bewertung
      */
     private function getOrderSQL(int $option): string
     {
-        switch ($option) {
-            case 3:
-                return ' tbewertung.dDatum ASC';
-            case 4:
-                return ' tbewertung.nSterne DESC';
-            case 5:
-                return ' tbewertung.nSterne ASC';
-            case 6:
-                return ' tbewertung.nHilfreich DESC';
-            case 7:
-                return ' tbewertung.nHilfreich ASC';
-            case 2:
-            default:
-                return ' tbewertung.dDatum DESC';
-        }
+        return match ($option) {
+            3       => ' tbewertung.dDatum ASC',
+            4       => ' tbewertung.nSterne DESC',
+            5       => ' tbewertung.nSterne ASC',
+            6       => ' tbewertung.nHilfreich DESC',
+            7       => ' tbewertung.nHilfreich ASC',
+            default => ' tbewertung.dDatum DESC',
+        };
     }
 
     /**
@@ -252,16 +245,15 @@ class Bewertung
             ['pid' => $productID]
         );
         if ($total !== null && (int)$total->fDurchschnitt > 0) {
-            $total->fDurchschnitt   = \round($total->fDurchschnitt * 2) / 2;
-            $total->nAnzahl         = (int)$total->nAnzahl;
-            $this->oBewertungGesamt = $total;
+            $total->fDurchschnitt = \round($total->fDurchschnitt * 2) / 2;
+            $total->nAnzahl       = (int)$total->nAnzahl;
         } else {
-            $total                  = new stdClass();
-            $total->fDurchschnitt   = 0;
-            $total->nAnzahl         = 0;
-            $this->oBewertungGesamt = $total;
+            $total                = new stdClass();
+            $total->fDurchschnitt = 0;
+            $total->nAnzahl       = 0;
         }
-        $this->nAnzahlSprache = (int)($totalLocalized->nAnzahlSprache ?? 0);
+        $this->oBewertungGesamt = $total;
+        $this->nAnzahlSprache   = (int)($totalLocalized->nAnzahlSprache ?? 0);
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }

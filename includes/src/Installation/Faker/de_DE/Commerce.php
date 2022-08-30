@@ -11,7 +11,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
     /**
      * @var array
      */
-    protected static $department = [
+    protected static array $department = [
         'Antiquitäten & Kunst', 'Auto & Motorrad: Fahrzeuge', 'Auto & Motorrad: Teile', 'Baby',
         'Beauty & Gesundheit', 'Briefmarken', 'Business & Industrie', 'Bücher', 'Büro & Schreibwaren',
         'Computer, Tablets & Netzwerk', 'Feinschmecker', 'Filme & DVDs', 'Foto & Camcorder',
@@ -24,7 +24,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
     /**
      * @var array
      */
-    protected static $adjective = [
+    protected static array $adjective = [
         'Klein', 'Ergonomisch', 'Rustikal', 'Intelligent', 'Herrlich', 'Unglaublich', 'Fantastisch',
         'Praktisch', 'Geschmeidig', 'Enorm', 'Mittelmäßig', 'Leicht', 'Aerodynamisch', 'Langlebig',
     ];
@@ -32,7 +32,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
     /**
      * @var array
      */
-    protected static $material = [
+    protected static array $material = [
         'Stahl', 'Beton', 'Kunststoff', 'Baumwolle', 'Granit', 'Gummi', 'Leder', 'Seide',
         'Wolle', 'Leinen', 'Marmor', 'Eisen', 'Bronze', 'Kupfer', 'Aluminium', 'Papier',
     ];
@@ -40,7 +40,7 @@ class Commerce extends \JTL\Installation\Faker\Commerce
     /**
      * @var array
      */
-    protected static $product = [
+    protected static array $product = [
         'Stuhl', 'Auto', 'Computer', 'Handschuhe', 'Hose', 'Hemd', 'Tabelle', 'Schuhe', 'Hut',
         'Platte', 'Messer', 'Flasche', 'Mantel',
         'Lampe', 'Tastatur', 'Tasche', 'Bank', 'Uhr', 'Portemonnaie',

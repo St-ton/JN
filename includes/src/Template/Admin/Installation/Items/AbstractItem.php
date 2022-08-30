@@ -13,38 +13,17 @@ use SimpleXMLElement;
 abstract class AbstractItem implements ItemInterface
 {
     /**
-     * @var DbInterface
-     */
-    protected DbInterface $db;
-
-    /**
-     * @var SimpleXMLElement
-     */
-    protected SimpleXMLElement $xml;
-
-    /**
-     * @var SimpleXMLElement|null
-     */
-    protected ?SimpleXMLElement $parentXml;
-
-    /**
-     * @var Model|null
-     */
-    protected ?Model $model;
-
-    /**
-     * @inheritdoc
+     * @param DbInterface           $db
+     * @param SimpleXMLElement      $xml
+     * @param SimpleXMLElement|null $parentXml
+     * @param Model|null            $model
      */
     public function __construct(
-        DbInterface $db,
-        SimpleXMLElement $xml,
-        ?SimpleXMLElement $parentXML,
-        ?Model $model = null
+        protected DbInterface $db,
+        protected SimpleXMLElement $xml,
+        protected ?SimpleXMLElement $parentXml,
+        protected ?Model $model = null
     ) {
-        $this->db        = $db;
-        $this->xml       = $xml;
-        $this->parentXml = $parentXML;
-        $this->model     = $model;
     }
 
     /**

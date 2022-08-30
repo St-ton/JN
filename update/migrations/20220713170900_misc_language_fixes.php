@@ -25,6 +25,5 @@ class Migration_20220713170900 extends Migration implements IMigration
      */
     public function down()
     {
-//        $this->removeLocalization('goBackToList', 'global');
     }
 }

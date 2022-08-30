@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Recommendation\Manager;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -38,6 +39,9 @@ class TaCController extends AbstractBackendController
                     $_POST,
                     Request::verifyGPCDataInt('kText')
                 );
+                if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+                    $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
+                }
             }
         }
 
@@ -45,10 +49,14 @@ class TaCController extends AbstractBackendController
             $this->assignOverview();
         }
 
+        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+
         return $this->smarty->assign('step', $this->step)
             ->assign('languageID', $this->currentLanguageID)
             ->assign('route', $this->route)
             ->assign('recommendations', new Manager($this->alertService, Manager::SCOPE_BACKEND_LEGAL_TEXTS))
+            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('agbwrb.tpl');
     }
 

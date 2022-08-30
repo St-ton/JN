@@ -277,7 +277,7 @@ class State
         'kNewsKategorie'         => 'newsCategoryID',
         'nBewertungSterneFilter' => 'ratingFilterID',
         'cPreisspannenFilter'    => 'priceRangeFilter',
-        'manufacturerFilterIDs'  => 'manufacturerFilterIDs',
+        'manufacturerFilters'    => 'manufacturerFilterIDs',
         'kHerstellerFilter'      => 'manufacturerFilterID',
         'categoryFilterIDs'      => 'categoryFilterIDs',
         'MerkmalFilter_arr'      => 'characteristicFilterIDs',

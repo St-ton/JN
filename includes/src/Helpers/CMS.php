@@ -74,13 +74,13 @@ class CMS
     public static function getHomeNews(array $conf): Collection
     {
         $items = new Collection();
-        if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
+        if ((int)($conf['news']['news_anzahl_content'] ?? 0) === 0) {
             return $items;
         }
         $limit   = '';
         $cgID    = Frontend::getCustomerGroup()->getID();
         $langID  = Shop::getLanguageID();
-        $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID . '_' . $cgID);
+        $cacheID = 'news_' . \md5(\json_encode($conf['news'], \JSON_THROW_ON_ERROR) . '_' . $langID . '_' . $cgID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
@@ -202,12 +202,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : (\round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1);
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;
@@ -246,12 +251,17 @@ class CMS
             ? (($searchData[0]->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / 9)
             : 0;
         foreach ($searchData as $item) {
-            $item->Klasse   = $priority < 1
+            $item->kSuchanfrage   = (int)$item->kSuchanfrage;
+            $item->kSprache       = (int)$item->kSprache;
+            $item->nAktiv         = (int)$item->nAktiv;
+            $item->nAnzahlTreffer = (int)$item->nAnzahlTreffer;
+            $item->nAnzahlGesuche = (int)$item->nAnzahlGesuche;
+            $item->Klasse         = $priority < 1
                 ? \random_int(1, 10)
                 : \round(($item->nAnzahlGesuche - $searchData[$count - 1]->nAnzahlGesuche) / $priority) + 1;
-            $item->cURL     = URL::buildURL($item, \URLART_LIVESUCHE);
-            $item->cURLFull = URL::buildURL($item, \URLART_LIVESUCHE, true);
-            $search[]       = $item;
+            $item->cURL           = URL::buildURL($item, \URLART_LIVESUCHE);
+            $item->cURLFull       = URL::buildURL($item, \URLART_LIVESUCHE, true);
+            $search[]             = $item;
         }
 
         return $search;
@@ -272,8 +282,9 @@ class CMS
             'dStart DESC'
         );
         foreach ($history as $item) {
-            $item->cURL     = URL::buildURL($item, \URLART_NEWSLETTER);
-            $item->cURLFull = URL::buildURL($item, \URLART_NEWSLETTER, true);
+            $item->kNewsletterHistory = (int)$item->kNewsletterHistory;
+            $item->cURL               = URL::buildURL($item, \URLART_NEWSLETTER);
+            $item->cURLFull           = URL::buildURL($item, \URLART_NEWSLETTER, true);
         }
 
         return $history;
@@ -287,7 +298,8 @@ class CMS
      */
     public static function getFreeGifts(array $conf): array
     {
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $customerGroup   = Frontend::getCustomerGroup();
+        $customerGroupID = $customerGroup->getID();
         $gifts           = [];
         $sort            = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
@@ -316,7 +328,7 @@ class CMS
         $defaultOptions = Artikel::getDefaultOptions();
         $languageID     = Shop::getLanguageID();
         foreach ($tmpGifts as $item) {
-            $product = new Artikel($db);
+            $product = new Artikel($db, $customerGroup, $currency);
             $product->fuelleArtikel((int)$item->kArtikel, $defaultOptions, $customerGroupID, $languageID);
             $product->cBestellwert = Preise::getLocalizedPriceString((float)$item->cWert, $currency);
             if ($product->kEigenschaftKombi > 0 || \count($product->Variationen) === 0) {

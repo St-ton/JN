@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\IO;
 
@@ -29,7 +29,9 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Review\ReviewController;
+use JTL\Router\Controller\ReviewController;
+use JTL\Router\Route;
+use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -47,23 +49,12 @@ use function Functional\pluck;
 class IOMethods
 {
     /**
-     * @var IO
-     */
-    private $io;
-
-    /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
      * IOMethods constructor.
      * @param IO               $io
      * @param DbInterface|null $db
      */
-    public function __construct(IO $io, ?DbInterface $db = null)
+    public function __construct(private IO $io, private ?DbInterface $db = null)
     {
-        $this->io = $io;
         $this->db = $db ?? Shop::Container()->getDB();
     }
 
@@ -181,7 +172,7 @@ class IOMethods
         if ($amount <= 0 || $productID <= 0) {
             return $ioResponse;
         }
-        $product               = new Artikel();
+        $product               = new Artikel($this->db);
         $options               = Artikel::getDefaultOptions();
         $options->nStueckliste = 1;
         $product->fuelleArtikel($productID, $options);
@@ -199,9 +190,7 @@ class IOMethods
         if ((int)$amount != $amount && $product->cTeilbar !== 'Y') {
             $amount = \max((int)$amount, 1);
         }
-        // Prüfung
         $errors = CartHelper::addToCartCheck($product, $amount, $properties, 2, $token);
-
         if (\count($errors) > 0) {
             $localizedErrors = Product::getProductMessages($errors, true, $product, $amount);
 
@@ -240,26 +229,26 @@ class IOMethods
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();
         $boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
-        $sum[0]      = Preise::getLocalizedPriceString(
-            $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)
-        );
-        $sum[1]      = Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]));
-        $smarty->assign('Boxen', $boxesToShow)
-            ->assign('WarenkorbWarensumme', $sum);
+        $xSelling    = Product::getXSelling($productID, $product->nIstVater > 0);
+        $sum         = [
+            Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true)),
+            Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
+        ];
 
         $customerGroupID = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
             ? $_SESSION['Kunde']->kKundengruppe
             : Frontend::getCustomerGroup()->getID();
-        $xSelling        = Product::getXSelling($productID, $product->nIstVater > 0);
 
-        $smarty->assign(
-            'WarenkorbVersandkostenfreiHinweis',
-            ShippingMethod::getShippingFreeString(
-                ShippingMethod::getFreeShippingMinimum($customerGroupID),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true),
-                $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true)
+        $smarty->assign('Boxen', $boxesToShow)
+            ->assign('WarenkorbWarensumme', $sum)
+            ->assign(
+                'WarenkorbVersandkostenfreiHinweis',
+                ShippingMethod::getShippingFreeString(
+                    ShippingMethod::getFreeShippingMinimum($customerGroupID),
+                    $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true),
+                    $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true)
+                )
             )
-        )
             ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
             ->assign('fAnzahl', $amount)
             ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant())
@@ -328,7 +317,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'vergleichsliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('compare')
             ]);
@@ -339,10 +328,7 @@ class IOMethods
             ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
-            ->assign(
-                'type',
-                $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info'
-            )
+            ->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
             ->assign('body', $content)
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
@@ -398,10 +384,10 @@ class IOMethods
      * @param JTLSmarty $smarty
      * @return array
      */
-    private function forceRenderBoxes(int $type, array $conf, $smarty): array
+    private function forceRenderBoxes(int $type, array $conf, JTLSmarty $smarty): array
     {
-        $res     = [];
-        $boxData = $this->db->getObjects(
+        $res      = [];
+        $boxData  = $this->db->getObjects(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
                        GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
@@ -415,13 +401,14 @@ class IOMethods
                 GROUP BY tboxen.kBox',
             ['type' => $type]
         );
-        $factory = new Factory($conf);
+        $factory  = new Factory($conf);
+        $renderer = new DefaultRenderer($smarty);
         foreach ($boxData as $item) {
             $box = $factory->getBoxByBaseType($type);
             $box->map([$item]);
             $box->setFilter([]);
             $box->setShow(true);
-            $renderer           = new DefaultRenderer($smarty, $box);
+            $renderer->setBox($box);
             $res[$box->getID()] = $renderer->render();
         }
 
@@ -445,10 +432,10 @@ class IOMethods
         $smarty     = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
-            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
-                '?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_LOGIN_WUNSCHLISTE;
+            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php')
+                . '?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_LOGIN_WUNSCHLISTE;
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -458,9 +445,9 @@ class IOMethods
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
-            $response->cLocation = (Shop::getURL() . '/?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_VARWAEHLEN);
+            $response->cLocation = (Shop::getURL() . '/?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_VARWAEHLEN);
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -481,19 +468,17 @@ class IOMethods
         $response->nCount    = \count(Frontend::getWishList()->getItems());
         $response->productID = $productID;
         $response->cTitle    = Shop::Lang()->get('goToWishlist');
-        $buttons             = [
-            (object)[
-                'href'    => '#',
-                'fa'      => 'fa fa-arrow-circle-right',
-                'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
-                'primary' => true,
-                'dismiss' => 'modal'
-            ]
-        ];
+        $buttons             = [(object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]];
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'wunschliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
@@ -597,7 +582,7 @@ class IOMethods
                 $qty             = $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]);
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
-                $error           = $smarty->getTemplateVars('fehler');
+                $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
@@ -629,7 +614,8 @@ class IOMethods
                     ))
                     ->assign('WarenkorbVersandkostenfreiHinweis', ShippingMethod::getShippingFreeString(
                         $shippingFreeMin,
-                        $cartValue
+                        $cartValueGros,
+                        $cartValueNet
                     ))
                     ->assign('oSpezialseiten_arr', Shop::Container()->getLinkService()->getSpecialPages())
                     ->assign('favourableShippingString', $cart->favourableShippingString);
@@ -658,7 +644,7 @@ class IOMethods
         $_POST['jtl_token'] = $aValues['jtl_token'];
         $smarty             = Shop::Smarty();
         $response           = new IOResponse();
-        $product            = new Artikel();
+        $product            = new Artikel($this->db);
         $productID          = (int)($aValues['VariKindArtikel'] ?? $aValues['a']);
         $items              = $aValues['item'] ?? [];
         $quantities         = $aValues['quantity'] ?? [];
@@ -721,49 +707,44 @@ class IOMethods
                 }
                 $configItems[] = $configItem;
                 // Alle Artikel können in den WK gelegt werden?
-                if ($configItem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
-                    // Varikombi
-                    /** @var Artikel $tmpProduct */
-                    $configItem->oEigenschaftwerte_arr = [];
-                    $tmpProduct                        = $configItem->getArtikel();
-
-                    if ($tmpProduct !== null
-                        && $tmpProduct->kVaterArtikel > 0
-                        && isset($tmpProduct->kEigenschaftKombi)
-                        && $tmpProduct->kEigenschaftKombi > 0
-                    ) {
-                        $configItem->oEigenschaftwerte_arr =
-                            Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
-                    }
-                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
-                        $count = (int)$count;
-                    }
-                    $tmpProduct->isKonfigItem = true;
-                    $redirectParam            = CartHelper::addToCartCheck(
-                        $tmpProduct,
+                if ($configItem->getPosTyp() !== \KONFIG_ITEM_TYP_ARTIKEL) {
+                    continue;
+                }
+                // Varikombi
+                $configItem->oEigenschaftwerte_arr = [];
+                /** @var Artikel $tmpProduct */
+                $tmpProduct = $configItem->getArtikel();
+                if ($tmpProduct !== null
+                    && $tmpProduct->kVaterArtikel > 0
+                    && isset($tmpProduct->kEigenschaftKombi)
+                    && $tmpProduct->kEigenschaftKombi > 0
+                ) {
+                    $configItem->oEigenschaftwerte_arr =
+                        Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
+                }
+                $tmpProduct->isKonfigItem = true;
+                $redirectParam            = CartHelper::addToCartCheck(
+                    $tmpProduct,
+                    $configItem->fAnzahlWK,
+                    $configItem->oEigenschaftwerte_arr
+                );
+                if (\count($redirectParam) > 0) {
+                    $productMessages = Product::getProductMessages(
+                        $redirectParam,
+                        true,
+                        $configItem->getArtikel(),
                         $configItem->fAnzahlWK,
-                        $configItem->oEigenschaftwerte_arr
+                        $configItem->getKonfigitem()
                     );
-                    if (\count($redirectParam) > 0) {
-                        $valid           = false;
-                        $productMessages = Product::getProductMessages(
-                            $redirectParam,
-                            true,
-                            $configItem->getArtikel(),
-                            $configItem->fAnzahlWK,
-                            $configItem->getKonfigitem()
-                        );
 
-                        $itemErrors[$configItem->getKonfigitem()] = (object)[
-                            'message' => $productMessages[0],
-                            'group'   => $configItem->getKonfiggruppe()
-                        ];
-                        $invalidGroups[]                          = $configItem->getKonfiggruppe();
-                    }
+                    $itemErrors[$configItem->getKonfigitem()] = (object)[
+                        'message' => $productMessages[0],
+                        'group'   => $configItem->getKonfiggruppe()
+                    ];
+                    $invalidGroups[]                          = $configItem->getKonfiggruppe();
                 }
             }
         }
-
         $errors                     = Configurator::validateCart($productID, $configItems ?? []);
         $config->invalidGroups      = \array_values(\array_unique(\array_merge(
             $invalidGroups,
@@ -781,11 +762,7 @@ class IOMethods
             $cartHelperErrors,
             true
         );
-        $config->inStock            = !\in_array(
-            \R_LAGER,
-            $cartHelperErrors,
-            true
-        );
+        $config->inStock            = !\in_array(\R_LAGER, $cartHelperErrors, true);
         $smarty->assign('oKonfig', $config)
             ->assign('NettoPreise', $net)
             ->assign('Artikel', $product);
@@ -812,38 +789,39 @@ class IOMethods
         if ($selectedVariationValues !== null) {
             $products = $this->getArticleByVariations($productID, $selectedVariationValues);
             if (\count($products) === 1) {
-                $productID = $products[0]->kArtikel;
+                $productID = (int)$products[0]->kArtikel;
             } else {
                 return $result;
             }
         }
 
-        if ($productID > 0) {
-            $product                            = new Artikel();
-            $options                            = Artikel::getDefaultOptions();
-            $options->nKeinLagerbestandBeachten = 1;
-
-            $product->fuelleArtikel(
-                $productID,
-                $options,
-                CustomerGroup::getCurrent(),
-                Shop::getLanguageID()
-            );
-
-            $stockInfo = $product->getStockInfo();
-
-            if ($stockInfo->notExists || !$stockInfo->inStock) {
-                $result->stock = false;
-                $result->text  = $stockInfo->notExists
-                    ? Shop::Lang()->get('notAvailableInSelection')
-                    : Shop::Lang()->get('ampelRot');
-            } else {
-                $result->stock = true;
-                $result->text  = '';
-            }
-
-            $result->status = $product->Lageranzeige->nStatus;
+        if ($productID <= 0) {
+            return $result;
         }
+        $product                            = new Artikel($this->db);
+        $options                            = Artikel::getDefaultOptions();
+        $options->nKeinLagerbestandBeachten = 1;
+
+        $product->fuelleArtikel(
+            $productID,
+            $options,
+            CustomerGroup::getCurrent(),
+            Shop::getLanguageID()
+        );
+
+        $stockInfo = $product->getStockInfo();
+
+        if ($stockInfo->notExists || !$stockInfo->inStock) {
+            $result->stock = false;
+            $result->text  = $stockInfo->notExists
+                ? Shop::Lang()->get('notAvailableInSelection')
+                : Shop::Lang()->get('ampelRot');
+        } else {
+            $result->stock = true;
+            $result->text  = '';
+        }
+
+        $result->status = $product->Lageranzeige->nStatus;
 
         return $result;
     }
@@ -857,19 +835,19 @@ class IOMethods
         $ioResponse = new IOResponse();
         $checkBulk  = isset($values['VariKindArtikel']);
         $parentID   = $checkBulk ? (int)$values['VariKindArtikel'] : (int)$values['a'];
-        $amount     = (float)$values['anzahl'];
-        $valueIDs   = \array_filter((array)$values['eigenschaftwert']);
-        $wrapper    = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
-
         if ($parentID <= 0) {
             return $ioResponse;
         }
+        $amount   = (float)$values['anzahl'];
+        $valueIDs = \array_filter((array)$values['eigenschaftwert']);
+        $wrapper  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
+
         $options                            = new stdClass();
         $options->nKeinLagerbestandBeachten = 1;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel();
+        $product                            = new Artikel($this->db);
         $product->fuelleArtikel($parentID, $checkBulk ? null : $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
         $newProductNr = '';
@@ -913,22 +891,21 @@ class IOMethods
             Shop::getLanguageID(),
             $product->fArtikelgewicht + $weightDiff
         );
-        $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
-
-        $currency     = Frontend::getCurrency();
-        $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
-        $fVKNetto     = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
-        $fVK          = [
+        $unitWeightLabel    = Shop::Lang()->get('weightUnit');
+        $currency           = Frontend::getCurrency();
+        $isNet              = Frontend::getCustomerGroup()->getIsMerchant();
+        $fVKNetto           = $product->gibPreis($amount, $valueIDs, Frontend::getCustomerGroup()->getID());
+        $fVK                = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
             $fVKNetto
         ];
-        $cVKLocalized = [
+        $cVKLocalized       = [
             0 => Preise::getLocalizedPriceString($fVK[0], $currency),
             1 => Preise::getLocalizedPriceString($fVK[1], $currency)
         ];
-        $cPriceLabel  = '';
+        $priceLabel         = '';
         if (isset($product->nVariationAnzahl) && $product->nVariationAnzahl > 0) {
-            $cPriceLabel = $product->nVariationOhneFreifeldAnzahl === \count($valueIDs)
+            $priceLabel = $product->nVariationOhneFreifeldAnzahl === \count($valueIDs)
                 ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
                 : Shop::Lang()->get('priceStarting');
         }
@@ -937,15 +914,15 @@ class IOMethods
                 'setPrice',
                 $fVK[$isNet],
                 $cVKLocalized[$isNet],
-                $cPriceLabel,
+                $priceLabel,
                 $wrapper
             );
         }
         $ioResponse->callEvoProductFunction(
             'setArticleWeight',
             [
-                [$product->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
-                [$product->fArtikelgewicht, $weightProductTotal . ' ' . $cUnitWeightLabel],
+                [$product->fGewicht, $weightTotal . ' ' . $unitWeightLabel],
+                [$product->fArtikelgewicht, $weightProductTotal . ' ' . $unitWeightLabel],
             ],
             $wrapper
         );
@@ -977,11 +954,7 @@ class IOMethods
             );
         }
 
-        if ($product->cVPE === 'Y'
-            && $product->fVPEWert > 0
-            && $product->cVPEEinheit
-            && !empty($product->Preise)
-        ) {
+        if ($product->cVPE === 'Y' && $product->fVPEWert > 0 && $product->cVPEEinheit && !empty($product->Preise)) {
             $product->baueVPE($fVKNetto);
             $fStaffelVPE = [0 => [], 1 => []];
             $cStaffelVPE = [0 => [], 1 => []];
@@ -1027,7 +1000,6 @@ class IOMethods
         $set             = \array_filter($idx);
         $layout          = isset($values['layout']) ? Text::filterXSS($values['layout']) : '';
         $wrapper         = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
-
         if ($parentProductID <= 0) {
             throw new Exception('Product not found ' . $parentProductID);
         }
@@ -1036,7 +1008,7 @@ class IOMethods
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
         $options->nVariationen              = 1;
-        $product                            = new Artikel();
+        $product                            = new Artikel($this->db);
         $product->fuelleArtikel($parentProductID, $options);
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
@@ -1092,7 +1064,22 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if ($layout === 'gallery') {
+                $childHasOPCContent = $this->db->getSingleInt(
+                    "SELECT COUNT(kPage) AS count
+                    FROM topcpage
+                    WHERE cPageId LIKE '%\"type\":\"product\"%'
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
+                    'count',
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
+                ) > 0;
+                if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,
@@ -1213,6 +1200,8 @@ class IOMethods
         $combinations   = [];
         $i              = 0;
         foreach ($selectedVariationValues as $id => $value) {
+            $id    = (int)$id;
+            $value = (int)$value;
             if ($i++ === 0) {
                 $variationID    = $id;
                 $variationValue = $value;
@@ -1274,15 +1263,13 @@ class IOMethods
         if ($auto) {
             $categoryID = Shop::$kKategorie;
         }
-
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryID);
-        $categories = $list->getChildCategories($category->kKategorie, 0, 0);
-
+        $category   = new Kategorie($categoryID, 0, 0, false, $this->db);
+        $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->kOberKategorie);
-            $categories = $list->getChildCategories($category->kKategorie, 0, 0);
+            $category   = new Kategorie($category->getParentID(), 0, 0, false, $this->db);
+            $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 
         $smarty->assign('result', (object)['current' => $category, 'items' => $categories])
@@ -1322,15 +1309,16 @@ class IOMethods
     public function checkDeliveryCountry(string $country): IOResponse
     {
         $response = new IOResponse();
-        if (\mb_strlen($country) === 2) {
-            $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
-                Frontend::getCustomerGroup()->getID(),
-                false,
-                false,
-                [$country]
-            );
-            $response->assignVar('response', \count($deliveryCountries) === 1);
+        if (\mb_strlen($country) !== 2) {
+            return $response;
         }
+        $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
+            Frontend::getCustomerGroup()->getID(),
+            false,
+            false,
+            [$country]
+        );
+        $response->assignVar('response', \count($deliveryCountries) === 1);
 
         return $response;
     }
@@ -1375,18 +1363,16 @@ class IOMethods
     public function getOpcDraftsHtml(
         string $curPageID,
         string $adminSessionToken,
-        array $languages,
-        array $currentLanguage
+        array  $languages,
+        array  $currentLanguage
     ): IOResponse {
         foreach ($languages as $i => $lang) {
             $languages[$i] = (object)$lang;
         }
         $opcPageService   = Shop::Container()->getOPCPageService();
-        $smarty           = Shop::Smarty();
         $response         = new IOResponse();
-        $publicDraft      = $opcPageService->getPublicPage($curPageID);
-        $publicDraftkey   = $publicDraft === null ? 0 : $publicDraft->getKey();
-        $newDraftListHtml = $smarty
+        $publicDraftkey   = $opcPageService->getPublicPage($curPageID)?->getKey() ?? 0;
+        $newDraftListHtml = Shop::Smarty()
             ->assign('pageDrafts', $opcPageService->getDrafts($curPageID))
             ->assign('ShopURL', Shop::getURL())
             ->assign('adminSessionToken', $adminSessionToken)
@@ -1394,7 +1380,7 @@ class IOMethods
             ->assign('currentLanguage', (object)$currentLanguage)
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
-            ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
+            ->assign('opcStartUrl', Shop::getAdminURL() . Route::OPC)
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assignDom('opc-draft-list', 'innerHTML', $newDraftListHtml);
@@ -1453,24 +1439,32 @@ class IOMethods
      * @param array $formData
      * @return IOResponse
      * @throws Exception
+     * @todo this is currently more of a hack
      */
     public function updateReviewHelpful(array $formData): IOResponse
     {
-        $_POST = $formData;
-        Shop::run();
+        $_POST      = $formData;
         $controller = new ReviewController(
             $this->db,
             Shop::Container()->getCache(),
-            Shop::Container()->getAlertService(),
-            Shop::Smarty()
+            new State(),
+            Shopsetting::getInstance()->getAll(),
+            Shop::Container()->getAlertService()
         );
-        $controller->handleRequest();
+        if (Form::validateToken()) {
+            $controller->updateWasHelpful(
+                (int)($formData['a'] ?? 0),
+                Frontend::getCustomer()->getID(),
+                (int)($formData['btgseite'] ?? 0),
+                (int)($formData['btgsterne'] ?? 0)
+            );
+        }
         $ioResponse       = new IOResponse();
         $response         = new stdClass();
         $response->review = flatten(filter(
             (new Artikel($this->db))
-                ->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions())->Bewertungen->oBewertung_arr,
-            static function ($e) use ($formData) {
+                ->fuelleArtikel((int)($formData['a'] ?? 0), Artikel::getDetailOptions())?->Bewertungen->oBewertung_arr,
+            static function ($e) use ($formData): bool {
                 return (int)$e->kBewertung === (int)$formData['reviewID'];
             }
         ))[0];

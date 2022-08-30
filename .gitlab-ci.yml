@@ -159,7 +159,7 @@ workflow:
   echo "] remove default composer files.."
   rm includes/composer.json includes/composer.lock
   echo "] running phpcs install.."
-  ./composer -q require squizlabs/php_codesniffer:3.5.8 -d includes/
+  ./composer -q require squizlabs/php_codesniffer:3.6.2 -d includes/
 
 .CodeSnifferRunScript: &CodeSnifferRunScript |
   # CODESNIFFER RUN

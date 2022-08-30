@@ -22,7 +22,7 @@ final class Checkboxes extends AbstractItem
         }
         foreach ($node['Function'] as $i => $cb) {
             $i = (string)$i;
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) === \mb_strlen($i)) {
                 if (!isset($cb['Name']) || \mb_strlen($cb['Name']) === 0) {
                     return InstallCode::INVALID_CHECKBOX_FUNCTION_NAME;

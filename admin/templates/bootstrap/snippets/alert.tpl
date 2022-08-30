@@ -20,8 +20,10 @@
                 {$alert->getMessage()}
             {/if}
         </div>
-        <div class="col-auto ml-auto">
-            {if $alert->getDismissable()}<div class="close">&times;</div>{/if}
-        </div>
+        {if $alert->getDismissable()}
+            <div class="col-auto ml-auto">
+                <div class="close">&times;</div>
+            </div>
+        {/if}
     </div>
 </div>

@@ -17,7 +17,7 @@ class WishlistItem
     /**
      * @var string[]
      */
-    private static $mapping = [
+    protected static array $mapping = [
         'kWunschliste'                   => 'ishlistID',
         'kWunschlistePos'                => 'ID',
         'kArtikel'                       => 'ProductID',
@@ -106,7 +106,7 @@ class WishlistItem
      */
     public function __sleep(): array
     {
-        return select(\array_keys(\get_object_vars($this)), static function ($e) {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
             return $e !== 'Artikel';
         });
     }
@@ -194,7 +194,7 @@ class WishlistItem
     {
         return some(
             $this->CWunschlistePosEigenschaft_arr,
-            static function ($e) use ($propertyID, $propertyValueID) {
+            static function ($e) use ($propertyID, $propertyValueID): bool {
                 return (int)$e->kEigenschaft === $propertyID && (int)$e->kEigenschaftWert === $propertyValueID;
             }
         );

@@ -40,14 +40,14 @@
                                             {image alt=$image->cAltAttribut
                                                 class="product-image"
                                                 fluid=true
-                                                lazy=true
+                                                lazy={!$image@first}
                                                 webp=true
                                                 src="{$image->cURLMini}"
                                                 srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
                                                     {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
                                                     {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
                                                     {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
-                                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index, "sizes"=>"auto"]
+                                                data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
                                             }
                                         </div>
                                     </div>

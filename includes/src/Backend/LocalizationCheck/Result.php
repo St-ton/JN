@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class Result
+ * Class Result
  * @package JTL\Backend\LocalizationCheck
  */
 class Result

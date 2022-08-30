@@ -4,6 +4,7 @@ namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\SearchSpecial;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**
@@ -26,8 +27,9 @@ final class TopRatedProducts extends AbstractBox
         $cacheID   = 'bx_tprtdp_' . $config['boxen']['boxen_topbewertet_minsterne']
             . '_' . $limit . \md5($parentSQL);
         $cached    = true;
+        $cache     = Shop::Container()->getCache();
         $db        = Shop::Container()->getDB();
-        if (($topRated = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($topRated = $cache->get($cacheID)) === false) {
             $cached   = false;
             $topRated = $db->getInts(
                 'SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
@@ -40,14 +42,16 @@ final class TopRatedProducts extends AbstractBox
                 'kArtikel',
                 ['lmt' => $limit, 'mnr' => (int)$config['boxen']['boxen_topbewertet_minsterne']]
             );
-            Shop::Container()->getCache()->set($cacheID, $topRated, $cacheTags);
+            $cache->set($cacheID, $topRated, $cacheTags);
         }
         if (\count($topRated) > 0) {
             \shuffle($topRated);
             $res            = \array_slice($topRated, 0, $config['boxen']['boxen_topbewertet_anzahl']);
             $defaultOptions = Artikel::getDefaultOptions();
+            $cgroup         = Frontend::getCustomerGroup();
+            $currency       = Frontend::getCurrency();
             foreach ($res as $id) {
-                $item = (new Artikel($db))->fuelleArtikel($id, $defaultOptions);
+                $item = (new Artikel($db, $cgroup, $currency))->fuelleArtikel($id, $defaultOptions);
                 if ($item !== null) {
                     $item->fDurchschnittsBewertung = \round($item->fDurchschnittsBewertung * 2) / 2;
                     $products[]                    = $item;
@@ -55,7 +59,7 @@ final class TopRatedProducts extends AbstractBox
             }
             $this->setShow(true);
             $this->setProducts($products);
-            $this->setURL(SearchSpecial::buildURL(\SEARCHSPECIALS_TOPREVIEWS));
+            $this->setURL((new SearchSpecial($db, $cache))->getURL(\SEARCHSPECIALS_TOPREVIEWS));
 
             \executeHook(\HOOK_BOXEN_INC_TOPBEWERTET, [
                 'box'        => &$this,

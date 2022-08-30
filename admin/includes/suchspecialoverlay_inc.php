@@ -1,31 +1,26 @@
 <?php declare(strict_types=1);
 
-use JTL\Media\Image;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 
 /**
  * @return Overlay[]
+ * @deprecated since 5.2.0
  */
 function gibAlleSuchspecialOverlays(): array
 {
-    $overlays = [];
-    foreach (Shop::Container()->getDB()->getInts(
-        'SELECT kSuchspecialOverlay FROM tsuchspecialoverlay',
-        'kSuchspecialOverlay'
-    ) as $type) {
-        $overlays[] = Overlay::getInstance($type, (int)$_SESSION['editLanguageID']);
-    }
-
-    return $overlays;
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
+    return [];
 }
 
 /**
  * @param int $overlayID
  * @return Overlay
+ * @deprecated since 5.2.0
  */
 function gibSuchspecialOverlay(int $overlayID): Overlay
 {
+    trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     return Overlay::getInstance($overlayID, (int)$_SESSION['editLanguageID']);
 }
 
@@ -36,6 +31,7 @@ function gibSuchspecialOverlay(int $overlayID): Overlay
  * @param int|null $lang
  * @param string|null $template
  * @return bool
+ * @deprecated since 5.2.0
  */
 function speicherEinstellung(
     int $overlayID,
@@ -44,56 +40,9 @@ function speicherEinstellung(
     int $lang = null,
     string $template = null
 ): bool {
-    $overlay = Overlay::getInstance(
-        $overlayID,
-        $lang ?? (int)$_SESSION['editLanguageID'],
-        $template,
-        false
-    );
-
-    if ($overlay->getType() <= 0) {
-        Shop::Container()->getAlertService()->addError(__('invalidOverlay'), 'invalidOverlay');
-        return false;
-    }
-    $overlay->setActive((int)$post['nAktiv'])
-        ->setTransparence((int)$post['nTransparenz'])
-        ->setSize((int)$post['nGroesse'])
-        ->setPosition((int)($post['nPosition'] ?? 0))
-        ->setPriority((int)$post['nPrio']);
-
-    if (mb_strlen($files['name']) > 0) {
-        $template    = $template ?: Shop::Container()->getTemplateService()->getActiveTemplate()->getName();
-        $overlayPath = PFAD_ROOT . PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE;
-        if (!is_writable($overlayPath)) {
-            Shop::Container()->getAlertService()->addError(
-                sprintf(__('errorOverlayWritePermissions'), PFAD_TEMPLATES . $template . PFAD_OVERLAY_TEMPLATE),
-                'errorOverlayWritePermissions',
-                ['saveInSession' => true]
-            );
-
-            return false;
-        }
-
-        loescheBild($overlay);
-        $overlay->setImageName(
-            Overlay::IMAGENAME_TEMPLATE . '_' . $overlay->getLanguage() . '_' . $overlay->getType() .
-            mappeFileTyp($files['type'])
-        );
-        $imageCreated = speicherBild($files, $overlay);
-    }
-    if (!isset($imageCreated) || $imageCreated) {
-        $overlay->save();
-    } else {
-        Shop::Container()->getAlertService()->addError(
-            __('errorFileUploadGeneral'),
-            'errorFileUploadGeneral',
-            ['saveInSession' => true]
-        );
-
-        return false;
-    }
-
-    return true;
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))
+        ->saveConfig($overlayID, $post, $files, $lang, $template);
 }
 
 /**
@@ -107,49 +56,13 @@ function speicherEinstellung(
  * @param int      $src_h
  * @param int      $pct
  * @return bool
+ * @deprecated since 5.2.0
  */
 function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct): bool
 {
-    if ($pct === null) {
-        return false;
-    }
-    $pct /= 100;
-    // Get image width and height
-    $w = imagesx($src_im);
-    $h = imagesy($src_im);
-    // Turn alpha blending off
-    imagealphablending($src_im, false);
-
-    $minalpha = 0;
-
-    // loop through image pixels and modify alpha for each
-    for ($x = 0; $x < $w; $x++) {
-        for ($y = 0; $y < $h; $y++) {
-            // get current alpha value (represents the TANSPARENCY!)
-            $colorxy = imagecolorat($src_im, $x, $y);
-            $alpha   = ($colorxy >> 24) & 0xFF;
-            // calculate new alpha
-            if ($minalpha !== 127) {
-                $alpha = 127 + 127 * $pct * ($alpha - 127) / (127 - $minalpha);
-            } else {
-                $alpha += 127 * $pct;
-            }
-            // get the color index with new alpha
-            $alphacolorxy = imagecolorallocatealpha(
-                $src_im,
-                ($colorxy >> 16) & 0xFF,
-                ($colorxy >> 8) & 0xFF,
-                $colorxy & 0xFF,
-                (int)$alpha
-            );
-            // set pixel with the new color + opacity
-            if (!imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
-                return false;
-            }
-        }
-    }
-
-    return imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))
+        ->imagecopymergeAlpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct);
 }
 
 /**
@@ -157,36 +70,12 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param int    $width
  * @param int    $height
  * @return resource|null
+ * @deprecated since 5.2.0
  */
 function imageload_alpha($img, int $width, int $height)
 {
-    $imgInfo = getimagesize($img);
-    switch ($imgInfo[2]) {
-        case 1:
-            $im = imagecreatefromgif($img);
-            break;
-        case 2:
-            $im = imagecreatefromjpeg($img);
-            break;
-        case 3:
-            $im = imagecreatefrompng($img);
-            break;
-        default:
-            return null;
-    }
-
-    $new = imagecreatetruecolor($width, $height);
-
-    if ($imgInfo[2] == 1 || $imgInfo[2] == 3) {
-        imagealphablending($new, false);
-        imagesavealpha($new, true);
-        $transparent = imagecolorallocatealpha($new, 255, 255, 255, 127);
-        imagefilledrectangle($new, 0, 0, $width, $height, $transparent);
-    }
-
-    imagecopyresampled($new, $im, 0, 0, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
-
-    return $new;
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->imageloadAlpha($img, $width, $height);
 }
 
 /**
@@ -195,25 +84,12 @@ function imageload_alpha($img, int $width, int $height)
  * @param int    $height
  * @param int    $transparency
  * @return resource
+ * @deprecated since 5.2.0
  */
 function ladeOverlay($image, int $width, int $height, int $transparency)
 {
-    $src = imageload_alpha($image, $width, $height);
-    if ($transparency > 0) {
-        $new = imagecreatetruecolor($width, $height);
-        imagealphablending($new, false);
-        imagesavealpha($new, true);
-        $transparent = imagecolorallocatealpha($new, 255, 255, 255, 127);
-        imagefilledrectangle($new, 0, 0, $width, $height, $transparent);
-        imagealphablending($new, true);
-        imagesavealpha($new, true);
-
-        imagecopymerge_alpha($new, $src, 0, 0, 0, 0, $width, $height, 100 - $transparency);
-
-        return $new;
-    }
-
-    return $src;
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->load($image, $width, $height, $transparency);
 }
 
 /**
@@ -222,24 +98,12 @@ function ladeOverlay($image, int $width, int $height, int $transparency)
  * @param string   $path
  * @param int      $quality
  * @return bool
+ * @deprecated since 5.2.0
  */
 function speicherOverlay($im, string $extension, string $path, int $quality = 80): bool
 {
-    if (!$extension || !$im) {
-        return false;
-    }
-    switch ($extension) {
-        case '.jpg':
-            return function_exists('imagejpeg') && imagejpeg($im, $path, $quality);
-        case '.png':
-            return function_exists('imagepng') && imagepng($im, $path);
-        case '.gif':
-            return function_exists('imagegif') && imagegif($im, $path);
-        case '.bmp':
-            return function_exists('imagewbmp') && imagewbmp($im, $path);
-        default:
-            return false;
-    }
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->save($im, $extension, $path, $quality);
 }
 
 /**
@@ -249,85 +113,44 @@ function speicherOverlay($im, string $extension, string $path, int $quality = 80
  * @param string $extension
  * @param string $path
  * @return bool
+ * @deprecated since 5.2.0
  */
 function erstelleFixedOverlay(string $image, int $size, int $transparency, string $extension, string $path): bool
 {
-    [$width, $height] = getimagesize($image);
-    $factor           = $size / $width;
-
-    return speicherOverlay(ladeOverlay($image, $size, (int)($height * $factor), $transparency), $extension, $path);
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))
+        ->createFixedOverlay($image, $size, $transparency, $extension, $path);
 }
-
 
 /**
  * @param array   $file
  * @param Overlay $overlay
  * @return bool
+ * @deprecated since 5.2.0
  */
 function speicherBild(array $file, Overlay $overlay): bool
 {
-    if (!Image::isImageUpload($file)) {
-        return false;
-    }
-    $ext           = mappeFileTyp($file['type']);
-    $original      = $file['tmp_name'];
-    $sizesToCreate = [
-        ['size' => IMAGE_SIZE_XS, 'factor' => 1],
-        ['size' => IMAGE_SIZE_SM, 'factor' => 2],
-        ['size' => IMAGE_SIZE_MD, 'factor' => 3],
-        ['size' => IMAGE_SIZE_LG, 'factor' => 4]
-    ];
-
-    foreach ($sizesToCreate as $sizeToCreate) {
-        if (!is_dir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']))) {
-            mkdir(PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']), 0755, true);
-        }
-        $imageCreated = erstelleFixedOverlay(
-            $original,
-            $overlay->getSize() * $sizeToCreate['factor'],
-            $overlay->getTransparance(),
-            $ext,
-            PFAD_ROOT . $overlay->getPathSize($sizeToCreate['size']) . $overlay->getImageName()
-        );
-        if (!$imageCreated) {
-            return false;
-        }
-    }
-
-    return true;
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->saveImage($file, $overlay);
 }
 
 /**
  * @param Overlay $overlay
+ * @deprecated since 5.2.0
  */
 function loescheBild(Overlay $overlay): void
 {
-    foreach ($overlay->getPathSizes() as $path) {
-        $path = PFAD_ROOT . $path . $overlay->getImageName();
-        if (file_exists($path)) {
-            @unlink($path);
-        }
-    }
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->deleteImage($overlay);
 }
 
 /**
  * @param string $type
  * @return string
+ * @deprecated since 5.2.0
  */
 function mappeFileTyp(string $type): string
 {
-    switch ($type) {
-        case 'image/gif':
-            return '.gif';
-        case 'image/png':
-        case 'image/x-png':
-            return '.png';
-        case 'image/bmp':
-            return '.bmp';
-        case 'image/jpg':
-        case 'image/jpeg':
-        case 'image/pjpeg':
-        default:
-            return '.jpg';
-    }
+    trigger_error(__FUNCTION__ . ' is deprecated. User JTL\Helpers\Overlay instead.', E_USER_DEPRECATED);
+    return (new \JTL\Helpers\Overlay(Shop::Container()->getDB()))->mapFileType($type);
 }

@@ -16,7 +16,7 @@
             {form id="suche2" action=$ShopURL method="get" slide=true}
                 <fieldset>
                     {formgroup label-for="searchkey" label="{lang key='searchText'}"}
-                            {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
+                        {input type="text" name="suchausdruck" value="{if $Suchergebnisse->getSearchTerm()}{$Suchergebnisse->getSearchTerm()|escape:'htmlall'}{/if}" id="searchkey"}
                     {/formgroup}
                     {button variant="primary" type="submit" value="1"}{lang key='searchAgain' section='productOverview'}{/button}
                 </fieldset>
@@ -57,6 +57,8 @@
                 class='productlist-header-description-image'
                 item=$navData
                 square=false
+                lazy=false
+                sizes="{if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}(min-width: 992px) 67vw, (min-width: 1300px) 75vw, 100vw{/if} "
                 alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->cBeschreibung|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}
@@ -70,28 +72,28 @@
 
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getCategory() !== null
-            && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getCategory()->getDescription()|strlen > 0}
             {block name='productlist-header-description-category'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getCategory()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getCategory()->getDescription()}</p>
                 </div>
             {/block}
         {/if}
         {if $Einstellungen.navigationsfilter.hersteller_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getManufacturer() !== null
-            && $oNavigationsinfo->getManufacturer()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getManufacturer()->getDescription()|strlen > 0}
             {block name='productlist-header-description-manufacturers'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getManufacturer()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getManufacturer()->getDescription()}</p>
                 </div>
             {/block}
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getCharacteristicValue() !== null
-            && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+            && $oNavigationsinfo->getCharacteristicValue()->getDescription()|strlen > 0}
             {block name='productlist-header-description-attributes'}
                 <div class="desc">
-                    <p>{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</p>
+                    <p>{$oNavigationsinfo->getCharacteristicValue()->getDescription()}</p>
                 </div>
             {/block}
         {/if}
@@ -108,10 +110,18 @@
                                 {block name='productlist-header-subcategories-image'}
                                     {link href=$subCategory->getURL()}
                                         {$imgAlt = $subCategory->getAttribute('img_alt')}
+                                        {$imgSrc = $subCategory->getImage(\JTL\Media\Image::SIZE_SM)}
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
-                                                src=$subCategory->getImage(\JTL\Media\Image::SIZE_SM)
-                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"}
+                                                src=$imgSrc
+                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_breite}{/if}"
+                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_hoehe}{/if}"
+                                                alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"
+                                                srcset="{$subCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
+                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
+                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
+                                                sizes="(min-width: 992px) 25vw, 33vw"
+                                            }
                                         </div>
                                     {/link}
                                 {/block}

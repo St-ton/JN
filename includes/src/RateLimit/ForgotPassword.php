@@ -11,7 +11,7 @@ class ForgotPassword extends AbstractRateLimiter
     /**
      * @var string
      */
-    protected $type = 'forgotpassword';
+    protected string $type = 'forgotpassword';
 
     /**
      * @inheritdoc

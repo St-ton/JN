@@ -11,14 +11,14 @@ class Upload extends AbstractRateLimiter
     /**
      * @var string
      */
-    protected $type = 'upload';
+    protected string $type = 'upload';
 
     protected const FLOOD_MINUTES = 60;
 
     /**
      * @var int
      */
-    private $limit = 10;
+    private int $limit = 10;
 
     /**
      * @inheritdoc

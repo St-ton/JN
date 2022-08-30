@@ -22,8 +22,8 @@ final class Consent extends AbstractItem
         $node = $node['ServicesRequiringConsent'][0]['Vendor'] ?? null;
         foreach ($node as $i => $vendor) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
@@ -43,8 +43,8 @@ final class Consent extends AbstractItem
             foreach ($vendor['Localization'] as $l => $localized) {
                 $l         = (string)$l;
                 $localized = $this->sanitizeLocalizationData($localized);
-                \preg_match('/[0-9]+\sattr/', $l, $hits1);
-                \preg_match('/[0-9]+/', $l, $hits2);
+                \preg_match('/\d+\sattr/', $l, $hits1);
+                \preg_match('/\d+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
                     \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                     $len = \mb_strlen($localized['iso']);

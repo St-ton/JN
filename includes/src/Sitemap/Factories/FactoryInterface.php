@@ -3,7 +3,6 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use JTL\DB\DbInterface;
 use JTL\Language\LanguageModel;
 
 /**
@@ -12,15 +11,6 @@ use JTL\Language\LanguageModel;
  */
 interface FactoryInterface
 {
-    /**
-     * FactoryInterface constructor.
-     * @param DbInterface $db
-     * @param array       $config
-     * @param string      $baseURL
-     * @param string      $baseImageURL
-     */
-    public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL);
-
     /**
      * @param LanguageModel[] $languages
      * @param int[]           $customerGroups

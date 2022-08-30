@@ -8,7 +8,7 @@
             <i class="btn btn-primary fa fa-bars"></i>
         </td>
         <td class="text-center">
-            <img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}"
+            <img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}{$adminURL}/templates/bootstrap/gfx/layout/upload.png{/if}"
                  id="img{$kSlide}" onclick="select_image('{$kSlide}');"
                  alt="Slidergrafik" class="slide-image" role="button">
         </td>
@@ -69,7 +69,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary btn-block mb-2"
-                                onclick="window.location.href = '{$adminURL}/slider.php';">
+                                onclick="window.location.href = '{$adminURL}{$route}';">
                             <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </button>
                     </div>

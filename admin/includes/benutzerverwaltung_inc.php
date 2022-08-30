@@ -1,17 +1,1 @@
-<?php declare(strict_types=1);
-
-use JTL\IO\IOResponse;
-use JTL\Shop;
-
-/**
- * @return IOResponse
- * @throws Exception
- */
-function getRandomPasswordIO(): IOResponse
-{
-    $response = new IOResponse();
-    $password = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
-    $response->assignDom('cPass', 'value', $password);
-
-    return $response;
-}
+<?php declare(strict_types=1); // removed in 5.2.0

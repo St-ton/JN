@@ -41,7 +41,7 @@
                                     <td class="text-center">{$oVergleichsliste20->kVergleichsliste}</td>
                                     <td class="">
                                         {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
-                                            <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
+                                            <a href="{$shopURL}/?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
                                             <br />
                                         {/foreach}
                                     </td>
@@ -58,7 +58,7 @@
             </div>
             <div id="topartikel" class="tab-pane fade {if $cTab === 'topartikel'} active show{/if}">
                 <div>
-                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$adminURL}/vergleichsliste.php">
+                    <form id="postzeitfilter" name="postzeitfilter" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
                         <input type="hidden" name="tab" value="topartikel" />
@@ -118,7 +118,7 @@
                                 {foreach $TopVergleiche as $oVergleichslistePosTop}
                                     <tr>
                                         <td>
-                                            <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
+                                            <a href="{$shopURL}/?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                         </td>
                                         <td class="text-center">{$oVergleichslistePosTop->nAnzahl}</td>
                                     </tr>
@@ -135,7 +135,7 @@
                 {include
                     file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action=$adminURL|cat:'/vergleichsliste.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

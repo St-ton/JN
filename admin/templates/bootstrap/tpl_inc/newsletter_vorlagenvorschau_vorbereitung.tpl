@@ -2,7 +2,7 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <form method="post" action="{$adminURL}/newsletter.php">
+            <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input name="tab" type="hidden" value="newslettervorlagen" />
                 <p><b>{__('subject')}</b>: {$oNewsletterVorlage->cBetreff}</p>

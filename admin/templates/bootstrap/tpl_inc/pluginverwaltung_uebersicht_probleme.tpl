@@ -1,6 +1,6 @@
 <div id="probleme" class="tab-pane fade {if $cTab === 'probleme'} active show{/if}">
     {if $pluginsProblematic->count() > 0}
-    <form name="pluginverwaltung" method="post" action="{$adminURL}/pluginverwaltung.php" id="problematic-plugins">
+    <form name="pluginverwaltung" method="post" action="{$adminURL}{$route}" id="problematic-plugins">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
         <div>
@@ -50,7 +50,7 @@
                         <td>{$plugin->getDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLangVarCount() > 0}
-                                <a href="{$adminURL}/pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
+                                <a href="{$adminURL}{$route}?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
@@ -61,7 +61,7 @@
                         </td>
                         <td class="text-center">
                             {if $plugin->getLinkCount() > 0}
-                                <a href="{$adminURL}/links.php?kPlugin={$plugin->getID()}"
+                                <a href="{$adminURL}/links?kPlugin={$plugin->getID()}"
                                    class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>

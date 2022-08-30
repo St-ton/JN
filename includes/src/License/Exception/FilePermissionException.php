@@ -5,7 +5,7 @@ namespace JTL\License\Exception;
 use Exception;
 
 /**
- * Class CreateFileException
+ * Class FilePermissionException
  * @package JTL\License\Exception
  */
 class FilePermissionException extends Exception

@@ -11,12 +11,12 @@ abstract class AbstractSchemaRenderer implements SchemaRendererInterface
     /**
      * @var array
      */
-    protected $config;
+    protected array $config;
 
     /**
      * @var string
      */
-    protected $xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+    protected string $xmlHeader = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 
     /**
      * @return array

@@ -44,7 +44,7 @@ class Image
      *
      * @var array
      */
-    private static $sizes = [
+    private static array $sizes = [
         self::SIZE_XS,
         self::SIZE_SM,
         self::SIZE_MD,
@@ -55,14 +55,14 @@ class Image
     /**
      * Image settings
      *
-     * @var array
+     * @var array|null
      */
-    private static $settings;
+    private static ?array $settings = null;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    private static $webPSupport;
+    private static ?bool $webPSupport = null;
 
     /**
      * @return array
@@ -492,7 +492,7 @@ class Image
         if (self::$webPSupport === null) {
             self::$webPSupport = self::getImageDriver() === 'imagick'
                 ? \count(Imagick::queryFormats('WEBP')) > 0
-                : \gd_info()['WebP Support'] ?? false;
+                : (bool)(\gd_info()['WebP Support'] ?? false);
         }
 
         return self::$webPSupport;

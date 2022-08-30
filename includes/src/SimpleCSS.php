@@ -17,7 +17,7 @@ class SimpleCSS
     /**
      * @var array
      */
-    public $cCSS_arr = [];
+    public array $cCSS_arr = [];
 
     /**
      * @param string $selector
@@ -131,9 +131,7 @@ class SimpleCSS
      */
     public function getCSS(): array
     {
-        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr)
-            ? $this->cCSS_arr
-            : [];
+        return $this->cCSS_arr;
     }
 
     /**
@@ -142,7 +140,7 @@ class SimpleCSS
     public function renderCSS(): string
     {
         $ret = '';
-        if (\is_array($this->cCSS_arr) && \count($this->cCSS_arr)) {
+        if (\count($this->cCSS_arr)) {
             foreach ($this->cCSS_arr as $selector => $attribute) {
                 $ret .= $selector . ' {' . self::LF;
                 foreach ($attribute as $cKey => $cValue) {
@@ -197,11 +195,7 @@ class SimpleCSS
             case 'size':
                 // 1.2em 15% '12 px'
                 if (\preg_match('/([\d\.]+)(.*)/', $value, $matches)) {
-                    $out            = [];
-                    $out['numeric'] = (float)$matches[1];
-                    $out['unit']    = \trim($matches[2]);
-
-                    return $out;
+                    return ['numeric' => (float)$matches[1], 'unit' => \trim($matches[2])];
                 }
                 break;
 
@@ -244,7 +238,7 @@ class SimpleCSS
      */
     public function html2rgb($color)
     {
-        if (\mb_strpos($color, '#') === 0) {
+        if (\str_starts_with($color, '#')) {
             $color = \mb_substr($color, 1);
         }
         if (\mb_strlen($color) === 6) {

@@ -66,10 +66,11 @@
                 <div class="save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <form action="{$adminURL}/sitemap.php" method="post">
+                            <form action="{$adminURL}{$route}" method="post">
                                 {$jtl_token}
                                 <input type="hidden" name="update" value="1" />
                                 <input type="hidden" name="tab" value="export" />
+                                <input type="hidden" name="action" value="export" />
 
                                 <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary btn-block">
                                     <i class="fa fa-share"></i> {__('sitemapExportSubmit')}
@@ -81,7 +82,7 @@
             </div>
             <div id="downloads" class="tab-pane fade {if $cTab === 'downloads'} active show{/if}">
                 <div class="toolbar">
-                    <form id="formDeleteSitemapExport" method="post" action="{$adminURL}/sitemapexport.php">
+                    <form id="formDeleteSitemapExport" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="action" value="">
                         <input type="hidden" name="tab" value="downloads">
@@ -107,7 +108,7 @@
                 {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
                 {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|count > 0}
                     <div>
-                        <form name="sitemapdownload" method="post" action="{$adminURL}/sitemapexport.php">
+                        <form name="sitemapdownload" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="download_edit" value="1" />
                             <input type="hidden" name="tab" value="downloads" />
@@ -180,7 +181,7 @@
             </div>
             <div id="report" class="tab-pane fade {if $cTab === 'report'} active show{/if}">
                 <div class="toolbar">
-                    <form id="formDeleteSitemapReport" method="post" action="{$adminURL}/sitemapexport.php">
+                    <form id="formDeleteSitemapReport" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input type="hidden" name="action" value="">
                         <input type="hidden" name="tab" value="report">
@@ -207,7 +208,7 @@
 
                 {if isset($oSitemapReport_arr) && $oSitemapReport_arr|count > 0}
                     <div>
-                        <form name="sitemapreport" method="post" action="{$adminURL}/sitemapexport.php">
+                        <form name="sitemapreport" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input type="hidden" name="report_edit" value="1">
                             <input type="hidden" name="tab" value="report">
@@ -301,7 +302,7 @@
             <div id="einstellungen" class="tab-pane fade {if $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
-                    action=$adminURL|cat:'/sitemapexport.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('saveWithIcon')
                     title=__('settings')
                     tab='einstellungen'

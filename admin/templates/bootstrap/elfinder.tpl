@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-		<title>{$mediafilesSubdir} - Media Browser</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+        <title>{$mediafilesSubdir} - Media Browser</title>
         <link rel="stylesheet" href="{$templateUrl}/css/jquery-ui.min.css">
         <link rel="stylesheet" href="{$templateUrl}/css/jquery-ui.theme.min.css">
         <style>
@@ -15,15 +15,15 @@
                 overflow: hidden;
             }
         </style>
-		<script data-main="{$templateUrl}/js/elfinder.client.js" src="{$templateUrl}/js/require.js"></script>
-		<script>
-			define('elFinderConfig', {
-			    elementId: 'elfinder',
-				// Documentation for elFinder client options:
+        <script data-main="{$templateUrl}/js/elfinder.client.js" src="{$templateUrl}/js/require.js"></script>
+        <script>
+            define('elFinderConfig', {
+                elementId: 'elfinder',
+                // Documentation for elFinder client options:
                 // https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
-				options: {
+                options: {
                     // connector URL (REQUIRED)
-					url : 'elfinder.php',
+                    url : '{$adminURL}{$route}',
                     defaultView: 'icons',
                     height: '100%',
                     resizable: false,
@@ -32,15 +32,15 @@
                         jtl_token: '{$smarty.session.jtl_token}',
                         mediafilesType: '{$mediafilesType}',
                     },
-					commandsOptions : {
-					    upload: {
-					        ui: 'uploadbutton',
+                    commandsOptions : {
+                        upload: {
+                            ui: 'uploadbutton',
                         },
-					},
+                    },
                     uiOptions: {
-					    toolbar: [
+                        toolbar: [
                             ['mkdir'],
-					        ['info', 'quicklook', 'upload'],
+                            ['info', 'quicklook', 'upload'],
                             ['rm', 'duplicate', 'rename'],
                             ['view'],
                             ['help']
@@ -54,7 +54,7 @@
                         ],
                     },
                     getFileCallback: function(file, fm) {
-					    {if $isCKEditor}
+                        {if $isCKEditor}
                             window.opener.CKEDITOR.tools.callFunction({$CKEditorFuncNum}, file.url);
                         {else}
                             window.opener.elfinder.getFileCallback(file, '{$mediafilesBaseUrlPath}');

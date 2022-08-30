@@ -11,17 +11,11 @@ use Psr\Container\NotFoundExceptionInterface;
 class ServiceNotFoundException extends \Exception implements NotFoundExceptionInterface
 {
     /**
-     * @var string
-     */
-    protected $interface;
-
-    /**
      * ServiceNotFoundException constructor.
      * @param string $interface
      */
-    public function __construct($interface)
+    public function __construct(protected $interface)
     {
-        $this->interface = $interface;
         parent::__construct('The Service "' . $interface . '" could not be found.');
     }
 }

@@ -16,31 +16,16 @@ use Psr\Log\LoggerInterface;
 class JobFactory
 {
     /**
-     * @var DbInterface
-     */
-    private $db;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected $cache;
-
-    /**
      * JobFactory constructor.
      * @param DbInterface       $db
      * @param LoggerInterface   $logger
      * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, LoggerInterface $logger, JTLCacheInterface $cache)
-    {
-        $this->db     = $db;
-        $this->logger = $logger;
-        $this->cache  = $cache;
+    public function __construct(
+        protected DbInterface $db,
+        protected LoggerInterface $logger,
+        protected JTLCacheInterface $cache
+    ) {
     }
 
     /**
@@ -52,7 +37,7 @@ class JobFactory
         $mapper = new JobTypeToJob();
         try {
             $class = $mapper->map($data->jobType);
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             $class = Dummy::class;
         }
         $job = new $class($this->db, $this->logger, new JobHydrator(), $this->cache);

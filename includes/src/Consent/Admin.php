@@ -3,20 +3,12 @@
 namespace JTL\Consent;
 
 use JTL\Model\GenericAdmin;
-use JTL\Shop;
 
 /**
  * Class Admin
  * @package JTL\Consent
+ * @deprecated since 5.2.0
  */
 class Admin extends GenericAdmin
 {
-    /**
-     * @inheritDoc
-     */
-    public function modelPRG(int $code = 303): void
-    {
-        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_CORE]);
-        parent::modelPRG($code);
-    }
 }

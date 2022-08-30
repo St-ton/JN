@@ -15,19 +15,9 @@ class CacheSqlite implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheSqlite|null
-     */
-    public static ?CacheSqlite $instance = null;
-
-    /**
      * @var string
      */
     private string $dbRoot = \PFAD_ROOT . \PFAD_COMPILEDIR;
-
-    /**
-     * @var bool
-     */
-    private bool $sqliteIsAvailable;
 
     /**
      * @var string
@@ -49,8 +39,7 @@ class CacheSqlite implements ICachingMethod
      */
     public function __construct(array $options)
     {
-        $this->sqliteIsAvailable = $this->isAvailable();
-        if ($this->sqliteIsAvailable) {
+        if ($this->isAvailable()) {
             $this->db          = new SQLite3($this->dbRoot . $this->dbName);
             $this->dbIsCreated = \filesize($this->dbRoot . $this->dbName) > 5000;
 
@@ -65,20 +54,33 @@ class CacheSqlite implements ICachingMethod
                 PRAGMA journal_mode = wal;
             ');
 
-            $this->journalID     = 'sqlite_journal';
-            $this->options       = $options;
-            $this->isInitialized = true;
-            self::$instance      = $this;
-
+            $this->setJournalID('sqlite_journal');
+            $this->setOptions($options);
+            $this->setIsInitialized(true);
             $this->installDB();
         }
+        self::$instance = $this;
     }
 
     public function __destruct()
     {
-        if ($this->sqliteIsAvailable) {
-            $this->db->close();
-        }
+        $this->db?->close();
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [];
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
     }
 
     /**
@@ -90,7 +92,7 @@ class CacheSqlite implements ICachingMethod
         $data = \serialize($content);
         $stmt = $this->db->prepare("REPLACE INTO cache (id, value, lifetime)
             VALUES (:id, :value, DATETIME(CURRENT_TIMESTAMP ,'+" . $exp . " Second'))");
-        $stmt->bindParam(':id', $cacheID, \SQLITE3_TEXT);
+        $stmt->bindParam(':id', $cacheID);
         $stmt->bindParam(':value', $data, \SQLITE3_BLOB);
 
         return $stmt->execute() !== false;
@@ -189,8 +191,8 @@ class CacheSqlite implements ICachingMethod
         $this->db->exec('PRAGMA auto_vacuum = FULL;');
         $this->db->exec('VACUUM;');
 
-        $result    = $this->db->query('SELECT count(*) num FROM cache');
-        $resultTag = $this->db->query('SELECT count(*) num FROM cache_tag');
+        $result    = $this->db->query('SELECT COUNT(*) num FROM cache');
+        $resultTag = $this->db->query('SELECT COUNT(*) num FROM cache_tag');
         $num       = $result->fetchArray(\SQLITE3_ASSOC)['num'];
         $numTags   = $resultTag->fetchArray(\SQLITE3_ASSOC)['num'];
         $total     = (\file_exists($this->dbRoot . $this->dbName)) ? \filesize($this->dbRoot . $this->dbName) : 0;
@@ -213,8 +215,8 @@ class CacheSqlite implements ICachingMethod
         $tags = (\is_string($tags)) ? [$tags] : $tags;
         foreach ($tags as $tag) {
             $stmt = $this->db->prepare('REPLACE INTO cache_tag (group_id, id) VALUES (:group_id, :id)');
-            $stmt->bindParam(':group_id', $tag, \SQLITE3_TEXT);
-            $stmt->bindParam(':id', $cacheID, \SQLITE3_TEXT);
+            $stmt->bindParam(':group_id', $tag);
+            $stmt->bindParam(':id', $cacheID);
             $res = $stmt->execute() !== false;
         }
 
@@ -229,10 +231,10 @@ class CacheSqlite implements ICachingMethod
         $ids  = (\is_string($tags)) ? $tags : \implode("','", \array_values((array)$tags));
         $stmt = $this->db->prepare('DELETE FROM cache 
             WHERE id IN (SELECT id FROM cache_tag WHERE group_id IN (:ids))');
-        $stmt->bindParam(':ids', $ids, \SQLITE3_TEXT);
+        $stmt->bindParam(':ids', $ids);
         $stmt->execute();
         $stmt = $this->db->prepare('DELETE FROM cache_tag WHERE group_id IN (:ids)');
-        $stmt->bindParam(':ids', $ids, \SQLITE3_TEXT);
+        $stmt->bindParam(':ids', $ids);
         $stmt->execute();
 
         return 0;
@@ -246,7 +248,7 @@ class CacheSqlite implements ICachingMethod
         $res  = [];
         $ids  = (\is_string($tags)) ? $tags : \implode("','", \array_values((array)$tags));
         $stmt = $this->db->prepare('SELECT group_id, id FROM cache_tag WHERE group_id IN (:ids)');
-        $stmt->bindParam(':ids', $ids, \SQLITE3_TEXT);
+        $stmt->bindParam(':ids', $ids);
         $result = $stmt->execute();
         while ($result !== false && $item = $result->fetchArray(\SQLITE3_ASSOC)) {
             $res[] = $item['id'];

@@ -35,7 +35,7 @@ final class Localization extends AbstractItem
     {
         foreach ($variables as $t => $var) {
             $t = (string)$t;
-            \preg_match('/[0-9]+/', $t, $hits2);
+            \preg_match('/\d+/', $t, $hits2);
             if (\mb_strlen($hits2[0]) !== \mb_strlen($t)) {
                 continue;
             }
@@ -89,8 +89,8 @@ final class Localization extends AbstractItem
     {
         foreach ($var['VariableLocalized'] as $i => $localized) {
             $i = (string)$i;
-            \preg_match('/[0-9]+\sattr/', $i, $hits1);
-            \preg_match('/[0-9]+/', $i, $hits2);
+            \preg_match('/\d+\sattr/', $i, $hits1);
+            \preg_match('/\d+/', $i, $hits2);
             if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
                 \preg_match('/[A-Z]{3}/', $localized['iso'], $hits);
                 $len = \mb_strlen($localized['iso']);

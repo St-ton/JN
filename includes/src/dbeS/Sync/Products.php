@@ -11,7 +11,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\XML;
 use stdClass;
-use function Functional\flatten;
 use function Functional\map;
 
 /**
@@ -53,7 +52,7 @@ final class Products extends AbstractSync
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            if (\strpos($file, 'artdel.xml') !== false) {
+            if (\str_contains($file, 'artdel.xml')) {
                 $productIDs[] = $this->handleDeletes($xml);
             } else {
                 $productIDs[] = $this->handleInserts($xml);
@@ -66,7 +65,7 @@ final class Products extends AbstractSync
                 );
             }
         }
-        $productIDs = \array_unique(flatten($productIDs));
+        $productIDs = $this->flattenTags($productIDs);
         $this->db->query('COMMIT');
         $this->clearProductCaches($productIDs);
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Update;
 
@@ -25,21 +25,15 @@ class Updater
     /**
      * @var bool
      */
-    protected static $isVerified = false;
-
-    /**
-     * @var DbInterface
-     */
-    protected $db;
+    protected static bool $isVerified = false;
 
     /**
      * Updater constructor.
      * @param DbInterface $db
      * @throws Exception
      */
-    public function __construct(DbInterface $db)
+    public function __construct(protected DbInterface $db)
     {
-        $this->db = $db;
         $this->verify();
     }
 
@@ -204,29 +198,63 @@ class Updater
         }
 
         if (empty($targetVersion)) {
-            $api               = Shop::Container()->get(JTLApi::class);
-            $availableUpdates  = $api->getAvailableVersions() ?? [];
-            $versionCollection = new VersionCollection();
+            /** @var JTLApi $api */
+            $api              = Shop::Container()->get(JTLApi::class);
+            $availableUpdates = $api->getAvailableVersions(true) ?? [];
+            foreach ($availableUpdates as $key => $availVersion) {
+                try {
+                    $availVersion->referenceVersion = Version::parse($availVersion->reference);
+                } catch (Exception) {
+                    unset($availableUpdates[$key]);
+                }
+            }
+            // sort versions ascending
+            \usort($availableUpdates, static function (stdClass $x, stdClass $y): int {
+                /** @var Version $versionX */
+                $versionX = $x->referenceVersion;
+                /** @var Version $versionY */
+                $versionY = $y->referenceVersion;
+                if ($versionX->smallerThan($versionY)) {
+                    return -1;
+                }
+                if ($versionX->greaterThan($versionY)) {
+                    return 1;
+                }
 
+                return 0;
+            });
+
+            $versionCollection = new VersionCollection();
             foreach ($availableUpdates as $availableUpdate) {
+                /** @var Version $referenceVersion */
+                $referenceVersion = $availableUpdate->referenceVersion;
+                if ($availableUpdate->isPublic === 0
+                    && $referenceVersion->equals($this->getCurrentFileVersion()) === false
+                ) {
+                    continue;
+                }
                 $versionCollection->append($availableUpdate->reference);
             }
 
             $targetVersion = $version->smallerThan(Version::parse($this->getCurrentFileVersion()))
                 ? $versionCollection->getNextVersion($version)
                 : $version;
+
+            // if target version is greater than file version: set file version as target version to avoid
+            // mistakes with missing versions in the version list from the API (fallback)
+            if ($targetVersion?->greaterThan($this->getCurrentFileVersion()) ?? false) {
+                $targetVersion = Version::parse($this->getCurrentFileVersion());
+            }
         }
 
         return $targetVersion ?? Version::parse(\APPLICATION_VERSION);
     }
 
     /**
-     * getPreviousVersion
-     *
      * @param int $version
-     * @return int|mixed
+     * @return int
      */
-    public function getPreviousVersion(int $version)
+    public function getPreviousVersion(int $version): int
     {
         $majors = [300 => 219, 400 => 320];
         if (\array_key_exists($version, $majors)) {
@@ -273,7 +301,7 @@ class Updater
         $lines = \file($sqlFile);
         foreach ($lines as $i => $line) {
             $line = \trim($line);
-            if (\mb_strpos($line, '--') === 0 || \mb_strpos($line, '#') === 0) {
+            if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {
                 unset($lines[$i]);
             }
         }

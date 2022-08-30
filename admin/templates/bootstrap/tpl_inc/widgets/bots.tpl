@@ -1,5 +1,5 @@
 <div class="widget-custom-data widget-bots">
-    {if is_array($oBots_arr) && count($oBots_arr) > 0}
+    {if count($oBots_arr) > 0}
         <table class="table table-condensed table-hover table-blank">
             <thead>
                 <tr>
@@ -24,7 +24,7 @@
                 {/foreach}
             </tbody>
         </table>
-        {__('moreDetailsStatistics')}
+        {__('moreDetailsStatistics')|sprintf:$adminURL}
     {else}
         <div class="alert alert-info">{__('noStatisticsFound')}</div>
     {/if}

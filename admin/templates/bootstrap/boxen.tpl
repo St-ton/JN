@@ -24,25 +24,25 @@
 
 <script>
     $(function () {
-        articlePicker = new SearchPicker({
+        window.articlePicker = new SearchPicker({
             searchPickerName:  'articlePicker',
             getDataIoFuncName: 'getProducts',
             keyName:           'kArtikel',
             renderItemCb:      renderItemName
         });
-        categoryPicker = new SearchPicker({
+        window.categoryPicker = new SearchPicker({
             searchPickerName:  'categoryPicker',
             getDataIoFuncName: 'getCategories',
             keyName:           'kKategorie',
             renderItemCb:      renderItemName
         });
-        manufacturerPicker = new SearchPicker({
+        window.manufacturerPicker = new SearchPicker({
             searchPickerName:  'manufacturerPicker',
             getDataIoFuncName: 'getManufacturers',
             keyName:           'kHersteller',
             renderItemCb:      renderItemName
         });
-        pagePicker = new SearchPicker({
+        window.pagePicker = new SearchPicker({
             searchPickerName:  'pagePicker',
             getDataIoFuncName: 'getPages',
             keyName:           'kLink',
@@ -50,12 +50,12 @@
         });
     });
 
-    function renderItemName (item)
+    function renderItemName(item)
     {
         return '<p class="list-group-item-text">' + item.cName + '</p>';
     }
 
-    function openFilterPicker (picker, kBox)
+    function openFilterPicker(picker, kBox)
     {
         picker
             .setOnApplyBefore(
@@ -68,7 +68,7 @@
             .show();
     }
 
-    function onApplyBeforeFilterPicker (kBox)
+    function onApplyBeforeFilterPicker(kBox)
     {
         $('#box-active-filters-' + kBox)
             .empty()
@@ -77,7 +77,7 @@
             );
     }
 
-    function onApplyFilterPicker (kBox, selectedKeys, selectedItems)
+    function onApplyFilterPicker(kBox, selectedKeys, selectedItems)
     {
         var $activeFilterList = $('#box-active-filters-' + kBox);
 
@@ -112,7 +112,7 @@
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
                 {if $invisibleBoxes|count > 0}
                     <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
-                    <form action="{$adminURL}/boxen.php" method="post" class="block">
+                    <form action="{$adminURL}{$route}" method="post" class="block">
                         {$jtl_token}
                         <div class="card editorInner">
                             <div class="card-header">
@@ -181,7 +181,7 @@
                 {else}
                     {if isset($oEditBox) && $oEditBox}
                         <div id="editor" class="editor">
-                            <form action="{$adminURL}/boxen.php" method="post">
+                            <form action="{$adminURL}{$route}" method="post">
                                 {$jtl_token}
                                 <div class="card editorInner">
                                     <div class="card-header">
@@ -190,17 +190,17 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="form-group form-row align-items-center">
-                                            <label class="col col-sm-4 col-form-label text-sm-right"for="boxtitle">{__('boxTitle')}:</label>
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="boxtitle">{__('boxTitle')}:</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
+                                                <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel|escape}" />
                                             </div>
                                         </div>
                                         {if $oEditBox->eTyp === 'text'}
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel|escape}{/if}{/foreach}" />
                                                     </div>
                                                 </div>
                                                 <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}</textarea>
@@ -208,7 +208,7 @@
                                             {/foreach}
                                         {elseif $oEditBox->eTyp === 'catbox'}
                                             <div class="form-group form-row align-items-center">
-                                                <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('catBoxNum')}:</label>
+                                                <label class="col col-sm-4 col-form-label text-sm-right" for="linkID">{__('catBoxNum')}:</label>
                                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                     <input class="form-control" id="linkID" type="text" name="linkID" value="{$oEditBox->kCustomID}">
                                                 </div>
@@ -218,7 +218,7 @@
                                             </div>
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                         <input class="form-control" id="title-{$language->getIso()}" type="text"
                                                                name="title[{$language->getIso()}]"
@@ -228,7 +228,7 @@
                                             {/foreach}
                                         {elseif $oEditBox->eTyp === 'link'}
                                             <div class="form-group form-row align-items-center">
-                                                <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('linkgroup')}:</label>
+                                                <label class="col col-sm-4 col-form-label text-sm-right" for="linkID">{__('linkgroup')}:</label>
                                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                     <select class="custom-select" id="linkID" name="linkID" required>
                                                         <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{__('FillOut')}</option>
@@ -242,7 +242,7 @@
                                             </div>
                                             {foreach $availableLanguages as $language}
                                                 <div class="form-group form-row align-items-center">
-                                                    <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
+                                                    <label class="col col-sm-4 col-form-label text-sm-right" for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
                                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                         <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                                     </div>
@@ -260,7 +260,7 @@
                                     <div class="card-footer save-wrapper">
                                         <div class="row">
                                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                                <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block">
+                                                <button type="button" onclick="window.location.href='{$adminURL}{$route}'" class="btn btn-outline-primary btn-block">
                                                     {__('cancelWithIcon')}
                                                 </button>
                                             </div>
@@ -280,7 +280,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-body">
-                                <form name="boxen" method="post" action="{$adminURL}/boxen.php">
+                                <form name="boxen" method="post" action="{$adminURL}{$route}">
                                     {$jtl_token}
                                     <div class="input-group left">
                                         <span class="input-group-addon">
@@ -308,7 +308,7 @@
                 {include file='tpl_inc/config_section.tpl'
                     name='einstellen'
                     a='saveSettings'
-                    action='boxen.php'
+                    action=$adminURL|cat:$route
                     buttonCaption=__('save')
                     title=__('settings')
                     tab='einstellungen'

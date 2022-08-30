@@ -51,7 +51,7 @@
         <div class="card-title">{__('danger')}</div>
         {__('generalresetwarning')}
     </div>
-    <form id="formZuruecksetzen" name="login" method="post" action="{$adminURL}/shopzuruecksetzen.php">
+    <form id="formZuruecksetzen" name="login" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
         <input type="hidden" name="zuruecksetzen" value="1" />
 

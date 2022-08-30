@@ -5,7 +5,7 @@ namespace JTL\Backend\LocalizationCheck;
 use Illuminate\Support\Collection;
 
 /**
- * class Attribute
+ * Class Attribute
  * @package JTL\Backend\LocalizationCheck
  */
 class Attributes extends AbstractLocalizationCheck
@@ -67,6 +67,6 @@ class Attributes extends AbstractLocalizationCheck
      */
     public function getLocation(): string
     {
-        return __('locationAttributes');
+        return \__('locationAttributes');
     }
 }

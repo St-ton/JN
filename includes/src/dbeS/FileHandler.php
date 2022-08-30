@@ -20,17 +20,11 @@ class FileHandler
     private string $unzipPath = '';
 
     /**
-     * @var LoggerInterface
-     */
-    private LoggerInterface $logger;
-
-    /**
      * FileHandler constructor.
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger)
     {
-        $this->logger = $logger;
     }
 
     public function __destruct()
@@ -94,7 +88,7 @@ class FileHandler
      * @param string $targetPath
      * @return array|bool
      */
-    private function unzipSyncFiles(string $zipFile, string $targetPath)
+    private function unzipSyncFiles(string $zipFile, string $targetPath): bool|array
     {
         $archive = new ZipArchive();
         if (($open = $archive->open($zipFile)) !== true) {
@@ -112,9 +106,9 @@ class FileHandler
             }
             $archive->close();
 
-            return \array_filter(\array_map(static function ($e) {
-                return \file_exists($e)
-                    ? $e
+            return \array_filter(\array_map(static function (string $file) {
+                return \file_exists($file)
+                    ? $file
                     : null;
             }, $filenames));
         }
@@ -128,34 +122,16 @@ class FileHandler
      */
     private function getErrorMessage(int $code): string
     {
-        switch ($code) {
-            case \UPLOAD_ERR_INI_SIZE:
-                $error = 'Dateigröße > upload_max_filesize directive in php.ini [1]';
-                break;
-            case \UPLOAD_ERR_FORM_SIZE:
-                $error = 'Dateigröße > MAX_FILE_SIZE [2]';
-                break;
-            case \UPLOAD_ERR_PARTIAL:
-                $error = 'Datei wurde nur zum Teil hochgeladen [3]';
-                break;
-            case \UPLOAD_ERR_NO_FILE:
-                $error = 'Es wurde keine Datei hochgeladen [4]';
-                break;
-            case \UPLOAD_ERR_NO_TMP_DIR:
-                $error = 'Es fehlt ein TMP-Verzeichnis für HTTP Datei-Uploads! Bitte an Hoster wenden! [6]';
-                break;
-            case \UPLOAD_ERR_CANT_WRITE:
-                $error = 'Datei konnte nicht auf Datenträger gespeichert werden! [7]';
-                break;
-            case \UPLOAD_ERR_EXTENSION:
-                $error = 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]';
-                break;
-            default:
-                $error = 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!';
-                break;
-        }
-
-        return $error;
+        return match ($code) {
+            \UPLOAD_ERR_INI_SIZE   => 'Dateigröße > upload_max_filesize directive in php.ini [1]',
+            \UPLOAD_ERR_FORM_SIZE  => 'Dateigröße > MAX_FILE_SIZE [2]',
+            \UPLOAD_ERR_PARTIAL    => 'Datei wurde nur zum Teil hochgeladen [3]',
+            \UPLOAD_ERR_NO_FILE    => 'Es wurde keine Datei hochgeladen [4]',
+            \UPLOAD_ERR_NO_TMP_DIR => 'Es fehlt ein TMP-Verzeichnis für HTTP Datei-Uploads! Bitte an Hoster wenden! [6]',
+            \UPLOAD_ERR_CANT_WRITE => 'Datei konnte nicht auf Datenträger gespeichert werden! [7]',
+            \UPLOAD_ERR_EXTENSION  => 'Dateiendung nicht akzeptiert, bitte an Hoster werden! [8]',
+            default                => 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!',
+        };
     }
 
     /**
@@ -171,8 +147,8 @@ class FileHandler
         }
         if (!empty($files['data']['error']) || (isset($files['data']['size']) && $files['data']['size'] === 0)) {
             $this->logger->error(
-                'ERROR: incoming: ' . $files['data']['name'] . ' size:' . $files['data']['size'] .
-                ' err:' . $files['data']['error']
+                'ERROR: incoming: ' . $files['data']['name'] . ' size:' . $files['data']['size']
+                . ' err:' . $files['data']['error']
             );
             $error = $this->getErrorMessage($files['data']['error'] ?? 0);
             \syncException($error . "\n" . \print_r($files, true), \FREIDEFINIERBARER_FEHLER);

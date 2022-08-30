@@ -15,7 +15,7 @@ use JTL\Update\Migration;
 class Migration_20170718083700 extends Migration implements IMigration
 {
     protected $author      = 'ms';
-    protected $description = 'corrects email template name';
+    protected $description = 'Correct email template name';
 
     /**
      * @inheritDoc

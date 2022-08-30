@@ -89,7 +89,7 @@ class Bewertung
         if ($productID > 0 && $languageID > 0) {
             $langSQL = $allLanguages ? '' : ' AND tbewertung.kSprache = ' . $languageID . ' ';
             $data    = Shop::Container()->getDB()->getSingleObject(
-                "SELECT tbewertung.*,
+                "SELECT DISTINCT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
                         tbewertunghilfreich.nBewertung AS rated,
@@ -209,7 +209,7 @@ class Bewertung
                     : ' LIMIT ' . $pageOffset;
             }
             $this->oBewertung_arr = $db->getObjects(
-                "SELECT tbewertung.*,
+                "SELECT DISTINCT tbewertung.*,
                         DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum,
                         tbewertunghilfreich.nBewertung AS rated,

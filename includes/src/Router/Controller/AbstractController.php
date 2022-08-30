@@ -170,7 +170,7 @@ abstract class AbstractController implements ControllerInterface
                 $this->state->newsCategoryID = 0;
                 $this->state->newsOverviewID = 0;
             }
-            $mapping                 = $this->state->getMapping();
+            $mapping = $this->state->getMapping();
             if (isset($mapping[$seo->cKey])) {
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }

@@ -210,12 +210,16 @@ class EmailTemplateController extends AbstractBackendController
                 }));
         }
 
+        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+
         return $smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)
             ->assign('checkTemplate', $doCheck ?? 0)
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
             ->assign('route', $this->route)
+            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('emailvorlagen.tpl');
     }
 

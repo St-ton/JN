@@ -162,6 +162,14 @@ abstract class AbstractController implements ControllerInterface
             $this->state->languageID = (int)$seo->kSprache;
             $this->state->itemID     = (int)$seo->kKey;
             $this->state->type       = $seo->cKey;
+            if ($seo->cKey === 'kLink') {
+                $this->state->productID      = 0;
+                $this->state->childProductID = 0;
+                $this->state->categoryID     = 0;
+                $this->state->newsItemID     = 0;
+                $this->state->newsCategoryID = 0;
+                $this->state->newsOverviewID = 0;
+            }
             $mapping                 = $this->state->getMapping();
             if (isset($mapping[$seo->cKey])) {
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;

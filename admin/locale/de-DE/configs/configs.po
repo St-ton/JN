@@ -2220,7 +2220,7 @@ msgid "bewertung_guthaben_nutzen_name"
 msgstr "Guthabenbonus gewähren"
 
 msgid "bewertung_guthaben_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden für das Erstellen einer Artikelbewertung Guthaben gutgeschrieben bekommen sollen. Die Einstellung „Bewertung freischalten“ muss dafür ebenfalls aktiviert sein."
 
 msgid "bewertungserinnerung_versandtage_name"
 msgstr "Tage nach Versand bis zur Erinnerung"

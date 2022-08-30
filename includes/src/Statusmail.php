@@ -822,17 +822,17 @@ class Statusmail
             case 1:
                 $startDate   = \date('Y-m-d', \strtotime('yesterday'));
                 $endDate     = \date('Y-m-d', \strtotime('today'));
-                $intervalLoc = 'Tägliche';
+                $intervalLoc = \__('intervalDay');
                 break;
             case 7:
                 $startDate   = \date('Y-m-d', \strtotime('last week monday'));
                 $endDate     = \date('Y-m-d', \strtotime('last week sunday'));
-                $intervalLoc = 'Wöchentliche';
+                $intervalLoc = \__('intervalWeek');
                 break;
             case 30:
                 $startDate   = \date('Y-m-d', \strtotime('first day of previous month'));
                 $endDate     = \date('Y-m-d', \strtotime('last day of previous month'));
-                $intervalLoc = 'Monatliche';
+                $intervalLoc = \__('intervalMonth');
                 break;
             default:
                 throw new InvalidArgumentException('Invalid interval type: ' . $interval);
@@ -840,7 +840,7 @@ class Statusmail
         $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
             $data->interval   = $interval;
-            $data->cIntervall = $intervalLoc . ' Status-Email';
+            $data->cIntervall = $intervalLoc;
 
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();

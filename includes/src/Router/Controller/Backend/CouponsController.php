@@ -14,6 +14,7 @@ use JTL\CSV\Export;
 use JTL\CSV\Import;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
+use JTL\DB\SqlObject;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -815,14 +816,18 @@ class CouponsController extends AbstractBackendController
         $manufacturerIDs = Text::parseSSK($coupon->cHersteller);
         $itemNumbers     = Text::parseSSK($coupon->cArtikel);
         if (\count($itemNumbers) > 0) {
-            $itemNumbers = \array_map(static function ($e): string {
-                return '"' . $e . '"';
-            }, $itemNumbers);
+            $sql = new SqlObject();
+            $in  = [];
+            foreach ($itemNumbers as $i => $item) {
+                $sql->addParam(':itm' . $i, $item);
+                $in[] = ':itm' . $i;
+            }
             $productIDs  = $this->db->getInts(
                 'SELECT kArtikel
                     FROM tartikel
-                    WHERE cArtNr IN (' . \implode(',', $itemNumbers) . ')',
-                'kArtikel'
+                    WHERE cArtNr IN (' . \implode(',', $in) . ')',
+                'kArtikel',
+                $sql->getParams()
             );
         }
         foreach ($customerData as $customerID) {

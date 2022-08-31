@@ -5763,10 +5763,11 @@ class Artikel implements RoutableInterface
      */
     public function showMatrix(): bool
     {
-        if (Request::verifyGPCDataInt('quickView') === 0
+        if ($this->nVariationOhneFreifeldAnzahl > 0
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
+            && Request::verifyGPCDataInt('quickView') === 0
             && $this->nVariationOhneFreifeldAnzahl === \count($this->Variationen)
             && (\count($this->Variationen) <= 2
                 || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'

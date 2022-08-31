@@ -2,6 +2,7 @@
 
 namespace JTL\Catalog;
 
+use InvalidArgumentException;
 use JTL\Helpers\Tax;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
@@ -92,15 +93,17 @@ class Currency
      * Currency constructor.
      *
      * @param int|null $id
+     * @throws InvalidArgumentException
      */
     public function __construct(int $id = null)
     {
         if ($id > 0) {
             $data = Shop::Container()->getDB()->select('twaehrung', 'kWaehrung', $id);
-            if ($data !== null) {
-                $data->kWaehrung = (int)$data->kWaehrung;
-                $this->extract($data);
+            if ($data === null) {
+                throw new InvalidArgumentException('Cannot load currency with id ' . $id);
             }
+            $data->kWaehrung = (int)$data->kWaehrung;
+            $this->extract($data);
         }
     }
 

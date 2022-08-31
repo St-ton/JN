@@ -282,7 +282,7 @@ class State
         'categoryFilterIDs'      => 'categoryFilterIDs',
         'MerkmalFilter_arr'      => 'characteristicFilterIDs',
         'kKategorieFilter'       => 'categoryFilterID',
-        'searchSpecialFilterIDs' => 'searchSpecialFilterIDs',
+        'searchSpecialFilters'   => 'searchSpecialFilterIDs',
         'kSuchFilter'            => 'searchFilterID',
         'kSuchspecialFilter'     => 'searchSpecialFilterID',
         'SuchFilter_arr'         => 'searchFilterIDs',

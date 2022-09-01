@@ -188,743 +188,373 @@ class_alias(\JTL\xtea\XTEA::class, 'XTEA');
 
 if (false) { // trick IDEs into displaying deprecations
     /** @deprecated since 5.0.0 */
-    class XTEA
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class phpQueryObject
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class phpQuery
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class StringHandler
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MediaImageRequest
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IMedia
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Image
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Media
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MediaImageSize
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MediaImage
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PlausiCMS
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kunde
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kundendatenhistory
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kundengruppe
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Jtllog
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Profiler
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Slide
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Statusmail
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Dispatcher
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Event
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Redirect
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class CheckBox
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ImageMap
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Nice
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JobQueue
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Linechart
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class CustomerFields
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DbInterface
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class NiceDB
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbPers
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbPersPosEigenschaft
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbPos
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbPosEigenschaft
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Warenkorb
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbPersPos
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Staat
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MagicCompatibilityTrait
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Firma
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PlausiTrennzeichen
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kampagne
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class SingletonTrait
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class KuponBestellung
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Lieferschein
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Versand
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Lieferscheinposinfo
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Lieferscheinpos
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ZahlungsInfo
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Lieferadresse
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Versandart
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ZahlungsLog
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Rechnungsadresse
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Zahlungsart
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ZipValidator
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Adresse
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Nummern
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kupon
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Bestellung
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Eigenschaft
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Shopsetting
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class SmartyResourceNiceDB
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JTLSmartyTemplateClass
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AdminAccount
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Notification
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JSONAPI
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class TwoFAEmergency
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class NotificationEntry
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AdminTemplate
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AdminIO
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AdminFavorite
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DirManager
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class TwoFA
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Sprache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Path
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Shop
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class XML
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IOError
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IOMethods
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IOResponse
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IO
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IOFile
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JTLApi
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MultiRequest
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Communication
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Alert
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Wunschliste
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WunschlistePosEigenschaft
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WunschlistePos
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Navigation
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Currency
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class NavigationEntry
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Warenlager
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Bestseller
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Preisverlauf
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Merkmal
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ArtikelListe
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PriceRange
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Preise
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MerkmalWert
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Bewertung
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Artikel
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class EigenschaftWert
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Vergleichsliste
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class UnitsOfMeasure
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class KategorieListe
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class KategorieArtikel
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Kategorie
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class KategoriePict
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Trennzeichen
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Hersteller
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Statistik
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IExtensionPoint
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class LessParser
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Migration
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MigrationHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Updater
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MigrationManager
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MigrationTableTrait
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IMigration
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MigrationTrait
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DBMigrationHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DBManager
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JTLCache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JTLCacheTrait
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ICachingMethod
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class JTLCacheInterface
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_session
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_null
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_apc
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_memcache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_redisCluster
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_file
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_memcached
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_redis
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class cache_advancedfile
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class MainModel
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Emailhistory
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Chartdata
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Plausi
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ContentAuthor
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PlausiKundenfeld
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ExtensionPoint
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class SimpleMail
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Slider
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Piechart
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class SimpleCSS
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Status
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Revision
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AuswahlAssistentOrt
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AuswahlAssistentGruppe
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AuswahlAssistentFrage
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AuswahlAssistent
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfigurator
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfigitemsprache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfigitempreis
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfigitem
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfiggruppesprache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Konfiggruppe
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DownloadSprache
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class DownloadHistory
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Download
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class UploadSchema
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class UploadDatei
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Upload
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class HerstellerHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class UrlHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ArtikelHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class KategorieHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class BestellungHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WarenkorbHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class VersandartHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PaymentMethod
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class ZahlungsartHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PHPSettingsHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class WidgetBase
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class EventDispatcher
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IPluginLizenz
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AbstractPlugin
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PluginLizenz
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class IPlugin
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Plugin
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class PHPMailer
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class LinkHelper
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class AdminSession
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class Session
-    {
-    }
-    /** @deprecated since 5.0.0 */
-    class StringHandler
-    {
-    }
+    class XTEA{}
+    /** @deprecated since 5.0.0 */
+    class phpQueryObject{}
+    /** @deprecated since 5.0.0 */
+    class phpQuery{}
+    /** @deprecated since 5.0.0 */
+    class StringHandler{}
+    /** @deprecated since 5.0.0 */
+    class MediaImageRequest{}
+    /** @deprecated since 5.0.0 */
+    class IMedia{}
+    /** @deprecated since 5.0.0 */
+    class Image{}
+    /** @deprecated since 5.0.0 */
+    class Media{}
+    /** @deprecated since 5.0.0 */
+    class MediaImageSize{}
+    /** @deprecated since 5.0.0 */
+    class MediaImage{}
+    /** @deprecated since 5.0.0 */
+    class PlausiCMS{}
+    /** @deprecated since 5.0.0 */
+    class Kunde{}
+    /** @deprecated since 5.0.0 */
+    class Kundendatenhistory{}
+    /** @deprecated since 5.0.0 */
+    class Kundengruppe{}
+    /** @deprecated since 5.0.0 */
+    class Jtllog{}
+    /** @deprecated since 5.0.0 */
+    class Profiler{}
+    /** @deprecated since 5.0.0 */
+    class Slide{}
+    /** @deprecated since 5.0.0 */
+    class Statusmail{}
+    /** @deprecated since 5.0.0 */
+    class Dispatcher{}
+    /** @deprecated since 5.0.0 */
+    class Event{}
+    /** @deprecated since 5.0.0 */
+    class Redirect{}
+    /** @deprecated since 5.0.0 */
+    class CheckBox{}
+    /** @deprecated since 5.0.0 */
+    class ImageMap{}
+    /** @deprecated since 5.0.0 */
+    class Nice{}
+    /** @deprecated since 5.0.0 */
+    class JobQueue{}
+    /** @deprecated since 5.0.0 */
+    class Linechart{}
+    /** @deprecated since 5.0.0 */
+    class CustomerFields{}
+    /** @deprecated since 5.0.0 */
+    class DbInterface{}
+    /** @deprecated since 5.0.0 */
+    class NiceDB{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbPers{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbPersPosEigenschaft{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbPos{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbPosEigenschaft{}
+    /** @deprecated since 5.0.0 */
+    class Warenkorb{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbPersPos{}
+    /** @deprecated since 5.0.0 */
+    class Staat{}
+    /** @deprecated since 5.0.0 */
+    class MagicCompatibilityTrait{}
+    /** @deprecated since 5.0.0 */
+    class Firma{}
+    /** @deprecated since 5.0.0 */
+    class PlausiTrennzeichen{}
+    /** @deprecated since 5.0.0 */
+    class Kampagne{}
+    /** @deprecated since 5.0.0 */
+    class SingletonTrait{}
+    /** @deprecated since 5.0.0 */
+    class KuponBestellung{}
+    /** @deprecated since 5.0.0 */
+    class Lieferschein{}
+    /** @deprecated since 5.0.0 */
+    class Versand{}
+    /** @deprecated since 5.0.0 */
+    class Lieferscheinposinfo{}
+    /** @deprecated since 5.0.0 */
+    class Lieferscheinpos{}
+    /** @deprecated since 5.0.0 */
+    class ZahlungsInfo{}
+    /** @deprecated since 5.0.0 */
+    class Lieferadresse{}
+    /** @deprecated since 5.0.0 */
+    class Versandart{}
+    /** @deprecated since 5.0.0 */
+    class ZahlungsLog{}
+    /** @deprecated since 5.0.0 */
+    class Rechnungsadresse{}
+    /** @deprecated since 5.0.0 */
+    class Zahlungsart{}
+    /** @deprecated since 5.0.0 */
+    class ZipValidator{}
+    /** @deprecated since 5.0.0 */
+    class Adresse{}
+    /** @deprecated since 5.0.0 */
+    class Nummern{}
+    /** @deprecated since 5.0.0 */
+    class Kupon{}
+    /** @deprecated since 5.0.0 */
+    class Bestellung{}
+    /** @deprecated since 5.0.0 */
+    class Eigenschaft{}
+    /** @deprecated since 5.0.0 */
+    class Shopsetting{}
+    /** @deprecated since 5.0.0 */
+    class SmartyResourceNiceDB{}
+    /** @deprecated since 5.0.0 */
+    class JTLSmartyTemplateClass{}
+    /** @deprecated since 5.0.0 */
+    class AdminAccount{}
+    /** @deprecated since 5.0.0 */
+    class Notification{}
+    /** @deprecated since 5.0.0 */
+    class JSONAPI{}
+    /** @deprecated since 5.0.0 */
+    class TwoFAEmergency{}
+    /** @deprecated since 5.0.0 */
+    class NotificationEntry{}
+    /** @deprecated since 5.0.0 */
+    class AdminTemplate{}
+    /** @deprecated since 5.0.0 */
+    class AdminIO{}
+    /** @deprecated since 5.0.0 */
+    class AdminFavorite{}
+    /** @deprecated since 5.0.0 */
+    class DirManager{}
+    /** @deprecated since 5.0.0 */
+    class TwoFA{}
+    /** @deprecated since 5.0.0 */
+    class Sprache{}
+    /** @deprecated since 5.0.0 */
+    class Path{}
+    /** @deprecated since 5.0.0 */
+    class Shop{}
+    /** @deprecated since 5.0.0 */
+    class XML{}
+    /** @deprecated since 5.0.0 */
+    class IOError{}
+    /** @deprecated since 5.0.0 */
+    class IOMethods{}
+    /** @deprecated since 5.0.0 */
+    class IOResponse{}
+    /** @deprecated since 5.0.0 */
+    class IO{}
+    /** @deprecated since 5.0.0 */
+    class IOFile{}
+    /** @deprecated since 5.0.0 */
+    class JTLApi{}
+    /** @deprecated since 5.0.0 */
+    class MultiRequest{}
+    /** @deprecated since 5.0.0 */
+    class Communication{}
+    /** @deprecated since 5.0.0 */
+    class Alert{}
+    /** @deprecated since 5.0.0 */
+    class Wunschliste{}
+    /** @deprecated since 5.0.0 */
+    class WunschlistePosEigenschaft{}
+    /** @deprecated since 5.0.0 */
+    class WunschlistePos{}
+    /** @deprecated since 5.0.0 */
+    class Navigation{}
+    /** @deprecated since 5.0.0 */
+    class Currency{}
+    /** @deprecated since 5.0.0 */
+    class NavigationEntry{}
+    /** @deprecated since 5.0.0 */
+    class Warenlager{}
+    /** @deprecated since 5.0.0 */
+    class Bestseller{}
+    /** @deprecated since 5.0.0 */
+    class Preisverlauf{}
+    /** @deprecated since 5.0.0 */
+    class Merkmal{}
+    /** @deprecated since 5.0.0 */
+    class ArtikelListe{}
+    /** @deprecated since 5.0.0 */
+    class PriceRange{}
+    /** @deprecated since 5.0.0 */
+    class Preise{}
+    /** @deprecated since 5.0.0 */
+    class MerkmalWert{}
+    /** @deprecated since 5.0.0 */
+    class Bewertung{}
+    /** @deprecated since 5.0.0 */
+    class Artikel{}
+    /** @deprecated since 5.0.0 */
+    class EigenschaftWert{}
+    /** @deprecated since 5.0.0 */
+    class Vergleichsliste{}
+    /** @deprecated since 5.0.0 */
+    class UnitsOfMeasure{}
+    /** @deprecated since 5.0.0 */
+    class KategorieListe{}
+    /** @deprecated since 5.0.0 */
+    class KategorieArtikel{}
+    /** @deprecated since 5.0.0 */
+    class Kategorie{}
+    /** @deprecated since 5.0.0 */
+    class KategoriePict{}
+    /** @deprecated since 5.0.0 */
+    class Trennzeichen{}
+    /** @deprecated since 5.0.0 */
+    class Hersteller{}
+    /** @deprecated since 5.0.0 */
+    class Statistik{}
+    /** @deprecated since 5.0.0 */
+    class IExtensionPoint{}
+    /** @deprecated since 5.0.0 */
+    class LessParser{}
+    /** @deprecated since 5.0.0 */
+    class Migration{}
+    /** @deprecated since 5.0.0 */
+    class MigrationHelper{}
+    /** @deprecated since 5.0.0 */
+    class Updater{}
+    /** @deprecated since 5.0.0 */
+    class MigrationManager{}
+    /** @deprecated since 5.0.0 */
+    class MigrationTableTrait{}
+    /** @deprecated since 5.0.0 */
+    class IMigration{}
+    /** @deprecated since 5.0.0 */
+    class MigrationTrait{}
+    /** @deprecated since 5.0.0 */
+    class DBMigrationHelper{}
+    /** @deprecated since 5.0.0 */
+    class DBManager{}
+    /** @deprecated since 5.0.0 */
+    class JTLCache{}
+    /** @deprecated since 5.0.0 */
+    class JTLCacheTrait{}
+    /** @deprecated since 5.0.0 */
+    class ICachingMethod{}
+    /** @deprecated since 5.0.0 */
+    class JTLCacheInterface{}
+    /** @deprecated since 5.0.0 */
+    class cache_session{}
+    /** @deprecated since 5.0.0 */
+    class cache_null{}
+    /** @deprecated since 5.0.0 */
+    class cache_apc{}
+    /** @deprecated since 5.0.0 */
+    class cache_memcache{}
+    /** @deprecated since 5.0.0 */
+    class cache_redisCluster{}
+    /** @deprecated since 5.0.0 */
+    class cache_file{}
+    /** @deprecated since 5.0.0 */
+    class cache_memcached{}
+    /** @deprecated since 5.0.0 */
+    class cache_redis{}
+    /** @deprecated since 5.0.0 */
+    class cache_advancedfile{}
+    /** @deprecated since 5.0.0 */
+    class MainModel{}
+    /** @deprecated since 5.0.0 */
+    class Emailhistory{}
+    /** @deprecated since 5.0.0 */
+    class Chartdata{}
+    /** @deprecated since 5.0.0 */
+    class Plausi{}
+    /** @deprecated since 5.0.0 */
+    class ContentAuthor{}
+    /** @deprecated since 5.0.0 */
+    class PlausiKundenfeld{}
+    /** @deprecated since 5.0.0 */
+    class ExtensionPoint{}
+    /** @deprecated since 5.0.0 */
+    class SimpleMail{}
+    /** @deprecated since 5.0.0 */
+    class Slider{}
+    /** @deprecated since 5.0.0 */
+    class Piechart{}
+    /** @deprecated since 5.0.0 */
+    class SimpleCSS{}
+    /** @deprecated since 5.0.0 */
+    class Status{}
+    /** @deprecated since 5.0.0 */
+    class Revision{}
+    /** @deprecated since 5.0.0 */
+    class AuswahlAssistentOrt{}
+    /** @deprecated since 5.0.0 */
+    class AuswahlAssistentGruppe{}
+    /** @deprecated since 5.0.0 */
+    class AuswahlAssistentFrage{}
+    /** @deprecated since 5.0.0 */
+    class AuswahlAssistent{}
+    /** @deprecated since 5.0.0 */
+    class Konfigurator{}
+    /** @deprecated since 5.0.0 */
+    class Konfigitemsprache{}
+    /** @deprecated since 5.0.0 */
+    class Konfigitempreis{}
+    /** @deprecated since 5.0.0 */
+    class Konfigitem{}
+    /** @deprecated since 5.0.0 */
+    class Konfiggruppesprache{}
+    /** @deprecated since 5.0.0 */
+    class Konfiggruppe{}
+    /** @deprecated since 5.0.0 */
+    class DownloadSprache{}
+    /** @deprecated since 5.0.0 */
+    class DownloadHistory{}
+    /** @deprecated since 5.0.0 */
+    class Download{}
+    /** @deprecated since 5.0.0 */
+    class UploadSchema{}
+    /** @deprecated since 5.0.0 */
+    class UploadDatei{}
+    /** @deprecated since 5.0.0 */
+    class Upload{}
+    /** @deprecated since 5.0.0 */
+    class HerstellerHelper{}
+    /** @deprecated since 5.0.0 */
+    class UrlHelper{}
+    /** @deprecated since 5.0.0 */
+    class ArtikelHelper{}
+    /** @deprecated since 5.0.0 */
+    class KategorieHelper{}
+    /** @deprecated since 5.0.0 */
+    class BestellungHelper{}
+    /** @deprecated since 5.0.0 */
+    class WarenkorbHelper{}
+    /** @deprecated since 5.0.0 */
+    class VersandartHelper{}
+    /** @deprecated since 5.0.0 */
+    class PaymentMethod{}
+    /** @deprecated since 5.0.0 */
+    class ZahlungsartHelper{}
+    /** @deprecated since 5.0.0 */
+    class PHPSettingsHelper{}
+    /** @deprecated since 5.0.0 */
+    class WidgetBase{}
+    /** @deprecated since 5.0.0 */
+    class EventDispatcher{}
+    /** @deprecated since 5.0.0 */
+    class IPluginLizenz{}
+    /** @deprecated since 5.0.0 */
+    class AbstractPlugin{}
+    /** @deprecated since 5.0.0 */
+    class PluginLizenz{}
+    /** @deprecated since 5.0.0 */
+    class IPlugin{}
+    /** @deprecated since 5.0.0 */
+    class Plugin{}
+    /** @deprecated since 5.0.0 */
+    class PHPMailer{}
+    /** @deprecated since 5.0.0 */
+    class LinkHelper{}
+    /** @deprecated since 5.0.0 */
+    class AdminSession{}
+    /** @deprecated since 5.0.0 */
+    class Session{}
+    /** @deprecated since 5.0.0 */
+    class StringHandler{}
 }

@@ -40,6 +40,19 @@ class Category extends BaseCategory
     }
 
     /**
+     * @inheritdoc
+     */
+    public function setSeo(array $languages): FilterInterface
+    {
+        parent::setSeo($languages);
+        foreach ($this->slugs as $langID => $slug) {
+            $this->cSeo[$langID] = $slug;
+        }
+
+        return $this;
+    }
+
+    /**
      * @inheritDoc
      */
     public function setValue($value): FilterInterface
@@ -173,7 +186,6 @@ class Category extends BaseCategory
                 ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie')
                 ->setOrigin(__CLASS__));
         } else {
-            // @todo: this instead of $naviFilter->Kategorie?
             if (!$this->productFilter->hasCategory()) {
                 $sql->addJoin((new Join())
                     ->setComment('join3 from ' . __METHOD__)
@@ -231,7 +243,8 @@ class Category extends BaseCategory
 
             return $this->options;
         }
-        $categories         = $this->productFilter->getDB()->getObjects(
+        $db                 = $this->productFilter->getDB();
+        $categories         = $db->getObjects(
             'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
                 ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . " ) AS ssMerkmal
@@ -249,7 +262,13 @@ class Category extends BaseCategory
         foreach ($categories as $category) {
             $category->kKategorie = (int)$category->kKategorie;
             if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie($category->kKategorie, $langID, $customerGroupID));
+                $category->cName = $helper->getPath(new Kategorie(
+                    $category->kKategorie,
+                    $langID,
+                    $customerGroupID,
+                    false,
+                    $db
+                ));
             }
             $options[] = (new Option())
                 ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))

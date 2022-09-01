@@ -220,7 +220,7 @@
                     {/block}
 
                     {if !isset($smarty.session.cPlausi_arr)}
-                        {assign var=plausiArr value=array()}
+                        {assign var=plausiArr value=[]}
                     {else}
                         {assign var=plausiArr value=$smarty.session.cPlausi_arr}
                     {/if}

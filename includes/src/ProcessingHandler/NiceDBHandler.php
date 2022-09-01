@@ -31,6 +31,9 @@ class NiceDBHandler extends AbstractProcessingHandler
         $context = isset($record['context'][0]) && \is_numeric($record['context'][0])
             ? (int)$record['context'][0]
             : 0;
+        if (!$this->db->isConnected()) {
+            $this->db->reInit();
+        }
 
         $this->db->insert(
             'tjtllog',

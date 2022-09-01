@@ -22,6 +22,7 @@ use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -37,6 +38,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -160,10 +162,22 @@ abstract class AbstractController implements ControllerInterface
             $this->state->languageID = (int)$seo->kSprache;
             $this->state->itemID     = (int)$seo->kKey;
             $this->state->type       = $seo->cKey;
-            $mapping                 = $this->state->getMapping();
+            if ($seo->cKey === 'kLink') {
+                $this->state->productID      = 0;
+                $this->state->childProductID = 0;
+                $this->state->categoryID     = 0;
+                $this->state->newsItemID     = 0;
+                $this->state->newsCategoryID = 0;
+                $this->state->newsOverviewID = 0;
+            }
+            $mapping = $this->state->getMapping();
             if (isset($mapping[$seo->cKey])) {
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
+        }
+        if ($this->state->productID > 0 && Product::isVariChild($this->state->productID)) {
+            $this->state->childProductID = $this->state->productID;
+            $this->state->productID      = Product::getParent($this->state->productID);
         }
         $this->updateShopParams($slug);
 
@@ -173,7 +187,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @return State
      */
-    protected function updateProductFilter(): State
+    public function updateProductFilter(): State
     {
         Shop::getProductFilter()->initStates($this->state->getAsParams());
         \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
@@ -309,8 +323,9 @@ abstract class AbstractController implements ControllerInterface
         $debugbarRenderer         = $debugbar->getJavascriptRenderer();
         $pageType                 = Shop::getPageType();
         $link                     = $this->currentLink ?? new Link($this->db);
+        $categoryID               = Request::verifyGPCDataInt('kategorie');
         $this->currentCategory    = $this->currentCategory
-            ?? new Kategorie(Request::verifyGPCDataInt('kategorie'), $this->languageID, $this->customerGroupID);
+            ?? new Kategorie($categoryID, $this->languageID, $this->customerGroupID, false, $this->db);
         $this->expandedCategories->getOpenCategories($this->currentCategory, $this->customerGroupID, $this->languageID);
         // put availability on top
         $filters = $this->productFilter->getAvailableContentFilters();
@@ -326,8 +341,8 @@ abstract class AbstractController implements ControllerInterface
 
         $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
-        $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-        $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
+        $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -406,8 +421,6 @@ abstract class AbstractController implements ControllerInterface
         $visitorCount = $this->config['global']['global_zaehler_anzeigen'] === 'Y'
             ? $this->db->getSingleInt('SELECT nZaehler FROM tbesucherzaehler', 'nZaehler')
             : 0;
-        $debugbar->getTimer()->stopMeasure('init');
-
         $this->smarty->assign('bCookieErlaubt', isset($_COOKIE[Frontend::getSessionName()]))
             ->assign('Brotnavi', $this->getNavigation()->createNavigation())
             ->assign('nIsSSL', Request::checkSSL())
@@ -416,8 +429,9 @@ abstract class AbstractController implements ControllerInterface
             ->assign('consentItems', Shop::Container()->getConsentManager()->getActiveItems($this->languageID))
             ->assign('nZeitGebraucht', $nStartzeit === null ? 0 : (\microtime(true) - $nStartzeit))
             ->assign('Besucherzaehler', $visitorCount)
-            ->assign('alertList', $this->alertService)
-            ->assign('dbgBarHead', $debugbarRenderer->renderHead())
+            ->assign('alertList', $this->alertService);
+        $debugbar->getTimer()->stopMeasure('init');
+        $this->smarty->assign('dbgBarHead', $debugbarRenderer->renderHead())
             ->assign('dbgBarBody', $debugbarRenderer->render());
     }
 
@@ -575,5 +589,12 @@ abstract class AbstractController implements ControllerInterface
         }
 
         return $default;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
     }
 }

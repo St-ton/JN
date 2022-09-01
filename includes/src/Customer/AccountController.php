@@ -259,7 +259,7 @@ class AccountController
                       ON tbewertung.kBewertung = tbewertungguthabenbonus.kBewertung
                   WHERE tbewertung.kKunde = :customer',
                 ['customer' => $customerID]
-            )->each(static function ($item) use ($currency) {
+            )->each(static function ($item) use ($currency): void {
                 $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
@@ -444,7 +444,7 @@ class AccountController
     private function checkCoupons(array $coupons): void
     {
         foreach ($coupons as $coupon) {
-            if (empty($coupon)) {
+            if (!\method_exists($coupon, 'check')) {
                 continue;
             }
             $error      = $coupon->check();
@@ -677,6 +677,7 @@ class AccountController
                     $customerGroupID,
                     $languageID
                 );
+                $tmpProduct->isKonfigItem = ($item->kKonfigitem > 0);
                 if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
@@ -692,6 +693,21 @@ class AccountController
                         null,
                         true,
                         $item->cResponsibility
+                    );
+                } elseif ($item->kKonfigitem > 0 && $item->kArtikel === 0) {
+                    $configItem = new Item($item->kKonfigitem);
+                    $cart->erstelleSpezialPos(
+                        $configItem->getName(),
+                        $item->fAnzahl,
+                        $configItem->getPreis(),
+                        $configItem->getSteuerklasse(),
+                        \C_WARENKORBPOS_TYP_ARTIKEL,
+                        false,
+                        !Frontend::getCustomerGroup()->isMerchant(),
+                        '',
+                        $item->cUnique,
+                        $configItem->getKonfigitem(),
+                        $configItem->getArtikelKey()
                     );
                 } else {
                     Shop::Container()->getAlertService()->addWarning(

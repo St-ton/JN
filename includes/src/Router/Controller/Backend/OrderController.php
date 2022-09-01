@@ -61,7 +61,7 @@ class OrderController extends AbstractBackendController
      * @return array
      * @former gibBestellungsUebersicht()
      */
-    private function getOrders(string $limitSQL, string $query): array
+    public function getOrders(string $limitSQL, string $query): array
     {
         $orders       = [];
         $prep         = [];
@@ -126,7 +126,7 @@ class OrderController extends AbstractBackendController
                 FROM tbestellung
                 WHERE kBestellung IN (' . $orderList . ")
                     AND cAbgeholt = 'Y'"
-        )->pluck('kKunde')->map(static function ($item) {
+        )->pluck('kKunde')->map(static function ($item): int {
             return (int)$item;
         })->unique()->toArray();
         if (\count($customers) > 0) {

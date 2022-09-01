@@ -401,7 +401,7 @@ class Text
     {
         $convert = false;
         if (!self::is_utf8($data)) {
-            //with non-utf8 input this function would return an empty string
+            // with non-utf8 input this function would return an empty string
             $convert = true;
             $data    = self::convertUTF8($data);
         }
@@ -568,7 +568,7 @@ class Text
     public static function parseSSKint($ssk): array
     {
         return \is_string($ssk)
-            ? \array_map(static function ($e) {
+            ? \array_map(static function ($e): int {
                 return (int)\trim($e);
             }, \array_filter(\explode(';', $ssk), static function ($e): bool {
                 return $e !== '' && $e !== null;

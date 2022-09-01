@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="1" class="hidden-soft">
                                         <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
@@ -159,7 +159,6 @@
                 <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_loeschen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
                     <div>
                         <div class="subheading1">{__('newsOverview')}</div>
@@ -191,7 +190,7 @@
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
                                             <td class="TD4">
                                                 {foreach $oNews->getCustomerGroups() as $customerGroupID}
-                                                    {if $customerGroupID === -1}{__('all')}{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
+                                                    {if $customerGroupID === -1}{__('all')}{else}{\JTL\Customer\CustomerGroup::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
                                             <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>
@@ -241,7 +240,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -253,11 +251,11 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <input name="news_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                                    <button name="news_erstellen" type="submit" value="1" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
                                 </div>
                             </div>
                         </div>
@@ -274,7 +272,6 @@
                 <form name="news" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
-                    <input type="hidden" name="news_kategorie_loeschen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
                     <div>
                         <div class="subheading1">{__('newsCatOverview')}</div>
@@ -292,27 +289,27 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {if $oNewsKategorie_arr|count}
-                                    {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                        <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
+                                {if $newsCategories|count > 0}
+                                    {foreach $newsCategories as $category}
+                                        <tr scope="row" class="tab_bg{$category@iteration % 2}{if $category->getLevel() > 1} hidden-soft{/if}" data-level="{$category->getLevel()}">
                                             <th class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
-                                                    <label class="custom-control-label" for="newscat-{$oNewsKategorie->getID()}"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$category->getName()}" value="{$category->getID()}" id="newscat-{$category->getID()}" />
+                                                    <label class="custom-control-label" for="newscat-{$category->getID()}"></label>
                                                 </div>
                                             </th>
-                                            <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                                <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
-                                                <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
+                                            <td class="TD2{if $category->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
+                                                <i class="fa fa-caret-right nav-toggle{if $category->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
+                                                <label for="newscat-{$category->getID()}">{$category->getName()|default:'???'}</label>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getSort()}</td>
+                                            <td class="text-center">{$category->getSort()}</td>
                                             <td class="text-center">
-                                                <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                                <i class="fal fa-{if $category->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
-                                            <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
+                                            <td class="text-center">{$category->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                    <a href="{$adminURL}{$route}?news=1&newskategorie_editieren=1&kNewsKategorie={$category->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
                                                        title="{__('modify')}"
                                                        data-toggle="tooltip">
@@ -324,7 +321,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
+                                        {include 'tpl_inc/newscategories_recursive.tpl' children=$category->getChildren() level=$category->getLevel()}
                                     {/foreach}
                                 {else}
                                     <tr>
@@ -337,7 +334,6 @@
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
-                        <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien' isBottom=true}
                         <div class="card-footer save-wrapper">
@@ -349,13 +345,13 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
+                                    <input name="news_kategorie_loeschen" type="submit" data-id="loeschen" value="1" class="hidden-soft">
+                                    <button name="news_kategorie_loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary btn-block">
+                                    <button name="news_kategorie_erstellen" type="submit" value="1" class="btn btn-primary btn-block">
                                         <i class="fa fa-share"></i> {__('newsCatCreate')}
                                     </button>
                                 </div>

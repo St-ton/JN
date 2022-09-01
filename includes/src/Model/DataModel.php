@@ -854,7 +854,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         if ($iterated) {
             foreach ($this as $member => $value) {
                 if (\is_a($value, Collection::class)) {
-                    $value = $value->map(static function (DataModelInterface $e) {
+                    $value = $value->map(static function (DataModelInterface $e): array {
                         return $e->rawArray(true);
                     })->toArray();
                 } elseif ($value instanceof DataModelInterface) {
@@ -943,7 +943,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (!\is_a($childModel, Collection::class)) {
                 continue;
             }
-            $childModel->each(function (DataModelInterface $model) {
+            $childModel->each(function (DataModelInterface $model): void {
                 $class = \get_class($model);
                 foreach ($this->getKeyUpdates($class) as $k => $v) {
                     $model->$k = $v;
@@ -982,7 +982,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         foreach ($this->getChildModels() as $childModel) {
             if (\is_a($childModel, Collection::class)) {
-                $childModel->each(function (DataModelInterface $model) {
+                $childModel->each(function (DataModelInterface $model): void {
                     $model->setDB($this->db);
                     $model->delete();
                 });

@@ -558,6 +558,7 @@ class ProductFilter
         $this->searchSpecial = new BaseSearchSpecial($this);
 
         $this->filters              = [];
+        $this->activeFilters        = [];
         $this->characteristicFilter = [];
         $this->searchFilter         = [];
 
@@ -600,9 +601,12 @@ class ProductFilter
      * @param array $params
      * @param bool  $validate
      * @return $this
+     * @todo: check for multiple calls
      */
     public function initStates(array $params, bool $validate = true): self
     {
+        $this->activeFilters = [];
+
         $params = \array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
             $this->baseState = $this->category->init($params['kKategorie']);
@@ -1846,18 +1850,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['mf'])) {
             if (\is_string($_GET['mf'])) {
-                $filter[] = $_GET['mf'];
+                $filter[] = (int)$_GET['mf'];
             } else {
-                foreach ($_GET['mf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['mf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['mf'])) {
             if (\is_string($_POST['mf'])) {
-                $filter[] = $_POST['mf'];
+                $filter[] = (int)$_POST['mf'];
             } else {
-                foreach ($_POST['mf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['mf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_SERVER['REQUEST_METHOD'])) {
@@ -1894,18 +1898,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['sf'])) {
             if (\is_string($_GET['sf'])) {
-                $filter[] = $_GET['sf'];
+                $filter[] = (int)$_GET['sf'];
             } else {
-                foreach ($_GET['sf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['sf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['sf'])) {
             if (\is_string($_POST['sf'])) {
-                $filter[] = $_POST['sf'];
+                $filter[] = (int)$_POST['sf'];
             } else {
-                foreach ($_POST['sf'] as $mf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['sf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } else {
@@ -1936,18 +1940,18 @@ class ProductFilter
             }
         } elseif (isset($_GET['kf'])) {
             if (\is_string($_GET['kf'])) {
-                $filter[] = $_GET['kf'];
+                $filter[] = (int)$_GET['kf'];
             } else {
-                foreach ($_GET['kf'] as $cf => $value) {
-                    $filter[] = $value;
+                foreach ($_GET['kf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } elseif (isset($_POST['kf'])) {
             if (\is_string($_POST['kf'])) {
-                $filter[] = $_POST['kf'];
+                $filter[] = (int)$_POST['kf'];
             } else {
-                foreach ($_POST['kf'] as $cf => $value) {
-                    $filter[] = $value;
+                foreach ($_POST['kf'] as $value) {
+                    $filter[] = (int)$value;
                 }
             }
         } else {

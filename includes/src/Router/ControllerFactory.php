@@ -84,12 +84,12 @@ class ControllerFactory
             }
             if ($parentID > 0) {
                 $code = \is_array($_POST) && \count($_POST) > 0 ? 308 : 301;
-                $path = Shop::getRouter()->getPathByType(
+                $url  = Shop::getRouter()->getURLByType(
                     Router::TYPE_PRODUCT,
                     ['id' => $parentID, 'lang' => Text::convertISO2ISO639(Shop::getLanguageCode())]
                 );
                 \http_response_code($code);
-                \header('Location: ' . Shop::getURL() . $path);
+                \header('Location: ' . $url);
                 exit();
             }
             $controller      = $this->createController(ProductController::class);
@@ -132,7 +132,7 @@ class ControllerFactory
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(SearchController::class);
         } elseif (!$state->linkID) {
-            //check path
+            // check path
             $shopPath    = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
             $path        = \str_replace($shopPath, '', $request->getUri()->getPath());
             $requestFile = '/' . \ltrim($path, '/');
@@ -146,6 +146,7 @@ class ControllerFactory
                 $state->pageType = \PAGE_STARTSEITE;
                 $state->linkType = \LINKTYP_STARTSEITE;
                 $state->linkID   = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE) ?: 0;
+                $controller      = $this->createController(PageController::class);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } elseif ($fileName !== '') {

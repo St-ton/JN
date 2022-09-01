@@ -13,12 +13,12 @@ class Vendor
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
      */
-    private $href;
+    private string $href;
 
     /**
      * Vendor constructor.

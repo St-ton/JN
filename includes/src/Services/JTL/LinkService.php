@@ -315,7 +315,7 @@ final class LinkService implements LinkServiceInterface
             return new Collection();
         }
 
-        return $lg->getLinks()->groupBy(static function (LinkInterface $link) {
+        return $lg->getLinks()->groupBy(static function (LinkInterface $link): int {
             return $link->getLinkType();
         })->map(static function (Collection $group) {
             return $group->first();
@@ -453,7 +453,7 @@ final class LinkService implements LinkServiceInterface
                             $parent = $this->getRootLink($linkID);
                             $linkGroup->getLinks()->filter(static function (LinkInterface $l) use ($parent): bool {
                                 return $l->getID() === $parent;
-                            })->map(static function (LinkInterface $l) {
+                            })->map(static function (LinkInterface $l): LinkInterface {
                                 $l->setIsActive(true);
 
                                 return $l;

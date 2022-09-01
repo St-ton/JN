@@ -51,23 +51,79 @@ use function Functional\select;
  */
 class PluginManagerController extends AbstractBackendController
 {
+    /**
+     * @var LegacyPluginValidator
+     */
     private LegacyPluginValidator $legacyValidator;
+
+    /**
+     * @var PluginValidator
+     */
     private PluginValidator $validator;
+
+    /**
+     * @var StateChanger
+     */
     private StateChanger $stateChanger;
+
+    /**
+     * @var Uninstaller
+     */
     private Uninstaller $uninstaller;
+
+    /**
+     * @var Installer
+     */
     private Installer $installer;
+
+    /**
+     * @var MinifyService
+     */
     private MinifyService $minify;
 
+    /**
+     * @var Collection
+     */
     private Collection $pluginsInstalled;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsProblematic;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsAvailable;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsDisabled;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsErroneous;
+
+    /**
+     * @var Collection
+     */
     private Collection $pluginsAll;
 
+    /**
+     * @var string
+     */
     private string $errorMessage = '';
-    private string $notice       = '';
 
+    /**
+     * @var string
+     */
+    private string $notice = '';
+
+    /**
+     * @var bool
+     */
     private bool $reload = false;
 
     /**
@@ -87,9 +143,10 @@ class PluginManagerController extends AbstractBackendController
         $this->step     = 'pluginverwaltung_uebersicht';
 
         $parser                = new XMLParser();
+        $extractor             = new Extractor($parser);
+        $this->minify          = new MinifyService();
         $this->legacyValidator = new LegacyPluginValidator($this->db, $parser);
         $this->validator       = new PluginValidator($this->db, $parser);
-        $extractor             = new Extractor($parser);
         $this->stateChanger    = new StateChanger($this->db, $this->cache, $this->legacyValidator, $this->validator);
         $this->uninstaller     = new Uninstaller($this->db, $this->cache);
         $this->installer       = new Installer(
@@ -99,7 +156,6 @@ class PluginManagerController extends AbstractBackendController
             $this->validator,
             $this->cache
         );
-        $this->minify          = new MinifyService();
 
         if (isset($_SESSION['plugin_msg'])) {
             $this->notice = $_SESSION['plugin_msg'];
@@ -161,7 +217,7 @@ class PluginManagerController extends AbstractBackendController
         $licenses                 = $mapper->getCollection();
         $listing                  = new Listing($this->db, $this->cache, $this->legacyValidator, $this->validator);
         $this->pluginsAll         = $listing->getAll();
-        $this->pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses) {
+        $this->pluginsDisabled    = $listing->getDisabled()->each(function (ListingItem $item) use ($licenses): void {
             $exsID = $item->getExsID();
             if ($exsID === null) {
                 return;
@@ -181,7 +237,7 @@ class PluginManagerController extends AbstractBackendController
         });
         $this->pluginsProblematic = $listing->getProblematic();
         $this->pluginsInstalled   = $listing->getEnabled();
-        $this->pluginsAvailable   = $listing->getAvailable()->each(function (ListingItem $item) use ($licenses) {
+        $this->pluginsAvailable   = $listing->getAvailable()->each(function (ListingItem $item) use ($licenses): void {
             $exsID = $item->getExsID();
             if ($exsID === null) {
                 return;
@@ -248,17 +304,15 @@ class PluginManagerController extends AbstractBackendController
 
     private function actionOverview(): void
     {
-        // Eine Aktion wurde von der Uebersicht aus gestartet
-        if (Request::postInt('lizenzkey') > 0) { // Lizenzkey eingeben
-            $pluginID = Request::postInt('lizenzkey');
-            $this->enterKeyStep($pluginID);
+        if (Request::postInt('lizenzkey') > 0) {
+            $this->enterKeyStep(Request::postInt('lizenzkey'));
         } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
             $this->enterKey(Request::postInt('kPlugin'));
         } elseif (\is_array($_POST['kPlugin'] ?? null) && \count($_POST['kPlugin']) > 0) {
             $this->massAction();
         } elseif (Request::verifyGPCDataInt('updaten') === 1) {
             $this->update();
-        } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) { // Sprachvariablen editieren
+        } elseif (Request::verifyGPCDataInt('sprachvariablen') === 1) {
             $this->step = 'pluginverwaltung_sprachvariablen';
         } elseif (isset($_POST['installieren'])) {
             $this->install();
@@ -269,29 +323,32 @@ class PluginManagerController extends AbstractBackendController
         }
     }
 
+    /**
+     * @return void
+     * @throws \JsonException
+     */
     private function addMarkdown(): void
     {
         if ($this->step !== 'pluginverwaltung_uebersicht') {
             return;
         }
+        $licenseFiles = [];
+        $files        = [
+            'license.md',
+            'License.md',
+            'LICENSE.md'
+        ];
         foreach ($this->pluginsAvailable as $available) {
             /** @var ListingItem $available */
             $baseDir = $available->getPath();
-            $files   = [
-                'license.md',
-                'License.md',
-                'LICENSE.md'
-            ];
             foreach ($files as $file) {
                 if (\file_exists($baseDir . $file)) {
-                    $vLicenseFiles[$available->getDir()] = $baseDir . $file;
+                    $licenseFiles[$available->getDir()] = $baseDir . $file;
                     break;
                 }
             }
         }
-        if (!empty($vLicenseFiles)) {
-            $this->smarty->assign('szLicenses', \json_encode($vLicenseFiles));
-        }
+        $this->smarty->assign('licenseFiles', \json_encode($licenseFiles, \JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -308,7 +365,7 @@ class PluginManagerController extends AbstractBackendController
             'kPluginSprachvariable',
             $varID
         );
-        if (isset($langVar->kPluginSprachvariable) && $langVar->kPluginSprachvariable > 0) {
+        if ($langVar !== null && $langVar->kPluginSprachvariable > 0) {
             $affected = $this->db->delete(
                 'tpluginsprachvariablecustomsprache',
                 ['kPlugin', 'cSprachvariable'],
@@ -337,7 +394,7 @@ class PluginManagerController extends AbstractBackendController
                 WHERE tpluginsprachvariable.kPlugin = :pid',
             ['pid' => $pluginID]
         );
-        $original = group($original, static function ($e) {
+        $original = group($original, static function (stdClass $e): int {
             return (int)$e->kPluginSprachvariable;
         });
         foreach (Shop::Lang()->gibInstallierteSprachen() as $lang) {
@@ -393,11 +450,10 @@ class PluginManagerController extends AbstractBackendController
      */
     private function enterKey(int $pluginID): void
     {
-        // Lizenzkey eingeben
         $this->step = 'pluginverwaltung_lizenzkey';
         $data       = $this->db->select('tplugin', 'kPlugin', $pluginID);
         $plugin     = null;
-        if (isset($data->kPlugin) && $data->kPlugin > 0) {
+        if ($data !== null && $data->kPlugin > 0) {
             $loader = Helper::getLoader((int)$data->bExtension === 1, $this->db, $this->cache);
             $plugin = $loader->init($pluginID, true);
             require_once $plugin->getPaths()->getLicencePath() . $plugin->getLicense()->getClassName();
@@ -476,9 +532,7 @@ class PluginManagerController extends AbstractBackendController
     {
         $dirs    = Request::postVar('cVerzeichnis', []);
         $res     = \count($dirs) > 0;
-        $manager = new MountManager([
-            'plgn' => Shop::Container()->get(Filesystem::class)
-        ]);
+        $manager = new MountManager(['plgn' => Shop::Container()->get(Filesystem::class)]);
         foreach ($dirs as $dir) {
             $dir  = \basename($dir);
             $test = $_POST['ext'][$dir] ?? -1;
@@ -494,11 +548,9 @@ class PluginManagerController extends AbstractBackendController
                 $res = false;
             }
         }
-        if ($res === true) {
-            $_SESSION['plugin_msg'] = \__('successPluginDelete');
-        } else {
-            $_SESSION['plugin_msg'] = \__('errorPluginDeleteAtLeastOne');
-        }
+        $_SESSION['plugin_msg'] = $res === true
+            ? \__('successPluginDelete')
+            : \__('errorPluginDeleteAtLeastOne');
     }
 
     private function install(): void
@@ -518,7 +570,7 @@ class PluginManagerController extends AbstractBackendController
                 $this->notice = \__('successPluginInstall');
                 $this->reload = true;
                 $this->minify->flushCache();
-            } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
+            } elseif ($res > InstallCode::OK) {
                 $mapper             = new ValidationMapper();
                 $this->errorMessage = \sprintf(
                     \__('Error during the installation. Error code %d - %s'),
@@ -531,10 +583,9 @@ class PluginManagerController extends AbstractBackendController
 
     private function massAction(): void
     {
-        $pluginIDs   = \array_map('\intval', $_POST['kPlugin'] ?? []);
         $deleteData  = Request::postInt('delete-data', 1) === 1;
         $deleteFiles = Request::postInt('delete-files', 1) === 1;
-        foreach ($pluginIDs as $pluginID) {
+        foreach (\array_map('\intval', $_POST['kPlugin'] ?? []) as $pluginID) {
             if (isset($_POST['aktivieren'])) {
                 if (\SAFE_MODE) {
                     $this->errorMessage = \__('Safe mode enabled.') . ' - ' . \__('activate');

@@ -202,7 +202,7 @@ class Revision
      */
     public function getRevisions(string $type, int $primary): array
     {
-        return \array_map(static function ($e) {
+        return \array_map(static function (stdClass $e): stdClass {
             $e->content = \json_decode($e->content);
 
             return $e;

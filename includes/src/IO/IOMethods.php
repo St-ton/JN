@@ -317,7 +317,7 @@ class IOMethods
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'vergleichsliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('vergleichsliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('compare')
             ]);
@@ -328,10 +328,7 @@ class IOMethods
             ->fetch('snippets/alert_list.tpl');
 
         $response->cNotification = $smarty
-            ->assign(
-                'type',
-                $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info'
-            )
+            ->assign('type', $alerts->alertTypeExists(Alert::TYPE_ERROR) ? 'danger' : 'info')
             ->assign('body', $content)
             ->assign('buttons', $buttons)
             ->fetch('snippets/notification.tpl');
@@ -387,10 +384,10 @@ class IOMethods
      * @param JTLSmarty $smarty
      * @return array
      */
-    private function forceRenderBoxes(int $type, array $conf, $smarty): array
+    private function forceRenderBoxes(int $type, array $conf, JTLSmarty $smarty): array
     {
-        $res     = [];
-        $boxData = $this->db->getObjects(
+        $res      = [];
+        $boxData  = $this->db->getObjects(
             'SELECT *, 0 AS nSort, \'\' AS pageIDs, \'\' AS pageVisibilities,
                        GROUP_CONCAT(tboxensichtbar.nSort) AS sortBypageIDs,
                        GROUP_CONCAT(tboxensichtbar.kSeite) AS pageIDs,
@@ -404,13 +401,14 @@ class IOMethods
                 GROUP BY tboxen.kBox',
             ['type' => $type]
         );
-        $factory = new Factory($conf);
+        $factory  = new Factory($conf);
+        $renderer = new DefaultRenderer($smarty);
         foreach ($boxData as $item) {
             $box = $factory->getBoxByBaseType($type);
             $box->map([$item]);
             $box->setFilter([]);
             $box->setShow(true);
-            $renderer           = new DefaultRenderer($smarty, $box);
+            $renderer->setBox($box);
             $res[$box->getID()] = $renderer->render();
         }
 
@@ -434,10 +432,10 @@ class IOMethods
         $smarty     = Shop::Smarty();
         if (Frontend::getCustomer()->getID() === 0) {
             $response->nType     = 1;
-            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
-                '?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_LOGIN_WUNSCHLISTE;
+            $response->cLocation = Shop::Container()->getLinkService()->getStaticRoute('jtl.php')
+                . '?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_LOGIN_WUNSCHLISTE;
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -447,9 +445,9 @@ class IOMethods
             // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde,
             // muss zum Artikel weitergeleitet werden um Variationen zu wählen
             $response->nType     = 1;
-            $response->cLocation = (Shop::getURL() . '/?a=' . $productID .
-                '&n=' . $qty .
-                '&r=' . \R_VARWAEHLEN);
+            $response->cLocation = (Shop::getURL() . '/?a=' . $productID
+                . '&n=' . $qty
+                . '&r=' . \R_VARWAEHLEN);
             $ioResponse->assignVar('response', $response);
 
             return $ioResponse;
@@ -470,19 +468,17 @@ class IOMethods
         $response->nCount    = \count(Frontend::getWishList()->getItems());
         $response->productID = $productID;
         $response->cTitle    = Shop::Lang()->get('goToWishlist');
-        $buttons             = [
-            (object)[
-                'href'    => '#',
-                'fa'      => 'fa fa-arrow-circle-right',
-                'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
-                'primary' => true,
-                'dismiss' => 'modal'
-            ]
-        ];
+        $buttons             = [(object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]];
 
         if ($response->nCount > 1) {
             \array_unshift($buttons, (object)[
-                'href'  => 'wunschliste.php',
+                'href'  => Shop::Container()->getLinkService()->getStaticRoute('wunschliste.php'),
                 'fa'    => 'fa-tasks',
                 'title' => Shop::Lang()->get('goToWishlist')
             ]);
@@ -586,7 +582,7 @@ class IOMethods
                 $qty             = $cart->gibAnzahlPositionenExt([\C_WARENKORBPOS_TYP_ARTIKEL]);
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
-                $error           = $smarty->getTemplateVars('fehler');
+                $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
@@ -711,49 +707,44 @@ class IOMethods
                 }
                 $configItems[] = $configItem;
                 // Alle Artikel können in den WK gelegt werden?
-                if ($configItem->getPosTyp() === \KONFIG_ITEM_TYP_ARTIKEL) {
-                    // Varikombi
-                    /** @var Artikel $tmpProduct */
-                    $configItem->oEigenschaftwerte_arr = [];
-                    $tmpProduct                        = $configItem->getArtikel();
-
-                    if ($tmpProduct !== null
-                        && $tmpProduct->kVaterArtikel > 0
-                        && isset($tmpProduct->kEigenschaftKombi)
-                        && $tmpProduct->kEigenschaftKombi > 0
-                    ) {
-                        $configItem->oEigenschaftwerte_arr =
-                            Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
-                    }
-                    if ($tmpProduct->cTeilbar !== 'Y' && (int)$count != $count) {
-                        $count = (int)$count;
-                    }
-                    $tmpProduct->isKonfigItem = true;
-                    $redirectParam            = CartHelper::addToCartCheck(
-                        $tmpProduct,
+                if ($configItem->getPosTyp() !== \KONFIG_ITEM_TYP_ARTIKEL) {
+                    continue;
+                }
+                // Varikombi
+                $configItem->oEigenschaftwerte_arr = [];
+                /** @var Artikel $tmpProduct */
+                $tmpProduct = $configItem->getArtikel();
+                if ($tmpProduct !== null
+                    && $tmpProduct->kVaterArtikel > 0
+                    && isset($tmpProduct->kEigenschaftKombi)
+                    && $tmpProduct->kEigenschaftKombi > 0
+                ) {
+                    $configItem->oEigenschaftwerte_arr =
+                        Product::getVarCombiAttributeValues($tmpProduct->kArtikel, false);
+                }
+                $tmpProduct->isKonfigItem = true;
+                $redirectParam            = CartHelper::addToCartCheck(
+                    $tmpProduct,
+                    $configItem->fAnzahlWK,
+                    $configItem->oEigenschaftwerte_arr
+                );
+                if (\count($redirectParam) > 0) {
+                    $productMessages = Product::getProductMessages(
+                        $redirectParam,
+                        true,
+                        $configItem->getArtikel(),
                         $configItem->fAnzahlWK,
-                        $configItem->oEigenschaftwerte_arr
+                        $configItem->getKonfigitem()
                     );
-                    if (\count($redirectParam) > 0) {
-                        $valid           = false;
-                        $productMessages = Product::getProductMessages(
-                            $redirectParam,
-                            true,
-                            $configItem->getArtikel(),
-                            $configItem->fAnzahlWK,
-                            $configItem->getKonfigitem()
-                        );
 
-                        $itemErrors[$configItem->getKonfigitem()] = (object)[
-                            'message' => $productMessages[0],
-                            'group'   => $configItem->getKonfiggruppe()
-                        ];
-                        $invalidGroups[]                          = $configItem->getKonfiggruppe();
-                    }
+                    $itemErrors[$configItem->getKonfigitem()] = (object)[
+                        'message' => $productMessages[0],
+                        'group'   => $configItem->getKonfiggruppe()
+                    ];
+                    $invalidGroups[]                          = $configItem->getKonfiggruppe();
                 }
             }
         }
-
         $errors                     = Configurator::validateCart($productID, $configItems ?? []);
         $config->invalidGroups      = \array_values(\array_unique(\array_merge(
             $invalidGroups,
@@ -771,11 +762,7 @@ class IOMethods
             $cartHelperErrors,
             true
         );
-        $config->inStock            = !\in_array(
-            \R_LAGER,
-            $cartHelperErrors,
-            true
-        );
+        $config->inStock            = !\in_array(\R_LAGER, $cartHelperErrors, true);
         $smarty->assign('oKonfig', $config)
             ->assign('NettoPreise', $net)
             ->assign('Artikel', $product);
@@ -802,38 +789,39 @@ class IOMethods
         if ($selectedVariationValues !== null) {
             $products = $this->getArticleByVariations($productID, $selectedVariationValues);
             if (\count($products) === 1) {
-                $productID = $products[0]->kArtikel;
+                $productID = (int)$products[0]->kArtikel;
             } else {
                 return $result;
             }
         }
 
-        if ($productID > 0) {
-            $product                            = new Artikel($this->db);
-            $options                            = Artikel::getDefaultOptions();
-            $options->nKeinLagerbestandBeachten = 1;
-
-            $product->fuelleArtikel(
-                $productID,
-                $options,
-                CustomerGroup::getCurrent(),
-                Shop::getLanguageID()
-            );
-
-            $stockInfo = $product->getStockInfo();
-
-            if ($stockInfo->notExists || !$stockInfo->inStock) {
-                $result->stock = false;
-                $result->text  = $stockInfo->notExists
-                    ? Shop::Lang()->get('notAvailableInSelection')
-                    : Shop::Lang()->get('ampelRot');
-            } else {
-                $result->stock = true;
-                $result->text  = '';
-            }
-
-            $result->status = $product->Lageranzeige->nStatus;
+        if ($productID <= 0) {
+            return $result;
         }
+        $product                            = new Artikel($this->db);
+        $options                            = Artikel::getDefaultOptions();
+        $options->nKeinLagerbestandBeachten = 1;
+
+        $product->fuelleArtikel(
+            $productID,
+            $options,
+            CustomerGroup::getCurrent(),
+            Shop::getLanguageID()
+        );
+
+        $stockInfo = $product->getStockInfo();
+
+        if ($stockInfo->notExists || !$stockInfo->inStock) {
+            $result->stock = false;
+            $result->text  = $stockInfo->notExists
+                ? Shop::Lang()->get('notAvailableInSelection')
+                : Shop::Lang()->get('ampelRot');
+        } else {
+            $result->stock = true;
+            $result->text  = '';
+        }
+
+        $result->status = $product->Lageranzeige->nStatus;
 
         return $result;
     }
@@ -1076,7 +1064,22 @@ class IOMethods
                         'value' => $cValue
                     ];
                 }
-                if ($layout === 'gallery') {
+                $childHasOPCContent = $this->db->getSingleInt(
+                    "SELECT COUNT(kPage) AS count
+                    FROM topcpage
+                    WHERE cPageId LIKE '%\"type\":\"product\"%'
+                        AND (
+                            cPageId LIKE CONCAT('%\"id\":', :id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :last_id,'%')
+                            OR cPageId LIKE CONCAT('%\"id\":', :father_id,'%'))",
+                    'count',
+                    [
+                        'id' => (int)$tmpProduct->kArtikel,
+                        'last_id' => $childProductID,
+                        'father_id' => $parentProductID
+                    ]
+                ) > 0;
+                if ($layout === 'gallery' || $childHasOPCContent) {
                     $ioResponse->callEvoProductFunction(
                         'redirectToArticle',
                         $parentProductID,
@@ -1197,6 +1200,8 @@ class IOMethods
         $combinations   = [];
         $i              = 0;
         foreach ($selectedVariationValues as $id => $value) {
+            $id    = (int)$id;
+            $value = (int)$value;
             if ($i++ === 0) {
                 $variationID    = $id;
                 $variationValue = $value;
@@ -1260,10 +1265,10 @@ class IOMethods
         }
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryID);
+        $category   = new Kategorie($categoryID, 0, 0, false, $this->db);
         $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         if ($auto && \count($categories) === 0) {
-            $category   = new Kategorie($category->getParentID());
+            $category   = new Kategorie($category->getParentID(), 0, 0, false, $this->db);
             $categories = $list->getChildCategories($category->getParentID(), 0, 0);
         }
 
@@ -1304,15 +1309,16 @@ class IOMethods
     public function checkDeliveryCountry(string $country): IOResponse
     {
         $response = new IOResponse();
-        if (\mb_strlen($country) === 2) {
-            $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
-                Frontend::getCustomerGroup()->getID(),
-                false,
-                false,
-                [$country]
-            );
-            $response->assignVar('response', \count($deliveryCountries) === 1);
+        if (\mb_strlen($country) !== 2) {
+            return $response;
         }
+        $deliveryCountries = ShippingMethod::getPossibleShippingCountries(
+            Frontend::getCustomerGroup()->getID(),
+            false,
+            false,
+            [$country]
+        );
+        $response->assignVar('response', \count($deliveryCountries) === 1);
 
         return $response;
     }
@@ -1364,11 +1370,9 @@ class IOMethods
             $languages[$i] = (object)$lang;
         }
         $opcPageService   = Shop::Container()->getOPCPageService();
-        $smarty           = Shop::Smarty();
         $response         = new IOResponse();
-        $publicDraft      = $opcPageService->getPublicPage($curPageID);
-        $publicDraftkey   = $publicDraft === null ? 0 : $publicDraft->getKey();
-        $newDraftListHtml = $smarty
+        $publicDraftkey   = $opcPageService->getPublicPage($curPageID)?->getKey() ?? 0;
+        $newDraftListHtml = Shop::Smarty()
             ->assign('pageDrafts', $opcPageService->getDrafts($curPageID))
             ->assign('ShopURL', Shop::getURL())
             ->assign('adminSessionToken', $adminSessionToken)

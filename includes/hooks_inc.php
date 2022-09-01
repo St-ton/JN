@@ -823,6 +823,7 @@ const HOOK_EIGENSCHAFTWERT_CLASS_LOADFROMDB = 117;
  *
  * @file Firma.php
  * @param JTL\Firma instance - since 5.0.0
+ * @param bool cached - since 5.2.0
  */
 const HOOK_FIRMA_CLASS_LOADFROMDB = 118;
 

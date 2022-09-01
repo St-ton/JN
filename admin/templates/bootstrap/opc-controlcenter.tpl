@@ -108,20 +108,20 @@
                                                                 <span class="text-danger">{__('unpublished')}</span>
                                                             {elseif $publicPageRow !== null && $publicPageRow->kPage == $draft->getKey()}
                                                                 <span class="text-success">
-                                                                    {$draft->getPublishFrom()|date_format:'%c'}
+                                                                    {$draft->getPublishFrom()|date_format:'r'}
                                                                 </span>
                                                             {else}
-                                                                {$draft->getPublishFrom()|date_format:'%c'}
+                                                                {$draft->getPublishFrom()|date_format:'r'}
                                                             {/if}
                                                         </td>
                                                         <td>
                                                             {if empty($draft->getPublishTo())}
                                                                 {__('tillUnknown')}
                                                             {else}
-                                                                {$draft->getPublishTo()|date_format:'%c'}
+                                                                {$draft->getPublishTo()|date_format:'r'}
                                                             {/if}
                                                         </td>
-                                                        <td>{$draft->getLastModified()|date_format:'%c'}</td>
+                                                        <td>{$draft->getLastModified()|date_format:'r'}</td>
                                                         <td>
                                                             {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                         </td>

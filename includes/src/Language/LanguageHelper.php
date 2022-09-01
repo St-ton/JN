@@ -328,11 +328,11 @@ class LanguageHelper
             return true;
         });
         /** @var Collection $data */
-        $this->availableLanguages = $data->map(static function (stdClass $e) {
+        $this->availableLanguages = $data->map(static function (stdClass $e): stdClass {
             return (object)['kSprache' => (int)$e->kSprache];
         })->toArray();
 
-        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e) {
+        $this->byISO = $data->groupBy('cISO')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)[
@@ -342,7 +342,7 @@ class LanguageHelper
             ];
         })->toArray();
 
-        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e) {
+        $this->byLangID = $data->groupBy('kSprache')->transform(static function (Collection $e): stdClass {
             $e = $e->first();
 
             return (object)['cISO' => $e->cISO];
@@ -991,10 +991,10 @@ class LanguageHelper
         }
 
         return match ($returnType) {
-            2 => reindex($languages, static function (LanguageModel $e) {
+            2 => reindex($languages, static function (LanguageModel $e): string {
                 return $e->getCode();
             }),
-            1 => reindex($languages, static function (LanguageModel $e) {
+            1 => reindex($languages, static function (LanguageModel $e): int {
                 return $e->getId();
             }),
             default => $languages,
@@ -1156,16 +1156,16 @@ class LanguageHelper
                     $currency->setURLFull($url);
                     continue;
                 }
-                if ($specialPage !== null) {
-                    $specialPage->createBySlug($specialPage->getID(), $additional);
-                    $url = $specialPage->getURL($currentLangID);
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
                     continue;
                 }
-                if ($page !== null) {
-                    $page->createBySlug($page->getID(), $additional);
-                    $url = $page->getURL($currentLangID);
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
                     continue;

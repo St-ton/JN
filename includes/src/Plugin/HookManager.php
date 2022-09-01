@@ -89,7 +89,7 @@ class HookManager
                         $smarty?->clearAssign('oPlugin_' . $plugin->getPluginID());
                         $oPlugin = $prevPlugin;
                     },
-                    $pluginData->nPriority
+                    $pluginData->nPriority ?? 5
                 );
             }
         }

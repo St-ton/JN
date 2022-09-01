@@ -211,6 +211,7 @@ class Slider implements IExtensionPoint
                 }
             }
             $this->set($first);
+
             return $this->getID() > 0 && \count($this->slides) > 0;
         }
 

@@ -9,7 +9,6 @@
                     {cardheader id="download-{$oDownload@iteration}"}
                         {button
                             variant="link"
-                            role="button"
                             block=true
                             aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
@@ -24,7 +23,7 @@
                             {block name='account-downloads-order-downloads-item-body'}
                                 {row}
                                     {col md=4}{lang key='downloadOrderDate'}:{/col}
-                                    {col md=8}{$Bestellung->dErstellt|default:"--"|date_format:"%d.%m.%Y %H:%M"}{/col}
+                                    {col md=8}{$Bestellung->dErstellt|default:'--'|date_format:'d.m.Y H:i'}{/col}
                                 {/row}
                                 {row}
                                     {col md=4}{lang key='downloadLimit'}:{/col}
@@ -81,7 +80,6 @@
                                             {cardheader id="download-{$oDownload@iteration}"}
                                                 {button
                                                     variant="link"
-                                                    role="button"
                                                     block=true
                                                     aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
@@ -106,7 +104,7 @@
                                                         {/foreach}
                                                         {row}
                                                             {col md=4}{lang key='downloadOrderDate'}:{/col}
-                                                            {col md=8}{$dErstellt|default:"--"|date_format:"%d.%m.%Y %H:%M"}{/col}
+                                                            {col md=8}{$dErstellt|default:'--'|date_format:'d.m.Y H:i'}{/col}
                                                         {/row}
                                                         {row}
                                                             {col md=4}{lang key='downloadLimit'}:{/col}

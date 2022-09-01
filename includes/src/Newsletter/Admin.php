@@ -89,7 +89,7 @@ final class Admin
             'image/gif' => '.gif',
             'image/png' => '.png',
             'image/bmp' => '.bmp',
-            default => '.jpg',
+            default     => '.jpg',
         };
     }
 
@@ -811,7 +811,7 @@ final class Admin
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()
             )
-        )->map(static function (stdClass $item) {
+        )->map(static function (stdClass $item): stdClass {
             $item->cVorname  = Text::filterXSS($item->cVorname);
             $item->cNachname = Text::filterXSS($item->cNachname);
             $item->cEmail    = Text::filterXSS($item->cEmail);

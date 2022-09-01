@@ -277,6 +277,16 @@ ifndef('SHOW_TEMPLATE_HINTS', 0);
 ifndef('SEO_SLUG_LOWERCASE', false);
 ifndef('REDIR_OLD_ROUTES', true);
 ifndef('SLUG_ALLOW_SLASHES', true);
+ifndef('ROUTE_PREFIX_PRODUCTS', 'products');
+ifndef('ROUTE_PREFIX_CHARACTERISTICS', 'characteristics');
+ifndef('ROUTE_PREFIX_CATEGORIES', 'categories');
+ifndef('ROUTE_PREFIX_SEARCHSPECIALS', 'searchspecials');
+ifndef('ROUTE_PREFIX_SEARCHQUERIES', 'searchqueries');
+ifndef('ROUTE_PREFIX_MANUFACTURERS', 'manufacturers');
+ifndef('ROUTE_PREFIX_NEWS', 'news');
+ifndef('ROUTE_PREFIX_SEARCH', 'search');
+ifndef('ROUTE_PREFIX_PAGES', 'pages');
+ifndef('CATEGORIES_SLUG_HIERARCHICALLY', false);
 
 const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck';
 

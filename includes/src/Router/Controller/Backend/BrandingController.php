@@ -53,7 +53,6 @@ class BrandingController extends AbstractBackendController
         return $smarty->assign('cRnd', \time())
             ->assign('branding', $this->getBranding($currentID))
             ->assign('brandings', $this->getBrandings())
-            ->assign('PFAD_BRANDINGBILDER', \PFAD_BRANDINGBILDER)
             ->assign('step', $step)
             ->assign('route', $this->route)
             ->getResponse('branding.tpl');
@@ -66,7 +65,7 @@ class BrandingController extends AbstractBackendController
     private function getBrandings(): array
     {
         return $this->db->getCollection('SELECT * FROM tbranding ORDER BY cBildKategorie')
-            ->map(static function (stdClass $item) {
+            ->map(static function (stdClass $item): stdClass {
                 $item->kBranding = (int)$item->kBranding;
 
                 return $item;
@@ -130,14 +129,8 @@ class BrandingController extends AbstractBackendController
         if ($hasNewImage) {
             $conf->cBrandingBild = 'kBranding_' . $brandingID . $this->mapFileType($files['cBrandingBild']['type']);
         } else {
-            $tmpConf             = $db->select(
-                'tbrandingeinstellung',
-                'kBranding',
-                $brandingID
-            );
-            $conf->cBrandingBild = !empty($tmpConf->cBrandingBild)
-                ? $tmpConf->cBrandingBild
-                : '';
+            $tmpConf             = $db->select('tbrandingeinstellung', 'kBranding', $brandingID);
+            $conf->cBrandingBild = empty($tmpConf->cBrandingBild) ? '' : $tmpConf->cBrandingBild;
         }
 
         if ($conf->kBranding > 0 && \mb_strlen($conf->cPosition) > 0 && \mb_strlen($conf->cBrandingBild) > 0) {

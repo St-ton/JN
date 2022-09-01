@@ -55,7 +55,7 @@ class CharacteristicValue extends AbstractImage
                 WHERE a.kMerkmalWert = :cid
                     AND tsprache.cShopStandard = \'Y\'',
             ['cid' => $req->getID()]
-        )->each(static function ($item, $key) use ($req) {
+        )->each(static function ($item, $key) use ($req): void {
             if ($key === 0 && !empty($item->path)) {
                 $req->setSourcePath($item->path);
             }

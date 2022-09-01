@@ -412,15 +412,12 @@ class Characteristic extends BaseCharacteristic
             && !empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER))
             && $this->productFilter->hasCategory()
         ) {
-            $catAttributeFilters = \explode(
-                ';',
-                $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER)
-            );
+            $catAttributeFilters = \explode(';', $category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_MERKMALFILTER));
             if (\count($catAttributeFilters) > 0) {
                 $state->addCondition('tmerkmal.cName IN (' . \implode(',', map(
                     $catAttributeFilters,
-                    static function ($e) {
-                            return '"' . $e . '"';
+                    static function ($e): string {
+                        return '"' . $e . '"';
                     }
                 )) . ')');
             }
@@ -650,7 +647,7 @@ class Characteristic extends BaseCharacteristic
         if (\count($characteristicValues) === 0) {
             return [];
         }
-        $characteristicValueIDs = \implode(',', \array_map(static function ($row) {
+        $characteristicValueIDs = \implode(',', \array_map(static function ($row): int {
             return (int)$row->kMerkmalWert;
         }, $characteristicValues));
         $queryResult            = $this->productFilter->getDB()->getObjects(

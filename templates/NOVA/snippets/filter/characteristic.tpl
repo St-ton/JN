@@ -9,7 +9,7 @@
         {include file='snippets/filter/search_in_items.tpl' itemCount=count($Merkmal->getOptions()) name=$Merkmal->getName()}
     {/block}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        <ul class="nav nav-filter-has-image">
+        <div class="nav nav-filter-has-image">
     {/if}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {$attributeImageURL = null}
@@ -47,7 +47,7 @@
             {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
                 {block name='snippets-filter-characteristics-more-top'}
                     <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false" role="button">
-                        <ul class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
+                        <div class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
                     {$collapseInit = true}
                 {/block}
             {/if}
@@ -125,11 +125,10 @@
     {/foreach}
     {if !$is_dropdown && $limit != -1 && $Merkmal->getOptions()|count > $limit}
         {block name='snippets-filter-characteristics-more-bottom'}
-                </ul>
+                </div>
             </div>
             <div class="snippets-filter-show-all">
                 {button variant="link"
-                    role="button"
                     data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]}
                     {lang key='showAll'}
                 {/button}
@@ -137,7 +136,7 @@
         {/block}
     {/if}
     {if $Merkmal->getData('cTyp') === 'BILD'}
-        </ul>
+        </div>
     {/if}
     </div>
 {/block}

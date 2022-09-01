@@ -1157,8 +1157,8 @@ class Wishlist
     public static function mapMessage(int $code): string
     {
         return match ($code) {
-            1 => Shop::Lang()->get('basketAdded', 'messages'),
-            2 => Shop::Lang()->get('basketAllAdded', 'messages'),
+            1       => Shop::Lang()->get('basketAdded', 'messages'),
+            2       => Shop::Lang()->get('basketAllAdded', 'messages'),
             default => '',
         };
     }
@@ -1364,7 +1364,7 @@ class Wishlist
                 GROUP BY tw.kWunschliste
                 ORDER BY tw.nStandard DESC',
             ['customerID' => $customerID]
-        )->map(static function ($list) use ($customer) {
+        )->map(static function ($list) use ($customer): self {
             $wl = new self();
             $wl->setID((int)$list->kWunschliste);
             $wl->setCustomerID((int)$list->kKunde);

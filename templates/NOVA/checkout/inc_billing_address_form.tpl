@@ -544,9 +544,9 @@
                         {block name='checkout-inc-billing-address-form-birthday'}
                             {col cols=12}
                                 {if isset($cPost_var['geburtstag'])}
-                                    {assign var=inputVal_birthday value=$cPost_var['geburtstag']|date_format:"%Y-%m-%d"}
+                                    {assign var=inputVal_birthday value=$cPost_var['geburtstag']|date_format:'Y-m-d'}
                                 {elseif isset($Kunde->dGeburtstag_formatted)}
-                                    {assign var=inputVal_birthday value=$Kunde->dGeburtstag_formatted|date_format:"%Y-%m-%d"}
+                                    {assign var=inputVal_birthday value=$Kunde->dGeburtstag_formatted|date_format:'Y-m-d'}
                                 {/if}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
@@ -671,10 +671,10 @@
         {/block}
     {/if}
     {if !isset($fehlendeAngaben)}
-        {assign var=fehlendeAngaben value=array()}
+        {assign var=fehlendeAngaben value=[]}
     {/if}
     {if !isset($cPost_arr)}
-        {assign var=cPost_arr value=array()}
+        {assign var=cPost_arr value=[]}
     {/if}
     {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$fehlendeAngaben cPost_arr=$cPost_arr bReturn='bHasCheckbox'}
     {if $bHasCheckbox}

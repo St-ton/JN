@@ -70,7 +70,7 @@ class Application extends BaseApplication
      */
     public function __construct()
     {
-        $this->devMode     = !empty(\APPLICATION_BUILD_SHA) && \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
+        $this->devMode     = \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
         $this->isInstalled = \defined('BLOWFISH_KEY');
         if ($this->isInstalled) {
             $cache = Shop::Container()->getCache();
@@ -107,7 +107,7 @@ class Application extends BaseApplication
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
         $listing         = new Listing($db, $cache, $validator, $modernValidator);
-        $compatible      = $listing->getAll()->filter(static function (ListingItem $i) {
+        $compatible      = $listing->getAll()->filter(static function (ListingItem $i): bool {
             return $i->isShop5Compatible();
         });
         /** @var ListingItem $plugin */

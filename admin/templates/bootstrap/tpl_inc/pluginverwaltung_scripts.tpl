@@ -1,11 +1,9 @@
 <script>
-    var vLicenses = {if isset($szLicenses)}{$szLicenses}{else}[]{/if};
+    var vLicenses = {$licenseFiles|default:[]};
     var pluginName;
     $(document).ready(function() {
-        var token = $('input[name="jtl_token"]').val();
         $('.tab-content').on('click', '#verfuegbar .plugin-license-check', function (e) {
-            var oTemp = $(e.currentTarget);
-            pluginName = oTemp.val();
+            pluginName = $(e.currentTarget).val();
             var licensePath = vLicenses[pluginName];
             if (this.checked && typeof licensePath === 'string') { // it's checked yet, right after the click was fired
                 var modal = $('#licenseModal');
@@ -13,19 +11,17 @@
                 modal.modal({ backdrop : 'static' }).one('hide.bs.modal', function (e) {
                     $('input[id=plugin-check-' + pluginName + ']').removeAttr('disabled');
                 });
-                $('#licenseModal button[name=cancel], #licenseModal .close').one('click', function(event) {
+                $('#licenseModal button[name=cancel], #licenseModal .close').one('click', function() {
                     $('input[id=plugin-check-' + pluginName + ']').prop('checked', false);
                 });
-                $('#licenseModal button[name=ok]').one('click', function(event) {
+                $('#licenseModal button[name=ok]').one('click', function() {
                     $('input[id=plugin-check-' + pluginName + ']').prop('checked', true);
                 });
                 startSpinner();
                 modal.find('.modal-body').load(
                     '{$adminURL}/markdown',
                     { 'jtl_token' : '{$smarty.Session.jtl_token}', 'path': vLicenses[pluginName] },
-                    function () {
-                        stopSpinner();
-                    }
+                    stopSpinner
                 );
                 modal.modal('show');
             }

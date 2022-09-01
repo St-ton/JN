@@ -22,10 +22,10 @@ class SectionFactory
     public function getSection(int $sectionID, Manager $manager): SectionInterface
     {
         return match ($sectionID) {
-            \CONF_KAUFABWICKLUNG => new Checkout($manager, $sectionID),
-            \CONF_ZAHLUNGSARTEN => new PaymentMethod($manager, $sectionID),
+            \CONF_KAUFABWICKLUNG  => new Checkout($manager, $sectionID),
+            \CONF_ZAHLUNGSARTEN   => new PaymentMethod($manager, $sectionID),
             \CONF_VERGLEICHSLISTE => new Comparelist($manager, $sectionID),
-            default => new Base($manager, $sectionID),
+            default               => new Base($manager, $sectionID),
         };
     }
 }

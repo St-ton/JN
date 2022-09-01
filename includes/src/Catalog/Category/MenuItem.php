@@ -49,6 +49,11 @@ class MenuItem
     private int $parentID = 0;
 
     /**
+     * @var int
+     */
+    private int $languageID = 0;
+
+    /**
      * @var string
      */
     private string $name = '';
@@ -67,6 +72,11 @@ class MenuItem
      * @var string
      */
     private string $url = '';
+
+    /**
+     * @var string
+     */
+    private string $seo = '';
 
     /**
      * @var string
@@ -217,6 +227,22 @@ class MenuItem
     public function setURL(string $url): void
     {
         $this->url = $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeo(): string
+    {
+        return $this->seo;
+    }
+
+    /**
+     * @param string $seo
+     */
+    public function setSeo(string $seo): void
+    {
+        $this->seo = $seo;
     }
 
     /**
@@ -425,11 +451,28 @@ class MenuItem
     }
 
     /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @param int $languageID
+     */
+    public function setLanguageID(int $languageID): void
+    {
+        $this->languageID = $languageID;
+    }
+
+    /**
      * MenuItem constructor.
      * @param stdClass $data
      */
     public function __construct(stdClass $data)
     {
+        $this->setLanguageID((int)($data->languageID ?? 0));
         $this->setLeft((int)$data->lft);
         $this->setRight((int)$data->rght);
         $this->setLevel((int)$data->nLevel);
@@ -449,7 +492,8 @@ class MenuItem
         if (isset($data->customImgName)) {
             $this->customImgName = $data->customImgName;
         }
-        $this->setURL($data->cSeo ?? '');
+        $this->setURL($data->cURL ?? $data->cSeo ?? '');
+        $this->setSeo($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
         $this->setProductCount((int)($data->cnt ?? 0));

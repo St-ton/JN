@@ -15,10 +15,12 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -87,6 +89,27 @@ class ProductController extends AbstractController
         $this->state->is404 = true;
 
         return $this->updateProductFilter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $visibilityMiddleware = new VisibilityMiddleware();
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
+            ->middleware($visibilityMiddleware);
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
+            ->middleware($visibilityMiddleware);
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
+            ->middleware($visibilityMiddleware);
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
+            ->middleware($visibilityMiddleware);
     }
 
     /**
@@ -201,7 +224,9 @@ class ProductController extends AbstractController
         $this->currentCategory    = new Kategorie(
             $this->currentProduct->gibKategorie($this->customerGroupID),
             $this->languageID,
-            $this->customerGroupID
+            $this->customerGroupID,
+            false,
+            $this->db
         );
         $this->expandedCategories = new KategorieListe();
         $this->expandedCategories->getOpenCategories($this->currentCategory);
@@ -353,7 +378,7 @@ class ProductController extends AbstractController
                 ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness')]
             ])
             ->setDefaultSortByDir((int)$this->config['bewertung']['bewertung_sortierung'])
-            ->setSortFunction(function ($a, $b) use ($pagination) {
+            ->setSortFunction(function ($a, $b) use ($pagination): int {
                 $sortBy  = $pagination->getSortByCol();
                 $sortDir = $pagination->getSortDirSQL() === 0 ? +1 : -1;
                 $valueA  = \is_string($a->$sortBy) ? \mb_convert_case($a->$sortBy, \MB_CASE_LOWER) : $a->$sortBy;

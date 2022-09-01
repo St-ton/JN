@@ -55,9 +55,9 @@ class CustomerFields implements ArrayAccess, IteratorAggregate, Countable
                         WHERE kSprache = :langID
                         ORDER BY nSort',
                     ['langID' => $langID]
-                )->map(static function ($e) {
+                )->map(static function ($e): CustomerField {
                     return new CustomerField($e);
-                })->keyBy(static function (CustomerField $field) {
+                })->keyBy(static function (CustomerField $field): int {
                     return $field->getID();
                 })->toArray();
                 Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_OBJECT]);

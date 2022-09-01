@@ -78,7 +78,7 @@ abstract class AbstractInstallerFactory
         $items->push(new Exports());
         $items->push(new CSS());
         $items->push(new JS());
-        $items->each(function (ItemInterface $e) {
+        $items->each(function (ItemInterface $e): void {
             $e->setDB($this->db);
             $e->setPlugin($this->plugin);
             $e->setBaseNode($this->baseNode);

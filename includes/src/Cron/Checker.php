@@ -69,24 +69,15 @@ class Checker
     public function check(): array
     {
         $jobs = $this->db->getObjects(
-            "SELECT tcron.*
+            'SELECT tcron.*
                 FROM tcron
                 LEFT JOIN tjobqueue 
                     ON tjobqueue.cronID = tcron.cronID
-                WHERE (tcron.lastStart IS NULL 
-                    OR IF(tcron.jobType = 'statusemail' AND tcron.frequency = 720,
-                          MONTH(tcron.lastStart) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH),
-                          (NOW() > ADDDATE(tcron.lastStart, INTERVAL tcron.frequency HOUR))
-                        )
-                    OR (tcron.jobType = 'exportformat' 
-                        AND tjobqueue.jobQueueID IS NULL 
-                        AND (NOW() > ADDDATE(
-                            ADDTIME(DATE(tcron.lastStart), tcron.startTime), 
-                            INTERVAL tcron.frequency HOUR)
-                        )
-                    ))
+                WHERE (tcron.lastStart IS NULL
+                           OR tcron.nextStart IS NULL
+                           OR tcron.nextStart < NOW())
                     AND tcron.startDate < NOW()
-                    AND tjobqueue.jobQueueID IS NULL"
+                    AND tjobqueue.jobQueueID IS NULL'
         );
         $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
 

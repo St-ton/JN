@@ -35,15 +35,12 @@
                         </a>
                         <ul>
                         {foreach $sub->getItems() as $setting}
-                                <li tabindex="-1">
-                                    <a class="dropdown-item value"
-                                       href="{$setting->getURL()}">
-                                        <span class="title">{$setting->getName()}
-{*                                            <small>{$setting->getDescription()}</small>*}
-                                        </span>
-                                        <span class="path">{__('settingNumberShort')}: {$setting->getID()}</span>
-                                    </a>
-                                </li>
+                            <li tabindex="-1">
+                                <a class="dropdown-item value" href="{$setting->getURL()}">
+                                    <span class="title">{$setting->getName()}</span>
+                                    <span class="path">{__('settingNumberShort')}: {$setting->getID()}</span>
+                                </a>
+                            </li>
                         {/foreach}
                         </ul>
                     </li>

@@ -21,14 +21,9 @@ class CacheRedisCluster implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var CacheRedisCluster
+     * @var RedisCluster|null
      */
-    public static $instance;
-
-    /**
-     * @var RedisCluster
-     */
-    private $redis;
+    private ?RedisCluster $redis = null;
 
     /**
      * @var array
@@ -40,9 +35,9 @@ class CacheRedisCluster implements ICachingMethod
      */
     public function __construct(array $options)
     {
-        $res             = false;
-        $this->journalID = 'redis_journal';
-        $this->options   = $options;
+        $res = false;
+        $this->setJournalID('redis_journal');
+        $this->setOptions($options);
         if (isset($options['rediscluster_hosts']) && $this->isAvailable()) {
             $res = $this->setRedisCluster(
                 $options['rediscluster_hosts'],
@@ -51,7 +46,8 @@ class CacheRedisCluster implements ICachingMethod
                 $options['redis_pass']
             );
         }
-        $this->isInitialized = $res;
+        $this->setIsInitialized($res);
+        self::$instance = $this;
     }
 
     /**

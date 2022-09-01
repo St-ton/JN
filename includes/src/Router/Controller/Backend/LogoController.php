@@ -7,6 +7,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -31,17 +32,18 @@ class LogoController extends AbstractBackendController
         $this->checkPermissions(Permissions::DISPLAY_OWN_LOGO_VIEW);
         $this->getText->loadAdminLocale('pages/shoplogouploader');
 
-        if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {
-            $this->actionDelete();
-        }
-        if (!empty($_FILES) && Form::validateToken()) {
-            $response         = new stdClass();
-            $response->status = ($this->saveShopLogo($_FILES) === self::OK) ? 'OK' : 'FAILED';
-            echo \json_encode($response);
-            die();
-        }
-        if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
-            $this->actionUpload();
+        if (Form::validateToken()) {
+            if (isset($_POST['action'], $_POST['logo']) && $_POST['action'] === 'deleteLogo') {
+                return $this->actionDelete();
+            }
+            if (!empty($_FILES)) {
+                $response = (object)['status' => ($this->saveShopLogo($_FILES) === self::OK) ? 'OK' : 'FAILED'];
+
+                return new JsonResponse($response);
+            }
+            if (Request::verifyGPCDataInt('upload') === 1) {
+                $this->actionUpload();
+            }
         }
 
         return $smarty->assign('ShopLogo', Shop::getLogo())
@@ -52,8 +54,6 @@ class LogoController extends AbstractBackendController
     }
 
     /**
-     * Speichert das aktuelle ShopLogo
-     *
      * @param array $files
      * @return int
      */
@@ -68,6 +68,7 @@ class LogoController extends AbstractBackendController
         if (empty($files['shopLogo']['name'])) {
             return self::ERR_EMPTY_FILE_NAME;
         }
+        $tmp          = $files['shopLogo']['tmp_name'];
         $allowedTypes = [
             'image/jpeg',
             'image/pjpeg',
@@ -81,15 +82,12 @@ class LogoController extends AbstractBackendController
             'image/webp'
         ];
         if (!\in_array($files['shopLogo']['type'], $allowedTypes, true)
-            || (\extension_loaded('fileinfo')
-                && !\in_array(\mime_content_type($files['shopLogo']['tmp_name']), $allowedTypes, true))
+            || (\extension_loaded('fileinfo') && !\in_array(\mime_content_type($tmp), $allowedTypes, true))
         ) {
             return self::ERR_INVALID_FILE_TYPE;
         }
         $file = \PFAD_ROOT . \PFAD_SHOPLOGO . \basename($files['shopLogo']['name']);
-        if ($files['shopLogo']['error'] === \UPLOAD_ERR_OK
-            && \move_uploaded_file($files['shopLogo']['tmp_name'], $file)
-        ) {
+        if ($files['shopLogo']['error'] === \UPLOAD_ERR_OK && \move_uploaded_file($tmp, $file)) {
             $option                        = new stdClass();
             $option->kEinstellungenSektion = \CONF_LOGO;
             $option->cName                 = 'shop_logo';
@@ -112,25 +110,30 @@ class LogoController extends AbstractBackendController
         return \is_file(\PFAD_ROOT . $logo) && \unlink(\PFAD_ROOT . $logo);
     }
 
-    private function actionDelete(): void
+    /**
+     * @return ResponseInterface
+     */
+    private function actionDelete(): ResponseInterface
     {
         $currentLogo = Shop::getLogo();
-        $response    = new stdClass();
+        $response    = (object)['status' => 'FAILED'];
         if ($currentLogo === $_POST['logo'] && Form::validateToken()) {
             $delete                        = $this->deleteShopLogo($currentLogo);
-            $response->status              = ($delete === true) ? 'OK' : 'FAILED';
+            $response->status              = $delete === true ? 'OK' : 'FAILED';
             $option                        = new stdClass();
             $option->kEinstellungenSektion = \CONF_LOGO;
             $option->cName                 = 'shop_logo';
             $option->cWert                 = null;
             $this->db->update('teinstellungen', 'cName', 'shop_logo', $option);
             $this->cache->flushTags([\CACHING_GROUP_OPTION]);
-        } else {
-            $response->status = 'FAILED';
         }
-        die(\json_encode($response));
+
+        return new JsonResponse($response);
     }
 
+    /**
+     * @return void
+     */
     private function actionUpload(): void
     {
         if (isset($_POST['delete'])) {

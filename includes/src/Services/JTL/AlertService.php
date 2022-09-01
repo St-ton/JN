@@ -17,7 +17,7 @@ class AlertService implements AlertServiceInterface
     private Collection $alertList;
 
     /**
-     * Alertservice constructor.
+     * AlertService constructor.
      */
     public function __construct()
     {

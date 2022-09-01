@@ -5,11 +5,13 @@ namespace JTL\Router\Controller;
 use JTL\Language\LanguageHelper;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
+use JTL\Router\Middleware\PhpFileCheckMiddleware;
 use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -65,6 +67,20 @@ class DefaultController extends AbstractController
     /**
      * @inheritdoc
      */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
+        $route->get('/{slug:.+}', [$this, 'getResponse'])
+            ->setName('catchall' . $dynName)
+            ->middleware($phpFileCheckMiddleware);
+        $route->post('/{slug:.+}', [$this, 'getResponse'])
+            ->setName('catchallPOST' . $dynName)
+            ->middleware($phpFileCheckMiddleware);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         if (\count($args) === 0) {
@@ -81,12 +97,22 @@ class DefaultController extends AbstractController
             && $controller::class !== SearchController::class
             && !isset($_GET['opcEditMode'])
         ) {
-            $langID = $this->state->languageID ?: Shop::getLanguageID();
-            $locale = null;
+            $langID    = $this->state->languageID ?: Shop::getLanguageID();
+            $locale    = null;
+            $isDefault = false;
             foreach (LanguageHelper::getAllLanguages() as $language) {
                 if ($language->getId() === $langID) {
-                    $locale = $language->getIso639();
+                    $locale    = $language->getIso639();
+                    $isDefault = $language->isShopDefault();
                 }
+            }
+            $scheme = $this->config['global']['routing_default_language'] ?? 'F';
+            if ($isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
+                return $controller->getResponse($request, $args, $smarty);
+            }
+            $scheme = $this->config['global']['routing_scheme'] ?? 'F';
+            if (!$isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
+                return $controller->getResponse($request, $args, $smarty);
             }
             $className = $controller instanceof PageController
                 ? PageController::class
@@ -94,19 +120,23 @@ class DefaultController extends AbstractController
             $type      = match ($className) {
                 CategoryController::class            => Router::TYPE_CATEGORY,
                 CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
-                ManufacturerController::class        => Router::TYPE_MANUFACTURERS,
+                ManufacturerController::class        => Router::TYPE_MANUFACTURER,
                 NewsController::class                => Router::TYPE_NEWS,
                 ProductController::class             => Router::TYPE_PRODUCT,
                 SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
                 SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
                 default                              => Router::TYPE_PAGE
             };
-            $test = Shop::getRouter()->getPathByType($type, [
+            $test  = Shop::getRouter()->getURLByType($type, [
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
+            $query = $request->getUri()->getQuery();
+            if (\mb_strlen($query) > 0) {
+                $test .= '?' . $query;
+            }
 
-            return new RedirectResponse(Shop::getURL() . $test, 301);
+            return new RedirectResponse($test, 301);
         }
 
         return $controller->getResponse($request, $args, $smarty);

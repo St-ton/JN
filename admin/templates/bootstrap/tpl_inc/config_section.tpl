@@ -25,8 +25,8 @@
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         {include
                             file='snippets/buttons/saveAndContinueButton.tpl'
-                            name='speichern_und_weiter_bearbeiten_einstellungen'
-                            value=1
+                            name='speichern_und_weiter_bearbeiten'
+                            value='einstellungen'
                         }
                     </div>
                 {/if}

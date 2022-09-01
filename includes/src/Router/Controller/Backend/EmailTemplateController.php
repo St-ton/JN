@@ -166,7 +166,7 @@ class EmailTemplateController extends AbstractBackendController
             $res = $this->updateTemplate($emailTemplateID, $_POST, $_FILES);
             if ($res === self::OK) {
                 $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
-                $continue = (bool)Request::verifyGPCDataInt('continue');
+                $continue = Request::postVar('speichern_und_weiter_bearbeiten', false) !== false;
                 $doCheck  = $emailTemplateID;
             } else {
                 $mailTemplate = $this->getModel();
@@ -210,8 +210,7 @@ class EmailTemplateController extends AbstractBackendController
                 }));
         }
 
-        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+        $this->assignScrollPosition();
 
         return $smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)
@@ -219,7 +218,6 @@ class EmailTemplateController extends AbstractBackendController
             ->assign('cFehlerAnhang_arr', $attachmentErrors)
             ->assign('step', $step)
             ->assign('route', $this->route)
-            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('emailvorlagen.tpl');
     }
 

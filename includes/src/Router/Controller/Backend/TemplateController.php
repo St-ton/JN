@@ -7,7 +7,6 @@ use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Installation\InstallationResponse;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -76,7 +75,7 @@ class TemplateController extends AbstractBackendController
         if (!$valid) {
             return $this->displayOverview();
         }
-        if (isset($_POST['speichern_und_weiter_bearbeiten'])) {
+        if (Request::postVar('speichern_und_weiter_bearbeiten')) {
             $this->saveConfig();
             return $this->displayTemplateSettings();
         }
@@ -333,11 +332,10 @@ class TemplateController extends AbstractBackendController
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
-        $service        = Shop::Container()->getTemplateService();
-        $current        = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
-        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
-        $parentFolder   = null;
+        $this->assignScrollPosition();
+        $service      = Shop::Container()->getTemplateService();
+        $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
+        $parentFolder = null;
         $this->getGetText()->loadTemplateLocale('base', $current);
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
@@ -346,7 +344,6 @@ class TemplateController extends AbstractBackendController
         $preview        = $this->getPreview($templateConfig);
 
         return $this->smarty->assign('template', $current)
-            ->assign('scrollPosition', $scrollPosition)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)

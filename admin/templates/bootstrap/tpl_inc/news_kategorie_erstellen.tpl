@@ -189,6 +189,7 @@
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <textarea id="{$name}" class="ckeditor" name="{$name}" rows="15" cols="60">{$category->getDescription($langID)}</textarea>
                                     </div>
+                                    {$name = null}
                                 </div>
                             </div>
                         </div>
@@ -200,7 +201,7 @@
                                     </a>
                                 </div>
                                 <div class=" col-sm-6 col-xl-auto">
-                                    {include file='snippets/buttons/saveAndContinueButton.tpl' name='speichern_und_weiter_bearbeiten_kategorie' value=1}
+                                    {include file='snippets/buttons/saveAndContinueButton.tpl' value='kategorie'}
                                 </div>
                                 <div class=" col-sm-6 col-xl-auto">
                                     <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">

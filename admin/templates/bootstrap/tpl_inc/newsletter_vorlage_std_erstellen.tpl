@@ -371,7 +371,7 @@
                         {/if}
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        {include file='snippets/buttons/saveAndContinueButton.tpl' name="speichern_und_weiter_bearbeiten_std"}
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' value='std'}
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">

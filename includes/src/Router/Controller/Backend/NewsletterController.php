@@ -34,6 +34,7 @@ class NewsletterController extends AbstractBackendController
         $this->checkPermissions(Permissions::MODULE_NEWSLETTER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletter');
         $this->setLanguage();
+        $this->assignScrollPosition();
 
         $conf          = Shop::getSettings([\CONF_NEWSLETTER]);
         $newsletterTPL = null;
@@ -178,7 +179,7 @@ class NewsletterController extends AbstractBackendController
                     $tpl = $admin->getDefaultTemplate($kNewsletterVorlageStd);
                     $smarty->assign('oNewslettervorlageStd', $tpl);
                 }
-                if (isset($postData['speichern_und_weiter_bearbeiten_std'])) {
+                if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'std') {
                     $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
                     $step = $admin->edit($admin->getCurrentId(), $smarty);
                 }
@@ -193,7 +194,7 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . (int)$customerGroupID . ';';
                     }
                 }
-                if (isset($postData['speichern_und_weiter_bearbeiten'])) {
+                if (Request::postVar('speichern_und_weiter_bearbeiten', '') === '1') {
                     $checks = $admin->saveTemplate($_POST);
                     if (is_array($checks) && count($checks) > 0) {
                         $smarty->assign('cPlausiValue_arr', $checks)

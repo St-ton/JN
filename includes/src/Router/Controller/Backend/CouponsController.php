@@ -45,13 +45,13 @@ class CouponsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kupons');
         $this->checkPermissions(Permissions::ORDER_COUPON_VIEW);
+        $this->assignScrollPosition();
 
-        $action         = Request::verifyGPDataString('action');
-        $tab            = Kupon::TYPE_STANDARD;
-        $languages      = LanguageHelper::getAllLanguages(0, true);
-        $coupon         = null;
-        $importer       = Request::verifyGPDataString('importcsv');
-        $scrollPosition = '';
+        $action    = Request::verifyGPDataString('action');
+        $tab       = Kupon::TYPE_STANDARD;
+        $languages = LanguageHelper::getAllLanguages(0, true);
+        $coupon    = null;
+        $importer  = Request::verifyGPDataString('importcsv');
 
         if (Form::validateToken()) {
             if ($importer !== '') {
@@ -148,7 +148,7 @@ class CouponsController extends AbstractBackendController
         if ($action === 'bearbeiten') {
             $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
             $coupon   = $couponID > 0 ? $this->getCoupon($couponID) : $this->createNewCoupon($_REQUEST['cKuponTyp']);
-        } elseif ($action === 'speichern' || $action === 'save-and-continue') {
+        } elseif ($action === 'speichern' || Request::postVar('speichern_und_weiter_bearbeiten')) {
             $coupon       = $this->createCouponFromInput();
             $couponErrors = $coupon->validate();
             if (\count($couponErrors) > 0) {
@@ -172,7 +172,7 @@ class CouponsController extends AbstractBackendController
                     $this->informCouponCustomers($coupon);
                 }
                 $this->alertService->addSuccess(\__('successCouponSave'), 'successCouponSave');
-                if ($action === 'save-and-continue') {
+                if (Request::postVar('speichern_und_weiter_bearbeiten')) {
                     $coupon = $this->getCoupon(\is_int($couponId) ? $couponId : $couponId[0]);
                 }
             } else {
@@ -191,12 +191,12 @@ class CouponsController extends AbstractBackendController
                 $this->alertService->addError(\__('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
             }
         }
-        if ($action === 'bearbeiten' || ($action === 'save-and-continue' && $coupon instanceof Kupon)) {
-            $action         = 'bearbeiten';
-            $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-            $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
-            $taxClasses     = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
-            $customerIDs    = \array_filter(
+        if ($action === 'bearbeiten'
+            || (Request::postVar('speichern_und_weiter_bearbeiten') && $coupon instanceof Kupon)
+        ) {
+            $action      = 'bearbeiten';
+            $taxClasses  = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');
+            $customerIDs = \array_filter(
                 Text::parseSSKint($coupon->cKunden),
                 static function ($customerID) {
                     return (int)$customerID > 0;
@@ -219,8 +219,7 @@ class CouponsController extends AbstractBackendController
                 ->assign('categories', $this->getCategories($coupon->cKategorien))
                 ->assign('customerIDs', $customerIDs)
                 ->assign('couponNames', $names)
-                ->assign('oKupon', $coupon)
-                ->assign('scrollPosition', $scrollPosition);
+                ->assign('oKupon', $coupon);
         } else {
             // Seite: Uebersicht
             if (Request::hasGPCData('tab')) {

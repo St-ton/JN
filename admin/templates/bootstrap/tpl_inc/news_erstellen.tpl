@@ -286,7 +286,7 @@
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        {include file='snippets/buttons/saveAndContinueButton.tpl' name='speichern_und_weiter_bearbeiten_news' value=1}
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' value='news'}
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">

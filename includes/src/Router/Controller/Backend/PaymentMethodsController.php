@@ -51,6 +51,7 @@ class PaymentMethodsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
         $this->checkPermissions(Permissions::ORDER_PAYMENT_VIEW);
+        $this->assignScrollPosition();
 
         $defaultCurrency      = $this->db->select('twaehrung', 'cStandard', 'Y');
         $this->step           = 'uebersicht';
@@ -117,14 +118,10 @@ class PaymentMethodsController extends AbstractBackendController
             $this->stepOverview();
         }
 
-        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
-
         return $this->smarty->assign('step', $this->step)
             ->assign('waehrung', $defaultCurrency->cName)
             ->assign('recommendations', $recommendations)
             ->assign('route', $this->route)
-            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('zahlungsarten.tpl');
     }
 

@@ -115,9 +115,9 @@ class NewsController extends AbstractBackendController
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
             } elseif (Request::postInt('news_kategorie_speichern') === 1
-                      && Request::postVar('speichern_und_weiter_bearbeiten_kategorie') === null) {
+                      && Request::postVar('speichern_und_weiter_bearbeiten', '') !== 'kategorie') {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
-            } elseif (Request::postInt('speichern_und_weiter_bearbeiten_kategorie') === 1) {
+            } elseif (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'kategorie') {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
                 $category = $this->actionEditCategory($category);
             } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
@@ -168,14 +168,13 @@ class NewsController extends AbstractBackendController
             $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
                 ->assign('category', $category);
         }
-        $this->alertService->addNotice($this->getMsg(), 'newsMessage');
-        $this->alertService->addError($this->getErrorMsg(), 'newsError');
+
+        $this->assignScrollPosition();
 
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
             ->assign('step', $this->getStep())
             ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
-            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('news.tpl');
     }
 
@@ -364,9 +363,10 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (Request::postInt('speichern_und_weiter_bearbeiten_news') === 1) {
+            if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
+                $this->alertService->addInfo($this->msg, 'successNewsSave');
             } else {
                 $tab = Request::verifyGPDataString('tab');
 
@@ -685,6 +685,7 @@ class NewsController extends AbstractBackendController
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
             $this->msg .= \__('successNewsCatSave') . '<br />';
+            $this->alertService->addInfo($this->msg, 'successNewsCatSave');
         }
         $newsCategory = new Category($this->db);
         $this->flushCache();

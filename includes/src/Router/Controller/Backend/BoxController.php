@@ -88,7 +88,7 @@ class BoxController extends AbstractBackendController
 
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_BOXEN, $_POST);
-            if (Request::postVar('speichern_und_weiter_bearbeiten_einstellungen')) {
+            if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'einstellungen') {
                 $this->smarty->assign('cTab', 'einstellungen');
             }
         } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
@@ -145,9 +145,7 @@ class BoxController extends AbstractBackendController
         $this->assignFilterMapping($pageID);
         $this->alertService->addWarning(\__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
         $this->getAdminSectionSettings(\CONF_BOXEN);
-
-        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
+        $this->assignScrollPosition();
 
         return $smarty->assign('validPageTypes', self::getMappedValidPageTypes())
             ->assign('bBoxenAnzeigen', $this->getVisibility($pageID))
@@ -162,7 +160,6 @@ class BoxController extends AbstractBackendController
             ->assign('nPage', $pageID)
             ->assign('invisibleBoxes', $this->getInvisibleBoxes())
             ->assign('route', $this->route)
-            ->assign('scrollPosition', $scrollPosition)
             ->getResponse('boxen.tpl');
     }
 

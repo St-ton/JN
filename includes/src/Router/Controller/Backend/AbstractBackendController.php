@@ -79,6 +79,19 @@ abstract class AbstractBackendController implements ControllerInterface
     }
 
     /**
+     * Gets the current scroll position and assigns it to smarty if save and continue button was used.
+     * @return void
+     */
+    protected function assignScrollPosition(): void
+    {
+        $scrollPosition    = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
+        $isSaveAndContinue = Request::postVar('speichern_und_weiter_bearbeiten', false) !== false;
+        $scrollPosition    = $isSaveAndContinue === true && \is_string($scrollPosition) ? $scrollPosition : '';
+
+        $this->smarty->assign('scrollPosition', $scrollPosition);
+    }
+
+    /**
      * @param string $permissions
      * @return void
      * @throws PermissionException

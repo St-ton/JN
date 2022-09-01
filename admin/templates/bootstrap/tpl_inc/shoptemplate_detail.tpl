@@ -238,6 +238,11 @@
                     {/if}
                     <div class="row">
                         {foreach $section->settings as $setting}
+                            {if !empty($setting->rawAttributes.Subheader)}
+                            <div class="col-12">
+                                <div class="subheading1 mb-2">{__($setting->rawAttributes.Subheader)}</div>
+                            </div>
+                            {/if}
                             {if $setting->key === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                 <div class="col-sm-8 ml-auto">
                                     <div class="item form-group form-row align-items-center" id="theme-preview-wrap" style="display: none;">

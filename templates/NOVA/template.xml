@@ -135,7 +135,7 @@
                 <Option Value="N">Inaktiv</Option>
             </Setting>
         </Section>
-        <Section Name="Listen- und Gallerieansicht" Key="productlist">
+        <Section Name="Listen- und Galerieansicht" Key="productlist">
             <Setting Description="Auswahloptionen bei „Filter anzeigen in (Desktop)“" Key="filter_placement" Type="select" Value="sidebar">
                 <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
                 <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
@@ -152,7 +152,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Artikel über die Artikelübersicht (Liste) in den Warenkorb legen" Key="buy_productlist" Type="select" Value="Y">
+            <Setting Description="Artikel über die Artikelübersicht (Liste) in den Warenkorb legen" Key="buy_productlist" Type="select" Value="Y" Subheader="header list">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -171,7 +171,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Variationsvorschau in Galerie anzeigen" Key="variation_select_productlist_gallery" Type="select" Value="2">
+            <Setting Description="Variationsvorschau in Galerie anzeigen" Key="variation_select_productlist_gallery" Type="select" Value="2" Subheader="header gallery">
                 <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>

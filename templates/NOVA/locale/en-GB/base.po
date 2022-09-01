@@ -5,11 +5,11 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: en_GB\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.1\n"
+"X-Generator: Poedit 3.1.1\n"
 
 msgid "Allgemein"
 msgstr "General"
@@ -56,11 +56,11 @@ msgstr "Favicon"
 msgid "Megamenu"
 msgstr "Mega menu"
 
-msgid "Kategoriebilder für erste Unterkategorie"
-msgstr "Category images for first subcategory <i class=\"fas fa-desktop\"></i> "
-
 msgid "Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)"
 msgstr "Categories (instead of category box / box administration)"
+
+msgid "Kategoriebilder für erste Unterkategorie"
+msgstr "Category images for first subcategory <i class=\"fas fa-desktop\"></i> "
 
 msgid "Unterkategorien"
 msgstr "Subcategories"
@@ -74,20 +74,20 @@ msgstr "Manufacturer drop-down"
 msgid "Herstellerbilder"
 msgstr "Manufacturer images <i class=\"fas fa-desktop\"></i> "
 
-msgid "Listen- und Gallerieansicht"
+msgid "Listen- und Galerieansicht"
 msgstr "List and gallery view"
 
 msgid "Auswahloptionen bei „Filter anzeigen in (Desktop)“"
-msgstr "Filter position"
+msgstr "Filter position <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies whether filter options are displayed in the sidebar on the left or in a separate dialogue box.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
-msgid "Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen"
-msgstr "Show \"Basket\" button in item overview (list view)"
+msgid "Artikel über die Artikelübersicht (Liste) in den Warenkorb legen"
+msgstr "Add items to basket <span data-html=\"true\" data-toggle=\"tooltip\" title=\" Displays the basket button in the item preview of the list view.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Filter immer ausgeklappt"
-msgstr "Always expand filter"
+msgstr "Always expand filters initially <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies whether all filter options of the separate filter categories are always visible or whether they have to be expanded first.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen"
-msgstr "Show additional item information when hovering/tapping"
+msgstr "Alter Text"
 
 msgid "Footer-Einstellungen"
 msgstr "Footer"
@@ -125,26 +125,32 @@ msgstr "Pinterest link"
 msgid "Skype-Link"
 msgstr "Skype link"
 
+msgid "header list"
+msgstr "List"
+
 msgid "Variationsauswahl in Liste anzeigen"
-msgstr "Anzahl der möglichen Variationen in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Listenansicht maximal angezeigt werden. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Number of possible variations <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the maximum number of variations displayed in the list view. At 0, no variations are displayed. If an item has more variations, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "header gallery"
+msgstr "Gallery"
 
 msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsvorschau in Galerieansicht anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Show variation preview <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the maximum number of variations displayed in the gallery view. At 0, no variations are displayed. If an item has more variations, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
-msgstr "Anzahl der sichtbaren Filteroptionen in Boxen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Number of initially visible filter options per filter <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specify how many filter options are displayed by default per filter. Further filter options can be additionally displayed at any time.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste"
-msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Listenansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Listenansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Number of possible variation values for radio buttons/swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the maximum number of variation values displayed for radio buttons and swatches in the list view. Drop-down menus are not affected by this. If an item has more values, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie"
-msgstr "Anzahl der möglichen Variationswerte für Radiobuttons/Swatches in Galerieansicht <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationswerte in der Galerieansicht maximal über Radiobuttons und Swatches angezeigt werden. Dropdown-Menüs werden davon nicht beeinflusst. Sollte der Artikel mehr Werte haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Number of possible variation values for radio buttons/swatches <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the maximum number of variation values displayed for radio buttons and swatches in the gallery view. Drop-down menus are not affected by this. If an item has more values, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "keine Beschränkung"
 msgstr "no restriction"
 
 msgid "0 - Keine Auswahl anzeigen"
-msgstr "0 - Keine Auswahl anzeigen"
+msgstr "0 – Show no options"
 
 msgid "max. 1"
 msgstr "max. of 1"
@@ -165,7 +171,7 @@ msgid "max. 12"
 msgstr "max. of 12"
 
 msgid "Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)"
-msgstr "Side bar (for individual filter settings, see \"Standard elements > Footers/Boxes\" and \"Standard views > Item overview\")"
+msgstr "Sidebar (for individual filter settings, see \"Standard elements > Footers/Boxes\" and \"Standard views > Item overview\")"
 
 msgid "Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)"
 msgstr "Separate window (for individual filter settings, see \"Standard views > Item overview\")"
@@ -204,13 +210,13 @@ msgid "Linke Seitenleiste anzeigen"
 msgstr "Show left sidebar"
 
 msgid "Nur auf Artikellisten"
-msgstr "Only on item lists"
+msgstr "Only with item lists"
 
 msgid "Auf allen Seiten"
 msgstr "On all pages"
 
 msgid "Suchfeld in Filtern anzeigen ab x Einträgen"
-msgstr "Show search in filters if filter has more than x items"
+msgstr "Show filter search from X filter options onwards <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Allows searching for the desired filter option if there are at least as many filter options as specified here.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Mobile Geräte: Menü in aktueller Kategorie öffnen"
 msgstr "Open menu in current category <i class=\"fas fa-mobile-alt\"></i> "
@@ -228,7 +234,7 @@ msgid "Einzeilig und scrollbar nach links/rechts"
 msgstr "Single line and scrollable to the left/right"
 
 msgid "Menüausrichtung"
-msgstr "Menu justification <i class=\"fas fa-desktop\"></i> "
+msgstr "Menu justification "
 
 msgid "Nur in Verbindung mit \"Menü in eigener Zeile: Ja\" nutzbar."
 msgstr "Requires \"Display menu in separate line\" to be set to \"Yes\"."
@@ -252,28 +258,28 @@ msgid "Menü, Logo, Suche"
 msgstr "Menu, logo, and search field"
 
 msgid "Nichts"
-msgstr "None"
+msgstr "Nothing"
 
 msgid "Suchfeld Breite (in px)"
-msgstr "Search input width (in px) <i class=\"fas fa-desktop\"></i> "
+msgstr "Search field width (in px) <i class=\"fas fa-desktop\"></i> "
 
 msgid "Logo Höhe (in px)"
 msgstr "Logo height (in px) <i class=\"fas fa-desktop\"></i> "
 
 msgid "Logo zentriert"
-msgstr "Logo centered <i class=\"fas fa-desktop\"></i> "
+msgstr "Centre logo <i class=\"fas fa-desktop\"></i> "
 
 msgid "Suchfeld"
-msgstr "Search input"
+msgstr "Search field"
 
 msgid "Suchfeld Positionierung"
-msgstr "Search input positioning <i class=\"fas fa-desktop\"></i> "
+msgstr "Search field position <i class=\"fas fa-desktop\"></i> "
 
 msgid "Topbar anzeigen"
-msgstr "Show topbar <i class=\"fas fa-desktop\"></i> "
+msgstr "Show top bar <i class=\"fas fa-desktop\"></i> "
 
 msgid "tooltipWithoutMenuSingleRow"
-msgstr "Can only be used with setting „Display menu in separate line - Yes“."
+msgstr "Requires \"Display menu in separate line\" to be set to \"Yes\"."
 
 msgid "tooltipDesktop"
 msgstr "Setting only affects desktop view."
@@ -285,43 +291,43 @@ msgid "buttonCustomLayout"
 msgstr "Custom layout"
 
 msgid "chooseLayout"
-msgstr "Please choose a preset layout:"
+msgstr "Please choose a prebuilt layout:"
 
 msgid "Colors"
-msgstr "Colors"
+msgstr "Colours"
 
 msgid "Custom Sass"
 msgstr "Custom styles"
 
 msgid "Custom Sass Description"
-msgstr "Here you can make your own CSS adjustments to your template. For information about valid variables, please see <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">Adjusting templates</a>. You can also define your own custom CSS, Sass or Scss. Learn how to do this <a href=\"https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\">here</a>. <br><br>Please note: <ul><li>Use either the settings on this page or the plug-in JTL-Theme Editor for CSS adjustments. If you use both at the same time, there might be unwanted overlaps.</li><li><span class=\"text-warning\"> Empty the browser cache to see the changes made in the back end in the online shop.</li></ul>"
+msgstr "Here you can make your own CSS adjustments to your template. For information about valid variables, please see <a href="\&quot;https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\&quot;">the JTL-Guide</a>. You can also define your own custom CSS, Sass or Scss. Learn how to do this <a href="\&quot;https://guide.jtl-software.de/jtl-shop/optik/templates-anpassen/\&quot;">here</a>. <br/><br/>Please note: <ul><li>Use either the settings on this page or the plug-in JTL-Theme Editor for CSS adjustments. If you use both at the same time, there might be unwanted overlaps.</li><li><span class="\&quot;text-warning\&quot;"> Empty the browser cache to see the changes made in the back end in the online shop.</li></ul>"
 
 msgid "colorPrimary"
-msgstr "Primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primary colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorSecondary"
-msgstr "Secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Secondary colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderBgColor"
-msgstr "Header background primary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Header: Primary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColor"
-msgstr "Header primary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Header: Primary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderBgColorSecondary"
-msgstr "Header background secondary color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Header: Secondary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColorSecondary"
-msgstr "Header secondary font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Header: Secondary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorFooterBgColor"
-msgstr "Footer background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Footer: Background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorFooterColor"
-msgstr "Footer font color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Footer: Font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorCopyrightBgColor"
-msgstr "Footer Copyright background color <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field empty to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Footer: Copyright background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "customVariables"
 msgstr "Custom variables"
@@ -330,31 +336,28 @@ msgid "customContent"
 msgstr "Custom CSS, Sass or Scss"
 
 msgid "The color settings might not work as expected in this theme."
-msgstr "The color settings might not work as expected in this theme."
-
-msgid "Gewählte Vorlage"
-msgstr "Chosen layout"
+msgstr "The colour selection may not work as expected in this theme."
 
 msgid "Standard"
 msgstr "Standard"
 
 msgid "Menü in eigener Zeile"
-msgstr "Menu in single row"
+msgstr "Menu in separate line"
 
 msgid "Header Boxed - Menü mehrspaltig"
-msgstr "Header Boxed - Menu multiple lines"
+msgstr "Boxed header – multi-column menu"
 
 msgid "Ohne Topbar - Header volle breite"
-msgstr "Without Topbar - Header full width"
+msgstr "Without top bar – full-width header"
 
 msgid "Custom"
 msgstr "Custom"
 
 msgid "Blocksatz"
-msgstr "Space between"
+msgstr "Justified"
 
 msgid "Artikeldetailseite"
-msgstr "Item overview"
+msgstr "Display of variation values"
 
 msgid "Slider für Swatches anzeigen, ab x Elementen"
-msgstr "Show slider for swatches for more than x items"
+msgstr "Sliders for swatches from X elements onwards <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the minimum number of elements needed to display swatches in a slider in the online shop.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"

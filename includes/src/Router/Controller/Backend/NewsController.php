@@ -166,6 +166,9 @@ class NewsController extends AbstractBackendController
                 ->assign('category', $category);
         }
 
+        $this->alertService->addNotice($this->getMsg(), 'newsMessage');
+        $this->alertService->addError($this->getErrorMsg(), 'newsError');
+
         $this->assignScrollPosition();
 
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
@@ -363,7 +366,6 @@ class NewsController extends AbstractBackendController
             if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
-                $this->alertService->addInfo($this->msg, 'successNewsSave');
             } else {
                 $tab = Request::verifyGPDataString('tab');
 
@@ -682,7 +684,6 @@ class NewsController extends AbstractBackendController
         $this->rebuildCategoryTree(0, 1);
         if ($error === false) {
             $this->msg .= \__('successNewsCatSave') . '<br />';
-            $this->alertService->addInfo($this->msg, 'successNewsCatSave');
         }
         $newsCategory = new Category($this->db);
         $this->flushCache();

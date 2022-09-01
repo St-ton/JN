@@ -822,7 +822,7 @@ class CouponsController extends AbstractBackendController
                 $sql->addParam(':itm' . $i, $item);
                 $in[] = ':itm' . $i;
             }
-            $productIDs  = $this->db->getInts(
+            $productIDs = $this->db->getInts(
                 'SELECT kArtikel
                     FROM tartikel
                     WHERE cArtNr IN (' . \implode(',', $in) . ')',

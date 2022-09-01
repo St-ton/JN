@@ -79,14 +79,11 @@ class NewsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
-
-        $scrollPosition = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $scrollPosition = \is_string($scrollPosition) ? $scrollPosition : '';
-        $author         = Author::getInstance($this->db);
-        $category       = new Category($this->db);
-        $languages      = LanguageHelper::getAllLanguages(0, true, true);
-        $valid          = Form::validateToken();
-        $tab            = Request::verifyGPDataString('tab');
+        $author    = Author::getInstance($this->db);
+        $category  = new Category($this->db);
+        $languages = LanguageHelper::getAllLanguages(0, true, true);
+        $valid     = Form::validateToken();
+        $tab       = Request::verifyGPDataString('tab');
         $this->handleTab($tab);
         if ($valid && Request::postInt('einstellungen') === 1) {
             $this->actionConfig($languages);

@@ -308,26 +308,32 @@ msgstr "Primary colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"
 msgid "colorSecondary"
 msgstr "Secondary colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
+msgid "header header"
+msgstr "Header"
+
 msgid "colorHeaderBgColor"
-msgstr "Header: Primary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColor"
-msgstr "Header: Primary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderBgColorSecondary"
-msgstr "Header: Secondary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Secondary background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColorSecondary"
-msgstr "Header: Secondary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Secondary font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "header footer"
+msgstr "Footer"
 
 msgid "colorFooterBgColor"
-msgstr "Footer: Background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorFooterColor"
-msgstr "Footer: Font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Font colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorCopyrightBgColor"
-msgstr "Footer: Copyright background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Copyright background colour <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Leave this field blank to use the default theme colour.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "customVariables"
 msgstr "Custom variables"

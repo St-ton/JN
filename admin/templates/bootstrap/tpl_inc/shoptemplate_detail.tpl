@@ -239,8 +239,9 @@
                     <div class="row">
                         {foreach $section->settings as $setting}
                             {if !empty($setting->rawAttributes.Subheader)}
-                            <div class="col-12">
+                            <div class="col-11 ml-auto">
                                 <div class="subheading1 mb-2">{__($setting->rawAttributes.Subheader)}</div>
+                                <hr>
                             </div>
                             {/if}
                             {if $setting->key === 'theme_default' && isset($themePreviews) && $themePreviews !== null}

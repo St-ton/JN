@@ -308,26 +308,32 @@ msgstr "Primärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"La
 msgid "colorSecondary"
 msgstr "Sekundärfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
+msgid "header header"
+msgstr "Header"
+
 msgid "colorHeaderBgColor"
-msgstr "Header: Primäre Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primäre Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColor"
-msgstr "Header: Primäre Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Primäre Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderBgColorSecondary"
-msgstr "Header: Sekundäre Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Sekundäre Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorHeaderColorSecondary"
-msgstr "Header: Sekundäre Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Sekundäre Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+
+msgid "header footer"
+msgstr "Footer"
 
 msgid "colorFooterBgColor"
-msgstr "Footer: Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorFooterColor"
-msgstr "Footer: Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Schriftfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "colorCopyrightBgColor"
-msgstr "Footer: Copyright-Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Copyright-Hintergrundfarbe <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Lassen Sie dieses Feld frei, um die Standardfarbe des Themes zu nutzen.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "customVariables"
 msgstr "Benutzerdefinierte Variablen"

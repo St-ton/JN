@@ -24,7 +24,8 @@ final class JobHydrator
         'startTime'     => 'StartTime',
         'frequency'     => 'Frequency',
         'isRunning'     => 'Running',
-        'lastFinish'    => 'DateLastFinished'
+        'lastFinish'    => 'DateLastFinished',
+        'nextStart'     => 'NextStartDate'
     ];
 
     /**

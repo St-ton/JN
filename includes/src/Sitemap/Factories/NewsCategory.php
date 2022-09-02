@@ -24,7 +24,7 @@ final class NewsCategory extends AbstractFactory
         });
         $res         = $this->db->getPDOStatement(
             "SELECT tnewskategorie.dLetzteAktualisierung AS dlm, tnewskategorie.kNewsKategorie, 
-            tnewskategorie.cPreviewImage AS image, tseo.cSeo, tseo.kSprache AS langID
+            tnewskategorie.cPreviewImage AS image, tseo.cSeo, tseo.kSprache AS langID, t.name AS title
                 FROM tnewskategorie
                 JOIN tnewskategoriesprache t 
                     ON tnewskategorie.kNewsKategorie = t.kNewsKategorie

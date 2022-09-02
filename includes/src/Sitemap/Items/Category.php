@@ -3,6 +3,8 @@
 namespace JTL\Sitemap\Items;
 
 use JTL\Helpers\URL;
+use JTL\Media\Image;
+use JTL\Media\Image\Category as CategoryImage;
 
 /**
  * Class Category
@@ -21,8 +23,18 @@ final class Category extends AbstractItem
         if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_KATEGORIEBILDER . $this->data->image);
+        $this->data->currentImagePath = $this->data->image;
+        $image                        = CategoryImage::getThumb(
+            Image::TYPE_CATEGORY,
+            (int)$this->data->kKategorie,
+            $this->data,
+            Image::SIZE_LG
+        );
+        if (\mb_strlen($image) > 0) {
+            $this->setImage($this->baseImageURL . $image);
+        }
     }
+
     /**
      * @inheritdoc
      */

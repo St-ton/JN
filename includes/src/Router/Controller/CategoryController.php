@@ -2,7 +2,9 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Router\DefaultParser;
 use JTL\Router\State;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
@@ -70,9 +72,6 @@ class CategoryController extends ProductListController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        if (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($args['name'] ?? '', '/')) {
-            $args['name'] = \last(\explode('/', $args['name']));
-        }
         $this->getStateFromSlug($args);
         if (!$this->init()) {
             return $this->notFoundResponse($request, $args, $smarty);

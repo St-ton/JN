@@ -251,15 +251,15 @@ class Navigation
                 ) {
                     break;
                 }
-                $elemCount = \count($this->categoryList->elemente) - 1;
-                for ($i = $elemCount; $i >= 0; $i--) {
-                    if (isset($this->categoryList->elemente[$i])) {
-                        $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->getShortName($langID));
-                        $ele->setURL($this->categoryList->elemente[$i]->getURL($langID));
-                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL($langID));
-                        $breadCrumb[] = $ele;
+                foreach (\array_reverse($this->categoryList->elemente) as $item) {
+                    if ($item->getID() < 1) {
+                        continue;
                     }
+                    $ele = new NavigationEntry();
+                    $ele->setName($item->getShortName($langID));
+                    $ele->setURL($item->getURL($langID));
+                    $ele->setURLFull($item->getURL($langID));
+                    $breadCrumb[] = $ele;
                 }
                 $ele = new NavigationEntry();
                 $ele->setName($this->product->cKurzbezeichnung);
@@ -278,14 +278,15 @@ class Navigation
 
             case \PAGE_ARTIKELLISTE:
                 $elemCount = \count($this->categoryList->elemente ?? []);
-                for ($i = $elemCount - 1; $i >= 0; $i--) {
-                    if (isset($this->categoryList->elemente[$i])) {
-                        $ele = new NavigationEntry();
-                        $ele->setName($this->categoryList->elemente[$i]->getShortName($langID));
-                        $ele->setURL($this->categoryList->elemente[$i]->getURL($langID));
-                        $ele->setURLFull($this->categoryList->elemente[$i]->getURL($langID));
-                        $breadCrumb[] = $ele;
+                foreach (\array_reverse($this->categoryList->elemente) as $item) {
+                    if ($item->getID() < 1) {
+                        continue;
                     }
+                    $ele = new NavigationEntry();
+                    $ele->setName($item->getShortName($langID));
+                    $ele->setURL($item->getURL($langID));
+                    $ele->setURLFull($item->getURL($langID));
+                    $breadCrumb[] = $ele;
                 }
                 if ($elemCount === 0 && $this->getProductFilter() !== null) {
                     $ele = new NavigationEntry();

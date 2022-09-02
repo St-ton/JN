@@ -630,7 +630,6 @@
             $('input[name="Versandart"]', '#checkout-shipping-payment').on('change', function() {
                 var id    = parseInt($(this).val());
                 var $form = $(this).closest('form');
-
                 if (isNaN(id)) {
                     return;
                 }
@@ -638,7 +637,14 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
+                var urlInstance = null;
+                if ($form.length === 1 && $form.attr('action') !== undefined) {
+                    urlInstance = new URL($form.attr('action'));
+                    urlInstance.searchParams.append('kVersandart', '' + id);
+                }
+                var url = urlInstance === null
+                    ? $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id
+                    : urlInstance.href;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);

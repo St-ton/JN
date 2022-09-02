@@ -4,6 +4,7 @@ namespace JTL\Router;
 
 use JTL\DB\DbInterface;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class DefaultParser
@@ -22,6 +23,49 @@ class DefaultParser
      */
     public function __construct(protected DbInterface $db, protected State $state)
     {
+    }
+
+    /**
+     * @param array $hierarchy
+     * @return stdClass|null
+     */
+    protected function validateCategoryHierarchy(array $hierarchy): ?stdClass
+    {
+        $seo   = null;
+        $left  = [];
+        $right = [];
+        foreach ($hierarchy as $item) {
+            $seo = $this->db->getSingleObject(
+                'SELECT *
+                    FROM tseo
+                    JOIN tkategorie
+                        ON tseo.cKey = :keyname
+                        AND tseo.kKey = tkategorie.kKategorie
+                    WHERE tseo.cSeo = :slg',
+                ['slg' => $item, 'keyname' => 'kKategorie']
+            );
+            if ($seo === null) {
+                break;
+            }
+            $left[]  = (int)$seo->lft;
+            $right[] = (int)$seo->rght;
+        }
+        if ($seo === null) {
+            return null;
+        }
+        $test = \array_values($left);
+        \sort($test, \SORT_NUMERIC);
+        if ($test !== $left) {
+            return null;
+        }
+        $test = \array_values($right);
+        \sort($test, \SORT_NUMERIC);
+        $test = \array_reverse($test);
+        if ($test !== $right) {
+            return null;
+        }
+
+        return $seo;
     }
 
     /**
@@ -330,6 +374,11 @@ class DefaultParser
                 $categorySeo = $arr[0];
                 $slug       .= \SEP_SEITE . $arr[1];
             }
+        } elseif (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($slug, '/')) {
+            $valid = $this->validateCategoryHierarchy(\explode('/', $slug));
+            if ($valid !== null) {
+                $slug = $valid->cSeo;
+            }
         } else {
             $slug = $categories[0];
         }
@@ -385,8 +434,7 @@ class DefaultParser
         // split attribute/attribute value
         $attributes = \explode(\SEP_MM_MMW, $slug);
         if (\is_array($attributes) && \count($attributes) > 1) {
-            $slug = $attributes[1];
-            //$mmseo = $oMerkmal_arr[0];
+            return $attributes[1];
         }
 
         return $slug;

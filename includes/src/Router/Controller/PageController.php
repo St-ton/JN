@@ -129,7 +129,7 @@ class PageController extends AbstractController
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);
             }
-        } else {
+        } elseif ($this->currentLink === null) {
             $this->initHome();
         }
         $this->smarty = $smarty;

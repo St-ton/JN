@@ -24,9 +24,6 @@ class PlausiTrennzeichen extends Plausi
             if (!isset($this->xPostVar_arr[$idx])) {
                 $this->xPlausiVar_arr[$idx] = 1;
             }
-            if ($unit === \JTL_SEPARATOR_AMOUNT && $this->xPostVar_arr[$idx] > 2) {
-                $this->xPlausiVar_arr[$idx] = 2;
-            }
             // Dezimaltrennzeichen
             $idx = 'cDezZeichen_' . $unit;
             if (!isset($this->xPostVar_arr[$idx]) || \mb_strlen($this->xPostVar_arr[$idx]) === 0) {

@@ -1,5 +1,4 @@
 {$skipHeading = $skipHeading|default:false}
-{$saveAndContinue = $saveAndContinue|default:false}
 <form{if !empty($name)} name="{$name}"{/if} method="{if !empty($method)}{$method}{else}post{/if}"{if !empty($action)} action="{$action}"{/if}>
     {$jtl_token}
     <input type="hidden" name="einstellungen" value="1" />

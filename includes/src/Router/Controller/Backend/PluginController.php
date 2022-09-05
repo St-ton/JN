@@ -107,7 +107,6 @@ class PluginController extends AbstractBackendController
             }
         }
         if ($plugin !== null) {
-            global $oPlugin;
             $oPlugin = $plugin;
             if (ADMIN_MIGRATION && $plugin instanceof Plugin) {
                 $this->getText->loadAdminLocale('pages/dbupdater');

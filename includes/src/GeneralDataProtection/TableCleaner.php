@@ -45,6 +45,12 @@ class TableCleaner
     private $taskRepetitions;
 
     /**
+     * @var int
+     */
+    private $lastProductID;
+
+
+    /**
      * anonymize methods
      * (NOTE: the order of this methods is not insignificant and "can be configured")
      *
@@ -79,7 +85,7 @@ class TableCleaner
     /**
      * get the count of all methods
      *
-     * @return integer
+     * @return int
      */
     public function getMethodCount(): int
     {
@@ -99,7 +105,7 @@ class TableCleaner
     /**
      * tells upper processes the max repetition count of one task
      *
-     * @return integer
+     * @return int
      */
     public function getTaskRepetitions(): int
     {
@@ -107,13 +113,24 @@ class TableCleaner
     }
 
     /**
+     * tells upper processes the max ID in table
+     *
+     * @return int
+     */
+    public function getLastProductID(): int
+    {
+        return $this->lastProductID;
+    }
+
+    /**
      * execute one single job by its index number
      *
-     * @param integer $taskIdx
+     * @param int $taskIdx
      * @return void
      */
-    public function executeByStep(int $taskIdx, int $taskRepetitions): void
+    public function executeByStep(int $taskIdx, int $taskRepetitions, int $lastProductID): void
     {
+        $this->lastProductID = $lastProductID;
         if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
@@ -132,8 +149,10 @@ class TableCleaner
         } else {
             $this->taskRepetitions = $instance->getTaskRepetitions();
         }
+        $instance->setLastProductID($this->lastProductID);
         $instance->execute();
         $this->taskRepetitions = $instance->getTaskRepetitions();
+        $this->lastProductID   = $instance->getLastProductID();
         $this->isFinished      = $instance->getIsFinished();
         ($this->logger === null) ?: $this->logger->log(
             \JTLLOG_LEVEL_NOTICE,

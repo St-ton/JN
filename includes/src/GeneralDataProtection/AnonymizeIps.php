@@ -96,6 +96,13 @@ class AnonymizeIps extends Method implements MethodInterface
      */
     public $taskRepetitions = 0;
 
+    /**
+     * last ID in table
+     *
+     * @var int
+     */
+    public $lastProductID;
+
 
     /**
      * run all anonymize processes

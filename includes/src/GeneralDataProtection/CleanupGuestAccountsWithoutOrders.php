@@ -23,6 +23,13 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     public $taskRepetitions = 5;
 
+    /**
+     * last ID in table `tkunde`
+     *
+     * @var int
+     */
+    public $lastProductID;
+
 
     /**
      * @inheritDoc
@@ -30,7 +37,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     public function execute(): void
     {
-        $this->workLimit = 100;        // override main value from Method class (can be configured here)
+        $this->workLimit = 100;
 
         $this->cleanupCustomers();
     }
@@ -51,12 +58,16 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                     AND cKundenNr != :anonym
                     AND cVorname != :anonym
                     AND cNachname != :anonym
+                    AND kKunde > :lastid
+                ORDER BY kKunde
                 LIMIT :worklimit",
             [
                 'anonym'    => Customer::CUSTOMER_ANONYM,
-                'worklimit' => $this->workLimit
+                'worklimit' => $this->workLimit,
+                'lastid'    => $this->lastProductID
             ]
         );
+        $this->lastProductID = (int)$guestAccounts[count($guestAccounts) -1]->kKunde;
         foreach ($guestAccounts as $guestAccount) {
             $customer = new Customer((int)$guestAccount->kKunde);
             $delRes   = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);

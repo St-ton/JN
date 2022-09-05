@@ -43,6 +43,13 @@ class CleanupCustomerRelicts extends Method implements MethodInterface
      */
     public $taskRepetitions = 0;
 
+    /**
+     * last ID in table
+     *
+     * @var int
+     */
+    public $lastProductID;
+
 
     /**
      * runs all anonymize-routines

@@ -29,4 +29,14 @@ interface MethodInterface
      * @return int
      */
     public function getTaskRepetitions(): int;
+
+    /**
+     * @return int
+     */
+    public function getLastProductID(): int;
+
+    /**
+     * @return int
+     */
+    public function setLastProductID(): int;
 }

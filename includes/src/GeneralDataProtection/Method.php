@@ -53,6 +53,13 @@ class Method
     protected $taskRepetitions = 0;
 
     /**
+     * last ID for `CleanupGuestAccountsWithoutOrders`
+     *
+     * @var int
+     */
+    protected $lastProductID = 0;
+
+    /**
      * the last date we keep
      * (depends on interval)
      *
@@ -120,5 +127,26 @@ class Method
     public function getTaskRepetitions(): int
     {
         return $this->taskRepetitions;
+    }
+
+    /**
+     * deliver the last ID in table (CleanupGuestAccountsWithoutOrders)
+     *
+     * @return integer
+     */
+    public function getLastProductID(): int
+    {
+        return $this->lastProductID ?? 0;
+    }
+
+    /**
+     * set the last processed tupel ID of a table
+     *
+     * @param int $lastProductID
+     * @return void
+     */
+    public function setLastProductID(int $lastProductID)
+    {
+        $this->lastProductID = $lastProductID;
     }
 }

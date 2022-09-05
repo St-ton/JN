@@ -58,9 +58,9 @@ final class GeneralDataProtect extends Job
     {
         parent::start($queueEntry);
         // using `tjobqueue`.`foreignKey` as a task index storage
-        $this->taskIdx         = (int)$queueEntry->foreignKey;
+        $this->taskIdx = (int)$queueEntry->foreignKey;
         // using `tjobqueue`.`lastProductID` as "index of work" in one table
-        $this->lastProductID   = (int)$queueEntry->lastProductID;
+        $this->lastProductID = (int)$queueEntry->lastProductID;
         // using `tjobqueue`.`tasksExecuted` as repetition "down counter"
         $this->taskRepetitions = (int)$queueEntry->tasksExecuted;
         if ($queueEntry->foreignKey === '') {

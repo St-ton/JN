@@ -49,7 +49,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
      */
     private function cleanupCustomers(): void
     {
-        $guestAccounts = $this->db->getObjects(
+        $guestAccounts       = $this->db->getObjects(
             "SELECT kKunde
                 FROM tkunde
                 WHERE

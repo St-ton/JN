@@ -88,9 +88,6 @@ class BoxController extends AbstractBackendController
 
         if (Request::postInt('einstellungen') > 0) {
             $this->saveAdminSectionSettings(\CONF_BOXEN, $_POST);
-            if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'einstellungen') {
-                $this->smarty->assign('cTab', 'einstellungen');
-            }
         } elseif (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::validateToken()) {
             switch ($_REQUEST['action']) {
                 case 'delete-invisible':

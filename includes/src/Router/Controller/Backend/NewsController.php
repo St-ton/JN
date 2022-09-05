@@ -1562,7 +1562,7 @@ class NewsController extends AbstractBackendController
         if ($category->getID() > 0) {
             $this->smarty->assign('category', $category)
                 ->assign('files', $this->getCategoryImages($category->getID()));
-        } else {
+        } elseif (!$this->errorMsg) {
             $this->setStep('news_uebersicht');
             $this->setErrorMsg(
                 \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))

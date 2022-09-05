@@ -21,15 +21,6 @@
         <div class="save-wrapper card-footer">
             <div class="row">
                 {$additionalButtons|default:''}
-                {if $saveAndContinue === true}
-                    <div class="ml-auto col-sm-6 col-xl-auto">
-                        {include
-                            file='snippets/buttons/saveAndContinueButton.tpl'
-                            name='speichern_und_weiter_bearbeiten'
-                            value='einstellungen'
-                        }
-                    </div>
-                {/if}
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <button name="speichern" type="submit" class="btn btn-primary btn-block">
                         {if !empty($buttonCaption)}{$buttonCaption}{else}{__('saveWithIcon')}{/if}

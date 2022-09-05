@@ -67,7 +67,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 'lastid'    => $this->lastProductID
             ]
         );
-        $this->lastProductID = (int)$guestAccounts[count($guestAccounts)-1]->kKunde;
+        $this->lastProductID = (int)$guestAccounts[count($guestAccounts) - 1]->kKunde;
         foreach ($guestAccounts as $guestAccount) {
             $customer = new Customer((int)$guestAccount->kKunde);
             $delRes   = $customer->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0);

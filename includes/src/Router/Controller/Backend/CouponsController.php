@@ -148,7 +148,7 @@ class CouponsController extends AbstractBackendController
         if ($action === 'bearbeiten') {
             $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
             $coupon   = $couponID > 0 ? $this->getCoupon($couponID) : $this->createNewCoupon($_REQUEST['cKuponTyp']);
-        } elseif ($action === 'speichern' || Request::postVar('speichern_und_weiter_bearbeiten')) {
+        } elseif ($action === 'speichern' || Request::postVar('saveAndContinue')) {
             $coupon       = $this->createCouponFromInput();
             $couponErrors = $coupon->validate();
             if (\count($couponErrors) > 0) {
@@ -172,7 +172,7 @@ class CouponsController extends AbstractBackendController
                     $this->informCouponCustomers($coupon);
                 }
                 $this->alertService->addSuccess(\__('successCouponSave'), 'successCouponSave');
-                if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+                if (Request::postVar('saveAndContinue')) {
                     $coupon = $this->getCoupon(\is_int($couponId) ? $couponId : $couponId[0]);
                 }
             } else {
@@ -192,7 +192,7 @@ class CouponsController extends AbstractBackendController
             }
         }
         if ($action === 'bearbeiten'
-            || (Request::postVar('speichern_und_weiter_bearbeiten') && $coupon instanceof Kupon)
+            || (Request::postVar('saveAndContinue') && $coupon instanceof Kupon)
         ) {
             $action      = 'bearbeiten';
             $taxClasses  = $this->db->getObjects('SELECT kSteuerklasse, cName FROM tsteuerklasse');

@@ -1,5 +1,5 @@
 {assign var='type' value=$type|default:'submit'}
-{assign var='name' value=$name|default:'speichern_und_weiter_bearbeiten'}
+{assign var='name' value=$name|default:'saveAndContinue'}
 {assign var='value' value=$value|default:'1'}
 {assign var='class' value=$class|default:'btn btn-outline-primary btn-block'}
 {assign var='id' value=$id|default:'save-and-continue'}

@@ -85,7 +85,7 @@ abstract class AbstractBackendController implements ControllerInterface
     protected function assignScrollPosition(): void
     {
         $scrollPosition    = Text::filterXSS(Request::verifyGPDataString('scrollPosition'));
-        $isSaveAndContinue = Request::postVar('speichern_und_weiter_bearbeiten', false) !== false;
+        $isSaveAndContinue = Request::postVar('saveAndContinue', false) !== false;
         $scrollPosition    = $isSaveAndContinue === true && \is_string($scrollPosition) ? $scrollPosition : '';
 
         $this->smarty->assign('scrollPosition', $scrollPosition);

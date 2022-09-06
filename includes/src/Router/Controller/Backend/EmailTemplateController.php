@@ -166,7 +166,7 @@ class EmailTemplateController extends AbstractBackendController
             $res = $this->updateTemplate($emailTemplateID, $_POST, $_FILES);
             if ($res === self::OK) {
                 $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
-                $continue = Request::postVar('speichern_und_weiter_bearbeiten', false) !== false;
+                $continue = Request::postVar('saveAndContinue', false) !== false;
                 $doCheck  = $emailTemplateID;
             } else {
                 $mailTemplate = $this->getModel();

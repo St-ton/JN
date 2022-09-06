@@ -101,11 +101,11 @@
         $('[name="scrollPosition"]').val(window.scrollY);
     });
 
-    {if isset($scrollPosition) && $scrollPosition != ''}
-    var scrollPosition = '{$scrollPosition}';
-    $('html, body').animate({
-        scrollTop: $("html").offset().top + scrollPosition
-    }, 1000);
+    {if !empty($scrollPosition)}
+        var scrollPosition = '{$scrollPosition}';
+        $('html, body').animate({
+            scrollTop: $("html").offset().top + scrollPosition
+        }, 1000);
     {/if}
 </script>
 

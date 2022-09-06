@@ -40,7 +40,7 @@ class TaCController extends AbstractBackendController
                     $_POST,
                     Request::verifyGPCDataInt('kText')
                 );
-                if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+                if (Request::postVar('saveAndContinue')) {
                     $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
                 }
             }

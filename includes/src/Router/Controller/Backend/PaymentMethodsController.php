@@ -98,7 +98,7 @@ class PaymentMethodsController extends AbstractBackendController
         ) {
             $this->actionSaveConfig($filteredPost);
 
-            if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+            if (Request::postVar('saveAndContinue')) {
                 $this->setStep('einstellen');
             }
         }

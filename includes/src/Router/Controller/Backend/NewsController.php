@@ -112,9 +112,9 @@ class NewsController extends AbstractBackendController
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
             } elseif (Request::postInt('news_kategorie_speichern') === 1
-                      && Request::postVar('speichern_und_weiter_bearbeiten', '') !== 'kategorie') {
+                      && Request::postVar('saveAndContinue', '') !== 'kategorie') {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
-            } elseif (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'kategorie') {
+            } elseif (Request::postVar('saveAndContinue', '') === 'kategorie') {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
                 $category = $this->actionEditCategory($category);
             } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
@@ -363,7 +363,7 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'news') {
+            if (Request::postVar('saveAndContinue', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {

@@ -126,7 +126,7 @@ class ShippingMethodsController extends AbstractBackendController
             if (Request::postInt('neueVersandart') > 0) {
                 $this->shippingMethod = $this->createOrUpdate($postData, $manager);
                 if (($this->shippingMethod->methodID ?? 0) > 0
-                    && Request::postVar('speichern_und_weiter_bearbeiten')
+                    && Request::postVar('saveAndContinue')
                 ) {
                     $this->shippingType = $this->actionEdit($this->shippingMethod->methodID);
                 }

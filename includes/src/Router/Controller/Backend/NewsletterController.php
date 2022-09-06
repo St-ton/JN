@@ -179,7 +179,7 @@ class NewsletterController extends AbstractBackendController
                     $tpl = $admin->getDefaultTemplate($kNewsletterVorlageStd);
                     $smarty->assign('oNewslettervorlageStd', $tpl);
                 }
-                if (Request::postVar('speichern_und_weiter_bearbeiten', '') === 'std') {
+                if (Request::postVar('saveAndContinue', '') === 'std') {
                     $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
                     $step = $admin->edit($admin->getCurrentId(), $smarty);
                 }
@@ -194,7 +194,7 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . (int)$customerGroupID . ';';
                     }
                 }
-                if (Request::postVar('speichern_und_weiter_bearbeiten', '') === '1') {
+                if (Request::postVar('saveAndContinue', '') === '1') {
                     $checks = $admin->saveTemplate($_POST);
                     if (is_array($checks) && count($checks) > 0) {
                         $smarty->assign('cPlausiValue_arr', $checks)

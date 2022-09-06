@@ -75,7 +75,7 @@ class TemplateController extends AbstractBackendController
         if (!$valid) {
             return $this->displayOverview();
         }
-        if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+        if (Request::postVar('saveAndContinue')) {
             $this->saveConfig();
             return $this->displayTemplateSettings();
         }

@@ -227,7 +227,7 @@ class BoxController extends AbstractBackendController
 
         if ($this->currentBoxID !== null
             && $this->currentBoxID > 0
-            && Request::postVar('speichern_und_weiter_bearbeiten')
+            && Request::postVar('saveAndContinue')
         ) {
             $this->actionEditMode($this->currentBoxID);
         }
@@ -314,7 +314,7 @@ class BoxController extends AbstractBackendController
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
         }
 
-        if (Request::postVar('speichern_und_weiter_bearbeiten')) {
+        if (Request::postVar('saveAndContinue')) {
             $this->actionEditMode($boxID);
         }
     }

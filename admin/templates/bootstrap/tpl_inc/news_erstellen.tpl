@@ -285,13 +285,9 @@
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>
-                    {if $oNews->getID() > 0}
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
-                                <i class="fal fa-save"></i> {__('saveAndContinue')}
-                            </button>
-                        </div>
-                    {/if}
+                    <div class="col-sm-6 col-xl-auto">
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' value='news'}
+                    </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}

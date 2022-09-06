@@ -581,6 +581,9 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-lg-auto">
+                    {include file='snippets/buttons/saveAndContinueButton.tpl'}
+                </div>
+                <div class="col-sm-6 col-lg-auto">
                     <button type="submit"
                             value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{__('createShippingType')}{else}{__('modifyedShippingType')}{/if}"
                             class="btn btn-primary btn-block">

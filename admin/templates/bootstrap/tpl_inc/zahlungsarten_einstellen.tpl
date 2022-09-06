@@ -203,6 +203,9 @@
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
+                    {include file='snippets/buttons/saveAndContinueButton.tpl'}
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                         {__('saveWithIcon')}
                     </button>

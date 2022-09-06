@@ -45,7 +45,6 @@
 <div id="content">
     <form name="news" method="post" action="{$adminURL}{$route}" enctype="multipart/form-data">
         {$jtl_token}
-        kNewsKategorie: {$category->getID()}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_kategorie_speichern" value="1" />
         <input type="hidden" name="tab" value="kategorien" />
@@ -190,6 +189,7 @@
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <textarea id="{$name}" class="ckeditor" name="{$name}" rows="15" cols="60">{$category->getDescription($langID)}</textarea>
                                     </div>
+                                    {$name = null}
                                 </div>
                             </div>
                         </div>
@@ -199,6 +199,9 @@
                                     <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                                         <i class="fa fa-exclamation"></i> {__('Cancel')}
                                     </a>
+                                </div>
+                                <div class=" col-sm-6 col-xl-auto">
+                                    {include file='snippets/buttons/saveAndContinueButton.tpl' value='kategorie'}
                                 </div>
                                 <div class=" col-sm-6 col-xl-auto">
                                     <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">

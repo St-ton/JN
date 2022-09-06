@@ -98,7 +98,7 @@ class PluginController extends AbstractBackendController
         }
         $this->smarty->assign('defaultTabbertab', $activeTab);
         $loader = $loader ?? Helper::getLoaderByPluginID($pluginID, $this->db, $this->cache);
-        global $plugin;
+        global $plugin, $oPlugin;
         if ($loader !== null) {
             try {
                 $plugin = $loader->init($pluginID, $this->invalidateCache);
@@ -107,7 +107,6 @@ class PluginController extends AbstractBackendController
             }
         }
         if ($plugin !== null) {
-            global $oPlugin;
             $oPlugin = $plugin;
             if (ADMIN_MIGRATION && $plugin instanceof Plugin) {
                 $this->getText->loadAdminLocale('pages/dbupdater');
@@ -235,6 +234,8 @@ class PluginController extends AbstractBackendController
                     $menu->html = \__('Safe mode enabled.');
                 } elseif ($menu->file !== '' && \file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
                     \ob_start();
+                    $oPlugin = $plugin;
+                    $smarty  = $this->getSmarty();
                     require $plugin->getPaths()->getAdminPath() . $menu->file;
                     $menu->html = \ob_get_clean();
                 } elseif (!empty($menu->tpl) && $menu->kPluginAdminMenu === -1) {

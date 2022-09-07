@@ -40,11 +40,6 @@ class TemplateController extends AbstractBackendController
     private Config $config;
 
     /**
-     * @var string
-     */
-    private string $jumpToSection = '';
-
-    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -64,7 +59,6 @@ class TemplateController extends AbstractBackendController
     {
         $action                   = Request::verifyGPDataString('action');
         $valid                    = Form::validateToken();
-        $this->jumpToSection      = Request::verifyGPDataString('section');
         $this->currentTemplateDir = \basename(Request::verifyGPDataString('dir'));
         if (!\is_dir(\PFAD_ROOT . \PFAD_TEMPLATES . $this->currentTemplateDir)) {
             $this->currentTemplateDir = null;
@@ -80,6 +74,10 @@ class TemplateController extends AbstractBackendController
         }
         if (!$valid) {
             return $this->displayOverview();
+        }
+        if (Request::postVar('saveAndContinue')) {
+            $this->saveConfig();
+            return $this->displayTemplateSettings();
         }
         switch ($action) {
             case 'config':
@@ -102,9 +100,6 @@ class TemplateController extends AbstractBackendController
                     : $this->displayOverview();
             case 'upload':
                 return $this->upload($_FILES['template-install-upload']);
-            case 'save-config-continue':
-                $this->saveConfig();
-                return $this->displayTemplateSettings();
             default:
                 return $this->displayOverview();
         }
@@ -337,6 +332,7 @@ class TemplateController extends AbstractBackendController
         if ($tplXML === null) {
             throw new InvalidArgumentException('Cannot display template settings');
         }
+        $this->assignScrollPosition();
         $service      = Shop::Container()->getTemplateService();
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
@@ -348,7 +344,6 @@ class TemplateController extends AbstractBackendController
         $preview        = $this->getPreview($templateConfig);
 
         return $this->smarty->assign('template', $current)
-            ->assign('jumpToSection', $this->jumpToSection)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
             ->assign('themePreviewsJSON', \json_encode($preview))
             ->assign('templateConfig', $templateConfig)

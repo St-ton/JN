@@ -1,3 +1,4 @@
+<div class="config-card-wrapper">
 <div class="card">
     <div class="card-header">
         <span class="subheading1" id="{$subsection->getValueName()}">

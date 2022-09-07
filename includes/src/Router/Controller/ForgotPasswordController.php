@@ -128,9 +128,8 @@ class ForgotPasswordController extends AbstractController
      */
     protected function initPasswordReset(array $missing): array
     {
-        $hasError = false;
-        $email    = Request::postVar('email', '');
-        $this->smarty->assign('customerEmail', $email);
+        $hasError     = false;
+        $email        = Request::postVar('email', '');
         $customerData = $this->db->getSingleObject(
             'SELECT kKunde, cSperre
                 FROM tkunde

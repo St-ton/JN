@@ -518,6 +518,7 @@ class PluginManagerController extends AbstractBackendController
             $this->cache->flushTags(
                 [\CACHING_GROUP_CORE, \CACHING_GROUP_LANGUAGE, \CACHING_GROUP_LICENSES, \CACHING_GROUP_PLUGIN]
             );
+            $this->minify->flushCache();
         } else {
             $mapper             = new ValidationMapper();
             $this->errorMessage = \sprintf(
@@ -569,7 +570,6 @@ class PluginManagerController extends AbstractBackendController
             if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                 $this->notice = \__('successPluginInstall');
                 $this->reload = true;
-                $this->minify->flushCache();
             } elseif ($res > InstallCode::OK) {
                 $mapper             = new ValidationMapper();
                 $this->errorMessage = \sprintf(
@@ -579,6 +579,7 @@ class PluginManagerController extends AbstractBackendController
                 );
             }
         }
+        $this->minify->flushCache();
     }
 
     private function massAction(): void
@@ -652,6 +653,7 @@ class PluginManagerController extends AbstractBackendController
                         default:
                             $this->notice = \__('successPluginDelete');
                             $this->reload = true;
+                            $this->minify->flushCache();
                             break;
                     }
                 } else {
@@ -659,7 +661,7 @@ class PluginManagerController extends AbstractBackendController
                 }
             } elseif (isset($_POST['reload'])) { // Reload
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-                if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
+                if ($plugin !== null && $plugin->kPlugin > 0) {
                     $loader = (int)$plugin->bExtension === 1
                         ? new PluginLoader($this->db, $this->cache)
                         : new LegacyPluginLoader($this->db, $this->cache);

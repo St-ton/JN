@@ -79,3 +79,6 @@ msgstr "%d item(s) successfully imported."
 
 msgid "Required attribute %s not found in row."
 msgstr "Required attribute %s not found in row."
+
+msgid "No items exported."
+msgstr "No items exported."

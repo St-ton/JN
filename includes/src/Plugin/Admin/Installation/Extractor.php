@@ -242,6 +242,10 @@ class Extractor
         for ($i = 0; $i < $zip->numFiles; $i++) {
             if ($i === 0) {
                 $dirName = $zip->getNameIndex($i);
+                $check   = \dirname($dirName);
+                if ($check !== '.') {
+                    $dirName = $check . '/';
+                }
                 \preg_match(self::GIT_REGEX, $dirName, $hits);
                 if (\count($hits) >= 3) {
                     $search  = $hits[2];

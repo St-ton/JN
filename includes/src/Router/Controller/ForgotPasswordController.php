@@ -128,6 +128,9 @@ class ForgotPasswordController extends AbstractController
      */
     protected function initPasswordReset(array $missing): array
     {
+        $hasError = false;
+        $email    = Request::postVar('email', '');
+        $this->smarty->assign('customerEmail', $email);
         $customerData = $this->db->getSingleObject(
             'SELECT kKunde, cSperre
                 FROM tkunde
@@ -135,36 +138,46 @@ class ForgotPasswordController extends AbstractController
                     AND nRegistriert = 1',
             ['mail' => $_POST['email']]
         );
-        if ($customerData === null) {
-            $this->alertService->addError(Shop::Lang()->get('incorrectEmail'), 'incorrectEmail');
 
-            return $missing;
+        if ($customerData !== null) {
+            $customerID = (int)$customerData->kKunde;
+            $limiter    = new Limiter($this->db);
+            $limiter->init(Request::getRealIP(), $customerID);
+            if ($limiter->check() === true) {
+                $limiter->persist();
+                $limiter->cleanup();
+                $validRecaptcha = true;
+                if ($this->config['kunden']['forgot_password_captcha'] === 'Y' && !Form::validateCaptcha($_POST)) {
+                    $validRecaptcha     = false;
+                    $missing['captcha'] = true;
+                }
+                if ($validRecaptcha === false) {
+                    $this->alertService->addError(Shop::Lang()->get('fillOut'), 'accountLocked');
+                    $hasError = true;
+                } elseif ($customerID > 0 && $customerData->cSperre !== 'Y') {
+                    $this->step = 'passwort versenden';
+                    $customer   = new Customer($customerID);
+                    $customer->prepareResetPassword();
+                    $this->smarty->assign('Kunde', $customer);
+                } elseif ($customerID > 0 && $customerData->cSperre === 'Y') {
+                    $this->alertService->addError(Shop::Lang()->get('accountLocked'), 'accountLocked');
+                    $hasError = true;
+                }
+            } else {
+                $missing['limit'] = true;
+                $this->alertService->addError(Shop::Lang()->get('formToFast', 'account data'), 'accountLocked');
+                $hasError = true;
+            }
         }
-        $customerID = (int)$customerData->kKunde;
-        $limiter    = new Limiter($this->db);
-        $limiter->init(Request::getRealIP(), $customerID);
-        if ($limiter->check() === true) {
-            $limiter->persist();
-            $limiter->cleanup();
-            $validRecaptcha = true;
-            if ($this->config['kunden']['forgot_password_captcha'] === 'Y' && !Form::validateCaptcha($_POST)) {
-                $validRecaptcha     = false;
-                $missing['captcha'] = true;
-            }
-            if ($validRecaptcha === false) {
-                $this->alertService->addError(Shop::Lang()->get('fillOut'), 'accountLocked');
-            } elseif ($customerID > 0 && $customerData->cSperre !== 'Y') {
-                $this->step = 'passwort versenden';
-                $customer   = new Customer($customerID);
-                $customer->prepareResetPassword();
 
-                $this->smarty->assign('Kunde', $customer);
-            } elseif ($customerID > 0 && $customerData->cSperre === 'Y') {
-                $this->alertService->addError(Shop::Lang()->get('accountLocked'), 'accountLocked');
-            }
-        } else {
-            $missing['limit'] = true;
-            $this->alertService->addError(Shop::Lang()->get('formToFast', 'account data'), 'accountLocked');
+        if ($hasError === false) {
+            $this->alertService->addSuccess(
+                \sprintf(
+                    Shop::Lang()->get('newPasswordWasGenerated', 'forgot password'),
+                    $email
+                ),
+                'newPasswordWasGenerated'
+            );
         }
 
         return $missing;

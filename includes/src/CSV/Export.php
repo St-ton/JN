@@ -47,6 +47,8 @@ class Export
             if ($arr instanceof Iterator) {
                 /** @var Iterator $arr * */
                 $first = $arr->current();
+            } elseif (!\is_array($arr) || \count($arr) === 0) {
+                return false;
             } else {
                 $first = $arr[0];
             }

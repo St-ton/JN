@@ -1104,6 +1104,33 @@
             }
         },
 
+        registerImageHover: function($wrapper) {
+            $('.productbox-show-variations', $wrapper).on('mouseenter', function () {
+                let productBox = $(this);
+                let collapse = productBox.find('.productbox-variations>.collapse');
+                let placeholderClone = productBox.clone();
+                placeholderClone.removeAttr('id');
+                placeholderClone.appendTo(productBox.parent());
+                productBox[0].placeholderClone = placeholderClone;
+                $(collapse).collapse('show');
+            });
+            $('.productbox-show-variations', $wrapper).on('mouseleave', function () {
+                let collapse = $(this).find('.productbox-variations>.collapse')
+                let box = $(this)
+
+                if (collapse.length === 1) {
+                    box.addClass('transition');
+                    $(collapse).collapse('hide');
+                    $(collapse).on('hidden.bs.collapse', function () {
+                        box.removeClass('transition');
+                        if (box[0].placeholderClone) {
+                            box[0].placeholderClone.remove();
+                        }
+                    });
+                }
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1136,6 +1163,7 @@
             this.initFilterEvents();
             this.initItemSearch('filter');
             this.initSliders();
+            this.registerImageHover();
         }
     };
 

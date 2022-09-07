@@ -638,7 +638,7 @@ class PluginManagerController extends AbstractBackendController
                 }
             } elseif (isset($_POST['deinstallieren'])) {
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
-                if (isset($plugin->kPlugin) && $plugin->kPlugin > 0) {
+                if ($plugin !== null && $plugin->kPlugin > 0) {
                     switch ($this->uninstaller->uninstall($pluginID, false, null, $deleteData, $deleteFiles)) {
                         case InstallCode::WRONG_PARAM:
                             $this->errorMessage = \__('errorAtLeastOnePlugin');

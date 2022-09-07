@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use JTL\Cache\JTLCacheInterface;
 use JTL\Events\Dispatcher;
 use JTL\Filter\FilterInterface;
 use JTL\Language\LanguageHelper;
@@ -424,5 +425,15 @@ class ShopBC
     {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
             . '://' . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'] ?? '');
+    }
+
+    /**
+     * @return JTLCacheInterface
+     * @deprecated since 5.0.0
+     */
+    public static function Cache(): JTLCacheInterface
+    {
+        \trigger_error(__METHOD__ . ' is deprecated - use JTL\Shop::Container()->getCache().', \E_USER_DEPRECATED);
+        return Shop::Container()->getCache();
     }
 }

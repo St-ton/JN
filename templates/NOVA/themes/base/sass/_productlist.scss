@@ -178,6 +178,7 @@
 				z-index: $zindex-dropdown;
 				padding: map-get($spacers, 3) map-get($spacers, 3) 0;
 				margin: -(map-get($spacers, 3));
+				width: 100%;
 			}
 		}
 	}

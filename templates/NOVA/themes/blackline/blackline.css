@@ -21734,7 +21734,7 @@ label {
 .productbox {
   position: relative;
 }
-@media (min-width: 1300px) {
+@media (min-width: 768px) {
   .productbox.productbox-hover .productbox-inner::before {
     content: "";
     background-color: #ffffff;
@@ -24558,6 +24558,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   z-index: 1000;
   padding: 1rem 1rem 0;
   margin: -1rem;
+  width: 100%;
 }
 
 #result-wrapper .title {

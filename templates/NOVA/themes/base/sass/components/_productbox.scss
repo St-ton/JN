@@ -1,6 +1,6 @@
 
 .productbox { position: relative;
-	@include media-breakpoint-up(xl) {
+	@include media-breakpoint-up(md) {
 		&.productbox-hover {
 			.productbox-inner::before { content: ''; background-color: $card-bg; position: absolute; left: 0; top: 0; right: 0; bottom: 0; transition: $transition-base; }
 

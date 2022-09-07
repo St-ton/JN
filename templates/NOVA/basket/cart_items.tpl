@@ -4,9 +4,13 @@
         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
             {$itemInfoCols=3}
             {$cols=9}
+            {$mdLeft=5}
+            {$mdRight=4}
         {else}
             {$itemInfoCols=5}
             {$cols=12}
+            {$mdLeft=6}
+            {$mdRight=6}
         {/if}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
             {$itemInfoCols=$itemInfoCols+2}
@@ -59,108 +63,13 @@
                         {/if}
                     {/block}
                     {block name='basket-cart-items-items-main-content'}
-                        {col cols=$cols xl=$itemInfoCols class="ml-auto-util"}
+                        {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}{$nameCol=$mdLeft}{else}{$nameCol=$mdLeft+$mdRight}{/if}
+                        {col cols=$cols xl=$itemInfoCols md=$nameCol class="ml-auto-util"}
                         {block name='basket-cart-items-items-main-content-inner'}
                         {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                             {block name='basket-cart-items-product-link'}
                                 {link class="cart-items-name" href=$oPosition->Artikel->cURLFull title=$posName}{$oPosition->cName|trans}{/link}
-                            {/block}
-                            {block name='basket-cart-items-product-data'}
-                                <ul class="list-unstyled">
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
-                                        {block name='basket-cart-items-product-data-short-desc'}
-                                            <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
-                                        {/block}
-                                    {/if}
-                                    {block name='basket-cart-items-product-data-sku'}
-                                        <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
-                                    {/block}
-                                    {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}
-                                        {block name='basket-cart-items-product-data-mhd'}
-                                            <li title="{lang key='productMHDTool'}" class="best-before">
-                                                <strong>{lang key='productMHD'}:</strong> {$oPosition->Artikel->dMHD_de}
-                                            </li>
-                                        {/block}
-                                    {/if}
-                                    {if $oPosition->Artikel->cLocalizedVPE
-                                        && $oPosition->Artikel->cVPE !== 'N'
-                                        && $oPosition->nPosTyp !== $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
-                                    }
-                                        {block name='basket-cart-items-product-data-base-price'}
-                                            <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
-                                        {/block}
-                                    {/if}
-                                    {if $Einstellungen.kaufabwicklung.warenkorb_varianten_varikombi_anzeigen === 'Y' && isset($oPosition->WarenkorbPosEigenschaftArr) && !empty($oPosition->WarenkorbPosEigenschaftArr)}
-                                        {foreach $oPosition->WarenkorbPosEigenschaftArr as $Variation}
-                                            {block name='basket-cart-items-product-data-variations'}
-                                                <li class="variation">
-                                                    <strong>{$Variation->cEigenschaftName|trans}:</strong> {$Variation->cEigenschaftWertName|trans}
-                                                </li>
-                                            {/block}
-                                        {/foreach}
-                                    {/if}
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $oPosition->cLieferstatus|trans}
-                                        {block name='basket-cart-items-product-data-delivery-status'}
-                                            <li class="delivery-status"><strong>{lang key='deliveryStatus'}:</strong> {$oPosition->cLieferstatus|trans}</li>
-                                        {/block}
-                                    {/if}
-                                    {if !empty($oPosition->cHinweis)}
-                                        {block name='basket-cart-items-product-data-notice'}
-                                            <li class="text-info notice">{$oPosition->cHinweis}</li>
-                                        {/block}
-                                    {/if}
-
-                                    {* Buttonloesung eindeutige Merkmale *}
-                                    {if $oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
-                                        {block name='basket-cart-items-product-data-manufacturers'}
-                                            <li class="manufacturer">
-                                                <strong>{lang key='manufacturer' section='productDetails'}</strong>:
-                                                <span class="values">
-                                                   {$oPosition->Artikel->cHersteller}
-                                                </span>
-                                            </li>
-                                        {/block}
-                                    {/if}
-
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
-                                        {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
-                                            {block name='basket-cart-items-product-data-attributes'}
-                                                <li class="characteristic">
-                                                    <strong>{$characteristic->getName()}</strong>:
-                                                    <span class="values">
-                                                        {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
-                                                            {if !$characteristicValue@first}, {/if}
-                                                            {$characteristicValue->getValue()}
-                                                        {/foreach}
-                                                    </span>
-                                                </li>
-                                            {/block}
-                                        {/foreach}
-                                    {/if}
-
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelattribute == 'Y' && !empty($oPosition->Artikel->Attribute)}
-                                        {foreach $oPosition->Artikel->Attribute as $oAttribute_arr}
-                                            {block name='basket-cart-items-product-data-attributes-attributes'}
-                                                <li class="attribute">
-                                                    <strong>{$oAttribute_arr->cName}</strong>:
-                                                    <span class="values">
-                                                        {$oAttribute_arr->cWert}
-                                                    </span>
-                                                </li>
-                                            {/block}
-                                        {/foreach}
-                                    {/if}
-
-                                    {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                        {block name='basket-cart-items-product-data-weight'}
-                                            <li class="weight">
-                                                <strong>{lang key='shippingWeight'}: </strong>
-                                                <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit'}</span>
-                                            </li>
-                                        {/block}
-                                    {/if}
-                                </ul>
                             {/block}
                         {else}
                             {block name='basket-cart-items-is-not-product'}
@@ -184,64 +93,11 @@
                             {/block}
                         {/if}
                         {/block}
-                        {block name='basket-cart-items-product-cofig-items-outer'}
-                        {if $oPosition->istKonfigVater()}
-                            {block name='basket-cart-items-product-cofig-items'}
-                                <ul class="config-items text-muted-util small">
-                                    {$labeled=false}
-                                    {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
-                                        {block name='product-config-item'}
-                                            {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
-                                            && !$KonfigPos->isIgnoreMultiplier()}
-                                                <li>
-                                                    <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
-                                                    {$KonfigPos->cName|trans} &raquo;
-                                                    <span class="price_value">
-                                                        {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                                        {lang key='pricePerUnit' section='checkout'}
-                                                    </span>
-                                                </li>
-                                            {elseif $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
-                                            && $KonfigPos->isIgnoreMultiplier()}
-                                                {if !$labeled}
-                                                    <strong>{lang key='one-off' section='checkout'}</strong>
-                                                    {$labeled=true}
-                                                {/if}
-                                                <li>
-                                                    <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
-                                                    {$KonfigPos->cName|trans} &raquo;
-                                                    <span class="price_value">
-                                                        {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                                                        {lang key='pricePerUnit' section='checkout'}
-                                                    </span>
-                                                </li>
-                                            {/if}
-                                        {/block}
-                                    {/foreach}
-                                </ul>
-                            {/block}
-                        {/if}
-                        {/block}
-
-                        {block name='basket-cart-items-product-partlist-items-outer'}
-                        {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
-                            {block name='basket-cart-items-product-partlist-items'}
-                                <ul class="partlist-items text-muted-util small">
-                                    {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
-                                        <li>
-                                            <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
-                                            {$partListItem->cName|trans}
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            {/block}
-                        {/if}
-                        {/block}
                         {/col}
 
                         {block name='basket-cart-items-price-single'}
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                {col cols=$cols xl=2 class="cart-items-single-price"}
+                                {col cols=$cols md=$mdRight xl=2 class="cart-items-single-price"}
                                 {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                                 && (!$oPosition->istKonfigVater() || !isset($oPosition->oKonfig_arr) || $oPosition->oKonfig_arr|count === 0)}
                                     <strong class="cart-items-price-text">
@@ -252,7 +108,7 @@
                             {/if}
                         {/block}
                         {block name='basket-cart-items-quantity-outer'}
-                        {col cols=$cols xl=3 class="cart-items-quantity"}
+                        {col cols=$cols xl=3 md=$mdLeft class="cart-items-quantity"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
@@ -304,7 +160,7 @@
                         {/block}
                     {/block}
                     {block name='basket-cart-items-order-items-price-net'}
-                        {col cols=$cols xl=2 class="cart-items-price price-col"}
+                        {col cols=$cols xl=2 md=$mdRight class="cart-items-price price-col"}
                             <strong class="cart-items-price-text">{lang key="price"}:</strong>
                             <span class="price_overall text-accent">
                                 {if $oPosition->istKonfigVater()}
@@ -315,6 +171,157 @@
                             </span>
                         {/col}
                     {/block}
+                    {col cols=$cols xl=$cols+1 class="ml-auto-util"}
+                    {block name='basket-cart-items-product-data'}
+                        <ul class="list-unstyled">
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                {block name='basket-cart-items-product-data-short-desc'}
+                                    <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
+                                {/block}
+                            {/if}
+                            {block name='basket-cart-items-product-data-sku'}
+                                <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
+                            {/block}
+                            {if isset($oPosition->Artikel->dMHD) && isset($oPosition->Artikel->dMHD_de) && $oPosition->Artikel->dMHD_de !== null}
+                                {block name='basket-cart-items-product-data-mhd'}
+                                    <li title="{lang key='productMHDTool'}" class="best-before">
+                                        <strong>{lang key='productMHD'}:</strong> {$oPosition->Artikel->dMHD_de}
+                                    </li>
+                                {/block}
+                            {/if}
+                            {if $oPosition->Artikel->cLocalizedVPE
+                            && $oPosition->Artikel->cVPE !== 'N'
+                            && $oPosition->nPosTyp !== $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
+                            }
+                                {block name='basket-cart-items-product-data-base-price'}
+                                    <li class="baseprice"><strong>{lang key='basePrice'}:</strong> {$oPosition->Artikel->cLocalizedVPE[$NettoPreise]}</li>
+                                {/block}
+                            {/if}
+                            {if $Einstellungen.kaufabwicklung.warenkorb_varianten_varikombi_anzeigen === 'Y' && isset($oPosition->WarenkorbPosEigenschaftArr) && !empty($oPosition->WarenkorbPosEigenschaftArr)}
+                                {foreach $oPosition->WarenkorbPosEigenschaftArr as $Variation}
+                                    {block name='basket-cart-items-product-data-variations'}
+                                        <li class="variation">
+                                            <strong>{$Variation->cEigenschaftName|trans}:</strong> {$Variation->cEigenschaftWertName|trans}
+                                        </li>
+                                    {/block}
+                                {/foreach}
+                            {/if}
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $oPosition->cLieferstatus|trans}
+                                {block name='basket-cart-items-product-data-delivery-status'}
+                                    <li class="delivery-status"><strong>{lang key='deliveryStatus'}:</strong> {$oPosition->cLieferstatus|trans}</li>
+                                {/block}
+                            {/if}
+                            {if !empty($oPosition->cHinweis)}
+                                {block name='basket-cart-items-product-data-notice'}
+                                    <li class="text-info notice">{$oPosition->cHinweis}</li>
+                                {/block}
+                            {/if}
+
+                            {* Buttonloesung eindeutige Merkmale *}
+                            {if $oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
+                                {block name='basket-cart-items-product-data-manufacturers'}
+                                    <li class="manufacturer">
+                                        <strong>{lang key='manufacturer' section='productDetails'}</strong>:
+                                        <span class="values">
+                                           {$oPosition->Artikel->cHersteller}
+                                        </span>
+                                    </li>
+                                {/block}
+                            {/if}
+
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
+                                {foreach $oPosition->Artikel->oMerkmale_arr as $characteristic}
+                                    {block name='basket-cart-items-product-data-attributes'}
+                                        <li class="characteristic">
+                                            <strong>{$characteristic->getName()}</strong>:
+                                            <span class="values">
+                                                {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
+                                                    {if !$characteristicValue@first}, {/if}
+                                                    {$characteristicValue->getValue()}
+                                                {/foreach}
+                                            </span>
+                                        </li>
+                                    {/block}
+                                {/foreach}
+                            {/if}
+
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelattribute == 'Y' && !empty($oPosition->Artikel->Attribute)}
+                                {foreach $oPosition->Artikel->Attribute as $oAttribute_arr}
+                                    {block name='basket-cart-items-product-data-attributes-attributes'}
+                                        <li class="attribute">
+                                            <strong>{$oAttribute_arr->cName}</strong>:
+                                            <span class="values">
+                                                {$oAttribute_arr->cWert}
+                                            </span>
+                                        </li>
+                                    {/block}
+                                {/foreach}
+                            {/if}
+
+                            {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
+                                {block name='basket-cart-items-product-data-weight'}
+                                    <li class="weight">
+                                        <strong>{lang key='shippingWeight'}: </strong>
+                                        <span class="value">{$oPosition->Artikel->cGewicht} {lang key='weightUnit'}</span>
+                                    </li>
+                                {/block}
+                            {/if}
+                        </ul>
+                    {/block}
+                    {block name='basket-cart-items-product-cofig-items-outer'}
+                        {if $oPosition->istKonfigVater()}
+                            {block name='basket-cart-items-product-cofig-items'}
+                                <ul class="config-items text-muted-util small">
+                                    {$labeled=false}
+                                    {foreach JTL\Session\Frontend::getCart()->PositionenArr as $KonfigPos}
+                                        {block name='product-config-item'}
+                                            {if $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
+                                            && !$KonfigPos->isIgnoreMultiplier()}
+                                                <li>
+                                                    <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
+                                                    {$KonfigPos->cName|trans} &raquo;
+                                                    <span class="price_value">
+                                                        {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                                        {lang key='pricePerUnit' section='checkout'}
+                                                    </span>
+                                                </li>
+                                            {elseif $oPosition->cUnique == $KonfigPos->cUnique && $KonfigPos->kKonfigitem > 0
+                                            && $KonfigPos->isIgnoreMultiplier()}
+                                                {if !$labeled}
+                                                    <strong>{lang key='one-off' section='checkout'}</strong>
+                                                    {$labeled=true}
+                                                {/if}
+                                                <li>
+                                                    <span class="qty">{if !$KonfigPos->istKonfigVater()}{$KonfigPos->nAnzahlEinzel}{else}1{/if}x</span>
+                                                    {$KonfigPos->cName|trans} &raquo;
+                                                    <span class="price_value">
+                                                        {$KonfigPos->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                                        {lang key='pricePerUnit' section='checkout'}
+                                                    </span>
+                                                </li>
+                                            {/if}
+                                        {/block}
+                                    {/foreach}
+                                </ul>
+                            {/block}
+                        {/if}
+                    {/block}
+
+                    {block name='basket-cart-items-product-partlist-items-outer'}
+                        {if $Einstellungen.kaufabwicklung.bestellvorgang_partlist === 'Y' && !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                            {block name='basket-cart-items-product-partlist-items'}
+                                <ul class="partlist-items text-muted-util small">
+                                    {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
+                                        <li>
+                                            <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
+                                            {$partListItem->cName|trans}
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            {/block}
+                        {/if}
+                    {/block}
+                    {/col}
                     {block name='basket-cart-items-cart-submit'}
                         {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK

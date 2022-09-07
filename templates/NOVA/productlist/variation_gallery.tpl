@@ -115,7 +115,7 @@
                                                 {else}
                                                     {block name='productlist-variation-swatch-inner'}
                                                         {col class='col-auto js-slider-item'}
-                                                            <label class="variation swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock not-available{elseif !$Variationswert->inStock}swatches-sold-out not-available{/if}"
+                                                            <label class="variation gall-preview swatches {if $hasImage}swatches-image{else}swatches-text{/if} {if $bSelected}active{/if} {if $Variationswert->notExists}swatches-not-in-stock not-available{elseif !$Variationswert->inStock}swatches-sold-out not-available{/if}"
                                                                    data-type="swatch"
                                                                    data-original="{$Variationswert->cName}"
                                                                    data-key="{$Variationswert->kEigenschaft}"
@@ -127,13 +127,11 @@
                                                                     {if $Variationswert->notExists}
                                                                         title="{lang key='notAvailableInSelection'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                        {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                     {elseif $Variationswert->inStock}
                                                                         data-title="{$Variationswert->cName}"
                                                                     {else}
                                                                         title="{lang key='ampelRot'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                        {if !$showSwatchSlider}data-toggle="tooltip"{/if}
                                                                         data-stock="out-of-stock"
                                                                     {/if}
                                                                     {if isset($Variationswert->oVariationsKombi)}
@@ -180,7 +178,7 @@
                                                 {else}
                                                     {block name='productlist-variation-textswatch-inner'}
                                                         {col class='col-auto'}
-                                                            <label class="variation swatches swatches-text{if $bSelected} active{/if} {if $Variationswert->notExists}swatches-not-in-stock{elseif !$Variationswert->inStock}swatches-sold-out{/if}"
+                                                            <label class="variation gall-preview swatches swatches-text{if $bSelected} active{/if} {if $Variationswert->notExists}swatches-not-in-stock{elseif !$Variationswert->inStock}swatches-sold-out{/if}"
                                                                    data-type="swatch"
                                                                    data-original="{$Variationswert->cName}"
                                                                    data-key="{$Variationswert->kEigenschaft}"
@@ -192,13 +190,11 @@
                                                                     {if $Variationswert->notExists}
                                                                         title="{lang key='notAvailableInSelection'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='notAvailableInSelection'}"
-                                                                        data-toggle="tooltip"
                                                                     {elseif $Variationswert->inStock}
                                                                         data-title="{$Variationswert->cName}"
                                                                     {else}
                                                                         title="{lang key='ampelRot'}"
                                                                         data-title="{$Variationswert->cName} - {lang key='ampelRot'}"
-                                                                        data-toggle="tooltip"
                                                                         data-stock="out-of-stock"
                                                                     {/if}
                                                                     {if isset($Variationswert->oVariationsKombi)}

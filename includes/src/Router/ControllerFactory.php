@@ -71,6 +71,8 @@ class ControllerFactory
         if ($fileName === 'wartung.php') {
             $this->setLinkTypeByFileName($fileName);
             $controller = $this->getPageControllerByLinkType($this->state->linkType);
+        } elseif ($state->type === 'kLink' && $state->linkID > 0) {
+            $controller = $this->getPageController();
         } elseif ($state->productID > 0
             && !$state->linkID
             && (!$state->categoryID || ($state->categoryID > 0 && $state->show === 1))

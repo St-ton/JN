@@ -28,6 +28,8 @@ class TaCController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/agbwrb');
         $this->step = 'agbwrb_uebersicht';
         $this->setLanguage();
+        $this->assignScrollPosition();
+
         if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
             // Editieren
             if (Request::verifyGPCDataInt('agbwrb_edit') === 1) {
@@ -38,6 +40,9 @@ class TaCController extends AbstractBackendController
                     $_POST,
                     Request::verifyGPCDataInt('kText')
                 );
+                if (Request::postVar('saveAndContinue')) {
+                    $this->actionEdit(Request::verifyGPCDataInt('kKundengruppe'));
+                }
             }
         }
 

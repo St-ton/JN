@@ -539,12 +539,20 @@
 
         registerImageHover: function($wrapper) {
             $('.productbox-show-variations', $wrapper).on('mouseenter', function () {
-                var collapse = $(this).find('.productbox-variations>.collapse')
+                let collapse = $(this).find('.productbox-variations>.collapse')
                 $(collapse).collapse('show');
             });
             $('.productbox-show-variations', $wrapper).on(' mouseleave', function () {
-                var collapse = $(this).find('.productbox-variations>.collapse')
-                $(collapse).collapse('hide');
+                let collapse = $(this).find('.productbox-variations>.collapse')
+                let box = $(this)
+
+                if (collapse.length === 1) {
+                    box.addClass('transition');
+                    $(collapse).collapse('hide');
+                    $(collapse).on('hidden.bs.collapse', function () {
+                        box.removeClass('transition');
+                    });
+                }
             });
         },
 
@@ -1495,11 +1503,13 @@
                     $item.append(label);
                     break;
                 case 'swatch':
-                    $item.tooltip({
-                        title: note,
-                        trigger: 'hover',
-                        container: 'body'
-                    });
+                    if (!$item.hasClass('gall-preview')) {
+                        $item.tooltip({
+                            title: note,
+                            trigger: 'hover',
+                            container: 'body'
+                        });
+                    }
                     if (notExists) {
                         $item.addClass('swatches-not-in-stock');
                     } else {

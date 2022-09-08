@@ -558,6 +558,7 @@ class ProductFilter
         $this->searchSpecial = new BaseSearchSpecial($this);
 
         $this->filters              = [];
+        $this->activeFilters        = [];
         $this->characteristicFilter = [];
         $this->searchFilter         = [];
 
@@ -604,6 +605,8 @@ class ProductFilter
      */
     public function initStates(array $params, bool $validate = true): self
     {
+        $this->activeFilters = [];
+
         $params = \array_merge($this->getParamsPrototype(), $params);
         if ($params['kKategorie'] > 0) {
             $this->baseState = $this->category->init($params['kKategorie']);

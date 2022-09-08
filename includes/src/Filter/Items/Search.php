@@ -137,7 +137,7 @@ class Search extends AbstractFilter
                   AND kSprache = :languageID',
             [
                 'kkey'       => $this->getValue(),
-                'languageID' => (int)$_SESSION['kSprache']
+                'languageID' => $this->getLanguageID()
             ]
         );
         if ($seo !== null && !empty($seo->cSuche)) {

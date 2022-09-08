@@ -1,18 +1,18 @@
 {block name='productlist-item-list'}
     {block name='productlist-item-list-variables'}
-        {if $Einstellungen.template.productlist.variation_select_productlist === 'N'}
+        {if $Einstellungen.template.productlist.variation_select_productlist_list === 'N'}
             {assign var=hasOnlyListableVariations value=0}
         {else}
             {hasOnlyListableVariations artikel=$Artikel
-                maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
-                maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+                maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist_list
+                maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist_list
                 assign='hasOnlyListableVariations'}
         {/if}
         {$isOPC=$isOPC|default:false}
     {/block}
     {block name='productlist-item-list-productbox-outer'}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-row productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($listStyle) && $listStyle === 'list'} active{/if}">
+         class="productbox productbox-row productbox-show-variations productbox-hover{if isset($listStyle) && $listStyle === 'list'} active{/if}">
         <div class="productbox-inner">
             {block name='productlist-item-list-productbox-inner'}
             {row}

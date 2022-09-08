@@ -51,6 +51,7 @@ class PaymentMethodsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
         $this->checkPermissions(Permissions::ORDER_PAYMENT_VIEW);
+        $this->assignScrollPosition();
 
         $defaultCurrency      = $this->db->select('twaehrung', 'cStandard', 'Y');
         $this->step           = 'uebersicht';
@@ -96,6 +97,10 @@ class PaymentMethodsController extends AbstractBackendController
             && Form::validateToken()
         ) {
             $this->actionSaveConfig($filteredPost);
+
+            if (Request::postVar('saveAndContinue')) {
+                $this->setStep('einstellen');
+            }
         }
 
         if ($this->step === 'einstellen') {

@@ -792,6 +792,7 @@ final class Admin
     public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
+            // --TO-CHECK-- filter, in join, by the highest/last date of a inserted mail tupel in t..history
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
@@ -808,6 +809,7 @@ final class Admin
                 LEFT JOIN tnewsletterempfaengerhistory
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
+                      AND tnewsletterempfaengerhistory.dEingetragen != (SELECT MAX(tnewsletterempfaengerhistory.dEingetragen))
                 LEFT JOIN toptin
                     ON toptin.cMail = tnewsletterempfaenger.cEmail
                 WHERE tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
@@ -887,9 +889,9 @@ final class Admin
             $entry = $this->db->getSingleObject(
                 'SELECT c.foreignKeyID AS newsletterID, c.cronID AS cronID, l.cBetreff
                     FROM tcron c
-                    LEFT JOIN tjobqueue j 
+                    LEFT JOIN tjobqueue j
                         ON j.cronID = c.cronID
-                    LEFT JOIN tnewsletter l 
+                    LEFT JOIN tnewsletter l
                         ON c.foreignKeyID = l.kNewsletter
                     WHERE c.cronID = :cronID',
                 ['cronID' => $queueID]

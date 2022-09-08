@@ -1,2 +1,3 @@
-    </div><!-- /.card -->
-</div><!-- /.card-header -->
+    </div>{* /.card-body *}
+</div>{* /.card *}
+</div>{* /.config-card-wrapper *}

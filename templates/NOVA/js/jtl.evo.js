@@ -630,7 +630,6 @@
             $('input[name="Versandart"]', '#checkout-shipping-payment').on('change', function() {
                 var id    = parseInt($(this).val());
                 var $form = $(this).closest('form');
-
                 if (isNaN(id)) {
                     return;
                 }
@@ -638,7 +637,14 @@
                 $form.find('fieldset, button[type="submit"]')
                     .attr('disabled', true);
 
-                var url = $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id;
+                var urlInstance = null;
+                if ($form.length === 1 && $form.attr('action') !== undefined) {
+                    urlInstance = new URL($form.attr('action'));
+                    urlInstance.searchParams.append('kVersandart', '' + id);
+                }
+                var url = urlInstance === null
+                    ? $('#jtl-io-path').data('path') + '/bestellvorgang.php?kVersandart=' + id
+                    : urlInstance.href;
                 $.evo.loadContent(url, function() {
                     $.evo.checkout();
                 }, null, true);
@@ -1104,6 +1110,16 @@
             }
         },
 
+        registerImageHover: function($wrapper) {
+            $(window).on("load resize", function() {
+                let productWrapper = $('.product-wrapper');
+                $.each(productWrapper, function() {
+                    let boxHeight = $(this).height()
+                    $(this).height(boxHeight);
+                })
+            })
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1136,6 +1152,7 @@
             this.initFilterEvents();
             this.initItemSearch('filter');
             this.initSliders();
+            this.registerImageHover();
         }
     };
 

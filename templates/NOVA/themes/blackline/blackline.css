@@ -17523,7 +17523,7 @@ label {
 .productbox {
   position: relative;
 }
-@media (min-width: 1300px) {
+@media (min-width: 768px) {
   .productbox.productbox-hover .productbox-inner::before {
     content: "";
     background-color: #ffffff;
@@ -17595,6 +17595,10 @@ label {
 .productbox-quick-actions .btn {
   margin: 0.25rem;
 }
+.productbox-show-variations.productbox-hover:hover .productbox-quick-actions {
+  right: 1.5rem;
+  top: 1.5rem;
+}
 .productbox-ribbon.ribbon {
   position: absolute;
   z-index: 1;
@@ -17632,11 +17636,17 @@ label {
 .productbox-variations {
   margin-bottom: 1rem;
 }
+.productbox-show-variations .productbox-variations {
+  margin-bottom: 0;
+}
+.productbox-show-variations .productbox-variations .productbox-onhover {
+  padding-bottom: 1rem;
+}
 .productbox-price {
   font-size: 1rem;
 }
 .productbox-onhover {
-  transition: 0.2s;
+  transition: opacity 0.35s linear;
 }
 .productbox-column .productbox-details {
   display: none;
@@ -19903,6 +19913,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 }
 #product-list .product-wrapper:not(:last-child) {
   margin-bottom: 4rem;
+}
+#product-list.layout-gallery .productbox-hover.productbox-show-variations.transition, #product-list.layout-gallery .productbox-hover.productbox-show-variations:hover {
+  position: absolute;
+  z-index: 1000;
+  padding: 1rem 1rem 0;
+  margin: -1rem;
+  width: 100%;
 }
 #result-wrapper .title {
   margin-bottom: 1.5rem;

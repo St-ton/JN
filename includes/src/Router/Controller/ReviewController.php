@@ -199,23 +199,23 @@ class ReviewController extends PageController
             );
             exit;
         }
-        $product = new Artikel($this->db);
-        $product->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
-        if (!$product->kArtikel) {
+        $this->currentProduct = new Artikel($this->db);
+        $this->currentProduct->fuelleArtikel($params['kArtikel'], Artikel::getDefaultOptions());
+        if (!$this->currentProduct->kArtikel) {
             \header('Location: ' . Shop::getURL() . '/', true, 303);
             exit;
         }
-        if ($product->Bewertungen === null) {
-            $product->holeBewertung(
+        if ($this->currentProduct->Bewertungen === null) {
+            $this->currentProduct->holeBewertung(
                 $this->config['bewertung']['bewertung_anzahlseite'],
                 0,
                 -1,
                 $this->config['bewertung']['bewertung_freischalten'],
                 $params['nSortierung']
             );
-            $product->holehilfreichsteBewertung();
+            $this->currentProduct->holehilfreichsteBewertung();
         }
-        if ($this->checkProductWasPurchased($product->kArtikel, Frontend::getCustomer()) === false) {
+        if ($this->checkProductWasPurchased($this->currentProduct->kArtikel, Frontend::getCustomer()) === false) {
             $this->alertService->addWarning(
                 Shop::Lang()->get('productNotBuyed', 'product rating'),
                 'productNotBuyed',
@@ -224,12 +224,12 @@ class ReviewController extends PageController
             $reviewAllowed = false;
         }
 
-        $this->smarty->assign('Artikel', $product)
+        $this->smarty->assign('Artikel', $this->currentProduct)
             ->assign('ratingAllowed', $reviewAllowed)
             ->assign(
                 'oBewertung',
                 ReviewModel::loadByAttributes(
-                    ['productID' => $product->kArtikel, 'customerID' => $customer->getID()],
+                    ['productID' => $this->currentProduct->kArtikel, 'customerID' => $customer->getID()],
                     $this->db,
                     ReviewHelpfulModel::ON_NOTEXISTS_NEW
                 )

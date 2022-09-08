@@ -125,6 +125,16 @@ interface JobInterface
     public function setStartDate($date): void;
 
     /**
+     * @return DateTime|null
+     */
+    public function getNextStartDate(): ?DateTime;
+
+    /**
+     * @param DateTime|string $date
+     */
+    public function setNextStartDate($date): void;
+
+    /**
      * @return int|null
      */
     public function getForeignKeyID(): ?int;

@@ -1,18 +1,24 @@
 {block name='productlist-item-box'}
-    {if $Einstellungen.template.productlist.variation_select_productlist === 'N'
-            || $Einstellungen.template.productlist.hover_productlist !== 'Y'}
+    {if $Einstellungen.template.productlist.variation_select_productlist_gallery === 'N'}
         {assign var=hasOnlyListableVariations value=0}
     {else}
         {hasOnlyListableVariations artikel=$Artikel
-            maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist
-            maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist
+            maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist_gallery
+            maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist_gallery
             assign='hasOnlyListableVariations'}
     {/if}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-column productbox-show-variations {if $Einstellungen.template.productlist.hover_productlist === 'Y'} productbox-hover{/if}{if isset($class)} {$class}{/if}">
+         class="productbox productbox-column {if !empty($hasOnlyListableVariations) && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW])}productbox-show-variations {/if} productbox-hover{if isset($class)} {$class}{/if}">
+        {block name='productlist-item-box-include-productlist-actions'}
+            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
+                {include file='productlist/productlist_actions.tpl'}
+            </div>
+        {/block}
+
         {form id="{$idPrefix|default:''}buy_form_{$Artikel->kArtikel}"
         action=$ShopURL class="form form-basket jtl-validate"
         data=["toggle" => "basket-add"]}
+        {input type="hidden" name="a" value="{if !empty({$Artikel->kVariKindArtikel})}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"}
         <div class="productbox-inner">
             {row}
                 {col cols=12}
@@ -77,18 +83,13 @@
                                 {/if}
                             </div>
                         {/block}
-
-                        {block name='productlist-item-box-include-productlist-actions'}
-                            <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
-                                {include file='productlist/productlist_actions.tpl'}
-                            </div>
-                        {/block}
                     </div>
                 {/col}
-            {if $hasOnlyListableVariations > 0 && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
-            $Einstellungen.template.productlist.variation_productlist_gallery === 'Y' && $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
+            {if $hasOnlyListableVariations > 0 && $Artikel->nIstVater && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
+            empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]) &&
+            $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
             ($Artikel->Variationen[0]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX') &&
-            (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX'))}
+            (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[1]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[1]->cTyp === 'SELECTBOX'))}
                     {col cols=12 class='productbox-variations'}
                     {block name='productlist-item-box-form-variations'}
                         <div class="productbox-onhover collapse" id="variations-collapse-{$Artikel->kArtikel}">

@@ -11,12 +11,6 @@ msgstr "https://jtl-url.de/p7xo3"
 msgid "trennzeichenDesc"
 msgstr " "
 
-msgid "errorWeightDecimals"
-msgstr "The weight value must not have more than 4 decimal places."
-
-msgid "errorAmountDecimals"
-msgstr "The quantity must not have more than 2 decimal places."
-
 msgid "countDecimals"
 msgstr "Number of decimal places"
 

@@ -22,7 +22,7 @@ class Migration_20220413114737 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("datatables");');
+        $this->execute("INSERT INTO tsprachsektion (cName) VALUES ('datatables')");
 
         $this->setLocalization('ger', 'account data', 'shippingAddress', 'Lieferadressen verwalten');
         $this->setLocalization('eng', 'account data', 'shippingAddress', 'Manage shipping addresses');
@@ -142,33 +142,33 @@ class Migration_20220413114737 extends Migration implements IMigration
 
         $this->execute("CREATE TABLE IF NOT EXISTS `tlieferadressevorlage` (
                                 `kLieferadresse` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                                `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT '0',
-                                `cAnrede` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cVorname` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cNachname` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cTitel` VARCHAR(64) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cFirma` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cZusatz` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cStrasse` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cHausnummer` VARCHAR(32) NOT NULL COLLATE 'utf8_unicode_ci',
-                                `cAdressZusatz` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cPLZ` VARCHAR(20) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cOrt` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cBundesland` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cLand` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_unicode_ci',
-                                `cTel` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cMobil` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cFax` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `cMail` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_unicode_ci',
-                                `nIstStandardLieferadresse` INT(11) NULL DEFAULT '0',
-                                PRIMARY KEY (`kLieferadresse`) USING BTREE,
-                                INDEX `kKunde` (`kKunde`) USING BTREE
+                                `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                                `cAnrede` VARCHAR(20) NOT NULL DEFAULT '',
+                                `cVorname` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cNachname` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cTitel` VARCHAR(64) NULL,
+                                `cFirma` VARCHAR(255) NULL,
+                                `cZusatz` VARCHAR(255) NULL,
+                                `cStrasse` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cHausnummer` VARCHAR(32) NOT NULL DEFAULT '',
+                                `cAdressZusatz` VARCHAR(255) NULL,
+                                `cPLZ` VARCHAR(20) NOT NULL DEFAULT '',
+                                `cOrt` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cBundesland` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cLand` VARCHAR(255) NOT NULL DEFAULT '',
+                                `cTel` VARCHAR(255) NULL,
+                                `cMobil` VARCHAR(255) NULL,
+                                `cFax` VARCHAR(255) NULL,
+                                `cMail` VARCHAR(255) NULL,
+                                `nIstStandardLieferadresse` INT(11) NOT NULL DEFAULT 0,
+                                PRIMARY KEY (`kLieferadresse`),
+                                INDEX `idx_kKunde` (`kKunde`, `nIstStandardLieferadresse`)
                             )
                             COMMENT='Beinhaltet veränderbare und löschbare Lieferadressenvorlagen.'
+                            CHARSET=utf8
                             COLLATE='utf8_unicode_ci'
                             ENGINE=InnoDB
-                            ROW_FORMAT=DYNAMIC;
-                            ");
+                        ");
     }
 
     /**
@@ -203,5 +203,7 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->removeLocalization('paginatelast', 'datatables');
         $this->removeLocalization('paginatenext', 'datatables');
         $this->removeLocalization('paginateprevious', 'datatables');
+
+        $this->execute("DELETE FROM tsprachsektion WHERE cName = 'datatables'");
     }
 }

@@ -175,7 +175,11 @@ class ForgotPasswordController extends AbstractController
                     Shop::Lang()->get('newPasswordWasGenerated', 'forgot password'),
                     $email
                 ),
-                'newPasswordWasGenerated'
+                'newPasswordWasGenerated',
+                [
+                    'dismissable' => true,
+                    'fadeOut' => 0
+                ]
             );
         }
 

@@ -122,7 +122,7 @@ class ForgotPasswordController extends AbstractController
     }
 
     /**
-     * @param array     $missing
+     * @param array $missing
      * @return array
      * @throws \Exception
      */
@@ -135,9 +135,8 @@ class ForgotPasswordController extends AbstractController
                 FROM tkunde
                     WHERE cMail = :mail
                     AND nRegistriert = 1',
-            ['mail' => $_POST['email']]
+            ['mail' => $email]
         );
-
         if ($customerData !== null) {
             $customerID = (int)$customerData->kKunde;
             $limiter    = new Limiter($this->db);
@@ -168,7 +167,6 @@ class ForgotPasswordController extends AbstractController
                 $hasError = true;
             }
         }
-
         if ($hasError === false) {
             $this->alertService->addSuccess(
                 \sprintf(
@@ -178,7 +176,7 @@ class ForgotPasswordController extends AbstractController
                 'newPasswordWasGenerated',
                 [
                     'dismissable' => true,
-                    'fadeOut' => 0
+                    'fadeOut'     => 0
                 ]
             );
         }

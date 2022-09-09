@@ -58,3 +58,6 @@ msgstr "GET-Parameter ignorieren"
 
 msgid "append GET parameters"
 msgstr "GET-Parameter übernehmen"
+
+msgid "parameterHandlingDesc"
+msgstr "Hier legen Sie fest, wie GET-Paramter in der Quell- und Ziel-URL behandelt werden sollen. Eine ausführliche Beschreibung dieser Einstellung finden Sie im zugehörigen Beitrag im JTL-Guide, den Sie über das Wegweiser-Symbol oben rechts auf dieser Seite erreichen."

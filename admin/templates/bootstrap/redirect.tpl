@@ -333,6 +333,7 @@
                                     <option value="2">{__('append GET parameters')}</option>
                                 </select>
                             </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('parameterHandlingDesc')}</div>
                         </div>
 
                     </div>

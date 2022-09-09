@@ -193,7 +193,7 @@ class Category implements CategoryInterface, RoutableInterface
             $this->previewImages[$langID]    = $groupLanguage->cPreviewImage;
             $this->isActive                  = (bool)$groupLanguage->nAktiv;
             $this->dateLastModified          = \date_create($groupLanguage->dLetzteAktualisierung);
-            $this->parentID                  = (int)($groupLanguage->kParent ?? '0');
+            $this->parentID                  = (int)($groupLanguage->kParent ?? 0);
             $this->level                     = (int)$groupLanguage->lvl;
             $this->lft                       = (int)$groupLanguage->lft;
             $this->rght                      = (int)$groupLanguage->rght;
@@ -537,6 +537,22 @@ class Category implements CategoryInterface, RoutableInterface
     /**
      * @inheritdoc
      */
+    public function setSEOs(array $seos): void
+    {
+        $this->seo = $seos;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSEO(string $seo, int $idx = null): void
+    {
+        $this->seo[$idx ?? Shop::getLanguageID()] = $seo;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getID(): int
     {
         return $this->id;
@@ -633,6 +649,14 @@ class Category implements CategoryInterface, RoutableInterface
     /**
      * @inheritdoc
      */
+    public function setDescription(string $description, int $idx = null): void
+    {
+        $this->descriptions[$idx ?? Shop::getLanguageID()] = $description;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function setDescriptions(array $descriptions): void
     {
         $this->descriptions = $descriptions;
@@ -652,6 +676,14 @@ class Category implements CategoryInterface, RoutableInterface
     public function getPreviewImages(): array
     {
         return $this->previewImages;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setPreviewImage(string $image, int $idx = null): void
+    {
+        $this->previewImages[$idx ?? Shop::getLanguageID()] = $image;
     }
 
     /**
@@ -756,6 +788,38 @@ class Category implements CategoryInterface, RoutableInterface
     public function setChildren(Collection $children): void
     {
         $this->children = $children;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getLft(): int
+    {
+        return $this->lft;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setLft(int $lft): void
+    {
+        $this->lft = $lft;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRght(): int
+    {
+        return $this->rght;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setRght(int $rght): void
+    {
+        $this->rght = $rght;
     }
 
     /**

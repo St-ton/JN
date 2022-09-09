@@ -241,7 +241,7 @@ class Preise
             if ($taxClassID === 0) {
                 $taxClassID = $this->db->getSingleInt(
                     'SELECT kSteuerklasse
-                        FROM kArtikel
+                        FROM tartikel
                         WHERE kArtikel = :pid',
                     'kSteuerklasse',
                     ['pid' => $productID]

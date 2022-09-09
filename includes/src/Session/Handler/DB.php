@@ -104,7 +104,7 @@ class DB extends JTLDefault
     /**
      * @inheritDoc
      */
-    public function gc($max_lifetime): bool
+    public function gc($max_lifetime): int|false
     {
         return $this->db->getAffectedRows(
             'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time()

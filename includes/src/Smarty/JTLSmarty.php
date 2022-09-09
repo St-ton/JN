@@ -72,9 +72,7 @@ class JTLSmarty extends BC
         if ($fast === false) {
             $this->init($parent);
         }
-        if ($context === ContextType::FRONTEND || $context === ContextType::BACKEND) {
-            self::$instance[$context] = $this;
-        }
+        self::$instance[$context] = $this;
         if ($fast === false && $context !== ContextType::BACKEND) {
             \executeHook(\HOOK_SMARTY_INC, ['smarty' => $this]);
         }
@@ -338,9 +336,8 @@ class JTLSmarty extends BC
     {
         if ($this->context === ContextType::FRONTEND) {
             $this->registerFilter('output', [$this, 'outputFilter']);
-            /** @var JTLSmartyTemplateClass $template */
             $template = $this->createTemplate($this->getResourceName($template), null, null, $this, false);
-
+            /** @var JTLSmartyTemplateClass $template */
             $template->noOutputFilter = false;
         }
 

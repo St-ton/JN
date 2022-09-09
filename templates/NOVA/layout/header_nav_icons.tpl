@@ -2,7 +2,7 @@
     {nav id="shop-nav" right=true class="nav-right order-lg-last nav-icons"}
         {block name='layout-header-nav-icons-include-header-nav-search'}
             {if $Einstellungen.template.header.menu_single_row !== 'Y'}
-                {include file='layout/header_nav_search.tpl'}
+                {include file='layout/header_nav_search.tpl' tag='li'}
             {/if}
         {/block}
         {block name='layout-header-nav-icons-include-currency-dropdown'}

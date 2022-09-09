@@ -1,6 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
 <div id="content">
-    einstellen!!!!!!!!!!!!!!!
     <form name="einstellen" method="post" action="{$adminURL}{$route}" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />
@@ -202,6 +201,9 @@
                     <a href="{$adminURL}{$route}" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
                         {__('cancelWithIcon')}
                     </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    {include file='snippets/buttons/saveAndContinueButton.tpl'}
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">

@@ -199,3 +199,6 @@ msgstr "Key"
 
 msgid "Invalid token."
 msgstr "Ungültiger Token."
+
+msgid "Changelog"
+msgstr "Changelog"

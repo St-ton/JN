@@ -152,7 +152,7 @@ interface DbInterface
      * @param string|int|null   $keyvalue2
      * @param bool              $echo
      * @param string            $select
-     * @return mixed
+     * @return stdClass|null
      */
     public function select(
         string $tableName,
@@ -164,7 +164,7 @@ interface DbInterface
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    );
+    ): ?stdClass;
 
     /**
      * @param string           $tableName
@@ -173,7 +173,7 @@ interface DbInterface
      * @param string           $select
      * @param string           $orderBy
      * @param string|int       $limit
-     * @return array
+     * @return stdClass[]
      * @throws \InvalidArgumentException
      */
     public function selectArray(
@@ -192,7 +192,7 @@ interface DbInterface
      * @param string           $select
      * @param string           $orderBy
      * @param string|int       $limit
-     * @return array
+     * @return stdClass[]
      */
     public function selectAll(
         string $tableName,
@@ -380,7 +380,7 @@ interface DbInterface
      * @param string $stmt - Statement to be executed
      * @return PDOStatement|int
      */
-    public function executeExQuery($stmt);
+    public function executeExQuery(string $stmt);
 
     /**
      * Quotes a string with outer quotes for use in a query.

@@ -504,7 +504,7 @@ class Category
         $prefix = Shop::getURL() . '/';
         $nodes  = \array_map(
             static function ($item) use ($functionAttributes, $localizedAttributes, $prefix) {
-                $item->cSeo                = URL::buildURL($item, \URLART_KATEGORIE, true, $prefix);
+                $item->cURL                = URL::buildURL($item, \URLART_KATEGORIE, true, $prefix);
                 $item->functionAttributes  = $functionAttributes;
                 $item->localizedAttributes = $localizedAttributes;
 
@@ -647,7 +647,7 @@ class Category
         if ($current === null && (self::$limitReached || self::isLostCategory($id))) {
             // we have an incomplete category tree (because of high category count)
             // or did not find the desired category (because it is a lost category)
-            $fallback = $this->getFallBackFlatTree($id);
+            $fallback = $this->getFallBackFlatTree($id, false);
             if (\count($fallback) === 0) {
                 // this category does not exists
                 return null;

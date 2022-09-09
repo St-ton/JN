@@ -84,7 +84,7 @@ class PageController extends AbstractController
     protected function initHome(): void
     {
         try {
-            $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+            $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
         } catch (SpecialPageNotFoundException) {
             return;
         }
@@ -93,13 +93,13 @@ class PageController extends AbstractController
 
         $this->updateState(
             (object)[
-                'cSeo'     => $home->getSEO(),
-                'kLink'    => $home->getID(),
-                'kKey'     => $home->getID(),
+                'cSeo'     => $this->currentLink->getSEO(),
+                'kLink'    => $this->currentLink->getID(),
+                'kKey'     => $this->currentLink->getID(),
                 'cKey'     => 'kLink',
-                'kSprache' => $home->getLanguageID()
+                'kSprache' => $this->currentLink->getLanguageID()
             ],
-            $home->getSEO()
+            $this->currentLink->getSEO()
         );
     }
 
@@ -129,7 +129,7 @@ class PageController extends AbstractController
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);
             }
-        } else {
+        } elseif ($this->currentLink === null) {
             $this->initHome();
         }
         $this->smarty = $smarty;

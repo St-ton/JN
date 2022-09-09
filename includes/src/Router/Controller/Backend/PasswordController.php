@@ -25,7 +25,11 @@ class PasswordController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/pass');
 
         $step = 'prepare';
-        $this->alertService->addWarning(\__('warningPasswordResetAuth'), 'warningPasswordResetAuth');
+        $this->alertService->addWarning(
+            \__('warningPasswordResetAuth'),
+            'warningPasswordResetAuth',
+            ['dismissable' => false]
+        );
         if (isset($_POST['mail']) && Form::validateToken()) {
             $this->account->prepareResetPassword(Text::filterXSS($_POST['mail']));
         } elseif (isset($_POST['pw_new'], $_POST['pw_new_confirm'], $_POST['fpm'], $_POST['fpwh'])

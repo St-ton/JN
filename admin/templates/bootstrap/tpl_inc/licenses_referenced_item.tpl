@@ -58,9 +58,20 @@
                 <input type="hidden" name="license-type" value="{$license->getLicense()->getType()}">
                 <input type="hidden" name="item-id" value="{$license->getID()}">
                 <input type="hidden" name="exs-id" value="{$license->getExsID()}">
-                <button{if $disabled} disabled{/if} class="btn btn-default btn-sm update-item" name="action" value="update">
-                    <i class="fas fa-refresh"></i> {__('Update')}
-                </button>
+                <div class="btn-group">
+                    <button{if $disabled} disabled{/if} class="btn btn-default btn-sm update-item" name="action" value="update">
+                        <i class="fas fa-refresh"></i> {__('Update')}
+                    </button>
+
+                    {foreach $license->getLinks() as $link}
+                        {if $link->getRel() === 'itemDetails'}
+                            <a class="btn btn-default btn-sm" target="_blank" rel="noopener" href="{$link->getHref()}#tab-changelog">
+                                <i class="fas fa-bullhorn"></i> {__('Changelog')}
+                            </a>
+                            {break}
+                        {/if}
+                    {/foreach}
+                </div>
             {/form}
         {/if}
     {else}

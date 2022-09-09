@@ -71,6 +71,8 @@ class ControllerFactory
         if ($fileName === 'wartung.php') {
             $this->setLinkTypeByFileName($fileName);
             $controller = $this->getPageControllerByLinkType($this->state->linkType);
+        } elseif ($state->type === 'kLink' && $state->linkID > 0) {
+            $controller = $this->getPageController();
         } elseif ($state->productID > 0
             && !$state->linkID
             && (!$state->categoryID || ($state->categoryID > 0 && $state->show === 1))
@@ -104,7 +106,6 @@ class ControllerFactory
         ) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(ProductListController::class);
-            $controller->updateProductFilter();
         } elseif ($state->categoryID > 0 && $state->manufacturerFilterNotFound === false) {
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(CategoryController::class);
@@ -133,7 +134,7 @@ class ControllerFactory
             $state->pageType = \PAGE_ARTIKELLISTE;
             $controller      = $this->createController(SearchController::class);
         } elseif (!$state->linkID) {
-            //check path
+            // check path
             $shopPath    = \parse_url(\URL_SHOP, \PHP_URL_PATH) ?? '';
             $path        = \str_replace($shopPath, '', $request->getUri()->getPath());
             $requestFile = '/' . \ltrim($path, '/');
@@ -147,6 +148,7 @@ class ControllerFactory
                 $state->pageType = \PAGE_STARTSEITE;
                 $state->linkType = \LINKTYP_STARTSEITE;
                 $state->linkID   = Shop::Container()->getLinkService()->getSpecialPageID(\LINKTYP_STARTSEITE) ?: 0;
+                $controller      = $this->createController(PageController::class);
             } elseif (Media::getInstance()->isValidRequest($path)) {
                 Media::getInstance()->handleRequest($path);
             } elseif ($fileName !== '') {

@@ -96,6 +96,17 @@
     $(function() {
         ioCall('notificationAction', ['update'], undefined, undefined, undefined, true);
     });
+
+    $( document ).scroll(function () {
+        $('[name="scrollPosition"]').val(window.scrollY);
+    });
+
+    {if !empty($scrollPosition)}
+        var scrollPosition = '{$scrollPosition}';
+        $('html, body').animate({
+            scrollTop: $("html").offset().top + scrollPosition
+        }, 1000);
+    {/if}
 </script>
 
 {/if}

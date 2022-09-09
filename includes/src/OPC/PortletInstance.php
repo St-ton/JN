@@ -148,21 +148,18 @@ class PortletInstance implements \JsonSerializable
      */
     public function getSubareaPreviewHtml(string $id): string
     {
-        return $this->hasSubarea($id)
-            ? $this->getSubarea($id)->getPreviewHtml()
-            : '';
+        return $this->getSubarea($id)?->getPreviewHtml() ?? '';
     }
 
     /**
      * @param string $id
+     * @param bool   $inContainer
      * @return string
      * @throws \Exception
      */
-    public function getSubareaFinalHtml(string $id): string
+    public function getSubareaFinalHtml(string $id, bool $inContainer = true): string
     {
-        return $this->hasSubarea($id)
-            ? $this->getSubarea($id)->getFinalHtml()
-            : '';
+        return $this->getSubarea($id)?->getFinalHtml($inContainer) ?? '';
     }
 
     /**
@@ -205,9 +202,9 @@ class PortletInstance implements \JsonSerializable
 
     /**
      * @param string $id
-     * @return Area
+     * @return Area|null
      */
-    public function getSubarea(string $id): Area
+    public function getSubarea(string $id): ?Area
     {
         return $this->subareaList->getArea($id);
     }

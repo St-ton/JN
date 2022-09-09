@@ -11,8 +11,6 @@ use stdClass;
  */
 class Config
 {
-    public const EXTENDED_VALUE = '<textarea>';
-
     /**
      * @var string
      */
@@ -65,9 +63,7 @@ class Config
             if (isset($settings[$setting->cSektion]) && !\is_array($settings[$setting->cSektion])) {
                 $settings[$setting->cSektion] = [];
             }
-            $settings[$setting->cSektion][$setting->cName] = ($setting->cWert === self::EXTENDED_VALUE
-                ? $setting->cWertExtended
-                : $setting->cWert);
+            $settings[$setting->cSektion][$setting->cName] = $setting->cWert;
         }
 
         return $settings;
@@ -83,7 +79,7 @@ class Config
      */
     public function updateConfigInDB(string $section, string $name, $value): self
     {
-        $config  = $this->db->select(
+        $config = $this->db->select(
             'ttemplateeinstellungen',
             'cTemplate',
             $this->currentTemplateDir,
@@ -92,28 +88,19 @@ class Config
             'cName',
             $name
         );
-        $exValue = null;
-        if (\mb_strlen($value) > 255) {
-            $exValue = $value;
-            $value   = self::EXTENDED_VALUE;
-        }
         if ($config !== null && isset($config->cTemplate)) {
             $this->db->update(
                 'ttemplateeinstellungen',
                 ['cTemplate', 'cSektion', 'cName'],
                 [$this->currentTemplateDir, $section, $name],
-                (object)[
-                    'cWert' => $value,
-                    'cWertExtended' => $value === self::EXTENDED_VALUE ? $exValue : null,
-                ]
+                (object)['cWert' => $value]
             );
         } else {
-            $ins                = new stdClass();
-            $ins->cTemplate     = $this->currentTemplateDir;
-            $ins->cSektion      = $section;
-            $ins->cName         = $name;
-            $ins->cWert         = $value;
-            $ins->cWertExtended = $value === self::EXTENDED_VALUE ? $exValue : null;
+            $ins            = new stdClass();
+            $ins->cTemplate = $this->currentTemplateDir;
+            $ins->cSektion  = $section;
+            $ins->cName     = $name;
+            $ins->cWert     = $value;
             $this->db->insert('ttemplateeinstellungen', $ins);
         }
 

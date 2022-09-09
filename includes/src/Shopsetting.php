@@ -4,7 +4,6 @@ namespace JTL;
 
 use ArrayAccess;
 use JTL\DB\DbInterface;
-use JTL\Template\Config;
 use function Functional\reindex;
 
 /**
@@ -344,9 +343,20 @@ final class Shopsetting implements ArrayAccess
      */
     private function getTemplateConfig(DbInterface $db): array
     {
-        $currentTemplate = $db->getSingleObject("SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard'");
+        $data     = $db->getObjects(
+            "SELECT cSektion AS sec, cWert AS val, cName AS name 
+                FROM ttemplateeinstellungen 
+                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
+        );
+        $settings = [];
+        foreach ($data as $setting) {
+            if (!isset($settings[$setting->sec])) {
+                $settings[$setting->sec] = [];
+            }
+            $settings[$setting->sec][$setting->name] = $setting->val;
+        }
 
-        return $currentTemplate === null ? [] : (new Config($currentTemplate->cTemplate, $db))->loadConfigFromDB();
+        return $settings;
     }
 
     /**

@@ -584,6 +584,21 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * @param int $languageID
+     * @return string
+     */
+    protected function getLocaleFromLanguageID(int $languageID): string
+    {
+        foreach (LanguageHelper::getAllLanguages() as $languageModel) {
+            if ($languageID === $languageModel->getId()) {
+                return $languageModel->getIso639();
+            }
+        }
+
+        return 'de';
+    }
+
+    /**
      * @inheritdoc
      */
     public function register(RouteGroup $route, string $dynName): void

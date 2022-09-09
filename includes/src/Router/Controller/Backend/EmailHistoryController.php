@@ -29,7 +29,6 @@ class EmailHistoryController extends AbstractBackendController
         $step    = 'uebersicht';
         $history = new Emailhistory();
         $action  = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
-
         if ($action === 'delete') {
             if (isset($_POST['remove_all'])) {
                 if ($history->deleteAll() === 0) {

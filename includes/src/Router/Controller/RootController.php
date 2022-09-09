@@ -2,11 +2,9 @@
 
 namespace JTL\Router\Controller;
 
-use JTL\Link\SpecialPageNotFoundException;
 use JTL\Router\ControllerFactory;
-use JTL\Router\State;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,28 +17,10 @@ class RootController extends AbstractController
     /**
      * @inheritdoc
      */
-    public function getStateFromSlug(array $args): State
+    public function register(RouteGroup $route, string $dynName): void
     {
-        try {
-            $home = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
-        } catch (SpecialPageNotFoundException) {
-            return $this->state;
-        }
-        $this->state->pageType = \PAGE_STARTSEITE;
-        $this->state->linkType = \LINKTYP_STARTSEITE;
-
-        return $this->state->type !== ''
-            ? $this->updateProductFilter()
-            : $this->updateState(
-                (object)[
-                    'cSeo'     => $home->getSEO(),
-                    'kLink'    => $home->getID(),
-                    'kKey'     => $home->getID(),
-                    'cKey'     => 'kLink',
-                    'kSprache' => $home->getLanguageID()
-                ],
-                $home->getSEO()
-            );
+        $route->get('/', [$this, 'getResponse'])->setName('ROUTE_ROOT' . $dynName);
+        $route->post('/', [$this, 'getResponse'])->setName('ROUTE_ROOTPOST' . $dynName);
     }
 
     /**
@@ -48,7 +28,9 @@ class RootController extends AbstractController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->getStateFromSlug($args);
+        $this->state->pageType = \PAGE_STARTSEITE;
+        $this->state->linkType = \LINKTYP_STARTSEITE;
+
         $factory    = new ControllerFactory($this->state, $this->db, $this->cache, $smarty);
         $controller = $factory->getEntryPoint($request);
         if (!$controller->init()) {

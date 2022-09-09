@@ -2,8 +2,11 @@
 
 namespace JTL\Router\Controller;
 
+use JTL\Router\DefaultParser;
 use JTL\Router\State;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -51,11 +54,24 @@ class CategoryController extends ProductListController
     /**
      * @inheritdoc
      */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $route->get('/' . \ROUTE_PREFIX_CATEGORIES . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_CATEGORY_BY_ID' . $dynName);
+        $route->get('/' . \ROUTE_PREFIX_CATEGORIES . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_CATEGORIES . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_CATEGORY_BY_ID' . $dynName . 'POST');
+        $route->post('/' . \ROUTE_PREFIX_CATEGORIES . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName . 'POST');
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        if (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($args['name'] ?? '', '/')) {
-            $args['name'] = \last(\explode('/', $args['name']));
-        }
         $this->getStateFromSlug($args);
         if (!$this->init()) {
             return $this->notFoundResponse($request, $args, $smarty);

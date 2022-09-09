@@ -94,7 +94,7 @@
                             <td class="text-center">{$usedCouponOrder.cBestellNr}</td>
                             <td class="text-center">{$usedCouponOrder.nCouponValue}</td>
                             <td class="text-center">{$usedCouponOrder.nShoppingCartAmount}</td>
-                            <td>{$usedCouponOrder.dErstellt|date_format:'%d.%m.%Y %H:%M:%S'}</td>
+                            <td>{$usedCouponOrder.dErstellt|date_format:'d.m.Y H:i:s'}</td>
                             <td>
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-link" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}">

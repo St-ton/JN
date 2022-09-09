@@ -51,6 +51,7 @@ class PaymentMethodsController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/zahlungsarten');
         $this->getText->loadConfigLocales(true, true);
         $this->checkPermissions(Permissions::ORDER_PAYMENT_VIEW);
+        $this->assignScrollPosition();
 
         $defaultCurrency      = $this->db->select('twaehrung', 'cStandard', 'Y');
         $this->step           = 'uebersicht';
@@ -96,6 +97,10 @@ class PaymentMethodsController extends AbstractBackendController
             && Form::validateToken()
         ) {
             $this->actionSaveConfig($filteredPost);
+
+            if (Request::postVar('saveAndContinue')) {
+                $this->setStep('einstellen');
+            }
         }
 
         if ($this->step === 'einstellen') {
@@ -311,14 +316,14 @@ class PaymentMethodsController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param array $filteredPost
+     * @return void
+     */
     private function actionSaveConfig(array $filteredPost): void
     {
         $this->step    = 'uebersicht';
-        $paymentMethod = $this->db->select(
-            'tzahlungsart',
-            'kZahlungsart',
-            Request::postInt('kZahlungsart')
-        );
+        $paymentMethod = $this->db->select('tzahlungsart', 'kZahlungsart', Request::postInt('kZahlungsart'));
         if ($paymentMethod !== null) {
             $paymentMethod->kZahlungsart        = (int)$paymentMethod->kZahlungsart;
             $paymentMethod->nSort               = (int)$paymentMethod->nSort;
@@ -401,7 +406,6 @@ class PaymentMethodsController extends AbstractBackendController
     /**
      * @param int $paymentMethodID
      * @return array
-     * @former getNames()
      */
     private function getNames(int $paymentMethodID): array
     {
@@ -420,7 +424,6 @@ class PaymentMethodsController extends AbstractBackendController
     /**
      * @param int $paymentMethodID
      * @return array
-     * @former getshippingTimeNames()
      */
     private function getshippingTimeNames(int $paymentMethodID): array
     {
@@ -428,8 +431,7 @@ class PaymentMethodsController extends AbstractBackendController
         if (!$paymentMethodID) {
             return $res;
         }
-        $items = $this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID);
-        foreach ($items as $item) {
+        foreach ($this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID) as $item) {
             $res[$item->cISOSprache] = $item->cGebuehrname;
         }
 
@@ -447,12 +449,7 @@ class PaymentMethodsController extends AbstractBackendController
         if (!$paymentMethodID) {
             return $messages;
         }
-        $localizations = $this->db->selectAll(
-            'tzahlungsartsprache',
-            'kZahlungsart',
-            $paymentMethodID
-        );
-        foreach ($localizations as $localization) {
+        foreach ($this->db->selectAll('tzahlungsartsprache', 'kZahlungsart', $paymentMethodID) as $localization) {
             $messages[$localization->cISOSprache] = $localization->cHinweisText;
         }
 

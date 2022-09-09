@@ -98,9 +98,9 @@ final class Upload
             $attributes = [];
             if (!empty($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attribute) {
-                    $attributes[$attribute->kEigenschaft] = \is_string($attribute->cEigenschaftWertName)
-                        ? $attribute->cEigenschaftWertName
-                        : \reset($attribute->cEigenschaftWertName);
+                    $attributes[$attribute->kEigenschaft] = \is_array($attribute->cEigenschaftWertName)
+                        ? \reset($attribute->cEigenschaftWertName)
+                        : (string)$attribute->cEigenschaftWertName;
                 }
             }
             $upload         = new stdClass();

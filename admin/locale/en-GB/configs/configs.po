@@ -2220,7 +2220,7 @@ msgid "bewertung_guthaben_nutzen_name"
 msgstr "Grant credit bonus"
 
 msgid "bewertung_guthaben_nutzen_desc"
-msgstr "Specify whether your customers receive a credit bonus for reviewing an item."
+msgstr "Specify whether your customers receive a credit bonus for reviewing an item. The “Activate customer reviews” setting must also be set to “Yes”."
 
 msgid "bewertungserinnerung_versandtage_name"
 msgstr "Days after shipping until reminder"
@@ -3075,6 +3075,9 @@ msgid "routing_default_language_value(L)"
 msgstr "With locale"
 
 msgid "routing_default_language_value(P)"
+msgstr "With prefix"
+
+msgid "routing_default_language_value(LP)"
 msgstr "With locale and prefix"
 
 msgid "routing_scheme_value(F)"
@@ -3084,4 +3087,7 @@ msgid "routing_scheme_value(L)"
 msgstr "With locale"
 
 msgid "routing_scheme_value(P)"
+msgstr "With prefix"
+
+msgid "routing_scheme_value(LP)"
 msgstr "With locale and prefix"

@@ -491,6 +491,10 @@ final class Shop extends ShopBC
         return self::$state;
     }
 
+    /**
+     * @return void
+     * @todo!!!
+     */
     public static function validateState(): void
     {
         if (self::$state->categoryID > 0
@@ -501,7 +505,7 @@ final class Shop extends ShopBC
             self::$state->is404      = true;
             self::$is404             = true;
         }
-        if (Product::isVariChild(self::$state->productID)) {
+        if (self::$state->productID > 0 && Product::isVariChild(self::$state->productID)) {
             self::$state->childProductID = self::$state->productID;
             self::$state->productID      = Product::getParent(self::$state->productID);
             self::$kVariKindArtikel      = self::$state->childProductID;

@@ -3,6 +3,7 @@
 namespace JTL\Helpers;
 
 use JTL\Catalog\Hersteller;
+use JTL\Contracts\RoutableInterface;
 use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
 use JTL\Router\RoutableTrait;
@@ -12,7 +13,7 @@ use JTL\Shop;
  * Class Manufacturer
  * @package JTL\Helpers
  */
-class Manufacturer
+class Manufacturer implements RoutableInterface
 {
     use RoutableTrait;
 

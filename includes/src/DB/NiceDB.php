@@ -303,7 +303,8 @@ class NiceDB implements DbInterface
      */
     public function close(): bool
     {
-        $this->pdo = null;
+        $this->pdo         = null;
+        $this->isConnected = false;
 
         return true;
     }
@@ -707,7 +708,7 @@ class NiceDB implements DbInterface
         $keyvalue2 = null,
         bool $echo = false,
         string $select = '*'
-    ) {
+    ): ?stdClass {
         return $this->selectSingleRow(
             $tableName,
             $keyname,
@@ -1151,7 +1152,7 @@ class NiceDB implements DbInterface
     /**
      * @inheritdoc
      */
-    public function executeExQuery($stmt)
+    public function executeExQuery(string $stmt)
     {
         try {
             $res = $this->pdo->query($stmt);

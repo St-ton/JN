@@ -87,6 +87,7 @@
                     {block name='blog-details-image'}
                         {include file='snippets/image.tpl'
                             item=$newsItem
+                            lazy=false
                             square=false
                             center=true
                             class="blog-details-image"
@@ -228,7 +229,7 @@
             {block name='blog-details-latest-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
                 <div itemprop="about"
-                    itemscope=true
+                    itemscope
                     itemtype="https://schema.org/Blog"
                     class="carousel carousel-arrows-inside mx-0 slick-lazy slick-type-three {if $oNews_arr|count < 3}slider-no-preview{/if}"
                     data-slick-type="slider-three">

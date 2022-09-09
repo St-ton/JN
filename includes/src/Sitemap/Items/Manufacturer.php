@@ -2,6 +2,9 @@
 
 namespace JTL\Sitemap\Items;
 
+use JTL\Media\Image;
+use JTL\Media\Image\Manufacturer as ManufacturerImage;
+
 /**
  * Class Manufacturer
  * @package JTL\Sitemap\Items
@@ -19,7 +22,16 @@ final class Manufacturer extends AbstractItem
         if (empty($this->data->image)) {
             return;
         }
-        $this->setImage($this->baseImageURL . \PFAD_HERSTELLERBILDER . $this->data->image);
+        $this->data->cBildpfad = $this->data->image;
+        $image                 = ManufacturerImage::getThumb(
+            Image::TYPE_MANUFACTURER,
+            (int)$this->data->kHersteller,
+            $this->data,
+            Image::SIZE_LG
+        );
+        if (\mb_strlen($image) > 0) {
+            $this->setImage($this->baseImageURL . $image);
+        }
     }
 
     /**

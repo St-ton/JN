@@ -234,7 +234,7 @@
                                                                             {/if}
                                                                         </td>
                                                                         <td>
-                                                                            {$oRedirectReferer->dDate|date_format:'%d.%m.%Y - %H:%M:%S'}
+                                                                            {$oRedirectReferer->dDate|date_format:'d.m.Y - H:M:S'}
                                                                         </td>
                                                                     </tr>
                                                                 {/foreach}

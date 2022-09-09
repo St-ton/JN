@@ -194,10 +194,9 @@ class TemplateService implements TemplateServiceInterface
             return $model;
         }
         $template = $this->mergeWithXML($dir, $tplXML, $template, $parentXML);
-        if ($withLicense === true) {
-            $manager    = new Manager($this->db, $this->cache);
-            $exsLicense = $manager->getLicenseByItemID($template->getTemplate());
-            if ($exsLicense === null && $template->getExsID() !== null) {
+        if ($withLicense === true && $template->getExsID() !== null) {
+            $exsLicense = (new Manager($this->db, $this->cache))->getLicenseByExsID($template->getExsID());
+            if ($exsLicense === null) {
                 $exsLicense = new ExpiredExsLicense();
                 $exsLicense->initFromTemplateData($template);
             }

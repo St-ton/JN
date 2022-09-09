@@ -15,10 +15,12 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Router\Middleware\VisibilityMiddleware;
 use JTL\Router\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -87,6 +89,27 @@ class ProductController extends AbstractController
         $this->state->is404 = true;
 
         return $this->updateProductFilter();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $visibilityMiddleware = new VisibilityMiddleware();
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
+            ->middleware($visibilityMiddleware);
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
+            ->middleware($visibilityMiddleware);
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
+            ->middleware($visibilityMiddleware);
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName . 'POST')
+            ->middleware($visibilityMiddleware);
     }
 
     /**

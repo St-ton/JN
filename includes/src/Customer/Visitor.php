@@ -53,11 +53,7 @@ class Visitor
             }
             // get back the new ID of that visitor (and write it back into the session)
             $visitor->kBesucher = $this->insert($visitor);
-            // store search-string from search-engine too
-            if ($visitor->cReferer !== '') {
-                $this->analyzeReferer($visitor->kBesucher, $visitor->cReferer);
-            }
-            // allways increment the visitor-counter (if no bot)
+            // always increment the visitor-counter (if no bot)
             $this->db->query('UPDATE tbesucherzaehler SET nZaehler = nZaehler + 1');
         } else {
             $visitor->kBesucher    = (int)$visitor->kBesucher;
@@ -314,38 +310,6 @@ class Visitor
      */
     public function analyzeReferer(int $visitorID, string $referer): void
     {
-        $ref             = $_SERVER['HTTP_REFERER'] ?? '';
-        $term            = new stdClass();
-        $term->kBesucher = $visitorID;
-        $term->cRohdaten = \mb_substr(Text::filterXSS($_SERVER['HTTP_REFERER']), 0, 255);
-        $param           = '';
-        if (\str_contains($referer, '.google.')
-            || \str_contains($referer, 'suche.t-online.')
-            || \str_contains($referer, 'search.live.')
-            || \str_contains($referer, '.aol.')
-            || \str_contains($referer, '.aolsvc.')
-            || \str_contains($referer, '.ask.')
-            || \str_contains($referer, 'search.icq.')
-            || \str_contains($referer, 'search.msn.')
-            || \str_contains($referer, '.exalead.')
-        ) {
-            $param = 'q';
-        } elseif (\str_contains($referer, 'suche.web')) {
-            $param = 'su';
-        } elseif (\str_contains($referer, 'suche.aolsvc')) {
-            $param = 'query';
-        } elseif (\str_contains($referer, 'search.yahoo')) {
-            $param = 'p';
-        } elseif (\str_contains($referer, 'search.ebay')) {
-            $param = 'satitle';
-        }
-        if ($param !== '') {
-            \preg_match("/(\?$param|&$param)=[^&]+/i", $ref, $treffer);
-            $term->cSuchanfrage = isset($treffer[0]) ? \urldecode(\mb_substr($treffer[0], 3)) : null;
-            if ($term->cSuchanfrage) {
-                $this->db->insert('tbesuchersuchausdruecke', $term);
-            }
-        }
     }
 
     /**

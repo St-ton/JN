@@ -46,6 +46,7 @@
                                         && $activeParent->getID() === $category->getID())}active{/if}">
                                     {block name='snippets-categories-recursive-categories-has-items-link'}
                                         <span class="nav-link {if $i !== 0}snippets-categories-nav-link-child{/if} dropdown-toggle"
+                                              role="button"
                                               data-toggle="collapse"
                                               data-target="#category_box_{$category->getID()}_{$i}-{$id}"
                                               aria-expanded="{if $category->getID() == $activeId

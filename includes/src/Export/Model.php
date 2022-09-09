@@ -158,10 +158,20 @@ final class Model extends DataModel
             }
         }
         if ($this->currencyID > 0) {
-            $this->currency = new Currency($this->currencyID);
+            try {
+                $this->currency = new Currency($this->currencyID);
+            } catch (Exception) {
+                $this->setHasError(1);
+                $this->currency = (new Currency())->getDefault();
+            }
         }
         if ($this->customerGroupID > 0) {
-            $this->customerGroup = new CustomerGroup($this->customerGroupID);
+            try {
+                $this->customerGroup = new CustomerGroup($this->customerGroupID);
+            } catch (Exception) {
+                $this->setHasError(1);
+                $this->customerGroup = (new CustomerGroup())->loadDefaultGroup();
+            }
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace JTL\Backend\Settings;
 
+use JTL\Backend\Menu;
 use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
@@ -133,24 +134,23 @@ class Search
         $factory    = new SectionFactory();
         $sections   = [];
         $urlPrefix  = Shop::getAdminURL() . '/' . Route::CONFIG . '?einstellungen_suchen=1&cSuche=';
+        $menu       = new Menu($this->db, Shop::Container()->getAdminAccount(), $this->getText);
+        $structure  = $menu->getStructure();
         foreach ($sectionIDs as $sectionID) {
             $section = $factory->getSection($sectionID, $this->manager);
             $section->load();
             foreach ($section->getSubsections() as $subsection) {
                 $subsection->setShow(false);
                 foreach ($subsection->getItems() as $idx => $item) {
-                    $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $item->getValueName());
-                    $isSpecial = $menuEntry->specialSetting ?? false;
-                    if ($isSpecial !== false) {
-                        $url = ($menuEntry->url ?? '') . ($menuEntry->settingsAnchor ?? '');
-                    } else {
-                        $url = $urlPrefix . $item->getID();
-                    }
+                    $menuEntry = $this->mapConfigSectionToMenuEntry($sectionID, $structure);
+                    $url       = ($menuEntry->specialSetting ?? false) === false
+                        ? $urlPrefix . $item->getID()
+                        : ($menuEntry->link ?? '') . ($menuEntry->settingsAnchor ?? '');
                     $item->setURL($url);
                     if (\in_array($item->getID(), $configIDs, true)) {
                         $subsection->setShow(true);
                         $subsection->setPath($menuEntry->path ?? '');
-                        $subsection->setURL($menuEntry->url ?? '');
+                        $subsection->setURL($menuEntry->link ?? '');
                         $item->setHighlight(true);
                     } elseif ($this->mode !== self::SEARCH_MODE_ID) {
                         $subsection->removeItemAtIndex($idx);
@@ -164,20 +164,26 @@ class Search
     }
 
     /**
-     * @param int    $sectionID
-     * @param string $groupName
+     * @param int   $sectionID
+     * @param array $structure
      * @return stdClass
      */
-    private function mapConfigSectionToMenuEntry(int $sectionID, string $groupName = 'all')
+    private function mapConfigSectionToMenuEntry(int $sectionID, array $structure): stdClass
     {
-        global $sectionMenuMapping;
-
-        if (isset($sectionMenuMapping[$sectionID])) {
-            if (!isset($sectionMenuMapping[$sectionID][$groupName])) {
-                $groupName = 'all';
+        foreach ($structure as $item) {
+            if (!isset($item->items)) {
+                continue;
             }
-
-            return $sectionMenuMapping[$sectionID][$groupName];
+            foreach ($item->items as $sub) {
+                if (!\is_array($sub)) {
+                    continue;
+                }
+                foreach ($sub as $sec) {
+                    if (isset($sec->section) && $sec->section === $sectionID) {
+                        return $sec;
+                    }
+                }
+            }
         }
 
         return (object)[];

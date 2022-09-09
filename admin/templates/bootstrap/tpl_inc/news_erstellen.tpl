@@ -29,7 +29,7 @@
                                 <select id="kkundengruppe"
                                         name="kKundengruppe[]"
                                         multiple="multiple"
-                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}"
+                                        class="selectpicker custom-select{if !empty($validation.kKundengruppe_arr)} error{/if}"
                                         data-selected-text-format="count > 2"
                                         data-size="7">
                                     <option value="-1"
@@ -64,14 +64,14 @@
                             <label class="col col-sm-4 col-form-label text-sm-right" for="kNewsKategorie">{__('category')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="kNewsKategorie"
-                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}"
+                                        class="selectpicker custom-select{if !empty($validation.kNewsKategorie_arr)} error{/if}"
                                         name="kNewsKategorie[]"
                                         multiple="multiple"
                                         data-selected-text-format="count > 2"
                                         data-size="7"
                                         data-live-search="true"
                                         data-actions-box="true">
-                                    {foreach $oNewsKategorie_arr as $category}
+                                    {foreach $newsCategories as $category}
                                         <option value="{$category->getID()}"
                                             {if isset($cPostVar_arr.kNewsKategorie)}
                                                 {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
@@ -214,7 +214,7 @@
                                             {__('headline')} *:
                                         </label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                            <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}"
+                                            <input class="form-control{if !empty($validation.cBetreff)} error{/if}"
                                                    id="cName_{$cISO}" type="text" name="cName_{$cISO}"
                                                    value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
                                         </div>
@@ -285,13 +285,9 @@
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>
-                    {if $oNews->getID() > 0}
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block" id="save-and-continue">
-                                <i class="fal fa-save"></i> {__('saveAndContinue')}
-                            </button>
-                        </div>
-                    {/if}
+                    <div class="col-sm-6 col-xl-auto">
+                        {include file='snippets/buttons/saveAndContinueButton.tpl' value='news'}
+                    </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}

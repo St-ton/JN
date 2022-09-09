@@ -8,7 +8,6 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Backend\Permissions;
 use JTL\Backend\Revision;
-use JTL\ContentAuthor;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -80,114 +79,26 @@ class NewsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
-
-        $uploadDir    = \PFAD_ROOT . \PFAD_NEWSBILDER;
-        $uploadDirCat = \PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER;
-        $author       = Author::getInstance($this->db);
-        $newsCategory = new Category($this->db);
-        $languages    = LanguageHelper::getAllLanguages(0, true, true);
-        $adminID      = (int)$_SESSION['AdminAccount']->kAdminlogin;
-        $valid        = Form::validateToken();
-        $adminName    = $this->db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
-
-        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
-            $smarty->assign('files', []);
-
-            switch (Request::verifyGPDataString('tab')) {
-                case 'inaktiv':
-                    if (Request::verifyGPCDataInt('s1') > 1) {
-                        $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
-                            ->assign('cSeite', Request::verifyGPCDataInt('s1'));
-                    }
-                    break;
-                case 'aktiv':
-                    if (Request::verifyGPCDataInt('s2') > 1) {
-                        $smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
-                            ->assign('cSeite', Request::verifyGPCDataInt('s2'));
-                    }
-                    break;
-                case 'kategorien':
-                    if (Request::verifyGPCDataInt('s3') > 1) {
-                        $smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
-                            ->assign('cSeite', Request::verifyGPCDataInt('s3'));
-                    }
-                    break;
-            }
-        }
+        $author    = Author::getInstance($this->db);
+        $category  = new Category($this->db);
+        $languages = LanguageHelper::getAllLanguages(0, true, true);
+        $valid     = Form::validateToken();
+        $tab       = Request::verifyGPDataString('tab');
+        $this->handleTab($tab);
         if ($valid && Request::postInt('einstellungen') === 1) {
             $this->actionConfig($languages);
         } elseif ($valid && Request::verifyGPCDataInt('news') === 1) {
-            if ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
-                || Request::postInt('news_erstellen') === 1
-            ) {
-                $newsCategories = $this->getAllNewsCategories();
-                if (\count($newsCategories) > 0) {
-                    $newsItem = new Item($this->db, $this->cache);
-                    $this->setStep('news_erstellen');
-                    $smarty->assign('oNewsKategorie_arr', $newsCategories)
-                        ->assign('oNews', $newsItem)
-                        ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
-                } else {
-                    $this->setErrorMsg(\__('errorNewsCatFirst'));
-                    $this->setStep('news_uebersicht');
-                }
-            } elseif ((isset($_POST['erstellen'], $_POST['news_kategorie_erstellen']) && (int)$_POST['erstellen'] === 1)
-                || Request::postInt('news_kategorie_erstellen') === 1
-            ) {
+            if (Request::postInt('news_erstellen') === 1) {
+                $this->actionCreateNews($author);
+            } elseif (Request::postInt('news_kategorie_erstellen') === 1) {
                 $this->setStep('news_kategorie_erstellen');
             } elseif (Request::verifyGPCDataInt('nkedit') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
-                if (isset($_POST['newskommentarsavesubmit'])) {
-                    if ($this->saveComment(Request::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
-                        $this->setStep('news_vorschau');
-                        $this->setMsg(\__('successNewsCommmentEdit'));
-
-                        if (Request::verifyGPCDataInt('nFZ') === 1) {
-                            return new RedirectResponse(Shop::getURL() . $this->route);
-                        }
-                        $tab = Request::verifyGPDataString('tab');
-                        if ($tab === 'aktiv') {
-                            return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), [
-                                'news'  => '1',
-                                'nd'    => '1',
-                                'kNews' => Request::verifyGPCDataInt('kNews'),
-                                'token' => $_SESSION['jtl_token'],
-                            ]);
-                        }
-                        return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg());
-                    }
-
-                    $this->setStep('news_kommentar_editieren');
-                    $this->setErrorMsg(\__('errorCheckInput'));
-                    $comment = new Comment($this->db);
-                    $comment->load((int)$_POST['kNewsKommentar']);
-                    $comment->setName(Text::filterXSS($_POST['cName']));
-                    $comment->setText(Text::filterXSS($_POST['cKommentar']));
-                    $smarty->assign('oNewsKommentar', $comment);
-                } else {
-                    $this->setStep('news_kommentar_editieren');
-                    $comment = new Comment($this->db);
-                    $comment->load(Request::verifyGPCDataInt('kNewsKommentar'));
-                    $smarty->assign('oNewsKommentar', $comment);
-                    if (Request::verifyGPCDataInt('nFZ') === 1) {
-                        $smarty->assign('nFZ', 1);
-                    }
+                $response = $this->actionEditComment();
+                if ($response !== null) {
+                    return $response;
                 }
             } elseif (Request::verifyGPCDataInt('nkanswer') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
-                $this->setStep('news_kommentar_antwort_editieren');
-                $comment         = new Comment($this->db);
-                $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
-                if ($comment->loadByParentCommentID($parentCommentID) === null) {
-                    $comment->setID(0);
-                    $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
-                    $comment->setCustomerID(0);
-                    $comment->setIsActive(true);
-                    $comment->setName($adminName);
-                    $comment->setMail('');
-                    $comment->setText('');
-                    $comment->setIsAdmin($adminID);
-                    $comment->setParentCommentID($parentCommentID);
-                }
-                $smarty->assign('oNewsKommentar', $comment);
+                $this->actionCommentAnswer();
             } elseif (Request::postInt('news_speichern') === 1) {
                 if (($response = $this->createOrUpdateNewsItem($_POST, $languages, $author)) !== null) {
                     return $response;
@@ -200,8 +111,12 @@ class NewsController extends AbstractBackendController
                     return $this->newsRedirect('aktiv', $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
-            } elseif (Request::postInt('news_kategorie_speichern') === 1) {
-                $newsCategory = $this->createOrUpdateCategory($_POST, $languages);
+            } elseif (Request::postInt('news_kategorie_speichern') === 1
+                      && Request::postVar('saveAndContinue', '') !== 'kategorie') {
+                $category = $this->createOrUpdateCategory($_POST, $languages);
+            } elseif (Request::postVar('saveAndContinue', '') === 'kategorie') {
+                $category = $this->createOrUpdateCategory($_POST, $languages);
+                $category = $this->actionEditCategory($category);
             } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
                 $this->setStep('news_uebersicht');
                 if (isset($_POST['kNewsKategorie'])) {
@@ -212,32 +127,9 @@ class NewsController extends AbstractBackendController
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNewsCat'));
             } elseif (Request::getInt('newskategorie_editieren') === 1) {
-                if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
-                    if ($this->deleteNewsImage(
-                        Request::verifyGPDataString('delpic'),
-                        Request::getInt('kNewsKategorie'),
-                        $uploadDirCat
-                    )) {
-                        $this->setMsg(\__('successNewsImageDelete'));
-                    } else {
-                        $this->setErrorMsg(\__('errorNewsImageDelete'));
-                    }
-                }
-                if (Request::getInt('kNewsKategorie') > 0) {
-                    $this->setStep('news_kategorie_erstellen');
-                    $newsCategory->load(Request::getInt('kNewsKategorie'), false);
-                    if ($newsCategory->getID() > 0) {
-                        $smarty->assign('oNewsKategorie', $newsCategory)
-                            ->assign('files', $this->getCategoryImages($newsCategory->getID(), $uploadDirCat));
-                    } else {
-                        $this->setStep('news_uebersicht');
-                        $this->setErrorMsg(
-                            \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
-                        );
-                    }
-                }
-            } elseif (Request::postInt('newskommentar_freischalten') > 0
-                && !isset($_POST['kommentareloeschenSubmit'])
+                $category = $this->actionEditCategory();
+            } elseif (!isset($_POST['kommentareloeschenSubmit'])
+                && Request::postInt('newskommentar_freischalten') > 0
             ) {
                 $commentIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
                 if (\count($commentIDs) > 0) {
@@ -259,103 +151,27 @@ class NewsController extends AbstractBackendController
                 }
             }
             if (Request::getInt('news_editieren') === 1 || $this->getContinueWith() > 0) {
-                $newsCategories = $this->getAllNewsCategories();
-                $newsItemID     = $this->getContinueWith() > 0
-                    ? $this->getContinueWith()
-                    : Request::getInt('kNews');
-                if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
-                    if ($this->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
-                        $this->setMsg(\__('successNewsImageDelete'));
-                    } else {
-                        $this->setErrorMsg(\__('errorNewsImageDelete'));
-                    }
-                }
-
-                if ($newsItemID > 0 && \count($newsCategories) > 0) {
-                    $smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                        ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
-                        ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
-                    $this->setStep('news_editieren');
-                    $newsItem = new Item($this->db, $this->cache);
-                    $newsItem->load($newsItemID);
-
-                    if ($newsItem->getID() > 0) {
-                        if ($this->hasOPCContent($languages, $newsItem->getID())) {
-                            $this->setMsg(\__('OPC content available'));
-                        }
-                        $smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                            ->assign('files', $this->getNewsImages($newsItem->getID(), $uploadDir))
-                            ->assign('oNews', $newsItem);
-                    }
-                } else {
-                    $this->setErrorMsg(\__('errorNewsCatFirst'));
-                    $this->setStep('news_uebersicht');
-                }
+                $this->actionEditNews($languages, $author);
             } elseif ($this->getStep() === 'news_vorschau' || Request::verifyGPCDataInt('nd') === 1) {
-                $this->setStep('news_vorschau');
-                $newsItemID = Request::verifyGPCDataInt('kNews');
-                $newsItem   = new Item($this->db, $this->cache);
-                $newsItem->load($newsItemID);
-
-                if ($newsItem->getID() > 0) {
-                    if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
-                        $response = $this->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
-                        if ($response !== null) {
-                            return $response;
-                        }
-                    }
-                    $smarty->assign('oNews', $newsItem)
-                        ->assign('files', $this->getNewsImages($newsItem->getID(), $uploadDir))
-                        ->assign('comments', $newsItem->getComments()->getThreadedItems());
+                $response = $this->actionPreview();
+                if ($response !== null) {
+                    return $response;
                 }
             }
         }
         if ($this->getStep() === 'news_uebersicht') {
-            $newsItems = $this->getAllNews();
-            $comments  = $this->getNonActivatedComments();
-            $prefixes  = [];
-            foreach ($languages as $i => $lang) {
-                $item                = new stdClass();
-                $item->kSprache      = $lang->getId();
-                $item->cNameEnglisch = $lang->getNameEN();
-                $item->cNameDeutsch  = $lang->getNameDE();
-                $item->name          = $lang->getLocalizedName();
-                $item->cISOSprache   = $lang->getIso();
-                $monthPrefix         = $this->db->select(
-                    'tnewsmonatspraefix',
-                    'kSprache',
-                    $lang->getId()
-                );
-                $item->cPraefix      = $monthPrefix->cPraefix ?? null;
-                $prefixes[$i]        = $item;
-            }
-            $newsCategories     = $this->getAllNewsCategories();
-            $commentPagination  = (new Pagination('kommentar'))
-                ->setItemArray($comments)
-                ->assemble();
-            $itemPagination     = (new Pagination('news'))
-                ->setItemArray($newsItems)
-                ->assemble();
-            $categoryPagination = (new Pagination('kats'))
-                ->setItemArray($newsCategories)
-                ->assemble();
-            $this->getAdminSectionSettings(\CONF_NEWS);
-            $smarty->assign('comments', $commentPagination->getPageItems())
-                ->assign('oNews_arr', $itemPagination->getPageItems())
-                ->assign('oNewsKategorie_arr', $categoryPagination->getPageItems())
-                ->assign('oNewsMonatsPraefix_arr', $prefixes)
-                ->assign('oPagiKommentar', $commentPagination)
-                ->assign('oPagiNews', $itemPagination)
-                ->assign('oPagiKats', $categoryPagination);
+            $this->actionOverview();
         } elseif ($this->getStep() === 'news_kategorie_erstellen') {
-            $smarty->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
-                ->assign('oNewsKategorie', $newsCategory);
+            $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
+                ->assign('category', $category);
         }
 
         $this->alertService->addNotice($this->getMsg(), 'newsMessage');
         $this->alertService->addError($this->getErrorMsg(), 'newsError');
 
-        return $smarty->assign('customerGroups', CustomerGroup::getGroups())
+        $this->assignScrollPosition();
+
+        return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
             ->assign('step', $this->getStep())
             ->assign('nMaxFileSize', self::getMaxFileSize(\ini_get('upload_max_filesize')))
@@ -369,24 +185,25 @@ class NewsController extends AbstractBackendController
     private function actionConfig(array $languages): void
     {
         $this->saveAdminSectionSettings(\CONF_NEWS, $_POST, [\CACHING_GROUP_OPTION, \CACHING_GROUP_NEWS]);
-        if (\count($languages) > 0) {
-            $this->db->query('TRUNCATE tnewsmonatspraefix');
-            foreach ($languages as $lang) {
-                $monthPrefix           = new stdClass();
-                $monthPrefix->kSprache = $lang->getId();
-                if (!empty($_POST['praefix_' . $lang->getIso()])) {
-                    $monthPrefix->cPraefix = \htmlspecialchars(
-                        $_POST['praefix_' . $lang->getIso()],
-                        \ENT_COMPAT | \ENT_HTML401,
-                        \JTL_CHARSET
-                    );
-                } else {
-                    $monthPrefix->cPraefix = $lang->getIso() === 'ger'
-                        ? 'Newsuebersicht'
-                        : 'Newsoverview';
-                }
-                $this->db->insert('tnewsmonatspraefix', $monthPrefix);
+        if (\count($languages) === 0) {
+            return;
+        }
+        $this->db->query('TRUNCATE tnewsmonatspraefix');
+        foreach ($languages as $lang) {
+            $monthPrefix           = new stdClass();
+            $monthPrefix->kSprache = $lang->getId();
+            if (!empty($_POST['praefix_' . $lang->getIso()])) {
+                $monthPrefix->cPraefix = \htmlspecialchars(
+                    $_POST['praefix_' . $lang->getIso()],
+                    \ENT_COMPAT | \ENT_HTML401,
+                    \JTL_CHARSET
+                );
+            } else {
+                $monthPrefix->cPraefix = $lang->getIso() === 'ger'
+                    ? 'Newsuebersicht'
+                    : 'Newsoverview';
             }
+            $this->db->insert('tnewsmonatspraefix', $monthPrefix);
         }
     }
 
@@ -505,7 +322,8 @@ class NewsController extends AbstractBackendController
                 } else {
                     $monthOverview           = new stdClass();
                     $monthOverview->kSprache = $langID;
-                    $monthOverview->cName    = \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
+                    $monthOverview->cName    =
+                        \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
                     $monthOverview->nMonat   = $month;
                     $monthOverview->nJahr    = $year;
 
@@ -545,7 +363,7 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (isset($post['continue']) && $post['continue'] === '1') {
+            if (Request::postVar('saveAndContinue', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
@@ -557,8 +375,8 @@ class NewsController extends AbstractBackendController
             $newsItem   = new Item($this->db, $this->cache);
             $this->step = 'news_editieren';
             $this->smarty->assign('cPostVar_arr', $post)
-                ->assign('cPlausiValue_arr', $validation)
-                ->assign('oNewsKategorie_arr', $this->getAllNewsCategories())
+                ->assign('validation', $validation)
+                ->assign('newsCategories', $this->getAllNewsCategories())
                 ->assign('oNews', $newsItem);
             $this->errorMsg .= \__('errorFillRequired');
 
@@ -604,7 +422,7 @@ class NewsController extends AbstractBackendController
         $insert->nAktiv          = $post['nAktiv'] ?? 1;
         $insert->cName           = $post['cName'] ?? 'Admin';
         $insert->cEmail          = $post['cEmail'] ?? '';
-        $insert->isAdmin         = $post['isAdmin'] ?? (int)($_SESSION['AdminAccount']->kAdminlogin ?? 0);
+        $insert->isAdmin         = $post['isAdmin'] ?? $this->account->getID();
         $insert->parentCommentID = $post['parentCommentID'] ?? 0;
         $insert->dErstellt       = 'NOW()';
         $this->flushCache();
@@ -623,7 +441,6 @@ class NewsController extends AbstractBackendController
         $this->setMsg(\__('successNewsCommentUnlock'));
         $this->flushCache();
     }
-
 
     /**
      * @param array  $newsItems
@@ -779,7 +596,22 @@ class NewsController extends AbstractBackendController
         $parentID     = (int)$post['kParent'];
         $previewImage = $post['previewImage'] ?? '';
         $oldPreview   = null;
+        $error        = false;
         $flag         = \ENT_COMPAT | \ENT_HTML401;
+
+        $category   = $this->createCategoryFromPost($post, $languages);
+        $validation = $this->validateNewsCategory($category, $languages);
+        if (\count($validation) > 0) {
+            $this->setStep('news_kategorie_erstellen');
+            $this->smarty->assign('cPostVar_arr', $post)
+                ->assign('validation', $validation)
+                ->assign('newsCategories', $this->getAllNewsCategories())
+                ->assign('category', $category);
+            $this->errorMsg .= \__('errorFillRequired');
+
+            return $category;
+        }
+
         $this->db->delete('tseo', ['cKey', 'kKey'], ['kNewsKategorie', $categoryID]);
         $newsCategory                        = new stdClass();
         $newsCategory->kParent               = $parentID;
@@ -787,7 +619,6 @@ class NewsController extends AbstractBackendController
         $newsCategory->nAktiv                = $active;
         $newsCategory->dLetzteAktualisierung = (new DateTime())->format('Y-m-d H:i:s');
         $newsCategory->cPreviewImage         = $previewImage;
-
         if ($update === true) {
             $oldPreview = $this->db->select('tnewskategorie', 'kNewsKategorie', $categoryID)->cPreviewImage ?? null;
             $this->db->update('tnewskategorie', 'kNewsKategorie', $categoryID, $newsCategory);
@@ -842,8 +673,7 @@ class NewsController extends AbstractBackendController
         foreach ($affected as $id) {
             $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
         }
-        $error = false;
-        $dir   = self::UPLOAD_DIR_CATEGORY . $categoryID;
+        $dir = self::UPLOAD_DIR_CATEGORY . $categoryID;
         if (!\is_dir($dir) && !\mkdir($dir) && !\is_dir($dir)) {
             $error = true;
             $this->setErrorMsg(\__('errorDirCreate') . $dir);
@@ -974,6 +804,69 @@ class NewsController extends AbstractBackendController
     }
 
     /**
+     * @param array           $post
+     * @param LanguageModel[] $languages
+     * @return CategoryInterface
+     */
+    private function createCategoryFromPost(array $post, array $languages): CategoryInterface
+    {
+        $category    = new Category($this->db);
+        $languageIDs = [];
+        foreach ($languages as $language) {
+            $iso           = $language->getCode();
+            $langID        = $language->getId();
+            $languageIDs[] = $langID;
+            $category->setName($post['cName_' . $iso] ?? '', $langID);
+            $category->setMetaDescription($post['cMetaDescription_' . $iso] ?? '', $langID);
+            $category->setMetaTitle($post['cMetaTitle_' . $iso] ?? '', $langID);
+            $category->setDescription($post['cBeschreibung_' . $iso] ?? '', $langID);
+            $category->setSEO($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setSlug($post['cSeo_' . $iso] ?? '', $langID);
+            $category->setPreviewImage($post['cPreviewImage'] ?? '', $langID);
+            $category->setDateLastModified(\date_create());
+            $category->setIsActive((bool)($post['nAktiv'] ?? false));
+            $category->setSort((int)($post['nSort'] ?? 0));
+            $category->setParentID((int)($post['kParent'] ?? 0));
+            $category->setLevel((int)($post['lvl'] ?? 0));
+            $category->setLft((int)($post['lft'] ?? 0));
+            $category->setRght((int)($post['rght'] ?? 0));
+        }
+        $category->setLanguageIDs($languageIDs);
+        $category->setID((int)($post['kNewsKategorie'] ?? -1));
+
+        return $category;
+    }
+
+    /**
+     * @param CategoryInterface $category
+     * @param array             $languages
+     * @return array
+     */
+    private function validateNewsCategory(CategoryInterface $category, array $languages): array
+    {
+        $validation = [];
+        foreach ($languages as $language) {
+            $id       = $language->getId();
+            $seo      = $category->getSEO($id);
+            $hasError = false;
+            if (empty($seo) || empty(Seo::checkSeo($seo))) {
+                $hasError                                   = true;
+                $validation['cSeo_' . $language->getCode()] = 1;
+            }
+            if (empty($category->getName($id))) {
+                $validation['cName_' . $language->getCode()] = 1;
+                $hasError                                    = true;
+            }
+            if ($hasError === true) {
+                $validation['lang']   = $validation['lang'] ?? [];
+                $validation['lang'][] = $language->getCode();
+            }
+        }
+
+        return $validation;
+    }
+
+    /**
      * @return Collection
      */
     public function getAllNews(): Collection
@@ -1017,7 +910,7 @@ class NewsController extends AbstractBackendController
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
         $itemList = new CategoryList($this->db);
-        $ids      = $this->db->getInts(
+        $itemList->createItems($this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
                 INNER JOIN tnewskategorie AS parent
@@ -1026,8 +919,7 @@ class NewsController extends AbstractBackendController
             ' GROUP BY node.kNewsKategorie
                 ORDER BY node.lft, node.nSort ASC',
             'id'
-        );
-        $itemList->createItems($ids);
+        ));
 
         return $itemList->generateTree();
     }
@@ -1044,31 +936,29 @@ class NewsController extends AbstractBackendController
     }
 
     /**
-     * @param int    $itemID
-     * @param string $uploadDirName
+     * @param int $itemID
      * @return array
      */
-    public function getCategoryImages(int $itemID, string $uploadDirName): array
+    public function getCategoryImages(int $itemID): array
     {
-        return $this->getImages(\PFAD_NEWSKATEGORIEBILDER, $itemID, $uploadDirName);
+        return $this->getImages(\PFAD_NEWSKATEGORIEBILDER, $itemID, self::UPLOAD_DIR_CATEGORY);
     }
 
     /**
      * @param string $base
      * @param int    $itemID
-     * @param string $uploadDirName
+     * @param string $dir
      * @param bool   $excludePreview
      * @return array
      */
-    private function getImages(string $base, int $itemID, string $uploadDirName, bool $excludePreview = true): array
+    private function getImages(string $base, int $itemID, string $dir, bool $excludePreview = true): array
     {
         $images = [];
-        if ($this->sanitizeDir('fake', $itemID, $uploadDirName) === false) {
+        if ($this->sanitizeDir('fake', $itemID, $dir) === false) {
             return $images;
         }
         $imageBaseURL = Shop::getURL() . '/';
-        $iterator     = new DirectoryIterator($uploadDirName . $itemID);
-        foreach ($iterator as $fileinfo) {
+        foreach (new DirectoryIterator($dir . $itemID) as $fileinfo) {
             $fileName = $fileinfo->getFilename();
             if (($excludePreview && \str_contains($fileName, '_preview.'))
                 || !$fileinfo->isFile()
@@ -1081,10 +971,9 @@ class NewsController extends AbstractBackendController
             $image->cURL     = $base . $itemID . '/' . $fileName;
             $image->cURLFull = $imageBaseURL . $base . $itemID . '/' . $fileName;
             $image->cDatei   = $fileName;
-
-            $images[] = $image;
+            $images[]        = $image;
         }
-        \usort($images, static function ($a, $b): int {
+        \usort($images, static function (stdClass $a, stdClass $b): int {
             return \strcmp($a->cName, $b->cName);
         });
 
@@ -1124,16 +1013,15 @@ class NewsController extends AbstractBackendController
     /**
      * @param string $imageName
      * @param int    $id
-     * @param string $uploadDir
+     * @param string $dir
      * @return bool
      */
-    public function deleteNewsImage(string $imageName, int $id, string $uploadDir): bool
+    public function deleteNewsImage(string $imageName, int $id, string $dir): bool
     {
-        if ($this->sanitizeDir($imageName, $id, $uploadDir) === false) {
+        if ($this->sanitizeDir($imageName, $id, $dir) === false) {
             return false;
         }
-        $iterator = new DirectoryIterator($uploadDir . $id);
-        foreach ($iterator as $fileinfo) {
+        foreach (new DirectoryIterator($dir . $id) as $fileinfo) {
             if ($fileinfo->isDot()
                 || !$fileinfo->isFile()
                 || $fileinfo->getFilename() !== $imageName . '.' . $fileinfo->getExtension()
@@ -1142,9 +1030,8 @@ class NewsController extends AbstractBackendController
             }
             \unlink($fileinfo->getPathname());
             if ($imageName === 'preview' || \str_contains($imageName, '_preview')) {
-                $upd                = new stdClass();
-                $upd->cPreviewImage = '';
-                if (\str_contains($uploadDir, \PFAD_NEWSKATEGORIEBILDER)) {
+                $upd = (object)['cPreviewImage' => ''];
+                if (\str_contains($dir, \PFAD_NEWSKATEGORIEBILDER)) {
                     $this->db->update('tnewskategorie', 'kNewsKategorie', $id, $upd);
                 } else {
                     $this->db->update('tnews', 'kNews', $id, $upd);
@@ -1160,21 +1047,20 @@ class NewsController extends AbstractBackendController
     /**
      * @param string $imageName
      * @param int    $id
-     * @param string $uploadDir
+     * @param string $dir
      * @return bool
      */
-    private function sanitizeDir(string $imageName, int $id, string $uploadDir): bool
+    private function sanitizeDir(string $imageName, int $id, string $dir): bool
     {
-        if ($imageName === '' || $id < 1 || !\is_dir($uploadDir . $id)) {
+        if ($imageName === '' || $id < 1 || !\is_dir($dir . $id)) {
             return false;
         }
-        $real     = \realpath($uploadDir);
+        $real     = \realpath($dir);
         $imgPath1 = \realpath(\PFAD_ROOT . \PFAD_NEWSKATEGORIEBILDER);
         $imgPath2 = \realpath(\PFAD_ROOT . \PFAD_NEWSBILDER);
 
         return \str_starts_with($real, $imgPath1) || \str_starts_with($real, $imgPath2);
     }
-
 
     /**
      * @param string      $tab
@@ -1250,7 +1136,7 @@ class NewsController extends AbstractBackendController
      */
     private function parseContent(string $text, int $id): string
     {
-        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER . $id;
+        $uploadDir = self::UPLOAD_DIR . $id;
         $images    = [];
         if (\is_dir($uploadDir)) {
             $handle = \opendir($uploadDir);
@@ -1262,7 +1148,7 @@ class NewsController extends AbstractBackendController
 
             \closedir($handle);
         }
-        \usort($images, static function ($a, $b): int {
+        \usort($images, static function (string $a, string $b): int {
             return \strcmp($a, $b);
         });
         $baseURL = Shop::getImageBaseURL();
@@ -1289,15 +1175,15 @@ class NewsController extends AbstractBackendController
     }
 
     /**
-     * @param int $kNews
+     * @param int $newsID
      * @return int
      */
-    private function getLastImageNumber(int $kNews): int
+    private function getLastImageNumber(int $newsID): int
     {
-        $uploadDir = \PFAD_ROOT . \PFAD_NEWSBILDER;
+        $uploadDir = self::UPLOAD_DIR;
         $images    = [];
-        if (\is_dir($uploadDir . $kNews)) {
-            $handle = \opendir($uploadDir . $kNews);
+        if (\is_dir($uploadDir . $newsID)) {
+            $handle = \opendir($uploadDir . $newsID);
             while (($file = \readdir($handle)) !== false) {
                 if ($file !== '.' && $file !== '..') {
                     $images[] = $file;
@@ -1417,5 +1303,272 @@ class NewsController extends AbstractBackendController
         }
 
         return false;
+    }
+
+    /**
+     * @param string $tab
+     * @return void
+     */
+    private function handleTab(string $tab): void
+    {
+        $this->smarty->assign('files', []);
+        switch ($tab) {
+            case 'inaktiv':
+                if (Request::verifyGPCDataInt('s1') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=inaktiv&s1=' . Request::verifyGPCDataInt('s1'))
+                        ->assign('cSeite', Request::verifyGPCDataInt('s1'));
+                }
+                break;
+            case 'aktiv':
+                if (Request::verifyGPCDataInt('s2') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=aktiv&s2=' . Request::verifyGPCDataInt('s2'))
+                        ->assign('cSeite', Request::verifyGPCDataInt('s2'));
+                }
+                break;
+            case 'kategorien':
+                if (Request::verifyGPCDataInt('s3') > 1) {
+                    $this->smarty->assign('cBackPage', 'tab=kategorien&s3=' . Request::verifyGPCDataInt('s3'))
+                        ->assign('cSeite', Request::verifyGPCDataInt('s3'));
+                }
+                break;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function actionOverview(): void
+    {
+        $newsItems = $this->getAllNews();
+        $comments  = $this->getNonActivatedComments();
+        $prefixes  = [];
+        foreach (LanguageHelper::getAllLanguages(0, true, true) as $i => $lang) {
+            $item                = new stdClass();
+            $item->kSprache      = $lang->getId();
+            $item->cNameEnglisch = $lang->getNameEN();
+            $item->cNameDeutsch  = $lang->getNameDE();
+            $item->name          = $lang->getLocalizedName();
+            $item->cISOSprache   = $lang->getIso();
+            $monthPrefix         = $this->db->select(
+                'tnewsmonatspraefix',
+                'kSprache',
+                $lang->getId()
+            );
+            $item->cPraefix      = $monthPrefix->cPraefix ?? null;
+            $prefixes[$i]        = $item;
+        }
+        $newsCategories     = $this->getAllNewsCategories();
+        $commentPagination  = (new Pagination('kommentar'))
+            ->setItemArray($comments)
+            ->assemble();
+        $itemPagination     = (new Pagination('news'))
+            ->setItemArray($newsItems)
+            ->assemble();
+        $categoryPagination = (new Pagination('kats'))
+            ->setItemArray($newsCategories)
+            ->assemble();
+        $this->getAdminSectionSettings(\CONF_NEWS);
+        $this->smarty->assign('comments', $commentPagination->getPageItems())
+            ->assign('oNews_arr', $itemPagination->getPageItems())
+            ->assign('newsCategories', $categoryPagination->getPageItems())
+            ->assign('oNewsMonatsPraefix_arr', $prefixes)
+            ->assign('oPagiKommentar', $commentPagination)
+            ->assign('oPagiNews', $itemPagination)
+            ->assign('oPagiKats', $categoryPagination);
+    }
+
+    /**
+     * @param Author $author
+     * @return void
+     */
+    private function actionCreateNews(Author $author): void
+    {
+        $newsCategories = $this->getAllNewsCategories();
+        if (\count($newsCategories) > 0) {
+            $newsItem = new Item($this->db, $this->cache);
+            $this->setStep('news_erstellen');
+            $this->smarty->assign('newsCategories', $newsCategories)
+                ->assign('oNews', $newsItem)
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+        } else {
+            $this->setErrorMsg(\__('errorNewsCatFirst'));
+            $this->setStep('news_uebersicht');
+        }
+    }
+
+    /**
+     * @return ResponseInterface|null
+     */
+    private function actionEditComment(): ?ResponseInterface
+    {
+        if (!isset($_POST['newskommentarsavesubmit'])) {
+            $this->setStep('news_kommentar_editieren');
+            $comment = new Comment($this->db);
+            $comment->load(Request::verifyGPCDataInt('kNewsKommentar'));
+            $this->smarty->assign('oNewsKommentar', $comment);
+            if (Request::verifyGPCDataInt('nFZ') === 1) {
+                $this->smarty->assign('nFZ', 1);
+            }
+
+            return null;
+        }
+        if ($this->saveComment(Request::verifyGPCDataInt('kNewsKommentar'), $_POST)) {
+            $this->setStep('news_vorschau');
+            $this->setMsg(\__('successNewsCommmentEdit'));
+            if (Request::verifyGPCDataInt('nFZ') === 1) {
+                return new RedirectResponse(Shop::getURL() . $this->route);
+            }
+            $tab = Request::verifyGPDataString('tab');
+            if ($tab === 'aktiv') {
+                return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg(), [
+                    'news'  => '1',
+                    'nd'    => '1',
+                    'kNews' => Request::verifyGPCDataInt('kNews'),
+                    'token' => $_SESSION['jtl_token'],
+                ]);
+            }
+
+            return $this->newsRedirect(empty($tab) ? 'inaktiv' : $tab, $this->getMsg());
+        }
+
+        $this->setStep('news_kommentar_editieren');
+        $this->setErrorMsg(\__('errorCheckInput'));
+        $comment = new Comment($this->db);
+        $comment->load((int)$_POST['kNewsKommentar']);
+        $comment->setName(Text::filterXSS($_POST['cName']));
+        $comment->setText(Text::filterXSS($_POST['cKommentar']));
+        $this->smarty->assign('oNewsKommentar', $comment);
+
+        return null;
+    }
+
+    /**
+     * @return void
+     */
+    private function actionCommentAnswer(): void
+    {
+        $this->setStep('news_kommentar_antwort_editieren');
+        $comment         = new Comment($this->db);
+        $parentCommentID = Request::verifyGPCDataInt('parentCommentID');
+        if ($comment->loadByParentCommentID($parentCommentID) === null) {
+            $adminID   = $this->account->getID();
+            $adminName = $this->db->select('tadminlogin', 'kAdminlogin', $adminID)->cName;
+            $comment->setID(0);
+            $comment->setNewsID(Request::verifyGPCDataInt('kNews'));
+            $comment->setCustomerID(0);
+            $comment->setIsActive(true);
+            $comment->setName($adminName);
+            $comment->setMail('');
+            $comment->setText('');
+            $comment->setIsAdmin($adminID);
+            $comment->setParentCommentID($parentCommentID);
+        }
+        $this->smarty->assign('oNewsKommentar', $comment);
+    }
+
+    /**
+     * @param array  $languages
+     * @param Author $author
+     * @return void
+     */
+    private function actionEditNews(array $languages, Author $author): void
+    {
+        $newsCategories = $this->getAllNewsCategories();
+        $newsItemID     = $this->getContinueWith() > 0
+            ? $this->getContinueWith()
+            : Request::getInt('kNews');
+        if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
+            if ($this->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, self::UPLOAD_DIR)) {
+                $this->setMsg(\__('successNewsImageDelete'));
+            } else {
+                $this->setErrorMsg(\__('errorNewsImageDelete'));
+            }
+        }
+        if ($newsItemID > 0 && \count($newsCategories) > 0) {
+            $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
+                ->assign('oAuthor', $author->getAuthor('NEWS', $newsItemID))
+                ->assign('oPossibleAuthors_arr', $author->getPossibleAuthors(['CONTENT_NEWS_SYSTEM_VIEW']));
+            $this->setStep('news_editieren');
+            $newsItem = new Item($this->db, $this->cache);
+            $newsItem->load($newsItemID);
+
+            if ($newsItem->getID() > 0) {
+                if ($this->hasOPCContent($languages, $newsItem->getID())) {
+                    $this->setMsg(\__('OPC content available'));
+                }
+                $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
+                    ->assign('files', $this->getNewsImages($newsItem->getID(), self::UPLOAD_DIR))
+                    ->assign('oNews', $newsItem);
+            }
+        } else {
+            $this->setErrorMsg(\__('errorNewsCatFirst'));
+            $this->setStep('news_uebersicht');
+        }
+    }
+
+    /**
+     * @return ResponseInterface|null
+     */
+    private function actionPreview(): ?ResponseInterface
+    {
+        $this->setStep('news_vorschau');
+        $newsItemID = Request::verifyGPCDataInt('kNews');
+        $newsItem   = new Item($this->db, $this->cache);
+        $newsItem->load($newsItemID);
+
+        if ($newsItem->getID() <= 0) {
+            return null;
+        }
+        if (isset($_POST['kommentareloeschenSubmit']) || Request::postInt('kommentare_loeschen') === 1) {
+            $response = $this->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
+            if ($response !== null) {
+                return $response;
+            }
+        }
+        $this->smarty->assign('oNews', $newsItem)
+            ->assign('files', $this->getNewsImages($newsItem->getID(), \PFAD_ROOT . \PFAD_NEWSBILDER))
+            ->assign('comments', $newsItem->getComments()->getThreadedItems());
+
+        return null;
+    }
+
+    /**
+     * @return Category
+     */
+    private function actionEditCategory(?Category $category = null): Category
+    {
+        if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
+            if ($this->deleteNewsImage(
+                Request::verifyGPDataString('delpic'),
+                Request::getInt('kNewsKategorie'),
+                self::UPLOAD_DIR_CATEGORY
+            )) {
+                $this->setMsg(\__('successNewsImageDelete'));
+            } else {
+                $this->setErrorMsg(\__('errorNewsImageDelete'));
+            }
+        }
+
+        if ($category === null) {
+            $category = new Category($this->db);
+            if (Request::getInt('kNewsKategorie') <= 0) {
+                return $category;
+            }
+        }
+        $categoryId = $category->getID() > 0 ? $category->getID() : Request::getInt('kNewsKategorie');
+        $this->setStep('news_kategorie_erstellen');
+        $category->load($categoryId, false);
+
+        if ($category->getID() > 0) {
+            $this->smarty->assign('category', $category)
+                ->assign('files', $this->getCategoryImages($category->getID()));
+        } elseif (!$this->errorMsg) {
+            $this->setStep('news_uebersicht');
+            $this->setErrorMsg(
+                \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))
+            );
+        }
+
+        return $category;
     }
 }

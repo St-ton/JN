@@ -34,6 +34,7 @@ class NewsletterController extends AbstractBackendController
         $this->checkPermissions(Permissions::MODULE_NEWSLETTER_VIEW);
         $this->getText->loadAdminLocale('pages/newsletter');
         $this->setLanguage();
+        $this->assignScrollPosition();
 
         $conf          = Shop::getSettings([\CONF_NEWSLETTER]);
         $newsletterTPL = null;
@@ -178,6 +179,10 @@ class NewsletterController extends AbstractBackendController
                     $tpl = $admin->getDefaultTemplate($kNewsletterVorlageStd);
                     $smarty->assign('oNewslettervorlageStd', $tpl);
                 }
+                if (Request::postVar('saveAndContinue', '') === 'std') {
+                    $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
+                    $step = $admin->edit($admin->getCurrentId(), $smarty);
+                }
             } elseif (Request::verifyGPCDataInt('newslettervorlagen') === 1) {
                 // Vorlagen
                 $smarty->assign('oKampagne_arr', self::getCampaigns(false, true, $this->db));
@@ -189,14 +194,27 @@ class NewsletterController extends AbstractBackendController
                         $groupString .= ';' . (int)$customerGroupID . ';';
                     }
                 }
+                if (Request::postVar('saveAndContinue', '') === '1') {
+                    $checks = $admin->saveTemplate($_POST);
+                    if (is_array($checks) && count($checks) > 0) {
+                        $smarty->assign('cPlausiValue_arr', $checks)
+                            ->assign('cPostVar_arr', $_POST)
+                            ->assign('oNewsletterVorlage', $newsletterTPL);
+                    }
+                    $step   = 'vorlage_erstellen';
+                    $option = 'editieren';
+                    $id     = $admin->getCurrentId();
+                }
                 // Vorlage hinzufuegen
                 if (isset($postData['vorlage_erstellen'])) {
                     $step   = 'vorlage_erstellen';
                     $option = 'erstellen';
-                } elseif (Request::getInt('editieren') > 0 || Request::getInt('vorbereiten') > 0) {
+                } elseif ((isset($id) && $id > 0)
+                    || Request::getInt('editieren') > 0
+                    || Request::getInt('vorbereiten') > 0) {
                     // Vorlage editieren/vorbereiten
                     $step         = 'vorlage_erstellen';
-                    $nlTemplateID = Request::verifyGPCDataInt('vorbereiten');
+                    $nlTemplateID = $id ?? Request::verifyGPCDataInt('vorbereiten');
                     if ($nlTemplateID === 0) {
                         $nlTemplateID = Request::verifyGPCDataInt('editieren');
                     }
@@ -391,7 +409,7 @@ class NewsletterController extends AbstractBackendController
                     ORDER BY cName'
             );
             $this->getAdminSectionSettings(\CONF_NEWSLETTER);
-            $smarty->assign('kundengruppen', $customerGroupsByName)
+            $this->smarty->assign('kundengruppen', $customerGroupsByName)
                 ->assign('oNewsletterQueue_arr', $queue)
                 ->assign('oNewsletterVorlage_arr', $templates)
                 ->assign('oNewslettervorlageStd_arr', $defaultData)
@@ -412,7 +430,7 @@ class NewsletterController extends AbstractBackendController
             $this->alertService->addError(\__('errorFillRequired'), 'plausiErrorFillRequired');
         }
 
-        return $smarty->assign('step', $step)
+        return $this->smarty->assign('step', $step)
             ->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('nRand', \time())
             ->assign('route', $this->route)

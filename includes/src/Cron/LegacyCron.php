@@ -8,7 +8,7 @@ use stdClass;
 /**
  * Class LegacyCron
  * @package JTL\Cron
- * @todo: finalize refactoring and remove this class
+ * @deprecated since 5.2.0
  */
 class LegacyCron
 {
@@ -36,6 +36,7 @@ class LegacyCron
         public ?string $dStartZeit = null,
         public ?string $dLetzterStart = null
     ) {
+        \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);
     }
 
     /**
@@ -64,6 +65,7 @@ class LegacyCron
             $ins->startDate    = $this->dStart;
             $ins->startTime    = $this->dStartZeit;
             $ins->lastStart    = $this->dLetzterStart ?? '_DBNULL_';
+            $ins->nextStart    = $this->dStart;
 
             return Shop::Container()->getDB()->insert('tcron', $ins);
         }

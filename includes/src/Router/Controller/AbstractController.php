@@ -22,6 +22,7 @@ use JTL\Firma;
 use JTL\Helpers\Category;
 use JTL\Helpers\Form;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -37,6 +38,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use League\Route\RouteGroup;
 use Mobile_Detect;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -165,6 +167,10 @@ abstract class AbstractController implements ControllerInterface
                 $this->state->{$mapping[$seo->cKey]} = $this->state->itemID;
             }
         }
+        if ($this->state->productID > 0 && Product::isVariChild($this->state->productID)) {
+            $this->state->childProductID = $this->state->productID;
+            $this->state->productID      = Product::getParent($this->state->productID);
+        }
         $this->updateShopParams($slug);
 
         return $this->updateProductFilter();
@@ -173,7 +179,7 @@ abstract class AbstractController implements ControllerInterface
     /**
      * @return State
      */
-    protected function updateProductFilter(): State
+    public function updateProductFilter(): State
     {
         Shop::getProductFilter()->initStates($this->state->getAsParams());
         \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
@@ -327,8 +333,8 @@ abstract class AbstractController implements ControllerInterface
 
         $origin          = Frontend::getCustomer()->cLand ?? '';
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
-        $cartValueGros   = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
-        $cartValueNet    = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
+        $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
+        $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);
         $this->smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
             ->assign('NaviFilter', $this->productFilter)
             ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
@@ -575,5 +581,12 @@ abstract class AbstractController implements ControllerInterface
         }
 
         return $default;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
     }
 }

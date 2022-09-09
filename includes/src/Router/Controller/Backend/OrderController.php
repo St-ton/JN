@@ -61,7 +61,7 @@ class OrderController extends AbstractBackendController
      * @return array
      * @former gibBestellungsUebersicht()
      */
-    private function getOrders(string $limitSQL, string $query): array
+    public function getOrders(string $limitSQL, string $query): array
     {
         $orders       = [];
         $prep         = [];

@@ -95,7 +95,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-auto">
-                                {assign var=cJahr value=$smarty.now|date_format:'%Y'}
+                                {assign var=cJahr value=$smarty.now|date_format:'Y'}
                                 <select name="cFromYear" class="custom-select combo">
                                     {section name=fromYear loop=$cJahr+1 start=2005 step=1}
                                         <option value="{$smarty.section.fromYear.index}"
@@ -134,7 +134,7 @@
                                     <option value="12"{if $smarty.session.Kampagne->cToDate_arr.nMonat == 12} selected{/if}>{__('december')}</option>
                                 </select>
                             </div>
-                            {assign var=cJahr value=$smarty.now|date_format:'%Y'}
+                            {assign var=cJahr value=$smarty.now|date_format:'Y'}
                             <div class="col-sm-auto mb-2">
                                 <select name="cToYear" class="custom-select combo">
                                     {section name=toYear loop=$cJahr+1 start=2005 step=1}

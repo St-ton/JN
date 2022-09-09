@@ -21,6 +21,10 @@
   .cart-dropdown-empty {
     padding: map-get($spacers, 2);
   }
+  .dropdown-cart-items img {
+    width: 100%;
+    height: auto;
+  }
 }
 
 /* cart-dropdown-label */

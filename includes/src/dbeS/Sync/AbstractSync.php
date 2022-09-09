@@ -656,4 +656,22 @@ abstract class AbstractSync
 
         return (new Redirect())->saveExt('/' . $oldSeo, $newSeo, true);
     }
+
+    /**
+     * faster than flatten() with a depth of 1
+     * @param array $tags
+     * @return array
+     * @since 5.2.0
+     */
+    protected function flattenTags(array $tags): array
+    {
+        $res = [];
+        foreach ($tags as $arr) {
+            foreach ($arr as $tag) {
+                $res[] = $tag;
+            }
+        }
+
+        return \array_unique($res);
+    }
 }

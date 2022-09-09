@@ -8,6 +8,7 @@ use JTL\Helpers\CMS;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Link\SpecialPageNotFoundException;
 use JTL\Mapper\LinkTypeToPageType;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Router\ControllerFactory;
@@ -15,6 +16,7 @@ use JTL\Shop;
 use JTL\Sitemap\Sitemap;
 use JTL\Smarty\JTLSmarty;
 use Laminas\Diactoros\Response\RedirectResponse;
+use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -63,7 +65,7 @@ class PageController extends AbstractController
         $sitemap             = new Sitemap($this->db, $this->cache, $this->config);
         $sitemap->assignData($this->smarty);
         Shop::setPageType(\PAGE_404);
-        $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+        $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound', ['dismissable' => false]);
 
         $this->preRender();
         $this->smarty->assign('Link', $this->currentLink)
@@ -77,6 +79,47 @@ class PageController extends AbstractController
     }
 
     /**
+     * @return void
+     */
+    protected function initHome(): void
+    {
+        try {
+            $this->currentLink = Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_STARTSEITE);
+        } catch (SpecialPageNotFoundException) {
+            return;
+        }
+        $this->state->pageType = \PAGE_STARTSEITE;
+        $this->state->linkType = \LINKTYP_STARTSEITE;
+
+        $this->updateState(
+            (object)[
+                'cSeo'     => $this->currentLink->getSEO(),
+                'kLink'    => $this->currentLink->getID(),
+                'kKey'     => $this->currentLink->getID(),
+                'cKey'     => 'kLink',
+                'kSprache' => $this->currentLink->getLanguageID()
+            ],
+            $this->currentLink->getSEO()
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function register(RouteGroup $route, string $dynName): void
+    {
+        $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PAGE_BY_ID' . $dynName);
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PAGE_BY_NAME' . $dynName);
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{id:\d+}', [$this, 'getResponse'])
+            ->setName('ROUTE_PAGE_BY_ID' . $dynName . 'POST');
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
+            ->setName('ROUTE_PAGE_BY_NAME' . $dynName . 'POST');
+    }
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
@@ -86,6 +129,8 @@ class PageController extends AbstractController
             if (!$this->init()) {
                 return $this->notFoundResponse($request, $args, $smarty);
             }
+        } elseif ($this->currentLink === null) {
+            $this->initHome();
         }
         $this->smarty = $smarty;
         Shop::setPageType($this->state->pageType);
@@ -95,7 +140,7 @@ class PageController extends AbstractController
         }
         $requestURL = URL::buildURL($this->currentLink, \URLART_SEITE);
         $linkType   = $this->currentLink->getLinkType();
-        if (!str_contains($requestURL, '.php')) {
+        if (!\str_contains($requestURL, '.php')) {
             $this->canonicalURL = $this->currentLink->getURL();
         }
         $mapped = ControllerFactory::getControllerClassByLinkType($linkType);
@@ -159,7 +204,7 @@ class PageController extends AbstractController
             $sitemap = new Sitemap($this->db, $this->cache, $this->config);
             $sitemap->assignData($this->smarty);
             Shop::setPageType(\PAGE_404);
-            $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound');
+            $this->alertService->addDanger(Shop::Lang()->get('pageNotFound'), 'pageNotFound', ['dismissable' => false]);
         } elseif ($linkType === \LINKTYP_GRATISGESCHENK) {
             if ($this->config['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
                 $freeGifts = CMS::getFreeGifts($this->config);

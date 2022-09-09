@@ -42,7 +42,7 @@ class BaseManufacturer extends AbstractFilter
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setRouteType(Router::TYPE_MANUFACTURERS);
+        $this->setRouteType(Router::TYPE_MANUFACTURER);
         $this->setIsCustom(false)
              ->setUrlParam('h')
              ->setUrlParamSEO(\SEP_HST);
@@ -80,10 +80,10 @@ class BaseManufacturer extends AbstractFilter
                 $langID              = $language->kSprache;
                 $this->cSeo[$langID] = '';
                 foreach ($seoData as $seo) {
-                    $this->slugs[$langID] = $seo->cSeo;
                     if ($langID === (int)$seo->kSprache) {
                         $sep                  = $this->cSeo[$langID] === '' ? '' : \SEP_HST;
                         $this->cSeo[$langID] .= $sep . $seo->cSeo;
+                        $this->slugs[$langID] = $seo->cSeo;
                     }
                 }
             }

@@ -132,6 +132,19 @@ interface CategoryInterface
     public function getSEOs(): array;
 
     /**
+     * @param string[] $seos
+     * @return void
+     */
+    public function setSEOs(array $seos): void;
+
+    /**
+     * @param string   $seo
+     * @param int|null $idx
+     * @return void
+     */
+    public function setSEO(string $seo, int $idx = null): void;
+
+    /**
      * @return int
      */
     public function getID(): int;
@@ -195,6 +208,13 @@ interface CategoryInterface
     public function getDescriptions(): array;
 
     /**
+     * @param string   $description
+     * @param int|null $idx
+     * @return void
+     */
+    public function setDescription(string $description, int $idx = null): void;
+
+    /**
      * @param string[] $descriptions
      */
     public function setDescriptions(array $descriptions): void;
@@ -209,6 +229,13 @@ interface CategoryInterface
      * @return string[]
      */
     public function getPreviewImages(): array;
+
+    /**
+     * @param string   $image
+     * @param int|null $idx
+     * @return void
+     */
+    public function setPreviewImage(string $image, int $idx = null): void;
 
     /**
      * @param string[] $previewImages
@@ -274,4 +301,24 @@ interface CategoryInterface
      * @param Collection $children
      */
     public function setChildren(Collection $children): void;
+
+    /**
+     * @return int
+     */
+    public function getLft(): int;
+
+    /**
+     * @param int $lft
+     */
+    public function setLft(int $lft): void;
+
+    /**
+     * @return int
+     */
+    public function getRght(): int;
+
+    /**
+     * @param int $rght
+     */
+    public function setRght(int $rght): void;
 }

@@ -135,7 +135,9 @@ class Firma
      */
     public function loadFromDB(): self
     {
+        $cached = false;
         if (($company = $this->cache->get('jtl_company')) !== false) {
+            $cached = true;
             foreach (\get_object_vars($company) as $k => $v) {
                 $this->$k = $v;
             }
@@ -147,13 +149,14 @@ class Firma
                     $this->$k = $v;
                 }
             }
-            $iso           = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
-            $this->country = $iso !== null
-                ? $countryHelper->getCountry($iso)
-                : null;
-            $this->cache->set('jtl_company', $this, [\CACHING_GROUP_CORE]);
+            $iso = $this->cLand !== null ? $countryHelper->getIsoByCountryName($this->cLand) : null;
+            if ($iso !== null) {
+                $this->country = $countryHelper->getCountry($iso);
+                $obj->country  = $this->country;
+            }
+            $this->cache->set('jtl_company', $obj, [\CACHING_GROUP_CORE]);
         }
-        \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this]);
+        \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this, 'cached' => $cached]);
 
         return $this;
     }

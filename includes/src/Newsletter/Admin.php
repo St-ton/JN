@@ -24,6 +24,8 @@ use stdClass;
  */
 final class Admin
 {
+    private int $currentId = 0;
+
     /**
      * Admin constructor.
      * @param DbInterface $db
@@ -465,6 +467,8 @@ final class Admin
             }
         }
 
+        $this->currentId = $templateID;
+
         return $checks;
     }
 
@@ -556,6 +560,7 @@ final class Admin
                 );
             }
             $tpl->kNewsletterVorlage = $templateID;
+            $this->currentId         = $templateID;
 
             return $tpl;
         }
@@ -1247,5 +1252,13 @@ final class Admin
         $this->alertService->addSuccess(\__('successNewsletterTemplateDelete'), 'successNewsletterTemplateDelete');
 
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentId(): int
+    {
+        return $this->currentId;
     }
 }

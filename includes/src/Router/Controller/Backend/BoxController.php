@@ -30,6 +30,8 @@ class BoxController extends AbstractBackendController
      */
     private ?array $visibility = null;
 
+    private ?int $currentBoxID = null;
+
     /**
      * @var array
      */
@@ -140,6 +142,7 @@ class BoxController extends AbstractBackendController
         $this->assignFilterMapping($pageID);
         $this->alertService->addWarning(\__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
         $this->getAdminSectionSettings(\CONF_BOXEN);
+        $this->assignScrollPosition();
 
         return $smarty->assign('validPageTypes', self::getMappedValidPageTypes())
             ->assign('bBoxenAnzeigen', $this->getVisibility($pageID))
@@ -221,6 +224,13 @@ class BoxController extends AbstractBackendController
         } else {
             $this->alertService->addError(\__('errorBoxCreate'), 'errorBoxCreate');
         }
+
+        if ($this->currentBoxID !== null
+            && $this->currentBoxID > 0
+            && Request::postVar('saveAndContinue')
+        ) {
+            $this->actionEditMode($this->currentBoxID);
+        }
     }
 
     /**
@@ -254,6 +264,7 @@ class BoxController extends AbstractBackendController
                 return $e->isSpecial() === false;
             }
         );
+
         $this->smarty->assign('oEditBox', $box)
             ->assign('revisionData', $revisionData)
             ->assign('oLink_arr', $links);
@@ -267,9 +278,9 @@ class BoxController extends AbstractBackendController
     private function actionEdit(int $boxID, int $linkID): void
     {
         $ok    = false;
-        $title = Text::filterXSS($_REQUEST['boxtitle']);
-        $type  = Text::filterXSS($_REQUEST['typ']);
-        if ($type === 'text') {
+        $title = Text::xssClean($_REQUEST['boxtitle']);
+        $type  = $_REQUEST['typ'];
+        if ($type === Type::TEXT) {
             $oldBox = $this->getByID($boxID);
             if ($oldBox->supportsRevisions === true) {
                 $revision = new Revision($this->db);
@@ -301,6 +312,10 @@ class BoxController extends AbstractBackendController
             $this->alertService->addSuccess(\__('successBoxEdit'), 'successBoxEdit');
         } else {
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
+        }
+
+        if (Request::postVar('saveAndContinue')) {
+            $this->actionEditMode($boxID);
         }
     }
 
@@ -500,7 +515,8 @@ class BoxController extends AbstractBackendController
             ? (int)$template->kCustomID
             : 0;
 
-        $boxID = $this->db->insert('tboxen', $box);
+        $boxID              = $this->db->insert('tboxen', $box);
+        $this->currentBoxID = $boxID;
         if ($boxID) {
             $visibility       = new stdClass();
             $visibility->kBox = $boxID;
@@ -546,15 +562,15 @@ class BoxController extends AbstractBackendController
         $box = $this->db->select('tboxsprache', 'kBox', $boxID, 'cISO', $isoCode);
         if (isset($box->kBox)) {
             $upd          = new stdClass();
-            $upd->cTitel  = Text::filterXSS($title);
+            $upd->cTitel  = $title;
             $upd->cInhalt = $content;
 
             return $this->db->update('tboxsprache', ['kBox', 'cISO'], [$boxID, $isoCode], $upd) >= 0;
         }
         $ins          = new stdClass();
         $ins->kBox    = $boxID;
-        $ins->cISO    = Text::filterXSS($isoCode);
-        $ins->cTitel  = Text::filterXSS($title);
+        $ins->cISO    = $isoCode;
+        $ins->cTitel  = $title;
         $ins->cInhalt = $content;
 
         return $this->db->insert('tboxsprache', $ins) > 0;

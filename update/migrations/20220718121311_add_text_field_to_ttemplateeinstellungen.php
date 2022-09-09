@@ -22,7 +22,9 @@ class Migration_20220718121311 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute('ALTER TABLE ttemplateeinstellungen ADD COLUMN cWertExtended MEDIUMTEXT NULL');
+        $this->execute('ALTER TABLE ttemplateeinstellungen MODIFY COLUMN cWert MEDIUMTEXT NULL');
+        $this->execute('ALTER TABLE teinstellungen MODIFY COLUMN cWert MEDIUMTEXT NULL');
+        $this->execute('ALTER TABLE tplugineinstellungen MODIFY COLUMN cWert MEDIUMTEXT NULL');
     }
 
     /**
@@ -30,6 +32,8 @@ class Migration_20220718121311 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('ALTER TABLE ttemplateeinstellungen DROP COLUMN cWertExtended');
+        $this->execute('ALTER TABLE ttemplateeinstellungen MODIFY COLUMN cWert VARCHAR(255) NULL');
+        $this->execute('ALTER TABLE teinstellungen MODIFY COLUMN cWert VARCHAR(255) NULL');
+        $this->execute('ALTER TABLE tplugineinstellungen MODIFY COLUMN cWert VARCHAR(255) NULL');
     }
 }

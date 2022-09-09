@@ -157,7 +157,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
                     $fileSuccess.removeClass('d-none');
                 {/if}
             } else {
-                if (response.errorMessage !== null && response.errorMessage.length > 0) {
+                if (typeof response.errorMessage !== 'undefined' && response.errorMessage.length > 0) {
                     $fileError.html('<p style="margin-top:20px">' + response.errorMessage + '</p>')
                 }
                 $fileError.removeClass('d-none');

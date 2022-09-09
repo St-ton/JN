@@ -77,7 +77,7 @@ class Bot extends JTLDefault
     /**
      * @inheritDoc
      */
-    public function gc($max_lifetime): bool
+    public function gc($max_lifetime): int|false
     {
         return true;
     }

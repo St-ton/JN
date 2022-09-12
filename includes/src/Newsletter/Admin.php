@@ -792,7 +792,6 @@ final class Admin
     public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
-            // --TO-CHECK-- filter, in join, by the highest/last date of a inserted mail tupel in t..history
             "SELECT tnewsletterempfaenger.*,
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,

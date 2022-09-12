@@ -2,6 +2,7 @@
 
 namespace JTL\Customer;
 
+use InvalidArgumentException;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -148,18 +149,20 @@ class CustomerGroup
     /**
      * @param int $id
      * @return $this
+     * @throws InvalidArgumentException
      */
     private function loadFromDB(int $id = 0): self
     {
         $item = Shop::Container()->getDB()->select('tkundengruppe', 'kKundengruppe', $id);
-        if (isset($item->kKundengruppe) && $item->kKundengruppe > 0) {
-            $this->setID((int)$item->kKundengruppe)
-                 ->setName($item->cName)
-                 ->setDiscount($item->fRabatt)
-                 ->setDefault($item->cStandard)
-                 ->setShopLogin($item->cShopLogin)
-                 ->setIsMerchant((int)$item->nNettoPreise);
+        if ($item === null) {
+            throw new InvalidArgumentException('Cannot load customer group with id ' . $id);
         }
+        $this->setID((int)$item->kKundengruppe)
+             ->setName($item->cName)
+             ->setDiscount($item->fRabatt)
+             ->setDefault($item->cStandard)
+             ->setShopLogin($item->cShopLogin)
+             ->setIsMerchant((int)$item->nNettoPreise);
 
         return $this;
     }

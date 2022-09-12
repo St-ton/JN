@@ -354,8 +354,7 @@ final class Shop extends ShopBC
      */
     public static function setLanguage(int $languageID, string $iso = null): void
     {
-        self::$kSprache              = $languageID;
-        self::getState()->languageID = $languageID;
+        self::$kSprache = $languageID;
         if ($iso !== null) {
             self::$cISO = $iso;
         }

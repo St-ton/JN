@@ -202,7 +202,7 @@ abstract class AbstractController implements ControllerInterface
             exit;
         }
         $languageID = $this->state->languageID ?: Shop::$kSprache;
-        Shop::updateLanguage($this->state->languageID);
+        Shop::updateLanguage($languageID);
         Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
         Shop::$is404                     = $this->state->is404;
         Shop::$kSprache                  = $languageID;

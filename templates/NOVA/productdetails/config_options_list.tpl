@@ -7,8 +7,8 @@
             {$configLocalization = $configGroup->getSprache()}
             {$configGroupHasImage = ($configGroup->getImage(\JTL\Media\Image::SIZE_MD)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
             {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
-            <div id="cfg-grp-{$configGroup@iteration}" class="cfg-group js-cfg-group mb-3 {if $configGroup@first}visited{/if}"
-                 data-id="{$kKonfiggruppe}">
+            <div id="cfg-grp-{$configGroup->getID()}" class="cfg-group js-cfg-group mb-3 {if $configGroup@first}visited{/if}"
+                 data-id="{$configGroup->getID()}">
                 {block name='productdetails-config-options-heading'}
                     <h3 class="hr-sect">
                         {$configLocalization->getName()}
@@ -112,8 +112,8 @@
                                                             <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                        <p class="cfg-item-description">
-                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height=60 srcSize='sm' alt=$oItem->getName()}
+                                                        <div class="cfg-item-description">
+                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' alt=$oItem->getName()}
                                                             <span>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</span>
                                                             {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                                 {badge variant="light"}
@@ -164,7 +164,7 @@
                                                                     <i class="fas fa-question-circle"></i>
                                                                 {/link}
                                                             {/if}
-                                                        </p>
+                                                        </div>
                                                     </div>
                                                 {/radio}
                                             {/block}
@@ -183,8 +183,8 @@
                                                             <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                        <p class="cfg-item-description">
-                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height=60 srcSize='sm' alt=$oItem->getName()}
+                                                        <div class="cfg-item-description">
+                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' alt=$oItem->getName()}
                                                             <span>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</span>
                                                             {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                                 {badge variant="light"}
@@ -235,7 +235,7 @@
                                                                     <i class="fas fa-question-circle"></i>
                                                                 {/link}
                                                             {/if}
-                                                        </p>
+                                                        </div>
                                                     </div>
                                                 {/checkbox}
                                             {/block}
@@ -294,7 +294,7 @@
                                         {row}
                                         {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
                                             {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
-                                            <p class="cfg-item-description">
+                                            <div class="cfg-item-description">
                                                 {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                                                 {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                     {badge variant="light"}
@@ -305,7 +305,7 @@
                                                     {$oItem->getPreisLocalized()}
                                                     {/badge}
                                                 {/if}
-                                            </p>
+                                            </div>
                                         {/col}
                                         {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
                                         {if !empty($cBeschreibung)}
@@ -360,6 +360,7 @@
                         {/row}
                     {/block}
                     {block name='productdetails-config-bottom'}
+                        {if $Einstellungen.template.productdetails.config_layout !== 'list'}
                         <div class="sticky-bottom">
                             {if $configGroup@last}
                                 {nav}
@@ -376,6 +377,7 @@
                                 {/nav}
                             {/if}
                         </div>
+                        {/if}
                     {/block}
 
                 {/block}

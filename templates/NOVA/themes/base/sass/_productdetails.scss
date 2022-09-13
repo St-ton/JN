@@ -289,6 +289,7 @@
 	align-items: center;
 	justify-content: space-between;
 	flex-wrap: wrap;
+	flex-grow: 1;
 	margin: map_get($spacers ,2) 0;
 }
 
@@ -396,6 +397,9 @@
 }
 
 #cfg-container-tab-panes {
+	.input-group.form-counter{
+		width: auto;
+	}
 	&.cfg-gallery {
 		height: calc((var(--vh, 1vh) * 78) - 3rem);
 		overflow-x: auto;
@@ -413,19 +417,12 @@
 			justify-content: space-between;
 			flex-grow: 1;
 			align-items: center;
-			.input-group {
-				width: auto;
-			}
 		}
 		.custom-checkbox .config-item {
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
 			align-items: center;
-
-			.input-group {
-				width: auto;
-			}
 		}
 	}
 	border-bottom: 2px solid $border-color;
@@ -469,7 +466,7 @@
 		display: block;
 		padding: $alert-padding-y;
 		border: 2px solid $cool-white;
-		margin-bottom: map_get($spacers, 5);
+		//margin-bottom: map_get($spacers, 5);
 		@include border-radius($dropdown-border-radius);
 		.badge-circle{
 			display: none;
@@ -532,6 +529,10 @@
 			margin-bottom: map_get($spacers, 2);
 		}
 	}
+}
+
+.config-table .accent-bg {
+	background: $table-accent-bg;
 }
 
 #product-configurator .modal-dialog {

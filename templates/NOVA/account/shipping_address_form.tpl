@@ -105,26 +105,7 @@
         $(document).ready(function () {
             function format(d) {
                 return (
-                    '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                    '<tr>' +
-                    '<td>Titel:</td>' +
-                    '<td>' +
-                    d.titel +
-                    '</td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Adresszusatz:</td>' +
-                    '<td>' +
-                    d.adresszusatz +
-                    '</td>' +
-                    '</tr>' +
-                    '<tr>' +
-                    '<td>Bundesland:</td>' +
-                    '<td>' +
-                    d.bundesland +
-                    '</td>' +
-                    '</tr>' +
-                    '</table>'
+                    'Weitere Informationen'
                 );
             }
             let tableID = '#lieferadressen-liste';

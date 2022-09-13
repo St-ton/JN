@@ -8,7 +8,7 @@
             {input type="hidden" name="shipping_address" value="1"}
             {checkbox id="checkout_register_shipping_address"
             name="shipping_address" value="0" checked=!$showShippingAddress
-            data=["toggle"=>"collapse", "target"=>"#select_shipping_address"]
+            data=["toggle"=>"collapse", "target"=>"#select-shipping-address"]
             class="{if isset($forceDeliveryAddress)}d-none{/if}"
             }
             {lang key='shippingAdressEqualBillingAdress' section='account data'}
@@ -18,7 +18,7 @@
     {/col}
     {col cols=12}
     {block name='checkout-inc-shipping-address-shipping-address'}
-        <div id="select_shipping_address" class="collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
+        <div id="select-shipping-address" class="select-shipping-address collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
             {block name='checkout-inc-shipping-address-shipping-address-body'}
                 {if JTL\Session\Frontend::getCustomer()->getID() > 0 && isset($Lieferadressen) && $Lieferadressen|count > 0}
                     {row}
@@ -83,25 +83,29 @@
                             </tbody>
                         </table>
                     {/block}
-                    {block name='checkout-inc-shipping-address-fieldset-new-address'}
-                        <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
-                            {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
-                                <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
-                            {/radio}
-                        </label>
-                    {/block}
-                    {block name='checkout-inc-shipping-address-fieldset-register'}
-                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
-                            {block name='checkout-inc-shipping-address-legend-register'}
-                                <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
-                            {/block}
-                            {block name='checkout-inc-shipping-address-include-customer-shipping-address'}
-                                {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-                            {/block}
-                            {block name='checkout-inc-shipping-address-include-customer-shipping-contact'}
-                                {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-                            {/block}
-                        </fieldset>
+                    {block name='checkout-inc-shipping-address-new-address-wrapper'}
+                        <div class="new-shipping-address">
+                        {block name='checkout-inc-shipping-address-fieldset-new-address'}
+                            <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
+                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
+                                    <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
+                                {/radio}
+                            </label>
+                        {/block}
+                        {block name='checkout-inc-shipping-address-fieldset-register'}
+                            <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
+                                {block name='checkout-inc-shipping-address-legend-register'}
+                                    <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
+                                {/block}
+                                {block name='checkout-inc-shipping-address-include-customer-shipping-address'}
+                                    {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+                                {/block}
+                                {block name='checkout-inc-shipping-address-include-customer-shipping-contact'}
+                                    {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+                                {/block}
+                            </fieldset>
+                        {/block}
+                        </div>
                     {/block}
                     {/col}
                     {/row}

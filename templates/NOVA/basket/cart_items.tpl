@@ -1,17 +1,10 @@
 {block name='basket-cart-items'}
     {input type="submit" name="fake" class="d-none"}
     {block name='basket-cart-items-cols'}
-        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
-            {$itemInfoCols=3}
-            {$cols=9}
-            {$mdLeft=5}
-            {$mdRight=4}
-        {else}
-            {$itemInfoCols=5}
-            {$cols=12}
-            {$mdLeft=6}
-            {$mdRight=6}
-        {/if}
+        {$itemInfoCols=4}
+        {$cols=12}
+        {$mdLeft=7}
+        {$mdRight=5}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
             {$itemInfoCols=$itemInfoCols+2}
         {/if}
@@ -22,19 +15,23 @@
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
                     {col cols=2}{/col}
                 {/if}
-                {col cols=$itemInfoCols}
-                    <span>{lang key='product'}</span>
-                {/col}
-                {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                    {col cols=2}
-                        <span>{lang key="pricePerUnit" section="productDetails"}</span>
-                    {/col}
-                {/if}
-                {col cols=3 class="text-center-util"}
-                    <span>{lang key="quantity" section="checkout"}</span>
-                {/col}
-                {col cols=2 class="text-right-util"}
-                    <span>{lang key="price"}</span>
+                {col}
+                    {row}
+                        {col cols=$itemInfoCols}
+                            <span>{lang key='product'}</span>
+                        {/col}
+                        {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                            {col cols=2}
+                                <span>{lang key="pricePerUnit" section="productDetails"}</span>
+                            {/col}
+                        {/if}
+                        {col cols=4 class="text-center-util"}
+                            <span>{lang key="quantity" section="checkout"}</span>
+                        {/col}
+                        {col cols=2 class="text-right-util"}
+                            <span>{lang key="price"}</span>
+                        {/col}
+                    {/row}
                 {/col}
                 {col cols=12}
                     <hr>
@@ -62,9 +59,11 @@
                             {/col}
                         {/if}
                     {/block}
+                {col}
+                {row class="align-items-baseline"}
                     {block name='basket-cart-items-items-main-content'}
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}{$nameCol=$mdLeft}{else}{$nameCol=$mdLeft+$mdRight}{/if}
-                        {col cols=$cols xl=$itemInfoCols md=$nameCol class="ml-auto-util"}
+                        {col cols=$cols xl=$itemInfoCols md=$nameCol}
                         {block name='basket-cart-items-items-main-content-inner'}
                         {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
@@ -108,12 +107,12 @@
                             {/if}
                         {/block}
                         {block name='basket-cart-items-quantity-outer'}
-                        {col cols=$cols xl=3 md=$mdLeft class="cart-items-quantity"}
+                        {col cols=$cols xl=4 md=$mdLeft class="cart-items-quantity"}
                         {block name='basket-cart-items-quantity'}
                             {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if $oPosition->istKonfigVater()}
                                     <div class="qty-wrapper max-w-sm">
-                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
+                                        {lang key="quantity" section="checkout"}: {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                         {link class="btn btn-outline-secondary configurepos btn-block btn-sm"
                                         href="{$ShopURL}/?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
                                             <i class="fa fa-cogs icon-mr-2"></i>{lang key='configure'}
@@ -326,7 +325,7 @@
                         {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
                         || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK
                         }
-                            {col cols=$cols xl=10 class='cart-items-delete' data=['toggle'=>'product-actions']}
+                            {col cols=$cols class='cart-items-delete' data=['toggle'=>'product-actions']}
                                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'
                                 && $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                     {block name='basket-cart-items-cart-submit-include-wishlist-button'}
@@ -345,11 +344,13 @@
                             {/col}
                         {/if}
                     {/block}
-                    {block name='basket-cart-items-items-bottom-hr'}
-                        {col cols=12}
-                            <hr>
-                        {/col}
-                    {/block}
+                    {/row}
+                {/col}
+                {block name='basket-cart-items-items-bottom-hr'}
+                    {col cols=12}
+                        <hr>
+                    {/col}
+                {/block}
                 {/row}
             {/if}
         {/foreach}

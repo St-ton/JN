@@ -212,4 +212,5 @@
             });
         });
     </script>{/inline_script}
+    {/block}
 {/block}

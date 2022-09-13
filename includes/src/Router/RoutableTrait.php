@@ -165,7 +165,7 @@ trait RoutableTrait
      */
     public function getURL(int $idx = null): ?string
     {
-        return $this->urls[$idx ?? $this->currentLanguageID];
+        return $this->urls[$idx ?? $this->currentLanguageID] ?? null;
     }
 
     /**

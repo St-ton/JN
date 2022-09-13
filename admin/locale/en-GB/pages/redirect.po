@@ -47,6 +47,9 @@ msgstr "Could not carry out import. Please check the CSV file."
 msgid "successImport"
 msgstr "Import carried out successfully."
 
+msgid "create/edit"
+msgstr "Create/Edit"
+
 msgid "Parameter handling"
 msgstr "Parameter handling"
 

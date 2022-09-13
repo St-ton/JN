@@ -21,7 +21,6 @@
         <div id="select-shipping-address" class="select-shipping-address collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
             {block name='checkout-inc-shipping-address-shipping-address-body'}
                 {if JTL\Session\Frontend::getCustomer()->getID() > 0 && isset($Lieferadressen) && $Lieferadressen|count > 0}
-                    <div class="h3">{lang key='chooseShippingAdress' section='checkout'}</div>
                     {row}
                     {col cols=12 md=4}
                     {block name='checkout-inc-shipping-address-legend-address'}
@@ -30,6 +29,7 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
+                        <div class="h3">{lang key='chooseShippingAdress' section='checkout'}</div>
                         <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>

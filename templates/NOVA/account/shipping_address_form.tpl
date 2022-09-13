@@ -37,7 +37,7 @@
             {/col}
             {col cols=12 md=6 class='shipping-addresses-wrapper'}
                 {block name='account-shipping-address-form-form-address-wrapper'}
-                    <table id="lieferadressen-liste" class="table-striped display compact" style="width:100%">
+                    <table id="lieferadressen-liste" class="table display compact" style="width:100%">
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -127,8 +127,8 @@
                     '</table>'
                 );
             }
-
-            var table = $('#lieferadressen-liste').DataTable( {
+            let tableID = '#lieferadressen-liste';
+            let table = $(tableID).DataTable( {
                 language: {
                     "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
                     "info":              "{lang key='info' section='datatables'}",
@@ -180,9 +180,12 @@
                     $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                     $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
                 },
+                drawCallback: function( settings ) {
+                    $('table.dataTable thead').remove();
+                },
             } );
 
-            $('#lieferadressen-liste tbody').on('click', 'td.dt-control', function () {
+            $(tableID + ' tbody').on('click', 'td.dt-control', function () {
                 let tr = $(this).closest('tr'),
                     row = table.row(tr);
 

@@ -29,7 +29,7 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <table id="shipping-address-templates" class="table-striped display compact" style="width:100%">
+                        <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -45,7 +45,7 @@
                             <tbody>
                             {foreach $Lieferadressen as $adresse}
                                 <tr>
-                                    <td style="max-width: 20px">
+                                    <td>
                                         <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
                                             {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse || $adresse->nIstStandardLieferadresse == 1)}
 
@@ -68,7 +68,7 @@
                                     <td>
                                         {$adresse->cAdressZusatz}
                                     </td>
-                                    <td style="max-width: 40px" class="text-right">
+                                    <td class="text-right">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
@@ -171,7 +171,6 @@
 
         var table = $('#shipping-address-templates').DataTable( {
             language: {
-                //url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
                 "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
                 "info":              "{lang key='info' section='datatables'}",
                 "infoEmpty":         "{lang key='infoEmpty' section='datatables'}",
@@ -188,12 +187,12 @@
             },
             columns: [
                 { data: 'select' },
-                {
+               /* {
                     className: 'dt-control',
                     orderable: false,
                     data: null,
                     defaultContent: '',
-                },
+                }, */
                 { data: 'address' },
                 { data: 'titel' },
                 { data: 'bundesland' },
@@ -219,9 +218,16 @@
                     visible: false,
                 }
             ],
-            lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Alle"] ],
+            lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
             pageLength: 5,
-            order: [6, 'desc']
+            order: [6, 'desc'],
+            initComplete: function (settings, json) {
+                $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
+                $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
+            },
+            drawCallback: function( settings ) {
+                $('table.dataTable thead').remove();
+            },
         } );
 
         $('#shipping-address-templates tbody').on('click', 'td.dt-control', function () {

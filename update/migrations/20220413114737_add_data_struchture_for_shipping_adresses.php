@@ -139,6 +139,9 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'datatables', 'paginateprevious', 'Zurück');
         $this->setLocalization('eng', 'datatables', 'paginateprevious', 'Previous');
 
+        $this->setLocalization('ger', 'checkout', 'chooseShippingAdress', 'Wählen Sie eine Ihrer Adressen');
+        $this->setLocalization('eng', 'checkout', 'chooseShippingAdress', 'Choose one of your shipping adresses');
+
 
         $this->execute("CREATE TABLE IF NOT EXISTS `tlieferadressevorlage` (
                                 `kLieferadresse` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -203,5 +206,6 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->removeLocalization('paginatelast', 'datatables');
         $this->removeLocalization('paginatenext', 'datatables');
         $this->removeLocalization('paginateprevious', 'datatables');
+        $this->removeLocalization('chooseShippingAdress', 'checkout');
     }
 }

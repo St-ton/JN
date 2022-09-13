@@ -16371,7 +16371,7 @@ select.selectpicker {
   z-index: 2;
 }
 .has-error .bootstrap-select .dropdown-toggle, .has-error .bootstrap-select [data-toggle=collapse]:not(.navbar-toggler), .error .bootstrap-select .dropdown-toggle, .error .bootstrap-select [data-toggle=collapse]:not(.navbar-toggler), .bootstrap-select.is-invalid .dropdown-toggle, .bootstrap-select.is-invalid [data-toggle=collapse]:not(.navbar-toggler), .was-validated .bootstrap-select .selectpicker:invalid + .dropdown-toggle, .was-validated .bootstrap-select .selectpicker:invalid + [data-toggle=collapse]:not(.navbar-toggler) {
-  border-color: rgb(185, 74, 72);
+  border-color: #b94a48;
 }
 .bootstrap-select.is-valid .dropdown-toggle, .bootstrap-select.is-valid [data-toggle=collapse]:not(.navbar-toggler), .was-validated .bootstrap-select .selectpicker:valid + .dropdown-toggle, .was-validated .bootstrap-select .selectpicker:valid + [data-toggle=collapse]:not(.navbar-toggler) {
   border-color: #28a745;
@@ -16541,8 +16541,8 @@ select.selectpicker {
   margin: 0 2%;
   min-height: 26px;
   padding: 3px 5px;
-  background: rgb(245, 245, 245);
-  border: 1px solid rgb(227, 227, 227);
+  background: whitesmoke;
+  border: 1px solid #e3e3e3;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   pointer-events: none;
   opacity: 0.9;
@@ -25758,6 +25758,24 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .swatches-image .square-image .inner img {
   width: 100%;
+}
+
+.cfg-layout-list .form-counter {
+  width: auto;
+}
+.cfg-layout-list .cfg-group .config-item {
+  padding: 0.75rem 0.25rem;
+}
+.cfg-layout-list .cfg-item-description {
+  margin: 0;
+}
+
+.cfg-layout-gallery #product-configuration-sidebar table td a {
+  text-decoration: none;
+  cursor: default;
+}
+.cfg-layout-gallery #product-configuration-sidebar table td a:hover {
+  color: #525252;
 }
 
 /* comparelist */

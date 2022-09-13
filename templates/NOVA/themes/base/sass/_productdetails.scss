@@ -865,3 +865,27 @@
 		}
 	}
 }
+
+.cfg-layout-list {
+	.form-counter {
+		width: auto;
+	}
+	.cfg-group .config-item {
+		padding: $toast-padding-x $toast-padding-y;
+	}
+	.cfg-item-description {
+		margin: 0;
+	}
+}
+
+.cfg-layout-gallery {
+	#product-configuration-sidebar {
+		table td a {
+			text-decoration: none;
+			cursor: default;
+			&:hover {
+				color: $body-color;
+			}
+		}
+	}
+}

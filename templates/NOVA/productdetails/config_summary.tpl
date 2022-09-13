@@ -14,33 +14,30 @@
                 <tr class="{if $oKonfiggruppe@iteration is odd}accent-bg{/if}">
                     <td colspan="3">
                         <a id="cfg-nav-{$oKonfiggruppe->getID()}"
-                           class="cfg-group js-cfg-group {if $oKonfiggruppe@first}visited{/if} nav-link"
+                           class="cfg-group js-cfg-group {if $oKonfiggruppe@first}visited{/if}"
                            href="#cfg-grp-{$oKonfiggruppe->getID()}" data-id="{$oKonfiggruppe->getID()}">
                             {$configLocalization->getName()}
                         </a>
+
+                    {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
+
+                        {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
+                            {row}
+                                {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
+                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized(true, false, 1)}{/col}
+                            {/row}
+                        {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
+                            {row}
+                                {col cols=12}{lang key='one-off' section='checkout'}{/col}
+                                {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
+                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized()}{/col}
+                            {/row}
+                        {/if}
+                    {/foreach}
                     </td>
                 </tr>
-                        {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
-                            {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
-                                <tr class="border-top-0 border-bottom-0 {if $oKonfiggruppe@iteration is odd}accent-bg{/if}">
-                                <td class="text-nowrap-util">{$oKonfigitem->fAnzahl} &times;</td>
-                                <td class="word-break">{$oKonfigitem->getName()}</td>
-                                <td class="cfg-price">{$oKonfigitem->getFullPriceLocalized(true, false, 1)}</td>
-                                </tr>
-                            {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
-                                <tr class="border-top-0 border-bottom-0 {if $oKonfiggruppe@iteration is odd}accent-bg{/if}">
-                                    <td colspan="3">{lang key='one-off' section='checkout'}</td>
-                                </tr>
-                                <tr class="border-top-0 border-bottom-0">
-                                    <td class="text-nowrap-util">{$oKonfigitem->fAnzahl} &times;</td>
-                                    <td class="word-break">{$oKonfigitem->getName()}</td>
-                                    <td class="cfg-price">{$oKonfigitem->getFullPriceLocalized()}</td>
-                                </tr>
-                            {/if}
-                        {/foreach}
-
-
-
             {/foreach}
         {/block}
         {*{if $isIgnoreMultiplier}

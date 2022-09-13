@@ -113,8 +113,20 @@
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
                                                         <div class="cfg-item-description">
-                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' alt=$oItem->getName()}
-                                                            <span>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</span>
+                                                            <div class="d-flex align-items-center">
+                                                                {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
+                                                                <dl>
+                                                                    <dt>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</dt>
+                                                                    <dd class="text-muted-util">
+                                                                        {if !empty($cBeschreibung)}
+                                                                            {$cBeschreibung}
+                                                                            {*{link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
+                                                                                <i class="fas fa-question-circle"></i>
+                                                                            {/link}*}
+                                                                        {/if}
+                                                                    </dd>
+                                                                </dl>
+                                                            </div>
                                                             {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                                 {badge variant="light"}
                                                                 {if $oItem->hasRabatt() && $oItem->showRabatt()}
@@ -159,11 +171,6 @@
                                                                 {/inputgroupappend}
                                                                 {/inputgroup}
                                                             {/if}
-                                                            {if !empty($cBeschreibung)}
-                                                                {link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
-                                                                    <i class="fas fa-question-circle"></i>
-                                                                {/link}
-                                                            {/if}
                                                         </div>
                                                     </div>
                                                 {/radio}
@@ -184,8 +191,20 @@
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
                                                         <div class="cfg-item-description">
-                                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' alt=$oItem->getName()}
-                                                            <span>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</span>
+                                                            <div class="d-flex align-items-center">
+                                                                {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
+                                                                <dl>
+                                                                    <dt>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</dt>
+                                                                    <dd class="text-muted-util">
+                                                                        {if !empty($cBeschreibung)}
+                                                                            {$cBeschreibung}
+                                                                            {*{link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
+                                                                                <i class="fas fa-question-circle"></i>
+                                                                            {/link}*}
+                                                                        {/if}
+                                                                    </dd>
+                                                                </dl>
+                                                            </div>
                                                             {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                                                                 {badge variant="light"}
                                                                 {if $oItem->hasRabatt() && $oItem->showRabatt()}
@@ -229,11 +248,6 @@
                                                                 {/button}
                                                                 {/inputgroupappend}
                                                                 {/inputgroup}
-                                                            {/if}
-                                                            {if !empty($cBeschreibung)}
-                                                                {link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
-                                                                    <i class="fas fa-question-circle"></i>
-                                                                {/link}
                                                             {/if}
                                                         </div>
                                                     </div>

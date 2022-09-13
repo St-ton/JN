@@ -25,6 +25,9 @@
 // slider
 @import '../../base/slider/slider';
 
+// datatables
+@import '../../base/DataTables/datatables.min';
+
 // theme mixins
 @import '../../base/sass/mixins';
 
@@ -78,6 +81,3 @@
 
 /* snippets */
 @import '../../base/sass/snippets';
-
-// datatables
-@import '../../base/DataTables/datatables.min';

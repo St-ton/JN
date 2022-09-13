@@ -111,9 +111,7 @@
                                                 <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
                                             </td>
                                             <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editRechnungsadresse=1"
-                                                aria=["label"=>{lang key='editBillingAdress' section='account data'}]
-                                                }
+                                                {link href="$cCanonicalURL?editRechnungsadresse=1" aria=["label"=>{lang key='editBillingAdress' section='account data'}]}
                                                     <span class="fas fa-pencil-alt"></span>
                                                 {/link}
                                             </td>
@@ -123,14 +121,9 @@
                                         <tr>
                                             <td class="min-w-sm">
                                                 {lang key='shippingAdress' section='account data'}
-                                                {*
-                                                    <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
-                                                *}
                                             </td>
                                             <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editLieferadresse=1"
-                                                aria=["label"=>{lang key='editShippingAddress' section='account data'}]
-                                                }
+                                                {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang key='editShippingAddress' section='account data'}]}
                                                     <span class="fas fa-pencil-alt"></span>
                                                 {/link}
                                             </td>

@@ -293,10 +293,8 @@
                 {/block}
             {/col}
         {/block}
-
-        {if $step == 'Lieferadresse' || $step == 'edit_customer_address'}
-            {* save as shipping address preset *}
-            {block name='checkout-customer-shipping-address-save-preset-wrap'}
+        {block name='checkout-customer-shipping-address-save-preset-wrap'}
+            {if $step == 'Lieferadresse' || $step == 'edit_customer_address'}
                 {col cols=12 md=12}
                     {block name='checkout-customer-shipping-address-save-preset'}
                         {checkbox id="checkout_register_save-shipping-address-as-preset" name="{$prefix}[{$name}][saveAsNewShippingAddressPreset]" value="1"}
@@ -304,10 +302,8 @@
                         {/checkbox}
                     {/block}
                 {/col}
-
-            {/block}
-        {/if}
-
+            {/if}
+        {/block}
     {/formrow}
     </fieldset>
 {/block}

@@ -1,7 +1,7 @@
 {block name='account-shipping-address-form'}
     {block name='account-shipping-address-form-form'}
-        {row class='btn-row'}
-            {col md=6}
+        {row}
+            {col cols=12 md=6 class='shipping-address-form-wrapper'}
                 {form method="post" id='lieferadressen' action="{get_static_route params=['editLieferadresse' => 1]}" class="jtl-validate" slide=true}
                     {block name='account-shipping-address-form-include-customer-shipping-address'}
                         {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=null}
@@ -35,7 +35,7 @@
                     {/block}
                 {/form}
             {/col}
-            {col md=6}
+            {col cols=12 md=6 class='shipping-addresses-wrapper'}
                 {block name='account-shipping-address-form-form-address-wrapper'}
                     <table id="lieferadressen-liste" class="table-striped display compact" style="width:100%">
                         <thead>
@@ -69,20 +69,22 @@
                                     <td>
                                         {$address->cAdressZusatz}
                                     </td>
-                                    <td style="max-width: 40px" class="text-right">
-                                        {if $address->nIstStandardLieferadresse !== 1}
-                                            <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
-                                                <span class="fas fa-star"></span>
+                                    <td class="text-right">
+                                        {buttongroup}
+                                            {if $address->nIstStandardLieferadresse !== 1}
+                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
+                                                    <span class="fas fa-star"></span>
+                                                </button>
+                                            {/if}
+
+                                            <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$address->kLieferadresse}]}'">
+                                                <span class="fas fa-pencil-alt"></span>
                                             </button>
-                                        {/if}
 
-                                        <button type="button" class="btn btn-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='editAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$address->kLieferadresse}]}'">
-                                            <span class="fas fa-pencil-alt"></span>
-                                        </button>
-
-                                        <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$address->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
-                                            <span class="fas fa-times"></span>
-                                        </button>
+                                            <button type="button" class="btn btn-danger btn-sm delete-popup-modal" data-lieferadresse="{$address->kLieferadresse}" data-toggle="tooltip" data-placement="top" title="{lang key='deleteAddress' section='account data'}">
+                                                <span class="fas fa-times"></span>
+                                            </button>
+                                        {/buttongroup}
                                     </td>
                                     <td>
                                         <span class="invisible">
@@ -171,9 +173,13 @@
                         visible: false,
                     }
                 ],
-                lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Alle"] ],
+                lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
                 pageLength: 5,
-                order: [6, 'desc']
+                order: [6, 'desc'],
+                initComplete: function (settings, json) {
+                    $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
+                    $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
+                },
             } );
 
             $('#lieferadressen-liste tbody').on('click', 'td.dt-control', function () {

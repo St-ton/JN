@@ -8,7 +8,7 @@
             {input type="hidden" name="shipping_address" value="1"}
             {checkbox id="checkout_register_shipping_address"
             name="shipping_address" value="0" checked=!$showShippingAddress
-            data=["toggle"=>"collapse", "target"=>"#select_shipping_address"]
+            data=["toggle"=>"collapse", "target"=>"#select-shipping-address"]
             class="{if isset($forceDeliveryAddress)}d-none{/if}"
             }
             {lang key='shippingAdressEqualBillingAdress' section='account data'}
@@ -18,7 +18,7 @@
     {/col}
     {col cols=12}
     {block name='checkout-inc-shipping-address-shipping-address'}
-        <div id="select_shipping_address" class="collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
+        <div id="select-shipping-address" class="select-shipping-address collapse collapse-non-validate{if $showShippingAddress} show{/if}" aria-expanded="{if $showShippingAddress}true{else}false{/if}">
             {block name='checkout-inc-shipping-address-shipping-address-body'}
                 {if JTL\Session\Frontend::getCustomer()->getID() > 0 && isset($Lieferadressen) && $Lieferadressen|count > 0}
                     {row}
@@ -29,7 +29,8 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <table id="shipping-address-templates" class="table-striped display compact" style="width:100%">
+                        <div class="h3">{lang key='chooseShippingAdress' section='checkout'}</div>
+                        <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>
                                 <th>&nbsp;</th>
@@ -45,7 +46,7 @@
                             <tbody>
                             {foreach $Lieferadressen as $adresse}
                                 <tr>
-                                    <td style="max-width: 20px">
+                                    <td>
                                         <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
                                             {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse || $adresse->nIstStandardLieferadresse == 1)}
 
@@ -68,7 +69,7 @@
                                     <td>
                                         {$adresse->cAdressZusatz}
                                     </td>
-                                    <td style="max-width: 40px" class="text-right">
+                                    <td class="text-right">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
@@ -83,25 +84,29 @@
                             </tbody>
                         </table>
                     {/block}
-                    {block name='checkout-inc-shipping-address-fieldset-new-address'}
-                        <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
-                            {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
-                                <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
-                            {/radio}
-                        </label>
-                    {/block}
-                    {block name='checkout-inc-shipping-address-fieldset-register'}
-                        <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
-                            {block name='checkout-inc-shipping-address-legend-register'}
-                                <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
-                            {/block}
-                            {block name='checkout-inc-shipping-address-include-customer-shipping-address'}
-                                {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-                            {/block}
-                            {block name='checkout-inc-shipping-address-include-customer-shipping-contact'}
-                                {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
-                            {/block}
-                        </fieldset>
+                    {block name='checkout-inc-shipping-address-new-address-wrapper'}
+                        <div class="new-shipping-address">
+                        {block name='checkout-inc-shipping-address-fieldset-new-address'}
+                            <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
+                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
+                                    <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
+                                {/radio}
+                            </label>
+                        {/block}
+                        {block name='checkout-inc-shipping-address-fieldset-register'}
+                            <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
+                                {block name='checkout-inc-shipping-address-legend-register'}
+                                    <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
+                                {/block}
+                                {block name='checkout-inc-shipping-address-include-customer-shipping-address'}
+                                    {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+                                {/block}
+                                {block name='checkout-inc-shipping-address-include-customer-shipping-contact'}
+                                    {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=$fehlendeAngabenShipping}
+                                {/block}
+                            </fieldset>
+                        {/block}
+                        </div>
                     {/block}
                     {/col}
                     {/row}
@@ -171,7 +176,6 @@
 
         var table = $('#shipping-address-templates').DataTable( {
             language: {
-                //url: '{$ShopURL}/{$currentTemplateDir}js/DataTables/de-DE.json'
                 "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
                 "info":              "{lang key='info' section='datatables'}",
                 "infoEmpty":         "{lang key='infoEmpty' section='datatables'}",
@@ -188,12 +192,12 @@
             },
             columns: [
                 { data: 'select' },
-                {
+               /* {
                     className: 'dt-control',
                     orderable: false,
                     data: null,
                     defaultContent: '',
-                },
+                }, */
                 { data: 'address' },
                 { data: 'titel' },
                 { data: 'bundesland' },
@@ -219,9 +223,16 @@
                     visible: false,
                 }
             ],
-            lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Alle"] ],
+            lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
             pageLength: 5,
-            order: [6, 'desc']
+            order: [6, 'desc'],
+            initComplete: function (settings, json) {
+                $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
+                $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
+            },
+            drawCallback: function( settings ) {
+                $('table.dataTable thead').remove();
+            },
         } );
 
         $('#shipping-address-templates tbody').on('click', 'td.dt-control', function () {

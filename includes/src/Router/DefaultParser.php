@@ -173,14 +173,14 @@ class DefaultParser
         $this->params['customFilters'] = [];
         foreach ($customSeo as $className => $data) {
             $seoData = $this->db->select($data['table'], 'cSeo', $data['cSeo']);
-            if (isset($seoData->filterval)) {
+            if ($seoData !== null && isset($seoData->filterval)) {
                 $this->params['customFilters'][$className] = (int)$seoData->filterval;
                 $this->state->customFilters[$className]    = (int)$seoData->filterval;
             } else {
                 $this->params['bKatFilterNotFound']  = true;
                 $this->state->categoryFilterNotFound = true;
             }
-            if (isset($seoData->kSprache) && $seoData->kSprache > 0) {
+            if ($seoData !== null && $seoData->kSprache > 0) {
                 Shop::updateLanguage((int)$seoData->kSprache);
             }
         }

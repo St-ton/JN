@@ -22296,9 +22296,13 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   white-space: normal;
 }
 .cart-items-body .cart-items-price {
-  margin-left: auto;
   white-space: nowrap;
   color: Montserrat, sans-serif;
+}
+@media (max-width: 767.98px) {
+  .cart-items-body .cart-items-price {
+    margin-left: auto;
+  }
 }
 @media (min-width: 1300px) {
   .cart-items-body .cart-items-price {

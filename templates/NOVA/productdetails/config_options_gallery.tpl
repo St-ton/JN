@@ -1,5 +1,5 @@
 {block name='productdetails-config-options'}
-    {row}
+    {row class="cfg-group-gallery-wrapper"}
         {col cols=3 class="d-none d-md-block"}
             <nav id="cfg-nav" class="navbar navbar-light bg-light sticky-top">
                 <nav class="nav nav-pills flex-column">

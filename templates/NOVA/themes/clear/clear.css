@@ -26379,6 +26379,15 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   z-index: 1019;
 }
 
+.cfg-position-details.cfg-layout-list #product-configuration-sidebar {
+  border: 1px solid #f5f7fa;
+  padding: 0.75rem;
+}
+.cfg-position-details.cfg-layout-list .cfg-group-list-wrapper .cfg-group {
+  border: 1px solid #f5f7fa;
+  padding: 1rem;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

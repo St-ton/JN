@@ -893,3 +893,15 @@
 #product-configuration-sidebar {
 	z-index: $zindex-sticky - 1;
 }
+.cfg-position-details.cfg-layout-list {
+	#product-configuration-sidebar {
+		border: 1px solid $gray-lighter;
+		padding: 0.75rem;
+	}
+	.cfg-group-list-wrapper {
+		.cfg-group {
+			border: 1px solid $gray-lighter;
+			padding: map_get($spacers, 3);
+		}
+	}
+}

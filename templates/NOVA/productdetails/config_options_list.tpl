@@ -1,5 +1,5 @@
 {block name='productdetails-config-options'}
-    {row}
+    {row class="cfg-group-list-wrapper"}
     {col}
 
     {foreach $Artikel->oKonfig_arr as $configGroup}

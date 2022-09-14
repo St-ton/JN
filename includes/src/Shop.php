@@ -592,11 +592,12 @@ final class Shop extends ShopBC
     }
 
     /**
-     * @param int $languageID
+     * @param int         $languageID
+     * @param string|null $iso
      */
-    public static function updateLanguage(int $languageID): void
+    public static function updateLanguage(int $languageID, ?string $iso = null): void
     {
-        $iso = self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
+        $iso = $iso ?? self::Lang()->getIsoFromLangID($languageID)->cISO ?? '';
         if ($iso !== $_SESSION['cISOSprache']) {
             Frontend::checkReset($iso ?? '');
             Tax::setTaxRates();
@@ -611,6 +612,7 @@ final class Shop extends ShopBC
             $customer->setLanguageID($languageID);
             $customer->updateInDB();
         }
+        self::setLanguage($languageID, $iso);
     }
 
     /**

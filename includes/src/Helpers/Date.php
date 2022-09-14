@@ -72,7 +72,7 @@ class Date
             try {
                 $date              = new DateTime($dateString);
                 $parts['cDatum']   = $date->format('Y-m-d');
-                $parts['cZeit']    = $date->format('H:m:s');
+                $parts['cZeit']    = $date->format('H:i:s');
                 $parts['cJahr']    = $date->format('Y');
                 $parts['cMonat']   = $date->format('m');
                 $parts['cTag']     = $date->format('d');

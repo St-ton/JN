@@ -49,6 +49,10 @@
                         {block name='account-index-include-address-form'}
                             {include file='account/address_form.tpl'}
                         {/block}
+                    {elseif $step === 'lieferadressen'}
+                        {block name='account-index-include-shippingaddress-form'}
+                            {include file='account/shipping_address_form.tpl'}
+                        {/block}
                     {elseif $step === 'passwort aendern'}
                         {block name='account-index-include-change-password'}
                             {include file='account/change_password.tpl'}

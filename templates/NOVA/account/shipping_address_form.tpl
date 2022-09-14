@@ -179,7 +179,7 @@
                 }
             });
 
-            $('.delete-popup-modal').on('click',function(){
+            $(tableID + ' tbody').on('click', '.delete-popup-modal',function(){
                 let lieferadresse = $(this).data('lieferadresse');
 
                 eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');

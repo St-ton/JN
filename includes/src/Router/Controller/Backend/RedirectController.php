@@ -33,9 +33,6 @@ class RedirectController extends AbstractBackendController
         $this->getText->loadAdminLocale('pages/redirect');
 
         $action = Request::verifyGPDataString('action');
-        if (Request::postInt('go-back') === 1) {
-            $action = '';
-        }
         if (Request::verifyGPDataString('importcsv') === 'redirects') {
             $action = 'csvImport';
         }

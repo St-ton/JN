@@ -352,9 +352,9 @@
                         <div class="row first-ml-auto">
                             {if !empty($redirectID)}
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button type="submit" name="go-back" value="1" class="btn btn-outline-primary btn-block" id="go-back">
+                                    <a class="btn btn-outline-primary btn-block" id="go-back" href="{$adminURL}{$route}">
                                         {__('cancelWithIcon')}
-                                    </button>
+                                    </a>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
                                     <button name="action" value="new" class="btn btn-primary btn-block">

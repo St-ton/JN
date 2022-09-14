@@ -119,7 +119,7 @@
                         alt=$alt
                         width=130
                         height= 130
-                        class=$class|cat:" img-aspect-ratio"
+                        class=$class
                     }
                 {else}
                     {image fluid=$fluid lazy=$lazy webp=$webp center=$center

@@ -888,6 +888,8 @@
 				color: $body-color;
 			}
 		}
-      z-index: $zindex-sticky - 1;
 	}
+}
+#product-configuration-sidebar {
+	z-index: $zindex-sticky - 1;
 }

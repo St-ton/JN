@@ -26367,15 +26367,16 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin: 0;
 }
 
-.cfg-layout-gallery #product-configuration-sidebar {
-  z-index: 1019;
-}
 .cfg-layout-gallery #product-configuration-sidebar table td a {
   text-decoration: none;
   cursor: default;
 }
 .cfg-layout-gallery #product-configuration-sidebar table td a:hover {
   color: #525252;
+}
+
+#product-configuration-sidebar {
+  z-index: 1019;
 }
 
 /* comparelist */

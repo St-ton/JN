@@ -297,6 +297,11 @@
                     scrollTop: elOffset
                 });
             });
+            $(document).on('scroll', function (e) {
+                let headerHeight = $('#jtl-nav-wrapper').outerHeight() + 10;
+                $('.cfg-position-details.cfg-layout-list #product-configuration-sidebar, ' +
+                    '.cfg-position-details.cfg-layout-list .cfg-group .cfg-group-info').css('top', headerHeight + 'px');
+            });
         },
 
         registerSimpleVariations: function($wrapper) {

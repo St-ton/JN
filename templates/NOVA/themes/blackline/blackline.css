@@ -25733,6 +25733,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .cfg-group .cfg-group-info {
   text-align: center;
   margin-bottom: 1.5rem;
+  z-index: 1019;
 }
 .cfg-group .group-description {
   margin-bottom: 1rem;
@@ -26130,6 +26131,9 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin: 0;
 }
 
+.cfg-layout-gallery #product-configuration-sidebar {
+  z-index: 1019;
+}
 .cfg-layout-gallery #product-configuration-sidebar table td a {
   text-decoration: none;
   cursor: default;

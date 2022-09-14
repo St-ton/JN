@@ -454,6 +454,7 @@
 	.cfg-group-info {
 		text-align: center;
 		margin-bottom: map_get($spacers, 4);
+		z-index: $zindex-sticky - 1;
 	}
 	.group-description {
 		margin-bottom: map_get($spacers, 3);
@@ -887,5 +888,6 @@
 				color: $body-color;
 			}
 		}
+      z-index: $zindex-sticky - 1;
 	}
 }

@@ -216,7 +216,7 @@ $(document).ready(function() {
                                 <input class="form-control datetimepicker-inpu"
                                        type="text"
                                        name="dGueltigBis"
-                                       value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'d.m.Y H:M:S'}{/if}"
+                                       value="{if !empty($oAccount->dGueltigBis)}{$oAccount->dGueltigBis|date_format:'d.m.Y H:i:s'}{/if}"
                                        id="dGueltigBis"
                                        data-target="#dGueltigBis"
                                        data-toggle="datetimepicker"/>

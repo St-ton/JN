@@ -129,3 +129,15 @@
 .account-feedback {
   margin-bottom: map-get($spacers, 3);
 }
+
+/* shipping-adresses */
+.shipping-address-form-wrapper {
+  margin-bottom: map-get($spacers, 3);
+}
+div.dataTables_wrapper div.dataTables_filter input[type=search] {
+  margin-left: 0;
+  width: 100%;
+}
+.dataTable td {
+  vertical-align: middle;
+}

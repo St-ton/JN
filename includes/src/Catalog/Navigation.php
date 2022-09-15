@@ -326,16 +326,18 @@ class Navigation
                     $childPages = [
                         'bestellungen'         => ['name' => $this->language->get('myOrders')],
                         'editRechnungsadresse' => ['name' => $this->language->get('myPersonalData')],
+                        'editLieferadresse'    => [
+                            'name' => $this->language->get('myShippingAddresses', 'account data')
+                        ],
                         'wllist'               => ['name' => $this->language->get('myWishlists')],
                         'del'                  => ['name' => $this->language->get('deleteAccount', 'login')],
                         'bestellung'           => [
-                            'name' => $this->language->get('bcOrder', 'breadcrumb'),
+                            'name'   => $this->language->get('bcOrder', 'breadcrumb'),
                             'parent' => 'bestellungen'
                         ],
                         'wl'                   => ['name' => $this->language->get('bcWishlist', 'breadcrumb')],
                         'pass'                 => ['name' => $this->language->get('changePassword', 'login')]
                     ];
-
                     foreach ($childPages as $childPageKey => $childPageData) {
                         $currentId = Request::verifyGPCDataInt($childPageKey);
                         if ($currentId === 0) {

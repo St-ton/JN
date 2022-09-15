@@ -792,27 +792,35 @@ final class Admin
     public function getSubscribers(string $limitSQL, SqlObject $searchSQL): array
     {
         return $this->db->getCollection(
-            "SELECT tnewsletterempfaenger.*,
-                DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
-                DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
-                tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
-                IF (tnewsletterempfaengerhistory.dOptCode != '0000-00-00 00:00:00'
-                    AND tnewsletterempfaengerhistory.dOptCode IS NOT NULL,
-                    DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
-                    DATE_FORMAT(toptin.dActivated, '%d.%m.%Y %H:%i')) AS optInDate
-                FROM tnewsletterempfaenger
-                LEFT JOIN tkunde
-                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                LEFT JOIN tkundengruppe
-                    ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-                LEFT JOIN tnewsletterempfaengerhistory
-                    ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
-                      AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
-                      AND tnewsletterempfaengerhistory.dEingetragen != (SELECT MAX(tnewsletterempfaengerhistory.dEingetragen))
-                LEFT JOIN toptin
-                    ON toptin.cMail = tnewsletterempfaenger.cEmail
-                WHERE tnewsletterempfaenger.kSprache = :lid " . $searchSQL->getWhere() . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
+            "SELECT
+                nle.*,
+                DATE_FORMAT(nle.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
+                DATE_FORMAT(nle.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
+                k.kKundengruppe,
+                kg.cName,
+                nleh.cOptIp,
+                IF (nleh.dOptCode != '0000-00-00 00:00:00' AND nleh.dOptCode IS NOT NULL,
+                    DATE_FORMAT(nleh.dOptCode, '%d.%m.%Y %H:%i'),
+                    DATE_FORMAT(op.dActivated, '%d.%m.%Y %H:%i')
+                ) AS optInDate
+            FROM
+                tnewsletterempfaenger nle
+                LEFT JOIN tkunde k
+                    ON k.kKunde = nle.kKunde
+                LEFT JOIN tkundengruppe kg
+                    ON kg.kKundengruppe = k.kKundengruppe
+                LEFT JOIN toptin op
+                    ON op.cMail = nle.cEmail
+                LEFT JOIN tnewsletterempfaengerhistory nleh
+                    ON nleh.cEmail = nle.cEmail
+                        AND nleh.cAktion = 'Eingetragen'
+                        AND nleh.dEingetragen = (
+                            SELECT MAX(dEingetragen) FROM tnewsletterempfaengerhistory WHERE cEmail = nle.cEmail
+                        )
+            WHERE
+                nle.kSprache = :lid " . $searchSQL->getWhere() . '
+            ORDER BY
+                 nle.dEingetragen DESC' . $limitSQL,
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()

@@ -811,6 +811,7 @@ final class Admin
                     ON kg.kKundengruppe = k.kKundengruppe
                 LEFT JOIN toptin op
                     ON op.cMail = nle.cEmail
+                    AND op.kOptinClass like '%Newsletter'
                 LEFT JOIN tnewsletterempfaengerhistory nleh
                     ON nleh.cEmail = nle.cEmail
                         AND nleh.cAktion = 'Eingetragen'

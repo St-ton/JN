@@ -821,7 +821,7 @@ final class Admin
             WHERE
                 nle.kSprache = :lid " . $searchSQL->getWhere() . '
             ORDER BY
-                 nle.dEingetragen DESC' . $limitSQL,
+                 nle.dEingetragen DESC ' . $limitSQL,
             \array_merge(
                 ['lid' => (int)($_SESSION['editLanguageID'] ?? $_SESSION['kSprache'])],
                 $searchSQL->getParams()

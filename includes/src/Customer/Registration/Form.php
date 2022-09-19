@@ -122,24 +122,22 @@ class Form
      */
     public function checkKundenFormular(bool $customerAccount, bool $checkpass = true): array
     {
-        $data = Text::filterXSS($_POST); // create a copy
-
-        return $this->checkKundenFormularArray($data, $customerAccount, $checkpass);
+        return $this->checkKundenFormularArray(Text::filterXSS($_POST), $customerAccount, $checkpass);
     }
 
     /**
      * @param array $data
-     * @param bool  $kundenaccount
+     * @param bool  $customerAccount
      * @param bool  $checkpass
      * @return array
      * @former checkKundenFormularArray()
      * @since 5.2.0
      */
-    public function checkKundenFormularArray(array $data, bool $kundenaccount, bool $checkpass = true): array
+    public function checkKundenFormularArray(array $data, bool $customerAccount, bool $checkpass = true): array
     {
         $validator = new RegistrationForm($data, Shop::getSettings([\CONF_KUNDEN, \CONF_KUNDENFELD, \CONF_GLOBAL]));
         $validator->validate();
-        if ($kundenaccount === true) {
+        if ($customerAccount === true) {
             $validator->validateCustomerAccount($checkpass);
         }
 

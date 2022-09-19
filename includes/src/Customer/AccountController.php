@@ -936,15 +936,9 @@ class AccountController
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $this->smarty->assign(
                 'cEstimatedDeliveryEx',
-                Date::dateAddWeekday(
-                    $order->dErstellt,
-                    $order->oEstimatedDelivery->longestMin
-                )->format('d.m.Y')
+                Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMin)->format('d.m.Y')
                 . ' - ' .
-                Date::dateAddWeekday(
-                    $order->dErstellt,
-                    $order->oEstimatedDelivery->longestMax
-                )->format('d.m.Y')
+                Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y')
             );
         }
 
@@ -1106,7 +1100,7 @@ class AccountController
         $form               = new CustomerForm();
         $missingData        = $form->checkKundenFormularArray($postData, true, false);
         $customerGroupID    = Frontend::getCustomerGroup()->getID();
-        $checkBox           = new CheckBox();
+        $checkBox           = new CheckBox(0, $this->db);
         $missingData        = \array_merge(
             $missingData,
             $checkBox->validateCheckBox(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true)

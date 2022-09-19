@@ -3,7 +3,6 @@
 namespace JTL\Mail\Template;
 
 use JTL\Link\SpecialPageNotFoundException;
-use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 

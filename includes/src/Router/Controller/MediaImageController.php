@@ -12,6 +12,7 @@ use JTL\Media\Image\ConfigGroup;
 use JTL\Media\Image\Manufacturer;
 use JTL\Media\Image\News;
 use JTL\Media\Image\NewsCategory;
+use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
 use JTL\Media\IMedia;
@@ -52,7 +53,7 @@ class MediaImageController extends AbstractController
         )
             ->setName('mediaImage' . $dynName);
         $route->get(
-            \sprintf('/media/image/opc/%s/%s.%s', $size, $name, $ext),
+            \sprintf('/media/image/{type:opc}/%s/%s.%s', $size, $name, $ext),
             [$this, 'getResponse']
         )
             ->setName('mediaImageOPC' . $dynName);
@@ -74,6 +75,7 @@ class MediaImageController extends AbstractController
             'newscategory'        => new NewsCategory($this->db),
             'product'             => new Product($this->db),
             'variation'           => new Variation($this->db),
+            'opc'                 => new OPC($this->db),
         };
     }
 

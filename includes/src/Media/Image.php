@@ -347,9 +347,10 @@ class Image
     /**
      * @param MediaImageRequest $req
      * @param bool              $streamOutput
+     * @param bool              $sendResponse
      * @throws Exception
      */
-    public static function render(MediaImageRequest $req, bool $streamOutput = false): void
+    public static function render(MediaImageRequest $req, bool $streamOutput = false, bool $sendResponse = false)
     {
         $rawPath = $req->getRaw();
         if ($rawPath === null || !\is_file($rawPath)) {
@@ -378,6 +379,9 @@ class Image
             'path'     => $thumbnail
         ]);
         $img->save($thumbnail, $settings['quality'], $regExt);
+        if ($sendResponse === true) {
+            return $img->psrResponse($regExt);
+        }
         if ($streamOutput) {
             $response = $img->response($regExt);
             if (\is_object($response) && \method_exists($response, 'send')) {

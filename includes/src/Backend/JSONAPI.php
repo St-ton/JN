@@ -4,7 +4,10 @@ namespace JTL\Backend;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
+use JTL\Router\Router;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class JSONAPI
@@ -57,9 +60,15 @@ class JSONAPI
         } elseif (\is_array($search)) {
             $searchIn = $keyName;
         }
-        $items = $this->getItems('tseo', ['cSeo', 'cKey', 'kKey'], null, $searchIn, \ltrim($search, '/'), (int)$limit);
 
-        return $this->itemsToJson($items);
+        return $this->itemsToJson($this->getItems(
+            'tseo',
+            ['cSeo', 'cKey', 'kKey', 'kSprache'],
+            null,
+            $searchIn,
+            \ltrim($search, '/'),
+            (int)$limit
+        ));
     }
 
     /**
@@ -349,10 +358,58 @@ class JSONAPI
             // invalid arguments
             $result = [];
         }
+        if ($table === 'tseo') {
+            $this->setRealSeo($result);
+        }
 
         $this->cache->set($cacheId, $result, $cacheTags);
 
         return $result;
+    }
+
+    /**
+     * @param array $items
+     * @return void
+     */
+    private function setRealSeo(array $items): void
+    {
+        $router    = Shop::getRouter();
+        $languages = LanguageHelper::getAllLanguages();
+        foreach ($items as $item) {
+            $locale = 'de';
+            $langID = (int)($item->kSprache ?? 0);
+            if (!isset($item->cSeo, $item->cKey, $item->kKey) || $langID === 0) {
+                continue;
+            }
+            foreach ($languages as $language) {
+                if ($language->getId() === $langID) {
+                    $locale = $language->getIso639();
+                }
+            }
+            $path = $router->getPathByType(
+                $this->getTypeByKey($item->cKey),
+                ['lang' => $locale, 'id' => (int)$item->kKey, 'name' => $item->cSeo]
+            );
+            if (!empty($path)) {
+                $item->cSeo = \ltrim($path, '/');
+            }
+        }
+    }
+
+    /**
+     * @param string $key
+     * @return string
+     */
+    private function getTypeByKey(string $key): string
+    {
+        return match ($key) {
+            'kKategorie'   => Router::TYPE_CATEGORY,
+            'kMerkmalWert' => Router::TYPE_CHARACTERISTIC_VALUE,
+            'kNews'        => Router::TYPE_NEWS,
+            'kHersteller'  => Router::TYPE_MANUFACTURER,
+            'kArtikel'     => Router::TYPE_PRODUCT,
+            default        => '',
+        };
     }
 
     /**

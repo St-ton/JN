@@ -115,7 +115,7 @@ class OrderHandler
         }
         $this->cart->kLieferadresse = 0; //=rechnungsadresse
         if (isset($_SESSION['Bestellung']->kLieferadresse)
-            && $_SESSION['Bestellung']->kLieferadresse == -1
+            && $_SESSION['Bestellung']->kLieferadresse === -1
             && !$deliveryAddress->kLieferadresse
         ) {
             $deliveryAddress->kKunde = $this->cart->kKunde;
@@ -124,6 +124,12 @@ class OrderHandler
                 ['deliveryAddress' => $deliveryAddress]
             );
             $this->cart->kLieferadresse = $deliveryAddress->insertInDB();
+            if (isset($_SESSION['newShippingAddressPreset'])) {
+                $deliveryAddressTemplate         = DeliveryAddressTemplate::createFromObject($deliveryAddress);
+                $deliveryAddressTemplate->kKunde = $this->cart->kKunde;
+                $deliveryAddressTemplate->persist();
+                unset($_SESSION['newShippingAddressPreset']);
+            }
         } elseif (isset($_SESSION['Bestellung']->kLieferadresse) && $_SESSION['Bestellung']->kLieferadresse > 0) {
             \executeHook(
                 \HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_LIEFERADRESSE_ALT,

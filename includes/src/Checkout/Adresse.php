@@ -101,7 +101,7 @@ class Adresse
     /**
      * @var array
      */
-    protected static $encodedProperties = [
+    protected static array $encodedProperties = [
         'cNachname',
         'cFirma',
         'cZusatz',

@@ -664,7 +664,7 @@
                         $shippingSwitch.parent().addClass('d-none');
                         if ($shippingSwitch.prop('checked')) {
                             $shippingSwitch.prop('checked', false);
-                            $('#select_shipping_address').collapse('show');
+                            $('#select-shipping-address').collapse('show');
                         }
                     }
                 });

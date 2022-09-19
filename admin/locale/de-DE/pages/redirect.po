@@ -46,3 +46,21 @@ msgstr "Der Import konnte nicht durchgeführt werden. Bitte prüfen Sie die CSV-
 
 msgid "successImport"
 msgstr "Import wurde erfolgreich durchgeführt."
+
+msgid "create/edit"
+msgstr "Erstellen/Bearbeiten"
+
+msgid "Parameter handling"
+msgstr "Parameterbehandlung"
+
+msgid "exact match"
+msgstr "Exakter Match"
+
+msgid "ignore GET parameters"
+msgstr "GET-Parameter ignorieren"
+
+msgid "append GET parameters"
+msgstr "GET-Parameter übernehmen"
+
+msgid "parameterHandlingDesc"
+msgstr "Hier legen Sie fest, wie GET-Paramter in der Quell- und Ziel-URL behandelt werden sollen. Eine ausführliche Beschreibung dieser Einstellung finden Sie im zugehörigen Beitrag im JTL-Guide, den Sie über das Wegweiser-Symbol oben rechts auf dieser Seite erreichen."

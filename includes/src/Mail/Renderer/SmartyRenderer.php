@@ -187,7 +187,7 @@ class SmartyRenderer implements RendererInterface
     {
         $template = $mail->getTemplate();
         $model    = $template?->getModel();
-        if ($model === null) {
+        if ($template === null || $model === null) {
             $mail->setBodyText($this->smarty->fetch('string:' . $mail->getBodyText()));
             $mail->setBodyHTML($this->smarty->fetch('string:' . $mail->getBodyHTML()));
             $mail->setSubject($this->smarty->fetch('string:' . $mail->getSubject()));

@@ -17,6 +17,7 @@ use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\DefaultController;
 use JTL\Router\Controller\IOController;
 use JTL\Router\Controller\ManufacturerController;
+use JTL\Router\Controller\MediaImageController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
@@ -166,6 +167,7 @@ class Router
             new NewsController($db, $cache, $state, $this->config, $alert),
             new SearchController($db, $cache, $state, $this->config, $alert),
             new PageController($db, $cache, $state, $this->config, $alert),
+            new MediaImageController($db, $cache, $state, $this->config, $alert),
         ];
 
         foreach ($this->collectHosts() as $data) {

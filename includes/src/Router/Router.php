@@ -10,6 +10,7 @@ use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
 use JTL\Language\LanguageHelper;
+use JTL\REST\Registrator;
 use JTL\Router\Controller\CategoryController;
 use JTL\Router\Controller\CharacteristicValueController;
 use JTL\Router\Controller\ConsentController;
@@ -40,6 +41,7 @@ use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
 use Laminas\HttpHandlerRunner\Exception\EmitterException;
+use League\Fractal\Manager;
 use League\Route\Http\Exception\NotFoundException;
 use League\Route\Route;
 use League\Route\RouteGroup;
@@ -211,7 +213,18 @@ class Router
                 $this->path = $path;
             }
         }
+        $this->registerAPI();
         $this->collectGroupRoutes();
+    }
+
+    private function registerAPI(): void
+    {
+        $rapi = new RouteGroup('/api/v1', function (RouteGroup $group) {
+            $registrator = new Registrator(new Manager(), $this->db, $this->cache);
+            $registrator->register($group);
+        }, $this->router);
+        $rapi->setName('restapi');
+        $this->routes[] = $rapi;
     }
 
     protected function collectGroupRoutes(): void

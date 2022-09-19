@@ -71,7 +71,9 @@
         "laminas/laminas-diactoros": "^2.8",
         "laminas/laminas-httphandlerrunner": "^2.1",
         "league/container": "^4.2",
-        "guzzlehttp/guzzle": "^7.4"
+        "guzzlehttp/guzzle": "^7.4",
+        "league/fractal": "^0.20.1",
+        "illuminate/validation": "^9.30"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

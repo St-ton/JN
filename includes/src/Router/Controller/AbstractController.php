@@ -201,10 +201,11 @@ abstract class AbstractController implements ControllerInterface
             \header('Location: ' . Shop::getURL() . '/' . $this->state->slug);
             exit;
         }
-        Shop::updateLanguage($this->state->languageID);
+        $languageID = $this->state->languageID ?: Shop::$kSprache;
+        Shop::updateLanguage($languageID);
         Shop::$cCanonicalURL             = Shop::getURL() . '/' . $this->state->slug;
         Shop::$is404                     = $this->state->is404;
-        Shop::$kSprache                  = $this->state->languageID ?: Shop::$kSprache;
+        Shop::$kSprache                  = $languageID;
         Shop::$kSeite                    = $this->state->pageID;
         Shop::$kKategorieFilter          = $this->state->categoryFilterID;
         Shop::$customFilters             = $this->state->customFilters;

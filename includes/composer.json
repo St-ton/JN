@@ -73,7 +73,7 @@
         "league/container": "^4.2",
         "guzzlehttp/guzzle": "^7.4",
         "league/fractal": "^0.20.1",
-        "illuminate/validation": "^9.30"
+        "rakit/validation": "^1.4"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

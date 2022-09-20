@@ -309,7 +309,7 @@ class NewsController extends AbstractBackendController
                     'kSprache',
                     $langID
                 )->cPraefix ?? 'Newsuebersicht';
-                if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
+                if ($monthOverview !== null && $monthOverview->kNewsMonatsUebersicht > 0) {
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
@@ -455,6 +455,9 @@ class NewsController extends AbstractBackendController
             }
             $author->clearAuthor('NEWS', $newsItemID);
             $newsData = $this->db->select('tnews', 'kNews', $newsItemID);
+            if ($newsData === null) {
+                continue;
+            }
             $this->db->delete('tnews', 'kNews', $newsItemID);
             self::deleteImageDir($newsItemID);
             $this->db->delete('tnewskommentar', 'kNews', $newsItemID);

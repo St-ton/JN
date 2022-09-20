@@ -70,11 +70,11 @@ final class Controller
         $nlCustomer          = null;
         if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
             $plausi->nPlausi_arr = $this->subscriptionCheck();
-            $kKundengruppe       = Frontend::getCustomerGroup()->getID();
-            $checkBox            = new CheckBox();
+            $customerGroupID     = Frontend::getCustomerGroup()->getID();
+            $checkBox            = new CheckBox(0, $this->db);
             $plausi->nPlausi_arr = \array_merge(
                 $plausi->nPlausi_arr,
-                $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+                $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true)
             );
 
             $plausi->cPost_arr['cAnrede']   = $customer->cAnrede;
@@ -90,7 +90,7 @@ final class Controller
                     'cEmail',
                     $customer->cEmail
                 );
-                if (!empty($recipient->dEingetragen)) {
+                if ($recipient !== null && !empty($recipient->dEingetragen)) {
                     $recipient->Datum = (new DateTime($recipient->dEingetragen))->format('d.m.Y H:i');
                 }
                 // Pruefen ob Kunde bereits eingetragen
@@ -108,23 +108,20 @@ final class Controller
                 } else {
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_NEWSLETTERANMELDUNG,
-                        $kKundengruppe,
+                        $customerGroupID,
                         true,
                         $_POST,
                         ['oKunde' => $customer]
                     );
-                    $checkBox->checkLogging(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
+                    $checkBox->checkLogging(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true);
 
                     unset($recipient);
 
                     $instance                      = new Newsletter($this->db, []);
                     $recipient                     = new stdClass();
                     $recipient->kSprache           = Shop::getLanguageID();
-                    $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
-                        ? (int)$_SESSION['Kunde']->kKunde
-                        : 0;
-                    $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-                        && $_SESSION['Kunde']->kKunde > 0
+                    $recipient->kKunde             = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                    $recipient->nAktiv             = $recipient->kKunde > 0
                         && $this->config['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
                     $recipient->cAnrede            = $customer->cAnrede;
                     $recipient->cVorname           = $customer->cVorname;

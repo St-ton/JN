@@ -391,7 +391,7 @@ class Plugins
         $cid        = 'cb_' . $location . '_' . $languageID;
         $checkBoxes = Shop::has($cid)
             ? Shop::get($cid)
-            : (new CheckBox())->getCheckBoxFrontend($location, 0, true, true);
+            : (new CheckBox(0, $this->db))->getCheckBoxFrontend($location, 0, true, true);
         Shop::set($cid, $checkBoxes);
 
         return $checkBoxes;

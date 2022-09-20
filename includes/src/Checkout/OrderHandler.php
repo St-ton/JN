@@ -399,7 +399,7 @@ class OrderHandler
         }
         $_SESSION['Kunde'] = $customer;
         $customerGroupID   = $this->customer->getGroupID();
-        $checkbox          = new CheckBox();
+        $checkbox          = new CheckBox(0, $this->db);
         $checkbox->triggerSpecialFunction(
             \CHECKBOX_ORT_BESTELLABSCHLUSS,
             $customerGroupID,

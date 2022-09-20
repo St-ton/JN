@@ -424,7 +424,7 @@ class CheckoutController extends RegistrationController
         $form               = new RegistrationForm();
         $this->customer     = $form->getCustomerData($post, false);
         $customerAttributes = $form->getCustomerAttributes($post);
-        $checkBox           = new CheckBox();
+        $checkBox           = new CheckBox(0, $this->db);
         $missingInput       = $form->getMissingInput($post, $this->customerGroupID, $checkBox);
         $this->customer->getCustomerAttributes()->assign($customerAttributes);
         Frontend::set('customerAttributes', $customerAttributes);

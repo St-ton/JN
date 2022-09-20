@@ -557,7 +557,7 @@ abstract class DataModel implements DataModelInterface, Iterator
     /**
      * @inheritDoc
      */
-    public function save(array $partial = null): bool
+    public function save(array $partial = null, bool $updateChildModels = true): bool
     {
         $noPrimaryKey = false;
         $keyValue     = null;
@@ -582,11 +582,15 @@ abstract class DataModel implements DataModelInterface, Iterator
             $pkValue = $this->db->insert($this->getTableName(), $members);
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 $this->setKey($pkValue);
-                $this->updateChildModels();
+                if ($updateChildModels) {
+                    $this->updateChildModels();
+                }
 
                 return true;
             }
-            $this->updateChildModels();
+            if ($updateChildModels) {
+                $this->updateChildModels();
+            }
 
             return false;
         }
@@ -600,7 +604,9 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $res = $this->db->update($this->getTableName(), $keyName, $keyValue, $members) >= 0;
-        $this->updateChildModels();
+        if ($updateChildModels) {
+            $this->updateChildModels();
+        }
 
         return $res;
     }

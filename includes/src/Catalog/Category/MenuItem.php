@@ -64,9 +64,9 @@ class MenuItem
     private string $shortName = '';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $description = '';
+    private ?string $description = '';
 
     /**
      * @var string

@@ -673,11 +673,11 @@ class Kategorie implements RoutableInterface
     }
 
     /**
-     * @param string   $description
-     * @param int|null $idx
+     * @param string|null $description
+     * @param int|null    $idx
      * @return void
      */
-    public function setDescription(string $description, int $idx = null): void
+    public function setDescription(?string $description, int $idx = null): void
     {
         $this->descriptions[$idx ?? $this->currentLanguageID] = $description;
     }

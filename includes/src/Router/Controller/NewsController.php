@@ -2,6 +2,7 @@
 
 namespace JTL\Router\Controller;
 
+use Exception;
 use Illuminate\Support\Collection;
 use JTL\Catalog\Navigation;
 use JTL\Catalog\NavigationEntry;
@@ -190,8 +191,17 @@ class NewsController extends AbstractController
             case ViewType::NEWS_OVERVIEW:
                 Shop::setPageType(\PAGE_NEWS);
                 $newsCategoryID = 0;
+                try {
+                    $page                  = $linkService->getSpecialPage(\LINKTYP_NEWS);
+                    $this->canonicalURL    = $page->getURL($this->languageID);
+                    $this->metaTitle       = $page->getMetaTitle();
+                    $this->metaDescription = $page->getMetaDescription();
+                    $this->metaKeywords    = $page->getMetaKeyword();
+                } catch (Exception) {
+                    $this->canonicalURL = $linkService->getStaticRoute('news.php');
+                }
                 $this->displayOverview($pagination, $newsCategoryID);
-                $this->canonicalURL  = $linkService->getStaticRoute('news.php');
+
                 $this->breadCrumbURL = $this->canonicalURL;
                 break;
             case ViewType::NEWS_MONTH_OVERVIEW:

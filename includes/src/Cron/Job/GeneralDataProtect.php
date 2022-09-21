@@ -34,7 +34,6 @@ final class GeneralDataProtect extends Job
      */
     protected int $lastProductID;
 
-
     /**
      * @inheritDoc
      */

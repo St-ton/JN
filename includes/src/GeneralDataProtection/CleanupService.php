@@ -90,14 +90,6 @@ class CleanupService extends Method implements MethodInterface
     public $taskRepetitions = 0;
 
     /**
-     * last ID in table
-     *
-     * @var int
-     */
-    public $lastProductID;
-
-
-    /**
      * remove data from various tables
      *
      * @return void

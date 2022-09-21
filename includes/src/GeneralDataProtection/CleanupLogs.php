@@ -51,7 +51,6 @@ class CleanupLogs extends Method implements MethodInterface
      */
     public $lastProductID;
 
-
     /**
      * runs all anonymize methods
      *

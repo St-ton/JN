@@ -145,7 +145,7 @@ class Method
      * @param int $lastProductID
      * @return void
      */
-    public function setLastProductID(int $lastProductID)
+    public function setLastProductID(int $lastProductID): void
     {
         $this->lastProductID = $lastProductID;
     }

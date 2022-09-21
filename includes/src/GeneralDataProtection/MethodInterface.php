@@ -36,7 +36,8 @@ interface MethodInterface
     public function getLastProductID(): int;
 
     /**
+     * @param int $lastProductID
      * @return void
      */
-    public function setLastProductID(int $lastProductID);
+    public function setLastProductID(int $lastProductID): void;
 }

@@ -1,0 +1,86 @@
+<?php declare(strict_types=1);
+
+namespace JTL\REST;
+
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\REST\Controllers\AbstractController;
+use JTL\REST\Controllers\AttributeController;
+use JTL\REST\Controllers\CacheController;
+use JTL\REST\Controllers\CartController;
+use JTL\REST\Controllers\CartItemController;
+use JTL\REST\Controllers\CategoryAttributeController;
+use JTL\REST\Controllers\CategoryController;
+use JTL\REST\Controllers\CharacteristicController;
+use JTL\REST\Controllers\CharacteristicValueController;
+use JTL\REST\Controllers\CustomerController;
+use JTL\REST\Controllers\LanguageController;
+use JTL\REST\Controllers\ManufacturerController;
+use JTL\REST\Controllers\OrderController;
+use JTL\REST\Controllers\PriceController;
+use JTL\REST\Controllers\ProductAttributeController;
+use JTL\REST\Controllers\ProductController;
+use JTL\REST\Controllers\SeoController;
+use JTL\REST\Controllers\StockController;
+use JTL\REST\Controllers\TaxClassController;
+use JTL\REST\Controllers\TaxRateController;
+use JTL\REST\Controllers\TaxZoneController;
+use League\Fractal\Manager;
+use League\Route\RouteGroup;
+
+/**
+ * Class Registrator
+ * @package JTL\REST
+ */
+final class Registrator
+{
+    /**
+     * @var string[]
+     */
+    private static array $classes = [
+        CategoryController::class,
+        CategoryAttributeController::class,
+        ProductController::class,
+        ManufacturerController::class,
+        AttributeController::class,
+        CacheController::class,
+        CharacteristicController::class,
+        CharacteristicValueController::class,
+        LanguageController::class,
+        ProductAttributeController::class,
+        SeoController::class,
+        TaxClassController::class,
+        TaxRateController::class,
+        TaxZoneController::class,
+        OrderController::class,
+        CartController::class,
+        CartItemController::class,
+        CustomerController::class,
+        StockController::class,
+        PriceController::class,
+    ];
+
+    /**
+     * @param Manager           $manager
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
+     */
+    public function __construct(
+        protected Manager $manager,
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache
+    ) {
+    }
+
+    /**
+     * @param RouteGroup $routeGroup
+     * @return void
+     */
+    public function register(RouteGroup $routeGroup): void
+    {
+        /** @var AbstractController $class */
+        foreach (self::$classes as $class) {
+            (new $class($this->manager, $this->db, $this->cache))->registerRoutes($routeGroup);
+        }
+    }
+}

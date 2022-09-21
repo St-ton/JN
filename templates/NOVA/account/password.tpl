@@ -13,7 +13,7 @@
             {/container}
         {/block}
         {container fluid=$Link->getIsFluid() class="account-password {if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-            {if $step === 'formular'}
+            {if $step !== 'confirm'}
                 {row}
                     {col cols=12 lg=8}
                         {block name='account-password-alert'}
@@ -59,7 +59,7 @@
                         {/block}
                     {/col}
                 {/row}
-            {elseif $step === 'confirm'}
+            {else}
                 {row}
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset-confirm'}
@@ -96,10 +96,6 @@
                         {/block}
                     {/col}
                 {/row}
-            {else}
-                {block name='account-password-alert-success'}
-                    {alert variant="success"}{lang key='newPasswortWasGenerated' section='forgot password'}{/alert}
-                {/block}
             {/if}
         {/container}
     {/block}

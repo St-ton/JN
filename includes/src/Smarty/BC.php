@@ -315,9 +315,9 @@ class BC extends Smarty
 
     /**
      * @param string $name
-     * @return array
+     * @return mixed
      */
-    public function get_template_vars($name = null): array
+    public function get_template_vars($name = null): mixed
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use getTemplateVars() instead.', \E_USER_DEPRECATED);
         return $this->getTemplateVars($name);

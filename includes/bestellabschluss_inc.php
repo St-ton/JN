@@ -303,7 +303,7 @@ function gibLieferadresseAusSession()
 }
 
 /**
- * Schaut nach ob eine Bestellmenge > Lagersbestand ist und falls dies erlaubt ist, gibt es einen Hinweis.
+ * Schaut nach ob eine Bestellmenge > Lagerbestand ist und falls dies erlaubt ist, gibt es einen Hinweis.
  *
  * @return array
  * @deprecated since 5.2.0

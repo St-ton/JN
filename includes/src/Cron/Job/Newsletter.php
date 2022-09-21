@@ -100,7 +100,7 @@ final class Newsletter extends Job
                     'tnewsletterempfaenger',
                     'kNewsletterEmpfaenger',
                     $recipient->kNewsletterEmpfaenger,
-                    (object)['dLetzterNewsletter' => \date('Y-m-d H:m:s')]
+                    (object)['dLetzterNewsletter' => \date('Y-m-d H:i:s')]
                 );
                 ++$queueEntry->tasksExecuted;
             }

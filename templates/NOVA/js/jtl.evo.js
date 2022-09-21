@@ -664,7 +664,7 @@
                         $shippingSwitch.parent().addClass('d-none');
                         if ($shippingSwitch.prop('checked')) {
                             $shippingSwitch.prop('checked', false);
-                            $('#select_shipping_address').collapse('show');
+                            $('#select-shipping-address').collapse('show');
                         }
                     }
                 });
@@ -1110,6 +1110,16 @@
             }
         },
 
+        registerImageHover: function($wrapper) {
+            $(window).on("load resize", function() {
+                let productWrapper = $('.product-wrapper');
+                $.each(productWrapper, function() {
+                    let boxHeight = $(this).height()
+                    $(this).height(boxHeight);
+                })
+            })
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -1142,6 +1152,7 @@
             this.initFilterEvents();
             this.initItemSearch('filter');
             this.initSliders();
+            this.registerImageHover();
         }
     };
 

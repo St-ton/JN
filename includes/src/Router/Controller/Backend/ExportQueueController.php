@@ -13,6 +13,7 @@ use JTL\Cron\Queue;
 use JTL\Cron\Type;
 use JTL\Customer\CustomerGroup;
 use JTL\Export\ExporterFactory;
+use JTL\Export\Model;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -200,34 +201,20 @@ class ExportQueueController extends AbstractBackendController
     }
 
     /**
-     * @return stdClass[]
+     * @return Model[]
      * @former holeAlleExportformate()
      */
     private function getExports(): array
     {
-        $formats = $this->db->selectAll(
-            'texportformat',
-            [],
-            [],
-            '*',
-            'cName, kSprache, kKundengruppe, kWaehrung'
+        $data    = $this->db->getInts(
+            'SELECT kExportformat 
+                FROM texportformat
+                ORDER BY cName, kSprache, kKundengruppe, kWaehrung',
+            'kExportformat'
         );
-        foreach ($formats as $format) {
-            $format->kExportformat   = (int)$format->kExportformat;
-            $format->kSprache        = (int)$format->kSprache;
-            $format->kWaehrung       = (int)$format->kWaehrung;
-            $format->kKundengruppe   = (int)$format->kKundengruppe;
-            $format->kKampagne       = (int)$format->kKampagne;
-            $format->kPlugin         = (int)$format->kPlugin;
-            $format->nSpecial        = (int)$format->nSpecial;
-            $format->nVarKombiOption = (int)$format->nVarKombiOption;
-            $format->nSplitgroesse   = (int)$format->nSplitgroesse;
-            $format->nUseCache       = (int)$format->nUseCache;
-            $format->nFehlerhaft     = (int)$format->nFehlerhaft;
-            $format->async           = (int)($format->async ?? 0);
-            $format->Sprache         = Shop::Lang()->getLanguageByID($format->kSprache);
-            $format->Waehrung        = new Currency($format->kWaehrung);
-            $format->Kundengruppe    = new CustomerGroup($format->kKundengruppe);
+        $formats = [];
+        foreach ($data as $id) {
+            $formats[] = Model::loadByAttributes(['id' => $id], $this->db);
         }
 
         return $formats;
@@ -325,7 +312,7 @@ class ExportQueueController extends AbstractBackendController
     }
 
     /**
-     * @param int[] $cronIDs
+     * @param int[]|string[] $cronIDs
      * @return bool
      * @former loescheExportformatCron()
      */
@@ -346,16 +333,11 @@ class ExportQueueController extends AbstractBackendController
      */
     private function getQueues(int $hours = 24): array
     {
-        $languageID = (int)($_SESSION['kSprache'] ?? 0);
+        $languageID = (int)($_SESSION['editLanguageID'] ?? 0);
         if (!$languageID) {
-            $tmp = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            if (isset($tmp->kSprache) && $tmp->kSprache > 0) {
-                $languageID = (int)$tmp->kSprache;
-            } else {
-                return [];
-            }
+            $languageID = LanguageHelper::getDefaultLanguage()->getId();
         }
-        $languages = Shop::Lang()->getAllLanguages(1);
+        $languages = LanguageHelper::getAllLanguages(1);
         $queues    = $this->db->getObjects(
             "SELECT texportformat.cName, texportformat.cDateiname, texportformatqueuebearbeitet.*,
             DATE_FORMAT(texportformatqueuebearbeitet.dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_DE,
@@ -364,7 +346,6 @@ class ExportQueueController extends AbstractBackendController
             FROM texportformatqueuebearbeitet
             JOIN texportformat
                 ON texportformat.kExportformat = texportformatqueuebearbeitet.kExportformat
-                AND texportformat.kSprache = :lid
             JOIN tsprache
                 ON tsprache.kSprache = texportformat.kSprache
             JOIN tkundengruppe
@@ -373,7 +354,7 @@ class ExportQueueController extends AbstractBackendController
                 ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
-            ['lid' => $languageID, 'hrs' => $hours]
+            ['hrs' => $hours]
         );
         foreach ($queues as $exportFormat) {
             $exportFormat->name      = $languages[$languageID]->getLocalizedName();
@@ -392,7 +373,7 @@ class ExportQueueController extends AbstractBackendController
      */
     private function stepCreate(JTLSmarty $smarty): string
     {
-        $smarty->assign('oExportformat_arr', $this->getExports());
+        $smarty->assign('exportFormats', $this->getExports());
 
         return 'erstellen';
     }
@@ -409,8 +390,8 @@ class ExportQueueController extends AbstractBackendController
         $cron = $id > 0 ? $this->getCron($id) : 0;
         if (\is_object($cron) && $cron->cronID > 0) {
             $step = 'erstellen';
-            $smarty->assign('oCron', $cron)
-                ->assign('oExportformat_arr', $this->getExports());
+            $smarty->assign('cron', $cron)
+                ->assign('exportFormats', $this->getExports());
         } else {
             $messages['error'] .= \__('errorWrongQueue');
             $step               = 'uebersicht';
@@ -492,15 +473,15 @@ class ExportQueueController extends AbstractBackendController
      */
     private function stepCreateInsert(JTLSmarty $smarty, array &$messages): string
     {
-        $id                    = Request::postInt('kExportformat');
-        $start                 = $_POST['dStart'] ?? '';
-        $freq                  = !empty($_POST['nAlleXStundenCustom'])
+        $id                   = Request::postInt('kExportformat');
+        $start                = $_POST['dStart'] ?? '';
+        $freq                 = !empty($_POST['nAlleXStundenCustom'])
             ? (int)$_POST['nAlleXStundenCustom']
             : (int)$_POST['nAlleXStunden'];
-        $values                = new stdClass();
-        $values->kExportformat = $id;
-        $values->dStart        = Text::filterXSS($_POST['dStart']);
-        $values->nAlleXStunden = Text::filterXSS($_POST['nAlleXStunden']);
+        $error                = new stdClass();
+        $error->kExportformat = $id;
+        $error->dStart        = Text::filterXSS($_POST['dStart']);
+        $error->nAlleXStunden = $freq;
         if ($id > 0) {
             if ($this->checkStartTime($start)) {
                 if ($freq >= 1) {
@@ -518,17 +499,17 @@ class ExportQueueController extends AbstractBackendController
                 } else { // Alle X Stunden ist entweder leer oder kleiner als 6
                     $messages['error'] .= \__('errorGreaterEqualOne') . '<br />';
                     $step               = 'erstellen';
-                    $smarty->assign('oFehler', $values);
+                    $smarty->assign('error', $error);
                 }
             } else { // Kein gueltiges Datum + Uhrzeit
                 $messages['error'] .= \__('errorEnterValidDate') . '<br />';
                 $step               = 'erstellen';
-                $smarty->assign('oFehler', $values);
+                $smarty->assign('error', $error);
             }
         } else { // Kein gueltiges Exportformat
             $messages['error'] .= \__('errorFormatSelect') . '<br />';
             $step               = 'erstellen';
-            $smarty->assign('oFehler', $values);
+            $smarty->assign('error', $error);
         }
 
         return $step;
@@ -598,7 +579,7 @@ class ExportQueueController extends AbstractBackendController
                     $freq = (int)($_SESSION['exportformatQueue.nStunden'] ?? 24);
                     $smarty->assign('oExportformatCron_arr', $this->holeExportformatCron())
                         ->assign('oExportformatQueueBearbeitet_arr', $this->getQueues($freq))
-                        ->assign('oExportformat_arr', $this->getExports())
+                        ->assign('exportFormats', $this->getExports())
                         ->assign('nStunden', $freq);
                 }
                 break;

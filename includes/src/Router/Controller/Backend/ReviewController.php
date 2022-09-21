@@ -146,11 +146,14 @@ class ReviewController extends AbstractBackendController
     private function export(): void
     {
         $export = new Export();
-        $export->export(
+        $res    = $export->export(
             'activereviews',
             'reviews.csv',
             [$this, 'getAllReviews'],
         );
+        if ($res === false) {
+            $this->alertService->addInfo(\__('No items exported.'), 'noExportInfo');
+        }
     }
 
     /**

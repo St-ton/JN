@@ -30,6 +30,8 @@ class BoxController extends AbstractBackendController
      */
     private ?array $visibility = null;
 
+    private ?int $currentBoxID = null;
+
     /**
      * @var array
      */
@@ -140,6 +142,7 @@ class BoxController extends AbstractBackendController
         $this->assignFilterMapping($pageID);
         $this->alertService->addWarning(\__('warningNovaSidebar'), 'warningNovaSidebar', ['dismissable' => false]);
         $this->getAdminSectionSettings(\CONF_BOXEN);
+        $this->assignScrollPosition();
 
         return $smarty->assign('validPageTypes', self::getMappedValidPageTypes())
             ->assign('bBoxenAnzeigen', $this->getVisibility($pageID))
@@ -221,6 +224,13 @@ class BoxController extends AbstractBackendController
         } else {
             $this->alertService->addError(\__('errorBoxCreate'), 'errorBoxCreate');
         }
+
+        if ($this->currentBoxID !== null
+            && $this->currentBoxID > 0
+            && Request::postVar('saveAndContinue')
+        ) {
+            $this->actionEditMode($this->currentBoxID);
+        }
     }
 
     /**
@@ -254,6 +264,7 @@ class BoxController extends AbstractBackendController
                 return $e->isSpecial() === false;
             }
         );
+
         $this->smarty->assign('oEditBox', $box)
             ->assign('revisionData', $revisionData)
             ->assign('oLink_arr', $links);
@@ -301,6 +312,10 @@ class BoxController extends AbstractBackendController
             $this->alertService->addSuccess(\__('successBoxEdit'), 'successBoxEdit');
         } else {
             $this->alertService->addError(\__('errorBoxEdit'), 'errorBoxEdit');
+        }
+
+        if (Request::postVar('saveAndContinue')) {
+            $this->actionEditMode($boxID);
         }
     }
 
@@ -500,7 +515,8 @@ class BoxController extends AbstractBackendController
             ? (int)$template->kCustomID
             : 0;
 
-        $boxID = $this->db->insert('tboxen', $box);
+        $boxID              = $this->db->insert('tboxen', $box);
+        $this->currentBoxID = $boxID;
         if ($boxID) {
             $visibility       = new stdClass();
             $visibility->kBox = $boxID;

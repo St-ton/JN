@@ -166,7 +166,7 @@ class EmailTemplateController extends AbstractBackendController
             $res = $this->updateTemplate($emailTemplateID, $_POST, $_FILES);
             if ($res === self::OK) {
                 $this->alertService->addSuccess(\__('successTemplateEdit'), 'successTemplateEdit');
-                $continue = (bool)Request::verifyGPCDataInt('continue');
+                $continue = Request::postVar('saveAndContinue', false) !== false;
                 $doCheck  = $emailTemplateID;
             } else {
                 $mailTemplate = $this->getModel();
@@ -209,6 +209,8 @@ class EmailTemplateController extends AbstractBackendController
                     return $e->getPluginID() > 0;
                 }));
         }
+
+        $this->assignScrollPosition();
 
         return $smarty->assign('kPlugin', $pluginID)
             ->assign('mailTemplate', $mailTemplate)

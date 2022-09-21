@@ -74,7 +74,29 @@ class RedirectController extends AbstractBackendController
                     Redirect::deleteUnassigned();
                     break;
                 case 'new':
-                    $this->actionCreate();
+                    if (Request::postInt('redirect-id') > 0) {
+                        $redirect = new Redirect(Request::postInt('redirect-id'));
+                        $data     = [
+                            'kRedirect'     => Request::postInt('redirect-id'),
+                            'cToUrl'        => Request::postVar('cToUrl'),
+                            'cFromUrl'      => Request::postVar('cFromUrl'),
+                            'paramHandling' => Request::postInt('paramHandling')
+                        ];
+                        $ok       = $this->updateItem($redirect, $data);
+                        if ($ok === true) {
+                            $this->alertService->addSuccess(\__('successRedirectSave'), 'successRedirectSave');
+                        } else {
+                            $this->alertService->addError(
+                                \sprintf(\__('errorURLNotReachable'), $data['cToUrl']),
+                                'errorURLNotReachable'
+                            );
+                        }
+                    } else {
+                        $this->actionCreate();
+                    }
+                    break;
+                case 'edit':
+                    $this->actionEdit(Request::getInt('id'));
                     break;
                 default:
                     break;
@@ -156,11 +178,7 @@ class RedirectController extends AbstractBackendController
             if ($redirect->kRedirect <= 0 || $redirect->cToUrl === $item['cToUrl']) {
                 continue;
             }
-            if (Redirect::checkAvailability($item['cToUrl'])) {
-                $redirect->cToUrl     = $item['cToUrl'];
-                $redirect->cAvailable = 'y';
-                $this->db->update('tredirect', 'kRedirect', $redirect->kRedirect, $redirect);
-            } else {
+            if (!$this->updateItem($redirect, $item)) {
                 $this->alertService->addError(
                     \sprintf(\__('errorURLNotReachable'), $item['cToUrl']),
                     'errorURLNotReachable'
@@ -169,12 +187,54 @@ class RedirectController extends AbstractBackendController
         }
     }
 
+    /**
+     * @param Redirect $redirect
+     * @param array    $item
+     * @return bool
+     */
+    private function updateItem(Redirect $redirect, array $item): bool
+    {
+        if (!Redirect::checkAvailability($item['cToUrl'])) {
+            return false;
+        }
+        $redirect->cToUrl     = $item['cToUrl'];
+        $redirect->cAvailable = 'y';
+        if (isset($item['paramHandling'])) {
+            $redirect->paramHandling = $item['paramHandling'];
+        }
+        $this->db->update('tredirect', 'kRedirect', $redirect->kRedirect, $redirect);
+
+        return true;
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    private function actionEdit(int $id): void
+    {
+        $redirect = new Redirect($id);
+        $this->smarty->assign('cTab', 'new_redirect')
+            ->assign('cFromUrl', $redirect->cFromUrl)
+            ->assign('cToUrl', $redirect->cToUrl)
+            ->assign('redirectID', $redirect->kRedirect)
+            ->assign('cAvailable', $redirect->cAvailable)
+            ->assign('nCount', $redirect->nCount)
+            ->assign('paramHandling', $redirect->paramHandling)
+            ->assign('cFromUrl', $redirect->cFromUrl);
+    }
+
+    /**
+     * @return void
+     */
     private function actionCreate(): void
     {
         $redirect = new Redirect();
         if ($redirect->saveExt(
             Request::verifyGPDataString('cFromUrl'),
-            Request::verifyGPDataString('cToUrl')
+            Request::verifyGPDataString('cToUrl'),
+            false,
+            Request::verifyGPCDataInt('paramHandling')
         )) {
             $this->alertService->addSuccess(\__('successRedirectSave'), 'successRedirectSave');
         } else {

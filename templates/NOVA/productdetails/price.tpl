@@ -16,10 +16,7 @@
                 {/block}
             {else}
                 {block name='productdetails-price-label'}
-                    {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
-                        || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
-                        <span class="price_label pricestarting">{lang key='priceStarting'} </span>
-                    {elseif $Artikel->Preise->rabatt > 0}
+                    {if $Artikel->Preise->rabatt > 0}
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
@@ -194,13 +191,17 @@
                     {block name='productdetails-price-price-note'}
                     <div class="price-note">
                         {* Grundpreis *}
-                        {if !empty($Artikel->cLocalizedVPE) && !$Artikel->Preise->oPriceRange->isRange()}
+                        {if !empty($Artikel->cLocalizedVPE)}
                             {block name='productdetails-price-list-base-price'}
                                 <div class="base_price" itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
                                     <meta itemprop="price" content="{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}">
                                     <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
+                                        {if $Artikel->Preise->oPriceRange->isRange() === true}
+                                            <br>
+                                            Weitere Variationen erhältlich
+                                        {/if}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
                                         <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
                                     </span>

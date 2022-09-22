@@ -26373,6 +26373,18 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   width: 100%;
 }
 
+.blockquote-divider::before {
+  content: "—";
+}
+
+.verified-purchase {
+  font-weight: 700;
+}
+
+.verified-purchase-notice {
+  margin-bottom: 1rem;
+}
+
 .cfg-layout-list .form-counter {
   width: auto;
 }

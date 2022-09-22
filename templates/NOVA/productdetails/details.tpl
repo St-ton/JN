@@ -258,23 +258,37 @@
                                             {/if}
                                             {block name='productdetails-details-config-button-button'}
                                                 {col cols=12 sm=6}
-                                                    {button type="button"
-                                                        class="start-configuration js-start-configuration"
-                                                        value="{lang key='configure'}"
-                                                        block=true
-                                                        data=["toggle"=>"modal", "target"=>"#cfg-container"]
-                                                        disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
-                                                    }
-                                                        <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
-                                                    {/button}
+                                                    {if $Einstellungen.template.productdetails.config_position === 'popup'}
+                                                        {button type="button"
+                                                            class="start-configuration js-start-configuration"
+                                                            value="{lang key='configure'}"
+                                                            block=true
+                                                            data=["toggle"=>"modal", "target"=>"#cfg-container"]
+                                                            disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
+                                                        }
+                                                            <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                        {/button}
+                                                    {else}
+                                                        {link type="button"
+                                                            class="btn btn-secondary start-configuration js-start-configuration"
+                                                            value="{lang key='configure'}"
+                                                            block=true
+                                                            href="#cfg-container"
+                                                            disabled=(isset($Artikel->Variationen) && $Artikel->Variationen|count > 0)
+                                                        }
+                                                            <span>{lang key='configure'}</span> <i class="fas fa-cogs"></i>
+                                                        {/link}
+                                                    {/if}
                                                 {/col}
                                             {/block}
                                         {/row}
                                     {/block}
-                                    {block name='productdetails-details-include-config-container'}
-                                        {row id="product-configurator"}
-                                            {include file='productdetails/config_container.tpl'}
-                                        {/row}
+                                    {block name='productdetails-details-include-config-container-popup'}
+                                        {if $Einstellungen.template.productdetails.config_position === 'popup'}
+                                            {row id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                                                {include file='productdetails/config_container.tpl'}
+                                            {/row}
+                                        {/if}
                                     {/block}
                                 {else}
                                     {block name='productdetails-details-include-basket'}
@@ -286,6 +300,13 @@
                         {/block}{* productdetails-info *}
                         {opcMountPoint id='opc_after_product_info'}
                     {/col}
+                    {block name='productdetails-details-include-config-container-details'}
+                        {if $Artikel->bHasKonfig && $Einstellungen.template.productdetails.config_position === 'details'}
+                            {col cols=12 id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                                {include file='productdetails/config_container.tpl'}
+                            {/col}
+                        {/if}
+                    {/block}
                 {/row}
                 {block name='productdetails-details-include-matrix'}
                     {include file='productdetails/matrix.tpl'}

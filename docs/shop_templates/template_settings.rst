@@ -165,7 +165,7 @@ Social-Media-Buttons im Footer
     Pinterest-Link  :
     Skype-Link      :*
 
-Listen- und Gallerieansicht
+Listen- und Galerieansicht
 """""""""""""""""""""""""""
 
 Hovereffekt für Zusatzinfos

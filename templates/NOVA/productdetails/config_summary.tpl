@@ -10,22 +10,37 @@
         {$isIgnoreMultiplier = false}
         {block name='productdetails-config-summary-conf-groups'}
             {foreach $oKonfig->oKonfig_arr as $oKonfiggruppe}
-                {if $oKonfiggruppe->bAktiv}
+                {$configLocalization = $oKonfiggruppe->getSprache()}
+                <tr class="{if $oKonfiggruppe@iteration is odd}accent-bg{/if}">
+                    <td colspan="3">
+                        <a id="cfg-nav-{$oKonfiggruppe->getID()}"
+                           class="cfg-group js-cfg-group {if $oKonfiggruppe@first}visited{/if}"
+                           href="#cfg-grp-{$oKonfiggruppe->getID()}" data-id="{$oKonfiggruppe->getID()}">
+                            {$configLocalization->getName()}
+                        </a>
+
                     {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
+
                         {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
-                            <tr>
-                                <td class="text-nowrap-util">{$oKonfigitem->fAnzahl} &times;</td>
-                                <td class="word-break">{$oKonfigitem->getName()}</td>
-                                <td class="cfg-price">{$oKonfigitem->getFullPriceLocalized(true, false, 1)}</td>
-                            </tr>
+                            {row}
+                                {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
+                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized(true, false, 1)}{/col}
+                            {/row}
                         {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
-                            {$isIgnoreMultiplier = true}
+                            {row}
+                                {col cols=12}{lang key='one-off' section='checkout'}{/col}
+                                {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
+                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized()}{/col}
+                            {/row}
                         {/if}
                     {/foreach}
-                {/if}
+                    </td>
+                </tr>
             {/foreach}
         {/block}
-        {if $isIgnoreMultiplier}
+        {*{if $isIgnoreMultiplier}
             {block name='productdetails-config-summary-conf-groups-ignore-multiplier'}
                 <tr>
                     <td colspan="3" class="highlighted">{lang key='one-off' section='checkout'}</td>
@@ -44,7 +59,7 @@
                     {/if}
                 {/foreach}
             {/block}
-        {/if}
+        {/if}*}
     {/if}
 {/strip}
 {/block}

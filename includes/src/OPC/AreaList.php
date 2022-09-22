@@ -38,18 +38,18 @@ class AreaList implements \JsonSerializable
      * @param string $id
      * @return bool
      */
-    public function hasArea($id): bool
+    public function hasArea(string $id): bool
     {
         return \array_key_exists($id, $this->areas);
     }
 
     /**
      * @param string $id
-     * @return Area
+     * @return Area|null
      */
-    public function getArea($id): Area
+    public function getArea(string $id): ?Area
     {
-        return $this->areas[$id];
+        return $this->areas[$id] ?? null;
     }
 
     /**
@@ -95,10 +95,8 @@ class AreaList implements \JsonSerializable
     public function deserialize(array $data): void
     {
         $this->clear();
-
         foreach ($data as $areaData) {
-            $area = (new Area())->deserialize($areaData);
-            $this->putArea($area);
+            $this->putArea((new Area())->deserialize($areaData));
         }
     }
 

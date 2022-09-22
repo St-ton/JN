@@ -28,7 +28,7 @@ class LocaleCheckMiddleware implements MiddlewareInterface
             if ($state !== null) {
                 $state->languageID = $lang->getId();
             }
-            Shop::setLanguage($lang->getId(), $lang->getCode());
+            Shop::updateLanguage($lang->getId(), $lang->getCode());
         }
 
         return $handler->handle($request);

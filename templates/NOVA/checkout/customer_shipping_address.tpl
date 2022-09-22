@@ -293,6 +293,17 @@
                 {/block}
             {/col}
         {/block}
+        {block name='checkout-customer-shipping-address-save-preset-wrap'}
+            {if $step == 'Lieferadresse' || $step == 'edit_customer_address'}
+                {col cols=12 md=12}
+                    {block name='checkout-customer-shipping-address-save-preset'}
+                        {checkbox id="checkout_register_save-shipping-address-as-preset" name="{$prefix}[{$name}][saveAsNewShippingAddressPreset]" value="1"}
+                            {lang key='checkoutSaveAsNewShippingAddressPreset' section='account data'}
+                        {/checkbox}
+                    {/block}
+                {/col}
+            {/if}
+        {/block}
     {/formrow}
     </fieldset>
 {/block}

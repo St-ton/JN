@@ -126,7 +126,7 @@ class RegistrationController extends PageController
             : $form->checkKundenFormular(true, false);
         $customerData       = $form->getCustomerData($post, true, false);
         $customerAttributes = $form->getCustomerAttributes($post);
-        $checkbox           = new CheckBox();
+        $checkbox           = new CheckBox(0, $this->db);
         $missingData        = \array_merge(
             $missingData,
             $checkbox->validateCheckBox(\CHECKBOX_ORT_REGISTRIERUNG, $this->customerGroupID, $post, true)

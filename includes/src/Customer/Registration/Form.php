@@ -5,6 +5,7 @@ namespace JTL\Customer\Registration;
 use DateTime;
 use JTL\Cart\CartHelper;
 use JTL\CheckBox;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Versandart;
 use JTL\Customer\Customer;
@@ -122,24 +123,22 @@ class Form
      */
     public function checkKundenFormular(bool $customerAccount, bool $checkpass = true): array
     {
-        $data = Text::filterXSS($_POST); // create a copy
-
-        return $this->checkKundenFormularArray($data, $customerAccount, $checkpass);
+        return $this->checkKundenFormularArray(Text::filterXSS($_POST), $customerAccount, $checkpass);
     }
 
     /**
      * @param array $data
-     * @param bool  $kundenaccount
+     * @param bool  $customerAccount
      * @param bool  $checkpass
      * @return array
      * @former checkKundenFormularArray()
      * @since 5.2.0
      */
-    public function checkKundenFormularArray(array $data, bool $kundenaccount, bool $checkpass = true): array
+    public function checkKundenFormularArray(array $data, bool $customerAccount, bool $checkpass = true): array
     {
         $validator = new RegistrationForm($data, Shop::getSettings([\CONF_KUNDEN, \CONF_KUNDENFELD, \CONF_GLOBAL]));
         $validator->validate();
-        if ($kundenaccount === true) {
+        if ($customerAccount === true) {
             $validator->validateCustomerAccount($checkpass);
         }
 
@@ -177,9 +176,12 @@ class Form
      */
     public function pruefeLieferdaten(array $post, ?array &$missingData = null): void
     {
-        unset($_SESSION['Lieferadresse']);
+        unset($_SESSION['Lieferadresse'], $_SESSION['newShippingAddressPreset']);
         if (!isset($_SESSION['Bestellung'])) {
             $_SESSION['Bestellung'] = new stdClass();
+        }
+        if (isset($post['saveAsNewShippingAddressPreset'])) {
+            $_SESSION['newShippingAddressPreset'] = 1;
         }
         $_SESSION['Bestellung']->kLieferadresse = (int)($post['kLieferadresse'] ?? -1);
         Frontend::getCart()->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS);
@@ -188,7 +190,7 @@ class Form
         if (!isset($post['kLieferadresse']) || (int)$post['kLieferadresse'] === -1) {
             $missingData               = \array_merge($missingData, $this->checkLieferFormularArray($post));
             $deliveryAddress           = Lieferadresse::createFromPost($post);
-            $ok                        = (int)\JTL\Helpers\Form::hasNoMissingData($missingData);
+            $ok                        = \JTL\Helpers\Form::hasNoMissingData($missingData);
             $_SESSION['Lieferadresse'] = $deliveryAddress;
 
             $_SESSION['preferredDeliveryCountryCode'] = $deliveryAddress->cLand;
@@ -211,14 +213,21 @@ class Form
             // vorhandene lieferadresse
             $addressID = Shop::Container()->getDB()->getSingleInt(
                 'SELECT kLieferadresse
-                    FROM tlieferadresse
+                    FROM tlieferadressevorlage
                     WHERE kKunde = :cid
                         AND kLieferadresse = :daid',
                 'kLieferadresse',
                 ['cid' => Frontend::getCustomer()->getID(), 'daid' => (int)$post['kLieferadresse']]
             );
             if ($addressID > 0) {
-                $_SESSION['Lieferadresse'] = new Lieferadresse($addressID);
+                $template                  = new DeliveryAddressTemplate(
+                    Shop::Container()->getDB(),
+                    $addressID
+                );
+                $_SESSION['Lieferadresse'] = $template->getDeliveryAddress();
+                if (isset($_SESSION['Bestellung']->kLieferadresse)) {
+                    $_SESSION['Bestellung']->kLieferadresse = -1;
+                }
                 \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
             }
         } elseif ((int)$post['kLieferadresse'] === 0 && isset($_SESSION['Kunde'])) {

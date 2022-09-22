@@ -170,6 +170,18 @@
 			margin-bottom: map-get($spacers, 7);
 		}
 	}
+	&.layout-gallery {
+		.productbox-hover.productbox-show-variations {
+			&.transition,
+			&:hover {
+				position: absolute;
+				z-index: $zindex-dropdown;
+				padding: map-get($spacers, 3) map-get($spacers, 3) 0;
+				margin: -(map-get($spacers, 3));
+				width: 100%;
+			}
+		}
+	}
 }
 
 #result-wrapper {

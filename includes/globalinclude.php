@@ -10,6 +10,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
+use JTLShop\SemVer\Version;
 
 $nStartzeit = microtime(true);
 
@@ -42,6 +43,22 @@ defined('DB_USER') || handleFatal('Kein MySql-Datenbankbenutzer angegeben. Bitte
 defined('DB_PASS') || handleFatal('Kein MySql-Datenbankpasswort angegeben. Bitte config.JTL-Shop.ini.php bearbeiten!');
 
 Profiler::start();
+
+/**
+ * @deprecated since 5.0.0
+ */
+define(
+    'JTL_VERSION',
+    (int)sprintf(
+        '%d%02d',
+        Version::parse(APPLICATION_VERSION)->getMajor(),
+        Version::parse(APPLICATION_VERSION)->getMinor()
+    )
+);
+/**
+ * @deprecated since 5.0.0
+ */
+define('JTL_MINOR_VERSION', Version::parse(APPLICATION_VERSION)->getPatch());
 
 $db    = null;
 $cache = null;

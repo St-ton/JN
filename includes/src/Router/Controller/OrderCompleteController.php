@@ -281,7 +281,7 @@ class OrderCompleteController extends CheckoutController
      */
     public function isOrderComplete(): bool
     {
-        $_SESSION['cPlausi_arr'] = (new CheckBox())->validateCheckBox(
+        $_SESSION['cPlausi_arr'] = (new CheckBox(0, $this->db))->validateCheckBox(
             \CHECKBOX_ORT_BESTELLABSCHLUSS,
             $this->customerGroupID,
             $_POST,

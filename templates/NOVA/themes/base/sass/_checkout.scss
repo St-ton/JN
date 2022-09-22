@@ -239,3 +239,16 @@
     text-align: center;
   }
 }
+
+/* shipping-adresses */
+.select-shipping-address {
+  .dataTables_wrapper {
+    border: 1px solid $gray-lighter;
+    padding: map-get($spacers, 3);
+    margin-bottom: map-get($spacers, 4);
+  }
+}
+.new-shipping-address {
+  border: 1px solid $gray-lighter;
+  padding: map-get($spacers, 3);
+}

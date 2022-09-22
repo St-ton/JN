@@ -79,7 +79,6 @@ class NewsController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
-
         $author    = Author::getInstance($this->db);
         $category  = new Category($this->db);
         $languages = LanguageHelper::getAllLanguages(0, true, true);
@@ -112,8 +111,12 @@ class NewsController extends AbstractBackendController
                     return $this->newsRedirect('aktiv', $this->getMsg());
                 }
                 $this->setErrorMsg(\__('errorAtLeastOneNews'));
-            } elseif (Request::postInt('news_kategorie_speichern') === 1) {
+            } elseif (Request::postInt('news_kategorie_speichern') === 1
+                      && Request::postVar('saveAndContinue', '') !== 'kategorie') {
                 $category = $this->createOrUpdateCategory($_POST, $languages);
+            } elseif (Request::postVar('saveAndContinue', '') === 'kategorie') {
+                $category = $this->createOrUpdateCategory($_POST, $languages);
+                $category = $this->actionEditCategory($category);
             } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
                 $this->setStep('news_uebersicht');
                 if (isset($_POST['kNewsKategorie'])) {
@@ -162,8 +165,11 @@ class NewsController extends AbstractBackendController
             $this->smarty->assign('newsCategories', $this->getAllNewsCategories())
                 ->assign('category', $category);
         }
+
         $this->alertService->addNotice($this->getMsg(), 'newsMessage');
         $this->alertService->addError($this->getErrorMsg(), 'newsError');
+
+        $this->assignScrollPosition();
 
         return $this->smarty->assign('customerGroups', CustomerGroup::getGroups())
             ->assign('route', $this->route)
@@ -303,7 +309,7 @@ class NewsController extends AbstractBackendController
                     'kSprache',
                     $langID
                 )->cPraefix ?? 'Newsuebersicht';
-                if (isset($monthOverview->kNewsMonatsUebersicht) && $monthOverview->kNewsMonatsUebersicht > 0) {
+                if ($monthOverview !== null && $monthOverview->kNewsMonatsUebersicht > 0) {
                     $this->db->delete(
                         'tseo',
                         ['cKey', 'kKey', 'kSprache'],
@@ -316,7 +322,8 @@ class NewsController extends AbstractBackendController
                 } else {
                     $monthOverview           = new stdClass();
                     $monthOverview->kSprache = $langID;
-                    $monthOverview->cName    = \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
+                    $monthOverview->cName    =
+                        \JTL\Router\Controller\NewsController::mapDateName((string)$month, $year, $iso);
                     $monthOverview->nMonat   = $month;
                     $monthOverview->nJahr    = $year;
 
@@ -356,7 +363,7 @@ class NewsController extends AbstractBackendController
             }
             $this->flushCache();
             $this->msg .= \__('successNewsSave');
-            if (isset($post['continue']) && $post['continue'] === '1') {
+            if (Request::postVar('saveAndContinue', '') === 'news') {
                 $this->step         = 'news_editieren';
                 $this->continueWith = $newsItemID;
             } else {
@@ -448,6 +455,9 @@ class NewsController extends AbstractBackendController
             }
             $author->clearAuthor('NEWS', $newsItemID);
             $newsData = $this->db->select('tnews', 'kNews', $newsItemID);
+            if ($newsData === null) {
+                continue;
+            }
             $this->db->delete('tnews', 'kNews', $newsItemID);
             self::deleteImageDir($newsItemID);
             $this->db->delete('tnewskommentar', 'kNews', $newsItemID);
@@ -1528,7 +1538,7 @@ class NewsController extends AbstractBackendController
     /**
      * @return Category
      */
-    private function actionEditCategory(): Category
+    private function actionEditCategory(?Category $category = null): Category
     {
         if (\mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($this->deleteNewsImage(
@@ -1541,16 +1551,21 @@ class NewsController extends AbstractBackendController
                 $this->setErrorMsg(\__('errorNewsImageDelete'));
             }
         }
-        $category = new Category($this->db);
-        if (Request::getInt('kNewsKategorie') <= 0) {
-            return $category;
+
+        if ($category === null) {
+            $category = new Category($this->db);
+            if (Request::getInt('kNewsKategorie') <= 0) {
+                return $category;
+            }
         }
+        $categoryId = $category->getID() > 0 ? $category->getID() : Request::getInt('kNewsKategorie');
         $this->setStep('news_kategorie_erstellen');
-        $category->load(Request::getInt('kNewsKategorie'), false);
+        $category->load($categoryId, false);
+
         if ($category->getID() > 0) {
             $this->smarty->assign('category', $category)
                 ->assign('files', $this->getCategoryImages($category->getID()));
-        } else {
+        } elseif (!$this->errorMsg) {
             $this->setStep('news_uebersicht');
             $this->setErrorMsg(
                 \sprintf(\__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie'))

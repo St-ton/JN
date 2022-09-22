@@ -41,6 +41,12 @@ class Customer
 
     public const CUSTOMER_ANONYM = 'Anonym';
 
+    public const CUSTOMER_DELETE_DONE = 0;
+
+    public const CUSTOMER_DELETE_DEACT = 1;
+
+    public const CUSTOMER_DELETE_NO = 2;
+
     /**
      * @var int
      */
@@ -914,32 +920,32 @@ class Customer
      * @param int    $issuerID
      * @param bool   $force
      * @param bool   $confirmationMail
+     * @return int
      */
     public function deleteAccount(
         string $issuerType,
         int $issuerID,
         bool $force = false,
         bool $confirmationMail = false
-    ): void {
+    ): int {
         $customerID = $this->getID();
-
         if (empty($customerID)) {
-            return;
+            return self::CUSTOMER_DELETE_NO;
         }
-
         if ($force) {
             $this->erasePersonalData($issuerType, $issuerID);
 
-            return;
+            return self::CUSTOMER_DELETE_DONE;
         }
-
         $openOrders = $this->getOpenOrders();
         if (!$openOrders) {
             $this->erasePersonalData($issuerType, $issuerID);
             $logMessage = \sprintf('Account with ID kKunde = %s deleted', $customerID);
+
+            $retVal = self::CUSTOMER_DELETE_DONE;
         } else {
             if ($this->nRegistriert === 0) {
-                return;
+                return self::CUSTOMER_DELETE_NO;
             }
             Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
@@ -960,6 +966,8 @@ class Customer
                 $logMessage,
                 (object)['kKunde' => $customerID]
             );
+
+            $retVal = self::CUSTOMER_DELETE_DEACT;
         }
         Shop::Container()->getLogService()->notice($logMessage);
         if ($confirmationMail) {
@@ -970,6 +978,8 @@ class Customer
                 (object)['tkunde' => $this]
             ));
         }
+
+        return $retVal;
     }
 
     /**

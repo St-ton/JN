@@ -17,6 +17,7 @@ use JTL\Router\Controller\ControllerInterface;
 use JTL\Router\Controller\DefaultController;
 use JTL\Router\Controller\IOController;
 use JTL\Router\Controller\ManufacturerController;
+use JTL\Router\Controller\MediaImageController;
 use JTL\Router\Controller\NewsController;
 use JTL\Router\Controller\PageController;
 use JTL\Router\Controller\ProductController;
@@ -45,6 +46,7 @@ use League\Route\Route;
 use League\Route\RouteGroup;
 use League\Route\Router as BaseRouter;
 use Psr\Http\Server\MiddlewareInterface;
+use function Functional\first;
 
 /**
  * Class Router
@@ -108,6 +110,11 @@ class Router
      */
     private array $routes = [];
 
+    /**
+     * @var array[]
+     */
+    private array $customRoutes = [];
+
     public const TYPE_CATEGORY             = 'categories';
     public const TYPE_CHARACTERISTIC_VALUE = 'characteristics';
     public const TYPE_MANUFACTURER         = 'manufacturers';
@@ -159,14 +166,15 @@ class Router
             new ManufacturerController($db, $cache, $state, $this->config, $alert),
             new NewsController($db, $cache, $state, $this->config, $alert),
             new SearchController($db, $cache, $state, $this->config, $alert),
-            new PageController($db, $cache, $state, $this->config, $alert)
+            new PageController($db, $cache, $state, $this->config, $alert),
+            new MediaImageController($db, $cache, $state, $this->config, $alert),
         ];
 
         foreach ($this->collectHosts() as $data) {
-            $host           = $data['host'];
-            $locale         = $data['locale'];
-            $localePrefix   = $data['prefix'];
-            $this->routes[] = $this->router->group($localePrefix, function (RouteGroup $route) use (
+            $host         = $data['host'];
+            $locale       = $data['locale'];
+            $localePrefix = $data['prefix'];
+            $group        = new RouteGroup($localePrefix, function (RouteGroup $route) use (
                 &$registeredDefault,
                 $data,
                 $controllers,
@@ -189,15 +197,15 @@ class Router
                     $io->register($route, $dynName);
                     $root->register($route, $dynName);
                 }
-
                 foreach ($controllers as $controller) {
                     $controller->register($route, $dynName);
                 }
-                $this->defaultController->register($route, $dynName);
-            })->setHost($host)->setName($locale
+            }, $this->router);
+            $group->setHost($host)->setName($locale
                 . '_grp'
                 . ($data['localized'] ? '_LOCALIZED' : '')
                 . ($data['currency'] ? '_CRNCY' : ''));
+            $this->routes[] = $group;
         }
         if ($this->isMultiDomain === false) {
             $path = \parse_url(\URL_SHOP, \PHP_URL_PATH);
@@ -205,28 +213,41 @@ class Router
                 $this->path = $path;
             }
         }
+        $this->collectGroupRoutes();
+    }
+
+    protected function collectGroupRoutes(): void
+    {
+        foreach ($this->routes as $group) {
+            $group();
+        }
     }
 
     /**
      * @param string                   $slug
      * @param callable                 $cb
-     * @param array                    $methods
      * @param string|null              $name
+     * @param array                    $methods
      * @param MiddlewareInterface|null $middleware
      * @return Route[]
      */
     public function addRoute(
         string $slug,
         callable $cb,
-        array $methods = ['GET'],
         ?string $name = null,
+        array $methods = ['GET'],
         ?MiddlewareInterface $middleware = null
     ): array {
         if (!\str_starts_with($slug, '/')) {
             $slug = '/' . $slug;
         }
-        $routes  = [];
-        $methods = \array_map('\mb_strtoupper', $methods);
+        $name                      = $name ?? \uniqid();
+        $routes                    = [];
+        $methods                   = \array_map('\mb_strtoupper', $methods);
+        $this->customRoutes[$name] = [];
+        foreach ($methods as $method) {
+            $this->customRoutes[$name][$method] = [];
+        }
         foreach ($this->routes as $group) {
             $groupName = $group->getName();
             // routes are named <locale>_grp, <locale>_grp_LOCALIZED, <locale>_grp_CRNCY etc.
@@ -239,9 +260,8 @@ class Router
             }
             foreach ($methods as $method) {
                 $route = $group->map($method, $slug, $cb);
-                if ($name !== null) {
-                    $route->setName($name . $dynName . $method);
-                }
+                $route->setName($name . $dynName . $method);
+                $this->customRoutes[$name][$method][] = $name . $dynName . $method;
                 if ($middleware !== null) {
                     $route->middleware($middleware);
                 }
@@ -249,7 +269,26 @@ class Router
             }
         }
 
+
         return $routes;
+    }
+
+    protected function registerDefaultController(): void
+    {
+        foreach ($this->routes as $group) {
+            $dynName = '';
+            if ($this->isMultiDomain === true) {
+                $locale  = \mb_substr($group->getName(), 0, \mb_strpos($group->getName(), '_grp'));
+                $dynName = '_' . $locale;
+            }
+            if (\str_contains($group->getName(), '_LOCALIZED')) {
+                $dynName = '_LOCALIZED';
+            }
+            if (\str_contains($group->getName(), '_CURNCY')) {
+                $dynName .= '_CRNCY';
+            }
+            $this->defaultController->register($group, $dynName);
+        }
     }
 
     /**
@@ -313,8 +352,12 @@ class Router
      * @param bool       $byName
      * @return string
      */
-    public function getURLByType(string $type, ?array $replacements = null, bool $byName = true): string
-    {
+    public function getURLByType(
+        string $type,
+        ?array $replacements = null,
+        bool $byName = true,
+        bool $forceDynamic = false
+    ): string {
         $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
         if (empty($replacements['lang'])) {
             $replacements['lang'] = $this->defaultLocale;
@@ -329,7 +372,7 @@ class Router
         if ($this->path !== '/') {
             $pfx .= $this->path;
         }
-        if ($byName === true) {
+        if ($forceDynamic === false && $byName === true) {
             $scheme = $this->config['global']['routing_default_language'] ?? 'F';
             if ($isDefaultLocale && $scheme === 'F') {
                 return $pfx . '/' . ($replacements['name'] ?? $replacements['id']);
@@ -400,9 +443,15 @@ class Router
             self::TYPE_PRODUCT              => 'ROUTE_PRODUCT_BY_',
             self::TYPE_SEARCH_SPECIAL       => 'ROUTE_SEARCHSPECIAL_BY_',
             self::TYPE_SEARCH_QUERY         => 'ROUTE_SEARCHQUERY_BY_',
-            default                         => 'ROUTE_UNKNOWN'
+            default                         => $type
         };
-        $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
+        $proto        = '';
+        $isNamedRoute = $name === $type;
+        if ($isNamedRoute === false) {
+            $name .= ($byName === true && !empty($replacements['name']) ? 'NAME' : 'ID');
+        } elseif (isset($this->customRoutes[$name])) {
+            $proto = first(\array_keys($this->customRoutes[$name]));
+        }
 
         if ($this->isMultiDomain === true) {
             $name .= '_' . \mb_convert_case($replacements['lang'], \MB_CASE_LOWER);
@@ -418,6 +467,9 @@ class Router
         }
         if ($this->isMulticrncy === true && isset($replacements['currency'])) {
             $name .= '_CRNCY';
+        }
+        if ($isNamedRoute === true) {
+            $name .= $proto;
         }
 
         return $name;
@@ -506,12 +558,12 @@ class Router
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-        if (\count($this->hosts) > 0) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
                 if ($host['host'] === $requestedHost) {
                     $this->state->languageID = $host['id'];
-                    Shop::setLanguage($this->state->languageID, $host['iso']);
+                    Shop::updateLanguage($this->state->languageID, $host['iso']);
                 }
             }
         }
@@ -532,6 +584,7 @@ class Router
 
         // this is added after HOOK_ROUTER_PRE_DISPATCH since plugins could register static routes
         // which would otherwise be shadowed by this
+        $this->registerDefaultController();
         try {
             $response = $this->router->dispatch($request);
         } catch (BadRouteException $e) {

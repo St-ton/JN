@@ -135,7 +135,7 @@
                 <Option Value="N">Inaktiv</Option>
             </Setting>
         </Section>
-        <Section Name="Listen- und Gallerieansicht" Key="productlist">
+        <Section Name="Listen- und Galerieansicht" Key="productlist">
             <Setting Description="Auswahloptionen bei „Filter anzeigen in (Desktop)“" Key="filter_placement" Type="select" Value="sidebar">
                 <Option Value="sidebar">Seitenleiste (Einstellung einzelner Filter unter „Standardelemente > Footer /Boxen“ und „Standardansichten > Artikelübersicht“)</Option>
                 <Option Value="modal">Eigenes Fenster (Einstellung einzelner Filter unter „Standardansichten > Artikelübersicht“)</Option>
@@ -152,49 +152,61 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Schaltfläche „Warenkorb“ in Artikelübersicht (Listenansicht) anzeigen" Key="buy_productlist" Type="select" Value="Y">
+            <Setting Description="Artikel über die Artikelübersicht (Liste) in den Warenkorb legen" Key="buy_productlist" Type="select" Value="Y" Subheader="header list">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Zusatzinfos zu Artikeln beim Hovern/Antippen anzeigen" Key="hover_productlist" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
-            <Setting Description="Variationsauswahl anzeigen" Key="variation_select_productlist" Type="select" Value="3">
-                <Option Value="N"><![CDATA[Nein]]></Option>
+            <Setting Description="Variationsauswahl in Liste anzeigen" Key="variation_select_productlist_list" Type="select" Value="3">
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches" Key="variation_max_werte_productlist" Type="select" Value="3">
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches in der Liste" Key="variation_max_werte_productlist_list" Type="select" Value="3" MarginBottom="true">
                 <Option Value="3"><![CDATA[max. 3]]></Option>
                 <Option Value="5"><![CDATA[max. 5]]></Option>
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
-            <Setting Description="Variationsauswahl in Galerie anzeigen" Key="variation_productlist_gallery" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
+            <Setting Description="Variationsvorschau in Galerie anzeigen" Key="variation_select_productlist_gallery" Type="select" Value="2" Subheader="header gallery">
+                <Option Value="N"><![CDATA[0 - Keine Auswahl anzeigen]]></Option>
+                <Option Value="1"><![CDATA[max. 1]]></Option>
+                <Option Value="2"><![CDATA[max. 2]]></Option>
+            </Setting>
+            <Setting Description="Anzahl der möglichen Variationswerte für Radio und Swatches in der Galerie" Key="variation_max_werte_productlist_gallery" Type="select" Value="3" MarginBottom="true">
+                <Option Value="3"><![CDATA[max. 3]]></Option>
+                <Option Value="5"><![CDATA[max. 5]]></Option>
+                <Option Value="9"><![CDATA[max. 9]]></Option>
+                <Option Value="12"><![CDATA[max. 12]]></Option>
+                <Option Value="9999"><![CDATA[keine Beschränkung]]></Option>
             </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y" Editable="false">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
         </Section>
-        <Section Name="Artikeldetailseite" Key="productdetails">
+        <Section Name="Variationswertdarstellung" Key="productdetails">
             <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
+            <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="popup">
+                <Option Value="popup">als Popup anzeigen</Option>
+                <Option Value="details">in den Artikeldetails anzeigen</Option>
+            </Setting>
+            <Setting Description="Darstellung der Konfiguratoroptionen" Key="config_layout" Type="select" Value="gallery">
+                <Option Value="list">als kompakte Liste</Option>
+                <Option Value="gallery">als Galerie</Option>
+            </Setting>
         </Section>
         <Section Name="Colors" Key="colors">
             <Setting Description="colorPrimary" Key="primary" Type="colorpicker" Value=""/>
             <Setting Description="colorSecondary" Key="secondary" Type="colorpicker" Value="" MarginBottom="true"/>
-            <Setting Description="colorHeaderBgColor" Key="header-bg-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorHeaderBgColor" Key="header-bg-color" Type="colorpicker" Value="" Subheader="header header"/>
             <Setting Description="colorHeaderColor" Key="header-color" Type="colorpicker" Value=""/>
             <Setting Description="colorHeaderBgColorSecondary" Key="header-bg-color-secondary" Type="colorpicker" Value=""/>
             <Setting Description="colorHeaderColorSecondary" Key="header-color-secondary" Type="colorpicker" Value="" MarginBottom="true"/>
-            <Setting Description="colorFooterBgColor" Key="footer-bg-color" Type="colorpicker" Value=""/>
+            <Setting Description="colorFooterBgColor" Key="footer-bg-color" Type="colorpicker" Value="" Subheader="header footer"/>
             <Setting Description="colorFooterColor" Key="footer-color" Type="colorpicker" Value=""/>
             <Setting Description="colorCopyrightBgColor" Key="copyright-bg-color" Type="colorpicker" Value=""/>
         </Section>

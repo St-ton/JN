@@ -281,6 +281,9 @@ msgstr "Topbar anzeigen <i class=\"fas fa-desktop\"></i> "
 msgid "tooltipWithoutMenuSingleRow"
 msgstr "Nur in Verbindung mit „Menü in eigener Zeile anzeigen: Ja“ nutzbar."
 
+msgid "tooltipDisabledMenuCenter"
+msgstr "Nur in Verbindung mit „Menü in eigener Zeile anzeigen: Ja“ und „Anzeige bei vielen Menüeinträgen: Mehrzeilig“ nutzbar."
+
 msgid "tooltipDesktop"
 msgstr "Einstellung wirkt sich nur auf die Desktop-Ansicht aus."
 

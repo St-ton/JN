@@ -48,21 +48,41 @@
                         <script>
                             {literal}
                             $(document).ready(function(){
-                                let $menuSingleRow      = $('#header_menu_single_row'),
-                                    $menuTemplate       = $('#header_menu_template'),
+                                let $menuTemplate       = $('#header_menu_template'),
                                     $allSettings        = $('[id^="header_"]'),
+                                    settingPrefix       = 'header_',
+                                    settingPrefixID     = '#' + settingPrefix,
                                     menuTemplateCurrent = $menuTemplate.val(),
                                     settings = {
-                                        menu_single_row: { usable_without_menu_single_row: true },
-                                        menu_multiple_rows: { usable_without_menu_single_row: false },
-                                        menu_center: { usable_without_menu_single_row: false },
-                                        menu_scroll: { usable_without_menu_single_row: false },
-                                        menu_logoheight: { usable_without_menu_single_row: true },
-                                        menu_logo_centered: { usable_without_menu_single_row: false },
-                                        menu_search_width: { usable_without_menu_single_row: false },
-                                        menu_search_position: { usable_without_menu_single_row: false },
-                                        header_full_width: { usable_without_menu_single_row: true },
-                                        menu_show_topbar: { usable_without_menu_single_row: true },
+                                        menu_single_row: {},
+                                        menu_multiple_rows: {disableOptionWhen: {
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        menu_center: {disableOptionWhen: {
+                                                'menu_multiple_rows':'scroll',
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        menu_scroll: { disableOptionWhen: {
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        menu_logoheight: {},
+                                        menu_logo_centered: { disableOptionWhen: {
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        menu_search_width: { disableOptionWhen: {
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        menu_search_position: { disableOptionWhen: {
+                                                'menu_single_row': 'N'
+                                            }
+                                        },
+                                        header_full_width: {},
+                                        menu_show_topbar: {},
                                 };
                                 let presets = [
                                     {
@@ -155,10 +175,10 @@
                                 $menuTemplate.on('change', function () {
                                     setSettings($(this).val());
                                 });
-
-                                $menuSingleRow.on('change', function() {
-                                    disableSettings($(this).val());
+                                $('[id^=' + settingPrefix).on('change', function() {
+                                    disableSettings();
                                 });
+                                //TODO: Generate disabled messages from javascript settings object above
                                 $allSettings
                                     .prop('toggle', 'tooltip')
                                     .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}')
@@ -168,40 +188,41 @@
                                             $menuTemplate.val('headerCustom');
                                         }
                                     });
-
-                                function disableSettings(menuSingelRow) {
-                                    if (menuSingelRow === 'Y') {
-                                        $.each(settings, function (key, value) {
-                                            $('#header_' + key)
-                                                .prop('disabled', false)
-                                                .tooltip('disable');
-                                        });
-                                    } else {
-                                        $.each(settings, function (key, value) {
-                                            $('#header_' + key).prop('disabled', !value.usable_without_menu_single_row);
-                                            if (!value.usable_without_menu_single_row) {
-                                                $('#header_' + key)
-                                                    .tooltip('enable');
-                                            }
-                                        });
-                                    }
+                                $(settingPrefixID + 'menu_center').prop('title', '{/literal}{__('tooltipDisabledMenuCenter')}{literal}')
+                                function disableSettings() {
+                                    $.each(settings, function (key, value) {
+                                        if (value.disableOptionWhen !== undefined) {
+                                            $.each(value.disableOptionWhen, function (keyOption, valueOption) {
+                                                if ($(settingPrefixID + keyOption).val() === valueOption) {
+                                                    $(settingPrefixID + key)
+                                                        .prop('disabled', true)
+                                                        .tooltip('enable');
+                                                    return false;
+                                                } else {
+                                                    $(settingPrefixID + key)
+                                                        .prop('disabled', false)
+                                                        .tooltip('disable');
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                                 function setSettings(presetId) {
                                     $.each(presets, function (key, value) {
                                         if (presetId === value.name) {
                                             $.each(value.settings, function (presetKey, presetValue) {
-                                                $('#header_' + presetKey).val(presetValue);
+                                                $(settingPrefixID + presetKey).val(presetValue);
                                             });
                                         }
                                     });
 
                                     $menuTemplate.val(presetId);
-                                    disableSettings($menuSingleRow.val());
+                                    disableSettings();
 
                                     $presetButtons.removeClass('selected');
                                     $('#' + presetId).addClass('selected');
                                 }
-                                disableSettings($menuSingleRow.val());
+                                disableSettings();
 
                                 $('.fa-desktop')
                                     .prop('toggle', 'tooltip')

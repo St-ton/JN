@@ -89,7 +89,7 @@
                             scrollTopActive = false,
                             isClosed        = false;
 
-                        $(document).on('scroll wheel', function (e) {
+                        $(document).on('scroll wheel touchend', function (e) {
                             if (window.innerWidth < globals.breakpoints.lg || $('.secure-checkout-topbar').length) {
                                 return;
                             }
@@ -97,7 +97,12 @@
                             timeoutSc = window.setTimeout(function () {
                                 let newScroll = $(this).scrollTop();
                                 if (newScroll < lastScroll || $(window).scrollTop() === 0) {
-                                    if ($(window).scrollTop() === 0 && (lastScroll > 100 || e.type === 'wheel' || scrollTopActive)) {
+                                    if ($(window).scrollTop() === 0 && (
+                                            lastScroll > 100
+                                            || e.type === 'touchend'
+                                            || e.type === 'wheel'
+                                            || scrollTopActive
+                                    )) {
                                         setState('open')
                                     } else {
                                         setState('closed')

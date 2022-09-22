@@ -1028,7 +1028,7 @@ class ShippingMethod
             $shippingMethod->kVersandberechnung
         );
         $price       = 0;
-        switch ($calculation !== null ? $calculation->cModulId : '') {
+        switch ($calculation->cModulId ?? '') {
             case 'vm_versandkosten_pauschale_jtl':
                 $price = (float)$shippingMethod->fPreis;
                 break;
@@ -1218,7 +1218,7 @@ class ShippingMethod
                     'kZahlungsart',
                     6,
                     'kVersandart',
-                    (int)$method->kVersandart
+                    $method->kVersandart
                 );
                 if ($cash !== null && isset($cash->kVersandartZahlungsart) && $cash->kVersandartZahlungsart > 0) {
                     continue;

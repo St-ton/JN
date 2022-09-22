@@ -867,6 +867,18 @@
 	}
 }
 
+.blockquote-divider {
+	&::before {
+		content: "\2014";
+	}
+}
+.verified-purchase {
+	font-weight: $font-weight-bold;
+}
+.verified-purchase-notice {
+	margin-bottom: map_get($spacers, 3);
+}
+
 .cfg-layout-list {
 	.form-counter {
 		width: auto;

@@ -23364,6 +23364,33 @@ table caption {
   caption-side: top;
 }
 
+table.dataTable td.dt-control:before {
+  content: '\f078' !important;
+  font-family: "Font Awesome 5 Free" !important;
+  font-weight: 900;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  display: inline-block;
+  line-height: 1;
+  transition: transform 0.2s;
+  will-change: transform;
+  border-top: 0;
+  background-color: initial;
+  border-radius: 0;
+  color: #525252;
+  border: none;
+  box-shadow: none;
+  margin-top: 0;
+  font-size: 0.875rem;
+}
+table.dataTable tr.dt-hasChild td.dt-control:before {
+  transform: rotate(180deg);
+  background-color: initial;
+}
+table.dataTable .dt-address {
+  cursor: pointer;
+}
+
 .list-icons > li {
   padding-left: 2em;
 }

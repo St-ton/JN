@@ -54,7 +54,7 @@
                                         </label>
                                     </td>
                                     <td></td>
-                                    <td>
+                                    <td class="dt-address" data-delivery-id="#delivery{$adresse->kLieferadresse}">
                                         {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
                                         <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
                                         {$adresse->cStrasse} {$adresse->cHausnummer}<br />
@@ -192,12 +192,12 @@
             },
             columns: [
                 { data: 'select' },
-               /* {
+                {
                     className: 'dt-control',
                     orderable: false,
                     data: null,
                     defaultContent: '',
-                }, */
+                },
                 { data: 'address' },
                 { data: 'titel' },
                 { data: 'bundesland' },
@@ -229,6 +229,9 @@
             initComplete: function (settings, json) {
                 $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                 $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
+                $('.dt-address').on('click', function (e) {
+                    $($(this).data('delivery-id')).prop('checked', true);
+                });
             },
             drawCallback: function( settings ) {
                 $('table.dataTable thead').remove();

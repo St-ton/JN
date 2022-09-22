@@ -22684,6 +22684,12 @@ label {
 .productbox-variations {
   margin-bottom: 1rem;
 }
+    .productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item:first-child {
+  margin-left: 3px;
+}
+.productbox-variations .js-slider-wrapper .js-slider-items .js-slider-item:last-child {
+  margin-right: 3px;
+}
 
 .productbox-show-variations .productbox-variations {
   margin-bottom: 0;

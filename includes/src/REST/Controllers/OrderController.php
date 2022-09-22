@@ -40,18 +40,12 @@ class OrderController extends AbstractController
 
     /**
      * @inheritdoc
-     * @todo
      */
-    protected function createItem(ServerRequestInterface $request): DataModelInterface
-    {
-        return parent::createItem($request);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
+    protected function getCreateBaseData(
+        ServerRequestInterface $request,
+        DataModelInterface $model,
+        stdClass $data
+    ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
             // tkategorie has no auto increment ID
@@ -63,33 +57,6 @@ class OrderController extends AbstractController
         }
 
         return $data;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function createdItem(DataModelInterface $item): void
-    {
-//        $baseSeo = Seo::getSeo($item->getSlug());
-//        $model   = new SeoModel($this->db);
-//        foreach ($item->getLocalization() as $localization) {
-//            $seo           = new stdClass();
-//            $seo->cSeo     = Seo::checkSeo($baseSeo);
-//            $seo->cKey     = 'kArtikel';
-//            $seo->kKey     = $item->getId();
-//            $seo->kSprache = $localization->getLanguageID();
-//            $model::create($seo, $this->db);
-//        }
-//        $this->cacheID = \CACHING_GROUP_PRODUCT . '_' . $item->getId();
-        parent::createdItem($item);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function deletedItem(DataModelInterface $item): void
-    {
-        parent::deletedItem($item);
     }
 
     /**

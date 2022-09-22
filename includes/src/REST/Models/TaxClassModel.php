@@ -41,12 +41,13 @@ final class TaxClassModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes              = [];
-            $attributes['id']        = DataAttribute::create('kSteuerklasse', 'int', self::cast('0', 'int'), false, true);
-            $attributes['name']      = DataAttribute::create('cName', 'varchar');
-            $attributes['isDefault'] = DataAttribute::create('cStandard', 'yesno', self::cast('N', 'yesno'));
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes              = [];
+        $attributes['id']        = DataAttribute::create('kSteuerklasse', 'int', self::cast('0', 'int'), false, true);
+        $attributes['name']      = DataAttribute::create('cName', 'varchar');
+        $attributes['isDefault'] = DataAttribute::create('cStandard', 'yesno', self::cast('N', 'yesno'));
 
         return $attributes;
     }

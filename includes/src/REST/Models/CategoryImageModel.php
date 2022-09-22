@@ -56,7 +56,7 @@ final class CategoryImageModel extends DataModel
 
     public function getNewID(): int
     {
-        return ($this->getDB()->getSingleInt(
+        return ($this->getDB()?->getSingleInt(
             'SELECT MAX(kKategoriePict) AS newID FROM ' . $this->getTableName(),
             'newID'
         )) + 1;

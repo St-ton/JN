@@ -41,12 +41,13 @@ final class ProductCategories extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes               = [];
-            $attributes['id']         = DataAttribute::create('kKategorieArtikel', 'int', self::cast('0', 'int'), false, true);
-            $attributes['productID']  = DataAttribute::create('kArtikel', 'int');
-            $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes               = [];
+        $attributes['id']         = DataAttribute::create('kKategorieArtikel', 'int', self::cast('0', 'int'), false, true);
+        $attributes['productID']  = DataAttribute::create('kArtikel', 'int');
+        $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int');
 
         return $attributes;
     }

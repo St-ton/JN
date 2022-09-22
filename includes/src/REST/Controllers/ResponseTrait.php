@@ -3,6 +3,7 @@
 namespace JTL\REST\Controllers;
 
 use Illuminate\Support\Collection;
+use League\Fractal\Resource\Collection as ResourceCollection;
 use JTL\Model\DataModelInterface;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Response\JsonResponse;
@@ -46,7 +47,7 @@ trait ResponseTrait
 
     /**
      * @param int $statusCode
-     * @return ResponseTrait|Controller
+     * @return ResponseTrait|AbstractController
      */
     public function setStatusCode(int $statusCode): self
     {
@@ -103,7 +104,6 @@ trait ResponseTrait
      */
     public function sendInvalidFieldResponse($errors): ResponseInterface
     {
-//        return \response()->json(['status' => 400, 'invalid_fields' => $errors], 400);
         return new JsonResponse(['invalid_fiels' => $errors], 400);
     }
 
@@ -139,23 +139,19 @@ trait ResponseTrait
      */
     public function sendEmptyDataResponse(): ResponseInterface
     {
-//        return \response()->json(['data' => new \stdClass()]);
         return new JsonResponse(['data' => new \stdClass()]);
     }
 
     /**
      * Return single item response from the application
      *
-     * @param DataModelInterface           $item
-     * @param \Closure|TransformerAbstract $callback
+     * @param DataModelInterface  $item
+     * @param TransformerAbstract $callback
      * @return JsonResponse
      */
-    protected function respondWithItem(DataModelInterface $item, $callback): JsonResponse
+    protected function respondWithItem(DataModelInterface $item, TransformerAbstract $callback): JsonResponse
     {
-        $resource  = new Item($item, $callback);
-        $rootScope = $this->fractal->createData($resource);
-
-        return $this->respondWithArray($rootScope->toArray());
+        return $this->respondWithArray($this->fractal->createData(new Item($item, $callback))->toArray());
     }
 
     /**
@@ -180,19 +176,23 @@ trait ResponseTrait
     }
 
     /**
-     * @param Collection                   $collection
-     * @param callable|TransformerAbstract $transformer
-     * @param array                        $headers
-     * @param CursorInterface|null         $cursor
+     * @param Collection           $collection
+     * @param TransformerAbstract  $transformer
+     * @param array                $headers
+     * @param CursorInterface|null $cursor
      * @return JsonResponse
      */
-    protected function respondWithCollection(Collection $collection, $transformer, array $headers = [], CursorInterface $cursor = null): JsonResponse
-    {
-        $resource  = new \League\Fractal\Resource\Collection($collection, $transformer);
-        $rootScope = $this->fractal->createData($resource);
+    protected function respondWithCollection(
+        Collection $collection,
+        TransformerAbstract $transformer,
+        array $headers = [],
+        CursorInterface $cursor = null
+    ): JsonResponse {
+        $resource = new ResourceCollection($collection, $transformer);
         if ($cursor !== null) {
             $resource->setCursor($cursor);
         }
-        return new JsonResponse($rootScope->toArray(), $this->statusCode, $headers);
+
+        return new JsonResponse($this->fractal->createData($resource)->toArray(), $this->statusCode, $headers);
     }
 }

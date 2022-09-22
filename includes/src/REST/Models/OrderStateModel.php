@@ -65,13 +65,14 @@ final class OrderStateModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes                   = [];
-            $attributes['orderID']        = DataAttribute::create('kBestellung', 'int', null, false, true);
-            $attributes['uid']            = DataAttribute::create('cUID', 'varchar', null, true, false);
-            $attributes['date']           = DataAttribute::create('dDatum', 'datetime', null, true, false);
-            $attributes['failedAttempts'] = DataAttribute::create('failedAttempts', 'int', self::cast('0', 'int'), false, false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                   = [];
+        $attributes['orderID']        = DataAttribute::create('kBestellung', 'int', null, false, true);
+        $attributes['uid']            = DataAttribute::create('cUID', 'varchar');
+        $attributes['date']           = DataAttribute::create('dDatum', 'datetime');
+        $attributes['failedAttempts'] = DataAttribute::create('failedAttempts', 'int', self::cast('0', 'int'), false);
 
         return $attributes;
     }

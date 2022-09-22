@@ -40,14 +40,15 @@ final class AttributeLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                = [];
-            $attributes['id']          = DataAttribute::create('kAttribut', 'int', self::cast('0', 'int'), false, true);
-            $attributes['languageID']  = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
-            $attributes['name']        = DataAttribute::create('cName', 'varchar');
-            $attributes['stringValue'] = DataAttribute::create('cStringWert', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['textValue']   = DataAttribute::create('cTextWert', 'mediumtext', null, false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                = [];
+        $attributes['id']          = DataAttribute::create('kAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['languageID']  = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
+        $attributes['name']        = DataAttribute::create('cName', 'varchar');
+        $attributes['stringValue'] = DataAttribute::create('cStringWert', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['textValue']   = DataAttribute::create('cTextWert', 'mediumtext', null, false);
 
         return $attributes;
     }

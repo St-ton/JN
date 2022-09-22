@@ -65,10 +65,10 @@ final class ManufacturerModel extends DataModel
                         $this->getDB(),
                         ManufacturerLocalizationModel::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($loc) {
+                $existing = $res->first(static function ($e) use ($loc): bool {
                     return $e->manufacturerID === $loc->manufacturerID && $e->languageID === $loc->languageID;
                 });
                 if ($existing === null) {
@@ -80,7 +80,6 @@ final class ManufacturerModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -94,16 +93,24 @@ final class ManufacturerModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                 = [];
-            $attributes['id']           = DataAttribute::create('kHersteller', 'int', self::cast('0', 'int'), false, true);
-            $attributes['name']         = DataAttribute::create('cName', 'varchar');
-            $attributes['slug']         = DataAttribute::create('cSeo', 'varchar', null, false);
-            $attributes['homepage']     = DataAttribute::create('cHomepage', 'varchar');
-            $attributes['sort']         = DataAttribute::create('nSortNr', 'tinyint', 0);
-            $attributes['image']        = DataAttribute::create('cBildpfad', 'varchar', '', false);
-            $attributes['localization'] = DataAttribute::create('localization', ManufacturerLocalizationModel::class, null, true, false, 'kHersteller');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                 = [];
+        $attributes['id']           = DataAttribute::create('kHersteller', 'int', self::cast('0', 'int'), false, true);
+        $attributes['name']         = DataAttribute::create('cName', 'varchar');
+        $attributes['slug']         = DataAttribute::create('cSeo', 'varchar', null, false);
+        $attributes['homepage']     = DataAttribute::create('cHomepage', 'varchar');
+        $attributes['sort']         = DataAttribute::create('nSortNr', 'tinyint', 0);
+        $attributes['image']        = DataAttribute::create('cBildpfad', 'varchar', '', false);
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            ManufacturerLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kHersteller'
+        );
 
         return $attributes;
     }

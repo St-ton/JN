@@ -48,15 +48,16 @@ final class ProductLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                     = [];
-            $attributes['productID']        = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
-            $attributes['languageID']       = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
-            $attributes['slug']             = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['name']             = DataAttribute::create('cName', 'varchar');
-            $attributes['description']      = DataAttribute::create('cBeschreibung', 'mediumtext');
-            $attributes['shortDescription'] = DataAttribute::create('cKurzBeschreibung', 'mediumtext');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                     = [];
+        $attributes['productID']        = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
+        $attributes['languageID']       = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
+        $attributes['slug']             = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['name']             = DataAttribute::create('cName', 'varchar');
+        $attributes['description']      = DataAttribute::create('cBeschreibung', 'mediumtext');
+        $attributes['shortDescription'] = DataAttribute::create('cKurzBeschreibung', 'mediumtext');
 
         return $attributes;
     }

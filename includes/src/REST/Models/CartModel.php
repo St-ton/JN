@@ -57,15 +57,16 @@ final class CartModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes                      = [];
-            $attributes['id']                = DataAttribute::create('kWarenkorb', 'int', null, false, true);
-            $attributes['customerID']        = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
-            $attributes['deliveryAddressID'] = DataAttribute::create('kLieferadresse', 'int', self::cast('0', 'int'), false);
-            $attributes['paymentInfoID']     = DataAttribute::create('kZahlungsInfo', 'int', self::cast('0', 'int'));
-
-            $attributes['items'] = DataAttribute::create('items', CartItemModel::class, null, true, false, 'kWarenkorb');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                      = [];
+        $attributes['id']                = DataAttribute::create('kWarenkorb', 'int', null, false, true);
+        $attributes['customerID']        = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
+        $attributes['deliveryAddressID'] = DataAttribute::create('kLieferadresse', 'int', self::cast('0', 'int'), false);
+        $attributes['paymentInfoID']     = DataAttribute::create('kZahlungsInfo', 'int', self::cast('0', 'int'));
+
+        $attributes['items'] = DataAttribute::create('items', CartItemModel::class, null, true, false, 'kWarenkorb');
 
         return $attributes;
     }

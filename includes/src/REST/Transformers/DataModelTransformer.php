@@ -6,10 +6,10 @@ use JTL\Model\DataModelInterface;
 use League\Fractal\TransformerAbstract;
 
 /**
- * Class CategoryTransformer
+ * Class DataModelTransformer
  * @package JAPI\Transformers
  */
-class CategoryTransformer extends TransformerAbstract
+class DataModelTransformer extends TransformerAbstract
 {
     /**
      * @param DataModelInterface $category

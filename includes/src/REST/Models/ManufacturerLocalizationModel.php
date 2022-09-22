@@ -47,15 +47,16 @@ final class ManufacturerLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                    = [];
-            $attributes['manufacturerID']  = DataAttribute::create('kHersteller', 'int', null, false, true);
-            $attributes['languageID']      = DataAttribute::create('kSprache', 'int', null, false, true);
-            $attributes['metaTitle']       = DataAttribute::create('cMetaTitle', 'mediumtext', self::cast('', 'varchar'), false);
-            $attributes['metaKeywords']    = DataAttribute::create('cMetaKeywords', 'mediumtext', self::cast('', 'varchar'), false);
-            $attributes['metaDescription'] = DataAttribute::create('cMetaDescription', 'mediumtext', self::cast('', 'varchar'), false);
-            $attributes['description']     = DataAttribute::create('cBeschreibung', 'mediumtext', self::cast('', 'varchar'), false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                    = [];
+        $attributes['manufacturerID']  = DataAttribute::create('kHersteller', 'int', null, false, true);
+        $attributes['languageID']      = DataAttribute::create('kSprache', 'int', null, false, true);
+        $attributes['metaTitle']       = DataAttribute::create('cMetaTitle', 'mediumtext', self::cast('', 'varchar'), false);
+        $attributes['metaKeywords']    = DataAttribute::create('cMetaKeywords', 'mediumtext', self::cast('', 'varchar'), false);
+        $attributes['metaDescription'] = DataAttribute::create('cMetaDescription', 'mediumtext', self::cast('', 'varchar'), false);
+        $attributes['description']     = DataAttribute::create('cBeschreibung', 'mediumtext', self::cast('', 'varchar'), false);
 
         return $attributes;
     }

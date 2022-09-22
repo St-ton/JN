@@ -46,7 +46,7 @@ final class CharacteristicValueModel extends DataModel
         parent::onRegisterHandlers();
         $this->registerSetter('localization', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -60,12 +60,17 @@ final class CharacteristicValueModel extends DataModel
                     $data['characteristicValueID'] = $model->id;
                 }
                 try {
-                    $loc = CharacteristicValueLocalizationModel::loadByAttributes($data, $this->getDB(), self::ON_NOTEXISTS_NEW);
-                } catch (Exception $e) {
+                    $loc = CharacteristicValueLocalizationModel::loadByAttributes(
+                        $data,
+                        $this->getDB(),
+                        self::ON_NOTEXISTS_NEW
+                    );
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($loc) {
-                    return $e->characteristicValueID === $loc->characteristicValueID && $e->languageID === $loc->languageID;
+                $existing = $res->first(static function ($e) use ($loc): bool {
+                    return $e->characteristicValueID === $loc->characteristicValueID
+                        && $e->languageID === $loc->languageID;
                 });
                 if ($existing === null) {
                     $res->push($loc);
@@ -74,7 +79,6 @@ final class CharacteristicValueModel extends DataModel
                         $existing->setAttribValue($attribute, $loc->getAttribValue($attribute));
                     }
                 }
-
             }
 
             return $res;
@@ -88,15 +92,23 @@ final class CharacteristicValueModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                     = [];
-            $attributes['id']               = DataAttribute::create('kMerkmalWert', 'int', null, false, true);
-            $attributes['characteristicID'] = DataAttribute::create('kMerkmal', 'int');
-            $attributes['sort']             = DataAttribute::create('nSort', 'int');
-            $attributes['imagePath']        = DataAttribute::create('cBildpfad', 'varchar', '', false);
-
-            $attributes['localization'] = DataAttribute::create('localization', CharacteristicValueLocalizationModel::class, null, true, false, 'kMerkmalWert');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                     = [];
+        $attributes['id']               = DataAttribute::create('kMerkmalWert', 'int', null, false, true);
+        $attributes['characteristicID'] = DataAttribute::create('kMerkmal', 'int');
+        $attributes['sort']             = DataAttribute::create('nSort', 'int');
+        $attributes['imagePath']        = DataAttribute::create('cBildpfad', 'varchar', '', false);
+
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            CharacteristicValueLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kMerkmalWert'
+        );
 
         return $attributes;
     }

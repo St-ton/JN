@@ -47,7 +47,7 @@ final class PriceModel extends DataModel
         // update price detail IDs after creating auto increment kPreis for this model
         $this->registerSetter('kPreis', static function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if ($model->kPreis === 0 && $model->detail instanceof Collection && $model->detail->count() > 0) {
                 foreach ($model->detail as $price) {
@@ -91,7 +91,7 @@ final class PriceModel extends DataModel
         if (!isset($value['kPreis'])) {
             $value['kPreis'] = $model->kPreis ?? 0;
         }
-        $detail = PriceDetailModel::loadByAttributes(
+        $detail   = PriceDetailModel::loadByAttributes(
             $value,
             $this->getDB(),
             ProductLocalizationModel::ON_NOTEXISTS_NEW
@@ -119,14 +119,16 @@ final class PriceModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                    = [];
-            $attributes['id']              = DataAttribute::create('kPreis', 'int', null, false, true);
-            $attributes['productID']       = DataAttribute::create('kArtikel', 'int', null, false);
-            $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', null, false);
-            $attributes['customerID']      = DataAttribute::create('kKunde', 'int');
-            $attributes['detail']          = DataAttribute::create('detail', PriceDetailModel::class, null, true, false, 'kPreis');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                    = [];
+        $attributes['id']              = DataAttribute::create('kPreis', 'int', null, false, true);
+        $attributes['productID']       = DataAttribute::create('kArtikel', 'int', null, false);
+        $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', null, false);
+        $attributes['customerID']      = DataAttribute::create('kKunde', 'int');
+
+        $attributes['detail'] = DataAttribute::create('detail', PriceDetailModel::class, null, true, false, 'kPreis');
 
         return $attributes;
     }

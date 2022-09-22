@@ -3,6 +3,7 @@
 namespace JTL\REST\Models;
 
 use Exception;
+use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 
@@ -54,7 +55,43 @@ final class CustomerGroupModel extends DataModel
      */
     protected function onRegisterHandlers(): void
     {
-        parent::onRegisterHandlers();
+        $this->registerSetter('localization', function ($value, $model) {
+            if (\is_a($value, Collection::class)) {
+                return $value;
+            }
+            if (!\is_array($value)) {
+                $value = [$value];
+            }
+            $res = $model->localization ?? new Collection();
+            foreach (\array_filter($value) as $data) {
+                if (!isset($data['customerGroupID'])) {
+                    $data['customerGroupID'] = $model->id;
+                }
+                try {
+                    $loc = CustomerGroupLocalizationModel::loadByAttributes(
+                        $data,
+                        $this->getDB(),
+                        CustomerGroupLocalizationModel::ON_NOTEXISTS_NEW
+                    );
+                } catch (Exception) {
+                    continue;
+                }
+                $existing = $res->first(static function ($e) use ($loc) {
+                    return $e->customerGroupID === $loc->customerGroupID && $e->languageID === $loc->languageID;
+                });
+                if ($existing === null) {
+                    $res->push($loc);
+                } else {
+                    foreach ($loc->getAttributes() as $attribute => $v) {
+                        if (\array_key_exists($attribute, $data)) {
+                            $existing->setAttribValue($attribute, $loc->getAttribValue($attribute));
+                        }
+                    }
+                }
+            }
+
+            return $res;
+        });
     }
 
     /**
@@ -63,15 +100,33 @@ final class CustomerGroupModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes              = [];
-            $attributes['id']        = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
-            $attributes['name']      = DataAttribute::create('cName', 'varchar', null, true, false);
-            $attributes['discount']  = DataAttribute::create('fRabatt', 'double', null, true, false);
-            $attributes['default']   = DataAttribute::create('cStandard', 'char', self::cast('N', 'char'), true, false);
-            $attributes['shopLogin'] = DataAttribute::create('cShopLogin', 'char', self::cast('N', 'char'), false, false);
-            $attributes['net']       = DataAttribute::create('nNettoPreise', 'tinyint', self::cast('0', 'tinyint'), false, false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes              = [];
+        $attributes['id']        = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
+        $attributes['name']      = DataAttribute::create('cName', 'varchar');
+        $attributes['discount']  = DataAttribute::create('fRabatt', 'double');
+        $attributes['default']   = DataAttribute::create('cStandard', 'char', self::cast('N', 'char'));
+        $attributes['shopLogin'] = DataAttribute::create('cShopLogin', 'char', self::cast('N', 'char'), false);
+        $attributes['net']       = DataAttribute::create('nNettoPreise', 'tinyint', self::cast('0', 'tinyint'), false);
+
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            CustomerGroupLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kKundengruppe'
+        );
+        $attributes['attributes']   = DataAttribute::create(
+            'attributes',
+            CustomerGroupAttributeModel::class,
+            null,
+            true,
+            false,
+            'kKundengruppe'
+        );
 
         return $attributes;
     }

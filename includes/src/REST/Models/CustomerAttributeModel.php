@@ -63,10 +63,10 @@ final class CustomerAttributeModel extends DataModel
         if ($attributes === null) {
             $attributes                    = [];
             $attributes['id']              = DataAttribute::create('kKundenAttribut', 'int', null, false, true);
-            $attributes['customerID']      = DataAttribute::create('kKunde', 'int', null, true, false);
-            $attributes['customerFieldID'] = DataAttribute::create('kKundenfeld', 'int', null, false, false);
-            $attributes['name']            = DataAttribute::create('cName', 'varchar', null, true, false);
-            $attributes['value']           = DataAttribute::create('cWert', 'varchar', null, true, false);
+            $attributes['customerID']      = DataAttribute::create('kKunde', 'int');
+            $attributes['customerFieldID'] = DataAttribute::create('kKundenfeld', 'int', null, false);
+            $attributes['name']            = DataAttribute::create('cName', 'varchar');
+            $attributes['value']           = DataAttribute::create('cWert', 'varchar');
         }
 
         return $attributes;

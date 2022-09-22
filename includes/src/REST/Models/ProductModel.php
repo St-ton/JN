@@ -92,21 +92,21 @@ final class ProductModel extends DataModel
      *
      * @var int
      */
-    protected $lastProductCategoryID = -1;
+    protected int $lastProductCategoryID = -1;
 
     /**
      * pseudo auto increment for ProductAttributes model
      *
      * @var int
      */
-    protected $lastProductAttributeID = -1;
+    protected int $lastProductAttributeID = -1;
 
     /**
      * pseudo auto increment for Attribute model
      *
      * @var int
      */
-    protected $lastAttributeID = -1;
+    protected int $lastAttributeID = -1;
 
     /**
      * @inheritdoc
@@ -161,10 +161,10 @@ final class ProductModel extends DataModel
                         $this->getDB(),
                         self::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($item) {
+                $existing = $res->first(static function ($e) use ($item) : bool {
                     return $e->productID === $item->productID && $e->languageID === $item->languageID;
                 });
                 if ($existing === null) {
@@ -176,7 +176,6 @@ final class ProductModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -210,10 +209,10 @@ final class ProductModel extends DataModel
                         $this->getDB(),
                         self::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($item) {
+                $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
                 if ($existing === null) {
@@ -225,7 +224,6 @@ final class ProductModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -259,10 +257,10 @@ final class ProductModel extends DataModel
                         $this->getDB(),
                         self::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($item) {
+                $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
                 if ($existing === null) {
@@ -274,7 +272,6 @@ final class ProductModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -308,10 +305,10 @@ final class ProductModel extends DataModel
                         $this->getDB(),
                         self::ON_NOTEXISTS_NEW
                     );
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($item) {
+                $existing = $res->first(static function ($e) use ($item): bool {
                     return $e->id === $item->id && $e->id > 0;
                 });
                 if ($existing === null) {
@@ -323,7 +320,6 @@ final class ProductModel extends DataModel
                         }
                     }
                 }
-
             }
 
             return $res;
@@ -331,7 +327,7 @@ final class ProductModel extends DataModel
 
         $this->registerSetter('images', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -359,7 +355,6 @@ final class ProductModel extends DataModel
                         $existing->setAttribValue($attribute, $img->getAttribValue($attribute));
                     }
                 }
-
             }
 
             return $res;
@@ -367,7 +362,7 @@ final class ProductModel extends DataModel
 
         $this->registerSetter('prices', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -382,10 +377,10 @@ final class ProductModel extends DataModel
                 }
                 try {
                     $price = PriceModel::loadByAttributes($data, $this->getDB(), self::ON_NOTEXISTS_NEW);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
-                $existing = $res->first(static function ($e) use ($price) {
+                $existing = $res->first(static function ($e) use ($price): bool {
                     return $e->kPreis === $price->kPreis
                         && $e->customerGroupID === $price->customerGroupID
                         && $e->customerID === $price->customerID;
@@ -410,88 +405,89 @@ final class ProductModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                            = [];
-            $attributes['id']                      = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
-            $attributes['manufacturerID']          = DataAttribute::create('kHersteller', 'int', self::cast('0', 'int'), false);
-            $attributes['taxClassID']              = DataAttribute::create('kSteuerklasse', 'int', self::cast('0', 'int'), false);
-            $attributes['unitID']                  = DataAttribute::create('kEinheit', 'int', self::cast('0', 'int'), false);
-            $attributes['shippingClassID']         = DataAttribute::create('kVersandklasse', 'int', self::cast('0', 'int'), false);
-            $attributes['parentID']                = DataAttribute::create('kVaterArtikel', 'bigint', self::cast('0', 'int'), false);
-            $attributes['partlistID']              = DataAttribute::create('kStueckliste', 'int', self::cast('0', 'int'), false);
-            $attributes['slug']                    = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['artno']                   = DataAttribute::create('cArtNr', 'varchar');
-            $attributes['name']                    = DataAttribute::create('cName', 'varchar');
-            $attributes['description']             = DataAttribute::create('cBeschreibung', 'mediumtext');
-            $attributes['comment']                 = DataAttribute::create('cAnmerkung', 'mediumtext');
-            $attributes['stockQty']                = DataAttribute::create('fLagerbestand', 'double', self::cast('0', 'double'));
-            $attributes['taxRate']                 = DataAttribute::create('fMwSt', 'float');
-            $attributes['minOrderQty']             = DataAttribute::create('fMindestbestellmenge', 'double', self::cast('0', 'double'));
-            $attributes['topProduct']              = DataAttribute::create('cTopArtikel', 'char');
-            $attributes['weight']                  = DataAttribute::create('fGewicht', 'double', self::cast('0', 'double'), false);
-            $attributes['productWeight']           = DataAttribute::create('fArtikelgewicht', 'double', self::cast('0', 'double'), false);
-            $attributes['width']                   = DataAttribute::create('fBreite', 'double', self::cast('0', 'double'));
-            $attributes['height']                  = DataAttribute::create('fHoehe', 'double', self::cast('0', 'double'));
-            $attributes['length']                  = DataAttribute::create('fLaenge', 'double', self::cast('0', 'double'));
-            $attributes['new']                     = DataAttribute::create('cNeu', 'char');
-            $attributes['shortdescription']        = DataAttribute::create('cKurzBeschreibung', 'mediumtext');
-            $attributes['msrp']                    = DataAttribute::create('fUVP', 'float', self::cast('0', 'double'));
-            $attributes['divisible']               = DataAttribute::create('cTeilbar', 'char', self::cast('', 'char'), false);
-            $attributes['searchTerms']             = DataAttribute::create('cSuchbegriffe', 'varchar');
-            $attributes['sort']                    = DataAttribute::create('nSort', 'int', self::cast('0', 'int'), false);
-            $attributes['release']                 = DataAttribute::create('dErscheinungsdatum', 'date');
-            $attributes['created']                 = DataAttribute::create('dErstellt', 'date');
-            $attributes['lastModified']            = DataAttribute::create('dLetzteAktualisierung', 'datetime');
-            $attributes['series']                  = DataAttribute::create('cSerie', 'varchar');
-            $attributes['isbn']                    = DataAttribute::create('cISBN', 'varchar');
-            $attributes['asin']                    = DataAttribute::create('cASIN', 'varchar');
-            $attributes['han']                     = DataAttribute::create('cHAN', 'varchar');
-            $attributes['originCountry']           = DataAttribute::create('cHerkunftsland', 'varchar');
-            $attributes['epid']                    = DataAttribute::create('cEPID', 'varchar');
-            $attributes['isParent']                = DataAttribute::create('nIstVater', 'tinyint', self::cast('0', 'tinyint'), false);
-            $attributes['autoDeliveryCalculation'] = DataAttribute::create('nAutomatischeLiefertageberechnung', 'int');
-            $attributes['deliveryStatus']          = DataAttribute::create('kLieferstatus', 'int', self::cast('0', 'int'), false);
-            $attributes['commodityGroup']          = DataAttribute::create('kWarengruppe', 'int', self::cast('0', 'int'), false);
-            $attributes['basePriceUnit']           = DataAttribute::create('kGrundPreisEinheit', 'int');
-            $attributes['bbd']                     = DataAttribute::create('dMHD', 'date');
-
-            $attributes['kEigenschaftKombi']          = DataAttribute::create('kEigenschaftKombi', 'int', self::cast('0', 'int'), false);
-            $attributes['kVPEEinheit']                = DataAttribute::create('kVPEEinheit', 'int');
-            $attributes['kMassEinheit']               = DataAttribute::create('kMassEinheit', 'int');
-            $attributes['fStandardpreisNetto']        = DataAttribute::create('fStandardpreisNetto', 'double');
-            $attributes['fLieferzeit']                = DataAttribute::create('fLieferzeit', 'double', self::cast('0', 'double'), false);
-            $attributes['barcode']                    = DataAttribute::create('cBarcode', 'varchar');
-            $attributes['fMassMenge']                 = DataAttribute::create('fMassMenge', 'double', self::cast('0', 'double'));
-            $attributes['fGrundpreisMenge']           = DataAttribute::create('fGrundpreisMenge', 'double', self::cast('0', 'double'));
-            $attributes['cLagerBeachten']             = DataAttribute::create('cLagerBeachten', 'char', self::cast('', 'char'), false);
-            $attributes['cLagerKleinerNull']          = DataAttribute::create('cLagerKleinerNull', 'char');
-            $attributes['cLagerVariation']            = DataAttribute::create('cLagerVariation', 'char');
-            $attributes['fPackeinheit']               = DataAttribute::create('fPackeinheit', 'double', self::cast('1.0000', 'double'));
-            $attributes['fAbnahmeintervall']          = DataAttribute::create('fAbnahmeintervall', 'double', self::cast('0', 'double'), false);
-            $attributes['fZulauf']                    = DataAttribute::create('fZulauf', 'double', self::cast('0', 'double'));
-            $attributes['cVPE']                       = DataAttribute::create('cVPE', 'char');
-            $attributes['fVPEWert']                   = DataAttribute::create('fVPEWert', 'double');
-            $attributes['cVPEEinheit']                = DataAttribute::create('cVPEEinheit', 'varchar', self::cast('0', 'double'));
-            $attributes['fLieferantenlagerbestand']   = DataAttribute::create('fLieferantenlagerbestand', 'double', self::cast('0', 'float'), false);
-            $attributes['nLiefertageWennAusverkauft'] = DataAttribute::create('nLiefertageWennAusverkauft', 'int', self::cast('0', 'int'));
-            $attributes['nBearbeitungszeit']          = DataAttribute::create('nBearbeitungszeit', 'int', self::cast('0', 'int'));
-            $attributes['cUNNummer']                  = DataAttribute::create('cUNNummer', 'varchar');
-            $attributes['cGefahrnr']                  = DataAttribute::create('cGefahrnr', 'varchar');
-            $attributes['cTaric']                     = DataAttribute::create('cTaric', 'varchar');
-            $attributes['cUPC']                       = DataAttribute::create('cUPC', 'varchar');
-            $attributes['dZulaufDatum']               = DataAttribute::create('dZulaufDatum', 'date');
-
-            $attributes['localization']         = DataAttribute::create('localization', ProductLocalizationModel::class, null, true, false, 'kArtikel');
-            $attributes['characteristics']      = DataAttribute::create('characteristics', ProductCharacteristicModel::class, null, true, false, 'kArtikel');
-            $attributes['functionalAttributes'] = DataAttribute::create('functionalAttributes', ProductAttributeModel::class, null, true, false, 'kArtikel');
-            $attributes['attributes']           = DataAttribute::create('attributes', AttributeModel::class, null, true, false, 'kArtikel');
-            $attributes['visibility']           = DataAttribute::create('visibility', ProductVisibilityModel::class, null, true, false, 'kArtikel');
-            $attributes['downloads']            = DataAttribute::create('downloads', ProductDownloadModel::class, null, true, false, 'kArtikel');
-            $attributes['images']               = DataAttribute::create('images', ProductImageModel::class, null, true, false, 'kArtikel');
-            $attributes['prices']               = DataAttribute::create('prices', PriceModel::class, null, true, false, 'kArtikel');
-            $attributes['categories']           = DataAttribute::create('categories', ProductCategories::class, null, true, false, 'kArtikel');
-            $attributes['stock']                = DataAttribute::create('stock', StockModel::class, null, true, false, 'kArtikel');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                            = [];
+        $attributes['id']                      = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
+        $attributes['manufacturerID']          = DataAttribute::create('kHersteller', 'int', self::cast('0', 'int'), false);
+        $attributes['taxClassID']              = DataAttribute::create('kSteuerklasse', 'int', self::cast('0', 'int'), false);
+        $attributes['unitID']                  = DataAttribute::create('kEinheit', 'int', self::cast('0', 'int'), false);
+        $attributes['shippingClassID']         = DataAttribute::create('kVersandklasse', 'int', self::cast('0', 'int'), false);
+        $attributes['parentID']                = DataAttribute::create('kVaterArtikel', 'bigint', self::cast('0', 'int'), false);
+        $attributes['partlistID']              = DataAttribute::create('kStueckliste', 'int', self::cast('0', 'int'), false);
+        $attributes['slug']                    = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['artno']                   = DataAttribute::create('cArtNr', 'varchar');
+        $attributes['name']                    = DataAttribute::create('cName', 'varchar');
+        $attributes['description']             = DataAttribute::create('cBeschreibung', 'mediumtext');
+        $attributes['comment']                 = DataAttribute::create('cAnmerkung', 'mediumtext');
+        $attributes['stockQty']                = DataAttribute::create('fLagerbestand', 'double', self::cast('0', 'double'));
+        $attributes['taxRate']                 = DataAttribute::create('fMwSt', 'float');
+        $attributes['minOrderQty']             = DataAttribute::create('fMindestbestellmenge', 'double', self::cast('0', 'double'));
+        $attributes['topProduct']              = DataAttribute::create('cTopArtikel', 'char');
+        $attributes['weight']                  = DataAttribute::create('fGewicht', 'double', self::cast('0', 'double'), false);
+        $attributes['productWeight']           = DataAttribute::create('fArtikelgewicht', 'double', self::cast('0', 'double'), false);
+        $attributes['width']                   = DataAttribute::create('fBreite', 'double', self::cast('0', 'double'));
+        $attributes['height']                  = DataAttribute::create('fHoehe', 'double', self::cast('0', 'double'));
+        $attributes['length']                  = DataAttribute::create('fLaenge', 'double', self::cast('0', 'double'));
+        $attributes['new']                     = DataAttribute::create('cNeu', 'char');
+        $attributes['shortdescription']        = DataAttribute::create('cKurzBeschreibung', 'mediumtext');
+        $attributes['msrp']                    = DataAttribute::create('fUVP', 'float', self::cast('0', 'double'));
+        $attributes['divisible']               = DataAttribute::create('cTeilbar', 'char', self::cast('', 'char'), false);
+        $attributes['searchTerms']             = DataAttribute::create('cSuchbegriffe', 'varchar');
+        $attributes['sort']                    = DataAttribute::create('nSort', 'int', self::cast('0', 'int'), false);
+        $attributes['release']                 = DataAttribute::create('dErscheinungsdatum', 'date');
+        $attributes['created']                 = DataAttribute::create('dErstellt', 'date');
+        $attributes['lastModified']            = DataAttribute::create('dLetzteAktualisierung', 'datetime');
+        $attributes['series']                  = DataAttribute::create('cSerie', 'varchar');
+        $attributes['isbn']                    = DataAttribute::create('cISBN', 'varchar');
+        $attributes['asin']                    = DataAttribute::create('cASIN', 'varchar');
+        $attributes['han']                     = DataAttribute::create('cHAN', 'varchar');
+        $attributes['originCountry']           = DataAttribute::create('cHerkunftsland', 'varchar');
+        $attributes['epid']                    = DataAttribute::create('cEPID', 'varchar');
+        $attributes['isParent']                = DataAttribute::create('nIstVater', 'tinyint', self::cast('0', 'tinyint'), false);
+        $attributes['autoDeliveryCalculation'] = DataAttribute::create('nAutomatischeLiefertageberechnung', 'int');
+        $attributes['deliveryStatus']          = DataAttribute::create('kLieferstatus', 'int', self::cast('0', 'int'), false);
+        $attributes['commodityGroup']          = DataAttribute::create('kWarengruppe', 'int', self::cast('0', 'int'), false);
+        $attributes['basePriceUnit']           = DataAttribute::create('kGrundPreisEinheit', 'int');
+        $attributes['bbd']                     = DataAttribute::create('dMHD', 'date');
+
+        $attributes['kEigenschaftKombi']          = DataAttribute::create('kEigenschaftKombi', 'int', self::cast('0', 'int'), false);
+        $attributes['kVPEEinheit']                = DataAttribute::create('kVPEEinheit', 'int');
+        $attributes['kMassEinheit']               = DataAttribute::create('kMassEinheit', 'int');
+        $attributes['fStandardpreisNetto']        = DataAttribute::create('fStandardpreisNetto', 'double');
+        $attributes['fLieferzeit']                = DataAttribute::create('fLieferzeit', 'double', self::cast('0', 'double'), false);
+        $attributes['barcode']                    = DataAttribute::create('cBarcode', 'varchar');
+        $attributes['fMassMenge']                 = DataAttribute::create('fMassMenge', 'double', self::cast('0', 'double'));
+        $attributes['fGrundpreisMenge']           = DataAttribute::create('fGrundpreisMenge', 'double', self::cast('0', 'double'));
+        $attributes['cLagerBeachten']             = DataAttribute::create('cLagerBeachten', 'char', self::cast('', 'char'), false);
+        $attributes['cLagerKleinerNull']          = DataAttribute::create('cLagerKleinerNull', 'char');
+        $attributes['cLagerVariation']            = DataAttribute::create('cLagerVariation', 'char');
+        $attributes['fPackeinheit']               = DataAttribute::create('fPackeinheit', 'double', self::cast('1.0000', 'double'));
+        $attributes['fAbnahmeintervall']          = DataAttribute::create('fAbnahmeintervall', 'double', self::cast('0', 'double'), false);
+        $attributes['fZulauf']                    = DataAttribute::create('fZulauf', 'double', self::cast('0', 'double'));
+        $attributes['cVPE']                       = DataAttribute::create('cVPE', 'char');
+        $attributes['fVPEWert']                   = DataAttribute::create('fVPEWert', 'double');
+        $attributes['cVPEEinheit']                = DataAttribute::create('cVPEEinheit', 'varchar', self::cast('0', 'double'));
+        $attributes['fLieferantenlagerbestand']   = DataAttribute::create('fLieferantenlagerbestand', 'double', self::cast('0', 'float'), false);
+        $attributes['nLiefertageWennAusverkauft'] = DataAttribute::create('nLiefertageWennAusverkauft', 'int', self::cast('0', 'int'));
+        $attributes['nBearbeitungszeit']          = DataAttribute::create('nBearbeitungszeit', 'int', self::cast('0', 'int'));
+        $attributes['cUNNummer']                  = DataAttribute::create('cUNNummer', 'varchar');
+        $attributes['cGefahrnr']                  = DataAttribute::create('cGefahrnr', 'varchar');
+        $attributes['cTaric']                     = DataAttribute::create('cTaric', 'varchar');
+        $attributes['cUPC']                       = DataAttribute::create('cUPC', 'varchar');
+        $attributes['dZulaufDatum']               = DataAttribute::create('dZulaufDatum', 'date');
+
+        $attributes['localization']         = DataAttribute::create('localization', ProductLocalizationModel::class, null, true, false, 'kArtikel');
+        $attributes['characteristics']      = DataAttribute::create('characteristics', ProductCharacteristicModel::class, null, true, false, 'kArtikel');
+        $attributes['functionalAttributes'] = DataAttribute::create('functionalAttributes', ProductAttributeModel::class, null, true, false, 'kArtikel');
+        $attributes['attributes']           = DataAttribute::create('attributes', AttributeModel::class, null, true, false, 'kArtikel');
+        $attributes['visibility']           = DataAttribute::create('visibility', ProductVisibilityModel::class, null, true, false, 'kArtikel');
+        $attributes['downloads']            = DataAttribute::create('downloads', ProductDownloadModel::class, null, true, false, 'kArtikel');
+        $attributes['images']               = DataAttribute::create('images', ProductImageModel::class, null, true, false, 'kArtikel');
+        $attributes['prices']               = DataAttribute::create('prices', PriceModel::class, null, true, false, 'kArtikel');
+        $attributes['categories']           = DataAttribute::create('categories', ProductCategories::class, null, true, false, 'kArtikel');
+        $attributes['stock']                = DataAttribute::create('stock', StockModel::class, null, true, false, 'kArtikel');
 
         return $attributes;
     }

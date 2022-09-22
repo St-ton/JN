@@ -45,14 +45,15 @@ final class TaxRateModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes               = [];
-            $attributes['id']         = DataAttribute::create('kSteuersatz', 'int', self::cast('0', 'int'), false, true);
-            $attributes['zoneID']     = DataAttribute::create('kSteuerzone', 'int');
-            $attributes['taxClassID'] = DataAttribute::create('kSteuerklasse', 'int');
-            $attributes['rate']       = DataAttribute::create('fSteuersatz', 'double');
-            $attributes['priority']   = DataAttribute::create('nPrio', 'tinyint');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes               = [];
+        $attributes['id']         = DataAttribute::create('kSteuersatz', 'int', self::cast('0', 'int'), false, true);
+        $attributes['zoneID']     = DataAttribute::create('kSteuerzone', 'int');
+        $attributes['taxClassID'] = DataAttribute::create('kSteuerklasse', 'int');
+        $attributes['rate']       = DataAttribute::create('fSteuersatz', 'double');
+        $attributes['priority']   = DataAttribute::create('nPrio', 'tinyint');
 
         return $attributes;
     }

@@ -42,7 +42,7 @@ final class CategoryModel extends DataModel
      *
      * @var int
      */
-    protected $lastAttributeID = -1;
+    protected int $lastAttributeID = -1;
 
     /**
      * @inheritdoc
@@ -74,7 +74,7 @@ final class CategoryModel extends DataModel
         });
         $this->registerSetter('localization', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -89,7 +89,7 @@ final class CategoryModel extends DataModel
                 }
                 try {
                     $loc = CategoryLocalizationModel::loadByAttributes($data, $this->getDB(), self::ON_NOTEXISTS_NEW);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
                 $existing = $res->first(static function ($e) use ($loc) {
@@ -102,14 +102,13 @@ final class CategoryModel extends DataModel
                         $existing->setAttribValue($attribute, $loc->getAttribValue($attribute));
                     }
                 }
-
             }
 
             return $res;
         });
         $this->registerSetter('attributes', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -147,14 +146,13 @@ final class CategoryModel extends DataModel
                         $existing->setAttribValue($attribute, $item->getAttribValue($attribute));
                     }
                 }
-
             }
 
             return $res;
         });
         $this->registerSetter('images', function ($value, $model) {
             if ($value === null) {
-                return $value;
+                return null;
             }
             if (\is_a($value, Collection::class)) {
                 return $value;
@@ -169,7 +167,7 @@ final class CategoryModel extends DataModel
                 }
                 try {
                     $img = CategoryImageModel::loadByAttributes($data, $this->getDB(), self::ON_NOTEXISTS_NEW);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     continue;
                 }
                 $existing = $res->first(static function ($e) use ($img) {
@@ -195,24 +193,53 @@ final class CategoryModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                 = [];
-            $attributes['id']           = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
-            $attributes['slug']         = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['name']         = DataAttribute::create('cName', 'varchar');
-            $attributes['description']  = DataAttribute::create('cBeschreibung', 'mediumtext');
-            $attributes['parentID']     = DataAttribute::create('kOberKategorie', 'int', self::cast('0', 'int'));
-            $attributes['sort']         = DataAttribute::create('nSort', 'int', self::cast('0', 'int'));
-            $attributes['lastModified'] = DataAttribute::create('dLetzteAktualisierung', 'date');
-            $attributes['lft']          = DataAttribute::create('lft', 'int', self::cast('0', 'int'), false);
-            $attributes['rght']         = DataAttribute::create('rght', 'int', self::cast('0', 'int'), false);
-            $attributes['level']        = DataAttribute::create('nLevel', 'int', self::cast('1', 'int'), false);
-
-            $attributes['localization'] = DataAttribute::create('localization', CategoryLocalizationModel::class, null, true, false, 'kKategorie');
-            $attributes['images']       = DataAttribute::create('images', CategoryImageModel::class, null, true, false, 'kKategorie');
-            $attributes['attributes']   = DataAttribute::create('attributes', CategoryAttributeModel::class, null, true, false, 'kKategorie');
-            $attributes['visibility']   = DataAttribute::create('visibility', CategoryVisibilityModel::class, null, true, false, 'kKategorie');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                 = [];
+        $attributes['id']           = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
+        $attributes['slug']         = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['name']         = DataAttribute::create('cName', 'varchar');
+        $attributes['description']  = DataAttribute::create('cBeschreibung', 'mediumtext');
+        $attributes['parentID']     = DataAttribute::create('kOberKategorie', 'int', self::cast('0', 'int'));
+        $attributes['sort']         = DataAttribute::create('nSort', 'int', self::cast('0', 'int'));
+        $attributes['lastModified'] = DataAttribute::create('dLetzteAktualisierung', 'date');
+        $attributes['lft']          = DataAttribute::create('lft', 'int', self::cast('0', 'int'), false);
+        $attributes['rght']         = DataAttribute::create('rght', 'int', self::cast('0', 'int'), false);
+        $attributes['level']        = DataAttribute::create('nLevel', 'int', self::cast('1', 'int'), false);
+
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            CategoryLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['images']       = DataAttribute::create(
+            'images',
+            CategoryImageModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['attributes']   = DataAttribute::create(
+            'attributes',
+            CategoryAttributeModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['visibility']   = DataAttribute::create(
+            'visibility',
+            CategoryVisibilityModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
 
         return $attributes;
     }

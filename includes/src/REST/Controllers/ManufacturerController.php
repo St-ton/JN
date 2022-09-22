@@ -72,16 +72,19 @@ class ManufacturerController extends AbstractController
     /**
      * @inheritdoc
      */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
+    protected function getCreateBaseData(
+        ServerRequestInterface $request,
+        DataModelInterface $model,
+        stdClass $data
+    ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
             // tkategorie has no auto increment ID
-            $lastManufacturerID = $this->db->getSingleInt(
+            $id       = $this->db->getSingleInt(
                 'SELECT MAX(kHersteller) AS newID FROM thersteller',
                 'newID'
             );
-            $data->id           = ++$lastManufacturerID;
+            $data->id = ++$id;
         }
 
         return $data;

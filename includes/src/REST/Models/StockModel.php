@@ -72,9 +72,9 @@ final class StockModel extends DataModel
             $attributes                 = [];
             $attributes['productID']    = DataAttribute::create('kArtikel', 'int', null, false, true);
             $attributes['warehouseID']  = DataAttribute::create('kWarenlager', 'int', null, false, true);
-            $attributes['stock']        = DataAttribute::create('fBestand', 'double', null, false, false);
-            $attributes['procured']     = DataAttribute::create('fZulauf', 'double', null, false, false);
-            $attributes['procuredDate'] = DataAttribute::create('dZulaufDatum', 'datetime', null, true, false);
+            $attributes['stock']        = DataAttribute::create('fBestand', 'double', null, false);
+            $attributes['procured']     = DataAttribute::create('fZulauf', 'double', null, false);
+            $attributes['procuredDate'] = DataAttribute::create('dZulaufDatum', 'datetime');
         }
 
         return $attributes;

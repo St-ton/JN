@@ -51,17 +51,18 @@ final class CharacteristicValueLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                          = [];
-            $attributes['characteristicValueID'] = DataAttribute::create('kMerkmalWert', 'int', self::cast('0', 'int'), false, true);
-            $attributes['languageID']            = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
-            $attributes['value']                 = DataAttribute::create('cWert', 'varchar');
-            $attributes['slug']                  = DataAttribute::create('cSeo', 'varchar', '', false);
-            $attributes['metaTitle']             = DataAttribute::create('cMetaTitle', 'varchar', '', false);
-            $attributes['metaKeywords']          = DataAttribute::create('cMetaKeywords', 'varchar', '', false);
-            $attributes['metaDescription']       = DataAttribute::create('cMetaDescription', 'mediumtext', '', false);
-            $attributes['description']           = DataAttribute::create('cBeschreibung', 'mediumtext', '', false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                          = [];
+        $attributes['characteristicValueID'] = DataAttribute::create('kMerkmalWert', 'int', self::cast('0', 'int'), false, true);
+        $attributes['languageID']            = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
+        $attributes['value']                 = DataAttribute::create('cWert', 'varchar');
+        $attributes['slug']                  = DataAttribute::create('cSeo', 'varchar', '', false);
+        $attributes['metaTitle']             = DataAttribute::create('cMetaTitle', 'varchar', '', false);
+        $attributes['metaKeywords']          = DataAttribute::create('cMetaKeywords', 'varchar', '', false);
+        $attributes['metaDescription']       = DataAttribute::create('cMetaDescription', 'mediumtext', '', false);
+        $attributes['description']           = DataAttribute::create('cBeschreibung', 'mediumtext', '', false);
 
         return $attributes;
     }

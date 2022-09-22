@@ -6,7 +6,7 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
-use JTL\REST\Transformers\CategoryTransformer;
+use JTL\REST\Transformers\DataModelTransformer;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
 use League\Route\RouteGroup;
@@ -61,8 +61,7 @@ abstract class AbstractController
         Manager $fractal,
         protected DbInterface $db,
         protected JTLCacheInterface $cache
-    )
-    {
+    ) {
         $this->modelClass = $modelClass;
         $this->validator  = new Validator();
         $this->setFractal($fractal);
@@ -124,7 +123,7 @@ abstract class AbstractController
             return $instance;
         });
 
-        return $this->respondWithCollection($res, new CategoryTransformer(), [], $cursor);
+        return $this->respondWithCollection($res, new DataModelTransformer(), [], $cursor);
     }
 
     /**
@@ -162,7 +161,7 @@ abstract class AbstractController
             /** @var $class DataModelInterface */
             $result = $class::load(['id' => $id], $this->db);
             /** @var $result DataModelInterface */
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $id . ' does not exist');
         }
         /** @var DataModelInterface $result */
@@ -249,7 +248,7 @@ abstract class AbstractController
             $result = new $this->modelClass($this->db);
             /** @var $result DataModelInterface */
             $result = $result->init(['id' => $id], DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $id . ' does not exist');
         }
         /** @var DataModelInterface $result */
@@ -269,8 +268,11 @@ abstract class AbstractController
      * @param stdClass               $data
      * @return stdClass
      */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
+    protected function getCreateBaseData(
+        ServerRequestInterface $request,
+        DataModelInterface $model,
+        stdClass $data
+    ): stdClass {
         if (\array_key_exists('lastModified', $model->getAttributes())) {
             $data->lastModified = $data->lastModified ?? 'now()';
         }

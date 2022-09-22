@@ -77,8 +77,11 @@ class ProductController extends AbstractController
     /**
      * @inheritdoc
      */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
+    protected function getCreateBaseData(
+        ServerRequestInterface $request,
+        DataModelInterface $model,
+        stdClass $data
+    ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
             // tkategorie has no auto increment ID

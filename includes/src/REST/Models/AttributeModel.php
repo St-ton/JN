@@ -45,18 +45,25 @@ final class AttributeModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                = [];
-            $attributes['id']          = DataAttribute::create('kAttribut', 'int', self::cast('0', 'int'), false, true);
-            $attributes['productID']   = DataAttribute::create('kArtikel', 'int');
-            $attributes['sort']        = DataAttribute::create('nSort', 'int', null, false);
-            $attributes['name']        = DataAttribute::create('cName', 'varchar');
-            $attributes['stringValue'] = DataAttribute::create('cStringWert', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['textValue']   = DataAttribute::create('cTextWert', 'mediumtext', null, false);
-
-            $attributes['localization'] = DataAttribute::create('localization', AttributeLocalizationModel::class, null, true, false, 'kAttribut');
-
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                = [];
+        $attributes['id']          = DataAttribute::create('kAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['productID']   = DataAttribute::create('kArtikel', 'int');
+        $attributes['sort']        = DataAttribute::create('nSort', 'int', null, false);
+        $attributes['name']        = DataAttribute::create('cName', 'varchar');
+        $attributes['stringValue'] = DataAttribute::create('cStringWert', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['textValue']   = DataAttribute::create('cTextWert', 'mediumtext', null, false);
+
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            AttributeLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kAttribut'
+        );
 
         return $attributes;
     }

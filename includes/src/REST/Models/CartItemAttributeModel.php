@@ -69,17 +69,18 @@ final class CartItemAttributeModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes                       = [];
-            $attributes['id']                 = DataAttribute::create('kWarenkorbPosEigenschaft', 'int', null, false, true);
-            $attributes['cartItemID']         = DataAttribute::create('kWarenkorbPos', 'int', self::cast('0', 'int'), false, false);
-            $attributes['attributeID']        = DataAttribute::create('kEigenschaft', 'int', self::cast('0', 'int'), false, false);
-            $attributes['attributeValueID']   = DataAttribute::create('kEigenschaftWert', 'int', self::cast('0', 'int'), false, false);
-            $attributes['attributeName']      = DataAttribute::create('cEigenschaftName', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['attributeValueName'] = DataAttribute::create('cEigenschaftWertName', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['freeTextValue']      = DataAttribute::create('cFreifeldWert', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['surcharge']          = DataAttribute::create('fAufpreis', 'double', self::cast('0', 'double'), true, false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                       = [];
+        $attributes['id']                 = DataAttribute::create('kWarenkorbPosEigenschaft', 'int', null, false, true);
+        $attributes['cartItemID']         = DataAttribute::create('kWarenkorbPos', 'int', self::cast('0', 'int'), false);
+        $attributes['attributeID']        = DataAttribute::create('kEigenschaft', 'int', self::cast('0', 'int'), false);
+        $attributes['attributeValueID']   = DataAttribute::create('kEigenschaftWert', 'int', self::cast('0', 'int'), false);
+        $attributes['attributeName']      = DataAttribute::create('cEigenschaftName', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['attributeValueName'] = DataAttribute::create('cEigenschaftWertName', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['freeTextValue']      = DataAttribute::create('cFreifeldWert', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['surcharge']          = DataAttribute::create('fAufpreis', 'double', self::cast('0', 'double'));
 
         return $attributes;
     }

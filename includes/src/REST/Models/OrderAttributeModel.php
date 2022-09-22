@@ -60,9 +60,9 @@ final class OrderAttributeModel extends DataModel
         if ($attributes === null) {
             $attributes            = [];
             $attributes['id']      = DataAttribute::create('kBestellattribut', 'int', null, false, true);
-            $attributes['orderID'] = DataAttribute::create('kBestellung', 'int', null, false, false);
-            $attributes['name']    = DataAttribute::create('cName', 'varchar', null, false, false);
-            $attributes['value']   = DataAttribute::create('cValue', 'mediumtext', null, true, false);
+            $attributes['orderID'] = DataAttribute::create('kBestellung', 'int', null, false);
+            $attributes['name']    = DataAttribute::create('cName', 'varchar', null, false);
+            $attributes['value']   = DataAttribute::create('cValue', 'mediumtext');
         }
 
         return $attributes;

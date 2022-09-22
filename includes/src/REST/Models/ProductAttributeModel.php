@@ -45,13 +45,14 @@ final class ProductAttributeModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes              = [];
-            $attributes['id']        = DataAttribute::create('kArtikelAttribut', 'int', self::cast('0', 'int'), false, true);
-            $attributes['productID'] = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
-            $attributes['name']      = DataAttribute::create('cName', 'varchar');
-            $attributes['value']     = DataAttribute::create('cWert', 'mediumtext');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes              = [];
+        $attributes['id']        = DataAttribute::create('kArtikelAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['productID'] = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
+        $attributes['name']      = DataAttribute::create('cName', 'varchar');
+        $attributes['value']     = DataAttribute::create('cWert', 'mediumtext');
 
         return $attributes;
     }

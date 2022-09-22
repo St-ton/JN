@@ -14,6 +14,7 @@ use JTL\REST\Controllers\CategoryController;
 use JTL\REST\Controllers\CharacteristicController;
 use JTL\REST\Controllers\CharacteristicValueController;
 use JTL\REST\Controllers\CustomerController;
+use JTL\REST\Controllers\CustomerGroupController;
 use JTL\REST\Controllers\LanguageController;
 use JTL\REST\Controllers\ManufacturerController;
 use JTL\REST\Controllers\OrderController;
@@ -58,6 +59,7 @@ final class Registrator
         CustomerController::class,
         StockController::class,
         PriceController::class,
+        CustomerGroupController::class,
     ];
 
     /**

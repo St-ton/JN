@@ -59,8 +59,11 @@ class CharacteristicValueController extends AbstractController
     /**
      * @inheritdoc
      */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
+    protected function getCreateBaseData(
+        ServerRequestInterface $request,
+        DataModelInterface $model,
+        stdClass $data
+    ) : stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
             // tmerkmalwert has no auto increment ID

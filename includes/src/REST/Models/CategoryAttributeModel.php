@@ -49,17 +49,26 @@ final class CategoryAttributeModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes               = [];
-            $attributes['id']         = DataAttribute::create('kKategorieAttribut', 'int', self::cast('0', 'int'), false, true);
-            $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false);
-            $attributes['name']       = DataAttribute::create('cName', 'varchar');
-            $attributes['value']      = DataAttribute::create('cWert', 'mediumtext');
-            $attributes['sort']       = DataAttribute::create('nSort', 'int', self::cast('0', 'int'), false);
-            $attributes['function']   = DataAttribute::create('bIstFunktionsAttribut', 'int', self::cast('1', 'int'), false);
-
-            $attributes['localization'] = DataAttribute::create('localization', CategoryAttributeLocalizationModel::class, null, true, false, 'kKategorieAttribut', 'kAttribut');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes               = [];
+        $attributes['id']         = DataAttribute::create('kKategorieAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false);
+        $attributes['name']       = DataAttribute::create('cName', 'varchar');
+        $attributes['value']      = DataAttribute::create('cWert', 'mediumtext');
+        $attributes['sort']       = DataAttribute::create('nSort', 'int', self::cast('0', 'int'), false);
+        $attributes['function']   = DataAttribute::create('bIstFunktionsAttribut', 'int', self::cast('1', 'int'), false);
+
+        $attributes['localization'] = DataAttribute::create(
+            'localization',
+            CategoryAttributeLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kKategorieAttribut',
+            'kAttribut'
+        );
 
         return $attributes;
     }

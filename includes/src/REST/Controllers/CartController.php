@@ -4,12 +4,10 @@ namespace JTL\REST\Controllers;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
-use JTL\Model\DataModelInterface;
 use JTL\REST\Models\CartModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
-use stdClass;
 
 /**
  * Class CartController
@@ -36,50 +34,6 @@ class CartController extends AbstractController
         $routeGroup->put('/cart/{id}', [$this, 'update']);
         $routeGroup->post('/cart', [$this, 'create']);
         $routeGroup->delete('/cart/{id}', [$this, 'delete']);
-    }
-
-    /**
-     * @inheritdoc
-     * @todo
-     */
-    protected function createItem(ServerRequestInterface $request): DataModelInterface
-    {
-        return parent::createItem($request);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function getCreateBaseData(ServerRequestInterface $request, DataModelInterface $model, stdClass $data): stdClass
-    {
-        return parent::getCreateBaseData($request, $model, $data);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function createdItem(DataModelInterface $item): void
-    {
-//        $baseSeo = Seo::getSeo($item->getSlug());
-//        $model   = new SeoModel($this->db);
-//        foreach ($item->getLocalization() as $localization) {
-//            $seo           = new stdClass();
-//            $seo->cSeo     = Seo::checkSeo($baseSeo);
-//            $seo->cKey     = 'kArtikel';
-//            $seo->kKey     = $item->getId();
-//            $seo->kSprache = $localization->getLanguageID();
-//            $model::create($seo, $this->db);
-//        }
-//        $this->cacheID = \CACHING_GROUP_PRODUCT . '_' . $item->getId();
-        parent::createdItem($item);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    protected function deletedItem(DataModelInterface $item): void
-    {
-        parent::deletedItem($item);
     }
 
     /**

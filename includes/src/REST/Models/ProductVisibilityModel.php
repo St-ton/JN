@@ -39,11 +39,12 @@ final class ProductVisibilityModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                    = [];
-            $attributes['productID']       = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
-            $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                    = [];
+        $attributes['productID']       = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
+        $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
 
         return $attributes;
     }

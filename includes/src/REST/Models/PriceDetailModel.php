@@ -42,7 +42,7 @@ final class PriceDetailModel extends DataModel
         if ($attributes === null) {
             $attributes               = [];
             $attributes['id']         = DataAttribute::create('kPreisDetail', 'int', null, false, true);
-            $attributes['kPreis']    = DataAttribute::create('kPreis', 'int', null, false);
+            $attributes['kPreis']     = DataAttribute::create('kPreis', 'int', null, false);
             $attributes['amountFrom'] = DataAttribute::create('nAnzahlAb', 'int', null, false);
             $attributes['netPrice']   = DataAttribute::create('fVKNetto', 'double', null, false);
         }

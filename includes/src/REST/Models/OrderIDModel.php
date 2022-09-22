@@ -65,8 +65,8 @@ final class OrderIDModel extends DataModel
         if ($attributes === null) {
             $attributes            = [];
             $attributes['id']      = DataAttribute::create('cId', 'varchar', null, false, true);
-            $attributes['orderID'] = DataAttribute::create('kBestellung', 'int', null, true, false);
-            $attributes['date']    = DataAttribute::create('dDatum', 'datetime', null, true, false);
+            $attributes['orderID'] = DataAttribute::create('kBestellung', 'int');
+            $attributes['date']    = DataAttribute::create('dDatum', 'datetime');
         }
 
         return $attributes;

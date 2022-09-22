@@ -51,17 +51,18 @@ final class CategoryLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                    = [];
-            $attributes['categoryID']      = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
-            $attributes['languageID']      = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
-            $attributes['slug']            = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
-            $attributes['name']            = DataAttribute::create('cName', 'varchar');
-            $attributes['description']     = DataAttribute::create('cBeschreibung', 'mediumtext');
-            $attributes['metaDescription'] = DataAttribute::create('cMetaDescription', 'varchar');
-            $attributes['metaKeywords']    = DataAttribute::create('cMetaKeywords', 'varchar');
-            $attributes['metaTitle']       = DataAttribute::create('cTitleTag', 'varchar');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                    = [];
+        $attributes['categoryID']      = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
+        $attributes['languageID']      = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
+        $attributes['slug']            = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['name']            = DataAttribute::create('cName', 'varchar');
+        $attributes['description']     = DataAttribute::create('cBeschreibung', 'mediumtext');
+        $attributes['metaDescription'] = DataAttribute::create('cMetaDescription', 'varchar');
+        $attributes['metaKeywords']    = DataAttribute::create('cMetaKeywords', 'varchar');
+        $attributes['metaTitle']       = DataAttribute::create('cTitleTag', 'varchar');
 
         return $attributes;
     }

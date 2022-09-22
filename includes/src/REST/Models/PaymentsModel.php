@@ -86,20 +86,26 @@ final class PaymentsModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes   = [];
-            $attributes['kZahlungseingang'] = DataAttribute::create('kZahlungseingang', 'int', null, false, true);
-            $attributes['kBestellung'] = DataAttribute::create('kBestellung', 'int', null, true, false);
-            $attributes['cZahlungsanbieter'] = DataAttribute::create('cZahlungsanbieter', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['fBetrag'] = DataAttribute::create('fBetrag', 'double', null, true, false);
-            $attributes['fZahlungsgebuehr'] = DataAttribute::create('fZahlungsgebuehr', 'double', null, true, false);
-            $attributes['cISO'] = DataAttribute::create('cISO', 'varchar', null, false, false);
-            $attributes['cEmpfaenger'] = DataAttribute::create('cEmpfaenger', 'varchar', null, true, false);
-            $attributes['cZahler'] = DataAttribute::create('cZahler', 'varchar', null, true, false);
-            $attributes['dZeit'] = DataAttribute::create('dZeit', 'datetime', null, true, false);
-            $attributes['cHinweis'] = DataAttribute::create('cHinweis', 'varchar', null, false, false);
-            $attributes['cAbgeholt'] = DataAttribute::create('cAbgeholt', 'char', self::cast('N', 'char'), false, false);
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                      = [];
+        $attributes['kZahlungseingang']  = DataAttribute::create('kZahlungseingang', 'int', null, false, true);
+        $attributes['kBestellung']       = DataAttribute::create('kBestellung', 'int');
+        $attributes['cZahlungsanbieter'] = DataAttribute::create(
+            'cZahlungsanbieter',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['fBetrag']           = DataAttribute::create('fBetrag', 'double');
+        $attributes['fZahlungsgebuehr']  = DataAttribute::create('fZahlungsgebuehr', 'double');
+        $attributes['cISO']              = DataAttribute::create('cISO', 'varchar', null, false);
+        $attributes['cEmpfaenger']       = DataAttribute::create('cEmpfaenger', 'varchar');
+        $attributes['cZahler']           = DataAttribute::create('cZahler', 'varchar');
+        $attributes['dZeit']             = DataAttribute::create('dZeit', 'datetime');
+        $attributes['cHinweis']          = DataAttribute::create('cHinweis', 'varchar', null, false);
+        $attributes['cAbgeholt']         = DataAttribute::create('cAbgeholt', 'char', self::cast('N', 'char'), false);
 
         return $attributes;
     }

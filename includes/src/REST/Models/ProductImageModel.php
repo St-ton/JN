@@ -47,15 +47,16 @@ final class ProductImageModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                = [];
-            $attributes['id']          = DataAttribute::create('kArtikelPict', 'int', self::cast('0', 'int'), false, true);
-            $attributes['mainImageID'] = DataAttribute::create('kMainArtikelBild', 'int', self::cast('0', 'int'), false);
-            $attributes['productID']   = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
-            $attributes['imageID']     = DataAttribute::create('kBild', 'int', self::cast('0', 'int'), false);
-            $attributes['path']        = DataAttribute::create('cPfad', 'varchar');
-            $attributes['imageNo']     = DataAttribute::create('nNr', 'tinyint');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                = [];
+        $attributes['id']          = DataAttribute::create('kArtikelPict', 'int', self::cast('0', 'int'), false, true);
+        $attributes['mainImageID'] = DataAttribute::create('kMainArtikelBild', 'int', self::cast('0', 'int'), false);
+        $attributes['productID']   = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
+        $attributes['imageID']     = DataAttribute::create('kBild', 'int', self::cast('0', 'int'), false);
+        $attributes['path']        = DataAttribute::create('cPfad', 'varchar');
+        $attributes['imageNo']     = DataAttribute::create('nNr', 'tinyint');
 
         return $attributes;
     }
@@ -65,7 +66,7 @@ final class ProductImageModel extends DataModel
      */
     public function getNewID(): int
     {
-        return ($this->getDB()->getSingleInt(
+        return ($this->getDB()?->getSingleInt(
             'SELECT MAX(kArtikelPict) AS newID FROM ' . $this->getTableName(),
             'newID'
         )) + 1;
@@ -76,7 +77,7 @@ final class ProductImageModel extends DataModel
      */
     public function getNewImageID(): int
     {
-        return ($this->getDB()->getSingleInt(
+        return ($this->getDB()?->getSingleInt(
             'SELECT MAX(kBild) AS newID FROM ' . $this->getTableName(),
             'newID'
         )) + 1;

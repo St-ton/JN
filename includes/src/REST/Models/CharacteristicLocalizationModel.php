@@ -41,12 +41,13 @@ final class CharacteristicLocalizationModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes                     = [];
-            $attributes['characteristicID'] = DataAttribute::create('kMerkmal', 'int', self::cast('0', 'int'), false, true);
-            $attributes['languageID']       = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
-            $attributes['name']             = DataAttribute::create('cName', 'varchar');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                     = [];
+        $attributes['characteristicID'] = DataAttribute::create('kMerkmal', 'int', self::cast('0', 'int'), false, true);
+        $attributes['languageID']       = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
+        $attributes['name']             = DataAttribute::create('cName', 'varchar');
 
         return $attributes;
     }

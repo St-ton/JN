@@ -7,7 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
 use JTL\REST\Models\StockModel;
-use JTL\REST\Transformers\CategoryTransformer;
+use JTL\REST\Transformers\DataModelTransformer;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
@@ -112,7 +112,7 @@ class StockController extends AbstractController
 
                     return $instance;
                 });
-                return $this->respondWithCollection($res, new CategoryTransformer());
+                return $this->respondWithCollection($res, new DataModelTransformer());
             } elseif ($warehouseID > 0) {
                 $model = new $this->modelClass($this->db);
                 $res   = $this->db->queryPrepared(
@@ -126,7 +126,7 @@ class StockController extends AbstractController
 
                     return $instance;
                 });
-                return $this->respondWithCollection($res, new CategoryTransformer());
+                return $this->respondWithCollection($res, new DataModelTransformer());
             }
         } catch (Exception) {
             return $this->sendNotFoundResponse();

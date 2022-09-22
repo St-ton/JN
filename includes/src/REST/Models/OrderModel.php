@@ -167,43 +167,136 @@ final class OrderModel extends DataModel
     public function getAttributes(): array
     {
         static $attributes = null;
-        if ($attributes === null) {
-            $attributes                             = [];
-            $attributes['id']                       = DataAttribute::create('kBestellung', 'int', null, false, true);
-            $attributes['cartID']                   = DataAttribute::create('kWarenkorb', 'int', self::cast('0', 'int'), false, false);
-            $attributes['customerID']               = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false, false);
-            $attributes['deliveryAddressID']        = DataAttribute::create('kLieferadresse', 'int', self::cast('0', 'int'), false, false);
-            $attributes['billingAddressID']         = DataAttribute::create('kRechnungsadresse', 'int', null, false, false);
-            $attributes['paymentMethodID']          = DataAttribute::create('kZahlungsart', 'int', self::cast('0', 'int'), false, false);
-            $attributes['shippingMethodID']         = DataAttribute::create('kVersandart', 'int', null, false, false);
-            $attributes['languageID']               = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, false);
-            $attributes['currencyID']               = DataAttribute::create('kWaehrung', 'int', self::cast('0', 'int'), false, false);
-            $attributes['paymentType']              = DataAttribute::create('nZahlungsTyp', 'int', self::cast('0', 'int'), false, false);
-            $attributes['balance']                  = DataAttribute::create('fGuthaben', 'double', self::cast('0.0000', 'double'), false, false);
-            $attributes['total']                    = DataAttribute::create('fGesamtsumme', 'double', self::cast('0', 'double'), false, false);
-            $attributes['sessionID']                = DataAttribute::create('cSession', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['shippingMethodName']       = DataAttribute::create('cVersandartName', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['paymentMethodName']        = DataAttribute::create('cZahlungsartName', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['orderNO']                  = DataAttribute::create('cBestellNr', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['shippingInfo']             = DataAttribute::create('cVersandInfo', 'varchar', null, true, false);
-            $attributes['longestMinDelivery']       = DataAttribute::create('nLongestMinDelivery', 'int', self::cast('0', 'int'), false, false);
-            $attributes['longestMaxDelivery']       = DataAttribute::create('nLongestMaxDelivery', 'int', self::cast('0', 'int'), false, false);
-            $attributes['shippingDate']             = DataAttribute::create('dVersandDatum', 'date', null, true, false);
-            $attributes['paymentDate']              = DataAttribute::create('dBezahltDatum', 'date', null, true, false);
-            $attributes['reviewReminder']           = DataAttribute::create('dBewertungErinnerung', 'datetime', null, true, false);
-            $attributes['trackingID']               = DataAttribute::create('cTracking', 'varchar', null, true, false);
-            $attributes['comment']                  = DataAttribute::create('cKommentar', 'mediumtext', null, true, false);
-            $attributes['logistics']                = DataAttribute::create('cLogistiker', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['trackingURL']              = DataAttribute::create('cTrackingURL', 'varchar', self::cast('', 'varchar'), false, false);
-            $attributes['ipAddress']                = DataAttribute::create('cIP', 'varchar', null, false, false);
-            $attributes['fetched']                  = DataAttribute::create('cAbgeholt', 'char', self::cast('N', 'char'), true, false);
-            $attributes['state']                    = DataAttribute::create('cStatus', 'char', null, true, false);
-            $attributes['created']                  = DataAttribute::create('dErstellt', 'datetime', null, true, false);
-            $attributes['currencyConversionFactor'] = DataAttribute::create('fWaehrungsFaktor', 'float', self::cast('1', 'float'), false, false);
-            $attributes['puidPaymentData']          = DataAttribute::create('cPUIZahlungsdaten', 'mediumtext', null, true, false);
-
-            $attributes['attributes'] = DataAttribute::create('attributes', OrderAttributeModel::class, null, true, false, 'kBestellung');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes                             = [];
+        $attributes['id']                       = DataAttribute::create('kBestellung', 'int', null, false, true);
+        $attributes['cartID']                   = DataAttribute::create(
+            'kWarenkorb',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['customerID']               = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
+        $attributes['deliveryAddressID']        = DataAttribute::create(
+            'kLieferadresse',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['billingAddressID']         = DataAttribute::create('kRechnungsadresse', 'int', null, false);
+        $attributes['paymentMethodID']          = DataAttribute::create(
+            'kZahlungsart',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['shippingMethodID']         = DataAttribute::create('kVersandart', 'int', null, false);
+        $attributes['languageID']               = DataAttribute::create(
+            'kSprache',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['currencyID']               = DataAttribute::create(
+            'kWaehrung',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['paymentType']              = DataAttribute::create(
+            'nZahlungsTyp',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['balance']                  = DataAttribute::create(
+            'fGuthaben',
+            'double',
+            self::cast('0.0000', 'double'),
+            false
+        );
+        $attributes['total']                    = DataAttribute::create(
+            'fGesamtsumme',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
+        $attributes['sessionID']                = DataAttribute::create(
+            'cSession',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['shippingMethodName']       = DataAttribute::create(
+            'cVersandartName',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['paymentMethodName']        = DataAttribute::create(
+            'cZahlungsartName',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['orderNO']                  = DataAttribute::create(
+            'cBestellNr',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['shippingInfo']             = DataAttribute::create('cVersandInfo', 'varchar');
+        $attributes['longestMinDelivery']       = DataAttribute::create(
+            'nLongestMinDelivery',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['longestMaxDelivery']       = DataAttribute::create(
+            'nLongestMaxDelivery',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['shippingDate']             = DataAttribute::create('dVersandDatum', 'date');
+        $attributes['paymentDate']              = DataAttribute::create('dBezahltDatum', 'date');
+        $attributes['reviewReminder']           = DataAttribute::create('dBewertungErinnerung', 'datetime');
+        $attributes['trackingID']               = DataAttribute::create('cTracking', 'varchar');
+        $attributes['comment']                  = DataAttribute::create('cKommentar', 'mediumtext');
+        $attributes['logistics']                = DataAttribute::create(
+            'cLogistiker',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['trackingURL']              = DataAttribute::create(
+            'cTrackingURL',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['ipAddress']                = DataAttribute::create('cIP', 'varchar', null, false);
+        $attributes['fetched']                  = DataAttribute::create('cAbgeholt', 'char', self::cast('N', 'char'));
+        $attributes['state']                    = DataAttribute::create('cStatus', 'char');
+        $attributes['created']                  = DataAttribute::create('dErstellt', 'datetime');
+        $attributes['currencyConversionFactor'] = DataAttribute::create(
+            'fWaehrungsFaktor',
+            'float',
+            self::cast('1', 'float'),
+            false
+        );
+        $attributes['puidPaymentData']          = DataAttribute::create('cPUIZahlungsdaten', 'mediumtext');
+
+        $attributes['attributes'] = DataAttribute::create(
+            'attributes',
+            OrderAttributeModel::class,
+            null,
+            true,
+            false,
+            'kBestellung'
+        );
 
         return $attributes;
     }

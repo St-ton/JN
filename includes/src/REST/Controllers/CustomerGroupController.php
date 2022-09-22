@@ -5,25 +5,25 @@ namespace JTL\REST\Controllers;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
-use JTL\REST\Models\CharacteristicModel;
+use JTL\REST\Models\CustomerGroupModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 /**
- * Class CharacteristicController
+ * Class CustomerGroupController
  * @package JTL\REST\Controllers
  */
-class CharacteristicController extends AbstractController
+class CustomerGroupController extends AbstractController
 {
     /**
-     * CharacteristicController constructor.
+     * CustomerGroupController constructor.
      * @inheritdoc
      */
     public function __construct(Manager $fractal, protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        parent::__construct(CharacteristicModel::class, $fractal, $this->db, $this->cache);
+        parent::__construct(CustomerGroupModel::class, $fractal, $this->db, $this->cache);
     }
 
     /**
@@ -31,11 +31,11 @@ class CharacteristicController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/characteristic', [$this, 'index']);
-        $routeGroup->get('/characteristic/{id}', [$this, 'show']);
-        $routeGroup->put('/characteristic/{id}', [$this, 'update']);
-        $routeGroup->post('/characteristic', [$this, 'create']);
-        $routeGroup->delete('/characteristic/{id}', [$this, 'delete']);
+        $routeGroup->get('/customerGroup', [$this, 'index']);
+        $routeGroup->get('/customerGroup/{id}', [$this, 'show']);
+        $routeGroup->put('/customerGroup/{id}', [$this, 'update']);
+        $routeGroup->post('/customerGroup', [$this, 'create']);
+        $routeGroup->delete('/customerGroup/{id}', [$this, 'delete']);
     }
 
     /**
@@ -45,12 +45,12 @@ class CharacteristicController extends AbstractController
         ServerRequestInterface $request,
         DataModelInterface $model,
         stdClass $data
-    ) : stdClass {
+    ): stdClass {
         $data = parent::getCreateBaseData($request, $model, $data);
         if (!isset($data->id)) {
-            // tmerkmal has no auto increment ID
+            // tmerkmalwert has no auto increment ID
             $id       = $this->db->getSingleInt(
-                'SELECT MAX(kMerkmal) AS newID FROM tmerkmal',
+                'SELECT MAX(kKundengruppe) AS newID FROM tkundengruppe',
                 'newID'
             );
             $data->id = ++$id;
@@ -66,11 +66,13 @@ class CharacteristicController extends AbstractController
     {
         return [
             'id'           => 'integer',
-            'sort'         => 'integer',
             'name'         => 'required|max:255',
-            'type'         => 'in:TEXTSWATCHES,IMGSWATCHES,RADIO,BILD,BILD-TEXT,SELECTBOX,TEXT',
-            'isMulti'      => 'integer',
+            'discount'     => 'numeric',
+            'default'      => 'in:Y,N',
+            'shopLogin'    => 'in:Y,N',
+            'net'          => 'integer',
             'localization' => 'array',
+            'attributes'   => 'array',
         ];
     }
 
@@ -80,8 +82,6 @@ class CharacteristicController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'name'         => 'max:255',
-            'localization' => 'array',
         ];
     }
 }

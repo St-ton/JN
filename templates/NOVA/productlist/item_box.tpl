@@ -1,14 +1,20 @@
 {block name='productlist-item-box'}
     {if $Einstellungen.template.productlist.variation_select_productlist_gallery === 'N'}
         {assign var=hasOnlyListableVariations value=0}
+        {$showVariationCollapse = false}
     {else}
         {hasOnlyListableVariations artikel=$Artikel
             maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist_gallery
             maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist_gallery
             assign='hasOnlyListableVariations'}
+        {$showVariationCollapse = ($hasOnlyListableVariations > 0 && $Artikel->nIstVater && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
+        empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]) &&
+    $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
+    ($Artikel->Variationen[0]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX') &&
+    (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[1]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[1]->cTyp === 'SELECTBOX')))}
     {/if}
     <div id="{$idPrefix|default:''}result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true"
-         class="productbox productbox-column {if !empty($hasOnlyListableVariations) && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW])}productbox-show-variations {/if} productbox-hover{if isset($class)} {$class}{/if}">
+         class="productbox productbox-column {if !empty($hasOnlyListableVariations) && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW])}productbox-show-variations {/if} productbox-hover{if isset($class)} {$class}{/if} {if $showVariationCollapse}show-variation-collapse{/if}">
         {block name='productlist-item-box-include-productlist-actions'}
             <div class="productbox-quick-actions productbox-onhover d-none d-md-flex">
                 {include file='productlist/productlist_actions.tpl'}
@@ -85,11 +91,7 @@
                         {/block}
                     </div>
                 {/col}
-            {if $hasOnlyListableVariations > 0 && $Artikel->nIstVater && !$Artikel->bHasKonfig && $Artikel->kEigenschaftKombi === 0 &&
-            empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]) &&
-            $Artikel->nVariationOhneFreifeldAnzahl <= 2 &&
-            ($Artikel->Variationen[0]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[0]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[0]->cTyp === 'SELECTBOX') &&
-            (!isset($Artikel->Variationen[1]) || ($Artikel->Variationen[1]->cTyp === 'IMGSWATCHES' || $Artikel->Variationen[1]->cTyp === 'TEXTSWATCHES' || $Artikel->Variationen[1]->cTyp === 'SELECTBOX'))}
+            {if $showVariationCollapse}
                     {col cols=12 class='productbox-variations'}
                     {block name='productlist-item-box-form-variations'}
                         <div class="productbox-onhover collapse" id="variations-collapse-{$Artikel->kArtikel}">

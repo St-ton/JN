@@ -25394,6 +25394,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin: -1rem;
   width: 100%;
 }
+#product-list.layout-gallery .productbox-hover.productbox-show-variations.show-variation-collapse:hover {
+  box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+}
 
 #result-wrapper .title {
   margin-bottom: 1.5rem;
@@ -25528,6 +25532,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 
 .layout-gallery .variations .variation-wrapper .form-group {
   margin-bottom: 0;
+}
+
+.is-mobile .show-variation-collapse .productbox-onhover.collapsing {
+  -webkit-transition: none;
+  transition: none;
+  display: none;
 }
 
 /* productdetails */

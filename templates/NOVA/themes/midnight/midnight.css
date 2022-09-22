@@ -26820,8 +26820,16 @@ header .btn-outline-primary:hover {
   padding-bottom: 0.5rem;
 }
 
+.full-width-mega .main-search-wrapper {
+  display: none;
+}
 .full-width-mega .main-search-wrapper .twitter-typeahead {
   flex: 1;
+}
+@media (min-width: 992px) {
+  .full-width-mega .main-search-wrapper {
+    display: block;
+  }
 }
 @media (max-width: 991.98px) {
   .full-width-mega.sticky-top .main-search-wrapper {

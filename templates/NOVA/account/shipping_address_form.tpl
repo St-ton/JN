@@ -71,7 +71,7 @@
                                     </td>
                                     <td class="text-right">
                                         {buttongroup}
-                                            {if $address->nIstStandardLieferadresse !== 1}
+                                            {if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N' && $address->nIstStandardLieferadresse !== 1}
                                                 <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
                                                     <span class="fas fa-star"></span>
                                                 </button>

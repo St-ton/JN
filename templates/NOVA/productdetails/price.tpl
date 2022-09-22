@@ -16,7 +16,10 @@
                 {/block}
             {else}
                 {block name='productdetails-price-label'}
-                    {if $Artikel->Preise->rabatt > 0}
+                    {if ($tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange() && $Artikel->Preise->oPriceRange->rangeWidth() > $Einstellungen.artikeluebersicht.articleoverview_pricerange_width)
+                    || ($tplscope === 'detail' && ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0)}
+                    <span class="price_label pricestarting">{lang key='priceStarting'} </span>
+                    {elseif $Artikel->Preise->rabatt > 0}
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
@@ -198,9 +201,12 @@
                                     <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
                                     <span class="value" itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
                                         {$Artikel->cLocalizedVPE[$NettoPreise]}
-                                        {if $Artikel->Preise->oPriceRange->isRange() === true}
+                                        {if ($Artikel->Preise->oPriceRange->isRange() === true)
+                                            && !(!empty($hasOnlyListableVariations)
+                                                 && empty($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_NO_GAL_VAR_PREVIEW]))
+                                        }
                                             <br>
-                                            Weitere Variationen erhältlich
+                                            {lang section='productOverview' key='moreVariationsAvailable'}
                                         {/if}
                                         <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
                                         <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">

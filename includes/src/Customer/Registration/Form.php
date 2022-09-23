@@ -225,7 +225,7 @@ class Form
                     $addressID
                 );
                 $_SESSION['Lieferadresse'] = $template->getDeliveryAddress();
-                if (isset($_SESSION['Bestellung']->kLieferadresse)) {
+                if (!isset($_SESSION['Bestellung']->kLieferadresse)) {
                     $_SESSION['Bestellung']->kLieferadresse = -1;
                 }
                 \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);

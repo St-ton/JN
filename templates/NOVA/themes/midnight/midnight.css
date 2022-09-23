@@ -23393,6 +23393,9 @@ table.dataTable .dt-address {
 table.dataTable .dt-full-address ul {
   margin-left: 34%;
 }
+table.dataTable .dt-full-address-account ul {
+  margin-left: 13%;
+}
 
 .list-icons > li {
   padding-left: 2em;

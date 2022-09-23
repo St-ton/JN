@@ -58,8 +58,12 @@
                                         {$adresse->cStrasse} {$adresse->cHausnummer}<br />
                                         {$adresse->cPLZ} {$adresse->cOrt}<br />
                                     </td>
-                                    <td class="dt-full-address">
-                                        {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
+                                    <td>
+                                        <div class="dt-full-address">
+                                            {block name='checkout-inc-shipping-address-include-inc-delivery-address'}
+                                                {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
+                                            {/block}
+                                        </div>
                                     </td>
                                     <td class="text-right-util">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}

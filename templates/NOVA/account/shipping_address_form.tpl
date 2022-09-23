@@ -55,8 +55,6 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,18 +64,16 @@
                                     <td></td>
                                     <td>
                                         {if $address->cFirma}{$address->cFirma}<br />{/if}
-                                        <strong>{$address->cVorname} {$address->cNachname}</strong><br />
+                                        <strong>{if $address->cTitel}{$address->cTitel}{/if} {$address->cVorname} {$address->cNachname}</strong><br />
                                         {$address->cStrasse} {$address->cHausnummer}<br />
                                         {$address->cPLZ} {$address->cOrt}<br />
                                     </td>
                                     <td>
-                                        {$address->cTitel}
-                                    </td>
-                                    <td>
-                                        {$address->cBundesland}
-                                    </td>
-                                    <td>
-                                        {$address->cAdressZusatz}
+                                        <div class="dt-full-address-account">
+                                            {block name='account-shipping-address-include-inc-delivery-address'}
+                                                {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$address hideMainInfo=true}
+                                            {/block}
+                                        </div>
                                     </td>
                                     <td class="text-right">
                                         {buttongroup}
@@ -114,9 +110,7 @@
         {inline_script}<script>
         $(document).ready(function () {
             function format(d) {
-                return (
-                    'Weitere Informationen'
-                );
+                return (d.moreAddressData);
             }
             let tableID = '#lieferadressen-liste';
             let table = $(tableID).DataTable( {
@@ -143,30 +137,19 @@
                         defaultContent: '',
                     },
                     { data: 'address' },
-                    { data: 'titel' },
-                    { data: 'bundesland' },
-                    { data: 'adresszusatz' },
+                    { data: 'moreAddressData' },
                     { data: 'buttons' },
                     { data: 'sort' }
                 ],
                 columnDefs: [
                     {
-                        target: 2,
-                        visible: false,
-                    },{
-                        target: 3,
-                        visible: false,
-                    },{
-                        target: 4,
-                        visible: false,
-                    },{
-                        target: 6,
+                        targets: [2,4],
                         visible: false,
                     }
                 ],
                 lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
                 pageLength: 5,
-                order: [6, 'desc'],
+                order: [4, 'desc'],
                 initComplete: function (settings, json) {
                     $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                     $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');

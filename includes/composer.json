@@ -33,7 +33,7 @@
         "symfony/finder": "6.0.*",
         "intervention/image": "^2.6",
         "ifsnop/mysqldump-php": "^2.1",
-        "jtlshop/shop5-systemcheck": "^3.0",
+        "jtlshop/shop5-systemcheck": "^4.0",
         "jtlshop/sccbs3": "1.0.*",
         "jtlshop/scc": "1.1.*",
         "jtlshop/phpquery": "^2.0",

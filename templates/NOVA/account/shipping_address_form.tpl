@@ -6,9 +6,12 @@
                     {block name='account-shipping-address-form-include-customer-shipping-address'}
                         {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=null}
                     {/block}
+                    {block name='account-shipping-address-form-include-customer-shipping-contact'}
+                        {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=null}
+                    {/block}
                     {block name='account-shipping-address-form-form-submit'}
                         {row class='btn-row'}
-                            {col md=8 xl=6 class="checkout-button-row-submit"}
+                            {col md=12 xl=6 class="checkout-button-row-submit mb-3"}
                                 {input type="hidden" name="editLieferadresse" value="1"}
                                 {if isset($Lieferadresse->nIstStandardLieferadresse) && $Lieferadresse->nIstStandardLieferadresse === 1}
                                     {input type="hidden" name="isDefault" value=1}
@@ -29,6 +32,13 @@
                                     {button type="submit" value="1" block=true variant="primary"}
                                         {lang key='updateAddressBackToCheckout' section='account data'}
                                     {/button}
+                                {/if}
+                            {/col}
+                            {col md=12 xl=6 class="checkout-button-row-new-address"}
+                                {if isset($Lieferadresse->kLieferadresse) && !isset($smarty.get.fromCheckout)}
+                                    {link type="button"  class="btn btn-primary btn-block" href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1]}"}
+                                        {lang key='newShippingAddress' section='account data'}
+                                    {/link}
                                 {/if}
                             {/col}
                         {/row}

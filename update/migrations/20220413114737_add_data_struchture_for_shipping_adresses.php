@@ -75,6 +75,9 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'account data', 'saveAddressSuccessful', 'Lieferadresse wurde gespeichert');
         $this->setLocalization('eng', 'account data', 'saveAddressSuccessful', 'Shipping address has been saved');
 
+        $this->setLocalization('ger', 'account data', 'newShippingAddress', 'Neue Lieferadresse');
+        $this->setLocalization('eng', 'account data', 'newShippingAddress', 'New shipping adresse');
+
         $this->setLocalization(
             'ger',
             'account data',
@@ -109,8 +112,8 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'myShippingAddresses', 'My shipping addresses');
 
 
-        $this->setLocalization('ger', 'datatables', 'lengthMenu', '_MENU_ Zeilen anzeigen');
-        $this->setLocalization('eng', 'datatables', 'lengthMenu', 'Show _MENU_ entries');
+        $this->setLocalization('ger', 'datatables', 'lengthMenu', '_MENU_ Adressen anzeigen');
+        $this->setLocalization('eng', 'datatables', 'lengthMenu', 'Show _MENU_ addresses');
 
         $this->setLocalization('ger', 'datatables', 'info', '_START_ bis _END_ von _TOTAL_ Einträgen');
         $this->setLocalization('eng', 'datatables', 'info', 'Showing _START_ to _END_ of _TOTAL_ entries');

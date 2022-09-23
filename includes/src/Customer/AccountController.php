@@ -1138,6 +1138,10 @@ class AccountController
         $template->cBundesland    = $shipping_address['bundesland'] ?? '';
         $template->cPLZ           = $shipping_address['plz'] ?? '';
         $template->cOrt           = $shipping_address['ort'] ?? '';
+        $template->cMobil         = $shipping_address['mobil'] ?? '';
+        $template->cFax           = $shipping_address['fax'] ?? '';
+        $template->cTel           = $shipping_address['tel'] ?? '';
+        $template->cMail          = $shipping_address['email'] ?? '';
         if (isset($postData['isDefault']) && (int)$postData['isDefault'] === 1) {
             $template->nIstStandardLieferadresse = 1;
         }
@@ -1182,6 +1186,10 @@ class AccountController
         $template->cBundesland   = $addressData['bundesland'] ?? '';
         $template->cPLZ          = $addressData['plz'] ?? '';
         $template->cOrt          = $addressData['ort'] ?? '';
+        $template->cMobil        = $addressData['mobil'] ?? '';
+        $template->cFax          = $addressData['fax'] ?? '';
+        $template->cTel          = $addressData['tel'] ?? '';
+        $template->cMail         = $addressData['email'] ?? '';
         $saveStatus              = $template->persist();
         if ($saveStatus) {
             $this->alertService->addSuccess(

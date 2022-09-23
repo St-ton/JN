@@ -39,8 +39,6 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -56,20 +54,14 @@
                                     <td></td>
                                     <td class="dt-address" data-delivery-id="#delivery{$adresse->kLieferadresse}">
                                         {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                        <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
+                                        <strong>{if $adresse->cTitel}{$adresse->cTitel}{/if} {$adresse->cVorname} {$adresse->cNachname}</strong><br />
                                         {$adresse->cStrasse} {$adresse->cHausnummer}<br />
                                         {$adresse->cPLZ} {$adresse->cOrt}<br />
                                     </td>
-                                    <td>
-                                        {$adresse->cTitel}
+                                    <td class="dt-full-address">
+                                        {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
                                     </td>
-                                    <td>
-                                        {$adresse->cBundesland}
-                                    </td>
-                                    <td>
-                                        {$adresse->cAdressZusatz}
-                                    </td>
-                                    <td class="text-right">
+                                    <td class="text-right-util">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
@@ -150,28 +142,7 @@
 <script>
     $(document).ready(function () {
         function format(d) {
-            return (
-                '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr>' +
-                '<td>Titel:</td>' +
-                '<td>' +
-                d.titel +
-                '</td>' +
-                '</tr>' +
-                '<tr>' +
-                '<td>Adresszusatz:</td>' +
-                '<td>' +
-                d.adresszusatz +
-                '</td>' +
-                '</tr>' +
-                '<tr>' +
-                '<td>Bundesland:</td>' +
-                '<td>' +
-                d.bundesland +
-                '</td>' +
-                '</tr>' +
-                '</table>'
-            );
+            return (d.moreAddressData);
         }
 
         var table = $('#shipping-address-templates').DataTable( {
@@ -199,9 +170,7 @@
                     defaultContent: '',
                 },
                 { data: 'address' },
-                { data: 'titel' },
-                { data: 'bundesland' },
-                { data: 'adresszusatz' },
+                { data: 'moreAddressData' },
                 { data: 'buttons' },
                 { data: 'sort' }
             ],
@@ -210,22 +179,13 @@
             },
             columnDefs: [
                 {
-                    target: 3,
-                    visible: false,
-                },{
-                    target: 4,
-                    visible: false,
-                },{
-                    target: 5,
-                    visible: false,
-                },{
-                    target: 7,
+                    targets: [3,5],
                     visible: false,
                 }
             ],
             lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
             pageLength: 5,
-            order: [6, 'desc'],
+            order: [4, 'desc'],
             initComplete: function (settings, json) {
                 $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                 $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
@@ -242,11 +202,9 @@
             let tr = $(this).closest('tr'),
                 row = table.row(tr);
             if (row.child.isShown()) {
-                // This row is already open - close it
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                // Open this row
                 row.child(format(row.data())).show();
                 tr.addClass('shown');
             }

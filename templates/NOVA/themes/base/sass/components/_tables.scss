@@ -72,4 +72,9 @@ table.dataTable  {
 	.dt-address {
 		cursor: pointer;
 	}
+	.dt-full-address {
+		ul {
+			margin-left: 34%;
+		}
+	}
 }

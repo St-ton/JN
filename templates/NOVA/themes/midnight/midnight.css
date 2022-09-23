@@ -23390,6 +23390,9 @@ table.dataTable tr.dt-hasChild td.dt-control:before {
 table.dataTable .dt-address {
   cursor: pointer;
 }
+table.dataTable .dt-full-address ul {
+  margin-left: 34%;
+}
 
 .list-icons > li {
   padding-left: 2em;

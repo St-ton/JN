@@ -1153,6 +1153,7 @@ class AccountController
         }
 
         if (isset($postData['backToCheckout'])) {
+            $_SESSION['Bestellung']->kLieferadresse = $template->kLieferadresse;
             \header('Location: '
                 . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php')
                 . '?editRechnungsadresse=1');

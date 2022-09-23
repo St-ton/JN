@@ -53,33 +53,32 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                             </tr>
                         </thead>
                         <tbody>
                             {block name='account-shipping-address-form-form-addresses'}
                             {foreach $Lieferadressen as $address}
                                 <tr>
-                                    <td></td>
                                     <td>
                                         {if $address->cFirma}{$address->cFirma}<br />{/if}
                                         <strong>{if $address->cTitel}{$address->cTitel}{/if} {$address->cVorname} {$address->cNachname}</strong><br />
                                         {$address->cStrasse} {$address->cHausnummer}<br />
                                         {$address->cPLZ} {$address->cOrt}<br />
-                                    </td>
-                                    <td>
-                                        <div class="dt-full-address-account">
+                                        <div id="deliveryAdditional{$address->kLieferadresse}" class="collapse">
                                             {block name='account-shipping-address-include-inc-delivery-address'}
                                                 {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$address hideMainInfo=true}
                                             {/block}
                                         </div>
+                                        {button variant="link" class="btn-show-more"
+                                            data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$address->kLieferadresse}"]}
+                                            {lang  key='showMore'}
+                                        {/button}
                                     </td>
                                     <td class="text-right">
                                         {buttongroup}
                                             {if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N' && $address->nIstStandardLieferadresse !== 1}
-                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
-                                                    <span class="fas fa-star"></span>
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
+                                                    {lang key='setAsStandard' section='account data'}
                                                 </button>
                                             {/if}
 
@@ -130,26 +129,19 @@
                     }
                 },
                 columns: [
-                    {
-                        className: 'dt-control',
-                        orderable: false,
-                        data: null,
-                        defaultContent: '',
-                    },
                     { data: 'address' },
-                    { data: 'moreAddressData' },
                     { data: 'buttons' },
                     { data: 'sort' }
                 ],
                 columnDefs: [
                     {
-                        targets: [2,4],
+                        targets: [2],
                         visible: false,
                     }
                 ],
                 lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
                 pageLength: 5,
-                order: [4, 'desc'],
+                order: [2, 'desc'],
                 initComplete: function (settings, json) {
                     $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                     $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');

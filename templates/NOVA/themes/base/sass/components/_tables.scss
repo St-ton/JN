@@ -44,42 +44,10 @@ table caption {
 }
 
 table.dataTable  {
-	td.dt-control {
-		&:before {
-			@include fas('f078');
-			margin-left: map-get($spacers, 2);
-			vertical-align: middle;
-			display: inline-block;
-			line-height: 1;
-			transition: transform $transition-base-duration;
-			will-change: transform;
-			border-top: 0;
-			background-color: initial;
-			border-radius: 0;
-			color: $gray-dark;
-			border: none;
-			box-shadow: none;
-			margin-top: 0;
-			font-size: $font-size-base;
-		}
-	}
-	tr.dt-hasChild {
-		td.dt-control:before {
-			transform: rotate(180deg);
-			background-color: initial;
-		}
+	td {
+		vertical-align: middle;
 	}
 	.dt-address {
 		cursor: pointer;
-	}
-	.dt-full-address {
-		ul {
-			margin-left: 34%;
-		}
-	}
-	.dt-full-address-account {
-		ul {
-			margin-left: 13%;
-		}
 	}
 }

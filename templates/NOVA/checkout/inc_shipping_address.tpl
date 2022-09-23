@@ -29,12 +29,9 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <div class="h3">{lang key='chooseShippingAdress' section='checkout'}</div>
-                        <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
+                        <table id="shipping-address-templates" class="shipping-address-table table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
@@ -51,19 +48,22 @@
                                             {/radio}
                                         </label>
                                     </td>
-                                    <td></td>
-                                    <td class="dt-address" data-delivery-id="#delivery{$adresse->kLieferadresse}">
-                                        {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                        <strong>{if $adresse->cTitel}{$adresse->cTitel}{/if} {$adresse->cVorname} {$adresse->cNachname}</strong><br />
-                                        {$adresse->cStrasse} {$adresse->cHausnummer}<br />
-                                        {$adresse->cPLZ} {$adresse->cOrt}<br />
-                                    </td>
                                     <td>
-                                        <div class="dt-full-address">
-                                            {block name='checkout-inc-shipping-address-include-inc-delivery-address'}
-                                                {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
-                                            {/block}
+                                        <div class="dt-address" data-delivery-id="#delivery{$adresse->kLieferadresse}">
+                                            {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
+                                            <strong>{if $adresse->cTitel}{$adresse->cTitel}{/if} {$adresse->cVorname} {$adresse->cNachname}</strong><br />
+                                            {$adresse->cStrasse} {$adresse->cHausnummer}<br />
+                                            {$adresse->cPLZ} {$adresse->cOrt}<br />
+                                            <div id="deliveryAdditional{$adresse->kLieferadresse}" class="collapse">
+                                                {block name='checkout-inc-shipping-address-include-inc-delivery-address'}
+                                                    {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
+                                                {/block}
+                                            </div>
                                         </div>
+                                        {button variant="link" class="btn-show-more"
+                                            data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$adresse->kLieferadresse}"]}
+                                            {lang  key='showMore'}
+                                        {/button}
                                     </td>
                                     <td class="text-right-util">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
@@ -167,14 +167,7 @@
             },
             columns: [
                 { data: 'select' },
-                {
-                    className: 'dt-control',
-                    orderable: false,
-                    data: null,
-                    defaultContent: '',
-                },
                 { data: 'address' },
-                { data: 'moreAddressData' },
                 { data: 'buttons' },
                 { data: 'sort' }
             ],
@@ -183,13 +176,13 @@
             },
             columnDefs: [
                 {
-                    targets: [3,5],
+                    targets: [3],
                     visible: false,
                 }
             ],
             lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
             pageLength: 5,
-            order: [4, 'desc'],
+            order: [2, 'desc'],
             initComplete: function (settings, json) {
                 $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                 $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');

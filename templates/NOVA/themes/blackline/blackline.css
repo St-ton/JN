@@ -21255,6 +21255,11 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   margin-top: 2rem;
 }
 
+.btn-show-more {
+  padding-left: 0;
+  padding-bottom: 0;
+}
+
 .card-gray {
   background: #f5f5f5;
   border: 0;
@@ -23132,37 +23137,11 @@ table caption {
   caption-side: top;
 }
 
-table.dataTable td.dt-control:before {
-  content: '\f078' !important;
-  font-family: "Font Awesome 5 Free" !important;
-  font-weight: 900;
-  margin-left: 0.5rem;
+table.dataTable td {
   vertical-align: middle;
-  display: inline-block;
-  line-height: 1;
-  transition: transform 0.2s;
-  will-change: transform;
-  border-top: 0;
-  background-color: initial;
-  border-radius: 0;
-  color: #212121;
-  border: none;
-  box-shadow: none;
-  margin-top: 0;
-  font-size: 0.875rem;
-}
-table.dataTable tr.dt-hasChild td.dt-control:before {
-  transform: rotate(180deg);
-  background-color: initial;
 }
 table.dataTable .dt-address {
   cursor: pointer;
-}
-table.dataTable .dt-full-address ul {
-  margin-left: 34%;
-}
-table.dataTable .dt-full-address-account ul {
-  margin-left: 13%;
 }
 
 .list-icons > li {
@@ -26951,8 +26930,8 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   width: 100%;
 }
 
-.dataTable td {
-  vertical-align: middle;
+.shipping-address-table tr:first-child {
+  background-color: #525252;
 }
 
 /* basket */
@@ -27423,10 +27402,16 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
 }
 
 /* shipping-adresses */
+.select-shipping-address {
+  margin-top: 1rem;
+}
 .select-shipping-address .dataTables_wrapper {
   border: 1px solid #f5f5f5;
   padding: 1rem;
   margin-bottom: 1.5rem;
+}
+.select-shipping-address .dataTables_wrapper td:first-child {
+  width: 5%;
 }
 
 .new-shipping-address {

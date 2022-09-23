@@ -138,6 +138,8 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   margin-left: 0;
   width: 100%;
 }
-.dataTable td {
-  vertical-align: middle;
+.shipping-address-table {
+  tr:first-child {
+    background-color: $info;
+  }
 }

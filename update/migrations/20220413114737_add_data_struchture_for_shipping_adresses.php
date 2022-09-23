@@ -142,8 +142,11 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('ger', 'datatables', 'paginateprevious', 'Zurück');
         $this->setLocalization('eng', 'datatables', 'paginateprevious', 'Previous');
 
-        $this->setLocalization('ger', 'checkout', 'chooseShippingAdress', 'Wählen Sie eine Ihrer Adressen');
-        $this->setLocalization('eng', 'checkout', 'chooseShippingAdress', 'Choose one of your shipping adresses');
+        $this->setLocalization('ger', 'global', 'showMore', 'Mehr anzeigen');
+        $this->setLocalization('eng', 'gloabl', 'showMore', 'Show more');
+
+        $this->setLocalization('ger', 'account data', 'setAsStandard', 'Als Standard festlegen');
+        $this->setLocalization('eng', 'account data', 'setAsStandard', 'Set as standard');
 
 
         $this->execute("CREATE TABLE IF NOT EXISTS `tlieferadressevorlage` (
@@ -209,7 +212,8 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->removeLocalization('paginatelast', 'datatables');
         $this->removeLocalization('paginatenext', 'datatables');
         $this->removeLocalization('paginateprevious', 'datatables');
-        $this->removeLocalization('chooseShippingAdress', 'checkout');
+        $this->removeLocalization('showMore', 'global');
+        $this->removeLocalization('setAsStandard', 'account data');
 
         $this->execute("DELETE FROM tsprachsektion WHERE cName = 'datatables'");
     }

@@ -1338,7 +1338,12 @@ class CheckoutController extends RegistrationController
                 ['cid' => $this->customer->getID()]
             );
             foreach ($data as $id) {
-                $addresses[] = new DeliveryAddressTemplate($this->db, $id);
+                $newAddress = new DeliveryAddressTemplate($this->db, $id);
+                if ($id === (int)$_SESSION['Bestellung']->kLieferadresse) {
+                    array_unshift($addresses, $newAddress);
+                } else {
+                    $addresses[] = $newAddress;
+                }
             }
             $this->smarty->assign('Lieferadressen', $addresses);
         }

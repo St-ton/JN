@@ -138,8 +138,8 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   margin-left: 0;
   width: 100%;
 }
-.shipping-address-table {
+.shipping-address-standard-active {
   tr:first-child {
-    background-color: $info;
+    background-color: $gray-light;
   }
 }

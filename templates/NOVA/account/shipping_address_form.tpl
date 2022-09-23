@@ -47,7 +47,7 @@
             {/col}
             {col cols=12 md=6 class='shipping-addresses-wrapper'}
                 {block name='account-shipping-address-form-form-address-wrapper'}
-                    <table id="lieferadressen-liste" class="table display compact" style="width:100%">
+                    <table id="lieferadressen-liste" class="{if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N'}shipping-address-standard-active{/if} table display compact" style="width:100%">
                         <thead>
                             <tr>
                                 <th>&nbsp;</th>

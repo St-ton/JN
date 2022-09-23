@@ -26930,8 +26930,8 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   width: 100%;
 }
 
-.shipping-address-table tr:first-child {
-  background-color: #525252;
+.shipping-address-standard-active tr:first-child {
+  background-color: #f5f5f5;
 }
 
 /* basket */

@@ -29,7 +29,7 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <table id="shipping-address-templates" class="shipping-address-table table table-hover display compact" style="width:100%">
+                        <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>
                                 <th>&nbsp;</th>

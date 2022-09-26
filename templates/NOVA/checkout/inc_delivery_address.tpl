@@ -11,14 +11,14 @@
                 {if $Lieferadresse->cLand}{$Lieferadresse->cLand}{/if}
             </li>
         {else}
-            {if $hideMainInfo}
+            {if !$hideMainInfo}
                 {if $Lieferadresse->cFirma}<li>{$Lieferadresse->cFirma}</li>{/if}
                 {if $Lieferadresse->cZusatz}<li>{$Lieferadresse->cZusatz}</li>{/if}
                 <li>{$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}</li>
                 <li>{$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}</li>
             {/if}
             {if $Lieferadresse->cAdressZusatz}<li>{$Lieferadresse->cAdressZusatz}</li>{/if}
-            {if $hideMainInfo}
+            {if !$hideMainInfo}
                 <li>{$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}</li>
             {/if}
             {if $Lieferadresse->cBundesland}<li>{$Lieferadresse->cBundesland}</li>{/if}

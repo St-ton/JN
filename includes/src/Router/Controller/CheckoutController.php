@@ -177,8 +177,20 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
+                if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
+                    $shippingID = $this->db->getSingleInt(
+                        'SELECT DISTINCT(kLieferadresse) AS id
+                            FROM tlieferadressevorlage
+                            WHERE kKunde = :cid
+                                AND nIstStandardLieferadresse=1',
+                        'id',
+                        ['cid' => $this->customer->getID()]
+                    );
+                }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => !empty($shippingID)
+                        ? $shippingID
+                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;

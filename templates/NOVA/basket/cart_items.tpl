@@ -172,6 +172,8 @@
                     {/block}
                     {col cols=$cols xl=$cols+1 class="ml-auto-util"}
                     {block name='basket-cart-items-product-data'}
+                        {if $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL
+                        || $oPosition->nPosTyp === $smarty.const.C_WARENKORBPOS_TYP_GRATISGESCHENK}
                         <ul class="list-unstyled">
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
                                 {block name='basket-cart-items-product-data-short-desc'}
@@ -266,6 +268,7 @@
                                 {/block}
                             {/if}
                         </ul>
+                        {/if}
                     {/block}
                     {block name='basket-cart-items-product-cofig-items-outer'}
                         {if $oPosition->istKonfigVater()}

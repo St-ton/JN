@@ -40,10 +40,16 @@
                             </thead>
                             <tbody>
                             {foreach $Lieferadressen as $adresse}
+                                {$checkAddress = (isset($smarty.session.shippingAddressPresetID) && ($smarty.session.shippingAddressPresetID == $adresse->kLieferadresse))
+                                    || (!isset($smarty.session.shippingAddressPresetID) && (
+                                        $kLieferadresse == $adresse->kLieferadresse
+                                        || ($kLieferadresse != $adresse->kLieferadresse && $adresse->nIstStandardLieferadresse == 1)
+                                    )
+                                )}
                                 <tr>
                                     <td>
                                         <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
-                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse || ($kLieferadresse === -1 && $adresse->nIstStandardLieferadresse == 1))}
+                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=$checkAddress}
 
                                             {/radio}
                                         </label>

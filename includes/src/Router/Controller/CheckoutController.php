@@ -1351,7 +1351,8 @@ class CheckoutController extends RegistrationController
             );
             foreach ($data as $id) {
                 $newAddress = new DeliveryAddressTemplate($this->db, $id);
-                if ($id === (int)$_SESSION['Bestellung']->kLieferadresse) {
+                if ($id === (int)($_SESSION['shippingAddressPresetID'] ?? 0)
+                    || $id === (int)$_SESSION['Bestellung']->kLieferadresse) {
                     array_unshift($addresses, $newAddress);
                 } else {
                     $addresses[] = $newAddress;

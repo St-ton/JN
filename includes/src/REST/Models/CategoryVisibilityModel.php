@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CategoryVisibilityModel
- *
+ * @OA\Schema(
+ *     title="Category visibility model",
+ *     description="Category visibility model",
+ * )
  * @property int $categoryID
  * @property int $customerGroupID
  */

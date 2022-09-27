@@ -118,7 +118,7 @@ final class CartItemModel extends DataModel
         $attributes['shippingClassID']    = DataAttribute::create('kVersandklasse', 'int', self::cast('1', 'int'), false);
         $attributes['name']               = DataAttribute::create('cName', 'varchar');
         $attributes['deliveryState']      = DataAttribute::create('cLieferstatus', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['artNO']              = DataAttribute::create('cArtNr', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['sku']                = DataAttribute::create('cArtNr', 'varchar', self::cast('', 'varchar'), false);
         $attributes['unit']               = DataAttribute::create('cEinheit', 'varchar', self::cast('', 'varchar'), false);
         $attributes['netSinglePrice']     = DataAttribute::create('fPreisEinzelNetto', 'double', self::cast('0', 'double'), false);
         $attributes['price']              = DataAttribute::create('fPreis', 'double', self::cast('0', 'double'), false);

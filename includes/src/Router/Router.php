@@ -145,16 +145,18 @@ class Router
         AlertServiceInterface $alert,
         private array $config
     ) {
-        $this->router = new BaseRouter();
-        $this->router->middleware(new MaintenanceModeMiddleware($this->config['global']));
-        $this->router->middleware(new SSLRedirectMiddleware($this->config['global']));
-        $this->router->middleware(new WishlistCheckMiddleware());
-        $this->router->middleware(new CartcheckMiddleware());
-        $this->router->middleware(new LocaleCheckMiddleware());
-        $this->router->middleware(new CurrencyCheckMiddleware());
-        $this->router->middleware(new OptinMiddleware());
+        $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
         $registeredDefault       = false;
+        $middlewares             = [
+            new MaintenanceModeMiddleware($this->config['global']),
+            new SSLRedirectMiddleware($this->config['global']),
+            new WishlistCheckMiddleware(),
+            new CartcheckMiddleware(),
+            new LocaleCheckMiddleware(),
+            new CurrencyCheckMiddleware(),
+            new OptinMiddleware(),
+        ];
 
         $root        = new RootController($db, $cache, $state, $this->config, $alert);
         $consent     = new ConsentController();
@@ -171,7 +173,7 @@ class Router
             new PageController($db, $cache, $state, $this->config, $alert),
             new MediaImageController($db, $cache, $state, $this->config, $alert),
         ];
-
+        $this->registerAPI();
         foreach ($this->collectHosts() as $data) {
             $host         = $data['host'];
             $locale       = $data['locale'];
@@ -207,6 +209,9 @@ class Router
                 . '_grp'
                 . ($data['localized'] ? '_LOCALIZED' : '')
                 . ($data['currency'] ? '_CRNCY' : ''));
+            foreach ($middlewares as $middleware) {
+                $group->middleware($middleware);
+            }
             $this->routes[] = $group;
         }
         if ($this->isMultiDomain === false) {
@@ -215,10 +220,12 @@ class Router
                 $this->path = $path;
             }
         }
-        $this->registerAPI();
         $this->collectGroupRoutes();
     }
 
+    /**
+     * @return void
+     */
     private function registerAPI(): void
     {
         $rapi = new RouteGroup('/api/v1', function (RouteGroup $group) {
@@ -229,6 +236,9 @@ class Router
         $this->routes[] = $rapi;
     }
 
+    /**
+     * @return void
+     */
     protected function collectGroupRoutes(): void
     {
         foreach ($this->routes as $group) {

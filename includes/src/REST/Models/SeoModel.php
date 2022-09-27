@@ -58,6 +58,11 @@ final class SeoModel extends DataModel
         throw new Exception(__METHOD__ . ': setting of keyname is not supported', self::ERR_DATABASE);
     }
 
+    public function getKeyName(bool $realName = false): string
+    {
+        return '';
+    }
+
     /**
      * @inheritdoc
      */
@@ -67,7 +72,7 @@ final class SeoModel extends DataModel
 
         if ($attributes === null) {
             $attributes           = [];
-            $attributes['slug']   = DataAttribute::create('cSeo', 'varchar', null, false, true);
+            $attributes['slug']   = DataAttribute::create('cSeo', 'varchar', null, false);
             $attributes['type']   = DataAttribute::create('cKey', 'varchar', null, false);
             $attributes['id']     = DataAttribute::create('kKey', 'int', null, false);
             $attributes['langID'] = DataAttribute::create('kSprache', 'tinyint');

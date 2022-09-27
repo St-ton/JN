@@ -15,6 +15,7 @@ use JTL\REST\Controllers\CharacteristicController;
 use JTL\REST\Controllers\CharacteristicValueController;
 use JTL\REST\Controllers\CustomerController;
 use JTL\REST\Controllers\CustomerGroupController;
+use JTL\REST\Controllers\ImageController;
 use JTL\REST\Controllers\LanguageController;
 use JTL\REST\Controllers\ManufacturerController;
 use JTL\REST\Controllers\OrderController;
@@ -26,8 +27,27 @@ use JTL\REST\Controllers\StockController;
 use JTL\REST\Controllers\TaxClassController;
 use JTL\REST\Controllers\TaxRateController;
 use JTL\REST\Controllers\TaxZoneController;
+use JTL\REST\Middleware\AuthMiddleware;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
+
+
+/**
+ * @OA\Info(
+ *     description="This is the JTL Shop 5 REST API.  You can find
+out more about this at
+[https://www.jtl-software.de](https://www.jtl-software.de)",
+ *     version="1.0.0",
+ *     title="JTL REST API",
+ *     @OA\Contact(
+ *         email="info@jtl-software.de"
+ *     )
+ * )
+ * @OA\Tag(
+ *     name="product",
+ *     description="All the products"
+ * )
+ */
 
 /**
  * Class Registrator
@@ -60,6 +80,7 @@ final class Registrator
         StockController::class,
         PriceController::class,
         CustomerGroupController::class,
+        ImageController::class,
     ];
 
     /**
@@ -84,5 +105,6 @@ final class Registrator
         foreach (self::$classes as $class) {
             (new $class($this->manager, $this->db, $this->cache))->registerRoutes($routeGroup);
         }
+        $routeGroup->middleware(new AuthMiddleware());
     }
 }

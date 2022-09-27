@@ -48,7 +48,7 @@ class CartItemController extends AbstractController
             'shippingClassID'    => 'integer',
             'name'               => 'max:255',
             'deliveryState'      => 'max:255',
-            'artNO'              => 'max:255',
+            'sku'                => 'max:255',
             'unit'               => 'max:255',
             'netSinglePrice'     => 'numeric',
             'price'              => 'numeric',

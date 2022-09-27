@@ -41,12 +41,22 @@ final class ProductCharacteristicModel extends DataModel
     {
         static $attributes = null;
 
-        if ($attributes === null) {
-            $attributes              = [];
-            $attributes['id']        = DataAttribute::create('kMerkmal', 'int');
-            $attributes['valueID']   = DataAttribute::create('kMerkmalWert', 'int');
-            $attributes['productID'] = DataAttribute::create('kArtikel', 'int');
+        if ($attributes !== null) {
+            return $attributes;
         }
+        $attributes              = [];
+        $attributes['id']        = DataAttribute::create('kMerkmal', 'int');
+        $attributes['valueID']   = DataAttribute::create('kMerkmalWert', 'int');
+        $attributes['productID'] = DataAttribute::create('kArtikel', 'int');
+
+//        $attributes['characteristics'] = DataAttribute::create(
+//            'characteristics',
+//            CharacteristicModel::class,
+//            null,
+//            true,
+//            false,
+//            'kMerkmal'
+//        );
 
         return $attributes;
     }

@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CategoryImageModel
- *
+ * @OA\Schema(
+ *     title="Category image model",
+ *     description="Category image model"
+ * )
  * @property int    $kKategoriePict
  * @property int    $id
  * @property int    $kKategorie
@@ -47,13 +50,16 @@ final class CategoryImageModel extends DataModel
             $attributes               = [];
             $attributes['id']         = DataAttribute::create('kKategoriePict', 'int', null, false, true);
             $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int');
-            $attributes['file']       = DataAttribute::create('cPfad', 'varchar');
+            $attributes['path']       = DataAttribute::create('cPfad', 'varchar');
             $attributes['type']       = DataAttribute::create('cType', 'char');
         }
 
         return $attributes;
     }
 
+    /**
+     * @return int
+     */
     public function getNewID(): int
     {
         return ($this->getDB()?->getSingleInt(

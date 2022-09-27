@@ -83,6 +83,44 @@ final class CharacteristicValueModel extends DataModel
 
             return $res;
         });
+        $this->registerSetter('image', function ($value, $model) {
+            if ($value === null) {
+                return null;
+            }
+            if (\is_a($value, Collection::class)) {
+                return $value;
+            }
+            if (!\is_array($value)) {
+                $value = [$value];
+            }
+            $res = $model->image ?? new Collection();
+            foreach ($value as $data) {
+                if (!isset($data['characteristicValueID'])) {
+                    $data['characteristicValueID'] = $model->id;
+                }
+                try {
+                    $item = CharacteristicValueImageModel::loadByAttributes(
+                        $data,
+                        $this->getDB(),
+                        self::ON_NOTEXISTS_NEW
+                    );
+                } catch (Exception) {
+                    continue;
+                }
+                $existing = $res->first(static function ($e) use ($item): bool {
+                    return $e->characteristicValueID === $item->characteristicValueID;
+                });
+                if ($existing === null) {
+                    $res->push($item);
+                } else {
+                    foreach ($item->getAttributes() as $attribute => $v) {
+                        $existing->setAttribValue($attribute, $item->getAttribValue($attribute));
+                    }
+                }
+            }
+
+            return $res;
+        });
     }
 
     /**
@@ -104,6 +142,15 @@ final class CharacteristicValueModel extends DataModel
         $attributes['localization'] = DataAttribute::create(
             'localization',
             CharacteristicValueLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kMerkmalWert'
+        );
+
+        $attributes['image'] = DataAttribute::create(
+            'image',
+            CharacteristicValueImageModel::class,
             null,
             true,
             false,

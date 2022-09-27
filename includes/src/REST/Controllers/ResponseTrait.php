@@ -104,7 +104,7 @@ trait ResponseTrait
      */
     public function sendInvalidFieldResponse($errors): ResponseInterface
     {
-        return new JsonResponse(['invalid_fiels' => $errors], 400);
+        return new JsonResponse(['invalid_fields' => $errors], 400);
     }
 
     /**

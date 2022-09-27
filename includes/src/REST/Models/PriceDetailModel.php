@@ -32,6 +32,11 @@ final class PriceDetailModel extends DataModel
         throw new Exception(__METHOD__ . ': setting of keyname is not supported', self::ERR_DATABASE);
     }
 
+    public function getKeyName(bool $realName = false): string
+    {
+        return $realName ? 'kPreis' : 'priceID';
+    }
+
     /**
      * @inheritdoc
      */
@@ -42,7 +47,7 @@ final class PriceDetailModel extends DataModel
         if ($attributes === null) {
             $attributes               = [];
             $attributes['id']         = DataAttribute::create('kPreisDetail', 'int', null, false, true);
-            $attributes['kPreis']     = DataAttribute::create('kPreis', 'int', null, false);
+            $attributes['priceID']    = DataAttribute::create('kPreis', 'int', null, false);
             $attributes['amountFrom'] = DataAttribute::create('nAnzahlAb', 'int', null, false);
             $attributes['netPrice']   = DataAttribute::create('fVKNetto', 'double', null, false);
         }

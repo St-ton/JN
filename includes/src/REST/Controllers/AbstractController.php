@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
 use JTL\REST\Transformers\DataModelTransformer;
+use JTL\Shop;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\Cursor;
 use League\Route\RouteGroup;
@@ -138,7 +139,8 @@ abstract class AbstractController
             $class = $this->modelClass;
             /** @var $class DataModelInterface */
             $result = $class::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception) {
+        } catch (Exception $e) {
+            die($e->getMessage());
             return $this->sendNotFoundResponse();
         }
         return $this->respondWithModel($result);
@@ -211,6 +213,7 @@ abstract class AbstractController
             $result = $this->createItem($request);
             $this->createdItem($result);
         } catch (Exception $e) {
+            Shop::dbg($e->getMessage(), true, 'EX:');
             return $this->sendCustomResponse(500, 'Error occurred creating item - duplicate ID? ' . $e->getMessage());
         }
 

@@ -9,6 +9,7 @@ use JTL\Model\DataModelInterface;
 use JTL\REST\Models\ProductImageModel;
 use JTL\REST\Models\ProductModel;
 use JTL\REST\Models\SeoModel;
+use JTL\Shop;
 use Laminas\Diactoros\UploadedFile;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
@@ -32,6 +33,42 @@ class ProductController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/product",
+     *   summary="list products",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with products"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Product not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/product/{productId}",
+     *     tags={"product"},
+     *     description="Get a product by ID",
+     *     operationId="getProductById",
+     *     @OA\Parameter(
+     *         name="productId",
+     *         in="path",
+     *         description="ID of product that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Product not found"
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

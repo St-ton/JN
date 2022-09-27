@@ -9,7 +9,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CategoryAttributeModel
- *
+ * @OA\Schema(
+ *     title="Category attribute model",
+ *     description="Category attribute model"
+ * )
  * @property int                                             $kKategorieAttribut
  * @property int                                             $id
  * @property int                                             $kKategorie

@@ -11,28 +11,119 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class CategoryModel
+ * @OA\Schema(
+ *     title="Category model",
+ *     description="Category model",
+ * )
+ *
  * @package JAPI\Models
+ * @OA\Property(
+ *   property="id",
+ *   type="integer",
+ *   example=123,
+ *   description="The category id"
+ * )
  * @property int                                    $kKategorie
  * @property int                                    $id
+ * @OA\Property(
+ *   property="slug",
+ *   type="string",
+ *   example="example-category",
+ *   description="The category url slug"
+ * )
  * @property string                                 $cSeo
  * @property string                                 $slug
+ * @OA\Property(
+ *   property="name",
+ *   type="string",
+ *   example="Example category",
+ *   description="The category name"
+ * )
  * @property string                                 $cName
  * @property string                                 $name
+ * @OA\Property(
+ *   property="description",
+ *   type="string",
+ *   example="Example description",
+ *   description="The category description"
+ * )
  * @property string                                 $cBeschreibung
  * @property string                                 $description
+ * @OA\Property(
+ *   property="parentID",
+ *   type="int",
+ *   example=0,
+ *   description="The category's parent ID (0 if none)"
+ * )
  * @property int                                    $kOberKategorie
  * @property int                                    $parentID
+ * @OA\Property(
+ *   property="sort",
+ *   type="int",
+ *   example=0,
+ *   description="The sort index"
+ * )
  * @property int                                    $nSort
  * @property int                                    $sort
+ * @OA\Property(
+ *     property="lastModified",
+ *     example="2022-09-22",
+ *     format="datetime",
+ *     description="Date of last modification",
+ *     title="Modification date",
+ *     type="string"
+ * )
  * @property DateTime                               $dLetzteAktualisierung
  * @property DateTime                               $lastModified
+ * @OA\Property(
+ *   property="lft",
+ *   type="int",
+ *   example=0,
+ *   description="Nested set model left value"
+ * )
  * @property int                                    $lft
+ * @OA\Property(
+ *   property="rght",
+ *   type="int",
+ *   example=0,
+ *   description="Nested set model right value"
+ * )
  * @property int                                    $rght
  * @property int                                    $nLevel
+ * @OA\Property(
+ *   property="level",
+ *   type="int",
+ *   example=1,
+ *   description="Nested set model level"
+ * )
  * @property int                                    $level
+ * @OA\Property(
+ *   property="localization",
+ *   type="array",
+ *   description="List of CategoryLocalizationModel objects",
+ *   @OA\Items(ref="#/components/schemas/CategoryLocalizationModel")
+ * )
  * @property Collection|CategoryLocalizationModel[] $localization
+ * @OA\Property(
+ *   property="images",
+ *   type="array",
+ *   description="List of CategoryImageModel objects",
+ *   @OA\Items(ref="#/components/schemas/CategoryImageModel")
+ * )
  * @property Collection|CategoryImageModel[]        $images
+ * @OA\Property(
+ *   property="attributes",
+ *   type="array",
+ *   description="List of CategoryAttributeModel objects",
+ *   @OA\Items(ref="#/components/schemas/CategoryAttributeModel")
+ * )
  * @property Collection|CategoryAttributeModel[]    $attributes
+ * @OA\Property(
+ *   property="visibility",
+ *   type="array",
+ *   description="List of CategoryVisibilityModel objects",
+ *   @OA\Items(ref="#/components/schemas/CategoryVisibilityModel")
+ * )
  * @property Collection|CategoryVisibilityModel[]   $visibility
  */
 final class CategoryModel extends DataModel

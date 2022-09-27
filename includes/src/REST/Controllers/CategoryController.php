@@ -8,7 +8,7 @@ use JTL\Helpers\Seo;
 use JTL\Model\DataModelInterface;
 use JTL\REST\Models\CategoryImageModel;
 use JTL\REST\Models\CategoryModel;
-use JTL\REST\Models\ProductCategories;
+use JTL\REST\Models\ProductCategoriesModel;
 use JTL\REST\Models\SeoModel;
 use Laminas\Diactoros\UploadedFile;
 use League\Fractal\Manager;
@@ -20,10 +20,90 @@ use stdClass;
  * Class CategoryController
  * @package JTL\REST\Controllers
  */
+
+/**
+ * @OA\Get(
+ *     path="/category/{categoryId}",
+ *     tags={"category"},
+ *     description="Get a single category",
+ *     summary="Get a single category",
+ *     @OA\Parameter(
+ *         description="ID of category to delete",
+ *         in="path",
+ *         name="categoryId",
+ *         required=true,
+ *         @OA\Schema(
+ *             format="int64",
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="successful operation",
+ *         @OA\JsonContent(ref="#/components/schemas/CategoryModel"),
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid ID supplied"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Category not found"
+ *     )
+ * )
+ */
+
+/**
+ * @OA\Get(
+ *     path="/category",
+ *     tags={"category"},
+ *     description="A list of categories",
+ *     summary="Get a list of categories",
+ *     @OA\Response(
+ *         response=200,
+ *         description="A list of categories"
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid ID supplied"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="No categories found"
+ *     )
+ * )
+ */
+
+/**
+ * @OA\Delete(
+ *     path="/category/{categoryId}",
+ *     description="deletes a single category based on the ID supplied",
+ *     summary="Delete a single category",
+ *     operationId="deleteCategory",
+ *     tags={"category"},
+ *     @OA\Parameter(
+ *         description="ID of category to delete",
+ *         in="path",
+ *         name="categoryId",
+ *         required=true,
+ *         @OA\Schema(
+ *             format="int64",
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=204,
+ *         description="Category deleted"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Categoty not found"
+ *     )
+ * )
+ */
 class CategoryController extends AbstractController
 {
     /**
-     * CategoryController constructor.
      * @inheritdoc
      */
     public function __construct(Manager $fractal, protected DbInterface $db, protected JTLCacheInterface $cache)
@@ -45,6 +125,37 @@ class CategoryController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Post(
+     *     path="/category",
+     *     tags={"category"},
+     *     summary="Create category",
+     *     description="",
+     *     summary="Create a category",
+     *     operationId="createUser",
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="An array of validation errors",
+     *         @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                  property="invalid_fields",
+     *                  type="object",
+     *                  @OA\Property(property="name",type="string",example="The Name is required"),
+     *                  @OA\Property(property="description",type="string",example="The Description maximum is 255")
+     *              )
+     *          ),
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Create category object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryModel")
+     *     )
+     * )
      */
     protected function createItem(ServerRequestInterface $request): DataModelInterface
     {
@@ -67,7 +178,7 @@ class CategoryController extends AbstractController
                     'id'         => $model->getNewID(),
                     'categoryID' => $item->id,
                     'type'       => '',
-                    'file'       => $file->getClientFilename()
+                    'path'       => $file->getClientFilename()
                 ];
                 $model::create($data, $this->db);
                 $item->images = [(array)$data];
@@ -153,7 +264,7 @@ class CategoryController extends AbstractController
         }
         foreach ($subItems as $subItem) {
             $this->deleteSubItems($subItem->getId());
-            $productCategories = ProductCategories::loadAll($this->db, 'kKategorie', $subItem->getId());
+            $productCategories = ProductCategoriesModel::loadAll($this->db, 'kKategorie', $subItem->getId());
             if (count($productCategories) > 0) {
                 foreach ($productCategories as $productCategory) {
                     $productCategory->delete();

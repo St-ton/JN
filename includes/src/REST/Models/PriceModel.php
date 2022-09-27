@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
+use JTL\Shop;
 
 /**
  * Class PriceModel
@@ -57,7 +58,7 @@ final class PriceModel extends DataModel
             return $value;
         });
 
-        $this->registerSetter('detail', function ($value, $model) {
+        $this->registerSetter('2detail', function ($value, $model) {
             if (\is_a($value, Collection::class)) {
                 return $value;
             }
@@ -73,6 +74,41 @@ final class PriceModel extends DataModel
                     $data['kPreis'] = $model->kPreis;
                 }
                 $res = $this->updateSingleDetailItem($res, $value, $model);
+            }
+
+            return $res;
+        });
+
+        $this->registerSetter('detail', function ($value, $model) {
+            if (\is_a($value, Collection::class)) {
+                return $value;
+            }
+            if (!\is_array($value)) {
+                $value = [$value];
+            }
+            $res = $model->detail ?? new Collection();
+            foreach (\array_filter($value) as $data) {
+                if (!isset($data['priceID'])) {
+                    $data['priceID'] = $model->id;
+                }
+                try {
+                    $price = PriceDetailModel::loadByAttributes($data, $this->getDB(), self::ON_NOTEXISTS_NEW);
+                } catch (Exception) {
+                    continue;
+                }
+                $existing = $res->first(static function ($e) use ($price): bool {
+                    return $e->kPreis > 0
+                        && $price->kPreis > 0
+                        && $e->kPreis === $price->kPreis
+                        && $e->kPreisDetail === $price->kPreisDetail;
+                });
+                if ($existing === null) {
+                    $res->push($price);
+                } else {
+                    foreach ($price->getAttributes() as $attribute => $v) {
+                        $existing->setAttribValue($attribute, $price->getAttribValue($attribute));
+                    }
+                }
             }
 
             return $res;
@@ -112,6 +148,11 @@ final class PriceModel extends DataModel
         return $collection;
     }
 
+    public function getKeyName(bool $realName = false): string
+    {
+        return $realName ? 'kPreis' : 'id';
+    }
+
     /**
      * @inheritdoc
      */
@@ -128,7 +169,14 @@ final class PriceModel extends DataModel
         $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', null, false);
         $attributes['customerID']      = DataAttribute::create('kKunde', 'int');
 
-        $attributes['detail'] = DataAttribute::create('detail', PriceDetailModel::class, null, true, false, 'kPreis');
+        $attributes['detail'] = DataAttribute::create(
+            'detail',
+            PriceDetailModel::class,
+            null,
+            true,
+            false,
+            'kPreis'
+        );
 
         return $attributes;
     }

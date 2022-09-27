@@ -7,9 +7,9 @@ use JTL\Model\DataAttribute;
 use JTL\Model\DataModel;
 
 /**
- * Class ProductCategories
+ * Class ProductCategoriesModel
  *
- * @package JTL\ChangeMe
+ * @package JTL\REST\Models
  * @property int $kKategorieArtikel
  * @property int $id
  * @property int $kArtikel
@@ -17,7 +17,7 @@ use JTL\Model\DataModel;
  * @property int $kKategorie
  * @property int $categoryID
  */
-final class ProductCategories extends DataModel
+final class ProductCategoriesModel extends DataModel
 {
     /**
      * @inheritdoc

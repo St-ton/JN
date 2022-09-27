@@ -9,19 +9,48 @@ use JTL\Model\DataModel;
 /**
  * Class CartModel
  *
+ * @OA\Schema(
+ *     title="Cart model",
+ *     description="Cart model",
+ * )
+ *
  * @package JTL\REST\Models
+ * @OA\Property(
+ *   property="id",
+ *   type="integer",
+ *   description="The cart's id"
+ * )
+ * @property int $id
  * @property int $kWarenkorb
- * @method int getKWarenkorb()
- * @method void setKWarenkorb(int $value)
+ * @method int getId()
+ * @method void setId(int $value)
+ * @OA\Property(
+ *   property="customerID",
+ *   type="integer",
+ *   description="The customers's id"
+ * )
+ * @property int $customerID
  * @property int $kKunde
- * @method int getKKunde()
- * @method void setKKunde(int $value)
+ * @method int getCustomerId()
+ * @method void setCustomerId(int $value)
+ * @OA\Property(
+ *   property="deliveryAddressID",
+ *   type="integer",
+ *   description="The delivery address id"
+ * )
+ * @property int $deliveryAddressID
  * @property int $kLieferadresse
- * @method int getKLieferadresse()
- * @method void setKLieferadresse(int $value)
+ * @method int getDeliveryAddressId()
+ * @method void setDeliveryAddressId(int $value)
+ * @OA\Property(
+ *   property="paymentInfoID",
+ *   type="integer",
+ *   description="The payment method's id"
+ * )
+ * @property int $paymentInfoID
  * @property int $kZahlungsInfo
- * @method int getKZahlungsInfo()
- * @method void setKZahlungsInfo(int $value)
+ * @method int getPaymentInfoId()
+ * @method void setPaymentInfoId(int $value)
  */
 final class CartModel extends DataModel
 {

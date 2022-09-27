@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use stdClass;
 use function Functional\select;
 
@@ -216,9 +217,13 @@ abstract class DataModel implements DataModelInterface, Iterator
     protected function createNew(int $option = self::NONE): self
     {
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
+
         if (!empty($pkValue)) {
-            if (empty($this->getKey())) {
-                $this->setKey($pkValue);
+            if (!empty($this->getKeyName())) {
+                $key = $this->getKey();
+                if (empty($key)) {
+                    $this->setKey($pkValue);
+                }
             }
         } elseif ($option === self::ON_EXISTS_UPDATE) {
             $this->save();
@@ -563,10 +568,12 @@ abstract class DataModel implements DataModelInterface, Iterator
         $keyValue     = null;
         $keyName      = null;
         $members      = $this->getSqlObject();
-        $allKeyNames  = $this->getAllKeyNames(true);
         try {
-            $keyValue = $this->getKey();
+            $allKeyNames  = $this->getAllKeyNames(true);
             $keyName  = $this->getKeyName(true);
+//            Shop::dbg($keyName, false, 'keyName@' . get_class($this));
+            $keyValue = $this->getKey();
+//            Shop::dbg($keyValue,false, 'got key value:');
             if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }
@@ -578,10 +585,19 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $members = $this->getMembersToSave($members, $partial);
+//        echo '<br>##### save or update @ ' . get_class($this) . '<br>';
+//        Shop::dbg($noPrimaryKey,false, 'noPrimaray');
+//        Shop::dbg($keyValue, false, 'keyValue:');
+//        Shop::dbg($this->loaded, false, 'loaded:');
         if (!$this->loaded || $noPrimaryKey || $keyValue === null || $keyValue === 0) {
+//            Shop::dbg($members, false, 'INSERTING ' . $this->getTableName());
             $pkValue = $this->db->insert($this->getTableName(), $members);
+//            Shop::dbg($pkValue, false, 'resulting $pkValue:');
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
-                $this->setKey($pkValue);
+//                Shop::dbg($pkValue, false, 'setting pkValue to key ' . $this->getKeyName());
+                try {
+                    $this->setKey($pkValue);
+                } catch (Exception) {}
                 if ($updateChildModels) {
                     $this->updateChildModels();
                 }
@@ -596,6 +612,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
         // hack to allow updating tables like "tkategoriesprache" where no single primary key is present
         if (\count($allKeyNames) > 1) {
+//            Shop::dbg($allKeyNames, false, '$allKeyNames@' . get_class($this));
             $keyValue = [];
             $keyName  = [];
             foreach ($allKeyNames as $name) {
@@ -758,18 +775,17 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function getKeyName(bool $realName = false): string
     {
-        static $keyName = null;
-        if ($keyName === null) {
-            foreach ($this->getAttributes() as $attribute) {
-                if ($attribute->isPrimaryKey) {
-                    $keyName = $attribute->name;
-                    break;
-                }
+        $keyName = null;
+        foreach ($this->getAttributes() as $attribute) {
+            if ($attribute->isPrimaryKey) {
+                $keyName = $attribute->name;
+                break;
             }
         }
 
         if (!isset($keyName)) {
-            throw new Exception(__METHOD__ . ': no primary key exists', self::ERR_NO_PRIMARY_KEY);
+//            Shop::dbg($realName,false,get_class($this),9,99);
+            throw new Exception(__METHOD__ . ': no primary key1 exists', self::ERR_NO_PRIMARY_KEY);
         }
 
         return $realName ? $keyName : $this->getMapping($keyName);
@@ -780,17 +796,14 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public function getAllKeyNames(bool $realName = false): array
     {
-        static $keyNames = null;
-        if ($keyNames === null) {
-            foreach ($this->getAttributes() as $attribute) {
-                if ($attribute->isPrimaryKey) {
-                    $keyNames[] = $attribute->name;
-                }
+        $keyNames = [];
+        foreach ($this->getAttributes() as $attribute) {
+            if ($attribute->isPrimaryKey) {
+                $keyNames[] = $attribute->name;
             }
         }
-
-        if ($keyNames === null) {
-            throw new Exception(__METHOD__ . ': no primary key exists', self::ERR_NO_PRIMARY_KEY);
+        if (\count($keyNames) === 0) {
+            throw new Exception(__METHOD__ . ': no primary key2 exists', self::ERR_NO_PRIMARY_KEY);
         }
 
         return $realName ? $keyNames : \array_map([$this, 'getMapping'], $keyNames);
@@ -806,6 +819,12 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (\array_key_exists($attribName, $this->getAttributes())) {
                 return $default;
             }
+            echo '<br><br>#########errrror!<br>';
+            Shop::dbg($this,false,get_class($this));
+            Shop::dbg($attribName,true,'error',99);
+die('error@key' . $attribName);
+            Shop::dbg($this->getAttributes(), false, 'getAttributes@' . __CLASS__);
+            Shop::dbg($this, true);
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
 

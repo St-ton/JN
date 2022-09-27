@@ -4,6 +4,7 @@ namespace JTL\REST\Controllers;
 
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Model\DataModelInterface;
 use JTL\REST\Models\CartModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
@@ -26,6 +27,36 @@ class CartController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *     path="/cart/{cardId}",
+     *     tags={"cart"},
+     *     description="For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CartModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Cart not found"
+     *     )
+     * )
+     * @OA\Get(
+     *   path="/cart",
+     *   summary="list carts",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with products"
+     *   ),
+     *   @OA\Response(
+     *     response="default",
+     *     description="an ""unexpected"" error"
+     *   )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
@@ -34,6 +65,14 @@ class CartController extends AbstractController
         $routeGroup->put('/cart/{id}', [$this, 'update']);
         $routeGroup->post('/cart', [$this, 'create']);
         $routeGroup->delete('/cart/{id}', [$this, 'delete']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function deletedItem(DataModelInterface $item): void
+    {
+        parent::deletedItem($item);
     }
 
     /**

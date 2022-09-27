@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CategoryAttributeLocalizationModel
- *
+ * @OA\Schema(
+ *     title="Category attribute localization model",
+ *     description="Category attribute localization model"
+ * )
  * @property int    $kAttribut
  * @property int    $attributeID
  * @property int    $kSprache

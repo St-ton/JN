@@ -154,7 +154,7 @@ class Backend extends AbstractSession
      */
     private static function createHash(): string
     {
-        return \bin2hex(\hash('sha1', \APPLICATION_VERSION));
+        return \hash('sha1', \APPLICATION_VERSION);
     }
 
     /**

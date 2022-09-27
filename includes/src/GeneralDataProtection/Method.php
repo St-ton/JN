@@ -23,13 +23,41 @@ class Method
     protected DateTime $now;
 
     /**
-     * select the maximum of 1,000 rows for one step!
-     * (if the scripts are running each day, we need some days
-     * to anonymize more than 1,000 data sets)
+     * select the maximum of 1000 rows for one "step per task"!
+     * (CONSIDER: some tasks need to overwrite this!)
      *
      * @var int
      */
     protected int $workLimit = 1000;
+
+    /**
+     * summery of processed entities per method
+     *
+     * @var int
+     */
+    protected $workSum = 0;
+
+    /**
+     * is this task finished
+     *
+     * @var boolean
+     */
+    protected $isFinished = false;
+
+    /**
+     * max repetitions of one task
+     * (can be overridden in each task)
+     *
+     * @var int
+     */
+    protected $taskRepetitions = 0;
+
+    /**
+     * last ID for `CleanupGuestAccountsWithoutOrders`
+     *
+     * @var int
+     */
+    protected $lastProductID = 0;
 
     /**
      * the last date we keep
@@ -69,5 +97,56 @@ class Method
                 'Wrong Interval given: ' . $this->interval
             );
         }
+    }
+
+    /**
+     * deliver the state of a method
+     *
+     * @return boolean
+     */
+    public function getIsFinished(): bool
+    {
+        return $this->isFinished;
+    }
+
+    /**
+     * deliver the summery of processed entities in method
+     *
+     * @return integer
+     */
+    public function getWorkSum(): int
+    {
+        return $this->workSum;
+    }
+
+    /**
+     * deliver the max alowed repetition of one task
+     *
+     * @return integer
+     */
+    public function getTaskRepetitions(): int
+    {
+        return $this->taskRepetitions;
+    }
+
+    /**
+     * deliver the last ID in table (CleanupGuestAccountsWithoutOrders)
+     *
+     * @return integer
+     */
+    public function getLastProductID(): int
+    {
+        return $this->lastProductID ?? 0;
+    }
+
+    /**
+     * set the last processed tupel ID of a table
+     *
+     * @param int $lastProductID
+     * @return void
+     */
+    public function setLastProductID(int $lastProductID): void
+    {
+        $this->lastProductID = $lastProductID;
     }
 }

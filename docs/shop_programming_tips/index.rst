@@ -8,6 +8,7 @@ Programmier-Tipps
 .. toctree::
     :hidden:
 
+    contributing
     alerts
     notifications
     shopclass

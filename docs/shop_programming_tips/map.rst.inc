@@ -1,3 +1,6 @@
+:doc:`/shop_programming_tips/contributing`
+    Mitmachen beim Entwickeln von JTL-Shop
+
 :doc:`/shop_programming_tips/alerts`
     Informationen über das Erzeugen von Alerts (Meldungen wie z.B. Fehler/Hinweise)
 

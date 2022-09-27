@@ -1364,10 +1364,12 @@ class CheckoutController extends RegistrationController
         $this->smarty->assign('laender', $countries)
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))
             ->assign('Kunde', $_SESSION['Kunde'] ?? null)
-            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
+            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null)
+            ->assign('shippingAddressPresetID', $_SESSION['shippingAddressPresetID']);
         if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
             $this->smarty->assign('Lieferadresse', $Lieferadresse);
         }
+        unset($_SESSION['shippingAddressPresetID']);
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE);
 
         return $Lieferadresse;

@@ -7,7 +7,7 @@ Mitmachen
 
 **Sie sind herzlich eingeladen, sich an der Entwicklung von JTL-Shop zu beteiligen.**
 
-Um aktiv an der Entwicklung mitzuarbeiten, biete Ihnen JTL-Shop ein öffentliches
+Um aktiv an der Entwicklung mitzuarbeiten, bietet Ihnen JTL-Shop ein öffentliches
 Repository: `JTL-Shop core <https://gitlab.com/jtl-software/jtl-shop/core>`_
 
 Um mitzuwirken, gehen Sie wie folgt vor:

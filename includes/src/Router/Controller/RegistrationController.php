@@ -200,6 +200,11 @@ class RegistrationController extends PageController
                 unset($customerData->cPasswortKlartext, $customerData->Anrede);
 
                 $customerData->kKunde = $customerData->insertInDB();
+
+                \executeHook(\HOOK_REGISTRATION_CUSTOMER_CREATED, [
+                    'customerID' => $customerData->kKunde,
+                ]);
+
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     Campaign::setCampaignAction(\KAMPAGNE_DEF_ANMELDUNG, $customerData->kKunde, 1.0); // Anmeldung

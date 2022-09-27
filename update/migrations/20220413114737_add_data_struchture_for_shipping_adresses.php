@@ -143,7 +143,7 @@ class Migration_20220413114737 extends Migration implements IMigration
         $this->setLocalization('eng', 'datatables', 'paginateprevious', 'Previous');
 
         $this->setLocalization('ger', 'global', 'showMore', 'Mehr anzeigen');
-        $this->setLocalization('eng', 'gloabl', 'showMore', 'Show more');
+        $this->setLocalization('eng', 'global', 'showMore', 'Show more');
 
         $this->setLocalization('ger', 'account data', 'setAsStandard', 'Als Standard festlegen');
         $this->setLocalization('eng', 'account data', 'setAsStandard', 'Set as standard');

@@ -246,7 +246,11 @@
     border: 1px solid $gray-lighter;
     padding: map-get($spacers, 3);
     margin-bottom: map-get($spacers, 4);
+    td:first-child {
+      width: 5%;
+    }
   }
+  margin-top: map-get($spacers, 3);
 }
 .new-shipping-address {
   border: 1px solid $gray-lighter;

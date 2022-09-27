@@ -29,14 +29,9 @@
                     {/col}
                     {col md=8}
                     {block name='checkout-inc-shipping-address-fieldset-address'}
-                        <div class="h3">{lang key='chooseShippingAdress' section='checkout'}</div>
                         <table id="shipping-address-templates" class="table table-hover display compact" style="width:100%">
                             <thead>
                             <tr>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
@@ -45,31 +40,38 @@
                             </thead>
                             <tbody>
                             {foreach $Lieferadressen as $adresse}
+                                {$checkAddress = (isset($shippingAddressPresetID) && ($shippingAddressPresetID == $adresse->kLieferadresse))
+                                    || (!isset($shippingAddressPresetID) && (
+                                        $kLieferadresse == $adresse->kLieferadresse
+                                        || ($kLieferadresse != -1 && $kLieferadresse != $adresse->kLieferadresse && $adresse->nIstStandardLieferadresse == 1)
+                                    )
+                                )}
                                 <tr>
                                     <td>
                                         <label class="btn-block no-caret text-wrap" for="delivery{$adresse->kLieferadresse}" data-toggle="collapse" data-target="#register_shipping_address.show">
-                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=($kLieferadresse == $adresse->kLieferadresse || $adresse->nIstStandardLieferadresse == 1)}
+                                            {radio name="kLieferadresse" value=$adresse->kLieferadresse id="delivery{$adresse->kLieferadresse}" checked=$checkAddress}
 
                                             {/radio}
                                         </label>
                                     </td>
-                                    <td></td>
                                     <td>
-                                        {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
-                                        <strong>{$adresse->cVorname} {$adresse->cNachname}</strong><br />
-                                        {$adresse->cStrasse} {$adresse->cHausnummer}<br />
-                                        {$adresse->cPLZ} {$adresse->cOrt}<br />
+                                        <div class="dt-address" data-delivery-id="#delivery{$adresse->kLieferadresse}">
+                                            {if $adresse->cFirma}{$adresse->cFirma}<br />{/if}
+                                            <strong>{if $adresse->cTitel}{$adresse->cTitel}{/if} {$adresse->cVorname} {$adresse->cNachname}</strong><br />
+                                            {$adresse->cStrasse} {$adresse->cHausnummer}<br />
+                                            {$adresse->cPLZ} {$adresse->cOrt}<br />
+                                            <div id="deliveryAdditional{$adresse->kLieferadresse}" class="collapse">
+                                                {block name='checkout-inc-shipping-address-include-inc-delivery-address'}
+                                                    {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$adresse hideMainInfo=true}
+                                                {/block}
+                                            </div>
+                                        </div>
+                                        {button variant="link" class="btn-show-more"
+                                            data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$adresse->kLieferadresse}"]}
+                                            {lang  key='showMore'}
+                                        {/button}
                                     </td>
-                                    <td>
-                                        {$adresse->cTitel}
-                                    </td>
-                                    <td>
-                                        {$adresse->cBundesland}
-                                    </td>
-                                    <td>
-                                        {$adresse->cAdressZusatz}
-                                    </td>
-                                    <td class="text-right">
+                                    <td class="text-right-util">
                                         {link href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'editAddress' => {$adresse->kLieferadresse}, 'fromCheckout'=>1]}" class="btn btn-outline-primary btn-sm" alt="Adresse bearbeiten"}
                                             <span class="fas fa-pencil-alt"></span>
                                         {/link}
@@ -94,7 +96,7 @@
                             </label>
                         {/block}
                         {block name='checkout-inc-shipping-address-fieldset-register'}
-                            <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1} show{/if}" aria-expanded="{if $kLieferadresse == -1}true{else}false{/if}">
+                            <fieldset id="register_shipping_address" class="checkout-register-shipping-address collapse collapse-non-validate {if $kLieferadresse == -1 && !isset($shippingAddressPresetID)} show{/if}" aria-expanded="{if $kLieferadresse == -1 && !isset($smarty.session.shippingAddressPresetID)}true{else}false{/if}">
                                 {block name='checkout-inc-shipping-address-legend-register'}
                                     <legend>{lang key='createNewShippingAdress' section='account data'}</legend>
                                 {/block}
@@ -150,28 +152,7 @@
 <script>
     $(document).ready(function () {
         function format(d) {
-            return (
-                '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
-                '<tr>' +
-                '<td>Titel:</td>' +
-                '<td>' +
-                d.titel +
-                '</td>' +
-                '</tr>' +
-                '<tr>' +
-                '<td>Adresszusatz:</td>' +
-                '<td>' +
-                d.adresszusatz +
-                '</td>' +
-                '</tr>' +
-                '<tr>' +
-                '<td>Bundesland:</td>' +
-                '<td>' +
-                d.bundesland +
-                '</td>' +
-                '</tr>' +
-                '</table>'
-            );
+            return (d.moreAddressData);
         }
 
         var table = $('#shipping-address-templates').DataTable( {
@@ -192,16 +173,7 @@
             },
             columns: [
                 { data: 'select' },
-               /* {
-                    className: 'dt-control',
-                    orderable: false,
-                    data: null,
-                    defaultContent: '',
-                }, */
                 { data: 'address' },
-                { data: 'titel' },
-                { data: 'bundesland' },
-                { data: 'adresszusatz' },
                 { data: 'buttons' },
                 { data: 'sort' }
             ],
@@ -210,25 +182,19 @@
             },
             columnDefs: [
                 {
-                    target: 3,
-                    visible: false,
-                },{
-                    target: 4,
-                    visible: false,
-                },{
-                    target: 5,
-                    visible: false,
-                },{
-                    target: 7,
+                    targets: [3],
                     visible: false,
                 }
             ],
             lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
             pageLength: 5,
-            order: [6, 'desc'],
+            order: [2, 'desc'],
             initComplete: function (settings, json) {
                 $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                 $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');
+                $('.dt-address').on('click', function (e) {
+                    $($(this).data('delivery-id')).prop('checked', true);
+                });
             },
             drawCallback: function( settings ) {
                 $('table.dataTable thead').remove();
@@ -239,11 +205,9 @@
             let tr = $(this).closest('tr'),
                 row = table.row(tr);
             if (row.child.isShown()) {
-                // This row is already open - close it
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                // Open this row
                 row.child(format(row.data())).show();
                 tr.addClass('shown');
             }

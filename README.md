@@ -66,6 +66,17 @@
 * LESS Leaner CSS - Apache v2 License
 * [slick](https://github.com/kenwheeler/slick/) - MIT
 
+## Contributing
+
+If you want to participate in the development of JTL-Shop,  
+you can do it in the following way:
+
+* first create your own *fork* of this repository
+* then create a *branch* in your own *fork*
+* finally make a merge request for that *branch* in the *upstream* of your *fork*
+
+Please DO NOT create a merge request of your own master branch!
+
 ## Related Links
 
 * [JTL](https://www.jtl-software.de/) - JTL-Software Homepage

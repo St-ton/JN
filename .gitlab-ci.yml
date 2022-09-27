@@ -18,7 +18,9 @@ stages:
   export CI_CONTAINER_NAME=ci-job-$CI_PROJECT_NAME-build-deploy-$CI_COMMIT_SHA
   export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
   export BUILD_SCRIPT_PATH=build/scripts/build.sh
-  export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh 
+  export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
+  #exprot BUILD_IMAGE="build-deploy"       # ":latest" fallback
+  exprot BUILD_IMAGE="build-deploy:php80"
 
   function dockerLogin() {
     echo "Login to GitLab Container Registry with CI credentials..."
@@ -31,7 +33,7 @@ stages:
     DB_HOST_NET=$(docker network inspect -f '{{range .Containers}}{{if eq .Name "mariadb-10-2-container"}}{{.IPv4Address}}{{end}}{{end}}' mysql-php-network)
     DB_HOST="${DB_HOST_NET::-3}"
 
-    echo "Building projekt in PHP 7.3 and mariadb server 10.2 docker image..."
+    echo "Building projekt in docker image \"${BUILD_IMAGE:`expr index "${BUILD_IMAGE}" :` -1}\" (based on MariaDB 10.3)..."
     docker run \
       -d -it \
       -w '/creation' \
@@ -39,7 +41,7 @@ stages:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network mysql-php-network \
-      $GLOBAL_CI_REGISTRY_URL/build-deploy \
+      $GLOBAL_CI_REGISTRY_URL/$BUILD_IMAGE \
       bash
 
     docker exec \

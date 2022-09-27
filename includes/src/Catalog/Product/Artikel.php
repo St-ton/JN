@@ -4393,7 +4393,9 @@ class Artikel implements RoutableInterface
                     ) . $per;
             }
         } else {
-            $price = $this->Preise->oPriceRange === null ? $price : $this->Preise->oPriceRange->minNettoPrice;
+            $price = $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()
+                ? $this->Preise->oPriceRange->minNettoPrice
+                : $price;
 
             $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
                 Tax::getGross($price / $this->fVPEWert, $ust, $precision),

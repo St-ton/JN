@@ -1984,6 +1984,13 @@ const HOOK_NEWS_ITEM_MAPPED = 360;
  */
 const HOOK_TPL_LOAD_PRE = 361;
 
+
+/**
+ * @since 5.2.0
+ * @param int customerID
+ */
+const HOOK_REGISTRATION_CUSTOMER_CREATED = 362;
+
 /**
  * @since 5.2.0
  * @param JTL\Router\Router router

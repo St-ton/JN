@@ -184,6 +184,9 @@ class Form
             $_SESSION['newShippingAddressPreset'] = 1;
         }
         $_SESSION['Bestellung']->kLieferadresse = (int)($post['kLieferadresse'] ?? -1);
+        if (isset($post['kLieferadresse'])) {
+            $_SESSION['shippingAddressPresetID'] = (int)$post['kLieferadresse'];
+        }
         Frontend::getCart()->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS);
         unset($_SESSION['Versandart']);
         // neue lieferadresse

@@ -42,3 +42,12 @@
 table caption {
 	caption-side: top;
 }
+
+table.dataTable  {
+	td {
+		vertical-align: middle;
+	}
+	.dt-address {
+		cursor: pointer;
+	}
+}

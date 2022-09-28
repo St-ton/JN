@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CustomerGroupAttributeModel
- *
+ * @OA\Schema(
+ *     title="Customer group attribute model",
+ *     description="Customer group attribute model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kKundengruppenAttribut
  * @method int getKKundengruppenAttribut()
@@ -25,6 +28,33 @@ use JTL\Model\DataModel;
  */
 final class CustomerGroupAttributeModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="example_attribute",
+     *   description="The attribute name"
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="string",
+     *   example="example_value",
+     *   description="The attribute value"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -53,7 +83,13 @@ final class CustomerGroupAttributeModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['id']              = DataAttribute::create('kKundengruppenAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['id']              = DataAttribute::create(
+            'kKundengruppenAttribut',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
         $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int');
         $attributes['name']            = DataAttribute::create('cName', 'varchar');
         $attributes['value']           = DataAttribute::create('cWert', 'varchar');

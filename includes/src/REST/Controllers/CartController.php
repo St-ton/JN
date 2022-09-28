@@ -30,7 +30,7 @@ class CartController extends AbstractController
      * @OA\Get(
      *     path="/cart/{cardId}",
      *     tags={"cart"},
-     *     description="For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
+     *     summary="Get cart by ID",
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -47,6 +47,7 @@ class CartController extends AbstractController
      * )
      * @OA\Get(
      *   path="/cart",
+     *   tags={"cart"},
      *   summary="list carts",
      *   @OA\Response(
      *     response=200,

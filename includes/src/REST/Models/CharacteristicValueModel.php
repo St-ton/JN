@@ -9,7 +9,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CharacteristicValueModel
- *
+ * @OA\Schema(
+ *     title="Characteristic model",
+ *     description="Characteristic model",
+ * )
  * @property int                                                $kMerkmalWert
  * @property int                                                $id
  * @property int                                                $kMerkmal
@@ -18,10 +21,43 @@ use JTL\Model\DataModel;
  * @property int                                                $sort
  * @property string                                             $cBildpfad
  * @property string                                             $imagePath
- * @property Collection|CharacteristicValueLocalizationModel[] $localization
  */
 final class CharacteristicValueModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=25,
+     *   description="The characteristic value ID"
+     * )
+     * @OA\Property(
+     *   property="characteristicID",
+     *   type="int",
+     *   example=7,
+     *   description="The characteristic ID"
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   example=0,
+     *   description="The sort number"
+     * )
+     * @OA\Property(
+     *   property="imagePath",
+     *   type="string",
+     *   example="example.jpg",
+     *   description="The image file"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of CharacteristicValueLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/CharacteristicValueLocalizationModel")
+     * )
+     * @property Collection|CharacteristicValueLocalizationModel[] $localization
+     */
+
     /**
      * @inheritdoc
      */

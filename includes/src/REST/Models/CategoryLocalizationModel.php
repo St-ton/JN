@@ -32,6 +32,57 @@ use JTL\Model\DataModel;
 final class CategoryLocalizationModel extends DataModel
 {
     /**
+     * @OA\Property(
+     *   property="categoryID",
+     *   type="int",
+     *   example=1,
+     *   description="The category ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="slug",
+     *   type="string",
+     *   example="example-category",
+     *   description="The URL slug"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Example Category",
+     *   description="The category's name"
+     * )
+     * @OA\Property(
+     *   property="description",
+     *   type="string",
+     *   example="This is an example category",
+     *   description="The description"
+     * )
+     * @OA\Property(
+     *   property="metaDescription",
+     *   type="string",
+     *   example="Example category meta description",
+     *   description="The meta description"
+     * )
+     * @OA\Property(
+     *   property="metaKeywords",
+     *   type="string",
+     *   example="example,keywords,for,this,category",
+     *   description="The meta keywords"
+     * )
+     * @OA\Property(
+     *   property="metaTitle",
+     *   type="string",
+     *   example="Example title for example category",
+     *   description="The meta description"
+     * )
+     */
+
+    /**
      * @inheritdoc
      */
     public function getTableName(): string
@@ -58,8 +109,20 @@ final class CategoryLocalizationModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['categoryID']      = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
-        $attributes['languageID']      = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
+        $attributes['categoryID']      = DataAttribute::create(
+            'kKategorie',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['languageID']      = DataAttribute::create(
+            'kSprache',
+            'tinyint',
+            self::cast('0', 'tinyint'),
+            false,
+            true
+        );
         $attributes['slug']            = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
         $attributes['name']            = DataAttribute::create('cName', 'varchar');
         $attributes['description']     = DataAttribute::create('cBeschreibung', 'mediumtext');

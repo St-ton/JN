@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class OrderModel
- *
+ * @OA\Schema(
+ *     title="Order model",
+ *     description="Order model",
+ * )
  * @package JTL\REST\Models
  * @property int      $kBestellung
  * @method int getKBestellung()
@@ -111,6 +114,215 @@ use JTL\Model\ModelHelper;
  */
 final class OrderModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The order ID"
+     * )
+     * @OA\Property(
+     *   property="cartID",
+     *   type="int",
+     *   example=1,
+     *   description="The cart ID"
+     * )
+     * @OA\Property(
+     *   property="customerID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer ID"
+     * )
+     * @OA\Property(
+     *   property="deliveryAddressID",
+     *   type="int",
+     *   example=1,
+     *   description="The delivery address ID"
+     * )
+     * @OA\Property(
+     *   property="billingAddressID",
+     *   type="int",
+     *   example=1,
+     *   description="The billing address ID"
+     * )
+     * @OA\Property(
+     *   property="paymentMethodID",
+     *   type="int",
+     *   example=1,
+     *   description="The payment method ID"
+     * )
+     * @OA\Property(
+     *   property="shippingMethodID",
+     *   type="int",
+     *   example=1,
+     *   description="The shipping method ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="currencyID",
+     *   type="int",
+     *   example=1,
+     *   description="The currency ID"
+     * )
+     * @OA\Property(
+     *   property="paymentType",
+     *   type="int",
+     *   example=0,
+     *   description="???"
+     * )
+     * @OA\Property(
+     *   property="balance",
+     *   type="float",
+     *   example=0,
+     *   description="???"
+     * )
+     * @OA\Property(
+     *   property="total",
+     *   type="float",
+     *   example=123.45,
+     *   description="Total order sum"
+     * )
+     * @OA\Property(
+     *   property="sessionID",
+     *   type="string",
+     *   example="rv3mjk0v3nvlhf31vitu3krlnn",
+     *   description="The PHP session ID"
+     * )
+     * @OA\Property(
+     *   property="shippingMethodName",
+     *   type="string",
+     *   example="DHL Paket",
+     *   description="The shipping method name"
+     * )
+     * @OA\Property(
+     *   property="paymentMethodName",
+     *   type="string",
+     *   example="PayPal",
+     *   description="The payment method name"
+     * )
+     * @OA\Property(
+     *   property="orderNO",
+     *   type="string",
+     *   example="123",
+     *   description="The order number"
+     * )
+     * @OA\Property(
+     *   property="shippingInfo",
+     *   type="string",
+     *   example="",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="longestMinDelivery",
+     *   type="int",
+     *   example=1,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="longestMaxDelivery",
+     *   type="int",
+     *   example=4,
+     *   description=""
+     * )
+     * @OA\Property(
+     *     property="shippingDate",
+     *     example="2022-09-22",
+     *     format="datetime",
+     *     description="Date of shipping",
+     *     title="Date of shipping",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="paymentDate",
+     *     example="2022-09-22",
+     *     format="datetime",
+     *     description="Date of incoming payment",
+     *     title="Date of incoming payment",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="reviewReminder",
+     *     example="2022-09-22",
+     *     format="datetime",
+     *     description="Date of sent review reminder",
+     *     title="Date of sent review reminder",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *   property="trackingID",
+     *   type="string",
+     *   example="",
+     *   description="The package's tracking ID"
+     * )
+     * @OA\Property(
+     *   property="comment",
+     *   type="string",
+     *   example="",
+     *   description="Order comment"
+     * )
+     * @OA\Property(
+     *   property="logistics",
+     *   type="string",
+     *   example="DHL",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="trackingURL",
+     *   type="string",
+     *   example="https://example.com?track=123abc",
+     *   description="The tracking URL"
+     * )
+     * @OA\Property(
+     *   property="ipAddress",
+     *   type="string",
+     *   example="127.0.0.1",
+     *   description="The customer's IP address"
+     * )
+     * @OA\Property(
+     *   property="fetched",
+     *   type="string",
+     *   example="N",
+     *   description="Fetched by Wawi"
+     * )
+     * @OA\Property(
+     *   property="state",
+     *   type="string",
+     *   example="0",
+     *   description="-1, 1, 2, 3, 4, 5"
+     * )
+     * @OA\Property(
+     *     property="created",
+     *     example="2022-09-22 12:13:14",
+     *     format="datetime",
+     *     description="Date of creation",
+     *     title="Date of creation",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *   property="currencyConversionFactor",
+     *   type="float",
+     *   example="1",
+     *   description="Currency conversion factor"
+     * )
+     * @OA\Property(
+     *   property="puidPaymentData",
+     *   type="string",
+     *   example="",
+     *   description="???"
+     * )
+     * @OA\Property(
+     *   property="attributes",
+     *   type="array",
+     *   description="List of OrderAttributeModel objects",
+     *   @OA\Items(ref="#/components/schemas/OrderAttributeModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */

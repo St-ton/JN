@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CharacteristicValueImageModel
- *
+ * @OA\Schema(
+ *     title="Characteristic value image model",
+ *     description="Characteristic value image model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kMerkmalWert
  * @method int getKMerkmalWert()
@@ -19,6 +22,22 @@ use JTL\Model\DataModel;
  */
 final class CharacteristicValueImageModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=25,
+     *   description="The characteristic value ID"
+     * )
+     * @OA\Property(
+     *   property="path",
+     *   type="string",
+     *   example="blau.jpg",
+     *   description="The image file name"
+     * )
+     *
+     */
+
     /**
      * @inheritdoc
      */

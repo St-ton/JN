@@ -9,7 +9,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CustomerGroupModel
- *
+ * @OA\Schema(
+ *     title="Customer group model",
+ *     description="Customer group model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kKundengruppe
  * @method int getKKundengruppe()
@@ -32,6 +35,57 @@ use JTL\Model\DataModel;
  */
 final class CustomerGroupModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Händler",
+     *   description="The customer group name"
+     * )
+     * @OA\Property(
+     *   property="discount",
+     *   type="float",
+     *   example=0,
+     *   description="The customer group discount"
+     * )
+     * @OA\Property(
+     *   property="default",
+     *   type="string",
+     *   example="N",
+     *   description="Is this the default group?"
+     * )
+     * @OA\Property(
+     *   property="shopLogin",
+     *   type="string",
+     *   example="N",
+     *   description="???"
+     * )
+     * @OA\Property(
+     *   property="net",
+     *   type="int",
+     *   example=0,
+     *   description="Show net prices?"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of CustomerGroupLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/CustomerGroupLocalizationModel")
+     * )
+     * @OA\Property(
+     *   property="attributes",
+     *   type="array",
+     *   description="List of CustomerGroupAttributeModel objects",
+     *   @OA\Items(ref="#/components/schemas/CustomerGroupAttributeModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */

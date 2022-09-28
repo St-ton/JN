@@ -11,7 +11,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductPropertyModel
- *
+ * @OA\Schema(
+ *     title="Product property model",
+ *     description="Product property model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kEigenschaft
  * @method int getKEigenschaft()
@@ -34,6 +37,57 @@ use JTL\Model\ModelHelper;
  */
 final class ProductPropertyModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="propertyID",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="",
+     *   description="The property's name"
+     * )
+     * @OA\Property(
+     *   property="selectable",
+     *   type="string",
+     *   example="",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="type",
+     *   type="string",
+     *   example="",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   example=0,
+     *   description="The sort number"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of ProductPropertyLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductPropertyLocalizationModel")
+     * )
+     * @OA\Property(
+     *   property="combinations",
+     *   type="array",
+     *   description="List of ProductPropertyCombinationValueModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductPropertyCombinationValueModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */

@@ -13,10 +13,27 @@ use JTL\Model\DataModel;
  *     description="Category visibility model",
  * )
  * @property int $categoryID
+ * @property int $kKategorie
  * @property int $customerGroupID
+ * @property int $kKundengruppe
  */
 final class CategoryVisibilityModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="categoryID",
+     *   type="int",
+     *   example=3,
+     *   description="The category ID"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -44,8 +61,20 @@ final class CategoryVisibilityModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['categoryID']      = DataAttribute::create('kKategorie', 'int', self::cast('0', 'int'), false, true);
-        $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
+        $attributes['categoryID']      = DataAttribute::create(
+            'kKategorie',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['customerGroupID'] = DataAttribute::create(
+            'kKundengruppe',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
 
         return $attributes;
     }

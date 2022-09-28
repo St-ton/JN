@@ -10,7 +10,10 @@ use JTL\Shop;
 
 /**
  * Class PriceModel
- *
+ * @OA\Schema(
+ *     title="Tax rate model",
+ *     description="Tax rate model",
+ * )
  * @property int $kPreis
  * @property int $id
  * @property int $kArtikel
@@ -22,6 +25,45 @@ use JTL\Shop;
  */
 final class PriceModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The price ID"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=1,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="customerID",
+     *   type="int",
+     *   example=0,
+     *   description="The customer ID"
+     * )
+     * @OA\Property(
+     *   property="priority",
+     *   type="int",
+     *   example=1,
+     *   description="The priority"
+     * )
+     * @OA\Property(
+     *   property="detail",
+     *   type="array",
+     *   description="List of PriceDetailModel objects",
+     *   @OA\Items(ref="#/components/schemas/PriceDetailModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */

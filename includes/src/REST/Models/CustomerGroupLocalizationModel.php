@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CustomerGroupLocalizationModel
- *
+ * @OA\Schema(
+ *     title="Customer group localization model",
+ *     description="Customer group localization model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kKundengruppe
  * @method int getKKundengruppe()
@@ -22,6 +25,27 @@ use JTL\Model\DataModel;
  */
 final class CustomerGroupLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Händler",
+     *   description="The customer group's localized name"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -58,7 +82,13 @@ final class CustomerGroupLocalizationModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
+        $attributes['customerGroupID'] = DataAttribute::create(
+            'kKundengruppe',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
         $attributes['languageID']      = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
         $attributes['name']            = DataAttribute::create('cName', 'varchar');
 

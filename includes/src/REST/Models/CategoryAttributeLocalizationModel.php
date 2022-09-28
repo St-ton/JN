@@ -24,6 +24,33 @@ use JTL\Model\DataModel;
 final class CategoryAttributeLocalizationModel extends DataModel
 {
     /**
+     * @OA\Property(
+     *   property="attributeID",
+     *   type="int",
+     *   example="1",
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example="1",
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Example attribute",
+     *   description="The attribute's name"
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="string",
+     *   example="examplevalue",
+     *   description="The attribute's value"
+     * )
+     */
+
+    /**
      * @inheritdoc
      */
     public function getTableName(): string

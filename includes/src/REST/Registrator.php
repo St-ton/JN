@@ -31,7 +31,6 @@ use JTL\REST\Middleware\AuthMiddleware;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 
-
 /**
  * @OA\Info(
  *     description="This is the JTL Shop 5 REST API.  You can find

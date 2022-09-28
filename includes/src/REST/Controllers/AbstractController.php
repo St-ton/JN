@@ -25,29 +25,22 @@ abstract class AbstractController
 {
     use ResponseTrait;
 
-    /**
-     * @var string
-     */
+    /** @var bool */
+    protected bool $full = false;
+
+    /** @var string */
     protected string $modelClass;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected array $cacheTags = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $cacheID = null;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $primaryKeyName = null;
 
-    /**
-     * @var Validator
-     */
+    /** @var Validator */
     protected Validator $validator;
 
     /**
@@ -136,9 +129,13 @@ abstract class AbstractController
     {
         $id = (int)($params['id'] ?? 0);
         try {
-            $class = $this->modelClass;
+            $class    = $this->modelClass;
+            $instance = (new $class($this->db));
+            if (\property_exists($instance, 'full')) {
+                $instance->full = $this->full;
+            }
             /** @var $class DataModelInterface */
-            $result = $class::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
+            $result = $instance->init(['id' => $id], DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             die($e->getMessage());
             return $this->sendNotFoundResponse();

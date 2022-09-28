@@ -45,7 +45,7 @@ class SeoController extends AbstractController
             'slug'   => 'required|max:255',
             'type'   => 'required|max:255',
             'id'     => 'required|integer',
-            'langID' => 'required|integer'
+            'languageID' => 'required|integer'
         ];
     }
 
@@ -57,7 +57,7 @@ class SeoController extends AbstractController
         return [
             'slug'   => 'required|max:255',
             'type'   => 'required|max:255',
-            'langID' => 'required|integer'
+            'languageID' => 'required|integer'
         ];
     }
 }

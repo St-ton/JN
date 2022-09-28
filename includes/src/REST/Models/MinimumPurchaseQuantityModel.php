@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class MinimumPurchaseQuantityModel
- *
+ * @OA\Schema(
+ *     title="MinimumPurchaseQuantity model",
+ *     description="MinimumPurchaseQuantity model",
+ * )
  * @package JTL\REST\Models
  * @property int   $kArtikel
  * @method int getKArtikel()
@@ -25,6 +28,33 @@ use JTL\Model\DataModel;
  */
 final class MinimumPurchaseQuantityModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=99,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="minimumOrderQty",
+     *   type="float",
+     *   example=10,
+     *   description="The minimum order quantity"
+     * )
+     * @OA\Property(
+     *   property="permissibleOrderQty",
+     *   type="float",
+     *   example=5,
+     *   description="The permissible order quantity"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -62,8 +92,18 @@ final class MinimumPurchaseQuantityModel extends DataModel
         }
         $attributes                        = [];
         $attributes['productID']           = DataAttribute::create('kArtikel', 'int', null, false, true);
-        $attributes['customerGroupID']     = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
-        $attributes['minimumOrderQty']     = DataAttribute::create('fMindestabnahme', 'double', self::cast('0', 'double'));
+        $attributes['customerGroupID']     = DataAttribute::create(
+            'kKundengruppe',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['minimumOrderQty']     = DataAttribute::create(
+            'fMindestabnahme',
+            'double',
+            self::cast('0', 'double')
+        );
         $attributes['permissibleOrderQty'] = DataAttribute::create('fIntervall', 'double', self::cast('0', 'double'));
 
         return $attributes;

@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class TaxRateModel
- *
+ * @OA\Schema(
+ *     title="Tax rate model",
+ *     description="Tax rate model",
+ * )
  * @property int   $kSteuersatz
  * @property int   $id
  * @property int   $kSteuerzone
@@ -22,6 +25,39 @@ use JTL\Model\DataModel;
  */
 final class TaxRateModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The rate ID"
+     * )
+     * @OA\Property(
+     *   property="zoneID",
+     *   type="int",
+     *   example=1,
+     *   description="The zone ID"
+     * )
+     * @OA\Property(
+     *   property="taxClassID",
+     *   type="int",
+     *   example=1,
+     *   description="The tax class ID"
+     * )
+     * @OA\Property(
+     *   property="rate",
+     *   type="float",
+     *   example=7.0,
+     *   description="The tax rate in percent"
+     * )
+     * @OA\Property(
+     *   property="priority",
+     *   type="int",
+     *   example=1,
+     *   description="The priority"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

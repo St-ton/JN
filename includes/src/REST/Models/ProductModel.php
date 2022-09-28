@@ -16,142 +16,500 @@ use JTL\Shop;
  *     description="Product model",
  * )
  *
- * @OA\Property(
- *   property="id",
- *   type="integer",
- *   description="The product id"
- * )
  * @property int                                     $id
- * @OA\Property(
- *   property="manufacturerID",
- *   type="integer",
- *   description="The manufacturer's id"
- * )
  * @property int                                     $manufacturerID
- * @OA\Property(
- *   property="deliveryStatus",
- *   type="integer",
- *   description="The deliery status"
- * )
  * @property int                                     $deliveryStatus
- * @OA\Property(
- *   property="taxClassID",
- *   type="integer"
- * )
  * @property int                                     $taxClassID
- * @OA\Property(
- *   property="unitID",
- *   type="integer"
- * )
  * @property int                                     $unitID
- * @OA\Property(
- *   property="shippingClassID",
- *   type="integer"
- * )
  * @property int                                     $shippingClassID
- * @property int                                     $kEigenschaftKombi
+ * @property int                                     $propertyCombinationID
  * @property int                                     $parentID
  * @property int                                     $partlistID
- * @property int                                     $commodityGroup
- * @property int                                     $kVPEEinheit
- * @property int                                     $kMassEinheit
- * @property int                                     $basePriceUnit
- * @OA\Property(
- *   property="slug",
- *   type="string",
- *   description="The url slug"
- * )
+ * @property int                                     $commodityGroupID
+ * @property int                                     $packagingUnitID
+ * @property int                                     $measurementUnitID
+ * @property int                                     $basePriceUnitID
  * @property string                                  $slug
- * @OA\Property(
- *   property="sku",
- *   type="string",
- *   description="product SKU"
- * )
  * @property string                                  $sku
- * @OA\Property(
- *   property="name",
- *   type="string",
- *   description="The product name"
- * )
  * @property string                                  $name
- * @OA\Property(
- *   property="description",
- *   type="string",
- *   description="The description"
- * )
  * @property string                                  $description
  * @property string                                  $comment
  * @property float                                   $stockQty
- * @property float                                   $fStandardpreisNetto
+ * @property float                                   $standardPriceNet
  * @property float                                   $taxRate
  * @property float                                   $minOrderQty
- * @property float                                   $fLieferantenlagerbestand
- * @property float                                   $fLieferzeit
+ * @property float                                   $supplierStocks
+ * @property float                                   $deliveryTime
  * @property string                                  $barcode
  * @property string                                  $topProduct
  * @property float                                   $weight
  * @property float                                   $productWeight
- * @property float                                   $fMassMenge
- * @property float                                   $fGrundpreisMenge
+ * @property float                                   $measurementAmount
+ * @property float                                   $basePriceAmount
  * @property float                                   $width
  * @property float                                   $height
  * @property float                                   $length
  * @property string                                  $new
- * @OA\Property(
- *   property="shortdescription",
- *   type="string",
- *   description="The short description"
- * )
  * @property string                                  $shortdescription
  * @property float                                   $msrp
- * @property string                                  $cLagerBeachten
- * @property string                                  $cLagerKleinerNull
- * @property string                                  $cLagerVariation
+ * @property string                                  $trackStock
+ * @property string                                  $stockMayBeSmallerThanZero
+ * @property string                                  $trackStocksOfVariations
  * @property string                                  $divisible
- * @property float                                   $fPackeinheit
- * @property float                                   $fAbnahmeintervall
- * @property float                                   $fZulauf
- * @property string                                  $cVPE
- * @property float                                   $fVPEWert
- * @property string                                  $cVPEEinheit
+ * @property float                                   $packagingUnit
+ * @property float                                   $permissibleOrderQty
+ * @property float                                   $awaitedDelivery
+ * @property string                                  $hasPackagingUnit
+ * @property float                                   $packagingUnitAmount
+ * @property string                                  $packagingUnitName
  * @property string                                  $searchTerms
  * @property int                                     $sort
- * @OA\Property(
- *     property="release",
- *     default="2022-09-22 18:31:45",
- *     format="datetime",
- *     description="Release date",
- *     title="Release date",
- *     type="string"
- * )
  * @property DateTime                                $release
  * @property DateTime                                $created
  * @property DateTime                                $lastModified
- * @property DateTime                                $dZulaufDatum
- * @property DateTime                                $bbd
+ * @property DateTime                                $dateOfAwaitedDelivery
+ * @property DateTime                                $shelflifeExpirationDate
  * @property string                                  $series
  * @property string                                  $isbn
  * @property string                                  $asin
  * @property string                                  $han
- * @property string                                  $cUNNummer
- * @property string                                  $cGefahrnr
- * @property string                                  $cTaric
- * @property string                                  $cUPC
+ * @property string                                  $unNumber
+ * @property string                                  $hazardIdentificationNumber
+ * @property string                                  $taric
+ * @property string                                  $upc
  * @property string                                  $originCountry
  * @property string                                  $epid
  * @property int                                     $isParent
- * @property int                                     $nLiefertageWennAusverkauft
+ * @property int                                     $deliveryDaysWhenSoldOut
  * @property int                                     $autoDeliveryCalculation
- * @property int                                     $nBearbeitungszeit
+ * @property int                                     $handlingTime
  * @property Collection|ProductLocalizationModel[]   $localization
  * @property Collection|ProductCharacteristicModel[] $characteristics
  * @property Collection|ProductAttributeModel[]      $functionalAttributes
  * @property Collection|AttributeModel[]             $attributes
  * @property Collection|ProductVisibilityModel[]     $visibility
  * @property Collection|ProductDownloadModel[]       $downloads
+ * @property Collection|ProductCategoriesModel[]     $categories
  */
 final class ProductModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="integer",
+     *   example=99,
+     *   description="The product id"
+     * )
+
+     * @OA\Property(
+     *   property="manufacturerID",
+     *   type="integer",
+     *   example=3,
+     *   description="The manufacturer's id"
+     * )
+     * @OA\Property(
+     *   property="deliveryStatus",
+     *   example=1,
+     *   type="integer",
+     *   description="The deliery status"
+     * )
+     * @OA\Property(
+     *   property="taxClassID",
+     *   example=1,
+     *   type="integer"
+     * )
+     * @OA\Property(
+     *   property="unitID",
+     *   example=0,
+     *   type="integer"
+     * )
+     * @OA\Property(
+     *   property="shippingClassID",
+     *   example=1,
+     *   type="integer"
+     * )
+     * @OA\Property(
+     *   property="propertyCombinationID",
+     *   example=1,
+     *   type="integer"
+     * )
+     * @OA\Property(
+     *   property="parentID",
+     *   type="integer",
+     *   example=0,
+     *   description="ID of parent product, 0 if none"
+     * )
+     * @OA\Property(
+     *   property="partlistID",
+     *   type="integer",
+     *   example=0,
+     *   description="ID of part list, 0 if none"
+     * )
+     * @OA\Property(
+     *   property="commodityGroupID",
+     *   type="integer",
+     *   example=0,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="packagingUnitID",
+     *   type="integer",
+     *   example=0,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="measurementUnitID",
+     *   type="integer",
+     *   example=0,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="basePriceUnitID",
+     *   type="integer",
+     *   example=0,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="slug",
+     *   type="string",
+     *   description="The url slug"
+     * )
+     * @OA\Property(
+     *   property="sku",
+     *   type="string",
+     *   description="product SKU"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Example product",
+     *   description="The product name"
+     * )
+     * @OA\Property(
+     *   property="description",
+     *   type="string",
+     *   description="The description"
+     * )
+     * @OA\Property(
+     *   property="comment",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="stockQty",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="standardPriceNet",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="taxRate",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="minOrderQty",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="supplierStocks",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="deliveryTime",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="barcode",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="topProduct",
+     *   type="string",
+     *   description="Is this a top product?"
+     * )
+     * @OA\Property(
+     *   property="weight",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="productWeight",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="measurementAmount",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="basePriceAmount",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="width",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="height",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="length",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="new",
+     *   type="string",
+     *   description="Is this a top product?"
+     * )
+     * @OA\Property(
+     *   property="shortdescription",
+     *   type="string",
+     *   description="The short description"
+     * )
+     * @OA\Property(
+     *   property="msrp",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="trackStock",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="stockMayBeSmallerThanZero",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="trackStocksOfVariations",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="divisible",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="packagingUnit",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="permissibleOrderQty",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="awaitedDelivery",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="hasPackagingUnit",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="packagingUnitAmount",
+     *   type="float",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="packagingUnitName",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="searchTerms",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   description=""
+     * )
+     * @OA\Property(
+     *     property="release",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Release date",
+     *     title="Release date",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="created",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Created date",
+     *     title="Created date",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="lastModified",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Last modified date",
+     *     title="Last modified date",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="dateOfAwaitedDelivery",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Date of awaited delivery",
+     *     title="Date of awaited delivery",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *     property="shelflifeExpirationDate",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Shelf life expiration date",
+     *     title="Shelf life expiration date",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *   property="series",
+     *   type="string",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="isbn",
+     *   type="string",
+     *   example="978-0241506455",
+     *   description="ISBN"
+     * )
+     * @OA\Property(
+     *   property="asin",
+     *   type="string",
+     *   example="352770986X",
+     *   description="ASIN"
+     * )
+     * @OA\Property(
+     *   property="han",
+     *   type="string",
+     *   example="abcde12345",
+     *   description="Manufacturer part number"
+     * )
+     * @OA\Property(
+     *   property="unNumber",
+     *   type="string",
+     *   description="UN Number"
+     * )
+     * @OA\Property(
+     *   property="hazardIdentificationNumber",
+     *   type="string",
+     *   example="X323",
+     *   description="Hazard identification number"
+     * )
+     * @OA\Property(
+     *   property="taric",
+     *   type="string",
+     *   example="8500000000",
+     *   description="TARIC code"
+     * )
+     * @OA\Property(
+     *   property="upc",
+     *   type="string",
+     *   example="123456789104",
+     *   description="Universal product code"
+     * )
+     * @OA\Property(
+     *   property="originCountry",
+     *   type="string",
+     *   example="Germany",
+     *   description="Country of origin"
+     * )
+     * @OA\Property(
+     *   property="epid",
+     *   type="string",
+     *   example="123456",
+     *   description="eBay product ID"
+     * )
+     * @OA\Property(
+     *   property="isParent",
+     *   type="int",
+     *   example=0,
+     *   description="Is parent product?"
+     * )
+     * @OA\Property(
+     *   property="deliveryDaysWhenSoldOut",
+     *   type="int",
+     *   example=3,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="autoDeliveryCalculation",
+     *   type="int",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="handlingTime",
+     *   type="int",
+     *   example="3",
+     *   description="The product's handling time in days"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of ProductLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductLocalizationModel")
+     * )
+     * @OA\Property(
+     *   property="characteristics",
+     *   type="array",
+     *   description="List of ProductCharacteristicModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductCharacteristicModel")
+     * )
+     * @OA\Property(
+     *   property="functionalAttributes",
+     *   type="array",
+     *   description="List of ProductAttributeModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductAttributeModel")
+     * )
+     * @OA\Property(
+     *   property="attributes",
+     *   type="array",
+     *   description="List of AttributeModel objects",
+     *   @OA\Items(ref="#/components/schemas/AttributeModel")
+     * )
+     * @OA\Property(
+     *   property="visibility",
+     *   type="array",
+     *   description="List of ProductVisibilityModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductVisibilityModel")
+     * )
+     * @OA\Property(
+     *   property="downloads",
+     *   type="array",
+     *   description="List of ProductDownloadModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductDownloadModel")
+     * )
+     * @OA\Property(
+     *   property="categories",
+     *   type="array",
+     *   description="List of ProductCategoriesModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductCategoriesModel")
+     * )
+     */
+
     /**
      * pseudo auto increment for ProductCategories model
      *
@@ -172,6 +530,11 @@ final class ProductModel extends DataModel
      * @var int
      */
     protected int $lastAttributeID = -1;
+
+    /**
+     * @var bool
+     */
+    public bool $full = false;
 
     /**
      * @inheritdoc
@@ -586,13 +949,12 @@ final class ProductModel extends DataModel
         });
     }
 
-
     /**
      *
      */
     protected function onInstanciation(): void
     {
-        if ($this->id <= 0) {
+        if ($this->id <= 0 || $this->full === false) {
             return;
         }
         if ($this->characteristics instanceof Collection && $this->characteristics->count() > 0) {
@@ -634,24 +996,87 @@ final class ProductModel extends DataModel
             return $attributes;
         }
         $attributes                            = [];
-        $attributes['id']                      = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
-        $attributes['manufacturerID']          = DataAttribute::create('kHersteller', 'int', self::cast('0', 'int'), false);
-        $attributes['taxClassID']              = DataAttribute::create('kSteuerklasse', 'int', self::cast('0', 'int'), false);
-        $attributes['unitID']                  = DataAttribute::create('kEinheit', 'int', self::cast('0', 'int'), false);
-        $attributes['shippingClassID']         = DataAttribute::create('kVersandklasse', 'int', self::cast('0', 'int'), false);
-        $attributes['parentID']                = DataAttribute::create('kVaterArtikel', 'bigint', self::cast('0', 'int'), false);
-        $attributes['partlistID']              = DataAttribute::create('kStueckliste', 'int', self::cast('0', 'int'), false);
-        $attributes['slug']                    = DataAttribute::create('cSeo', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['id']                      = DataAttribute::create(
+            'kArtikel',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['manufacturerID']          = DataAttribute::create(
+            'kHersteller',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['taxClassID']              = DataAttribute::create(
+            'kSteuerklasse',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['unitID']                  = DataAttribute::create(
+            'kEinheit',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['shippingClassID']         = DataAttribute::create(
+            'kVersandklasse',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['parentID']                = DataAttribute::create(
+            'kVaterArtikel',
+            'bigint',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['partlistID']              = DataAttribute::create(
+            'kStueckliste',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['slug']                    = DataAttribute::create(
+            'cSeo',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
         $attributes['sku']                     = DataAttribute::create('cArtNr', 'varchar');
         $attributes['name']                    = DataAttribute::create('cName', 'varchar');
         $attributes['description']             = DataAttribute::create('cBeschreibung', 'mediumtext');
         $attributes['comment']                 = DataAttribute::create('cAnmerkung', 'mediumtext');
-        $attributes['stockQty']                = DataAttribute::create('fLagerbestand', 'double', self::cast('0', 'double'));
+        $attributes['stockQty']                = DataAttribute::create(
+            'fLagerbestand',
+            'double',
+            self::cast('0', 'double')
+        );
         $attributes['taxRate']                 = DataAttribute::create('fMwSt', 'float');
-        $attributes['minOrderQty']             = DataAttribute::create('fMindestbestellmenge', 'double', self::cast('0', 'double'));
-        $attributes['topProduct']              = DataAttribute::create('cTopArtikel', 'yesno', self::cast('N', 'yesno'));
-        $attributes['weight']                  = DataAttribute::create('fGewicht', 'double', self::cast('0', 'double'), false);
-        $attributes['productWeight']           = DataAttribute::create('fArtikelgewicht', 'double', self::cast('0', 'double'), false);
+        $attributes['minOrderQty']             = DataAttribute::create(
+            'fMindestbestellmenge',
+            'double',
+            self::cast('0', 'double')
+        );
+        $attributes['topProduct']              = DataAttribute::create(
+            'cTopArtikel',
+            'yesno',
+            self::cast('N', 'yesno')
+        );
+        $attributes['weight']                  = DataAttribute::create(
+            'fGewicht',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
+        $attributes['productWeight']           = DataAttribute::create(
+            'fArtikelgewicht',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
         $attributes['width']                   = DataAttribute::create('fBreite', 'double', self::cast('0', 'double'));
         $attributes['height']                  = DataAttribute::create('fHoehe', 'double', self::cast('0', 'double'));
         $attributes['length']                  = DataAttribute::create('fLaenge', 'double', self::cast('0', 'double'));
@@ -670,33 +1095,108 @@ final class ProductModel extends DataModel
         $attributes['han']                     = DataAttribute::create('cHAN', 'varchar');
         $attributes['originCountry']           = DataAttribute::create('cHerkunftsland', 'varchar');
         $attributes['epid']                    = DataAttribute::create('cEPID', 'varchar');
-        $attributes['isParent']                = DataAttribute::create('nIstVater', 'tinyint', self::cast('0', 'tinyint'), false);
+        $attributes['isParent']                = DataAttribute::create(
+            'nIstVater',
+            'tinyint',
+            self::cast('0', 'tinyint'),
+            false
+        );
         $attributes['autoDeliveryCalculation'] = DataAttribute::create('nAutomatischeLiefertageberechnung', 'int');
-        $attributes['deliveryStatus']          = DataAttribute::create('kLieferstatus', 'int', self::cast('0', 'int'), false);
-        $attributes['commodityGroup']          = DataAttribute::create('kWarengruppe', 'int', self::cast('0', 'int'), false);
-        $attributes['basePriceUnit']           = DataAttribute::create('kGrundPreisEinheit', 'int');
+        $attributes['deliveryStatus']          = DataAttribute::create(
+            'kLieferstatus',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['commodityGroupID']        = DataAttribute::create(
+            'kWarengruppe',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['basePriceUnitID']         = DataAttribute::create('kGrundPreisEinheit', 'int');
         $attributes['shelflifeExpirationDate'] = DataAttribute::create('dMHD', 'date');
 
-        $attributes['propertyCombinationID']      = DataAttribute::create('kEigenschaftKombi', 'int', self::cast('0', 'int'), false);
+        $attributes['propertyCombinationID']      = DataAttribute::create(
+            'kEigenschaftKombi',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
         $attributes['packagingUnitID']            = DataAttribute::create('kVPEEinheit', 'int');
         $attributes['measurementUnitID']          = DataAttribute::create('kMassEinheit', 'int');
         $attributes['standardPriceNet']           = DataAttribute::create('fStandardpreisNetto', 'double');
-        $attributes['deliveryTime']               = DataAttribute::create('fLieferzeit', 'double', self::cast('0', 'double'), false);
+        $attributes['deliveryTime']               = DataAttribute::create(
+            'fLieferzeit',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
         $attributes['barcode']                    = DataAttribute::create('cBarcode', 'varchar');
-        $attributes['measurementAmount']          = DataAttribute::create('fMassMenge', 'double', self::cast('0', 'double'));
-        $attributes['basePriceAmount']            = DataAttribute::create('fGrundpreisMenge', 'double', self::cast('0', 'double'));
-        $attributes['trackStock']                 = DataAttribute::create('cLagerBeachten', 'yesno', self::cast('N', 'yesno'));
-        $attributes['stockMayBeSmallerThanZero']  = DataAttribute::create('cLagerKleinerNull', 'yesno', self::cast('N', 'yesno'));
-        $attributes['trackStocksOfVariations']    = DataAttribute::create('cLagerVariation', 'yesno', self::cast('N', 'yesno'));
-        $attributes['packagingUnit']              = DataAttribute::create('fPackeinheit', 'double', self::cast('1.0000', 'double'));
-        $attributes['permissibleOrderQty']        = DataAttribute::create('fAbnahmeintervall', 'double', self::cast('0', 'double'), false);
-        $attributes['awaitedDelivery']            = DataAttribute::create('fZulauf', 'double', self::cast('0', 'double'));
+        $attributes['measurementAmount']          = DataAttribute::create(
+            'fMassMenge',
+            'double',
+            self::cast('0', 'double')
+        );
+        $attributes['basePriceAmount']            = DataAttribute::create(
+            'fGrundpreisMenge',
+            'double',
+            self::cast('0', 'double')
+        );
+        $attributes['trackStock']                 = DataAttribute::create(
+            'cLagerBeachten',
+            'yesno',
+            self::cast('N', 'yesno')
+        );
+        $attributes['stockMayBeSmallerThanZero']  = DataAttribute::create(
+            'cLagerKleinerNull',
+            'yesno',
+            self::cast('N', 'yesno')
+        );
+        $attributes['trackStocksOfVariations']    = DataAttribute::create(
+            'cLagerVariation',
+            'yesno',
+            self::cast('N', 'yesno')
+        );
+        $attributes['packagingUnit']              = DataAttribute::create(
+            'fPackeinheit',
+            'double',
+            self::cast('1.0000', 'double')
+        );
+        $attributes['permissibleOrderQty']        = DataAttribute::create(
+            'fAbnahmeintervall',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
+        $attributes['awaitedDelivery']            = DataAttribute::create(
+            'fZulauf',
+            'double',
+            self::cast('0', 'double')
+        );
         $attributes['hasPackagingUnit']           = DataAttribute::create('cVPE', 'yesno', self::cast('N', 'yesno'));
         $attributes['packagingUnitAmount']        = DataAttribute::create('fVPEWert', 'double');
-        $attributes['packagingUnitName']          = DataAttribute::create('cVPEEinheit', 'varchar', self::cast('0', 'double'));
-        $attributes['supplierStocks']             = DataAttribute::create('fLieferantenlagerbestand', 'double', self::cast('0', 'float'), false);
-        $attributes['deliveryDaysWhenSoldOut']    = DataAttribute::create('nLiefertageWennAusverkauft', 'int', self::cast('0', 'int'));
-        $attributes['handlingTime']               = DataAttribute::create('nBearbeitungszeit', 'int', self::cast('0', 'int'));
+        $attributes['packagingUnitName']          = DataAttribute::create(
+            'cVPEEinheit',
+            'varchar',
+            self::cast('0', 'double')
+        );
+        $attributes['supplierStocks']             = DataAttribute::create(
+            'fLieferantenlagerbestand',
+            'double',
+            self::cast('0', 'float'),
+            false
+        );
+        $attributes['deliveryDaysWhenSoldOut']    = DataAttribute::create(
+            'nLiefertageWennAusverkauft',
+            'int',
+            self::cast('0', 'int')
+        );
+        $attributes['handlingTime']               = DataAttribute::create(
+            'nBearbeitungszeit',
+            'int',
+            self::cast('0', 'int')
+        );
         $attributes['unNumber']                   = DataAttribute::create('cUNNummer', 'varchar');
         $attributes['hazardIdentificationNumber'] = DataAttribute::create('cGefahrnr', 'varchar');
         $attributes['taricCode']                  = DataAttribute::create('cTaric', 'varchar');
@@ -704,34 +1204,84 @@ final class ProductModel extends DataModel
         $attributes['dateOfAwaitedDelivery']      = DataAttribute::create('dZulaufDatum', 'date');
 
         $attributes['localization']           = DataAttribute::create(
-            'localization', ProductLocalizationModel::class, null, true, false, 'kArtikel'
+            'localization',
+            ProductLocalizationModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['characteristics']        = DataAttribute::create(
-            'characteristics', ProductCharacteristicModel::class, null, true, false, 'kArtikel'
+            'characteristics',
+            ProductCharacteristicModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['functionalAttributes']   = DataAttribute::create(
-            'functionalAttributes', ProductAttributeModel::class, null, true, false, 'kArtikel'
+            'functionalAttributes',
+            ProductAttributeModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['attributes']             = DataAttribute::create(
-            'attributes', AttributeModel::class, null, true, false, 'kArtikel'
+            'attributes',
+            AttributeModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['visibility']             = DataAttribute::create(
-            'visibility', ProductVisibilityModel::class, null, true, false, 'kArtikel'
+            'visibility',
+            ProductVisibilityModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['downloads']              = DataAttribute::create(
-            'downloads', ProductDownloadModel::class, null, true, false, 'kArtikel'
+            'downloads',
+            ProductDownloadModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['images']                 = DataAttribute::create(
-            'images', ProductImageModel::class, null, true, false, 'kArtikel'
+            'images',
+            ProductImageModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['prices']                 = DataAttribute::create(
-            'prices', PriceModel::class, null, true, false, 'kArtikel'
+            'prices',
+            PriceModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['categories']             = DataAttribute::create(
-            'categories', ProductCategoriesModel::class, null, true, false, 'kArtikel'
+            'categories',
+            ProductCategoriesModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['stock']                  = DataAttribute::create(
-            'stock', StockModel::class, null, true, false, 'kArtikel'
+            'stock',
+            StockModel::class,
+            null,
+            true,
+            false,
+            'kArtikel'
         );
         $attributes['minimumOrderQuantities'] = DataAttribute::create(
             'minimumOrderQuantities',

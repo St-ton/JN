@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductPropertyValueModel
- *
+ * @OA\Schema(
+ *     title="Product property value model",
+ *     description="Product property value model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kEigenschaftWert
  * @method int getKEigenschaftWert()
@@ -42,6 +45,69 @@ use JTL\Model\ModelHelper;
  */
 final class ProductPropertyValueModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="propertyValueID",
+     *   type="int",
+     *   example=1,
+     *   description="The property value ID"
+     * )
+     * @OA\Property(
+     *   property="propertyID",
+     *   type="int",
+     *   example=1,
+     *   description="The property ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Example property",
+     *   description="The property name"
+     * )
+     * @OA\Property(
+     *   property="surchargeNet",
+     *   type="float",
+     *   example="1.234",
+     *   description="The surcharge"
+     * )
+     * @OA\Property(
+     *   property="weightDiff",
+     *   type="float",
+     *   example="-1.234",
+     *   description="The weight difference"
+     * )
+     * @OA\Property(
+     *   property="sku",
+     *   type="string",
+     *   example="123-example",
+     *   description="The SKU"
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   example=0,
+     *   description="The sort number"
+     * )
+     * @OA\Property(
+     *   property="stock",
+     *   type="float",
+     *   example="0",
+     *   description="The current stock"
+     * )
+     * @OA\Property(
+     *   property="packagingUnit",
+     *   type="float",
+     *   example="0",
+     *   description="The packaging unit"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of ProductPropertyValueLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductPropertyValueLocalizationModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -78,15 +144,30 @@ final class ProductPropertyValueModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['propertyValueID'] = DataAttribute::create('kEigenschaftWert', 'int', self::cast('0', 'int'), false, true);
-        $attributes['propertyID']      = DataAttribute::create('kEigenschaft', 'int', null, true, false);
-        $attributes['name']            = DataAttribute::create('cName', 'varchar', null, true, false);
-        $attributes['surchargeNet']    = DataAttribute::create('fAufpreisNetto', 'double', self::cast('0.0000', 'double'), false, false);
-        $attributes['weightDiff']      = DataAttribute::create('fGewichtDiff', 'double', null, true, false);
-        $attributes['sku']             = DataAttribute::create('cArtNr', 'varchar', null, true, false);
-        $attributes['sort']            = DataAttribute::create('nSort', 'int', self::cast('0', 'int'), true, false);
-        $attributes['stock']           = DataAttribute::create('fLagerbestand', 'double', null, true, false);
-        $attributes['packagingUnit']   = DataAttribute::create('fPackeinheit', 'double', self::cast('1.0000', 'double'), true, false);
+        $attributes['propertyValueID'] = DataAttribute::create(
+            'kEigenschaftWert',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['propertyID']      = DataAttribute::create('kEigenschaft', 'int');
+        $attributes['name']            = DataAttribute::create('cName', 'varchar');
+        $attributes['surchargeNet']    = DataAttribute::create(
+            'fAufpreisNetto',
+            'double',
+            self::cast('0.0000', 'double'),
+            false
+        );
+        $attributes['weightDiff']      = DataAttribute::create('fGewichtDiff', 'double');
+        $attributes['sku']             = DataAttribute::create('cArtNr', 'varchar');
+        $attributes['sort']            = DataAttribute::create('nSort', 'int', self::cast('0', 'int'));
+        $attributes['stock']           = DataAttribute::create('fLagerbestand', 'double');
+        $attributes['packagingUnit']   = DataAttribute::create(
+            'fPackeinheit',
+            'double',
+            self::cast('1.0000', 'double')
+        );
 
         $attributes['localization'] = DataAttribute::create(
             'localization',

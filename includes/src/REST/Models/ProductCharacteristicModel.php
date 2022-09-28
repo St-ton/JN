@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ProductCharacteristicModel
- *
+ * @OA\Schema(
+ *     title="Product characteristic model",
+ *     description="Product characteristic model",
+ * )
  * @property int $kMerkmal
  * @property int $id
  * @property int $kMerkmalWert
@@ -18,6 +21,27 @@ use JTL\Model\DataModel;
  */
 final class ProductCharacteristicModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=7,
+     *   description="The characteristic ID"
+     * )
+     * @OA\Property(
+     *   property="valueID",
+     *   type="int",
+     *   example=25,
+     *   description="The characteristic value ID"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product ID"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

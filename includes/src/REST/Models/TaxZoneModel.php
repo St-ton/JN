@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class TaxZoneModel
- *
+ * @OA\Schema(
+ *     title="Tax zone model",
+ *     description="Tax zone model",
+ * )
  * @package JAPI\Models
  * @property int    $kSteuerzone
  * @property int    $id
@@ -17,6 +20,21 @@ use JTL\Model\DataModel;
  */
 final class TaxZoneModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The zone ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Zone-EU",
+     *   description="The zone name"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

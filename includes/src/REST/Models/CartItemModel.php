@@ -115,26 +115,83 @@ final class CartItemModel extends DataModel
         $attributes['id']                 = DataAttribute::create('kWarenkorbPos', 'int', null, false, true);
         $attributes['cartID']             = DataAttribute::create('kWarenkorb', 'int', self::cast('0', 'int'), false);
         $attributes['productID']          = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
-        $attributes['shippingClassID']    = DataAttribute::create('kVersandklasse', 'int', self::cast('1', 'int'), false);
+        $attributes['shippingClassID']    = DataAttribute::create(
+            'kVersandklasse',
+            'int',
+            self::cast('1', 'int'),
+            false
+        );
         $attributes['name']               = DataAttribute::create('cName', 'varchar');
-        $attributes['deliveryState']      = DataAttribute::create('cLieferstatus', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['sku']                = DataAttribute::create('cArtNr', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['unit']               = DataAttribute::create('cEinheit', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['netSinglePrice']     = DataAttribute::create('fPreisEinzelNetto', 'double', self::cast('0', 'double'), false);
+        $attributes['deliveryState']      = DataAttribute::create(
+            'cLieferstatus',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['sku']                = DataAttribute::create(
+            'cArtNr',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['unit']               = DataAttribute::create(
+            'cEinheit',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['netSinglePrice']     = DataAttribute::create(
+            'fPreisEinzelNetto',
+            'double',
+            self::cast('0', 'double'),
+            false
+        );
         $attributes['price']              = DataAttribute::create('fPreis', 'double', self::cast('0', 'double'), false);
         $attributes['taxPercent']         = DataAttribute::create('fMwSt', 'float');
-        $attributes['qty']                = DataAttribute::create('nAnzahl', 'double', self::cast('0.0000', 'double'), false);
-        $attributes['posType']            = DataAttribute::create('nPosTyp', 'tinyint', self::cast('1', 'tinyint'), false);
+        $attributes['qty']                = DataAttribute::create(
+            'nAnzahl',
+            'double',
+            self::cast('0.0000', 'double'),
+            false
+        );
+        $attributes['posType']            = DataAttribute::create(
+            'nPosTyp',
+            'tinyint',
+            self::cast('1', 'tinyint'),
+            false
+        );
         $attributes['notice']             = DataAttribute::create('cHinweis', 'varchar', null, false);
         $attributes['unique']             = DataAttribute::create('cUnique', 'varchar', null, false);
-        $attributes['responsibility']     = DataAttribute::create('cResponsibility', 'varchar', self::cast('core', 'varchar'), false);
+        $attributes['responsibility']     = DataAttribute::create(
+            'cResponsibility',
+            'varchar',
+            self::cast('core', 'varchar'),
+            false
+        );
         $attributes['configItemID']       = DataAttribute::create('kKonfigitem', 'int', self::cast('0', 'int'), false);
         $attributes['orderItemID']        = DataAttribute::create('kBestellpos', 'int', self::cast('0', 'int'), false);
         $attributes['stockBefore']        = DataAttribute::create('fLagerbestandVorAbschluss', 'double');
-        $attributes['longestMinDelivery'] = DataAttribute::create('nLongestMinDelivery', 'int', self::cast('0', 'int'), false);
-        $attributes['longestMaxDelivery'] = DataAttribute::create('nLongestMaxDelivery', 'int', self::cast('0', 'int'), false);
+        $attributes['longestMinDelivery'] = DataAttribute::create(
+            'nLongestMinDelivery',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
+        $attributes['longestMaxDelivery'] = DataAttribute::create(
+            'nLongestMaxDelivery',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
 
-        $attributes['attributes'] = DataAttribute::create('attributes', CartItemAttributeModel::class, null, true, false, 'kWarenkorbPos');
+        $attributes['attributes'] = DataAttribute::create(
+            'attributes',
+            CartItemAttributeModel::class,
+            null,
+            true,
+            false,
+            'kWarenkorbPos'
+        );
 
         return $attributes;
     }

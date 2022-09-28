@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class PriceDetailModel
- *
+ * @OA\Schema(
+ *     title="Price detail model",
+ *     description="Price detail model",
+ * )
  * @property int   $kPreisDetail
  * @property int   $kPreis
  * @property int   $nAnzahlAb
@@ -16,6 +19,33 @@ use JTL\Model\DataModel;
  */
 final class PriceDetailModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="priceID",
+     *   type="int",
+     *   example=1,
+     *   description="The price ID"
+     * )
+     * @OA\Property(
+     *   property="amountFrom",
+     *   type="int",
+     *   example=20,
+     *   description="Quantity scle price start"
+     * )
+     * @OA\Property(
+     *   property="netPrice",
+     *   type="float",
+     *   example=1.2345,
+     *   description="The net price"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

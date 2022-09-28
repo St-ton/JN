@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductCategoryDiscountModel
- *
+ * @OA\Schema(
+ *     title="Product category discount model",
+ *     description="Product category discount model"
+ * )
  * @package JTL\REST\Models
  * @property int   $kArtikel
  * @method int getKArtikel()
@@ -27,6 +30,33 @@ use JTL\Model\ModelHelper;
  */
 final class ProductCategoryDiscountModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     * @OA\Property(
+     *   property="categoryID",
+     *   type="int",
+     *   example=3,
+     *   description="The category ID"
+     * )
+     * @OA\Property(
+     *   property="discount",
+     *   type="flaot",
+     *   example="3.50",
+     *   description="The discount"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

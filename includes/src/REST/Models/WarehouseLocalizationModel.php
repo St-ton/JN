@@ -8,13 +8,36 @@ use JTL\Model\DataModel;
 
 /**
  * Class WarehouseLocalizationModel
- *
+ * @OA\Schema(
+ *     title="Warehouse localization model",
+ *     description="Warehouse localization model",
+ * )
  * @property int    $kWarenlager
  * @property int    $kSprache
  * @property string $cName
  */
 final class WarehouseLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="warehouseID",
+     *   type="int",
+     *   example=55,
+     *   description="The warehouse ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The languageID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Mein Lager in Hückelhoven",
+     *   description="The warehouse's localized name"
+     * )
+     */
     /**
      * @return string
      * @see DataModel::getTableName()

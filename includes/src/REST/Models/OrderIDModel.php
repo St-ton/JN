@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class OrderIDModel
- *
+ * @OA\Schema(
+ *     title="Order ID model",
+ *     description="Order ID model",
+ * )
  * @package JTL\REST\Models
  * @property string   $cId
  * @method string getCId()
@@ -24,6 +27,29 @@ use JTL\Model\ModelHelper;
  */
 final class OrderIDModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="Primary key"
+     * )
+     * @OA\Property(
+     *   property="orderID",
+     *   type="int",
+     *   example=1,
+     *   description="The order ID"
+     * )
+     * @OA\Property(
+     *     property="date",
+     *     example="2022-09-22 12:13:14",
+     *     format="datetime",
+     *     description="",
+     *     title="",
+     *     type="string"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

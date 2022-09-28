@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class OrderAttributeModel
- *
+ * @OA\Schema(
+ *     title="Order attribute model",
+ *     description="Order attribute model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kBestellattribut
  * @method int getKBestellattribut()
@@ -25,6 +28,33 @@ use JTL\Model\DataModel;
  */
 final class OrderAttributeModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The order attribute ID"
+     * )
+     * @OA\Property(
+     *   property="orderID",
+     *   type="int",
+     *   example=1,
+     *   description="The order ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="example_attribute",
+     *   description="The order attribute name"
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="string",
+     *   example="examplevalue",
+     *   description="The order attribute value"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

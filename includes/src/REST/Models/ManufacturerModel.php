@@ -9,7 +9,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ManufacturerModel
- *
+ * @OA\Schema(
+ *     title="Manufacturer model",
+ *     description="Manufacturer model"
+ * )
  * @property int                                        $id
  * @property int                                        $kHersteller
  * @property string                                     $name
@@ -26,6 +29,51 @@ use JTL\Model\DataModel;
  */
 final class ManufacturerModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="integer",
+     *   example=33,
+     *   description="The manufcaturer ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Example manufacturer",
+     *   description="The manufcaturer name"
+     * )
+     * @OA\Property(
+     *   property="slug",
+     *   type="string",
+     *   example="example-manufacturer",
+     *   description="The manufcaturer URL slug"
+     * )
+     * @OA\Property(
+     *   property="homepage",
+     *   type="string",
+     *   example="https://example.com",
+     *   description="The manufcaturer homepage"
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="integer",
+     *   example=0,
+     *   description="The sort number"
+     * )
+     * @OA\Property(
+     *   property="image",
+     *   type="string",
+     *   example="examplemanufacturer.jpg",
+     *   description="The manufcaturer image file name"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of ManufacturerLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/ManufacturerLocalizationModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */

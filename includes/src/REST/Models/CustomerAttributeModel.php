@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CustomerAttributeModel
- *
+ * @OA\Schema(
+ *     title="Customer attribute model",
+ *     description="Customer attribute model"
+ * )
  * @package JTL\REST\Models
  * @property int    $kKundenAttribut
  * @method int getKKundenAttribut()
@@ -28,6 +31,39 @@ use JTL\Model\DataModel;
  */
 final class CustomerAttributeModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=75,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="customerID",
+     *   type="int",
+     *   example=33,
+     *   description="The customer ID"
+     * )
+     * @OA\Property(
+     *   property="customerFieldID",
+     *   type="int",
+     *   example=45,
+     *   description="The customer field ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="example_field",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="string",
+     *   example="example_value",
+     *   description=""
+     * )
+     */
+
     /**
      * @inheritdoc
      */

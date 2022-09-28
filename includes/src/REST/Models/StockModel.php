@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class StockModel
- *
+ * @OA\Schema(
+ *     title="Stock model",
+ *     description="Stock model",
+ * )
  * @package JTL\REST\Models
  * @property int      $kArtikel
  * @method int getKArtikel()
@@ -30,6 +33,41 @@ use JTL\Model\ModelHelper;
  */
 final class StockModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=1,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="warehouseID",
+     *   type="int",
+     *   example=1,
+     *   description="The warehouse ID"
+     * )
+     * @OA\Property(
+     *   property="stock",
+     *   type="float",
+     *   example="123.00",
+     *   description="The current stock"
+     * )
+     * @OA\Property(
+     *   property="procured",
+     *   type="float",
+     *   example="123.00",
+     *   description="The procured stock"
+     * )
+     * @OA\Property(
+     *     property="procuredDate",
+     *     example="2022-09-22",
+     *     format="datetime",
+     *     description="",
+     *     title="",
+     *     type="string"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

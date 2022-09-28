@@ -12,6 +12,68 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Class CustomerController
  * @package JTL\REST\Controllers
+ * @OA\Delete(
+ *     path="/customer/{customerId}",
+ *     description="deletes a single customer based on the ID supplied",
+ *     summary="Delete a single customer",
+ *     operationId="deleteCustomer",
+ *     tags={"customer"},
+ *     @OA\Parameter(
+ *         description="ID of customer to delete",
+ *         in="path",
+ *         name="customerId",
+ *         required=true,
+ *         @OA\Schema(
+ *             format="int64",
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=204,
+ *         description="Customer deleted"
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Customer not found"
+ *     )
+ * )
+ * @OA\Get(
+ *   path="/customer",
+ *   tags={"customer"},
+ *   summary="list customers",
+ *   @OA\Response(
+ *     response=200,
+ *     description="A list with customers"
+ *   ),
+ *   @OA\Response(
+ *     response=404,
+ *     description="Customer not found"
+ *   )
+ * )
+ * @OA\Get(
+ *     path="/customer/{customerId}",
+ *     tags={"customer"},
+ *     description="Get a customer by ID",
+ *     operationId="getCustomerById",
+ *     @OA\Parameter(
+ *         name="customerId",
+ *         in="path",
+ *         description="ID of customer that needs to be fetched",
+ *         required=true,
+ *         @OA\Schema(
+ *             type="integer"
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="successful operation",
+ *         @OA\JsonContent(ref="#/components/schemas/CustomerModel"),
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Customer not found"
+ *     )
+ * )
  */
 class CustomerController extends AbstractController
 {

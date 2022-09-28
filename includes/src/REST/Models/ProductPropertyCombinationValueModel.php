@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductPropertyCombinationValueModel
- *
+ * @OA\Schema(
+ *     title="Product property combination value model",
+ *     description="Product property combination value model",
+ * )
  * @package JTL\REST\Models
  * @property int $kEigenschaftKombi
  * @method int getKEigenschaftKombi()
@@ -24,6 +27,39 @@ use JTL\Model\ModelHelper;
  */
 final class ProductPropertyCombinationValueModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="propertyID",
+     *   type="int",
+     *   example=1,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="propertyValueID",
+     *   type="int",
+     *   example=1,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="values",
+     *   type="array",
+     *   description="List of ProductPropertyValueModel objects",
+     *   @OA\Items(ref="#/components/schemas/ProductPropertyValueModel")
+     * )
+     * @OA\Property(
+     *   property="image",
+     *   type="array",
+     *   description="List of ProductPropertyValueImage objects",
+     *   @OA\Items(ref="#/components/schemas/ProductPropertyValueImage")
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -72,7 +108,7 @@ final class ProductPropertyCombinationValueModel extends DataModel
             false,
             'kEigenschaftWert'
         );
-        $attributes['image'] = DataAttribute::create(
+        $attributes['image']  = DataAttribute::create(
             'image',
             ProductPropertyValueImage::class,
             null,
@@ -80,7 +116,6 @@ final class ProductPropertyCombinationValueModel extends DataModel
             false,
             'kEigenschaftWert'
         );
-
 
         return $attributes;
     }

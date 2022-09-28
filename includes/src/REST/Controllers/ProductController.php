@@ -13,6 +13,7 @@ use JTL\Shop;
 use Laminas\Diactoros\UploadedFile;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
@@ -35,6 +36,7 @@ class ProductController extends AbstractController
      * @inheritdoc
      * @OA\Get(
      *   path="/product",
+     *   tags={"product"},
      *   summary="list products",
      *   @OA\Response(
      *     response=200,
@@ -73,10 +75,19 @@ class ProductController extends AbstractController
     public function registerRoutes(RouteGroup $routeGroup): void
     {
         $routeGroup->get('/product', [$this, 'index']);
-        $routeGroup->get('/product/{id}', [$this, 'show']);
+        $routeGroup->get('/product/{id}[/{full:full}]', [$this, 'show']);
         $routeGroup->put('/product/{id}', [$this, 'update']);
         $routeGroup->post('/product', [$this, 'create']);
         $routeGroup->delete('/product/{id}', [$this, 'delete']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function show(ServerRequestInterface $request, array $params): ResponseInterface
+    {
+        $this->full = ($params['full'] ?? '') === 'full';
+        return parent::show($request, $params);
     }
 
     /**
@@ -153,6 +164,31 @@ class ProductController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Delete(
+     *     path="/product/{productId}",
+     *     description="deletes a single product based on the ID supplied",
+     *     summary="Delete a single product",
+     *     operationId="deleteProduct",
+     *     tags={"product"},
+     *     @OA\Parameter(
+     *         description="ID of product to delete",
+     *         in="path",
+     *         name="productId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Product deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Product not found"
+     *     )
+     * )
      */
     protected function deletedItem(DataModelInterface $item): void
     {

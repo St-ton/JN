@@ -15,38 +15,22 @@ use JTL\Model\DataModel;
  * )
  *
  * @package JTL\REST\Models
- * @OA\Property(
- *   property="id",
- *   type="integer",
- *   description="The cart's id"
- * )
+
  * @property int $id
  * @property int $kWarenkorb
  * @method int getId()
  * @method void setId(int $value)
- * @OA\Property(
- *   property="customerID",
- *   type="integer",
- *   description="The customers's id"
- * )
+
  * @property int $customerID
  * @property int $kKunde
  * @method int getCustomerId()
  * @method void setCustomerId(int $value)
- * @OA\Property(
- *   property="deliveryAddressID",
- *   type="integer",
- *   description="The delivery address id"
- * )
+
  * @property int $deliveryAddressID
  * @property int $kLieferadresse
  * @method int getDeliveryAddressId()
  * @method void setDeliveryAddressId(int $value)
- * @OA\Property(
- *   property="paymentInfoID",
- *   type="integer",
- *   description="The payment method's id"
- * )
+
  * @property int $paymentInfoID
  * @property int $kZahlungsInfo
  * @method int getPaymentInfoId()
@@ -54,6 +38,31 @@ use JTL\Model\DataModel;
  */
 final class CartModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   title="id",
+     *   format="int64",
+     *   type="integer",
+     *   description="The cart's id"
+     * )
+     * @OA\Property(
+     *   property="deliveryAddressID",
+     *   type="integer",
+     *   description="The delivery address id"
+     * )
+     * @OA\Property(
+     *   property="customerID",
+     *   type="integer",
+     *   description="The customers's id"
+     * )
+     * @OA\Property(
+     *   property="paymentInfoID",
+     *   type="integer",
+     *   description="The payment method's id"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -92,7 +101,12 @@ final class CartModel extends DataModel
         $attributes                      = [];
         $attributes['id']                = DataAttribute::create('kWarenkorb', 'int', null, false, true);
         $attributes['customerID']        = DataAttribute::create('kKunde', 'int', self::cast('0', 'int'), false);
-        $attributes['deliveryAddressID'] = DataAttribute::create('kLieferadresse', 'int', self::cast('0', 'int'), false);
+        $attributes['deliveryAddressID'] = DataAttribute::create(
+            'kLieferadresse',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
         $attributes['paymentInfoID']     = DataAttribute::create('kZahlungsInfo', 'int', self::cast('0', 'int'));
 
         $attributes['items'] = DataAttribute::create('items', CartItemModel::class, null, true, false, 'kWarenkorb');

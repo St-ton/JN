@@ -8,7 +8,11 @@ use JTL\Model\DataModel;
 
 /**
  * Class CharacteristicLocalizationModel
- *
+ * @OA\Schema(
+ *     title="Characteristic localization model",
+ *     description="Characteristic localization model",
+ * )
+
  * @property int    $kMerkmal
  * @property int    $characteristicID
  * @property int    $kSprache
@@ -18,6 +22,27 @@ use JTL\Model\DataModel;
  */
 final class CharacteristicLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="characteristicID",
+     *   type="int",
+     *   example=7,
+     *   description="The characteristic ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Farbe",
+     *   description="The characteristic's name"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

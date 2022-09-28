@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductPropertyValueLocalizationModel
- *
+ * @OA\Schema(
+ *     title="Product property value localization model",
+ *     description="Product property value localization model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kEigenschaftWert
  * @method int getKEigenschaftWert()
@@ -24,6 +27,27 @@ use JTL\Model\ModelHelper;
  */
 final class ProductPropertyValueLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="propertyValueID",
+     *   type="int",
+     *   example=1,
+     *   description="The property value ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="",
+     *   description="The name"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -60,7 +84,13 @@ final class ProductPropertyValueLocalizationModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['propertyValueID'] = DataAttribute::create('kEigenschaftWert', 'int', self::cast('0', 'int'), false, true);
+        $attributes['propertyValueID'] = DataAttribute::create(
+            'kEigenschaftWert',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
         $attributes['languageID']      = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false, true);
         $attributes['name']            = DataAttribute::create('cName', 'varchar');
 

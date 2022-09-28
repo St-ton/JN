@@ -9,8 +9,10 @@ use JTL\Model\DataModel;
 /**
  * Class ProductAttributeModel
  *
- * this is what would be JTL\Catalog\Product\Artikel::FunktionsAttribute
- *
+ * @OA\Schema(
+ *     title="Product attribute model",
+ *     description="Product attribute model"
+ * )
  * @property int    $kArtikelAttribut
  * @property int    $id
  * @property int    $kArtikel
@@ -22,6 +24,33 @@ use JTL\Model\DataModel;
  */
 final class ProductAttributeModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="warenkorbmatrix",
+     *   description="The attribute name"
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="string",
+     *   example="1",
+     *   description="The attribute value"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -49,7 +78,13 @@ final class ProductAttributeModel extends DataModel
             return $attributes;
         }
         $attributes              = [];
-        $attributes['id']        = DataAttribute::create('kArtikelAttribut', 'int', self::cast('0', 'int'), false, true);
+        $attributes['id']        = DataAttribute::create(
+            'kArtikelAttribut',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
         $attributes['productID'] = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false);
         $attributes['name']      = DataAttribute::create('cName', 'varchar');
         $attributes['value']     = DataAttribute::create('cWert', 'mediumtext');

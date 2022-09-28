@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ProductVisibilityModel
- *
+ * @OA\Schema(
+ *     title="Product visibility model",
+ *     description="Product visibility model. Product IDs listed here are NOT visible to given customer group ID",
+ * )
  * @property int $kArtikel
  * @property int $productID
  * @property int $kKundengruppe
@@ -16,6 +19,21 @@ use JTL\Model\DataModel;
  */
 final class ProductVisibilityModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product's ID"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group ID"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -43,8 +61,20 @@ final class ProductVisibilityModel extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['productID']       = DataAttribute::create('kArtikel', 'int', self::cast('0', 'int'), false, true);
-        $attributes['customerGroupID'] = DataAttribute::create('kKundengruppe', 'int', self::cast('0', 'int'), false, true);
+        $attributes['productID']       = DataAttribute::create(
+            'kArtikel',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['customerGroupID'] = DataAttribute::create(
+            'kKundengruppe',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
 
         return $attributes;
     }

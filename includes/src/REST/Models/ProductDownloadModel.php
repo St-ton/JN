@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ProductDownloadModel
- *
+ * @OA\Schema(
+ *     title="Product download model",
+ *     description="Product download model",
+ * )
  * @property int $kArtikel
  * @property int $productID
  * @property int $kDownload
@@ -16,6 +19,21 @@ use JTL\Model\DataModel;
  */
 final class ProductDownloadModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product's ID"
+     * )
+     * @OA\Property(
+     *   property="downloadID",
+     *   type="int",
+     *   example=2,
+     *   description="The download's ID"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

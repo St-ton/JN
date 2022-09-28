@@ -8,6 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class AttributeLocalizationModel
+ * @OA\Schema(
+ *     title="Attribute localization model",
+ *     description="Attribute localization model",
+ * )
  *
  * @property int    $id
  * @property int    $languageID
@@ -17,6 +21,39 @@ use JTL\Model\DataModel;
  */
 final class AttributeLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=99,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="example attribute",
+     *   description="The localized attribute's name"
+     * )
+     * @OA\Property(
+     *   property="stringValue",
+     *   type="string",
+     *   example="example",
+     *   description="The localized string value"
+     * )
+     * @OA\Property(
+     *   property="textValue",
+     *   type="string",
+     *   example="example",
+     *   description="The localized text value"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -45,7 +82,13 @@ final class AttributeLocalizationModel extends DataModel
         }
         $attributes                = [];
         $attributes['id']          = DataAttribute::create('kAttribut', 'int', self::cast('0', 'int'), false, true);
-        $attributes['languageID']  = DataAttribute::create('kSprache', 'tinyint', self::cast('0', 'tinyint'), false, true);
+        $attributes['languageID']  = DataAttribute::create(
+            'kSprache',
+            'tinyint',
+            self::cast('0', 'tinyint'),
+            false,
+            true
+        );
         $attributes['name']        = DataAttribute::create('cName', 'varchar');
         $attributes['stringValue'] = DataAttribute::create('cStringWert', 'varchar', self::cast('', 'varchar'), false);
         $attributes['textValue']   = DataAttribute::create('cTextWert', 'mediumtext', null, false);

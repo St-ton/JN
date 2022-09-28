@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class ProductPropertyValueImage
- *
+ * @OA\Schema(
+ *     title="Product property value image model",
+ *     description="Product property value image model",
+ * )
  * @package JTL\REST\Models
  * @property int    $kEigenschaftWertPict
  * @method int getKEigenschaftWertPict()
@@ -27,6 +30,32 @@ use JTL\Model\ModelHelper;
  */
 final class ProductPropertyValueImage extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="propertyValueID",
+     *   type="int",
+     *   example=1,
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="path",
+     *   type="string",
+     *   example="examplepropertyvalue.jpg",
+     *   description="Image path"
+     * )
+     * @OA\Property(
+     *   property="type",
+     *   type="string",
+     *   description="Not used"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -63,10 +92,22 @@ final class ProductPropertyValueImage extends DataModel
             return $attributes;
         }
         $attributes                    = [];
-        $attributes['id']              = DataAttribute::create('kEigenschaftWertPict', 'int', self::cast('0', 'int'), false, true);
-        $attributes['propertyValueID'] = DataAttribute::create('kEigenschaftWert', 'int', self::cast('0', 'int'), false, false);
-        $attributes['path']            = DataAttribute::create('cPfad', 'varchar', null, true, false);
-        $attributes['type']            = DataAttribute::create('cType', 'char', null, true, false);
+        $attributes['id']              = DataAttribute::create(
+            'kEigenschaftWertPict',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
+        $attributes['propertyValueID'] = DataAttribute::create(
+            'kEigenschaftWert',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            false
+        );
+        $attributes['path']            = DataAttribute::create('cPfad', 'varchar');
+        $attributes['type']            = DataAttribute::create('cType', 'char');
 
         return $attributes;
     }

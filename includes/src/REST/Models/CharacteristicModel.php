@@ -9,7 +9,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class CharacteristicModel
- *
+ * @OA\Schema(
+ *     title="Characteristic model",
+ *     description="Characteristic model",
+ * )
  * @property int                                           $kMerkmal
  * @property int                                           $id
  * @property int                                           $nSort
@@ -27,6 +30,57 @@ use JTL\Model\DataModel;
  */
 final class CharacteristicModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=7,
+     *   description="The characteristic ID"
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   example=0,
+     *   description="The sort number"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="Farbe",
+     *   description="The characteristic's name"
+     * )
+     * @OA\Property(
+     *   property="image",
+     *   type="string",
+     *   example="example.jpg",
+     *   description="The image name"
+     * )
+     * @OA\Property(
+     *   property="type",
+     *   type="string",
+     *   example="",
+     *   description="The type (not used)"
+     * )
+     * @OA\Property(
+     *   property="isMulti",
+     *   type="int",
+     *   example=0,
+     *   description="Set to 1 if multiple selections should be allowed"
+     * )
+     * @OA\Property(
+     *   property="value",
+     *   type="array",
+     *   description="List of CharacteristicValueModel objects",
+     *   @OA\Items(ref="#/components/schemas/CharacteristicValueModel")
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of CharacteristicLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/CharacteristicLocalizationModel")
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -105,7 +159,12 @@ final class CharacteristicModel extends DataModel
         $attributes['name']    = DataAttribute::create('cName', 'varchar');
         $attributes['image']   = DataAttribute::create('cBildpfad', 'varchar', '', false);
         $attributes['type']    = DataAttribute::create('cTyp', 'varchar', null, false);
-        $attributes['isMulti'] = DataAttribute::create('nMehrfachauswahl', 'tinyint', self::cast('0', 'tinyint'), false);
+        $attributes['isMulti'] = DataAttribute::create(
+            'nMehrfachauswahl',
+            'tinyint',
+            self::cast('0', 'tinyint'),
+            false
+        );
 
         $attributes['value']        = DataAttribute::create(
             'value',

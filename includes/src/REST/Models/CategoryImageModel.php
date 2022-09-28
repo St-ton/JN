@@ -24,6 +24,33 @@ use JTL\Model\DataModel;
 final class CategoryImageModel extends DataModel
 {
     /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="categoryID",
+     *   type="int",
+     *   example=1,
+     *   description="The category ID"
+     * )
+     * @OA\Property(
+     *   property="file",
+     *   type="string",
+     *   example="testimage.jpg",
+     *   description="The file name"
+     * )
+     * @OA\Property(
+     *   property="type",
+     *   type="string",
+     *   example="",
+     *   description="The type (unused)"
+     * )
+     */
+
+    /**
      * @inheritdoc
      */
     public function getTableName(): string

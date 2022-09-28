@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class TaxClassModel
- *
+ * @OA\Schema(
+ *     title="Tax class model",
+ *     description="Tax class model",
+ * )
  * @property int    $kSteuerklasse
  * @property int    $id
  * @property string $cName
@@ -18,6 +21,27 @@ use JTL\Model\DataModel;
  */
 final class TaxClassModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=1,
+     *   description="The tax class ID"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="ermäßigter Steuersatz",
+     *   description="The class name"
+     * )
+     * @OA\Property(
+     *   property="isDefault",
+     *   type="string",
+     *   example="N",
+     *   description=""
+     * )
+     */
+
     /**
      * @inheritdoc
      */

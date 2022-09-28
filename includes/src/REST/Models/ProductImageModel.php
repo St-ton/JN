@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ProductImageModel
- *
+ * @OA\Schema(
+ *     title="Product image model",
+ *     description="Product image model",
+ * )
  * @property int    $kArtikelPict
  * @property int    $id
  * @property int    $kMainArtikelBild
@@ -24,6 +27,45 @@ use JTL\Model\DataModel;
  */
 final class ProductImageModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=99,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="mainImageID",
+     *   type="int",
+     *   example=0,
+     *   description="The main image ID"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product's ID"
+     * )
+     * @OA\Property(
+     *   property="imageID",
+     *   type="int",
+     *   example=0,
+     *   description="The image ID"
+     * )
+     * @OA\Property(
+     *   property="path",
+     *   type="string",
+     *   example="exampleproduct.jpg",
+     *   description="The image path"
+     * )
+     * @OA\Property(
+     *   property="imageNo",
+     *   type="int",
+     *   example=1,
+     *   description="The image number"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class CustomerModel
- *
+ * @OA\Schema(
+ *     title="Customer model",
+ *     description="Customer model",
+ * )
  * @package JTL\REST\Models
  * @property int      $kKunde
  * @method int getKKunde()
@@ -182,18 +185,39 @@ final class CustomerModel extends DataModel
         $attributes['languageID']        = DataAttribute::create('kSprache', 'int', self::cast('0', 'int'), false);
         $attributes['customerNO']        = DataAttribute::create('cKundenNr', 'varchar');
         $attributes['password']          = DataAttribute::create('cPasswort', 'varchar');
-        $attributes['salutation']        = DataAttribute::create('cAnrede', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['salutation']        = DataAttribute::create(
+            'cAnrede',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
         $attributes['title']             = DataAttribute::create('cTitel', 'varchar');
-        $attributes['firstname']         = DataAttribute::create('cVorname', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['surname']           = DataAttribute::create('cNachname', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['firstname']         = DataAttribute::create(
+            'cVorname',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
+        $attributes['surname']           = DataAttribute::create(
+            'cNachname',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
         $attributes['company']           = DataAttribute::create('cFirma', 'varchar');
         $attributes['additional']        = DataAttribute::create('cZusatz', 'varchar');
-        $attributes['street']            = DataAttribute::create('cStrasse', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['street']            = DataAttribute::create(
+            'cStrasse',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
         $attributes['streetNO']          = DataAttribute::create('cHausnummer', 'varchar', null, false);
         $attributes['additionalAddress'] = DataAttribute::create('cAdressZusatz', 'varchar');
         $attributes['zip']               = DataAttribute::create('cPLZ', 'varchar', self::cast('', 'varchar'), false);
         $attributes['city']              = DataAttribute::create('cOrt', 'varchar', self::cast('', 'varchar'), false);
-        $attributes['state']             = DataAttribute::create('cBundesland', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['state']             = DataAttribute::create('
+        cBundesland', 'varchar', self::cast('', 'varchar'), false);
         $attributes['country']           = DataAttribute::create('cLand', 'varchar', null, false);
         $attributes['tel']               = DataAttribute::create('cTel', 'varchar');
         $attributes['mobile']            = DataAttribute::create('cMobil', 'varchar');
@@ -201,18 +225,43 @@ final class CustomerModel extends DataModel
         $attributes['mail']              = DataAttribute::create('cMail', 'varchar', self::cast('', 'varchar'), false);
         $attributes['ustidnr']           = DataAttribute::create('cUSTID', 'varchar');
         $attributes['www']               = DataAttribute::create('cWWW', 'varchar');
-        $attributes['locked']            = DataAttribute::create('cSperre', 'varchar', self::cast('N', 'varchar'), false);
-        $attributes['balance']           = DataAttribute::create('fGuthaben', 'double', self::cast('0.00', 'double'), false);
+        $attributes['locked']            = DataAttribute::create(
+            'cSperre',
+            'varchar',
+            self::cast('N', 'varchar'),
+            false
+        );
+        $attributes['balance']           = DataAttribute::create(
+            'fGuthaben',
+            'double',
+            self::cast('0.00', 'double'),
+            false
+        );
         $attributes['newsletter']        = DataAttribute::create('cNewsletter', 'char', self::cast('', 'char'), false);
         $attributes['birthday']          = DataAttribute::create('dGeburtstag', 'date');
-        $attributes['discount']          = DataAttribute::create('fRabatt', 'double', self::cast('0.00', 'double'), false);
-        $attributes['origin']            = DataAttribute::create('cHerkunft', 'varchar', self::cast('', 'varchar'), false);
+        $attributes['discount']          = DataAttribute::create(
+            'fRabatt',
+            'double',
+            self::cast('0.00', 'double'),
+            false
+        );
+        $attributes['origin']            = DataAttribute::create(
+            'cHerkunft',
+            'varchar',
+            self::cast('', 'varchar'),
+            false
+        );
         $attributes['created']           = DataAttribute::create('dErstellt', 'date');
         $attributes['modified']          = DataAttribute::create('dVeraendert', 'datetime', null, false);
         $attributes['active']            = DataAttribute::create('cAktiv', 'char', self::cast('Y', 'char'), false);
         $attributes['fetched']           = DataAttribute::create('cAbgeholt', 'char', self::cast('N', 'char'), false);
         $attributes['registered']        = DataAttribute::create('nRegistriert', 'tinyint', null, false);
-        $attributes['loginAttempts']     = DataAttribute::create('nLoginversuche', 'int', self::cast('0', 'int'), false);
+        $attributes['loginAttempts']     = DataAttribute::create(
+            'nLoginversuche',
+            'int',
+            self::cast('0', 'int'),
+            false
+        );
 
         return $attributes;
     }

@@ -10,7 +10,10 @@ use JTL\Model\ModelHelper;
 
 /**
  * Class OrderStateModel
- *
+ * @OA\Schema(
+ *     title="Order state model",
+ *     description="Order state model",
+ * )
  * @package JTL\REST\Models
  * @property int      $kBestellung
  * @method int getKBestellung()
@@ -27,6 +30,42 @@ use JTL\Model\ModelHelper;
  */
 final class OrderStateModel extends DataModel
 {
+
+    /**
+     * @OA\Property(
+     *   property="orderID",
+     *   type="int",
+     *   example=1,
+     *   description="The order ID"
+     * )
+     * @OA\Property(
+     *   property="uid",
+     *   type="string",
+     *   example="62472badde7b48.36199128",
+     *   description="The unique ID"
+     * )
+     * @OA\Property(
+     *   property="paymentProvider",
+     *   type="string",
+     *   example="PayPal",
+     *   description="The payment provider name"
+     * )
+     * @OA\Property(
+     *     property="date",
+     *     example="2022-09-22 18:31:45",
+     *     format="datetime",
+     *     description="Time of creation",
+     *     title="Time of creation",
+     *     type="string"
+     * )
+     * @OA\Property(
+     *   property="failedAttempts",
+     *   type="int",
+     *   example=0,
+     *   description=""
+     * )
+     */
+
     /**
      * @inheritdoc
      */

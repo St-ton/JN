@@ -8,7 +8,10 @@ use JTL\Model\DataModel;
 
 /**
  * Class ProductCategoriesModel
- *
+ * @OA\Schema(
+ *     title="Product categories model",
+ *     description="Product categories model",
+ * )
  * @package JTL\REST\Models
  * @property int $kKategorieArtikel
  * @property int $id
@@ -19,6 +22,27 @@ use JTL\Model\DataModel;
  */
 final class ProductCategoriesModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example="1",
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example="123",
+     *   description="The product ID"
+     * )
+     * @OA\Property(
+     *   property="categoryID",
+     *   type="int",
+     *   example="3",
+     *   description="The category ID"
+     * )
+     */
+
     /**
      * @inheritdoc
      */
@@ -45,7 +69,13 @@ final class ProductCategoriesModel extends DataModel
             return $attributes;
         }
         $attributes               = [];
-        $attributes['id']         = DataAttribute::create('kKategorieArtikel', 'int', self::cast('0', 'int'), false, true);
+        $attributes['id']         = DataAttribute::create(
+            'kKategorieArtikel',
+            'int',
+            self::cast('0', 'int'),
+            false,
+            true
+        );
         $attributes['productID']  = DataAttribute::create('kArtikel', 'int');
         $attributes['categoryID'] = DataAttribute::create('kKategorie', 'int');
 

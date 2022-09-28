@@ -11,17 +11,65 @@ use JTL\Model\DataModel;
  *
  * this actually also is a ProductAttributeModel - but the table name is "attribut" for some reason
  * it would be JTL\Catalog\Product\Artikel::AttributeAssoc
+ * @OA\Schema(
+ *     title="Attribute model",
+ *     description="Attribute model",
+ * )
  *
- *
+
+ * @property int    $id
  * @property int    $kAttribut
  * @property int    $kArtikel
+ * @property int    $productID
  * @property int    $nSort
+ * @property int    $sort
  * @property string $cName
+ * @property string $stringValue
  * @property string $cStringWert
  * @property string $cTextWert
+ * @property string $textValue
  */
 final class AttributeModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=99,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="productID",
+     *   type="int",
+     *   example=99,
+     *   description="The product's ID"
+     * )
+     * @OA\Property(
+     *   property="sort",
+     *   type="int",
+     *   example=0,
+     *   description="The sorting number"
+     * )
+     * @OA\Property(
+     *   property="name",
+     *   type="string",
+     *   example="example",
+     *   description="The attribute's name"
+     * )
+     * @OA\Property(
+     *   property="stringValue",
+     *   type="string",
+     *   example="example",
+     *   description="The string value"
+     * )
+     * @OA\Property(
+     *   property="textValue",
+     *   type="string",
+     *   example="example",
+     *   description="The text value"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

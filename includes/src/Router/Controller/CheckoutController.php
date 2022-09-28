@@ -1352,8 +1352,8 @@ class CheckoutController extends RegistrationController
             foreach ($data as $id) {
                 $newAddress = new DeliveryAddressTemplate($this->db, $id);
                 if ($id === (int)($_SESSION['shippingAddressPresetID'] ?? 0)
-                    || $id === (int)$_SESSION['Bestellung']->kLieferadresse) {
-                    array_unshift($addresses, $newAddress);
+                    || $id === (int)($_SESSION['Bestellung']->kLieferadresse ?? 0)) {
+                    \array_unshift($addresses, $newAddress);
                 } else {
                     $addresses[] = $newAddress;
                 }
@@ -1365,7 +1365,7 @@ class CheckoutController extends RegistrationController
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))
             ->assign('Kunde', $_SESSION['Kunde'] ?? null)
             ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null)
-            ->assign('shippingAddressPresetID', $_SESSION['shippingAddressPresetID']);
+            ->assign('shippingAddressPresetID', $_SESSION['shippingAddressPresetID'] ?? null);
         if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
             $this->smarty->assign('Lieferadresse', $Lieferadresse);
         }

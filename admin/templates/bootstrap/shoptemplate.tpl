@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{assign var=cBeschreibung value=__('shoptemplatesDesc')}
+{assign var=cBeschreibung value=__('shoptemplatesDesc')|sprintf:($shopURL|cat:'/?preview'):($shopURL|cat:'/?preview')}
 {if isset($templateConfig) && $templateConfig}
     {assign var=cTitel value={__('settings')}|cat:': '|cat:$template->getName()}
     {if !empty($template->getDocumentationURL())}

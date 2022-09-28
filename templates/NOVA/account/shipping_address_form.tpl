@@ -6,9 +6,12 @@
                     {block name='account-shipping-address-form-include-customer-shipping-address'}
                         {include file='checkout/customer_shipping_address.tpl' prefix="register" fehlendeAngaben=null}
                     {/block}
+                    {block name='account-shipping-address-form-include-customer-shipping-contact'}
+                        {include file='checkout/customer_shipping_contact.tpl' prefix="register" fehlendeAngaben=null}
+                    {/block}
                     {block name='account-shipping-address-form-form-submit'}
                         {row class='btn-row'}
-                            {col md=8 xl=6 class="checkout-button-row-submit"}
+                            {col md=12 xl=6 class="checkout-button-row-submit mb-3"}
                                 {input type="hidden" name="editLieferadresse" value="1"}
                                 {if isset($Lieferadresse->nIstStandardLieferadresse) && $Lieferadresse->nIstStandardLieferadresse === 1}
                                     {input type="hidden" name="isDefault" value=1}
@@ -31,19 +34,22 @@
                                     {/button}
                                 {/if}
                             {/col}
+                            {col md=12 xl=6 class="checkout-button-row-new-address"}
+                                {if isset($Lieferadresse->kLieferadresse) && !isset($smarty.get.fromCheckout)}
+                                    {link type="button"  class="btn btn-primary btn-block" href="{get_static_route id='jtl.php' params=['editLieferadresse' => 1]}"}
+                                        {lang key='newShippingAddress' section='account data'}
+                                    {/link}
+                                {/if}
+                            {/col}
                         {/row}
                     {/block}
                 {/form}
             {/col}
             {col cols=12 md=6 class='shipping-addresses-wrapper'}
                 {block name='account-shipping-address-form-form-address-wrapper'}
-                    <table id="lieferadressen-liste" class="table display compact" style="width:100%">
+                    <table id="lieferadressen-liste" class="{if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N'}shipping-address-standard-active{/if} table display compact" style="width:100%">
                         <thead>
                             <tr>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
@@ -53,27 +59,26 @@
                             {block name='account-shipping-address-form-form-addresses'}
                             {foreach $Lieferadressen as $address}
                                 <tr>
-                                    <td></td>
                                     <td>
                                         {if $address->cFirma}{$address->cFirma}<br />{/if}
-                                        <strong>{$address->cVorname} {$address->cNachname}</strong><br />
+                                        <strong>{if $address->cTitel}{$address->cTitel}{/if} {$address->cVorname} {$address->cNachname}</strong><br />
                                         {$address->cStrasse} {$address->cHausnummer}<br />
                                         {$address->cPLZ} {$address->cOrt}<br />
-                                    </td>
-                                    <td>
-                                        {$address->cTitel}
-                                    </td>
-                                    <td>
-                                        {$address->cBundesland}
-                                    </td>
-                                    <td>
-                                        {$address->cAdressZusatz}
+                                        <div id="deliveryAdditional{$address->kLieferadresse}" class="collapse">
+                                            {block name='account-shipping-address-include-inc-delivery-address'}
+                                                {include file='checkout/inc_delivery_address.tpl' Lieferadresse=$address hideMainInfo=true}
+                                            {/block}
+                                        </div>
+                                        {button variant="link" class="btn-show-more"
+                                            data=["toggle"=> "collapse", "target"=>"#deliveryAdditional{$address->kLieferadresse}"]}
+                                            {lang  key='showMore'}
+                                        {/button}
                                     </td>
                                     <td class="text-right">
                                         {buttongroup}
-                                            {if $address->nIstStandardLieferadresse !== 1}
-                                                <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
-                                                    <span class="fas fa-star"></span>
+                                            {if $Einstellungen.kaufabwicklung.bestellvorgang_kaufabwicklungsmethode == 'N' && $address->nIstStandardLieferadresse !== 1}
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" data-toggle="tooltip" data-placement="top" title="{lang key='useAsDefaultShippingAddress' section='account data'}" onclick="location.href='{get_static_route id='jtl.php' params=['editLieferadresse' => 1, 'setAddressAsDefault' => {$address->kLieferadresse}]}'">
+                                                    {lang key='setAsStandard' section='account data'}
                                                 </button>
                                             {/if}
 
@@ -104,9 +109,7 @@
         {inline_script}<script>
         $(document).ready(function () {
             function format(d) {
-                return (
-                    'Weitere Informationen'
-                );
+                return (d.moreAddressData);
             }
             let tableID = '#lieferadressen-liste';
             let table = $(tableID).DataTable( {
@@ -126,37 +129,19 @@
                     }
                 },
                 columns: [
-                    {
-                        className: 'dt-control',
-                        orderable: false,
-                        data: null,
-                        defaultContent: '',
-                    },
                     { data: 'address' },
-                    { data: 'titel' },
-                    { data: 'bundesland' },
-                    { data: 'adresszusatz' },
                     { data: 'buttons' },
                     { data: 'sort' }
                 ],
                 columnDefs: [
                     {
-                        target: 2,
-                        visible: false,
-                    },{
-                        target: 3,
-                        visible: false,
-                    },{
-                        target: 4,
-                        visible: false,
-                    },{
-                        target: 6,
+                        targets: [2],
                         visible: false,
                     }
                 ],
                 lengthMenu: [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "{lang key='showAll'}"] ],
                 pageLength: 5,
-                order: [6, 'desc'],
+                order: [2, 'desc'],
                 initComplete: function (settings, json) {
                     $('.dataTables_filter input[type=search]').removeClass('form-control-sm');
                     $('.dataTables_length select').removeClass('custom-select-sm form-control-sm');

@@ -18,11 +18,15 @@ const proxy = function(fn, ...args) {
 const updateCount = function(increase = false) {
 	let $input = $(this).parents(`.${Classes.counter}`).find('.form-control');
 	let input = $input.get(0);
+	let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
 	let stepDirection = increase ? 'stepUp' : 'stepDown';
 
 	try {
 		input[stepDirection]()
 		$input.trigger('change')
+		if (control != null && control.disabled == false) {
+			control.checked = true
+		}
 	} catch(e) {
 		let step = input.step > 0 ? parseFloat(input.step) : 1;
 
@@ -42,7 +46,11 @@ window.initNumberInput = function () {
 		let min = parseInt(this.min);
 		let max = parseInt(this.max);
 		let value = parseInt(this.value);
+		let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
 
+		if (control != null && control.disabled == false) {
+			control.checked = true
+		}
 		if(value < min) this.value = min;
 		if(value > max) this.value = max;
 	})

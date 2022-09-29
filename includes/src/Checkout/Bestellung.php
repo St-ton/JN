@@ -411,7 +411,6 @@ class Bestellung
             $this->kVersandart          = (int)$obj->kVersandart;
             $this->kSprache             = (int)$obj->kSprache;
             $this->kWaehrung            = (int)$obj->kWaehrung;
-            $this->nZahlungsTyp         = (int)$obj->nZahlungsTyp;
             $this->fGuthaben            = $obj->fGuthaben;
             $this->fGesamtsumme         = $obj->fGesamtsumme;
             $this->cSession             = $obj->cSession;

@@ -179,29 +179,27 @@
                                     disableSettings();
                                 });
                                 //TODO: Generate disabled messages from javascript settings object above
-                                $allSettings
-                                    .prop('toggle', 'tooltip')
-                                    .prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}')
-                                    .on('change', function () {
+                                $allSettings.on('change', function () {
                                         if (!$menuTemplate.is(this)) {
                                             $presetButtons.removeClass('selected');
                                             $menuTemplate.val('headerCustom');
                                         }
                                     });
-                                $(settingPrefixID + 'menu_center').prop('title', '{/literal}{__('tooltipDisabledMenuCenter')}{literal}')
+                                $allSettings.parent().prop('toggle', 'tooltip');
+                                $allSettings.parent().prop('title', '{/literal}{__('tooltipWithoutMenuSingleRow')}{literal}');
+                                $(settingPrefixID + 'menu_center').parent().prop('title', '{/literal}{__('tooltipDisabledMenuCenter')}{literal}')
                                 function disableSettings() {
                                     $.each(settings, function (key, value) {
                                         if (value.disableOptionWhen !== undefined) {
                                             $.each(value.disableOptionWhen, function (keyOption, valueOption) {
+                                                let $settingID = $(settingPrefixID + key);
                                                 if ($(settingPrefixID + keyOption).val() === valueOption) {
-                                                    $(settingPrefixID + key)
-                                                        .prop('disabled', true)
-                                                        .tooltip('enable');
+                                                    $settingID.prop('disabled', true).css('pointer-events', 'none');
+                                                    $settingID.parent().tooltip('enable');
                                                     return false;
                                                 } else {
-                                                    $(settingPrefixID + key)
-                                                        .prop('disabled', false)
-                                                        .tooltip('disable');
+                                                    $settingID.prop('disabled', false).css('pointer-events', 'initial');
+                                                    $settingID.parent().tooltip('disable');
                                                 }
                                             });
                                         }

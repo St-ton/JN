@@ -101,7 +101,9 @@
                                             {/block}
                                         {/if}
 
-                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
+                                        {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y'
+                                            && $oPosition->Artikel->cKurzBeschreibung !== null
+                                            && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
                                             {block name='account-order-item-short-desc'}
                                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                                             {/block}

@@ -11,6 +11,8 @@
         title=$imgAttribs.title
         fluid=true
         webp=true
+        width=$imgAttribs.realWidth
+        height=$imgAttribs.realHeight
     }
     {if !$isPreview}
         {foreach $instance->getProperty('zones') as $zone}

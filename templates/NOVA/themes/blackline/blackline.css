@@ -20586,9 +20586,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 .banner > .area > .area-desc {
   display: none;
 }
-.banner .img-fluid {
-  width: 100%;
-}
 .banner > a.area {
   position: absolute;
   display: block;

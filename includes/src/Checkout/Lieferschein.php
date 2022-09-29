@@ -109,10 +109,8 @@ class Lieferschein
                 'kLieferscheinPos'
             );
             foreach ($items as $deliveryItem) {
-                $lineItem                           = new Lieferscheinpos((int)$deliveryItem->kLieferscheinPos);
-                $lineItem->oLieferscheinPosInfo_arr = [];
-
-                $infos = $db->selectAll(
+                $lineItem = new Lieferscheinpos((int)$deliveryItem->kLieferscheinPos, $db);
+                $infos    = $db->selectAll(
                     'tlieferscheinposinfo',
                     'kLieferscheinPos',
                     (int)$deliveryItem->kLieferscheinPos,

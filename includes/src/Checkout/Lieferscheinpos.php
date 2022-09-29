@@ -33,9 +33,9 @@ class Lieferscheinpos
     protected ?int $kWarenlager = null;
 
     /**
-     * @var float|int|null
+     * @var float|null
      */
-    protected int|null|float $fAnzahl = null;
+    protected ?float $fAnzahl = null;
 
     /**
      * @var array
@@ -78,7 +78,7 @@ class Lieferscheinpos
             $this->kLieferschein    = (int)$item->kLieferschein;
             $this->kBestellPos      = (int)$item->kBestellPos;
             $this->kWarenlager      = (int)$item->kWarenlager;
-            $this->fAnzahl          = $item->fAnzahl;
+            $this->fAnzahl          = (float)$item->fAnzahl;
         }
 
         return $this;

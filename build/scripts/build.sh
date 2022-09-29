@@ -30,7 +30,7 @@ build_create()
 
 	# extract version from defines_inc.php -> APPLICATION_VERSION
 	definesInc=`cat ${REPOSITORY_DIR}/includes/defines_inc.php`;
-	pattern=".*define\('APPLICATION_VERSION', '([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?'\);";
+    pattern="const[[:blank:]]APPLICATION_VERSION[[:blank:]]*=[[:blank:]]*'([0-9]\.[0-9].[0-9])(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?';"
 
 	if [[ $definesInc =~ $pattern ]];then
 		if [[ ! -z "${BASH_REMATCH[2]}" ]]; then

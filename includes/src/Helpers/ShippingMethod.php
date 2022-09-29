@@ -1002,7 +1002,7 @@ class ShippingMethod
      * @param String                $iso
      * @param Artikel|stdClass|null $additionalProduct
      * @param Artikel|null          $product
-     * @return int|string
+     * @return int|float
      * @former berechneVersandpreis()
      * @todo fWarenwertNetto vom Zusatzartikel darf kein Netto sein - der Preis muss in Brutto angegeben werden.
      */
@@ -1028,9 +1028,9 @@ class ShippingMethod
             $shippingMethod->kVersandberechnung
         );
         $price       = 0;
-        switch ($calculation->cModulId) {
+        switch ($calculation->cModulId ?? '') {
             case 'vm_versandkosten_pauschale_jtl':
-                $price = $shippingMethod->fPreis;
+                $price = (float)$shippingMethod->fPreis;
                 break;
 
             case 'vm_versandberechnung_gewicht_jtl':
@@ -1046,7 +1046,7 @@ class ShippingMethod
                     ['sid' => (int)$shippingMethod->kVersandart, 'wght' => $totalWeight]
                 );
                 if ($shipping !== null) {
-                    $price = $shipping->fPreis;
+                    $price = (float)$shipping->fPreis;
                 } else {
                     return -1;
                 }
@@ -1071,7 +1071,7 @@ class ShippingMethod
                     ['sid' => (int)$shippingMethod->kVersandart, 'val' => $total]
                 );
                 if (isset($shipping->kVersandartStaffel)) {
-                    $price = $shipping->fPreis;
+                    $price = (float)$shipping->fPreis;
                 } else {
                     return -1;
                 }
@@ -1098,7 +1098,7 @@ class ShippingMethod
                     ['sid' => (int)$shippingMethod->kVersandart, 'cnt' => $productCount]
                 );
                 if (isset($shipping->kVersandartStaffel)) {
-                    $price = $shipping->fPreis;
+                    $price = (float)$shipping->fPreis;
                 } else {
                     return -1;
                 }
@@ -1120,13 +1120,13 @@ class ShippingMethod
                 || !empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
             $productSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
-            $price          += $productSpecific->fKosten ?? 0;
+            $price          += (float)($productSpecific->fKosten ?? 0);
         }
         if ($price >= $shippingMethod->fDeckelung && $shippingMethod->fDeckelung > 0) {
-            $price = $shippingMethod->fDeckelung;
+            $price = (float)$shippingMethod->fDeckelung;
         }
         if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
-            $price += $shippingMethod->Zuschlag->fZuschlag;
+            $price += (float)$shippingMethod->Zuschlag->fZuschlag;
         }
         $productPrice         = 0;
         $totalForShippingFree = 0;
@@ -1218,7 +1218,7 @@ class ShippingMethod
                     'kZahlungsart',
                     6,
                     'kVersandart',
-                    (int)$method->kVersandart
+                    $method->kVersandart
                 );
                 if ($cash !== null && isset($cash->kVersandartZahlungsart) && $cash->kVersandartZahlungsart > 0) {
                     continue;

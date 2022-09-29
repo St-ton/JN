@@ -4373,7 +4373,7 @@ class Artikel implements RoutableInterface
                         $precision
                     ) . $per;
             } else {
-                $this->cLocalizedVPE[0] = Shop::Lang()->get('priceStarting') . ' ' .
+                $this->cLocalizedVPE[0] =
                     Preise::getLocalizedPriceString(
                         Tax::getGross(
                             $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
@@ -4384,7 +4384,7 @@ class Artikel implements RoutableInterface
                         true,
                         $precision
                     ) . $per;
-                $this->cLocalizedVPE[1] = Shop::Lang()->get('priceStarting') . ' ' .
+                $this->cLocalizedVPE[1] =
                     Preise::getLocalizedPriceString(
                         $this->Preise->oPriceRange->minNettoPrice / $this->fVPEWert,
                         $this->currency,
@@ -4393,6 +4393,10 @@ class Artikel implements RoutableInterface
                     ) . $per;
             }
         } else {
+            $price = $this->Preise->oPriceRange !== null && $this->Preise->oPriceRange->isRange()
+                ? $this->Preise->oPriceRange->minNettoPrice
+                : $price;
+
             $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
                 Tax::getGross($price / $this->fVPEWert, $ust, $precision),
                 $this->currency,

@@ -177,8 +177,20 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
+                if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
+                    $shippingID = $this->db->getSingleInt(
+                        'SELECT DISTINCT(kLieferadresse) AS id
+                            FROM tlieferadressevorlage
+                            WHERE kKunde = :cid
+                                AND nIstStandardLieferadresse=1',
+                        'id',
+                        ['cid' => $this->customer->getID()]
+                    );
+                }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => !empty($shippingID)
+                        ? $shippingID
+                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;
@@ -1338,7 +1350,13 @@ class CheckoutController extends RegistrationController
                 ['cid' => $this->customer->getID()]
             );
             foreach ($data as $id) {
-                $addresses[] = new DeliveryAddressTemplate($this->db, $id);
+                $newAddress = new DeliveryAddressTemplate($this->db, $id);
+                if ($id === (int)($_SESSION['shippingAddressPresetID'] ?? 0)
+                    || $id === (int)($_SESSION['Bestellung']->kLieferadresse ?? 0)) {
+                    \array_unshift($addresses, $newAddress);
+                } else {
+                    $addresses[] = $newAddress;
+                }
             }
             $this->smarty->assign('Lieferadressen', $addresses);
         }
@@ -1346,10 +1364,12 @@ class CheckoutController extends RegistrationController
         $this->smarty->assign('laender', $countries)
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))
             ->assign('Kunde', $_SESSION['Kunde'] ?? null)
-            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
+            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null)
+            ->assign('shippingAddressPresetID', $_SESSION['shippingAddressPresetID'] ?? null);
         if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
             $this->smarty->assign('Lieferadresse', $Lieferadresse);
         }
+        unset($_SESSION['shippingAddressPresetID']);
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE);
 
         return $Lieferadresse;

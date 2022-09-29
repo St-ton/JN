@@ -78,13 +78,13 @@ you can do it in the following way:
 Please DO NOT create a merge request of your own master branch!
 
 A short description of the procedure can be found here: 
-[contributing](https://jtl-devguide.readthedocs.io/projects/jtl-shop/de/latest/shop_programming_tips/contributing.html)
+[contributing](https://docs.jtl-shop.de/de/latest/shop_programming_tips/contributing.html)
 
 ## Related Links
 
 * [JTL](https://www.jtl-software.de/) - JTL-Software Homepage
 * [JTL Userguide](https://guide.jtl-software.de/) - Userguide
-* [JTL Developer Documentation](http://docs.jtl-shop.de/) - Developer Docs
+* [JTL Developer Documentation](https://docs.jtl-shop.de/) - Developer Docs
 * [JTL Community](https://forum.jtl-software.de/) - JTL-Forum 
 * [JTL Shop-Entwicklung](https://gitlab.com/jtl-software/jtl-shop/core) - GitLab Repository
 * [JTL Shop-Builds](https://build.jtl-shop.de/) - Ready-to-use zip archives 

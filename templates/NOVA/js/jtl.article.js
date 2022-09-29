@@ -583,6 +583,11 @@
                     });
                 }
             });
+            $('.is-mobile .show-variation-collapse a').on('click', function (e) {
+                if (!$(this).closest('.show-variation-collapse').find('.collapse').hasClass('show')) {
+                    e.preventDefault();
+                }
+            });
         },
 
         registerFinish: function($wrapper) {

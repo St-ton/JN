@@ -307,7 +307,7 @@
         {/if}
 
         {block name='account-order-details-order-comment'}
-            {if !empty($Bestellung->cKommentar|trim)}
+            {if $Bestellung->cKommentar !== null && !empty($Bestellung->cKommentar|trim)}
                 <div class="h3">{lang key='yourOrderComment' section='login'}</div>
                 <p>{$Bestellung->cKommentar}</p>
             {/if}

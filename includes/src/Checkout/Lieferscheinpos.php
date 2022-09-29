@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Checkout;
 
+use JTL\DB\DbInterface;
 use JTL\Shop;
 use stdClass;
 
@@ -17,37 +18,49 @@ class Lieferscheinpos
     protected $kLieferscheinPos;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kLieferschein;
+    protected ?int $kLieferschein = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kBestellPos;
+    protected ?int $kBestellPos = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    protected $kWarenlager;
+    protected ?int $kWarenlager = null;
 
     /**
-     * @var float|int
+     * @var float|null
      */
-    protected $fAnzahl;
+    protected ?float $fAnzahl = null;
 
     /**
      * @var array
      */
-    public $oLieferscheinPosInfo_arr;
+    public array $oLieferscheinPosInfo_arr = [];
+
+    /**
+     * @var object|null
+     */
+    public ?object $oPosition = null;
+
+    /**
+     * @var DbInterface
+     */
+    private DbInterface $db;
 
     /**
      * Lieferscheinpos constructor.
      *
-     * @param int $id
+     * @param int              $id
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = 0)
+    public function __construct(int $id = 0, ?DbInterface $db = null)
     {
+        $this->db = $db ?? Shop::Container()->getDB();
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -59,15 +72,13 @@ class Lieferscheinpos
      */
     private function loadFromDB(int $id = 0): self
     {
-        $item = Shop::Container()->getDB()->select('tlieferscheinpos', 'kLieferscheinPos', $id);
+        $item = $this->db->select('tlieferscheinpos', 'kLieferscheinPos', $id);
         if ($item !== null && $item->kLieferscheinPos > 0) {
-            foreach (\array_keys(\get_object_vars($item)) as $member) {
-                $this->$member = $item->$member;
-            }
-            $this->kBestellPos      = (int)$this->kBestellPos;
-            $this->kLieferschein    = (int)$this->kLieferschein;
-            $this->kLieferscheinPos = (int)$this->kLieferscheinPos;
-            $this->kWarenlager      = (int)$this->kWarenlager;
+            $this->kLieferscheinPos = (int)$item->kLieferscheinPos;
+            $this->kLieferschein    = (int)$item->kLieferschein;
+            $this->kBestellPos      = (int)$item->kBestellPos;
+            $this->kWarenlager      = (int)$item->kWarenlager;
+            $this->fAnzahl          = (float)$item->fAnzahl;
         }
 
         return $this;
@@ -79,16 +90,15 @@ class Lieferscheinpos
      */
     public function save(bool $primary = true)
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
+        $ins                = new stdClass();
+        $ins->kLieferschein = $this->getLieferschein();
+        $ins->kBestellPos   = $this->getBestellPos();
+        $ins->kWarenlager   = $this->getWarenlager();
+        $ins->fAnzahl       = $this->getAnzahl();
 
-        unset($ins->kLieferscheinPos, $ins->oLieferscheinPosInfo_arr);
-        $kPrim = Shop::Container()->getDB()->insert('tlieferscheinpos', $ins);
-
-        if ($kPrim > 0) {
-            return $primary ? $kPrim : true;
+        $id = $this->db->insert('tlieferscheinpos', $ins);
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
         return false;
@@ -105,7 +115,7 @@ class Lieferscheinpos
         $upd->kWarenlager   = $this->getWarenlager();
         $upd->fAnzahl       = $this->getAnzahl();
 
-        return Shop::Container()->getDB()->update(
+        return $this->db->update(
             'tlieferscheinpos',
             'kLieferscheinPos',
             $this->getLieferscheinPos(),
@@ -118,7 +128,7 @@ class Lieferscheinpos
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos());
+        return $this->db->delete('tlieferscheinpos', 'kLieferscheinPos', $this->getLieferscheinPos());
     }
 
     /**

@@ -15,7 +15,7 @@ extensions = [
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'JTL-Shop'
-copyright = u'2010-2020, JTL-Software GmbH'
+copyright = u'2010-2022, JTL-Software GmbH'
 version = ''
 release = ''
 exclude_patterns = []
@@ -42,6 +42,7 @@ sys.path.append(os.path.abspath('_exts'))
 lexers['php'] = PhpLexer(startinline=True)
 lexers['php-annotations'] = PhpLexer(startinline=True)
 def setup(app):
-    app.add_stylesheet('css/custom.css')
+    app.add_stylesheet('css/custom.css')  # --DEPRECATED-- in newer versions of sphinx
+    #app.add_css_file('css/custom.css')
 #primary_domain = 'php'
         #'sphinxcontrib.phpdomain'

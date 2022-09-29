@@ -370,6 +370,16 @@ class Bestellung
     public $cEstimatedDeliveryEx = null;
 
     /**
+     * @var int
+     */
+    public int $nLongestMinDelivery = 0;
+
+    /**
+     * @var int
+     */
+    public int $nLongestMaxDelivery = 0;
+
+    /**
      * Bestellung constructor.
      * @param int  $id
      * @param bool $init
@@ -392,22 +402,41 @@ class Bestellung
     {
         $obj = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', $id);
         if ($obj !== null && $obj->kBestellung > 0) {
-            foreach (\get_object_vars($obj) as $k => $v) {
-                $this->$k = $v;
-            }
-            $this->kSprache          = (int)$this->kSprache;
-            $this->kWarenkorb        = (int)$this->kWarenkorb;
-            $this->kBestellung       = (int)$this->kBestellung;
-            $this->kWaehrung         = (int)$this->kWaehrung;
-            $this->kKunde            = (int)$this->kKunde;
-            $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
-            $this->kZahlungsart      = (int)$this->kZahlungsart;
-            $this->kVersandart       = (int)$this->kVersandart;
-            $this->nZahlungsTyp      = (int)$this->nZahlungsTyp;
+            $this->kBestellung          = (int)$obj->kBestellung;
+            $this->kWarenkorb           = (int)$obj->kWarenkorb;
+            $this->kKunde               = (int)$obj->kKunde;
+            $this->kLieferadresse       = (int)$obj->kLieferadresse;
+            $this->kRechnungsadresse    = (int)$obj->kRechnungsadresse;
+            $this->kZahlungsart         = (int)$obj->kZahlungsart;
+            $this->kVersandart          = (int)$obj->kVersandart;
+            $this->kSprache             = (int)$obj->kSprache;
+            $this->kWaehrung            = (int)$obj->kWaehrung;
+            $this->fGuthaben            = $obj->fGuthaben;
+            $this->fGesamtsumme         = $obj->fGesamtsumme;
+            $this->cSession             = $obj->cSession;
+            $this->cVersandartName      = $obj->cVersandartName;
+            $this->cZahlungsartName     = $obj->cZahlungsartName;
+            $this->cBestellNr           = $obj->cBestellNr;
+            $this->cVersandInfo         = $obj->cVersandInfo;
+            $this->nLongestMinDelivery  = (int)$obj->nLongestMinDelivery;
+            $this->nLongestMaxDelivery  = (int)$obj->nLongestMaxDelivery;
+            $this->dVersandDatum        = $obj->dVersandDatum;
+            $this->dBezahltDatum        = $obj->dBezahltDatum;
+            $this->dBewertungErinnerung = $obj->dBewertungErinnerung;
+            $this->cTracking            = $obj->cTracking;
+            $this->cKommentar           = $obj->cKommentar;
+            $this->cLogistiker          = $obj->cLogistiker;
+            $this->cTrackingURL         = $obj->cTrackingURL;
+            $this->cIP                  = $obj->cIP;
+            $this->cAbgeholt            = $obj->cAbgeholt;
+            $this->cStatus              = $obj->cStatus;
+            $this->dErstellt            = $obj->dErstellt;
+            $this->fWaehrungsFaktor     = $obj->fWaehrungsFaktor;
+            $this->cPUIZahlungsdaten    = $obj->cPUIZahlungsdaten;
         }
 
         if (isset($this->nLongestMinDelivery, $this->nLongestMaxDelivery)) {
-            $this->setEstimatedDelivery((int)$this->nLongestMinDelivery, (int)$this->nLongestMaxDelivery);
+            $this->setEstimatedDelivery($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
             unset($this->nLongestMinDelivery, $this->nLongestMaxDelivery);
         } else {
             $this->setEstimatedDelivery();

@@ -808,6 +808,16 @@ class Artikel implements RoutableInterface
     public ?string $cHerstellerBildURLNormal = null;
 
     /**
+     * @var int
+     */
+    public int $manufacturerImageWidthSM = 0;
+
+    /**
+     * @var int
+     */
+    public int $manufacturerImageWidthMD = 0;
+
+    /**
      * @var int|null
      */
     public ?int $cHerstellerSortNr = null;
@@ -1456,7 +1466,8 @@ class Artikel implements RoutableInterface
             $image->cURLGross    = $baseURL . \BILD_KEIN_ARTIKELBILD_VORHANDEN;
             $image->nNr          = 1;
             $image->cAltAttribut = \strip_tags(\str_replace(['"', "'"], '', $this->cName));
-            $image->galleryJSON  = $this->prepareImageDetails($image);
+            $image->imageSizes   = $this->prepareImageDetails($image, false);
+            $image->galleryJSON  = \json_encode($image->imageSizes, \JSON_FORCE_OBJECT);
 
             $this->Bilder[0] = $image;
 
@@ -1491,7 +1502,8 @@ class Artikel implements RoutableInterface
                 $image->cAltAttribut = Text::htmlentitiesOnce($image->cAltAttribut, \ENT_COMPAT | \ENT_HTML401);
             }
 
-            $image->galleryJSON = $this->prepareImageDetails($image);
+            $image->imageSizes  = $this->prepareImageDetails($image, false);
+            $image->galleryJSON = \json_encode($image->imageSizes, \JSON_FORCE_OBJECT);
             $this->Bilder[]     = $image;
         }
         unset($this->images);
@@ -3948,6 +3960,8 @@ class Artikel implements RoutableInterface
             $this->cBildpfad_thersteller    = $manufacturer->getImage(Image::SIZE_XS);
             $this->cHerstellerBildURLKlein  = $this->cBildpfad_thersteller;
             $this->cHerstellerBildURLNormal = $manufacturer->getImage();
+            $this->manufacturerImageWidthSM = $manufacturer->getImageWidth(Image::SIZE_SM);
+            $this->manufacturerImageWidthMD = $manufacturer->getImageWidth(Image::SIZE_MD);
         }
 
         return $this;

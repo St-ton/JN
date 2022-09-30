@@ -43,10 +43,11 @@
                                                 lazy={!$image@first}
                                                 webp=true
                                                 src="{$image->cURLMini}"
-                                                srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                    {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                    {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w,
-                                                    {$image->cURLGross} {$Einstellungen.bilder.bilder_artikel_gross_breite}w"
+                                                srcset="
+                                                    {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                    {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                    {$image->cURLNormal} {$image->imageSizes->md->size->width}w,
+                                                    {$image->cURLGross} {$image->imageSizes->lg->size->width}w"
                                                 data=["list"=>"{$image->galleryJSON|escape:"html"}", "index"=>$image@index]
                                             }
                                         </div>

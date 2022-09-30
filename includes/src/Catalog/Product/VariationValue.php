@@ -271,6 +271,7 @@ class VariationValue
         }
         $this->cPfad = $path;
         $this->generateAllImageSizes(true, 1, $path);
+        $this->generateAllImageDimensions(1, $path);
 
         $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;
         $this->cBildPfad      = \PFAD_VARIATIONSBILDER_NORMAL . $path;

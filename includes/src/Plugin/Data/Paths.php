@@ -59,6 +59,11 @@ class Paths
     private string $backendURL;
 
     /**
+     * @var string
+     */
+    private string $backendRoute;
+
+    /**
      * @var string|null
      */
     private ?string $licencePath = null;
@@ -241,6 +246,22 @@ class Paths
     public function setBackendURL(string $backendURL): void
     {
         $this->backendURL = $backendURL;
+    }
+
+    /**
+     * @param string $route
+     */
+    public function setBackendRoute(string $route): void
+    {
+        $this->backendRoute = $route;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendRoute(): string
+    {
+        return $this->backendRoute;
     }
 
     /**

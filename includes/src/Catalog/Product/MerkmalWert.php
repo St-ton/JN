@@ -248,6 +248,7 @@ class MerkmalWert implements RoutableInterface
         }
         $this->setImagePath($imagePath);
         $this->generateAllImageSizes(true, 1, $imagePath);
+        $this->generateAllImageDimensions(1, $imagePath);
         $imageBaseURL         = Shop::getImageBaseURL();
         $this->cBildURLKlein  = $imageBaseURL . $this->cBildpfadKlein;
         $this->cBildURLNormal = $imageBaseURL . $this->cBildpfadNormal;

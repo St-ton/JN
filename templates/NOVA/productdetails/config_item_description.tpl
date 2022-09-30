@@ -3,18 +3,43 @@
         <div class="d-flex align-items-center">
             {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
             <dl>
-                <dt>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                    {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
-                        {badge variant="light"}
-                            {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                            {/if}
-                            {$oItem->getPreisLocalized()}
-                        {/badge}
+                <dt>{if !empty($oItem->getArtikelKey())}
+                        <span class="configpreview" data-src="{$oItem->getArtikel()->cURLFull}" title="{lang section="productDownloads" key="downloadPreview"} - {$oItem->getName()}">
+                        {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
+                            {badge variant="light" class="border-primary"}
+                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                {/if}
+                                {$oItem->getPreisLocalized()}
+                            {/badge}
+                            {badge variant="light" class="circle-small"}<i class="fas fa-question"></i>{/badge}
+                        {/if}
+                        </span>
+                    {else}
+                        {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
+                        {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
+                            {badge variant="light" class="border-primary"}
+                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
+                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
+                                {/if}
+                                {$oItem->getPreisLocalized()}
+                            {/badge}
+                        {/if}
                     {/if}
                 </dt>
                 <dd class="text-muted-util">
+                    {if !empty($oItem->getArtikelKey())}
+                        {$Artikel = $oItem->getArtikel()}
+                        <div class="price-note">
+                            {* Grundpreis *}
+                            {if !$oItem->hasRabatt() && !empty($Artikel->cLocalizedVPE)}
+                                {$Artikel->cLocalizedVPE[$NettoPreise]}
+                            {/if}
+                        </div>
+                    {/if}
                     {if !empty($cBeschreibung)}
                         {$cBeschreibung}
                     {/if}

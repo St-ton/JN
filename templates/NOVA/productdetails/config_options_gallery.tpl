@@ -304,66 +304,7 @@
                                             {/if}
                                             {block name='productdetails-config-container-group-item-type-dropdown-collapse'}
                                                 {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
-                                                {row}
-                                                    {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
-                                                        {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
-                                                        <div class="cfg-item-description">
-                                                            {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                            {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
-                                                                {badge variant="light"}
-                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                                {/if}
-                                                                {$oItem->getPreisLocalized()}
-                                                                {/badge}
-                                                            {/if}
-                                                        </div>
-                                                    {/col}
-                                                    {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
-                                                        {if !empty($cBeschreibung)}
-                                                            <div class="config-option-dropdown-description">
-                                                                {$cBeschreibung}
-                                                            </div>
-                                                        {/if}
-
-                                                            {if $oItem->getMin() == $oItem->getMax()}
-                                                                {lang key='quantity'}: {$oItem->getInitial()}
-                                                            {else}
-                                                                {inputgroup class="form-counter"}
-                                                                    {inputgroupprepend}
-                                                                        {button variant=""
-                                                                            data=["count-down"=>""]
-                                                                            size="{if $device->isMobile()}sm{/if}"
-                                                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]
-                                                                        }
-                                                                            <span class="fas fa-minus"></span>
-                                                                        {/button}
-                                                                    {/inputgroupprepend}
-                                                                    {input
-                                                                        type="number"
-                                                                        min="{$oItem->getMin()}"
-                                                                        max="{$oItem->getMax()}"
-                                                                        step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
-                                                                        id="quantity{$oItem->getKonfigitem()}"
-                                                                        class="quantity"
-                                                                        name="item_quantity[{$oItem->getKonfigitem()}]"
-                                                                        autocomplete="off"
-                                                                        value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{$oItem->getMin()}{/if}{/if}"
-                                                                    }
-                                                                    {inputgroupappend}
-                                                                        {button variant=""
-                                                                            data=["count-up"=>""]
-                                                                            size="{if $device->isMobile()}sm{/if}"
-                                                                            aria=["label"=>{lang key='increaseQuantity' section='aria'}]
-                                                                        }
-                                                                            <span class="fas fa-plus"></span>
-                                                                        {/button}
-                                                                    {/inputgroupappend}
-                                                                {/inputgroup}
-                                                            {/if}
-                                                        {/col}
-                                                    {/row}
+                                                    {include file='productdetails/config_item_description.tpl'}
                                                 {/collapse}
                                             {/block}
                                         {/foreach}

@@ -10704,7 +10704,7 @@ a.close.disabled {
 @media (min-width: 992px) {
   .modal-lg,
 .modal-xl {
-    max-width: 800px;
+    max-width: 940px;
   }
 }
 @media (min-width: 1300px) {
@@ -26058,7 +26058,7 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .cfg-group .drpdwn_qnt {
   display: none;
 }
-.cfg-group.visited .js-group-checked {
+.cfg-group .js-group-checked {
   color: #1973D3;
 }
 .cfg-group .config-option-dropdown {

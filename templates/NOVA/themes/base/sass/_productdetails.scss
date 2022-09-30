@@ -523,11 +523,11 @@
 	.drpdwn_qnt{
 		display: none;
 	}
-	&.visited {
-		.js-group-checked {
-			color: $primary;
-		}
+
+	.js-group-checked {
+		color: $primary;
 	}
+
 	.config-option-dropdown {
 		margin-top: map_get($spacers, 3);
 		.config-option-dropdown-description {

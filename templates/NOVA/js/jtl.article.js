@@ -122,7 +122,7 @@
             this.registerBulkPrices($wrapper);
             this.registerAccordion();
             // this.registerImageSwitch($wrapper);
-            //this.registerArticleOverlay($wrapper);
+            this.registerArticleOverlay($wrapper);
             this.registerImageHover($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
@@ -145,6 +145,26 @@
                         });
                 }, 400);
             });
+        },
+
+        registerArticleOverlay: function($wrapper) {
+            var that         = this;
+
+            $('.configpreview', $wrapper)
+                .each(function(i, item) {
+                    var $item      = $(item),
+                        formID     = $item.data('target'),
+                        wrapper    = that.options.modal.wrapper_modal + '_' + formID,
+                        srcWrapper = that.options.modal.wrapper + '_' + formID;
+
+                    $item.on('click', function (event) {
+                        event.preventDefault();
+                        that.modalArticleDetail(this, wrapper, srcWrapper);
+                    });
+                });
+            $wrapper.hover(null, function() {
+                $(this).removeClass('active');
+            })
         },
 
         registerGallery: function(wrapper) {
@@ -1587,6 +1607,56 @@
                     }
                 });
             }
+        },
+
+        modalArticleDetail: function(item, wrapper, srcWrapper) {
+            var that     = this,
+                title    = $(srcWrapper).find('h4.title').text(),
+                image    = $(srcWrapper).find('.image-content').html(),
+                url      = $(item).data('src');
+
+            if (typeof this.modalView === 'undefined' || this.modalView === null) {
+                this.modalView = $(
+                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" tabindex="-1" >' +
+                    '   <div class="modal-dialog modal-lg">' +
+                    '       <div class="modal-content">' +
+                    '           <div class="modal-header">' +
+                    '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
+                    '               <h4 class="modal-title">' + title + '</h4>' +
+                    '           </div>' +
+                    '           <div class="modal-body"><div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div></div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>');
+                this.modalView
+                    .on('hidden.bs.modal', function() {
+                        $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
+                        $('.modal-title', that.modalView).html('');
+                        that.modalView
+                            .off('shown.bs.modal');
+                        that.modalShown = false;
+                    });
+            } else {
+                $('.modal-title', that.modalView).html(title);
+                $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
+            }
+
+            this.modalView
+                .on('shown.bs.modal', function() {
+                    that.modalShown = true;
+                    that.loadModalArticle(url, wrapper,
+                        function() {
+                            var article = new ArticleClass();
+                            article.register(wrapper);
+                            $.evo.extended().stopSpinner();
+                        },
+                        function() {
+                            $.evo.extended().stopSpinner();
+                            $.evo.error('Error loading ' + params.url);
+                        }
+                    );
+                })
+                .modal('show');
         },
 
         variationPrice: function($item, animation, wrapper) {

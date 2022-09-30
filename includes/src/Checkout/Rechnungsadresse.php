@@ -5,6 +5,7 @@ namespace JTL\Checkout;
 use JTL\Customer\Customer;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Rechnungsadresse
@@ -87,13 +88,29 @@ class Rechnungsadresse extends Adresse
     public function insertInDB(): int
     {
         $this->encrypt();
-        $obj = $this->toObject();
+        $ins                = new stdClass();
+        $ins->kKunde        = $this->kKunde;
+        $ins->cAnrede       = $this->cAnrede;
+        $ins->cTitel        = $this->cTitel;
+        $ins->cVorname      = $this->cVorname;
+        $ins->cNachname     = $this->cNachname;
+        $ins->cFirma        = $this->cFirma;
+        $ins->cZusatz       = $this->cZusatz;
+        $ins->cStrasse      = $this->cStrasse;
+        $ins->cHausnummer   = $this->cHausnummer;
+        $ins->cAdressZusatz = $this->cAdressZusatz;
+        $ins->cPLZ          = $this->cPLZ;
+        $ins->cOrt          = $this->cOrt;
+        $ins->cBundesland   = $this->cBundesland;
+        $ins->cLand         = self::checkISOCountryCode($this->cLand);
+        $ins->cTel          = $this->cTel;
+        $ins->cMobil        = $this->cMobil;
+        $ins->cFax          = $this->cFax;
+        $ins->cUSTID        = $this->cUSTID;
+        $ins->cWWW          = $this->cWWW;
+        $ins->cMail         = $this->cMail;
 
-        $obj->cLand = self::checkISOCountryCode($obj->cLand);
-
-        unset($obj->kRechnungsadresse, $obj->angezeigtesLand, $obj->cAnredeLocalized);
-
-        $this->kRechnungsadresse = Shop::Container()->getDB()->insert('trechnungsadresse', $obj);
+        $this->kRechnungsadresse = Shop::Container()->getDB()->insert('trechnungsadresse', $ins);
         $this->decrypt();
         // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);

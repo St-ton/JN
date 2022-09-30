@@ -42,6 +42,11 @@ class Redirect
     public int $nCount = 0;
 
     /**
+     * @var int
+     */
+    public int $paramHandling = 0;
+
+    /**
      * @var DbInterface
      */
     protected DbInterface $db;
@@ -65,11 +70,12 @@ class Redirect
     {
         $obj = $this->db->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
-            $this->kRedirect  = (int)$obj->kRedirect;
-            $this->nCount     = (int)$obj->nCount;
-            $this->cFromUrl   = $obj->cFromUrl;
-            $this->cToUrl     = $obj->cToUrl;
-            $this->cAvailable = $obj->cAvailable;
+            $this->kRedirect     = (int)$obj->kRedirect;
+            $this->nCount        = (int)$obj->nCount;
+            $this->paramHandling = (int)$obj->paramHandling;
+            $this->cFromUrl      = $obj->cFromUrl;
+            $this->cToUrl        = $obj->cToUrl;
+            $this->cAvailable    = $obj->cAvailable;
         }
 
         return $this;
@@ -117,9 +123,10 @@ class Redirect
      * @param string $source
      * @param string $destination
      * @param bool   $force
+     * @param int    $handling
      * @return bool
      */
-    public function saveExt(string $source, string $destination, bool $force = false): bool
+    public function saveExt(string $source, string $destination, bool $force = false, int $handling = 0): bool
     {
         if (\mb_strlen($source) > 0) {
             $source = $this->normalize($source);
@@ -154,19 +161,21 @@ class Redirect
             }
             $target = $this->getRedirectByTarget($source);
             if ($target !== null) {
-                $this->saveExt($target->cFromUrl, $destination);
-                $ins             = new stdClass();
-                $ins->cToUrl     = Text::convertUTF8($destination);
-                $ins->cAvailable = 'y';
+                $this->saveExt($target->cFromUrl, $destination, false, $handling);
+                $ins                = new stdClass();
+                $ins->cToUrl        = Text::convertUTF8($destination);
+                $ins->cAvailable    = 'y';
+                $ins->paramHandling = $handling;
                 $this->db->update('tredirect', 'cToUrl', $source, $ins);
             }
 
             $redirect = $this->find($source);
             if ($redirect === null) {
-                $ins             = new stdClass();
-                $ins->cFromUrl   = Text::convertUTF8($source);
-                $ins->cToUrl     = Text::convertUTF8($destination);
-                $ins->cAvailable = 'y';
+                $ins                = new stdClass();
+                $ins->cFromUrl      = Text::convertUTF8($source);
+                $ins->cToUrl        = Text::convertUTF8($destination);
+                $ins->cAvailable    = 'y';
+                $ins->paramHandling = $handling;
 
                 $kRedirect = $this->db->insert('tredirect', $ins);
                 if ($kRedirect > 0) {
@@ -212,6 +221,15 @@ class Redirect
             if ($item !== null) {
                 $url                   .= '?' . $queryString;
                 $foundRedirectWithQuery = true;
+            } else {
+                $item = $this->find($url);
+                if ($item !== null) {
+                    if ((int)$item->paramHandling === 0) {
+                        $item = null;
+                    } elseif ((int)$item->paramHandling === 1) {
+                        $foundRedirectWithQuery = true;
+                    }
+                }
             }
         } else {
             $item = $this->find($url);
@@ -320,6 +338,7 @@ class Redirect
         );
         foreach ($redirects as $redirect) {
             $redirect->kRedirect            = (int)$redirect->kRedirect;
+            $redirect->paramHandling        = (int)$redirect->paramHandling;
             $redirect->nCount               = (int)$redirect->nCount;
             $redirect->cFromUrl             = Text::filterXSS($redirect->cFromUrl);
             $redirect->oRedirectReferer_arr = self::getReferers($redirect->kRedirect);

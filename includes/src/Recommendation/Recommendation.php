@@ -100,10 +100,7 @@ class Recommendation
      */
     public function parseDown(string $text): string
     {
-        return $this->setLinkTargets(\mb_convert_encoding(
-            $this->parseDown->text(Text::convertUTF8($text)),
-            'HTML-ENTITIES'
-        ));
+        return $this->setLinkTargets(\html_entity_decode($this->parseDown->text(Text::convertUTF8($text))));
     }
 
     /**

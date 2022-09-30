@@ -306,6 +306,7 @@ class Kategorie implements RoutableInterface
             $this->image     = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->hasImage  = true;
             $this->generateAllImageSizes(true, 1, $this->imagePath);
+            $this->generateAllImageDimensions(1, $this->imagePath);
         }
     }
 
@@ -673,11 +674,11 @@ class Kategorie implements RoutableInterface
     }
 
     /**
-     * @param string   $description
-     * @param int|null $idx
+     * @param string|null $description
+     * @param int|null    $idx
      * @return void
      */
-    public function setDescription(string $description, int $idx = null): void
+    public function setDescription(?string $description, int $idx = null): void
     {
         $this->descriptions[$idx ?? $this->currentLanguageID] = $description;
     }

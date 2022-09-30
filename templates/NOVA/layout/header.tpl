@@ -295,6 +295,7 @@
         {if $Einstellungen.preisverlauf.preisverlauf_anzeigen === 'Y' && !empty($bPreisverlauf)}
             <script defer src="{$ShopURL}/{$templateDir}js/Chart.bundle.min.js"></script>
         {/if}
+        <script defer src="{$ShopURL}/{$templateDir}js/DataTables/datatables.min.js"></script>
         <script type="module" src="{$ShopURL}/{$templateDir}js/app/app.js"></script>
         <script>(function(){
             // back-to-list-link mechanics

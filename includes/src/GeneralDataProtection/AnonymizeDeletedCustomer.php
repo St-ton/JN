@@ -3,6 +3,7 @@
 namespace JTL\GeneralDataProtection;
 
 use JTL\Customer\Customer;
+use JTL\DB\ReturnType;
 
 /**
  * Class AnonymizeDeletedCustomer
@@ -10,23 +11,49 @@ use JTL\Customer\Customer;
  */
 class AnonymizeDeletedCustomer extends Method implements MethodInterface
 {
+    private array $methodName = [
+        'anonymizeRatings',
+        'anonymizeReceivedPayments',
+        'anonymizeNewsComments'
+    ];
+
+    /**
+     * max repetitions of this task
+     *
+     * @var int
+     */
+    public $taskRepetitions = 0;
+
+
     /**
      * runs all anonymize-routines
+     *
+     * @return void
      */
     public function execute(): void
     {
-        $this->anonymizeRatings();
-        $this->anonymizeReceivedPayments();
-        $this->anonymizeNewsComments();
+        $workLimitStart = $this->workLimit;
+        foreach ($this->methodName as $method) {
+            if ($this->workLimit === 0) {
+                $this->isFinished = false;
+                return;
+            }
+            $affected         = $this->$method();
+            $this->workLimit -= $affected; // reduce $workLimit locallly for the next method
+            $this->workSum   += $affected; // summarize complete work
+        }
+        $this->isFinished = ($this->workSum < $workLimitStart);
     }
 
     /**
      * anonymize orphaned ratings.
      * (e.g. of canceled memberships)
+     *
+     * @return int
      */
-    private function anonymizeRatings(): void
+    private function anonymizeRatings(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'UPDATE tbewertung b
             SET
                 b.cName  = :anonString,
@@ -49,17 +76,20 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 'dateLimit'  => $this->dateLimit,
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
     /**
      * anonymize received payments.
      * (replace `cZahler`(e-mail) in `tzahlungseingang`)
+     *
+     * @return int
      */
-    private function anonymizeReceivedPayments(): void
+    private function anonymizeReceivedPayments(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             "UPDATE tzahlungseingang z
             SET
                 z.cZahler = '-'
@@ -68,9 +98,9 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 AND z.cAbgeholt != 'N'
                 AND NOT EXISTS (
                     SELECT k.kKunde
-                    FROM tkunde k 
+                    FROM tkunde k
                         INNER JOIN tbestellung b ON k.kKunde = b.kKunde
-                    WHERE 
+                    WHERE
                         b.kBestellung = z.kBestellung
                         AND k.cKundenNr != :anonString
                         AND k.cVorname != :anonString
@@ -83,7 +113,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
                 'dateLimit' => $this->dateLimit,
                 'workLimit' => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 
@@ -92,10 +123,12 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
      * (delete names and e-mails from `tnewskommentar` and remove the customer-relation)
      *
      * CONSIDER: using no time base or limit!
+     *
+     * @return int
      */
-    private function anonymizeNewsComments(): void
+    private function anonymizeNewsComments(): int
     {
-        $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'UPDATE tnewskommentar n
             SET
                 n.cName = :anonString,
@@ -118,7 +151,8 @@ class AnonymizeDeletedCustomer extends Method implements MethodInterface
             [
                 'workLimit'  => $this->workLimit,
                 'anonString' => Customer::CUSTOMER_ANONYM
-            ]
+            ],
+            ReturnType::AFFECTED_ROWS
         );
     }
 }

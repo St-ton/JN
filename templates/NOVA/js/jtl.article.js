@@ -297,6 +297,11 @@
                     scrollTop: elOffset
                 });
             });
+            $(document).on('scroll', function (e) {
+                let headerHeight = $('#jtl-nav-wrapper').outerHeight() + 10;
+                $('.cfg-position-details.cfg-layout-list #product-configuration-sidebar, ' +
+                    '.cfg-position-details.cfg-layout-list .cfg-group .cfg-group-info').css('top', headerHeight + 'px');
+            });
         },
 
         registerSimpleVariations: function($wrapper) {
@@ -576,6 +581,11 @@
                     $(collapse).on('hidden.bs.collapse', function () {
                         box.removeClass('transition');
                     });
+                }
+            });
+            $('.is-mobile .show-variation-collapse a').on('click', function (e) {
+                if (!$(this).closest('.show-variation-collapse').find('.collapse').hasClass('show')) {
+                    e.preventDefault();
                 }
             });
         },

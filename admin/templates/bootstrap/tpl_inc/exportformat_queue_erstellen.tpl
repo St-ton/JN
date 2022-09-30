@@ -19,12 +19,12 @@
 <div id="content" class="container-fluid2">
     <form name="exportformat_queue" method="post" action="{$adminURL}{$route}">
         {$jtl_token}
-        {$cronID = $oCron->cronID|default:0}
+        {$cronID = $cron->cronID|default:0}
         <input type="hidden" name="erstellen_eintragen" value="1" />
         {if $cronID > 0}
             <input type="hidden" name="kCron" value="{$cronID}" />
         {/if}
-        {if $oExportformat_arr|count > 0}
+        {if $exportFormats|count > 0}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</div>
@@ -36,10 +36,10 @@
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="kExportformat" id="kExportformat" class="custom-select">
                                 <option value="-1"></option>
-                                {foreach $oExportformat_arr as $oExportformat}
-                                    <option value="{$oExportformat->kExportformat}"{if (isset($oFehler->kExportformat) && $oFehler->kExportformat == $oExportformat->kExportformat) || (isset($oCron->foreignKeyID) && $oCron->foreignKeyID == $oExportformat->kExportformat)} selected{/if}>{$oExportformat->cName}
-                                        ({$oExportformat->Sprache->getLocalizedName()} / {$oExportformat->Waehrung->getName()}
-                                        / {$oExportformat->Kundengruppe->getName()})
+                                {foreach $exportFormats as $format}
+                                    <option value="{$format->getId()}"{if (isset($error->kExportformat) && $error->kExportformat == $format->getId()) || (isset($cron->foreignKeyID) && $cron->foreignKeyID == $format->getId())} selected{/if}>{$format->getName()}
+                                        ({$format->getLanguage()->getLocalizedName()} / {$format->getCurrency()->getName()}
+                                        / {$format->getCustomerGroup()->getName()})
                                     </option>
                                 {/foreach}
                             </select>
@@ -48,21 +48,29 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="dStart">{__('exportformatStart')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'d.m.Y H:i'}{/if}" />
+                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($error->dStart) && $error->dStart|strlen > 0}{$error->dStart}{elseif isset($cron->dStart_de) && $cron->dStart_de|strlen > 0}{$cron->dStart_de}{else}{$smarty.now|date_format:'d.m.Y H:i'}{/if}" />
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nAlleXStunden">{__('exportformatEveryXHour')}:</label>
                         {assign var=showCustomInput value=false}
+                        {assign var=customInput value=''}
+                        {if isset($error->nAlleXStunden)}
+                            {assign var=customInput value=$error->nAlleXStunden}
+                            {assign var=showCustomInput value=!in_array($error->nAlleXStunden, [24, 48, 168])}
+                        {elseif isset($cron->frequency)}
+                            {assign var=customInput value=$cron->frequency}
+                            {assign var=showCustomInput value=!in_array($cron->frequency, [24, 48, 168])}
+                        {/if}
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select id="nAlleXStunden" name="nAlleXStunden" class="custom-select">
-                                <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 24) || (isset($oCron->frequency) && $oCron->frequency === 24)} selected{/if}>
+                                <option value="24"{if (isset($error->nAlleXStunden) && $error->nAlleXStunden === 24) || (isset($cron->frequency) && $cron->frequency === 24)} selected{/if}>
                                     24 {__('hours')}
                                 </option>
-                                <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 48) || (isset($oCron->frequency) && $oCron->frequency === 48)} selected{/if}>
+                                <option value="48"{if (isset($error->nAlleXStunden) && $error->nAlleXStunden === 48) || (isset($cron->frequency) && $cron->frequency === 48)} selected{/if}>
                                     48 {__('hours')}
                                 </option>
-                                <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 168) || (isset($oCron->frequency) && $oCron->frequency === 168)} selected{/if}>
+                                <option value="168"{if (isset($error->nAlleXStunden) && $error->nAlleXStunden === 168) || (isset($cron->frequency) && $cron->frequency === 168)} selected{/if}>
                                     1 {__('week')}
                                 </option>
                                 <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>
@@ -71,12 +79,12 @@
                             </select>
                         </div>
                     </div>
-                    <div id="custom-freq-input-wrapper" class="form-group form-row align-items-center d-none">
+                    <div id="custom-freq-input-wrapper" class="form-group form-row align-items-center{if !$showCustomInput} d-none{/if}">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nAlleXStundenCustom"></label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="number"
                                    min="1"
-                                   value="{if !empty($oCron->frequency) && $oCron->frequency != 24 && $oCron->frequency != 48 && $oCron->frequency != 168}{assign var=showCustomInput value=true}{$oCron->frequency}{/if}"
+                                   value="{$customInput}"
                                    class="form-control"
                                    name="{if $showCustomInput}nAlleXStundenCustom{/if}" id="custom-freq-input"/>
                         </div>

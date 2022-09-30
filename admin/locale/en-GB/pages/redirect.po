@@ -46,3 +46,21 @@ msgstr "Could not carry out import. Please check the CSV file."
 
 msgid "successImport"
 msgstr "Import carried out successfully."
+
+msgid "create/edit"
+msgstr "Create/Edit"
+
+msgid "Parameter handling"
+msgstr "Parameter handling"
+
+msgid "exact match"
+msgstr "exact match"
+
+msgid "ignore GET parameters"
+msgstr "ignore GET parameters"
+
+msgid "append GET parameters"
+msgstr "append GET parameters"
+
+msgid "parameterHandlingDesc"
+msgstr "Specify how GET parameters in Source and Target URLs should be handled. For a comprehensive description of this setting, please see the respective help page in the JTL-Guide. It is accessible via the signpost symbol in the top right corner of this page."

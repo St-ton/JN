@@ -39,6 +39,12 @@ h4, .h4 { @include font-size($h4-font-size); }
 h5, .h5 { @include font-size($h5-font-size); }
 h6, .h6 { @include font-size($h6-font-size); }
 
+.banner {
+  .img-fluid {
+    width: 100%;
+  }
+}
+
 .label-slide {
   .form-group:not(.exclude-from-label-slide):not(.checkbox) {
     label {

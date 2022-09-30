@@ -285,7 +285,7 @@
                                     {/block}
                                     {block name='productdetails-details-include-config-container-popup'}
                                         {if $Einstellungen.template.productdetails.config_position === 'popup'}
-                                            {row id="product-configurator" class="cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                                            {row id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
                                                 {include file='productdetails/config_container.tpl'}
                                             {/row}
                                         {/if}
@@ -302,7 +302,7 @@
                     {/col}
                     {block name='productdetails-details-include-config-container-details'}
                         {if $Artikel->bHasKonfig && $Einstellungen.template.productdetails.config_position === 'details'}
-                            {col cols=12 id="product-configurator" class="cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
+                            {col cols=12 id="product-configurator" class="cfg-position-{$Einstellungen.template.productdetails.config_position} cfg-layout-{$Einstellungen.template.productdetails.config_layout}"}
                                 {include file='productdetails/config_container.tpl'}
                             {/col}
                         {/if}

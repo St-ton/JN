@@ -454,6 +454,7 @@
 	.cfg-group-info {
 		text-align: center;
 		margin-bottom: map_get($spacers, 4);
+		z-index: $zindex-sticky - 1;
 	}
 	.group-description {
 		margin-bottom: map_get($spacers, 3);
@@ -866,6 +867,18 @@
 	}
 }
 
+.blockquote-divider {
+	&::before {
+		content: "\2014";
+	}
+}
+.verified-purchase {
+	font-weight: $font-weight-bold;
+}
+.verified-purchase-notice {
+	margin-bottom: map_get($spacers, 3);
+}
+
 .cfg-layout-list {
 	.form-counter {
 		width: auto;
@@ -886,6 +899,21 @@
 			&:hover {
 				color: $body-color;
 			}
+		}
+	}
+}
+#product-configuration-sidebar {
+	z-index: $zindex-sticky - 1;
+}
+.cfg-position-details.cfg-layout-list {
+	#product-configuration-sidebar {
+		border: 1px solid $gray-medium;
+		padding: 0.75rem;
+	}
+	.cfg-group-list-wrapper {
+		.cfg-group {
+			border: 1px solid $gray-medium;
+			padding: map_get($spacers, 3);
 		}
 	}
 }

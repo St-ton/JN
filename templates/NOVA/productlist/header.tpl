@@ -114,12 +114,24 @@
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
                                                 src=$imgSrc
-                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_breite}{/if}"
-                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}130{else}{$Einstellungen.bilder.bilder_kategorien_klein_hoehe}{/if}"
+                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}
+                                                    130
+                                                {else}
+                                                    {$subCategory->getImageWidth(\JTL\Media\Image::SIZE_MD)}
+                                                {/if}"|strip
+                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}
+                                                    130
+                                                {else}
+                                                    {$subCategory->getImageHeight(\JTL\Media\Image::SIZE_MD)}
+                                                {/if}"|strip
                                                 alt="{if empty($imgAlt->cWert)}{$subCategory->getName()}{else}{$imgAlt->cWert}{/if}"
-                                                srcset="{$subCategory->getImage(\JTL\Media\Image::SIZE_XS)} {$Einstellungen.bilder.bilder_kategorien_mini_breite}w,
-                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_SM)} {$Einstellungen.bilder.bilder_kategorien_klein_breite}w,
-                                                        {$subCategory->getImage(\JTL\Media\Image::SIZE_MD)} {$Einstellungen.bilder.bilder_kategorien_breite}w"
+                                                srcset="
+                                                    {$subCategory->getImage(\JTL\Media\Image::SIZE_XS)}
+                                                    {$subCategory->getImageWidth(\JTL\Media\Image::SIZE_XS)}w,
+                                                    {$subCategory->getImage(\JTL\Media\Image::SIZE_SM)}
+                                                    {$subCategory->getImageWidth(\JTL\Media\Image::SIZE_SM)}w,
+                                                    {$subCategory->getImage(\JTL\Media\Image::SIZE_MD)}
+                                                    {$subCategory->getImageWidth(\JTL\Media\Image::SIZE_MD)}w"|strip
                                                 sizes="(min-width: 992px) 25vw, 33vw"
                                             }
                                         </div>

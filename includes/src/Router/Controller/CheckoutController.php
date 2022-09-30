@@ -10,6 +10,7 @@ use JTL\Cart\PersistentCart;
 use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\CouponValidator;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Zahlungsart;
@@ -162,7 +163,6 @@ class CheckoutController extends RegistrationController
             $_POST['form']     = 1;
             $this->saveCustomer($_POST);
         }
-
         if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
             $this->checkPaymentMethod($paymentMethodID);
         }
@@ -177,8 +177,20 @@ class CheckoutController extends RegistrationController
         //autom. step ermitteln
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             if (!isset($_SESSION['Lieferadresse'])) {
+                if ($this->config['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'N') {
+                    $shippingID = $this->db->getSingleInt(
+                        'SELECT DISTINCT(kLieferadresse) AS id
+                            FROM tlieferadressevorlage
+                            WHERE kKunde = :cid
+                                AND nIstStandardLieferadresse=1',
+                        'id',
+                        ['cid' => $this->customer->getID()]
+                    );
+                }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
+                    'kLieferadresse' => !empty($shippingID)
+                        ? $shippingID
+                        : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
                 ]);
                 if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
                     $_GET['editLieferadresse'] = 1;
@@ -240,7 +252,6 @@ class CheckoutController extends RegistrationController
         // sondersteps Zahlungsart aendern
         $this->checkStepPaymentMethod(Text::filterXSS($_GET));
         $this->checkStepPaymentMethodSelection(Text::filterXSS($_POST));
-
         if ($this->step === 'accountwahl') {
             $this->checkStepAccountSelection();
             $this->getStepGuestCheckout();
@@ -425,7 +436,7 @@ class CheckoutController extends RegistrationController
         $form               = new RegistrationForm();
         $this->customer     = $form->getCustomerData($post, false);
         $customerAttributes = $form->getCustomerAttributes($post);
-        $checkBox           = new CheckBox();
+        $checkBox           = new CheckBox(0, $this->db);
         $missingInput       = $form->getMissingInput($post, $this->customerGroupID, $checkBox);
         $this->customer->getCustomerAttributes()->assign($customerAttributes);
         Frontend::set('customerAttributes', $customerAttributes);
@@ -1330,14 +1341,22 @@ class CheckoutController extends RegistrationController
 
         if ($this->customer->getID() > 0) {
             $addresses = [];
-            $data      = $this->db->getObjects(
-                'SELECT DISTINCT(kLieferadresse)
-                    FROM tlieferadresse
-                    WHERE kKunde = :cid',
+            $data      = $this->db->getInts(
+                'SELECT DISTINCT(kLieferadresse) AS id
+                    FROM tlieferadressevorlage
+                    WHERE kKunde = :cid
+                    ORDER BY nIstStandardLieferadresse DESC',
+                'id',
                 ['cid' => $this->customer->getID()]
             );
-            foreach ($data as $item) {
-                $addresses[] = new Lieferadresse((int)$item->kLieferadresse);
+            foreach ($data as $id) {
+                $newAddress = new DeliveryAddressTemplate($this->db, $id);
+                if ($id === (int)($_SESSION['shippingAddressPresetID'] ?? 0)
+                    || $id === (int)($_SESSION['Bestellung']->kLieferadresse ?? 0)) {
+                    \array_unshift($addresses, $newAddress);
+                } else {
+                    $addresses[] = $newAddress;
+                }
             }
             $this->smarty->assign('Lieferadressen', $addresses);
         }
@@ -1345,10 +1364,12 @@ class CheckoutController extends RegistrationController
         $this->smarty->assign('laender', $countries)
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($this->customerGroupID))
             ->assign('Kunde', $_SESSION['Kunde'] ?? null)
-            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
+            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null)
+            ->assign('shippingAddressPresetID', $_SESSION['shippingAddressPresetID'] ?? null);
         if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
             $this->smarty->assign('Lieferadresse', $Lieferadresse);
         }
+        unset($_SESSION['shippingAddressPresetID']);
         \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE);
 
         return $Lieferadresse;
@@ -1384,6 +1405,9 @@ class CheckoutController extends RegistrationController
     public function getStepShipping(): void
     {
         CartHelper::applyShippingFreeCoupon();
+        if (!isset($_SESSION['Lieferadresse'])) {
+            Lieferadresse::createFromShippingAddress();
+        }
         $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$deliveryCountry) {
             $deliveryCountry = $this->customer->cLand;

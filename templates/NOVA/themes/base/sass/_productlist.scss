@@ -180,6 +180,10 @@
 				margin: -(map-get($spacers, 3));
 				width: 100%;
 			}
+			&.show-variation-collapse:hover {
+				box-shadow: 0 0 1.5rem rgba($black, .15);
+				background-color: $white;
+			}
 		}
 	}
 }
@@ -311,4 +315,10 @@
 
 .layout-gallery .variations .variation-wrapper .form-group {
 	margin-bottom: 0;
+}
+
+.is-mobile .show-variation-collapse .productbox-onhover.collapsing {
+	-webkit-transition: none;
+	transition: none;
+	display: none;
 }

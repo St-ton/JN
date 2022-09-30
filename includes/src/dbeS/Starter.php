@@ -211,8 +211,10 @@ class Starter
         if (!isset($post['userID'], $post['userPWD'])) {
             return false;
         }
+        $userID = Text::convertUTF8($post['userID']);
+        $pass   = Text::convertUTF8($post['userPWD']);
 
-        return $this->auth->checkLogin(\utf8_encode($post['userID']), \utf8_encode($post['userPWD'])) === true;
+        return $this->auth->checkLogin($userID, $pass) === true;
     }
 
     /**

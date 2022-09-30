@@ -64,9 +64,9 @@ class MenuItem
     private string $shortName = '';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $description = '';
+    private ?string $description = '';
 
     /**
      * @var string
@@ -496,6 +496,7 @@ class MenuItem
         $this->setSeo($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->generateAllImageSizes(true, 1, $data->cPfad ?? null);
+        $this->generateAllImageDimensions(1, $data->cPfad ?? null);
         $this->setProductCount((int)($data->cnt ?? 0));
         $this->setFunctionalAttributes($data->functionAttributes[$this->getID()] ?? []);
         $this->setAttributes($data->localizedAttributes[$this->getID()] ?? []);

@@ -210,6 +210,7 @@ class Merkmal
             $this->nBildGrossVorhanden = 1;
         }
         $this->generateAllImageSizes(true, 1, $imagePath);
+        $this->generateAllImageDimensions(1, $imagePath);
         $this->setImageURLLG($imageBaseURL . $this->getImagePathLG());
         $this->setImageURLMD($imageBaseURL . $this->getImagePathMD());
         $this->setImageURLSM($imageBaseURL . $this->getImagePathSM());

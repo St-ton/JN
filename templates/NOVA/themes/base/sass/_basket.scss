@@ -123,9 +123,11 @@
     }
   }
   .cart-items-price {
-    margin-left: auto;
     white-space: nowrap;
     color: $font-accent;
+    @include media-breakpoint-down(sm) {
+      margin-left: auto;
+    }
     @include media-breakpoint-up(xl) {
       text-align: right;
     }

@@ -4,7 +4,7 @@
             {opcMountPoint id='opc_before_banner'}
             <div class="banner snippets-banner">
                 {block name='snippets-banner-image'}
-                    {image fluid=true lazy=true src=$oImageMap->cBildPfad alt=$oImageMap->cTitel}
+                    {image fluid=true lazy=true src=$oImageMap->cBildPfad alt=$oImageMap->cTitel width=$oImageMap->fWidth height=$oImageMap->fHeight}
                 {/block}
                 {block name='snippets-banner-map'}
                     {foreach $oImageMap->oArea_arr as $oImageMapArea}

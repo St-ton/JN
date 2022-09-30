@@ -38,9 +38,6 @@
                                             {/inputgroupappend}
                                         {/inputgroup}
                                     {/col}
-                                    {if isset($kEditKonfig)}
-                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
-                                    {/if}
                                     {input type="hidden" id="quantity" class="quantity" name="anzahl" value="1"}
                                 {/block}
                             {else}
@@ -61,7 +58,7 @@
                                             step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
-                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}"
                                             data=[
                                                 "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
                                                 "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
@@ -105,6 +102,9 @@
                                             <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
                                         </svg>
                                     {/button}
+                                    {if isset($kEditKonfig)}
+                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                                    {/if}
                                 {/col}
                             {/block}
                         {/row}

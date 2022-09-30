@@ -115,7 +115,7 @@
                                                             class="cfg-swatch"
                                                             required=$oItem@first && $configGroup->getMin() > 0
                                                         }
-                                                            <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                            <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-recommendation{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                                 {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                                     <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                                 {/if}
@@ -187,7 +187,7 @@
                                                             id="item{$oItem->getKonfigitem()}"
                                                             class="cfg-swatch"
                                                         }
-                                                            <div data-id="$oItem->getKonfigitem()" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                            <div data-id="$oItem->getKonfigitem()" class="config-item {if $oItem->getEmpfohlen()} bg-recommendation{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                                 {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                                     <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                                 {/if}

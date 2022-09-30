@@ -298,13 +298,17 @@
 	margin-bottom: map_get($spacers, 5);
 }
 
+.bg-recommendation {
+	background-color: $bg-config-recommendation;
+}
+
 #cfg-container {
 	margin-bottom: map_get($spacers, 5);
 	.cfg-group {
 		.hr-sect {
 			margin-bottom: 0;
 			&::before {
-				max-width: 2%;
+				max-width: 50%;
 			}
 		}
 		.h5 {
@@ -521,7 +525,7 @@
 	}
 	&.visited {
 		.js-group-checked {
-			color: $success;
+			color: $primary;
 		}
 	}
 	.config-option-dropdown {
@@ -530,12 +534,22 @@
 			margin-bottom: map_get($spacers, 2);
 		}
 	}
+	.form-counter .btn {
+		background-color: $white;
+		&:hover {
+			background-color: $gray-lighter;
+		}
+	}
 }
 
-.config-table .accent-bg {
-	background: $table-accent-bg;
+.config-table {
+	.js-group-checked {
+		color: $primary;
+	}
+	.accent-bg {
+		background: $table-accent-bg;
+	}
 }
-
 #product-configurator .modal-dialog {
 	@include media-breakpoint-down(sm) {
 		margin: 0;

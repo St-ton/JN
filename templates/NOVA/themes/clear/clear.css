@@ -26440,8 +26440,10 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper .cfg-summary-item .col {
+.cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper .cfg-summary-item .col:not(:first-child) {
   padding-left: 0.5rem;
+}
+.cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper .cfg-summary-item .col:not(:last-child) {
   padding-right: 0.5rem;
 }
 .cfg-position-details.cfg-layout-list .cfg-group-list-wrapper .cfg-group {

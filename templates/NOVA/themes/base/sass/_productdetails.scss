@@ -934,8 +934,10 @@
 		overflow-y: auto;
 		overflow-x: hidden;
 		.cfg-summary-item {
-			.col {
+			.col:not(:first-child) {
 				padding-left: map_get($spacers, 2);
+			}
+			.col:not(:last-child) {
 				padding-right: map_get($spacers, 2);
 			}
 		}

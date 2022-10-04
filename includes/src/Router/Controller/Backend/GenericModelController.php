@@ -45,6 +45,11 @@ abstract class GenericModelController extends AbstractBackendController
     protected string $tab = 'overview';
 
     /**
+     * @var DataModelInterface|null
+     */
+    protected ?DataModelInterface $child = null;
+
+    /**
      * @param string $template
      * @return ResponseInterface
      */
@@ -78,6 +83,12 @@ abstract class GenericModelController extends AbstractBackendController
         }
         if ($itemID > 0) {
             $this->item = $this->modelClass::load(['id' => $itemID], $this->db);
+            foreach ($this->item->getAttributes() as $attribute) {
+                if (\str_contains($attribute->getDataType(), '\\')) {
+                    $className   = $attribute->getDataType();
+                    $this->child = new $className($this->getDB());
+                }
+            }
         }
         unset($_SESSION['step'], $_SESSION['continue']);
 
@@ -109,6 +120,7 @@ abstract class GenericModelController extends AbstractBackendController
             ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
             ->assign('action', $this->getAction())
             ->assign('pagination', $pagination)
+            ->assign('childModel', $this->child)
             ->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
             ->getResponse($template);

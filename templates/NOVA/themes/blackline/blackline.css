@@ -21058,13 +21058,6 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
 }
 
 /* add to cart btn */
-#add-to-cart .btn .btn-basket-check {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  white-space: nowrap;
-}
 #add-to-cart .btn .btn-basket-check span {
   margin-right: 0.25rem;
   display: none;

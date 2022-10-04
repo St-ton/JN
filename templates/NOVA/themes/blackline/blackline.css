@@ -26231,6 +26231,12 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   padding: 0.35rem;
 }
 
+#modal-article-dialog .modal-body {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

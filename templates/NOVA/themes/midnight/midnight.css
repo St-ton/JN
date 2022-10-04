@@ -26436,9 +26436,13 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper {
   border: 1px solid #ebebeb;
   padding: 0.75rem;
-  max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+}
+@media (min-width: 992px) {
+  .cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper {
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 }
 .cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper .cfg-summary-item .col:not(:first-child) {
   padding-left: 0.5rem;

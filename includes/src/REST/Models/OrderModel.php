@@ -42,9 +42,6 @@ use JTL\Model\ModelHelper;
  * @property int      $kWaehrung
  * @method int getKWaehrung()
  * @method void setKWaehrung(int $value)
- * @property int      $nZahlungsTyp
- * @method int getNZahlungsTyp()
- * @method void setNZahlungsTyp(int $value)
  * @property float    $fGuthaben
  * @method float getFGuthaben()
  * @method void setFGuthaben(float $value)
@@ -413,12 +410,6 @@ final class OrderModel extends DataModel
         );
         $attributes['currencyID']               = DataAttribute::create(
             'kWaehrung',
-            'int',
-            self::cast('0', 'int'),
-            false
-        );
-        $attributes['paymentType']              = DataAttribute::create(
-            'nZahlungsTyp',
             'int',
             self::cast('0', 'int'),
             false

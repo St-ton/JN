@@ -1624,13 +1624,18 @@
                     '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
                     '               <h4 class="modal-title">' + title + '</h4>' +
                     '           </div>' +
-                    '           <div class="modal-body"><div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div></div>' +
+                    '           <div class="modal-body">' +
+                    '               <div id="' + wrapper.substring(1) + '" style="min-height:100px">' +
+                                        image +
+                    '               </div>' +
+                    '           </div>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>');
                 this.modalView
                     .on('hidden.bs.modal', function() {
-                        $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
+                        $('.modal-body', that.modalView)
+                            .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
                         $('.modal-title', that.modalView).html('');
                         that.modalView
                             .off('shown.bs.modal');
@@ -1638,7 +1643,8 @@
                     });
             } else {
                 $('.modal-title', that.modalView).html(title);
-                $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
+                $('.modal-body', that.modalView)
+                    .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
             }
 
             this.modalView

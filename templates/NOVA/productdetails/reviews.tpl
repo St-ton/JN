@@ -4,7 +4,14 @@
         {row id='reviews-overview'}
             {block name='productdetails-reviews-overview'}
                 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                    {col cols=12 md=6 lg=4 order=1 order-md=0}
+                    {if empty($smarty.get.quickView)}
+                        {$colsMD = 6}
+                        {$colsLG = 4}
+                    {else}
+                        {$colsMD = 12}
+                        {$colsLG = 12}
+                    {/if}
+                    {col cols=12 md=$colsMD lg=$colsLG order=1 order-md=0}
                         {card}
                             {block name='productdetails-reviews-heading'}
                                 <div class="card-title">
@@ -15,12 +22,21 @@
                             {/block}
                             {block name='productdetails-reviews-rating-dropdown'}
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {if !empty($smarty.get.quickView)}
+                                    <span id="ratingDropdown">
+                                {else}
+                                    <button class="btn btn-link dropdown-toggle" type="button" id="ratingDropdown"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {/if}
                                     {block name='productdetails-reviews-include-rating'}
                                         {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                         <span>({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='Votes'})</span>
                                     {/block}
-                                </button>
+                                {if !empty($smarty.get.quickView)}
+                                    </span>
+                                {else}
+                                    </button>
+                                {/if}
                                 <div class="dropdown-menu min-w-lg" aria-labelledby="ratingDropdown" data-dropdown-stay>
                                     <div class="dropdown-body">
                                         {block name='productdetails-reviews-votes'}

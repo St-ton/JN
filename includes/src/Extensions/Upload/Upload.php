@@ -310,11 +310,8 @@ final class Upload
      */
     public static function vorschauTyp(string $name): bool
     {
-        $pathInfo = \pathinfo($name);
-
-        return \is_array($pathInfo)
-            && \in_array(
-                $pathInfo['extension'],
+        return \in_array(
+                \pathinfo($name, \PATHINFO_EXTENSION),
                 ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
                 true
             );

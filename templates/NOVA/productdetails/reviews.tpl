@@ -69,6 +69,7 @@
                 {/if}
             {/block}
             {block name='productdetails-reviews-votes'}
+                {if empty($smarty.get.quickView)}
                 {col cols=12 md=6 lg=8  order=0 order-md=1}
                     {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating" slide=true}
                         <div class="subheadline">
@@ -89,6 +90,7 @@
                         {/button}
                     {/form}
                 {/col}
+                {/if}
             {/block}
         {/row}
         {/block}

@@ -26400,14 +26400,25 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   margin-bottom: 1rem;
 }
 
-.cfg-layout-list .form-counter {
-  width: auto;
+.cfg-layout-list {
+  margin-bottom: 1rem;
 }
 .cfg-layout-list .cfg-group .config-item {
-  padding: 0.75rem;
+  padding: 0.75rem 0;
 }
 .cfg-layout-list .cfg-item-description {
   margin: 0;
+}
+.cfg-layout-list .cfg-item-description dd, .cfg-layout-list .cfg-item-description dl {
+  margin-bottom: 0;
+}
+.cfg-layout-list .cfg-item-qty {
+  text-align: right;
+}
+@media (max-width: 991.98px) {
+  .cfg-layout-list .cfg-item-qty {
+    margin-top: 0.5rem;
+  }
 }
 
 .cfg-layout-gallery #product-configuration-sidebar table td a {
@@ -26436,6 +26447,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
     border-bottom: 1px solid #ebebeb;
     padding: 1.5rem 0;
   }
+}
+
+.cfg-item-detail-button .badge {
+  margin-top: 0.3rem;
+  padding: 0.35rem;
 }
 
 /* comparelist */

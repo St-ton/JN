@@ -894,14 +894,21 @@
 }
 
 .cfg-layout-list {
-	.form-counter {
-		width: auto;
-	}
+	margin-bottom: map_get($spacers, 3);
 	.cfg-group .config-item {
-		padding: $toast-padding-x;
+		padding: $toast-padding-x 0;
 	}
 	.cfg-item-description {
 		margin: 0;
+		dd, dl {
+			margin-bottom: 0;
+		}
+	}
+	.cfg-item-qty {
+		text-align: right;
+		@include media-breakpoint-down(md) {
+			margin-top: map_get($spacers, 2);
+		}
 	}
 }
 
@@ -938,5 +945,11 @@
 				padding: map_get($spacers, 4) 0;
 			}
 		}
+	}
+}
+.cfg-item-detail-button {
+	.badge {
+		margin-top: 0.3rem;
+		padding: 0.35rem
 	}
 }

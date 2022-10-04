@@ -97,8 +97,8 @@ class BaseCategory extends AbstractFilter
             $id              = $language->getId();
             $this->cSeo[$id] = '';
             foreach ($seoData as $seo) {
-                $this->cSeo[$id]  = \ltrim($seo->getURLPath($id), '/');
                 $this->slugs[$id] = $seo->getSlug($id);
+                $this->cSeo[$id]  = $this->slugs[$id];
             }
         }
         foreach ($seoData as $item) {

@@ -4,7 +4,6 @@
             {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
             <dl>
                 <dt>{if !empty($oItem->getArtikelKey())}
-                        <span class="configpreview" data-src="{$oItem->getArtikel()->cURLFull}" title="{lang section="productDownloads" key="downloadPreview"} - {$oItem->getName()}">
                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                         {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
                             {badge variant="light" class="border-primary"}
@@ -15,7 +14,6 @@
                                 {$oItem->getPreisLocalized()}
                             {/badge}
                         {/if}
-                        </span>
                     {else}
                         {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
                         {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
@@ -47,7 +45,9 @@
                     {block name='productdetails-config-item-description-detail-button'}
                         {if !empty($oItem->getArtikelKey())}
                             <div class="cfg-item-detail-button">
-                                {badge variant="light" class="circle-small"}
+                                {badge variant="light" class="circle-small configpreview"
+                                    data=["src"=>"{$oItem->getArtikel()->cURLFull}"]
+                                    title="{lang section='productDownloads' key='downloadPreview'} - {$oItem->getName()}"}
                                     <i class="fas fa-info-circle"></i> {lang section='productDetails' key='articledetails'}
                                 {/badge}
                             </div>
@@ -66,6 +66,7 @@
                             data=["count-down"=>""]
                             size="{if $device->isMobile()}sm{/if}"
                             aria=["label"=>{lang key='decreaseQuantity' section='aria'}]
+                            disabled=empty($bSelectable)
                         }
                             <span class="fas fa-minus"></span>
                         {/button}
@@ -80,12 +81,14 @@
                         name="item_quantity[{$kKonfigitem}]"
                         autocomplete="off"
                         value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{if ($oItem->getInitial()>0)}{$oItem->getInitial()}{else}{$oItem->getMin()}{/if}{/if}{/if}"
+                        disabled=empty($bSelectable)
                     }
                     {inputgroupappend}
                         {button variant=""
                             data=["count-up"=>""]
                             size="{if $device->isMobile()}sm{/if}"
                             aria=["label"=>{lang key='increaseQuantity' section='aria'}]
+                            disabled=empty($bSelectable)
                         }
                             <span class="fas fa-plus"></span>
                         {/button}

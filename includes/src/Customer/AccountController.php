@@ -1014,7 +1014,7 @@ class AccountController
                 if (isset($currencies[$order->kWaehrung])) {
                     $order->Waehrung = $currencies[$order->kWaehrung];
                 } else {
-                    $order->Waehrung               = $this->db->select(
+                    $order->Waehrung = $this->db->select(
                         'twaehrung',
                         'kWaehrung',
                         $order->kWaehrung

@@ -182,13 +182,15 @@ class CheckoutController extends RegistrationController
                         'SELECT DISTINCT(kLieferadresse) AS id
                             FROM tlieferadressevorlage
                             WHERE kKunde = :cid
-                                AND nIstStandardLieferadresse=1',
+                                AND nIstStandardLieferadresse = 1',
                         'id',
                         ['cid' => $this->customer->getID()]
                     );
+                } else {
+                    $shippingID = 0;
                 }
                 $form->pruefeLieferdaten([
-                    'kLieferadresse' => !empty($shippingID)
+                    'kLieferadresse' => $shippingID > 0
                         ? $shippingID
                         : Order::getLastOrderRefIDs($this->customer->getID())->kLieferadresse
                 ]);

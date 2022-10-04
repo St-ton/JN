@@ -15,7 +15,7 @@
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
+            {form id="buy_form{if !empty($smarty.get.quickView)}-quickview{/if}" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}

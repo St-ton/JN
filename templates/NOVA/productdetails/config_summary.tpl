@@ -16,7 +16,7 @@
                         <a id="cfg-nav-{$oKonfiggruppe->getID()}"
                            class="cfg-group js-cfg-group {if $oKonfiggruppe@first}visited{/if}"
                            href="#cfg-grp-{$oKonfiggruppe->getID()}" data-id="{$oKonfiggruppe->getID()}">
-                            {$configLocalization->getName()} <span class="{if $oKonfiggruppe->getID()|in_array:$oKonfig->invalidGroups|default:[]}d-none {/if}js-group-checked"><i class="fas fa-check"></i></span>
+                            {$configLocalization->getName()} <span class="{if $oKonfiggruppe->getID()|in_array:$oKonfig->invalidGroups|default:[]}d-none {/if}cfg-group-check js-group-checked"><i class="fas fa-check"></i></span>
                         </a>
 
                     {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}

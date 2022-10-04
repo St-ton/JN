@@ -26237,6 +26237,11 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow-x: hidden;
 }
 
+.cfg-group-check {
+  float: right;
+  color: #1C871E;
+}
+
 /* comparelist */
 #filter-checkboxes {
   margin-bottom: 1.5rem;

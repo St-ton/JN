@@ -898,7 +898,7 @@
 		width: auto;
 	}
 	.cfg-group .config-item {
-		padding: $toast-padding-x $toast-padding-y;
+		padding: $toast-padding-x;
 	}
 	.cfg-item-description {
 		margin: 0;
@@ -928,6 +928,15 @@
 		.cfg-group {
 			border: 1px solid $gray-medium;
 			padding: map_get($spacers, 3);
+		}
+	}
+	@include media-breakpoint-down(md) {
+		.cfg-group-list-wrapper {
+			.cfg-group {
+				border: none;
+				border-bottom: 1px solid $gray-medium;
+				padding: map_get($spacers, 4) 0;
+			}
 		}
 	}
 }

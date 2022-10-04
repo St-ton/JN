@@ -56,7 +56,7 @@
                     {include file='productdetails/config_options_list.tpl'}
                 {/col}
                 {col cols=12 lg=4}
-                    <div id="product-configuration-sidebar" class="sticky-top">
+                    <div id="product-configuration-sidebar" class="product-configuration-sidebar-wrapper sticky-top">
                         <div class="panel panel-primary no-margin">
                             <div class="panel-heading">
                                 <h5 class="panel-title">{lang key='yourConfiguration'}</h5>

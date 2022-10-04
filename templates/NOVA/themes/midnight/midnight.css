@@ -26421,21 +26421,28 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   }
 }
 
-.cfg-layout-gallery #product-configuration-sidebar table td a {
+.cfg-layout-gallery .product-configuration-sidebar-wrapper table td a {
   text-decoration: none;
   cursor: default;
 }
-.cfg-layout-gallery #product-configuration-sidebar table td a:hover {
+.cfg-layout-gallery .product-configuration-sidebar-wrapper table td a:hover {
   color: #525252;
 }
 
-#product-configuration-sidebar {
+.product-configuration-sidebar-wrapper {
   z-index: 1019;
 }
 
-.cfg-position-details.cfg-layout-list #product-configuration-sidebar {
+.cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper {
   border: 1px solid #ebebeb;
   padding: 0.75rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.cfg-position-details.cfg-layout-list .product-configuration-sidebar-wrapper .cfg-summary-item .col {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 .cfg-position-details.cfg-layout-list .cfg-group-list-wrapper .cfg-group {
   border: 1px solid #ebebeb;

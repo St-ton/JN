@@ -913,7 +913,7 @@
 }
 
 .cfg-layout-gallery {
-	#product-configuration-sidebar {
+	.product-configuration-sidebar-wrapper {
 		table td a {
 			text-decoration: none;
 			cursor: default;
@@ -923,13 +923,22 @@
 		}
 	}
 }
-#product-configuration-sidebar {
+.product-configuration-sidebar-wrapper {
 	z-index: $zindex-sticky - 1;
 }
 .cfg-position-details.cfg-layout-list {
-	#product-configuration-sidebar {
+	.product-configuration-sidebar-wrapper {
 		border: 1px solid $gray-medium;
 		padding: 0.75rem;
+		max-height: 90vh;
+		overflow-y: auto;
+		overflow-x: hidden;
+		.cfg-summary-item {
+			.col {
+				padding-left: map_get($spacers, 2);
+				padding-right: map_get($spacers, 2);
+			}
+		}
 	}
 	.cfg-group-list-wrapper {
 		.cfg-group {

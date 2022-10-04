@@ -12,7 +12,7 @@
             {foreach $oKonfig->oKonfig_arr as $oKonfiggruppe}
                 {$configLocalization = $oKonfiggruppe->getSprache()}
                 <tr class="{if $oKonfiggruppe@iteration is odd}accent-bg{/if}">
-                    <td colspan="3">
+                    <td class="cfg-summary-item" colspan="3">
                         <a id="cfg-nav-{$oKonfiggruppe->getID()}"
                            class="cfg-group js-cfg-group {if $oKonfiggruppe@first}visited{/if}"
                            href="#cfg-grp-{$oKonfiggruppe->getID()}" data-id="{$oKonfiggruppe->getID()}">
@@ -20,19 +20,18 @@
                         </a>
 
                     {foreach $oKonfiggruppe->oItem_arr as $oKonfigitem}
-
                         {if $oKonfigitem->bAktiv && !$oKonfigitem->ignoreMultiplier()}
                             {row}
                                 {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
-                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
-                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized(true, false, 1)}{/col}
+                                {col cols=7 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=3 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized(true, false, 1)}{/col}
                             {/row}
                         {elseif $oKonfigitem->bAktiv && $oKonfigitem->ignoreMultiplier()}
                             {row}
                                 {col cols=12}{lang key='one-off' section='checkout'}{/col}
                                 {col cols=2 class="text-nowrap-util"}{$oKonfigitem->fAnzahl} &times;{/col}
-                                {col cols=6 class="word-break"}{$oKonfigitem->getName()}{/col}
-                                {col cols=4 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized()}{/col}
+                                {col cols=7 class="word-break"}{$oKonfigitem->getName()}{/col}
+                                {col cols=3 class="cfg-price"}{$oKonfigitem->getFullPriceLocalized()}{/col}
                             {/row}
                         {/if}
                     {/foreach}

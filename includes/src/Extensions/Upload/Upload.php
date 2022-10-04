@@ -311,9 +311,9 @@ final class Upload
     public static function vorschauTyp(string $name): bool
     {
         return \in_array(
-                \pathinfo($name, \PATHINFO_EXTENSION),
-                ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
-                true
-            );
+            \pathinfo($name, \PATHINFO_EXTENSION),
+            ['gif', 'png', 'jpg', 'jpeg', 'bmp', 'jpe'],
+            true
+        );
     }
 }

@@ -14,12 +14,14 @@
                 {block name='productdetails-image-actions'}
                     <div class="product-actions" data-toggle="product-actions">
                         {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'
-                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'}
+                            && $Einstellungen.vergleichsliste.vergleichsliste_anzeigen === 'Y'
+                            && empty($smarty.get.quickView)}
                             {block name='productdetails-image-include-comparelist-button'}
                                 {include file='snippets/comparelist_button.tpl'}
                             {/block}
                         {/if}
-                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
+                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'
+                            && empty($smarty.get.quickView)}
                             {block name='productdetails-image-include-wishlist-button'}
                                 {include file='snippets/wishlist_button.tpl'}
                             {/block}

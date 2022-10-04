@@ -72,6 +72,7 @@
             {/col}
         {/block}
         {block name='productdetails-image-preview'}
+            {if empty($smarty.get.quickView)}
             {col cols=12 align-self='end' class='product-detail-image-preview-bar'}
             {$imageCount = $Artikel->Bilder|count}
             {$imageCountDefault = 5}
@@ -110,6 +111,7 @@
                 </div>
             {/if}
             {/col}
+            {/if}
         {/block}
         {/row}
         {block name='productdetails-image-meta'}

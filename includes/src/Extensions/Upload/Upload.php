@@ -21,7 +21,6 @@ final class Upload
     public static function checkLicense(): bool
     {
         static $license;
-
         if ($license === null) {
             $license = Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_UPLOADS);
         }
@@ -39,7 +38,6 @@ final class Upload
         if (!self::checkLicense()) {
             return [];
         }
-
         $scheme  = new Scheme();
         $uploads = $scheme->fetchAll($productID, \UPLOAD_TYP_WARENKORBPOS);
         foreach ($uploads as $upload) {
@@ -136,7 +134,6 @@ final class Upload
         if (!self::checkLicense()) {
             return true;
         }
-
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
                 if ($upload->nPflicht && !$upload->bVorhanden) {
@@ -153,9 +150,11 @@ final class Upload
      */
     public static function redirectWarenkorb(int $errorCode): void
     {
-        \header('Location: ' .
-            LinkService::getInstance()->getStaticRoute('warenkorb.php') .
-            '?fillOut=' . $errorCode, true, 303);
+        \header(
+            'Location: ' . LinkService::getInstance()->getStaticRoute('warenkorb.php') . '?fillOut=' . $errorCode,
+            true,
+            303
+        );
     }
 
     /**
@@ -253,13 +252,12 @@ final class Upload
         $step     = 0;
         $decr     = 1024;
         $prefixes = ['Byte', 'KB', 'MB', 'GB', 'TB', 'PB'];
-
         while (($fileSize / $decr) > 0.9) {
             $fileSize /= $decr;
             ++$step;
         }
 
-        return \round($fileSize, 2) . ' ' . $prefixes[$step];
+        return \round($fileSize, 2) . ' ' . ($prefixes[$step] ?? '');
     }
 
     /**
@@ -297,8 +295,8 @@ final class Upload
     public static function formatTypen(string $type): array
     {
         $fileTypes = \explode(',', $type);
-        foreach ($fileTypes as &$fileTtype) {
-            $fileTtype = '*' . $fileTtype;
+        foreach ($fileTypes as &$fileType) {
+            $fileType = '*' . $fileType;
         }
 
         return $fileTypes;

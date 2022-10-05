@@ -1171,7 +1171,7 @@
                     that.setStockInformation(result.cEstimatedDelivery);
 
                     $('#content .summary').html(result.cTemplate);
-
+                    $.evo.tooltips();
                     $.evo.extended()
                         .trigger('priceChanged', result);
                 });

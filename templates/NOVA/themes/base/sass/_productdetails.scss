@@ -966,7 +966,17 @@
 		overflow-x: hidden;
 	}
 }
-.cfg-group-check {
+.cfg-group-icon {
 	float: right;
+}
+.cfg-group-check {
 	color: $success;
+}
+.cfg-group-missing {
+	color: $danger;
+}
+.cfg-group-optional {
+	.cfg-group-check {
+		color: $warning;
+	}
 }

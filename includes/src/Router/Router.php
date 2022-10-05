@@ -143,16 +143,18 @@ class Router
         AlertServiceInterface $alert,
         private array $config
     ) {
-        $this->router = new BaseRouter();
-        $this->router->middleware(new MaintenanceModeMiddleware($this->config['global']));
-        $this->router->middleware(new SSLRedirectMiddleware($this->config['global']));
-        $this->router->middleware(new WishlistCheckMiddleware());
-        $this->router->middleware(new CartcheckMiddleware());
-        $this->router->middleware(new LocaleCheckMiddleware());
-        $this->router->middleware(new CurrencyCheckMiddleware());
-        $this->router->middleware(new OptinMiddleware());
+        $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
         $registeredDefault       = false;
+        $middlewares             = [
+            new MaintenanceModeMiddleware($this->config['global']),
+            new SSLRedirectMiddleware($this->config['global']),
+            new WishlistCheckMiddleware(),
+            new CartcheckMiddleware(),
+            new LocaleCheckMiddleware(),
+            new CurrencyCheckMiddleware(),
+            new OptinMiddleware(),
+        ];
 
         $root        = new RootController($db, $cache, $state, $this->config, $alert);
         $consent     = new ConsentController();
@@ -169,7 +171,6 @@ class Router
             new PageController($db, $cache, $state, $this->config, $alert),
             new MediaImageController($db, $cache, $state, $this->config, $alert),
         ];
-
         foreach ($this->collectHosts() as $data) {
             $host         = $data['host'];
             $locale       = $data['locale'];
@@ -205,6 +206,9 @@ class Router
                 . '_grp'
                 . ($data['localized'] ? '_LOCALIZED' : '')
                 . ($data['currency'] ? '_CRNCY' : ''));
+            foreach ($middlewares as $middleware) {
+                $group->middleware($middleware);
+            }
             $this->routes[] = $group;
         }
         if ($this->isMultiDomain === false) {
@@ -216,6 +220,9 @@ class Router
         $this->collectGroupRoutes();
     }
 
+    /**
+     * @return void
+     */
     protected function collectGroupRoutes(): void
     {
         foreach ($this->routes as $group) {
@@ -557,7 +564,11 @@ class Router
     {
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $body = $_POST;
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'PUT') {
+            \parse_str(\file_get_contents('php://input'), $body);
+        }
+        $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
         if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
@@ -752,5 +763,21 @@ class Router
     public function setLangGroups(array $langGroups): void
     {
         $this->langGroups = $langGroups;
+    }
+
+    /**
+     * @return State
+     */
+    public function getState(): State
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param State $state
+     */
+    public function setState(State $state): void
+    {
+        $this->state = $state;
     }
 }

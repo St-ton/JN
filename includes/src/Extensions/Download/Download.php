@@ -530,10 +530,7 @@ class Download
     public function getExtension(): string
     {
         if ($this->cPfad !== null && \mb_strlen($this->cPfad) > 0) {
-            $pathInfo = \pathinfo($this->cPfad);
-            if (\is_array($pathInfo)) {
-                return \mb_convert_case($pathInfo['extension'], \MB_CASE_UPPER);
-            }
+            return \mb_convert_case(\pathinfo($this->cPfad, \PATHINFO_EXTENSION), \MB_CASE_UPPER);
         }
 
         return '';

@@ -1,6 +1,7 @@
 {$postfix = $postfix|default:''}
 {$prefix = $prefix|default:''}
 {$isChild = $isChild|default:false}
+{$addChild = $addChild|default:false}
 
 {foreach $item->getAttributes() as $attr}
     {$name = $attr->getName()}
@@ -16,12 +17,31 @@
         {continue}
     {/if}
     {if strpos($type, "\\") !== false && class_exists($type)}
+        {$cnt = $item->$name->count()}
+        {if $cnt === 0 && $addChild === false}
+            {continue}
+        {/if}
         <div class="subheading1">{__('childHeading')}</div>
-            <hr>
+        <hr>
         {foreach $item->$name as $childItem}
             {include file='tpl_inc/model_item.tpl' isChild=true postfix=$childItem->getId() item=$childItem prefix=$name}
             <hr>
         {/foreach}
+        {if $addChild !== false}
+            {include file='tpl_inc/model_item.tpl' isChild=true item=$childModel addChild=false postfix=$postfix prefix=$name assign=foo}
+            <div id="childmodelappend"></div>
+            <script>
+                $(document).ready(function () {
+                    $('#add-child-model-item').on('click', function () {
+                        $('#childmodelappend').append(`{$foo|trim}`);
+                    });
+                });
+            </script>
+
+            <button type="button" value="1" class="btn btn-default" id="add-child-model-item">
+                <i class="fas fa-share"></i> {__('add')}
+            </button>
+        {/if}
         {continue}
     {/if}
 

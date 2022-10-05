@@ -995,21 +995,33 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload   = some($downloads, static function ($dl) use ($order): bool {
+            $order->bDownload           = some($downloads, static function ($dl) use ($order): bool {
                 return $dl->kBestellung === $order->kBestellung;
             });
-            $order->kBestellung = (int)$order->kBestellung;
-            $order->kWaehrung   = (int)$order->kWaehrung;
-            $order->cStatus     = (int)$order->cStatus;
+            $order->kBestellung         = (int)$order->kBestellung;
+            $order->kWarenkorb          = (int)$order->kWarenkorb;
+            $order->kKunde              = (int)$order->kKunde;
+            $order->kLieferadresse      = (int)$order->kLieferadresse;
+            $order->kRechnungsadresse   = (int)$order->kRechnungsadresse;
+            $order->kZahlungsart        = (int)$order->kZahlungsart;
+            $order->kVersandart         = (int)$order->kVersandart;
+            $order->kSprache            = (int)$order->kSprache;
+            $order->kWaehrung           = (int)$order->kWaehrung;
+            $order->cStatus             = (int)$order->cStatus;
+            $order->nLongestMinDelivery = (int)$order->nLongestMinDelivery;
+            $order->nLongestMaxDelivery = (int)$order->nLongestMaxDelivery;
             if ($order->kWaehrung > 0) {
                 if (isset($currencies[$order->kWaehrung])) {
                     $order->Waehrung = $currencies[$order->kWaehrung];
                 } else {
-                    $order->Waehrung               = $this->db->select(
+                    $order->Waehrung = $this->db->select(
                         'twaehrung',
                         'kWaehrung',
                         $order->kWaehrung
                     );
+                    if ($order->Waehrung !== null) {
+                        $order->Waehrung->kWaehrung = (int)$order->Waehrung->kWaehrung;
+                    }
                     $currencies[$order->kWaehrung] = $order->Waehrung;
                 }
                 if (isset($order->fWaehrungsFaktor, $order->Waehrung->fFaktor) && $order->fWaehrungsFaktor !== 1) {
@@ -1022,7 +1034,6 @@ class AccountController
             );
             $order->Status                = \lang_bestellstatus($order->cStatus);
         }
-
         $orderPagination = (new Pagination('orders'))
             ->setItemArray($orders)
             ->setItemsPerPage(10)
@@ -1093,11 +1104,10 @@ class AccountController
      */
     private function loadShippingAddress(Customer $customer): void
     {
-        $getData = Text::filterXSS($_GET);
-        $data    = $this->db->selectSingleRow(
+        $data = $this->db->selectSingleRow(
             'tlieferadressevorlage',
             'kLieferadresse',
-            (int)$getData['editAddress'],
+            Request::getInt('editAddress'),
             'kKunde',
             $customer->getID()
         );
@@ -1208,9 +1218,8 @@ class AccountController
      */
     private function deleteShippingAddress(Customer $customer): void
     {
-        $getData                  = Text::filterXSS($_GET);
         $template                 = new DeliveryAddressTemplate($this->db);
-        $template->kLieferadresse = (int)$getData['deleteAddress'];
+        $template->kLieferadresse = Request::getInt('deleteAddress');
         $template->kKunde         = $customer->kKunde;
         if ($template->delete()) {
             $this->alertService->addNotice(
@@ -1228,7 +1237,6 @@ class AccountController
      */
     private function setShippingAddressAsDefault(Customer $customer): void
     {
-        $getData                                    = Text::filterXSS($_GET);
         $resetAllDefault                            = new stdClass();
         $resetAllDefault->nIstStandardLieferadresse = 0;
         $this->db->update('tlieferadressevorlage', 'kKunde', $customer->kKunde, $resetAllDefault);
@@ -1238,7 +1246,7 @@ class AccountController
         $this->db->update(
             'tlieferadressevorlage',
             ['kLieferadresse', 'kKunde'],
-            [(int)$getData['setAddressAsDefault'], $customer->kKunde],
+            [Request::getInt('setAddressAsDefault'), $customer->kKunde],
             $resetAllDefault
         );
 

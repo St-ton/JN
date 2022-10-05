@@ -28,8 +28,8 @@ class MarkdownController extends AbstractBackendController
             $base1 = \realpath(\PFAD_ROOT . \PLUGIN_DIR);
             $base2 = \realpath(\PFAD_ROOT . \PFAD_PLUGIN);
             if ($path !== false && (\str_starts_with($path, $base1) || \str_starts_with($path, $base2))) {
-                $info = \pathinfo($path);
-                if (\mb_convert_case($info['extension'], \MB_CASE_LOWER) === 'md') {
+                $extension = \pathinfo($path, \PATHINFO_EXTENSION);
+                if (\mb_convert_case($extension, \MB_CASE_LOWER) === 'md') {
                     $parseDown      = new Parsedown();
                     $licenseContent = \mb_convert_encoding(
                         $parseDown->text(Text::convertUTF8(\file_get_contents($path))),

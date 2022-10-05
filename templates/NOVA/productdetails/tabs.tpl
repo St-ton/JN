@@ -68,7 +68,7 @@
             {$quickViewIdPostfix = '-quickview'}
         {else}
             {$quickViewIdPostfix = ''}
-        {/if}}
+        {/if}
     {/block}
     {block name='productdetails-tabs-content'}
         {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow

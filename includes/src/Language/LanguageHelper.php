@@ -1066,6 +1066,7 @@ class LanguageHelper
         $linkService   = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
         $pageType      = Shop::getPageType();
+        $state         = Shop::getState();
         if ($pageID !== null && $pageID > 0 && $pageType !== \PAGE_ARTIKELLISTE) {
             $linkID = $pageID;
         }
@@ -1084,7 +1085,15 @@ class LanguageHelper
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
-                if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
+                if ($state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $lang->getIso639()]),
+                        true,
+                        true
+                    );
+                    $lang->setUrl($url);
+                } elseif (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
                     $lang->setUrl($AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);

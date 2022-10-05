@@ -229,7 +229,9 @@
                                                 {/col}
                                                 {col class="question-on-item col-auto"}
                                                     {block name='productdetails-details-question-on-item'}
-                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'
+                                                            && empty($smarty.get.quickView)
+                                                        }
                                                             <button type="button" id="z{$Artikel->kArtikel}"
                                                                     class="btn btn-link question"
                                                                     title="{lang key='productQuestion' section='productDetails'}"

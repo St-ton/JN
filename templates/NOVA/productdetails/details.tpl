@@ -245,14 +245,18 @@
                                                 {/col}
                                             {/row}
                                             {block name='snippets-stock-note-include-warehouse'}
+                                                {if empty($smarty.get.quickView)}
                                                 {include file='productdetails/warehouse.tpl'}
+                                                {/if}
                                             {/block}
                                         {/col}
                                     {/block}
                                 {/row}
                                 {*UPLOADS product-specific files, e.g. for customization*}
                                 {block name='productdetails-details-include-uploads'}
+                                    {if empty($smarty.get.quickView)}
                                     {include file="snippets/uploads.tpl" tplscope='product'}
+                                    {/if}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                                 {if $Artikel->bHasKonfig}

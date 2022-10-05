@@ -89,7 +89,7 @@ class PageService
         if (Request::verifyGPCDataInt('quickView')) {
             return '';
         }
-        
+
         $id          = $params['id'];
         $title       = $params['title'] ?? $id;
         $inContainer = $params['inContainer'] ?? true;

@@ -1631,7 +1631,7 @@
                             var article = new ArticleClass();
                             article.register(wrapper);
                             $.evo.extended().stopSpinner();
-                            $('[data-toggle="popover"]').popover()
+                            $('[data-toggle="popover"]').popover({ html: true });
                         },
                         function() {
                             $.evo.extended().stopSpinner();

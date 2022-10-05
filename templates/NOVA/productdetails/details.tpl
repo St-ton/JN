@@ -43,6 +43,7 @@
                                             <meta itemprop="worstRating" content="1"/>
                                             <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
                                             {block name='productdetails-details-include-rating'}
+                                                {if empty($smarty.get.quickView)}
                                                 {link href="{$Artikel->cURLFull}#tab-votes"
                                                     id="jump-to-votes-tab"
                                                     aria=["label"=>{lang key='Votes'}]
@@ -50,6 +51,10 @@
                                                     {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                                     ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
                                                 {/link}
+                                                {else}
+                                                    {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
+                                                    ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
+                                                {/if}
                                             {/block}
                                         </div>
                                     {/block}

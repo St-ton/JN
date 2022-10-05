@@ -258,6 +258,16 @@ class State
     public string $fileName = '';
 
     /**
+     * @var string|null
+     */
+    public ?string $currentRouteName = null;
+
+    /**
+     * @var array|null
+     */
+    public ?array $routeData = null;
+
+    /**
      * @var string[]
      */
     private static array $mapping = [

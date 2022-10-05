@@ -4,6 +4,9 @@
 {$addChild = $addChild|default:false}
 
 {foreach $item->getAttributes() as $attr}
+    {if $attr->isDynamic() === true}
+        {continue}
+    {/if}
     {$name = $attr->getName()}
     {$inputName = $name}
     {if $isChild}

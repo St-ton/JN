@@ -107,7 +107,11 @@
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <strong>{lang key='category'}: </strong>
-                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
+                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category"
+                                                           {if !empty($smarty.get.quickView)}target="_blank"{/if}
+                                                        >
+                                                            {$Brotnavi[$cidx]->getName()}
+                                                        </a>
                                                     </li>
                                                 {/block}
                                             {/if}

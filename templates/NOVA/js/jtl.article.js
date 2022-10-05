@@ -156,11 +156,10 @@
                     let formID     = $item.data('target');
                     formID = 'formid';
                     let wrapper    = that.options.modal.wrapper_modal + '_' + formID;
-                    let srcWrapper = that.options.modal.wrapper + '_' + formID;
 
                     $item.on('click', function (event) {
                         event.preventDefault();
-                        that.modalArticleDetail(this, wrapper, srcWrapper);
+                        that.modalArticleDetail(this, wrapper);
                     });
                 });
             $wrapper.hover(null, function() {
@@ -1585,13 +1584,11 @@
             }
         },
 
-        modalArticleDetail: function(item, wrapper, srcWrapper)
+        modalArticleDetail: function(item, wrapper)
         {
             let $item = $(item);
             let title = $item.data('title');
-            var that     = this,
-                image    = $(srcWrapper).find('.image-content').html(),
-                url      = $(item).data('src');
+            let url   = $item.data('src');
 
             if (typeof this.modalView === 'undefined' || this.modalView === null) {
                 this.modalView = $(
@@ -1611,24 +1608,25 @@
                     '   </div>' +
                     '</div>');
                 this.modalView
-                    .on('hidden.bs.modal', function() {
-                        $('.modal-body', that.modalView)
+                    .on('hidden.bs.modal', () => {
+                        $('.modal-body', this.modalView)
                             .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
-                        $('.modal-title', that.modalView).html('');
-                        that.modalView
+                        $('.modal-title', this.modalView).html('');
+                        this.modalView
                             .off('shown.bs.modal');
-                        that.modalShown = false;
+                        this.modalShown = false;
                     });
             } else {
-                $('.modal-title', that.modalView).html(title);
-                $('.modal-body', that.modalView)
-                    .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
+                $('.modal-title', this.modalView).html(title);
+                $('.modal-body', this.modalView)
+                    .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' +
+                        '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div></div>');
             }
 
             this.modalView
-                .on('shown.bs.modal', function() {
-                    that.modalShown = true;
-                    that.loadModalArticle(url, wrapper,
+                .on('shown.bs.modal', () => {
+                    this.modalShown = true;
+                    this.loadModalArticle(url, wrapper,
                         function() {
                             var article = new ArticleClass();
                             article.register(wrapper);

@@ -135,7 +135,7 @@
                             {/block}
                         {/if}
 
-                        {if $useQuestionOnItem}
+                        {if $useQuestionOnItem && empty($smarty.get.quickView)}
                             {block name='productdetails-tabs-tab-question-on-item'}
                                 {tab title="{lang key="productQuestion" section="productDetails"}" active=$setActiveClass.questionOnItem id="questionOnItem"}
                                     {opcMountPoint id='opc_before_tab_question'}
@@ -155,7 +155,7 @@
                             {/block}
                         {/if}
 
-                        {if $useAvailabilityNotification}
+                        {if $useAvailabilityNotification && empty($smarty.get.quickView)}
                             {block name='productdetails-tabs-tab-availability-notification'}
                                 {tab title="{lang key='notifyMeWhenProductAvailableAgain'}" active=$setActiveClass.availabilityNotification id="availabilityNotification"}
                                     {opcMountPoint id='opc_before_tab_availability'}

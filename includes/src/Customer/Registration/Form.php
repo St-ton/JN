@@ -191,9 +191,7 @@ class Form
         unset($_SESSION['Versandart']);
         // neue lieferadresse
         if (!isset($post['kLieferadresse']) || (int)$post['kLieferadresse'] === -1) {
-            $missingData               = $missingData === null
-                ? $this->checkLieferFormularArray($post)
-                : \array_merge($missingData, $this->checkLieferFormularArray($post));
+            $missingData               = \array_merge($missingData ?? [], $this->checkLieferFormularArray($post));
             $deliveryAddress           = Lieferadresse::createFromPost($post);
             $ok                        = \JTL\Helpers\Form::hasNoMissingData($missingData);
             $_SESSION['Lieferadresse'] = $deliveryAddress;

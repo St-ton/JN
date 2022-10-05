@@ -728,7 +728,7 @@ class NewsController extends AbstractBackendController
         if (empty($_FILES['previewImage']['name'])) {
             return '';
         }
-        $extension = \pathinfo($_FILES['previewImage']['name'])['extension'];
+        $extension = \pathinfo($_FILES['previewImage']['name'], \PATHINFO_EXTENSION);
         if ($extension === 'jpe') {
             $extension = 'jpg';
         }
@@ -769,7 +769,7 @@ class NewsController extends AbstractBackendController
                 $info       = \pathinfo($_FILES['Bilder']['name'][$i - $counter]);
                 $oldName    = $info['filename'];
                 $newName    = Image::getCleanFilename($oldName);
-                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . $info['extension'];
+                $uploadFile = self::UPLOAD_DIR . $newsItemID . '/' . $newName . '.' . ($info['extension'] ?? '');
                 if (Image::isImageUpload($upload)) {
                     \move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $counter], $uploadFile);
                 }

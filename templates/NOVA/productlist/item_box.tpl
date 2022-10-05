@@ -50,9 +50,10 @@
                                                 <div class="inner">
                                                     {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                        srcset="
+                                                            {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                            {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                            {$image->cURLNormal} {$image->imageSizes->md->size->width}w"
                                                         sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, 50vw'
                                                         data=["id"  => $imgcounter]
                                                         class="{if !$isMobile && !empty($Artikel->Bilder[1])} first{/if}"
@@ -71,9 +72,10 @@
                                                     {/if}
                                                     {image alt=$alt|truncate:60 fluid=true webp=true lazy=true
                                                         src="{$image->cURLKlein}"
-                                                        srcset="{$image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                                 {$image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                                 {$image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                        srcset="
+                                                            {$image->cURLMini} {$image->imageSizes->xs->size->width}w,
+                                                            {$image->cURLKlein} {$image->imageSizes->sm->size->width}w,
+                                                            {$image->cURLNormal} {$image->imageSizes->md->size->width}w"
                                                         sizes = '(min-width: 1300px) 25vw, (min-width: 992px) 34vw, 50vw'
                                                         data=["id"  => $imgcounter|cat:"_2nd"]
                                                         class='second'

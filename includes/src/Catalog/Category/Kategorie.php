@@ -306,6 +306,7 @@ class Kategorie implements RoutableInterface
             $this->image     = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->hasImage  = true;
             $this->generateAllImageSizes(true, 1, $this->imagePath);
+            $this->generateAllImageDimensions(1, $this->imagePath);
         }
     }
 

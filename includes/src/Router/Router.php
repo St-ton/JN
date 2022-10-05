@@ -580,7 +580,11 @@ class Router
     {
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+        $body = $_POST;
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'PUT') {
+            \parse_str(\file_get_contents('php://input'), $body);
+        }
+        $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
         if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
@@ -775,5 +779,21 @@ class Router
     public function setLangGroups(array $langGroups): void
     {
         $this->langGroups = $langGroups;
+    }
+
+    /**
+     * @return State
+     */
+    public function getState(): State
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param State $state
+     */
+    public function setState(State $state): void
+    {
+        $this->state = $state;
     }
 }

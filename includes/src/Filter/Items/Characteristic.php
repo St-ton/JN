@@ -522,6 +522,7 @@ class Characteristic extends BaseCharacteristic
             $option->setValue($filter->kMerkmal);
             $option->setCount(0);
             $option->generateAllImageSizes();
+            $option->generateAllImageDimensions();
             $additionalFilter->setBatchCharacteristicData(
                 $this->batchGetDataForCharacteristicValue($filter->characteristicValues)
             );
@@ -557,6 +558,7 @@ class Characteristic extends BaseCharacteristic
                 $url = $filterURLGenerator->getURL($additionalFilter->init($filterValue->kMerkmalWert));
                 $characteristicOption->setURL($url);
                 $characteristicOption->generateAllImageSizes();
+                $characteristicOption->generateAllImageDimensions();
                 $option->addOption($characteristicOption);
             }
             // backwards compatibility

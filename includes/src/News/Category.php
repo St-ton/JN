@@ -201,7 +201,9 @@ class Category implements CategoryInterface, RoutableInterface
             $this->slugs[$langID]            = $groupLanguage->cSeo;
         }
         if (($preview = $this->getPreviewImage()) !== '') {
-            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview));
+            $preview = \str_replace(\PFAD_NEWSKATEGORIEBILDER, '', $preview);
+            $this->generateAllImageSizes(true, 1, $preview);
+            $this->generateAllImageDimensions(1, $preview);
         }
         $this->createBySlug($this->id);
         $this->items = (new ItemList($this->db))->createItems($this->db->getInts(

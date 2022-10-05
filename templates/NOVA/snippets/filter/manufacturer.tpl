@@ -32,7 +32,8 @@
                 <div class="box-link-wrapper">
                     {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
                         {block name='snippets-filter-manufacturer-item-image'}
-                            {image lazy=true webo=true
+                            {image lazy=true webp=true
+                                alt=$filterOption->getName()|escape:'html'
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }
@@ -41,6 +42,7 @@
                     {elseif $Einstellungen.navigationsfilter.hersteller_anzeigen_als === 'BT'}
                         {block name='snippets-filter-manufacturer-item-image-text'}
                             {image lazy=true webp=true
+                                alt=$filterOption->getName()|escape:'html'
                                 src=$filterOption->getData('cBildpfadKlein')
                                 class="vmiddle filter-img"
                             }

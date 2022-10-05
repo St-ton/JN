@@ -14,9 +14,13 @@
                                                 {link href=$product->cURLFull}
                                                     {image lazy=true webp=true
                                                     src=$product->image->cURLMini
-                                                    srcset="{$product->image->cURLMini} {$Einstellungen.bilder.bilder_artikel_mini_breite}w,
-                                                            {$product->image->cURLKlein} {$Einstellungen.bilder.bilder_artikel_klein_breite}w,
-                                                            {$product->image->cURLNormal} {$Einstellungen.bilder.bilder_artikel_normal_breite}w"
+                                                    srcset="
+                                                        {$product->image->cURLMini}
+                                                        {$product->image->imageSizes->xs->size->width}w,
+                                                        {$product->image->cURLKlein}
+                                                        {$product->image->imageSizes->sm->size->width}w,
+                                                        {$product->image->cURLNormal}
+                                                        {$product->image->imageSizes->md->size->width}w"
                                                     sizes="45px"
                                                     alt=$product->cName
                                                     class="img-sm"}

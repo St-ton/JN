@@ -269,7 +269,9 @@ class Item extends AbstractItem implements RoutableInterface
         $this->commentChildCount = $this->comments->getCommentsCount('child');
 
         if (($preview = $this->getPreviewImage()) !== '') {
-            $this->generateAllImageSizes(true, 1, \str_replace(\PFAD_NEWSBILDER, '', $preview));
+            $preview = \str_replace(\PFAD_NEWSBILDER, '', $preview);
+            $this->generateAllImageSizes(true, 1, $preview);
+            $this->generateAllImageDimensions(1, $preview);
         }
         $this->setContentAuthor();
         \executeHook(\HOOK_NEWS_ITEM_MAPPED, [

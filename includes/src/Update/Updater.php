@@ -107,17 +107,12 @@ class Updater
      */
     public function createSqlDump(string $file, bool $compress = true): void
     {
-        if ($compress) {
-            $info = \pathinfo($file);
-            if ($info['extension'] !== 'gz') {
-                $file .= '.gz';
-            }
+        if ($compress && \pathinfo($file, \PATHINFO_EXTENSION) !== 'gz') {
+            $file .= '.gz';
         }
-
         if (\file_exists($file)) {
             @\unlink($file);
         }
-
         $connectionStr = \sprintf('mysql:host=%s;dbname=%s', \DB_HOST, \DB_NAME);
         $sql           = new Mysqldump($connectionStr, \DB_USER, \DB_PASS, [
             'skip-comments'  => true,

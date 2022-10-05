@@ -196,6 +196,7 @@ abstract class AbstractLoader implements LoaderInterface
         $paths->setAdminPath($basePath . \PFAD_PLUGIN_ADMINMENU);
         $paths->setAdminURL($baseURL . \PFAD_PLUGIN_ADMINMENU);
         $paths->setBackendURL(Shop::getAdminURL() . '/' . Route::PLUGIN . '/' . $id);
+        $paths->setBackendRoute('/' . Route::PLUGIN . '/' . $id);
         $paths->setLicencePath($basePath . \PFAD_PLUGIN_LICENCE);
         $paths->setUninstaller($basePath . \PFAD_PLUGIN_UNINSTALL);
         $paths->setPortletsPath($basePath . \PFAD_PLUGIN_PORTLETS);

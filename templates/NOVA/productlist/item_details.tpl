@@ -52,8 +52,8 @@
                     }
                         {image webp=true lazy=true fluid=true
                             src=$Artikel->cHerstellerBildURLKlein
-                            srcset="{$Artikel->cHerstellerBildURLKlein} {$Einstellungen.bilder.bilder_hersteller_mini_breite}w,
-                                    {$Artikel->cHerstellerBildURLNormal} {$Einstellungen.bilder.bilder_hersteller_normal_breite}w"
+                            srcset="{$Artikel->cHerstellerBildURLKlein} {$Artikel->manufacturerImageWidthSM}w,
+                                    {$Artikel->cHerstellerBildURLNormal} {$Artikel->manufacturerImageWidthMD}w"
                             alt=$Artikel->cHersteller|escape:'html'
                             sizes="25px"
                             class="img-xs"}

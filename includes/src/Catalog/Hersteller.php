@@ -254,6 +254,7 @@ class Hersteller implements RoutableInterface
             $this->imagePathSmall  = \PFAD_HERSTELLERBILDER_KLEIN . $this->imagePath;
             $this->imagePathNormal = \PFAD_HERSTELLERBILDER_NORMAL . $this->imagePath;
             $this->generateAllImageSizes(true, 1, $this->imagePath);
+            $this->generateAllImageDimensions(1, $this->imagePath);
         }
         $this->imageURLSmall  = $imageBaseURL . $this->imagePathSmall;
         $this->imageURLNormal = $imageBaseURL . $this->imagePathNormal;

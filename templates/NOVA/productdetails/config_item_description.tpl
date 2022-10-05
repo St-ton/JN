@@ -46,7 +46,7 @@
                         {if !empty($oItem->getArtikelKey())}
                             <div class="cfg-item-detail-button">
                                 {badge variant="light" class="circle-small configpreview"
-                                    data=["src"=>"{$oItem->getArtikel()->cURLFull}"]
+                                    data=["src"=>"{$oItem->getArtikel()->cURLFull}", "title"=>$oItem->getName()]
                                     title="{lang section='productDownloads' key='downloadPreview'} - {$oItem->getName()}"}
                                     <i class="fas fa-info-circle"></i> {lang section='productDetails' key='articledetails'}
                                 {/badge}

@@ -152,10 +152,11 @@
 
             $('.configpreview', $wrapper)
                 .each(function(i, item) {
-                    var $item      = $(item),
-                        formID     = $item.data('target'),
-                        wrapper    = that.options.modal.wrapper_modal + '_' + formID,
-                        srcWrapper = that.options.modal.wrapper + '_' + formID;
+                    let $item      = $(item);
+                    let formID     = $item.data('target');
+                    formID = 'formid';
+                    let wrapper    = that.options.modal.wrapper_modal + '_' + formID;
+                    let srcWrapper = that.options.modal.wrapper + '_' + formID;
 
                     $item.on('click', function (event) {
                         event.preventDefault();
@@ -1584,9 +1585,11 @@
             }
         },
 
-        modalArticleDetail: function(item, wrapper, srcWrapper) {
+        modalArticleDetail: function(item, wrapper, srcWrapper)
+        {
+            let $item = $(item);
+            let title = $item.data('title');
             var that     = this,
-                title    = $(srcWrapper).find('h4.title').text(),
                 image    = $(srcWrapper).find('.image-content').html(),
                 url      = $(item).data('src');
 
@@ -1601,7 +1604,7 @@
                     '           </div>' +
                     '           <div class="modal-body">' +
                     '               <div id="' + wrapper.substring(1) + '" style="min-height:100px">' +
-                                        image +
+                    '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>' +
                     '               </div>' +
                     '           </div>' +
                     '       </div>' +

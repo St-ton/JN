@@ -22,11 +22,11 @@ const updateCount = function(increase = false) {
 	let stepDirection = increase ? 'stepUp' : 'stepDown';
 
 	try {
-		input[stepDirection]()
+		input[stepDirection]();
+        if (control != null && control.disabled == false) {
+            control.checked = true
+        }
 		$input.trigger('change')
-		if (control != null && control.disabled == false) {
-			control.checked = true
-		}
 	} catch(e) {
 		let step = input.step > 0 ? parseFloat(input.step) : 1;
 

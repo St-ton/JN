@@ -25828,9 +25828,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   background-color: #f5f5f5;
 }
 
-.config-table .js-group-checked {
-  color: #EFC03D;
-}
 .config-table .accent-bg {
   background: #f5f5f5;
 }
@@ -26234,9 +26231,20 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
   overflow-x: hidden;
 }
 
-.cfg-group-check {
+.cfg-group-icon {
   float: right;
+}
+
+.cfg-group-check {
   color: #1C871E;
+}
+
+.cfg-group-missing {
+  color: #b90000;
+}
+
+.cfg-group-optional .cfg-group-check {
+  color: #f39932;
 }
 
 /* comparelist */

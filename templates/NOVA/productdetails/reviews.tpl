@@ -172,7 +172,9 @@
                 {/button}
             {/block}
             {block name='productdetails-reviews-include-pagination-bottom'}
+                {if empty($smarty.get.quickView)}
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes'}
+                {/if}
             {/block}
             {block name='productdetails-reviews-form'}
                 {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list" slide=true}
@@ -190,7 +192,9 @@
                 {/form}
             {/block}
             {block name='productdetails-reviews-include-pagination-bottom'}
+                {if empty($smarty.get.quickView)}
                 {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes' showFilter=false}
+                {/if}
             {/block}
         {/if}
     </div>

@@ -52,14 +52,14 @@
     {else}
         {if $Einstellungen.template.productdetails.config_layout === 'list'}
             {row id="cfg-container"}
-                {col cols=8}
+                {col cols=12 lg=8}
                     {include file='productdetails/config_options_list.tpl'}
                 {/col}
-                {col cols=4}
-                    <div id="product-configuration-sidebar" class="sticky-top">
+                {col cols=12 lg=4}
+                    <div id="product-configuration-sidebar" class="product-configuration-sidebar-wrapper sticky-top">
                         <div class="panel panel-primary no-margin">
                             <div class="panel-heading">
-                                <h5 class="panel-title">{lang key='yourConfiguration'}</h5>
+                                <h2 class="panel-title">{lang key='yourConfiguration'}</h2>
                             </div>
                             <table class="table table-sm config-table">
                                 <tbody class="summary"></tbody>
@@ -75,29 +75,7 @@
                                 </tfoot>
                             </table>
                             <div class="panel-footer">
-                                {if $Artikel->inWarenkorbLegbar == 1}
-                                    <div id="quantity-grp" class="choose_quantity input-group">
-                                        <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"
-                                               class="quantity form-control text-right" name="anzahl"
-                                               value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
-                                        <span class="input-group-btn">
-                                    <button name="inWarenkorb" type="submit" value="{lang key='addToCart'}"
-                                            class="submit btn btn-primary">
-                                        {if isset($kEditKonfig)}
-                                            {lang key='applyChanges'}
-                                        {else}
-                                            {lang key='addToCart'}
-                                        {/if}
-                                    </button>
-                                </span>
-                                    </div>
-                                    {if $Artikel->kVariKindArtikel > 0}
-                                        <input type="hidden" name="a2" value="{$Artikel->kVariKindArtikel}"/>
-                                    {/if}
-                                    {if isset($kEditKonfig)}
-                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
-                                    {/if}
-                                {/if}
+                                {include file='productdetails/basket.tpl'}
                             </div>
                         </div>
                     </div>

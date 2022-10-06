@@ -1,4 +1,5 @@
 {block name='productdetails-attributes'}
+{$inQuickView = !empty($smarty.get.quickView)}
 {if $showAttributesTable}
     <div class="product-attributes">
     {block name='productdetails-attributes-table'}
@@ -13,16 +14,19 @@
                                     {foreach $characteristic->getCharacteristicValues() as $characteristicValue}
                                         {if $characteristic->getType() === 'TEXT' || $characteristic->getType() === 'SELECTBOX' || $characteristic->getType() === ''}
                                             {block name='productdetails-attributes-badge'}
-                                                {link href=$characteristicValue->getURL() class="badge badge-primary"}{$characteristicValue->getValue()|escape:'html'}{/link}
+                                                <a {if !$inQuickView}href="{$characteristicValue->getURL()}"{/if}
+                                                   class="badge badge-primary">
+                                                    {$characteristicValue->getValue()|escape:'html'}
+                                                </a>
                                             {/block}
                                         {else}
                                             {block name='productdetails-attributes-image'}
-                                                {link href=$characteristicValue->getURL()
+                                                <a {if !$inQuickView}href="{$characteristicValue->getURL()}"{/if}
                                                     class="text-decoration-none-util"
-                                                    data=['toggle'=>'tooltip', 'placement'=>'top', 'boundary'=>'window']
-                                                    title=$characteristicValue->getValue()|escape:'html'
-                                                    aria=["label"=>$characteristicValue->getValue()|escape:'html']
-                                                }
+                                                    data-toggle="tooltip" data-placement="top" data-boundary="window"
+                                                    title="{$characteristicValue->getValue()|escape:'html'}"
+                                                    aria-label="{$characteristicValue->getValue()|escape:'html'}"
+                                                >
                                                     {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
                                                     {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
                                                     && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
@@ -38,7 +42,7 @@
                                                     {else}
                                                         {badge variant="primary"}{$characteristicValue->getValue()|escape:'html'}{/badge}
                                                     {/if}
-                                                {/link}
+                                                </a>
                                             {/block}
                                         {/if}
                                     {/foreach}

@@ -1,57 +1,57 @@
 
 const Classes = {
-	counter	: 'form-counter'
+    counter	: 'form-counter'
 };
 
 const Data = {
-	up		: 'data-count-up',
-	down	: 'data-count-down'
+    up		: 'data-count-up',
+    down	: 'data-count-down'
 };
 
 
 const proxy = function(fn, ...args) {
-	return function() {
-		fn.call(this, ...args)
-	}
+    return function() {
+        fn.call(this, ...args)
+    }
 };
 
 const updateCount = function(increase = false) {
-	let $input = $(this).parents(`.${Classes.counter}`).find('.form-control');
-	let input = $input.get(0);
-	let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
-	let stepDirection = increase ? 'stepUp' : 'stepDown';
+    let $input = $(this).parents(`.${Classes.counter}`).find('.form-control');
+    let input = $input.get(0);
+    let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
+    let stepDirection = increase ? 'stepUp' : 'stepDown';
 
-	try {
-		input[stepDirection]()
-		$input.trigger('change')
-		if (control != null && control.disabled == false) {
-			control.checked = true
-		}
-	} catch(e) {
-		let step = input.step > 0 ? parseFloat(input.step) : 1;
+    try {
+        input[stepDirection]();
+        if (control != null && control.disabled == false) {
+            control.checked = true
+        }
+        $input.trigger('change')
+    } catch(e) {
+        let step = input.step > 0 ? parseFloat(input.step) : 1;
 
-		let newValue = increase ? parseFloat(input.value) + step : parseFloat(input.value) - step;
+        let newValue = increase ? parseFloat(input.value) + step : parseFloat(input.value) - step;
 
-		if(newValue > parseFloat(input.max)) return;
-		if(newValue < parseFloat(input.min)) return;
+        if(newValue > parseFloat(input.max)) return;
+        if(newValue < parseFloat(input.min)) return;
 
-		input.value = (newValue).toFixed($input.data('decimals'));
-	}
+        input.value = (newValue).toFixed($input.data('decimals'));
+    }
 };
 
 window.initNumberInput = function () {
-	$(`[${Data.up}]`).on('click', proxy(updateCount, true));
-	$(`[${Data.down}]`).on('click', proxy(updateCount));
-	$(`.${Classes.counter} .form-control`).on('blur', function() {
-		let min = parseInt(this.min);
-		let max = parseInt(this.max);
-		let value = parseInt(this.value);
-		let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
+    $(`[${Data.up}]`).on('click', proxy(updateCount, true));
+    $(`[${Data.down}]`).on('click', proxy(updateCount));
+    $(`.${Classes.counter} .form-control`).on('blur', function() {
+        let min = parseInt(this.min);
+        let max = parseInt(this.max);
+        let value = parseInt(this.value);
+        let control = $(this).closest('.custom-control').find('input.custom-control-input').get(0)
 
-		if (control != null && control.disabled == false) {
-			control.checked = true
-		}
-		if(value < min) this.value = min;
-		if(value > max) this.value = max;
-	})
+        if (control != null && control.disabled == false) {
+            control.checked = true
+        }
+        if(value < min) this.value = min;
+        if(value > max) this.value = max;
+    })
 };

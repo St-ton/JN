@@ -190,11 +190,11 @@
         </Section>
         <Section Name="Variationswertdarstellung" Key="productdetails">
             <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
-            <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="popup">
+            <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="details" Editable="false">
                 <Option Value="popup">als Popup anzeigen</Option>
                 <Option Value="details">in den Artikeldetails anzeigen</Option>
             </Setting>
-            <Setting Description="Darstellung der Konfiguratoroptionen" Key="config_layout" Type="select" Value="gallery">
+            <Setting Description="Darstellung der Konfiguratoroptionen" Key="config_layout" Type="select" Value="list" Editable="false">
                 <Option Value="list">als kompakte Liste</Option>
                 <Option Value="gallery">als Galerie</Option>
             </Setting>

@@ -21,9 +21,14 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {if $Artikel->bHasKonfig}
+                                {$basketColWidth = 12}
+                            {else}
+                                {$basketColWidth = 6}
+                            {/if}
                             {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
-                                    {col cols=12 sm=6}
+                                    {col cols=12 sm=$basketColWidth}
                                         {inputgroup class="form-counter"}
                                             {input type="number"
                                                 step=".01"
@@ -38,14 +43,11 @@
                                             {/inputgroupappend}
                                         {/inputgroup}
                                     {/col}
-                                    {if isset($kEditKonfig)}
-                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
-                                    {/if}
                                     {input type="hidden" id="quantity" class="quantity" name="anzahl" value="1"}
                                 {/block}
                             {else}
                             {block name='productdetails-basket-quantity'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
                                         {inputgroupprepend}
                                             {button variant=""
@@ -61,7 +63,7 @@
                                             step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
-                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}"
                                             data=[
                                                 "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
                                                 "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
@@ -84,7 +86,7 @@
                             {/block}
                             {/if}
                             {block name='productdetails-basket-add-to-cart'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {button aria=["label"=>"{lang key='addToCart'}"]
                                         block=true name="inWarenkorb"
                                         type="submit"
@@ -105,6 +107,9 @@
                                             <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
                                         </svg>
                                     {/button}
+                                    {if isset($kEditKonfig)}
+                                        <input type="hidden" name="kEditKonfig" value="{$kEditKonfig}"/>
+                                    {/if}
                                 {/col}
                             {/block}
                         {/row}

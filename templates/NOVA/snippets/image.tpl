@@ -26,8 +26,8 @@
         {$klein     = $item->getImageWidth('sm')}
         {$normal    = $item->getImageWidth('md')}
         {$gross     = $item->getImageWidth('lg')}
-        {$width     = $item->getImageWidth('lg')}
-        {$height    = $item->getImageHeight('lg')}
+        {$width     = $width|default:$item->getImageWidth('lg')}
+        {$height    = $height|default:$item->getImageHeight('lg')}
 
         {if $imageType === \JTL\Media\Image::TYPE_CHARACTERISTIC_VALUE}
             {$mini   = $mini|default:$Einstellungen.bilder.bilder_merkmalwert_mini_breite}

@@ -122,7 +122,7 @@
             this.registerBulkPrices($wrapper);
             this.registerAccordion();
             // this.registerImageSwitch($wrapper);
-            //this.registerArticleOverlay($wrapper);
+            this.registerArticleOverlay($wrapper);
             this.registerImageHover($wrapper);
             this.registerFinish($wrapper);
             window.initNumberInput();
@@ -145,6 +145,24 @@
                         });
                 }, 400);
             });
+        },
+
+        registerArticleOverlay: function($wrapper) {
+            var that         = this;
+
+            $('.configpreview', $wrapper)
+                .each(function(i, item) {
+                    let $item   = $(item);
+                    let wrapper = that.options.modal.wrapper_modal + '_modal';
+
+                    $item.on('click', function (event) {
+                        event.preventDefault();
+                        that.modalArticleDetail(this, wrapper);
+                    });
+                });
+            $wrapper.hover(null, function() {
+                $(this).removeClass('active');
+            })
         },
 
         registerGallery: function(wrapper) {
@@ -230,7 +248,7 @@
 
             slickinit();
 
-            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
+            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.slice(1)) === -1) {
                 addClickListener();
 
                 $(document).on('keyup', e => {
@@ -296,11 +314,6 @@
                 $('#cfg-container .cfg-options').stop().animate({
                     scrollTop: elOffset
                 });
-            });
-            $(document).on('scroll', function (e) {
-                let headerHeight = $('#jtl-nav-wrapper').outerHeight() + 10;
-                $('.cfg-position-details.cfg-layout-list #product-configuration-sidebar, ' +
-                    '.cfg-position-details.cfg-layout-list .cfg-group .cfg-group-info').css('top', headerHeight + 'px');
             });
         },
 
@@ -682,8 +695,7 @@
 
         loadModalArticle: function(url, wrapper, done, fail) {
             var that       = this,
-                $wrapper   = this.getWrapper(wrapper),
-                id         = wrapper.substring(1),
+                id         = wrapper.slice(1),
                 $modalBody = $('.modal-body', this.modalView);
 
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
@@ -1106,37 +1118,32 @@
                             badgeInfoDanger = 'alert-info';
                         if (data.response.invalidGroups && data.response.invalidGroups.includes($(this).data('id'))) {
                             iconChecked.addClass('d-none');
-                            // iconChecked.next().removeClass('d-none');
-                            if ($(this).find('.js-cfg-group').hasClass('visited')) {
+                            if ($(this).hasClass('visited')) {
                                 badgeInfoDanger = 'alert-danger';
                             }
                             $(this).find('.js-group-badge-checked')
                                 .removeClass('alert-success alert-info')
                                 .addClass(badgeInfoDanger);
-                            // $(this).find('.js-cfg-next').prop('disabled', true);
                         } else {
-                            // if ($(this).hasClass('visited')) {
-                                iconChecked.removeClass('d-none');
-                                // iconChecked.next().addClass('d-none');
-                            // }
+                            iconChecked.removeClass('d-none');
                             $(this).find('.js-group-badge-checked')
                                 .addClass('alert-success')
                                 .removeClass('alert-danger alert-info');
-                            // $(this).find('.js-cfg-next').prop('disabled', false);
                         }
                     });
                     $('.js-cfg-group-error').addClass('d-none').html('');
                     $.each(data.response.errorMessages, function (i, item) {
                         $('.js-cfg-group-error[data-id="' + item.group + '"]').removeClass('d-none').html(item.message);
                     });
+                    let $summaryFinish = $('#cfg-tab-summary-finish');
                     if (data.response.valid) {
                         $('.js-cfg-validate').prop('disabled', false);
-                        $('#cfg-tab-summary-finish').children().removeClass('disabled');
-                        $('#cfg-tab-summary-finish').removeClass('disabled');
+                        $summaryFinish.children().removeClass('disabled');
+                        $summaryFinish.removeClass('disabled');
                     } else {
                         $('.js-cfg-validate').prop('disabled', true);
-                        $('#cfg-tab-summary-finish').children().addClass('disabled');
-                        $('#cfg-tab-summary-finish').addClass('disabled');
+                        $summaryFinish.children().addClass('disabled');
+                        $summaryFinish.addClass('disabled');
                     }
                     $.evo.extended().stopSpinner();
                     if (error) {
@@ -1156,7 +1163,7 @@
                     that.setStockInformation(result.cEstimatedDelivery);
 
                     $('#content .summary').html(result.cTemplate);
-
+                    $.evo.tooltips();
                     $.evo.extended()
                         .trigger('priceChanged', result);
                 });
@@ -1164,29 +1171,9 @@
         },
 
         initConfigListeners: function () {
-            let that   = this;
             $('.js-cfg-group').on('click', function () {
-                let self = $(this);
-                setTimeout(function() {
-                    $(this).closest('.tab-content').animate({
-                        scrollTop: self.offset().top
-                    }, 500);
-                }, 200);
+                $(this).addClass('visited');
             });
-            // $('#cfg-accordion .js-cfg-group-collapse').on('shown.bs.collapse', function () {
-            //     if (!$(this).find('select').is(":focus")) {
-            //         $(this).prev()[0].scrollIntoView({
-            //             behavior: 'smooth',
-            //             block: 'start'
-            //         });
-            //     }
-            // });
-            // $('.js-cfg-next').on('click', function () {
-            //     $('button[data-target="' +  $(this).data('target') + '"]')
-            //         .prop('disabled', false)
-            //         .closest('.js-cfg-group').addClass('visited').tooltip('disable');
-            //     that.configurator();
-            // });
             $('#cfg-tab-summary-finish').on('click', function () {
                 if (!$(this).hasClass('disabled')) {
                     $('#cfg-modal-tabs').find('.nav-link').removeClass('active');
@@ -1587,6 +1574,66 @@
                     }
                 });
             }
+        },
+
+        modalArticleDetail: function(item, wrapper)
+        {
+            let $item = $(item);
+            let title = $item.data('title');
+            let url   = $item.data('src');
+
+            if (typeof this.modalView === 'undefined' || this.modalView === null) {
+                this.modalView = $(
+                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" tabindex="-1" >' +
+                    '   <div class="modal-dialog modal-lg">' +
+                    '       <div class="modal-content">' +
+                    '           <div class="modal-header">' +
+                    '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
+                    '               <h4 class="modal-title">' + title + '</h4>' +
+                    '           </div>' +
+                    '           <div class="modal-body">' +
+                    '               <div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
+                    '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>' +
+                    '               </div>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</div>');
+                this.modalView
+                    .on('hidden.bs.modal', () => {
+                        $('.modal-body', this.modalView)
+                            .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px" />');
+                        $('.modal-title', this.modalView).html('');
+                        this.modalView
+                            .off('shown.bs.modal');
+                        this.modalShown = false;
+                    });
+            } else {
+                $('.modal-title', this.modalView).html(title);
+                $('.modal-body', this.modalView)
+                    .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
+                        '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div></div>');
+            }
+
+            this.modalView
+                .on('shown.bs.modal', () => {
+                    this.modalShown = true;
+                    this.loadModalArticle(url, wrapper,
+                        function() {
+                            // no functionality needed in quickview
+                            // var article = new ArticleClass();
+                            // article.register(wrapper);
+                            $.evo.extended().stopSpinner();
+                            $('[data-toggle="popover"]', wrapper).popover({ html: true });
+                            $('.product-image', wrapper).css('cursor', 'default');
+                        },
+                        function() {
+                            $.evo.extended().stopSpinner();
+                            $.evo.error('Error loading ' + params.url);
+                        }
+                    );
+                })
+                .modal('show');
         },
 
         variationPrice: function($item, animation, wrapper) {

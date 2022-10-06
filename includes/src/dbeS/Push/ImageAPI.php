@@ -49,7 +49,7 @@ final class ImageAPI extends AbstractPush
             'id'         => $this->imageID,
             'size'       => $this->getSizeByID(Request::verifyGPCDataInt('s')),
             'number'     => $imageNo,
-            'ext'        => \pathinfo($path)['extension'],
+            'ext'        => \pathinfo($path, \PATHINFO_EXTENSION),
             'sourcePath' => $path
         ]);
         $names = $instance->getImageNames($req);

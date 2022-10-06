@@ -55,16 +55,16 @@ class SyntaxChecker
         } else {
             $model->setName($post['cName']);
         }
-        $pathinfo           = \pathinfo(\PFAD_ROOT . \PFAD_EXPORT . $post['cDateiname']);
-        $extensionWhitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
-        $realpath           = \realpath($pathinfo['dirname']);
+        $info      = \pathinfo(\PFAD_ROOT . \PFAD_EXPORT . $post['cDateiname']);
+        $whitelist = \array_map('\strtolower', \explode(',', \EXPORTFORMAT_ALLOWED_FORMATS));
+        $realpath  = \realpath($info['dirname']);
         if (empty($post['cDateiname'])) {
             $validation['cDateiname'] = 1;
         } elseif (!\str_contains($post['cDateiname'], '.')) { // Dateiendung fehlt
             $validation['cDateiname'] = 2;
         } elseif ($realpath === false || !\str_contains($realpath, \realpath(\PFAD_ROOT))) {
             $validation['cDateiname'] = 3;
-        } elseif (!\in_array(\mb_convert_case($pathinfo['extension'], \MB_CASE_LOWER), $extensionWhitelist, true)) {
+        } elseif (!\in_array(\mb_convert_case($info['extension'] ?? '', \MB_CASE_LOWER), $whitelist, true)) {
             $validation['cDateiname'] = 4;
         } else {
             $model->setFilename($post['cDateiname']);

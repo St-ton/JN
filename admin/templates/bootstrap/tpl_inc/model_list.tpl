@@ -1,4 +1,5 @@
 {$select = $select|default:true}
+{$create = $create|default:false}
 {$edit = $edit|default:true}
 {$delete = $delete|default:false}
 {$save = $save|default:false}
@@ -129,6 +130,13 @@
                     <div class="col-sm-6 col-xl-auto">
                         <button name="model-delete" type="submit" value="1" class="btn btn-danger btn-block">
                             <i class="fas fa-trash-alt"></i> {__('delete')}
+                        </button>
+                    </div>
+                {/if}
+                {if $create === true}
+                    <div class="col-sm-6 col-xl-auto">
+                        <button name="model-create" type="submit" value="1" class="btn btn-default btn-block">
+                            <i class="fas fa-share"></i> {__('create')}
                         </button>
                     </div>
                 {/if}

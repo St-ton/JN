@@ -22,7 +22,7 @@ abstract class GenericModelController extends AbstractBackendController
     /**
      * @var string
      */
-    protected string $adminBaseFile;
+    protected string $adminBaseFile = '';
 
     /**
      * @var string
@@ -45,6 +45,11 @@ abstract class GenericModelController extends AbstractBackendController
     protected string $tab = 'overview';
 
     /**
+     * @var DataModelInterface|null
+     */
+    protected ?DataModelInterface $child = null;
+
+    /**
      * @param string $template
      * @return ResponseInterface
      */
@@ -65,6 +70,7 @@ abstract class GenericModelController extends AbstractBackendController
         $delete       = $valid && Request::postInt('model-delete') === 1 && \count($modelIDs) > 0;
         $disable      = $valid && Request::postInt('model-disable') === 1 && \count($modelIDs) > 0;
         $enable       = $valid && Request::postInt('model-enable') === 1 && \count($modelIDs) > 0;
+        $create       = Request::postInt('model-create') === 1;
         $saveSettings = Request::postVar('a') === 'saveSettings';
         if ($cancel) {
             return $this->modelPRG();
@@ -77,6 +83,12 @@ abstract class GenericModelController extends AbstractBackendController
         }
         if ($itemID > 0) {
             $this->item = $this->modelClass::load(['id' => $itemID], $this->db);
+            foreach ($this->item->getAttributes() as $attribute) {
+                if (\str_contains($attribute->getDataType(), '\\')) {
+                    $className   = $attribute->getDataType();
+                    $this->child = new $className($this->getDB());
+                }
+            }
         }
         unset($_SESSION['step'], $_SESSION['continue']);
 
@@ -92,6 +104,9 @@ abstract class GenericModelController extends AbstractBackendController
             $this->disable($modelIDs);
         } elseif ($enable === true) {
             $this->enable($modelIDs);
+        } elseif ($create === true) {
+            $this->item = new $this->modelClass($this->db);
+            $this->step = 'detail';
         }
         $this->setMessages();
 
@@ -103,11 +118,20 @@ abstract class GenericModelController extends AbstractBackendController
         return $this->smarty->assign('step', $this->step)
             ->assign('item', $this->item)
             ->assign('models', $models->forPage($pagination->getPage() + 1, $pagination->getItemsPerPage()))
-            ->assign('action', $this->baseURL . '/' . $this->adminBaseFile)
+            ->assign('action', $this->getAction())
             ->assign('pagination', $pagination)
+            ->assign('childModel', $this->child)
             ->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER))
             ->assign('tab', $this->tab)
             ->getResponse($template);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAction(): string
+    {
+        return $this->baseURL . '/' . $this->adminBaseFile;
     }
 
     /**

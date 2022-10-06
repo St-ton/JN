@@ -130,6 +130,10 @@ class Config implements ConfigInterface
      */
     public function setBaseURL(string $baseURL): void
     {
+        $path = \parse_url($baseURL, \PHP_URL_PATH);
+        if ($path !== null && $path !== '/') {
+            $baseURL = \rtrim(\str_replace($path, '', $baseURL), '/') . '/';
+        }
         $this->baseURL = $baseURL;
     }
 }

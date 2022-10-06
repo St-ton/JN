@@ -198,7 +198,7 @@ class NetSyncHandler
                     \str_replace([\PFAD_DOWNLOADS_PREVIEW, \PFAD_DOWNLOADS], '', $pathName),
                     $pathinfo['filename'],
                     $pathinfo['dirname'],
-                    $pathinfo['extension'],
+                    $pathinfo['extension'] ?? '',
                     \filemtime($pathName),
                     \filesize($pathName)
                 );

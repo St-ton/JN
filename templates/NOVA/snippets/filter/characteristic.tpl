@@ -86,7 +86,6 @@
                             {image lazy=true  webp=true
                                 src=$attributeImageURL
                                 alt=$attributeValue->getValue()|escape:'html'
-                                title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                 class="vmiddle filter-img"
                             }
                             <span class="d-none filter-item-value">
@@ -106,7 +105,6 @@
                                     {image lazy=true webp=true
                                         src=$attributeImageURL
                                         alt=$attributeValue->getValue()|escape:'html'
-                                        title="{if $showFilterCount}{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}{else}{$attributeValue->getValue()|escape:'html'}{/if}"
                                         class="vmiddle filter-img"
                                     }
                                 {/if}

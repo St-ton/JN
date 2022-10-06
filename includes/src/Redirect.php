@@ -284,12 +284,12 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
+     * @param string $url
      * @return bool
      */
-    public function isValid(string $cUrl): bool
+    public function isValid(string $url): bool
     {
-        $pathInfo          = \pathinfo($cUrl);
+        $extension         = \pathinfo($url, \PATHINFO_EXTENSION);
         $invalidExtensions = [
             'jpg',
             'gif',
@@ -299,8 +299,8 @@ class Redirect
             'txt',
             'png'
         ];
-        if (isset($pathInfo['extension']) && \mb_strlen($pathInfo['extension']) > 0) {
-            $extension = \mb_convert_case($pathInfo['extension'], \MB_CASE_LOWER);
+        if (\mb_strlen($extension) > 0) {
+            $extension = \mb_convert_case($extension, \MB_CASE_LOWER);
             if (\in_array($extension, $invalidExtensions, true)) {
                 return false;
             }

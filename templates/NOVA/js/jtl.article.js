@@ -152,10 +152,8 @@
 
             $('.configpreview', $wrapper)
                 .each(function(i, item) {
-                    let $item      = $(item);
-                    let formID     = $item.data('target');
-                    formID = 'formid';
-                    let wrapper    = that.options.modal.wrapper_modal + '_' + formID;
+                    let $item   = $(item);
+                    let wrapper = that.options.modal.wrapper_modal + '_modal';
 
                     $item.on('click', function (event) {
                         event.preventDefault();
@@ -250,7 +248,7 @@
 
             slickinit();
 
-            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
+            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.slice(1)) === -1) {
                 addClickListener();
 
                 $(document).on('keyup', e => {
@@ -702,8 +700,7 @@
 
         loadModalArticle: function(url, wrapper, done, fail) {
             var that       = this,
-                $wrapper   = this.getWrapper(wrapper),
-                id         = wrapper.substring(1),
+                id         = wrapper.slice(1),
                 $modalBody = $('.modal-body', this.modalView);
 
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
@@ -1600,7 +1597,7 @@
                     '               <h4 class="modal-title">' + title + '</h4>' +
                     '           </div>' +
                     '           <div class="modal-body">' +
-                    '               <div id="' + wrapper.substring(1) + '" style="min-height:100px">' +
+                    '               <div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
                     '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>' +
                     '               </div>' +
                     '           </div>' +
@@ -1610,7 +1607,7 @@
                 this.modalView
                     .on('hidden.bs.modal', () => {
                         $('.modal-body', this.modalView)
-                            .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
+                            .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px" />');
                         $('.modal-title', this.modalView).html('');
                         this.modalView
                             .off('shown.bs.modal');
@@ -1619,7 +1616,7 @@
             } else {
                 $('.modal-title', this.modalView).html(title);
                 $('.modal-body', this.modalView)
-                    .html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' +
+                    .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
                         '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div></div>');
             }
 

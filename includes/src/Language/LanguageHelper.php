@@ -1077,14 +1077,19 @@ class LanguageHelper
         } catch (SpecialPageNotFoundException) {
             $specialPage = null;
         }
-        $page       = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
-        $languages  = Frontend::getLanguages();
-        $currencies = Frontend::getCurrencies();
+        $page          = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
+        $languages     = Frontend::getLanguages();
+        $currencies    = Frontend::getCurrencies();
+        $currentLangID = Shop::getLanguageID();
+        $currentLocale = null;
         if (\count($languages) > 1) {
             foreach ($languages as $lang) {
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
+                if ($currentLangID === $langID) {
+                    $currentLocale = $lang->getIso639();
+                }
                 if ($state->currentRouteName !== null && $state->routeData !== null) {
                     $url = Shop::getRouter()->getURLByType(
                         $state->currentRouteName,
@@ -1152,12 +1157,22 @@ class LanguageHelper
         }
         if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangID       = Shop::getLanguageID();
             foreach ($currencies as $currency) {
                 $code       = $currency->getCode();
                 $additional = $currency->getID() === $currentCurrencyCode
                     ? []
                     : ['currency' => $code];
+                if ($currentLocale !== null && $state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $currentLocale, 'currency' => $code]),
+                        true,
+                        true
+                    );
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
                 if (isset($AktuellerArtikel)) {
                     $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
                     $url = $AktuellerArtikel->getURL($currentLangID);

@@ -21,9 +21,14 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {if $Artikel->bHasKonfig}
+                                {$basketColWidth = 12}
+                            {else}
+                                {$basketColWidth = 6}
+                            {/if}
                             {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
-                                    {col cols=12 sm=6}
+                                    {col cols=12 sm=$basketColWidth}
                                         {inputgroup class="form-counter"}
                                             {input type="number"
                                                 step=".01"
@@ -42,7 +47,7 @@
                                 {/block}
                             {else}
                             {block name='productdetails-basket-quantity'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {inputgroup id="quantity-grp" class="form-counter choose_quantity"}
                                         {inputgroupprepend}
                                             {button variant=""
@@ -81,7 +86,7 @@
                             {/block}
                             {/if}
                             {block name='productdetails-basket-add-to-cart'}
-                                {col cols=12 sm=6}
+                                {col cols=12 sm=$basketColWidth}
                                     {button aria=["label"=>"{lang key='addToCart'}"]
                                         block=true name="inWarenkorb"
                                         type="submit"

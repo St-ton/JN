@@ -1625,8 +1625,9 @@
                     this.modalShown = true;
                     this.loadModalArticle(url, wrapper,
                         function() {
-                            var article = new ArticleClass();
-                            article.register(wrapper);
+                            // no functionality needed in quickview
+                            // var article = new ArticleClass();
+                            // article.register(wrapper);
                             $.evo.extended().stopSpinner();
                             $('[data-toggle="popover"]', wrapper).popover({ html: true });
                             $('.product-image', wrapper).css('cursor', 'default');

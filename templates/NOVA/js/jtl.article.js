@@ -152,14 +152,12 @@
 
             $('.configpreview', $wrapper)
                 .each(function(i, item) {
-                    var $item      = $(item),
-                        formID     = $item.data('target'),
-                        wrapper    = that.options.modal.wrapper_modal + '_' + formID,
-                        srcWrapper = that.options.modal.wrapper + '_' + formID;
+                    let $item   = $(item);
+                    let wrapper = that.options.modal.wrapper_modal + '_modal';
 
                     $item.on('click', function (event) {
                         event.preventDefault();
-                        that.modalArticleDetail(this, wrapper, srcWrapper);
+                        that.modalArticleDetail(this, wrapper);
                     });
                 });
             $wrapper.hover(null, function() {
@@ -250,7 +248,7 @@
 
             slickinit();
 
-            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.substr(1)) === -1) {
+            if (wrapper[0].id.indexOf(this.options.modal.wrapper_modal.slice(1)) === -1) {
                 addClickListener();
 
                 $(document).on('keyup', e => {
@@ -702,8 +700,7 @@
 
         loadModalArticle: function(url, wrapper, done, fail) {
             var that       = this,
-                $wrapper   = this.getWrapper(wrapper),
-                id         = wrapper.substring(1),
+                id         = wrapper.slice(1),
                 $modalBody = $('.modal-body', this.modalView);
 
             $.ajax(url, {data: {'isAjax':1, 'quickView':1}})
@@ -1584,11 +1581,11 @@
             }
         },
 
-        modalArticleDetail: function(item, wrapper, srcWrapper) {
-            var that     = this,
-                title    = $(srcWrapper).find('h4.title').text(),
-                image    = $(srcWrapper).find('.image-content').html(),
-                url      = $(item).data('src');
+        modalArticleDetail: function(item, wrapper)
+        {
+            let $item = $(item);
+            let title = $item.data('title');
+            let url   = $item.data('src');
 
             if (typeof this.modalView === 'undefined' || this.modalView === null) {
                 this.modalView = $(
@@ -1599,31 +1596,40 @@
                     '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
                     '               <h4 class="modal-title">' + title + '</h4>' +
                     '           </div>' +
-                    '           <div class="modal-body"><div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div></div>' +
+                    '           <div class="modal-body">' +
+                    '               <div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
+                    '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div>' +
+                    '               </div>' +
+                    '           </div>' +
                     '       </div>' +
                     '   </div>' +
                     '</div>');
                 this.modalView
-                    .on('hidden.bs.modal', function() {
-                        $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
-                        $('.modal-title', that.modalView).html('');
-                        that.modalView
+                    .on('hidden.bs.modal', () => {
+                        $('.modal-body', this.modalView)
+                            .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px" />');
+                        $('.modal-title', this.modalView).html('');
+                        this.modalView
                             .off('shown.bs.modal');
-                        that.modalShown = false;
+                        this.modalShown = false;
                     });
             } else {
-                $('.modal-title', that.modalView).html(title);
-                $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
+                $('.modal-title', this.modalView).html(title);
+                $('.modal-body', this.modalView)
+                    .html('<div id="' + wrapper.slice(1) + '" style="min-height:100px">' +
+                        '<div class="jtl-spinner"><i class="fa fa-spinner fa-pulse"></i></div></div>');
             }
 
             this.modalView
-                .on('shown.bs.modal', function() {
-                    that.modalShown = true;
-                    that.loadModalArticle(url, wrapper,
+                .on('shown.bs.modal', () => {
+                    this.modalShown = true;
+                    this.loadModalArticle(url, wrapper,
                         function() {
                             var article = new ArticleClass();
                             article.register(wrapper);
                             $.evo.extended().stopSpinner();
+                            $('[data-toggle="popover"]', wrapper).popover({ html: true });
+                            $('.product-image', wrapper).css('cursor', 'default');
                         },
                         function() {
                             $.evo.extended().stopSpinner();

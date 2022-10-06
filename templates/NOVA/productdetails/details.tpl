@@ -15,7 +15,7 @@
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form' inContainer=false}
         {container class="{if $Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive}container-plus-sidebar{/if}"}
-            {form id="buy_form" action=$Artikel->cURLFull class="jtl-validate"}
+            {form id="buy_form{if !empty($smarty.get.quickView)}-quickview{/if}" action=$Artikel->cURLFull class="jtl-validate"}
                 {row id="product-offer" class="product-detail"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 lg=6 class="product-gallery"}
@@ -43,6 +43,7 @@
                                             <meta itemprop="worstRating" content="1"/>
                                             <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
                                             {block name='productdetails-details-include-rating'}
+                                                {if empty($smarty.get.quickView)}
                                                 {link href="{$Artikel->cURLFull}#tab-votes"
                                                     id="jump-to-votes-tab"
                                                     aria=["label"=>{lang key='Votes'}]
@@ -50,6 +51,10 @@
                                                     {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                                     ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
                                                 {/link}
+                                                {else}
+                                                    {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
+                                                    ({$Artikel->Bewertungen->oBewertungGesamt->nAnzahl} {lang key='rating'})
+                                                {/if}
                                             {/block}
                                         </div>
                                     {/block}
@@ -102,7 +107,11 @@
                                                 {block name='productdetails-details-info-category'}
                                                     <li class="product-category word-break">
                                                         <strong>{lang key='category'}: </strong>
-                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category">{$Brotnavi[$cidx]->getName()}</a>
+                                                        <a href="{$Brotnavi[$cidx]->getURLFull()}" itemprop="category"
+                                                           {if !empty($smarty.get.quickView)}target="_blank"{/if}
+                                                        >
+                                                            {$Brotnavi[$cidx]->getName()}
+                                                        </a>
                                                     </li>
                                                 {/block}
                                             {/if}
@@ -220,7 +229,9 @@
                                                 {/col}
                                                 {col class="question-on-item col-auto"}
                                                     {block name='productdetails-details-question-on-item'}
-                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                                                        {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'
+                                                            && empty($smarty.get.quickView)
+                                                        }
                                                             <button type="button" id="z{$Artikel->kArtikel}"
                                                                     class="btn btn-link question"
                                                                     title="{lang key='productQuestion' section='productDetails'}"
@@ -234,14 +245,18 @@
                                                 {/col}
                                             {/row}
                                             {block name='snippets-stock-note-include-warehouse'}
+                                                {if empty($smarty.get.quickView)}
                                                 {include file='productdetails/warehouse.tpl'}
+                                                {/if}
                                             {/block}
                                         {/col}
                                     {/block}
                                 {/row}
                                 {*UPLOADS product-specific files, e.g. for customization*}
                                 {block name='productdetails-details-include-uploads'}
+                                    {if empty($smarty.get.quickView)}
                                     {include file="snippets/uploads.tpl" tplscope='product'}
+                                    {/if}
                                 {/block}
                                 {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                                 {if $Artikel->bHasKonfig}

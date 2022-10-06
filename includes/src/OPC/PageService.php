@@ -86,6 +86,10 @@ class PageService
      */
     public function renderMountPoint(array $params): string
     {
+        if (Request::verifyGPCDataInt('quickView')) {
+            return '';
+        }
+
         $id          = $params['id'];
         $title       = $params['title'] ?? $id;
         $inContainer = $params['inContainer'] ?? true;

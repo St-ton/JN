@@ -15,8 +15,6 @@
                     </h3>
                 {/block}
                 {block name='productdetails-config-options-collapse'}
-
-
                     {block name='productdetails-config-options-collapse-top'}
                         <div class="cfg-group-info sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}

@@ -5,7 +5,7 @@
     "type": "project",
     "homepage": "https://www.jtl-software.de",
     "require": {
-        "php-64bit": ">=8.0",
+        "php-64bit": ">=8.1",
         "ext-bcmath": "*",
         "ext-curl": "*",
         "ext-dom": "*",

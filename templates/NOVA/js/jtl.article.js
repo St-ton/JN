@@ -1629,6 +1629,7 @@
                             article.register(wrapper);
                             $.evo.extended().stopSpinner();
                             $('[data-toggle="popover"]', wrapper).popover({ html: true });
+                            $('.product-image', wrapper).css('cursor', 'default');
                         },
                         function() {
                             $.evo.extended().stopSpinner();

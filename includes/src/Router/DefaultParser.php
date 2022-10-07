@@ -36,7 +36,7 @@ class DefaultParser
         $right = [];
         foreach ($hierarchy as $item) {
             $seo = $this->db->getSingleObject(
-                'SELECT *
+                'SELECT tseo.cSeo AS slug, tkategorie.lft, tkategorie.rght 
                     FROM tseo
                     JOIN tkategorie
                         ON tseo.cKey = :keyname
@@ -239,14 +239,8 @@ class DefaultParser
             if ($i <= 0 || \mb_strlen($seoString) === 0) {
                 continue;
             }
-            $seoData = $this->db->select(
-                'tseo',
-                'cKey',
-                'kMerkmalWert',
-                'cSeo',
-                $seoString
-            );
-            if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+            $seoData = $this->db->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $seoString);
+            if ($seoData !== null && \strcasecmp($seoData->cSeo, $seoString) === 0) {
                 // haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
                 $_GET['mf'][]                           = (int)$seoData->kKey;
                 $this->state->characteristicFilterIDs[] = (int)$seoData->kKey;
@@ -377,7 +371,7 @@ class DefaultParser
         } elseif (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($slug, '/')) {
             $valid = $this->validateCategoryHierarchy(\explode('/', $slug));
             if ($valid !== null) {
-                $slug = $valid->cSeo;
+                $slug = $valid->slug;
             }
         } else {
             $slug = $categories[0];
@@ -385,7 +379,7 @@ class DefaultParser
         // category filter
         if (\mb_strlen($categorySeo) > 0) {
             $seoData = $this->db->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
-            if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
+            if ($seoData !== null && \strcasecmp($seoData->cSeo, $categorySeo) === 0) {
                 $this->params['kKategorieFilter'] = (int)$seoData->kKey;
                 $this->state->categoryFilterID    = (int)$seoData->kKey;
             } else {
@@ -407,14 +401,8 @@ class DefaultParser
             if ($i === 0 || \mb_strlen($seoString) === 0) {
                 continue;
             }
-            $seoData = $this->db->select(
-                'tseo',
-                'cKey',
-                'kKategorie',
-                'cSeo',
-                $seoString
-            );
-            if (isset($seoData->kKey) && \strcasecmp($seoData->cSeo, $seoString) === 0) {
+            $seoData = $this->db->select('tseo', 'cKey', 'kKategorie', 'cSeo', $seoString);
+            if ($seoData !== null && \strcasecmp($seoData->cSeo, $seoString) === 0) {
                 $_GET['kf'][] = (int)$seoData->kKey;
             } else {
                 $this->params['bSEOMerkmalNotFound'] = true;

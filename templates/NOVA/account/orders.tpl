@@ -5,10 +5,11 @@
     {block name='account-orders-content'}
         {if $Bestellungen|count > 0}
             {block name='account-orders-orders'}
+                {get_static_route id='jtl.php' assign='ordersURL'}
                 {foreach $orderPagination->getPageItems() as $order}
                     {card no-body=true class='account-orders-item'}
                         {cardheader}
-                            {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
+                            {link href="{$ordersURL}?bestellung={$order->kBestellung}"
                                 title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
                                 data=["toggle" => "tooltip", "placement" => "bottom"]
                             }

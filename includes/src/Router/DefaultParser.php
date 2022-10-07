@@ -36,7 +36,7 @@ class DefaultParser
         $right = [];
         foreach ($hierarchy as $item) {
             $seo = $this->db->getSingleObject(
-                'SELECT *
+                'SELECT tseo.cSeo AS slug, tkategorie.lft, tkategorie.rght 
                     FROM tseo
                     JOIN tkategorie
                         ON tseo.cKey = :keyname
@@ -377,7 +377,7 @@ class DefaultParser
         } elseif (\CATEGORIES_SLUG_HIERARCHICALLY === true && \str_contains($slug, '/')) {
             $valid = $this->validateCategoryHierarchy(\explode('/', $slug));
             if ($valid !== null) {
-                $slug = $valid->cSeo;
+                $slug = $valid->slug;
             }
         } else {
             $slug = $categories[0];

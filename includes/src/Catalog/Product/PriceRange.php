@@ -35,6 +35,11 @@ class PriceRange
     private $discount = 0;
 
     /**
+     * @var array
+     */
+    private static $calculatedRange = [];
+
+    /**
      * @var float
      */
     public $minNettoPrice;
@@ -89,7 +94,8 @@ class PriceRange
         $this->customerID      = $customerID;
 
         $productData = $db->getSingleObject(
-            'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
+            'SELECT tartikel.kArtikel, tartikel.nIstVater, tartikel.kSteuerklasse, tartikel.fLagerbestand,
+                tartikel.fStandardpreisNetto fNettoPreis,
                 tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
                 FROM tartikel
                 LEFT JOIN tartikelkonfiggruppe
@@ -109,7 +115,31 @@ class PriceRange
             if ($productData->g1 !== null && $productData->g1 === $productData->g2) {
                 $this->productData->kKonfiggruppe = (int)$productData->g1;
             }
-            $this->loadPriceRange($db);
+            if ((int)$productData->nIstVater > 0 || $this->productData->kKonfiggruppe > 0) {
+                $key = $this->productData->kArtikel . ':' . $this->customerGroupID . $this->customerID;
+                if (isset(self::$calculatedRange[$key])) {
+                    $calculated           = self::$calculatedRange[$key];
+                    $this->minNettoPrice  = $calculated->minNettoPrice;
+                    $this->maxNettoPrice  = $calculated->maxNettoPrice;
+                    $this->minBruttoPrice = $calculated->minBruttoPrice;
+                    $this->maxBruttoPrice = $calculated->maxBruttoPrice;
+                } else {
+                    $this->loadPriceRange($db);
+                    self::$calculatedRange[$key] = (object)[
+                        'minNettoPrice' => $this->minNettoPrice,
+                        'maxNettoPrice' => $this->maxNettoPrice,
+                        'minBruttoPrice' => $this->minBruttoPrice,
+                        'maxBruttoPrice' => $this->maxBruttoPrice,
+                    ];
+                }
+            } else {
+                $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
+
+                $this->minNettoPrice  = $this->productData->fNettoPreis;
+                $this->maxNettoPrice  = $this->productData->fNettoPreis;
+                $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust, 4);
+                $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
+            }
         }
     }
 

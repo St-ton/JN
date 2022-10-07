@@ -3015,6 +3015,7 @@ class Artikel implements RoutableInterface
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = $this->getPrecision();
+        $prodVkNetto = $this->gibPreis(1, [], $customerGroupID, '', false);
         foreach ($varDetailPrices as $varDetailPrice) {
             $varDetailPrice->kArtikel         = (int)$varDetailPrice->kArtikel;
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
@@ -3028,7 +3029,6 @@ class Artikel implements RoutableInterface
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
-            $prodVkNetto            = $this->gibPreis(1, [], $customerGroupID, '', false);
             $varVKNetto             = $tmpProduct->gibPreis(1, [], $customerGroupID, '', false);
             $variationPrice         = $this->oVariationDetailPreis_arr[$idx] ?? new stdClass();
             $variationPrice->Preise = clone $tmpProduct->Preise;
@@ -4872,14 +4872,14 @@ class Artikel implements RoutableInterface
         $minDeliveryDays = $favShipping->nMinLiefertage ?? 2;
         $maxDeliveryDays = $favShipping->nMaxLiefertage ?? 3;
         // get all pieces (even invisible) to calc delivery
-        $nAllPieces = $this->getDB()->getAffectedRows(
-            'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                FROM tartikel
-                JOIN tstueckliste
-                    ON tstueckliste.kArtikel = tartikel.kArtikel
-                    AND tstueckliste.kStueckliste = :plid',
+        $nAllPieces = empty($this->kStueckliste) ? 0 : (int)($this->getDB()->getSingleObject(
+            'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+                FROM tstueckliste
+                JOIN tartikel
+                     ON tstueckliste.kArtikel = tartikel.kArtikel
+                WHERE tstueckliste.kStueckliste = :plid',
             ['plid' => $this->kStueckliste]
-        );
+        )->nAnzahl ?? 0);
         // check if this is a set product - if so, calculate the delivery time from the set of products
         // we don't have loaded the list of pieces yet, do so!
         $partList = null;
@@ -4893,17 +4893,14 @@ class Artikel implements RoutableInterface
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
-            $piecesNotInShop = $this->getDB()->getSingleObject(
+            $piecesNotInShop = (int)($this->getDB()->getSingleObject(
                 'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
-                    LEFT JOIN tartikel
-                      ON tartikel.kArtikel = tstueckliste.kArtikel
-                    WHERE tstueckliste.kStueckliste = :plid
-                        AND tartikel.kArtikel IS NULL',
+                    WHERE tstueckliste.kStueckliste = :plid',
                 ['plid' => $this->kStueckliste]
-            );
+            )->nAnzahl ?? 0) - $nAllPieces;
 
-            if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
+            if ($piecesNotInShop > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
                 // handle this parts list as a normal product
                 $isPartsList = false;

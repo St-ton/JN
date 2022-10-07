@@ -185,11 +185,12 @@
                             <div class="table-responsive">
                                 <table class="table table-vertical-middle table-hover">
                                     <tbody>
+                                    {get_static_route id='wunschliste.php' assign='wlSlug'}
                                     {foreach $oWunschliste_arr as $wishlist}
                                         <tr>
                                             {block name='account-my-account-wishlist-name'}
                                                 <td>
-                                                    {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->getID()}"}{$wishlist->getName()}{/link}<br />
+                                                    {link href="{$wlSlug}?wl={$wishlist->getID()}"}{$wishlist->getName()}{/link}<br />
                                                     <small>{$wishlist->getProductCount()} {lang key='products'}</small>
                                                 </td>
                                             {/block}

@@ -1,5 +1,7 @@
 {block name='productdetails-basket'}
     {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
+        {$interval = $Artikel->fAbnahmeintervall|default:0}
+        {$mbm = $Artikel->fMindestbestellmenge|default:0}
         <div id="add-to-cart" class="product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
             {if $Artikel->nErscheinendesProdukt}
                 {block name='productdetails-basket-coming-soon'}
@@ -21,10 +23,9 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="basket-form-inline"}
+                            {$basketColWidth = 6}
                             {if $Artikel->bHasKonfig}
                                 {$basketColWidth = 12}
-                            {else}
-                                {$basketColWidth = 6}
                             {/if}
                             {if $Artikel->Preise->fVKNetto == 0 && isset($Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX])}
                                 {block name='productdetails-basket-voucher-flex'}
@@ -56,17 +57,30 @@
                                                 <span class="fas fa-minus"></span>
                                             {/button}
                                         {/inputgroupprepend}
+                                        {$step = 1}
+                                        {if $Artikel->cTeilbar === 'Y' && $interval == 0}
+                                            {$step = 'any'}
+                                        {elseif $interval > 0}
+                                            {$step = $interval}
+                                        {/if}
+                                        {$inputValue = 1}
+                                        {if $interval > 0 || $mbm > 1}
+                                            {$inputValue = max($mbm,$interval)}
+                                        {elseif isset($fAnzahl)}
+                                            {$inputValue = $fAnzahl}
+                                        {/if}
+                                        {$pid = $Artikel->kVariKindArtikel|default:$Artikel->kArtikel}
                                         {input type="number"
-                                            min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                            min=$mbm
                                             max=$Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:''
-                                            required=($Artikel->fAbnahmeintervall > 0)
-                                            step="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}any{elseif $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}1{/if}"
+                                            required=($interval > 0)
+                                            step=$step
                                             id="quantity" class="quantity" name="anzahl"
                                             aria=["label"=>"{lang key='quantity'}"]
-                                            value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}"
+                                            value=$inputValue
                                             data=[
-                                                "decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall},
-                                                "product-id"=>"{if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if}"
+                                                "decimals"=>{getDecimalLength quantity=$interval},
+                                                "product-id"=>"{$pid}"
                                             ]
                                         }
                                         {inputgroupappend}
@@ -117,9 +131,8 @@
                 {/if}
             {/if}
             {if $Artikel->inWarenkorbLegbar == 1
-            && ($Artikel->fMindestbestellmenge > 1
-                || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')
-                || ($Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y')
+            && ($mbm > 1
+                || ($interval > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y')
                 || $Artikel->cTeilbar === 'Y'
                 || $Artikel->FunktionsAttribute[$smarty.const.FKT_ATTRIBUT_MAXBESTELLMENGE]|default:0 > 0)}
                 {block name='productdetails-basket-alert-purchase-info'}
@@ -129,14 +142,14 @@
                             <p>{lang key='units' section='productDetails' assign='units'}</p>
                         {/if}
 
-                        {if $Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')}
+                        {if $mbm > 1 || ($mbm > 0 && $Artikel->cTeilbar === 'Y')}
                             {lang key='minimumPurchase' section='productDetails' assign='minimumPurchase'}
-                            <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
+                            <p>{$minimumPurchase|replace:"%d":$mbm|replace:"%s":$units}</p>
                         {/if}
 
-                        {if $Artikel->fAbnahmeintervall > 0}
+                        {if $interval > 0}
                             {lang key='takeHeedOfInterval' section='productDetails' assign='takeHeedOfInterval'}
-                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
+                            <p id="intervall-notice" {if $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen !== 'Y'}class="d-none"{/if}>{$takeHeedOfInterval|replace:"%d":$interval|replace:"%s":$units}</p>
                         {/if}
 
                         {if $Artikel->cTeilbar === 'Y'}

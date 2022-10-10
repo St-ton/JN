@@ -1,11 +1,12 @@
 {block name='snippets-wishlist-dropdown'}
+    {get_static_route id='wunschliste.php' assign='wlslug'}
     {if $wishlists->isNotEmpty()}
         {block name='snippets-wishlist-dropdown-wishlists'}
             <div class="wishlist-dropdown-items table-responsive max-h-sm lg-max-h">
                 <table class="table table-vertical-middle">
                     <tbody>
                         {foreach $wishlists as $wishlist}
-                            <tr class="clickable-row cursor-pointer" data-href="{get_static_route id='wunschliste.php'}?wl={$wishlist->getID()}">
+                            <tr class="clickable-row cursor-pointer" data-href="{$wlslug}?wl={$wishlist->getID()}">
                                 <td>
                                     {block name='snippets-wishlist-dropdown-link'}
                                         {$wishlist->getName()}<br />
@@ -36,7 +37,7 @@
     {block name='snippets-wishlist-dropdown-new-wl'}
         <div class="wishlist-dropdown-footer dropdown-body">
             {block name='snippets-wishlist-dropdown-new-wl-link'}
-                {button variant="primary" type="link" block=true size="sm" href="{get_static_route id='wunschliste.php'}?newWL=1"}
+                {button variant="primary" type="link" block=true size="sm" href="{$wlslug}?newWL=1"}
                     {lang key='addNew' section='wishlist'}
                 {/button}
             {/block}

@@ -20,7 +20,7 @@ stages:
   export BUILD_SCRIPT_PATH=build/scripts/build.sh
   export DEPLOY_SCRIPT_PATH=build/scripts/deploy.sh
   #export BUILD_IMAGE="build-deploy"       # ":latest" fallback
-  export BUILD_IMAGE="build-deploy:php80"
+  export BUILD_IMAGE="build-deploy:php81"
 
   function dockerLogin() {
     echo "Login to GitLab Container Registry with CI credentials..."

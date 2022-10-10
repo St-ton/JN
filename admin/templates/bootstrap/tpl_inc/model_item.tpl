@@ -4,6 +4,9 @@
 {$addChild = $addChild|default:false}
 
 {foreach $item->getAttributes() as $attr}
+    {if $attr->isDynamic() === true}
+        {continue}
+    {/if}
     {$name = $attr->getName()}
     {$inputName = $name}
     {if $isChild}
@@ -27,13 +30,13 @@
             {include file='tpl_inc/model_item.tpl' isChild=true postfix=$childItem->getId() item=$childItem prefix=$name}
             <hr>
         {/foreach}
-        {if $addChild !== false}
-            {include file='tpl_inc/model_item.tpl' isChild=true item=$childModel addChild=false postfix=$postfix prefix=$name assign=foo}
+        {if $addChild !== false && $childModel !== null}
+            {include file='tpl_inc/model_item.tpl' isChild=true item=$childModel addChild=false postfix=$postfix prefix=$name assign=cmdata}
             <div id="childmodelappend"></div>
             <script>
                 $(document).ready(function () {
                     $('#add-child-model-item').on('click', function () {
-                        $('#childmodelappend').append(`{$foo|trim}`);
+                        $('#childmodelappend').append(`{$cmdata|trim}`);
                     });
                 });
             </script>

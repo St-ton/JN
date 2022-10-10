@@ -21,6 +21,7 @@ $danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
 $bg-main:                           #1C1D2C !default;
 $bg-main-ligther:                   lighten($bg-main, 10%) !default;
+$bg-config-recommendation:          lighten($primary, 40%) !default;
 
 $white:                             #ffffff !default;
 $black:                             #000000 !default;
@@ -370,7 +371,9 @@ $modal-header-padding-x			: 0 !default;
 
 $modal-backdrop-opacity			: .8 !default;
 
-$modal-md: 700px !default;
+$modal-xl:                          1140px !default;
+$modal-lg:                          940px !default;
+$modal-md:                          700px !default;
 
 /* progress */
 

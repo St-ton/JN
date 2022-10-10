@@ -123,7 +123,7 @@
                     {/block}
                     {block name='snippets-shipping-calculator-link'}
                         {if isset($checkout) && $checkout}
-                            {$link = {get_static_route id='warenkorb.php'}}
+                            {get_static_route id='warenkorb.php' assign='link'}
                         {else}
                             {$link = $ShopURL|cat:'/?s='|cat:$Link->getID()}
                         {/if}

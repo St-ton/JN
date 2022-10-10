@@ -1066,6 +1066,7 @@ class LanguageHelper
         $linkService   = Shop::Container()->getLinkService();
         $productFilter = Shop::getProductFilter();
         $pageType      = Shop::getPageType();
+        $state         = Shop::getState();
         if ($pageID !== null && $pageID > 0 && $pageType !== \PAGE_ARTIKELLISTE) {
             $linkID = $pageID;
         }
@@ -1076,15 +1077,28 @@ class LanguageHelper
         } catch (SpecialPageNotFoundException) {
             $specialPage = null;
         }
-        $page       = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
-        $languages  = Frontend::getLanguages();
-        $currencies = Frontend::getCurrencies();
+        $page          = $linkID > 0 ? $linkService->getPageLink($linkID) : null;
+        $languages     = Frontend::getLanguages();
+        $currencies    = Frontend::getCurrencies();
+        $currentLangID = Shop::getLanguageID();
+        $currentLocale = null;
         if (\count($languages) > 1) {
             foreach ($languages as $lang) {
                 /** @var Artikel $AktuellerArtikel */
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
-                if (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
+                if ($currentLangID === $langID) {
+                    $currentLocale = $lang->getIso639();
+                }
+                if ($state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $lang->getIso639()]),
+                        true,
+                        true
+                    );
+                    $lang->setUrl($url);
+                } elseif (isset($AktuellerArtikel->cSprachURL_arr[$langISO])) {
                     $lang->setUrl($AktuellerArtikel->cSprachURL_arr[$langISO]);
                 } elseif ($page !== null) {
                     $url = $page->getURL($langID);
@@ -1143,12 +1157,22 @@ class LanguageHelper
         }
         if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
-            $currentLangID       = Shop::getLanguageID();
             foreach ($currencies as $currency) {
                 $code       = $currency->getCode();
                 $additional = $currency->getID() === $currentCurrencyCode
                     ? []
                     : ['currency' => $code];
+                if ($currentLocale !== null && $state->currentRouteName !== null && $state->routeData !== null) {
+                    $url = Shop::getRouter()->getURLByType(
+                        $state->currentRouteName,
+                        \array_merge($state->routeData, ['lang' => $currentLocale, 'currency' => $code]),
+                        true,
+                        true
+                    );
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
                 if (isset($AktuellerArtikel)) {
                     $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
                     $url = $AktuellerArtikel->getURL($currentLangID);

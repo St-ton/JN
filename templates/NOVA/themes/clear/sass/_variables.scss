@@ -21,6 +21,7 @@ $danger:                            #b90000 !default;
 $bg-danger:                         #E8CCD2 !default;
 $bg-main:                           $gray-lighter !default;
 $bg-main-ligther:                   $bg-main !default;
+$bg-config-recommendation:          lighten($primary, 40%) !default;
 
 $white:                             #ffffff !default;
 $black:                             #000000 !default;

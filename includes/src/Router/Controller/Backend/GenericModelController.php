@@ -83,12 +83,6 @@ abstract class GenericModelController extends AbstractBackendController
         }
         if ($itemID > 0) {
             $this->item = $this->modelClass::load(['id' => $itemID], $this->db);
-            foreach ($this->item->getAttributes() as $attribute) {
-                if (\str_contains($attribute->getDataType(), '\\')) {
-                    $className   = $attribute->getDataType();
-                    $this->child = new $className($this->getDB());
-                }
-            }
         }
         unset($_SESSION['step'], $_SESSION['continue']);
 
@@ -107,6 +101,14 @@ abstract class GenericModelController extends AbstractBackendController
         } elseif ($create === true) {
             $this->item = new $this->modelClass($this->db);
             $this->step = 'detail';
+        }
+        if ($this->item !== null) {
+            foreach ($this->item->getAttributes() as $attribute) {
+                if (\str_contains($attribute->getDataType(), '\\')) {
+                    $className   = $attribute->getDataType();
+                    $this->child = new $className($this->getDB());
+                }
+            }
         }
         $this->setMessages();
 

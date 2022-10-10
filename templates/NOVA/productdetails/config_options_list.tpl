@@ -15,8 +15,6 @@
                     </h3>
                 {/block}
                 {block name='productdetails-config-options-collapse'}
-
-
                     {block name='productdetails-config-options-collapse-top'}
                         <div class="cfg-group-info sticky-top">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
@@ -107,71 +105,12 @@
                                                 required=$oItem@first && $configGroup->getMin() > 0
                                                 }
 
-                                                    <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                    <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-recommendation{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                         {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                             <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                        <div class="cfg-item-description">
-                                                            <div class="d-flex align-items-center">
-                                                                {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
-                                                                <dl>
-                                                                    <dt>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</dt>
-                                                                    <dd class="text-muted-util">
-                                                                        {if !empty($cBeschreibung)}
-                                                                            {$cBeschreibung}
-                                                                            {*{link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
-                                                                                <i class="fas fa-question-circle"></i>
-                                                                            {/link}*}
-                                                                        {/if}
-                                                                    </dd>
-                                                                </dl>
-                                                            </div>
-                                                            {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
-                                                                {badge variant="light"}
-                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                                {/if}
-                                                                {$oItem->getPreisLocalized()}
-                                                                {/badge}
-                                                            {/if}
-                                                            {if $oItem->getMin() == $oItem->getMax()}
-                                                                {lang key='quantity'}: {$oItem->getInitial()}
-                                                            {else}
-                                                                {inputgroup class="form-counter"}
-                                                                {inputgroupprepend}
-                                                                {button variant=""
-                                                                data=["count-down"=>""]
-                                                                size="{if $device->isMobile()}sm{/if}"
-                                                                aria=["label"=>{lang key='decreaseQuantity' section='aria'}]
-                                                                }
-                                                                    <span class="fas fa-minus"></span>
-                                                                {/button}
-                                                                {/inputgroupprepend}
-                                                                {input
-                                                                type="number"
-                                                                min="{$oItem->getMin()}"
-                                                                max="{$oItem->getMax()}"
-                                                                step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
-                                                                id="quantity{$oItem->getKonfigitem()}"
-                                                                class="quantity"
-                                                                name="item_quantity[{$kKonfigitem}]"
-                                                                autocomplete="off"
-                                                                value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{$oItem->getMin()}{/if}{/if}"
-                                                                }
-                                                                {inputgroupappend}
-                                                                {button variant=""
-                                                                data=["count-up"=>""]
-                                                                size="{if $device->isMobile()}sm{/if}"
-                                                                aria=["label"=>{lang key='increaseQuantity' section='aria'}]
-                                                                }
-                                                                    <span class="fas fa-plus"></span>
-                                                                {/button}
-                                                                {/inputgroupappend}
-                                                                {/inputgroup}
-                                                            {/if}
-                                                        </div>
+                                                        {include file='productdetails/config_item_description.tpl'}
                                                     </div>
                                                 {/radio}
                                             {/block}
@@ -185,71 +124,12 @@
                                                     id="item{$oItem->getKonfigitem()}"
                                                     class="cfg-swatch"
                                                 }
-                                                    <div data-id="$oItem->getKonfigitem()" class="config-item {if $oItem->getEmpfohlen()} bg-info{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
+                                                    <div data-id="{$oItem->getKonfigitem()}" class="config-item {if $oItem->getEmpfohlen()} bg-recommendation{/if}{if empty($bSelectable)} disabled{/if}{if $checkboxActive} active{/if}">
                                                         {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                             <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
                                                         {/if}
                                                         {badge class="badge-circle circle-small"}<i class="fas fa-check"></i>{/badge}
-                                                        <div class="cfg-item-description">
-                                                            <div class="d-flex align-items-center">
-                                                                {include file='snippets/image.tpl' class="mr-2" item=$oItem->getArtikel() square=false fluid=false width=60 height='auto' srcSize='sm' sizes="15vw" alt=$oItem->getName()}
-                                                                <dl>
-                                                                    <dt>{$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}</dt>
-                                                                    <dd class="text-muted-util">
-                                                                        {if !empty($cBeschreibung)}
-                                                                            {$cBeschreibung}
-                                                                            {*{link title=$cBeschreibung|escape:"html" data=["toggle"=>"tooltip", "html"=>"true"]}
-                                                                                <i class="fas fa-question-circle"></i>
-                                                                            {/link}*}
-                                                                        {/if}
-                                                                    </dd>
-                                                                </dl>
-                                                            </div>
-                                                            {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
-                                                                {badge variant="light"}
-                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                                    <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                                    <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                                {/if}
-                                                                {$oItem->getPreisLocalized()}
-                                                                {/badge}
-                                                            {/if}
-                                                            {if $oItem->getMin() == $oItem->getMax()}
-                                                                {lang key='quantity'}: {$oItem->getInitial()}
-                                                            {else}
-                                                                {inputgroup class="form-counter"}
-                                                                {inputgroupprepend}
-                                                                {button variant=""
-                                                                    data=["count-down"=>""]
-                                                                    size="{if $device->isMobile()}sm{/if}"
-                                                                    aria=["label"=>{lang key='decreaseQuantity' section='aria'}]
-                                                                }
-                                                                    <span class="fas fa-minus"></span>
-                                                                {/button}
-                                                                {/inputgroupprepend}
-                                                                {input
-                                                                    type="number"
-                                                                    min="{$oItem->getMin()}"
-                                                                    max="{$oItem->getMax()}"
-                                                                    step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
-                                                                    id="quantity{$oItem->getKonfigitem()}"
-                                                                    class="quantity"
-                                                                    name="item_quantity[{$kKonfigitem}]"
-                                                                    autocomplete="off"
-                                                                    value="{if !empty($nKonfigitemAnzahl_arr[$kKonfigitem])}{$nKonfigitemAnzahl_arr[$kKonfigitem]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{$oItem->getMin()}{/if}{/if}"
-                                                                }
-                                                                {inputgroupappend}
-                                                                {button variant=""
-                                                                    data=["count-up"=>""]
-                                                                    size="{if $device->isMobile()}sm{/if}"
-                                                                    aria=["label"=>{lang key='increaseQuantity' section='aria'}]
-                                                                }
-                                                                    <span class="fas fa-plus"></span>
-                                                                {/button}
-                                                                {/inputgroupappend}
-                                                                {/inputgroup}
-                                                            {/if}
-                                                        </div>
+                                                        {include file='productdetails/config_item_description.tpl'}
                                                     </div>
                                                 {/checkbox}
                                             {/block}
@@ -305,66 +185,7 @@
                                     {/if}
                                     {block name='productdetails-config-container-group-item-type-dropdown-collapse'}
                                         {collapse visible=isset($nKonfigitem_arr) && in_array($oItem->getKonfigitem(), $nKonfigitem_arr) id="drpdwn_qnt_{$oItem->getKonfigitem()}" class="cfg-drpdwn-item"}
-                                        {row}
-                                        {col md=4 cols="{if empty($cBeschreibung)}12{else}4{/if}"}
-                                            {include file='snippets/image.tpl' item=$oItem->getArtikel() srcSize='sm' alt=$oItem->getName()}
-                                            <div class="cfg-item-description">
-                                                {$oItem->getName()}{if empty($bSelectable)} - {lang section="productDetails" key="productOutOfStock"}{/if}
-                                                {if JTL\Session\Frontend::getCustomerGroup()->mayViewPrices()}
-                                                    {badge variant="light"}
-                                                    {if $oItem->hasRabatt() && $oItem->showRabatt()}
-                                                        <span class="discount">{$oItem->getRabattLocalized()} {lang key='discount'}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
-                                                        <span class="additional">{$oItem->getZuschlagLocalized()} {lang key='additionalCharge'}</span>
-                                                    {/if}
-                                                    {$oItem->getPreisLocalized()}
-                                                    {/badge}
-                                                {/if}
-                                            </div>
-                                        {/col}
-                                        {col md=8 cols="{if empty($cBeschreibung)}12{else}8{/if}"}
-                                        {if !empty($cBeschreibung)}
-                                            <div class="config-option-dropdown-description">
-                                                {$cBeschreibung}
-                                            </div>
-                                        {/if}
-
-                                        {if $oItem->getMin() == $oItem->getMax()}
-                                            {lang key='quantity'}: {$oItem->getInitial()}
-                                        {else}
-                                            {inputgroup class="form-counter"}
-                                            {inputgroupprepend}
-                                            {button variant=""
-                                            data=["count-down"=>""]
-                                            size="{if $device->isMobile()}sm{/if}"
-                                            aria=["label"=>{lang key='decreaseQuantity' section='aria'}]
-                                            }
-                                                <span class="fas fa-minus"></span>
-                                            {/button}
-                                            {/inputgroupprepend}
-                                            {input
-                                            type="number"
-                                            min="{$oItem->getMin()}"
-                                            max="{$oItem->getMax()}"
-                                            step="{if $oItem->getArtikel()->cTeilbar === 'Y' && $oItem->getArtikel()->fAbnahmeintervall == 0}any{elseif $oItem->getArtikel()->fAbnahmeintervall > 0}{$oItem->getArtikel()->fAbnahmeintervall}{else}1{/if}"
-                                            id="quantity{$oItem->getKonfigitem()}"
-                                            class="quantity"
-                                            name="item_quantity[{$oItem->getKonfigitem()}]"
-                                            autocomplete="off"
-                                            value="{if !empty($nKonfigitemAnzahl_arr[$oItem->getKonfigitem()])}{$nKonfigitemAnzahl_arr[$oItem->getKonfigitem()]}{else}{if $oItem->getArtikel()->fAbnahmeintervall > 0}{if $oItem->getArtikel()->fMindestbestellmenge > $oItem->getArtikel()->fAbnahmeintervall}{$oItem->getArtikel()->fMindestbestellmenge}{else}{$oItem->getArtikel()->fAbnahmeintervall}{/if}{else}{$oItem->getMin()}{/if}{/if}"
-                                            }
-                                            {inputgroupappend}
-                                            {button variant=""
-                                            data=["count-up"=>""]
-                                            size="{if $device->isMobile()}sm{/if}"
-                                            aria=["label"=>{lang key='increaseQuantity' section='aria'}]
-                                            }
-                                                <span class="fas fa-plus"></span>
-                                            {/button}
-                                            {/inputgroupappend}
-                                            {/inputgroup}
-                                        {/if}
-                                        {/col}
-                                        {/row}
+                                            {include file='productdetails/config_item_description.tpl'}
                                         {/collapse}
                                     {/block}
                                 {/foreach}
@@ -378,16 +199,16 @@
                         <div class="sticky-bottom">
                             {if $configGroup@last}
                                 {nav}
-                                {navitem id="cfg-tab-summary-finish"
-                                href="#cfg-tab-pane-summary"
-                                role="tab"
-                                router-data=["toggle"=>"pill"]
-                                router-aria=["controls"=>"cfg-tab-pane-summary", "selected"=>"false"]
-                                router-class="btn btn-secondary btn-sm"
-                                disabled=true
-                                }
-                                {lang key='finishConfiguration' section='productDetails'}
-                                {/navitem}
+                                    {navitem id="cfg-tab-summary-finish"
+                                        href="#cfg-tab-pane-summary"
+                                        role="tab"
+                                        router-data=["toggle"=>"pill"]
+                                        router-aria=["controls"=>"cfg-tab-pane-summary", "selected"=>"false"]
+                                        router-class="btn btn-secondary btn-sm"
+                                        disabled=true
+                                    }
+                                        {lang key='finishConfiguration' section='productDetails'}
+                                    {/navitem}
                                 {/nav}
                             {/if}
                         </div>

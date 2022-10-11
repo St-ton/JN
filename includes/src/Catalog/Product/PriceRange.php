@@ -88,18 +88,7 @@ class PriceRange
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
 
-        $productData = $db->getSingleObject(
-            'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
-                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
-                FROM tartikel
-                LEFT JOIN tartikelkonfiggruppe
-                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
-                LEFT JOIN tkonfigitem
-                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                        AND tartikelkonfiggruppe.kArtikel = :pid
-                WHERE tartikel.kArtikel = :pid',
-            ['pid' => $productID]
-        );
+        $productData = $this->getProduct($db, $productID);
         if ($productData !== null) {
             $this->productData->kArtikel      = (int)$productData->kArtikel;
             $this->productData->kSteuerklasse = (int)$productData->kSteuerklasse;
@@ -111,6 +100,27 @@ class PriceRange
             }
             $this->loadPriceRange($db);
         }
+    }
+
+    /**
+     * @param DbInterface $db
+     * @param int         $productID
+     * @return stdClass|null
+     */
+    private function getProduct(DbInterface $db, int $productID): ?stdClass
+    {
+        return $db->getSingleObject(
+            'SELECT tartikel.kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis,
+                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
+                FROM tartikel
+                LEFT JOIN tartikelkonfiggruppe
+                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
+                LEFT JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                        AND tartikelkonfiggruppe.kArtikel = :pid
+                WHERE tartikel.kArtikel = :pid',
+            ['pid' => $productID]
+        );
     }
 
     /**

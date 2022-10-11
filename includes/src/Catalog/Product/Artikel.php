@@ -4294,7 +4294,7 @@ class Artikel implements RoutableInterface
             $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
             $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
-                self::getDefaultOptions(),
+                (object)['nAttribute' => 1],
                 $this->kKundengruppe,
                 $this->kSprache
             );

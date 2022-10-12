@@ -293,7 +293,7 @@ header {
 		.twitter-typeahead {
 			flex: 1;
 		}
-		display: none;
+		//display: none;
 		@include media-breakpoint-up(lg) {
 			display: block;
 		}
@@ -322,6 +322,7 @@ header {
 		}
 		.toggler-logo-wrapper {
 			position: initial;
+			width: max-content;
 		}
 	}
 	.nav-icons-wrapper {

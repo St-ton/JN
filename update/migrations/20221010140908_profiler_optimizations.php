@@ -34,6 +34,9 @@ class Migration_20221010140908 extends Migration implements IMigration
         if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'kSprachISOcISO'") === null) {
             $this->db->executeQuery('ALTER TABLE tsprachiso ADD UNIQUE KEY kSprachISOcISO (kSprachISO, cISO)');
         }
+        if ($this->db->getSingleObject("SHOW INDEX FROM tkonfigitem WHERE COLUMN_NAME = 'kKonfiggruppe'") === null) {
+            $this->db->executeQuery('ALTER TABLE tkonfigitem ADD INDEX idx_kKonfigGruppe(kKonfiggruppe)');
+        }
     }
 
     /**
@@ -51,7 +54,10 @@ class Migration_20221010140908 extends Migration implements IMigration
             $this->db->executeQuery('ALTER TABLE tsprache DROP INDEX activeISO');
         }
         if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'kSprachISOcISO'") !== null) {
-            $this->db->executeQuery('ALTER TABLE tsprachiso DROP KEY kSprachISOcISO');
+            $this->db->executeQuery('ALTER TABLE tsprachiso DROP INDEX kSprachISOcISO');
+        }
+        if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'idx_kKonfigGruppe'") === null) {
+            $this->db->executeQuery('ALTER TABLE tkonfigitem DROP INDEX idx_kKonfigGruppe');
         }
     }
 }

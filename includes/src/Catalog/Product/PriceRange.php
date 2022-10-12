@@ -15,6 +15,11 @@ use stdClass;
 class PriceRange
 {
     /**
+     * @var DbInterface
+     */
+    private DbInterface $db;
+
+    /**
      * @var stdClass
      */
     private stdClass $productData;
@@ -79,7 +84,7 @@ class PriceRange
      */
     public function __construct(int $productID, int $customerGroupID = 0, int $customerID = 0, ?DbInterface $db = null)
     {
-        $db              = $db ?? Shop::Container()->getDB();
+        $this->db        = $db ?? Shop::Container()->getDB();
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $customerID      = $customerID ?: Frontend::getCustomer()->getID();
 
@@ -93,19 +98,7 @@ class PriceRange
         $this->customerGroupID = $customerGroupID;
         $this->customerID      = $customerID;
 
-        $productData = $db->getSingleObject(
-            'SELECT tartikel.kArtikel, tartikel.nIstVater, tartikel.kSteuerklasse, tartikel.fLagerbestand,
-                tartikel.fStandardpreisNetto fNettoPreis,
-                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
-                FROM tartikel
-                LEFT JOIN tartikelkonfiggruppe
-                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
-                LEFT JOIN tkonfigitem
-                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
-                        AND tartikelkonfiggruppe.kArtikel = :pid
-                WHERE tartikel.kArtikel = :pid',
-            ['pid' => $productID]
-        );
+        $productData = $this->getProduct($productID);
         if ($productData !== null) {
             $this->productData->kArtikel      = (int)$productData->kArtikel;
             $this->productData->kSteuerklasse = (int)$productData->kSteuerklasse;
@@ -124,7 +117,7 @@ class PriceRange
                     $this->minBruttoPrice = $calculated->minBruttoPrice;
                     $this->maxBruttoPrice = $calculated->maxBruttoPrice;
                 } else {
-                    $this->loadPriceRange($db);
+                    $this->loadPriceRange();
                     self::$calculatedRange[$key] = (object)[
                         'minNettoPrice' => $this->minNettoPrice,
                         'maxNettoPrice' => $this->maxNettoPrice,
@@ -144,11 +137,34 @@ class PriceRange
     }
 
     /**
-     * @param DbInterface $db
+     * @param int $productID
+     * @return stdClass|null
      */
-    private function loadPriceRange(DbInterface $db): void
+    private function getProduct(int $productID): ?stdClass
     {
-        $priceRange = $db->getSingleObject(
+        return $this->db->getSingleObject(
+            'SELECT tartikel.kArtikel, tartikel.nIstVater, tartikel.kSteuerklasse, tartikel.fLagerbestand,
+                tartikel.fStandardpreisNetto fNettoPreis,
+                tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
+                FROM tartikel
+                LEFT JOIN tartikelkonfiggruppe
+                    ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
+                LEFT JOIN tkonfigitem
+                    ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                WHERE tartikel.kArtikel = :pid',
+            ['pid' => $productID]
+        );
+    }
+
+    /**
+     * @param int $productID
+     * @param int $customerGroupID
+     * @param int $customerID
+     * @return stdClass|null
+     */
+    private function getPriceRange(int $productID, int $customerGroupID = 0, int $customerID = 0): ?stdClass
+    {
+        return $this->db->getSingleObject(
             "SELECT baseprice.kArtikel,
                     MIN(IF(varaufpreis.fMinAufpreisNetto IS NULL,
                         ROUND(COALESCE(baseprice.specialPrice, 999999999), 4),
@@ -224,13 +240,24 @@ class PriceRange
                   AND baseprice.nIstVater = 0
             GROUP BY baseprice.kArtikel",
             [
-                'productID'     => (int)$this->productData->kArtikel,
-                'customerGroup' => $this->customerGroupID,
-                'customerID'    => $this->customerID
+                'productID'     => $productID,
+                'customerGroup' => $customerGroupID,
+                'customerID'    => $customerID,
             ]
         );
+    }
 
-        if ($priceRange) {
+    /**
+     * @return void
+     */
+    private function loadPriceRange(): void
+    {
+        $priceRange = $this->getPriceRange(
+            (int)$this->productData->kArtikel,
+            $this->customerGroupID,
+            $this->customerID
+        );
+        if ($priceRange !== null) {
             $roundedMin              = \round((float)($priceRange->specialPriceMin ?? 0), 2);
             $roundedMax              = \round((float)($priceRange->specialPriceMax ?? 0), 2);
             $this->minNettoPrice     = (float)$priceRange->fVKNettoMin;
@@ -243,7 +270,7 @@ class PriceRange
         }
 
         if ($this->productData->kKonfiggruppe > 0) {
-            $this->loadConfiguratorRange($db);
+            $this->loadConfiguratorRange();
         }
 
         $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
@@ -253,11 +280,11 @@ class PriceRange
     }
 
     /**
-     * @param DbInterface $db
+     * @return void
      */
-    private function loadConfiguratorRange(DbInterface $db): void
+    private function loadConfiguratorRange(): void
     {
-        $configItems = $db->getObjects(
+        $configItems = $this->db->getObjects(
             'SELECT tartikel.kArtikel,
                     tkonfiggruppe.kKonfiggruppe,
                     MIN(tkonfiggruppe.nMin) AS nMin,
@@ -314,7 +341,12 @@ class PriceRange
                 $configGroups[$configItemID]->prices->max[] =
                     (float)$configItem->fMax * Tax::getGross((float)$configItem->fMaxPreis, $ust, 4);
             } else {
-                $priceRange = new PriceRange((int)$configItem->kKindArtikel, $this->customerGroupID, $this->customerID);
+                $priceRange = new PriceRange(
+                    (int)$configItem->kKindArtikel,
+                    $this->customerGroupID,
+                    $this->customerID,
+                    $this->db
+                );
                 // Es wird immer maxNettoPrice verwendet, da im Konfigurator keine Staffelpreise berücksichtigt werden
                 $configGroups[$configItemID]->prices->min[] =
                     (float)$configItem->fMin * Tax::getGross($priceRange->maxNettoPrice, $ust, 4);

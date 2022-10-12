@@ -1432,10 +1432,9 @@ class Artikel implements RoutableInterface
             $images = $this->getDB()->getObjects(
                 'SELECT tartikelpict.cPfad, tartikelpict.nNr
                     FROM tartikelpict
-                    JOIN tartikel 
-                        ON tartikel.cArtNr = :cartnr
-                    WHERE tartikelpict.kArtikel = tartikel.kArtikel
-                    GROUP BY tartikelpict.cPfad
+                    JOIN tartikel
+                         ON tartikelpict.kArtikel = tartikel.kArtikel
+                    WHERE tartikel.cArtNr = :cartnr
                     ORDER BY tartikelpict.nNr',
                 ['cartnr' => $this->getFunctionalAttributevalue(\ART_ATTRIBUT_BILDLINK)]
             );
@@ -1446,7 +1445,6 @@ class Artikel implements RoutableInterface
                 'SELECT cPfad, nNr
                     FROM tartikelpict 
                     WHERE kArtikel = :pid 
-                    GROUP BY cPfad 
                     ORDER BY nNr',
                 ['pid' => (int)$this->kArtikel]
             );
@@ -1473,9 +1471,14 @@ class Artikel implements RoutableInterface
 
             return $this;
         }
+        $paths = [];
         foreach ($images as $i => $item) {
-            $imgNo = (int)$item->nNr;
-            $image = new stdClass();
+            if (\in_array($item->cPfad, $paths)) {
+                continue;
+            }
+            $paths[] = $item->cPfad;
+            $imgNo   = (int)$item->nNr;
+            $image   = new stdClass();
             $this->generateAllImageSizes(false, $imgNo, $item->cPfad);
             $image->cPfadMini   = $this->images[$imgNo][Image::SIZE_XS];
             $image->cPfadKlein  = $this->images[$imgNo][Image::SIZE_SM];

@@ -35,7 +35,10 @@ class Migration_20221010140908 extends Migration implements IMigration
             $this->db->executeQuery('ALTER TABLE tsprachiso ADD UNIQUE KEY kSprachISOcISO (kSprachISO, cISO)');
         }
         if ($this->db->getSingleObject("SHOW INDEX FROM tkonfigitem WHERE COLUMN_NAME = 'kKonfiggruppe'") === null) {
-            $this->db->executeQuery('ALTER TABLE tkonfigitem ADD INDEX idx_kKonfigGruppe(kKonfiggruppe)');
+            $this->db->executeQuery('ALTER TABLE tkonfigitem ADD INDEX kKonfigGruppe(kKonfiggruppe)');
+        }
+        if ($this->db->getSingleObject("SHOW INDEX FROM tartikelpict WHERE KEY_NAME = 'kArtikelNr'") === null) {
+            $this->db->executeQuery('ALTER TABLE tartikelpict ADD INDEX kArtikelNr(kArtikel, nNr)');
         }
     }
 
@@ -56,8 +59,11 @@ class Migration_20221010140908 extends Migration implements IMigration
         if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'kSprachISOcISO'") !== null) {
             $this->db->executeQuery('ALTER TABLE tsprachiso DROP INDEX kSprachISOcISO');
         }
-        if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'idx_kKonfigGruppe'") === null) {
-            $this->db->executeQuery('ALTER TABLE tkonfigitem DROP INDEX idx_kKonfigGruppe');
+        if ($this->db->getSingleObject("SHOW INDEX FROM tsprachiso WHERE KEY_NAME = 'kKonfigGruppe'") !== null) {
+            $this->db->executeQuery('ALTER TABLE tkonfigitem DROP INDEX kKonfigGruppe');
+        }
+        if ($this->db->getSingleObject("SHOW INDEX FROM tartikelpict WHERE KEY_NAME = 'kArtikelNr'") !== null) {
+            $this->db->executeQuery('ALTER TABLE tartikelpict DROP INDEX kArtikelNr');
         }
     }
 }

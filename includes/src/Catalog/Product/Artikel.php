@@ -1093,6 +1093,11 @@ class Artikel implements RoutableInterface
     protected CustomerGroup $customerGroup;
 
     /**
+     * @var self[]
+     */
+    private static $products = [];
+
+    /**
      *
      */
     public function __wakeup()
@@ -3473,6 +3478,7 @@ class Artikel implements RoutableInterface
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
         }
         $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
+        self::$products[$this->cacheID] = $this;
 
         return $this;
     }
@@ -3524,7 +3530,11 @@ class Artikel implements RoutableInterface
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
-            return false;
+            if (isset(self::$products[$this->cacheID])) {
+                $product = self::$products[$this->cacheID];
+            } else {
+                return false;
+            }
         }
         if ($product === null) {
             return null;

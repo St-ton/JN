@@ -82,6 +82,33 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
         </td>
     </tr>
 </table>
+{if isset($payments) && $payments|@count > 0}
+<strong>Received Payments:</strong>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
+    {foreach $payments as $incommingPayment}
+    {foreach $incommingPayment as $payment}
+    <tr>
+        <td class="column mobile-left" width="25%" align="left" valign="top">
+            {$payment->cZahlungsanbieter}:
+        </td>
+        <td class="column mobile-left" width="75%" align="right" valign="top">
+            {$payment->paymentLocalization}
+        </td>
+    </tr>
+    {/foreach}
+    {/foreach}
+</table><br>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
+    <tr>
+        <td align="right" valign="top">
+            <strong>Pending Payment:</strong>
+        </td>
+        <td width="90" align="right" valign="top">
+            <strong>{if isset($totalLocalized)}{$totalLocalized}{else}$Bestellung->WarensummeLocalized[0]}{/if}</strong>
+        </td>
+    </tr>
+</table><br>
+{/if}
 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
     <tr>
         <td class="column mobile-left" width="50%" align="left" valign="top">
@@ -557,7 +584,7 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br
                     <tr>
                         <td>
                             <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                                <strong>{$Bestellung->WarensummeLocalized[0]}</strong>
+                                <strong>{if isset($totalLocalized)}{$totalLocalized}{else}{$Bestellung->WarensummeLocalized[0]}{/if}</strong>
                             </font>
                         </td>
                     </tr>

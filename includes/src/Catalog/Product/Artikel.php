@@ -4307,16 +4307,16 @@ class Artikel implements RoutableInterface
     }
 
     /**
-     * @param $kArtikel
-     * @return $this
+     * @param int $productId
+     * @return Artikel
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    private function getCurrentParentProduct($kArtikel): self
+    private function getCurrentParentProduct(int $productId): self
     {
         $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
         if (!isset($this->currentParentProduct) ||
-            ($this->currentParentProduct->kArtikel !== $kArtikel)) {
+            ($this->currentParentProduct->kArtikel !== $productId)) {
             $this->currentParentProduct = $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 self::getDefaultOptions(),

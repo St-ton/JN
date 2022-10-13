@@ -1095,7 +1095,7 @@ class Artikel implements RoutableInterface
     /**
      * @var self
      */
-    private self $currentParentArticle;
+    private self $currentParentProduct;
 
     /**
      *
@@ -3444,7 +3444,7 @@ class Artikel implements RoutableInterface
                 );
         }
         if ($this->kVaterArtikel > 0) {
-            $this->fDurchschnittsBewertung = $this->getParentProduct($this->kVaterArtikel)->fDurchschnittsBewertung;
+            $this->fDurchschnittsBewertung = $this->getCurrentParentProduct($this->kVaterArtikel)->fDurchschnittsBewertung;
         }
         $this->buildURLs();
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME])
@@ -4299,7 +4299,7 @@ class Artikel implements RoutableInterface
     private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
-            $parentProduct                 = $this->getParentProduct($this->kVaterArtikel);
+            $parentProduct                 = $this->getCurrentParentProduct($this->kVaterArtikel);
             $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
                 ? $parentProduct->AttributeAssoc[$stockTextConstant]
                 : Shop::Lang()->get($stockTextLangVar, 'global');
@@ -4312,12 +4312,12 @@ class Artikel implements RoutableInterface
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    private function getParentProduct($kArtikel): self
+    private function getCurrentParentProduct($kArtikel): self
     {
         $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
-        if (!isset($this->currentParentArticle) ||
-            ($this->currentParentArticle->kArtikel !== $kArtikel)) {
-            $this->currentParentArticle = $parentProduct->fuelleArtikel(
+        if (!isset($this->currentParentProduct) ||
+            ($this->currentParentProduct->kArtikel !== $kArtikel)) {
+            $this->currentParentProduct = $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 self::getDefaultOptions(),
                 $this->kKundengruppe,

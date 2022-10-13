@@ -4317,7 +4317,7 @@ class Artikel implements RoutableInterface
         $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
         if (!isset($this->currentParentArticle) ||
             ($this->currentParentArticle->kArtikel !== $kArtikel)) {
-            $parentProduct->fuelleArtikel(
+            $this->currentParentArticle = $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 self::getDefaultOptions(),
                 $this->kKundengruppe,

@@ -1093,6 +1093,11 @@ class Artikel implements RoutableInterface
     protected CustomerGroup $customerGroup;
 
     /**
+     * @var self
+     */
+    private self $currentParentArticle;
+
+    /**
      *
      */
     public function __wakeup()
@@ -3438,6 +3443,9 @@ class Artikel implements RoutableInterface
                     $this->conf['bewertung']['bewertung_alle_sprachen'] === 'Y'
                 );
         }
+        if ($this->kVaterArtikel > 0) {
+            $this->fDurchschnittsBewertung = $this->getParentProduct($this->kVaterArtikel)->fDurchschnittsBewertung;
+        }
         $this->buildURLs();
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME])
             ? $this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME]
@@ -4291,17 +4299,33 @@ class Artikel implements RoutableInterface
     private function setToParentStockText(string $stockTextConstant, string $stockTextLangVar): void
     {
         if ($this->kVaterArtikel > 0 && empty($this->AttributeAssoc[$stockTextConstant])) {
-            $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
+            $parentProduct                 = $this->getParentProduct($this->kVaterArtikel);
+            $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
+                ? $parentProduct->AttributeAssoc[$stockTextConstant]
+                : Shop::Lang()->get($stockTextLangVar, 'global');
+        }
+    }
+
+    /**
+     * @param $kArtikel
+     * @return $this
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
+    private function getParentProduct($kArtikel): self
+    {
+        $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
+        if (!isset($this->currentParentArticle) ||
+            ($this->currentParentArticle->kArtikel !== $kArtikel)) {
             $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
                 self::getDefaultOptions(),
                 $this->kKundengruppe,
                 $this->kSprache
             );
-            $this->Lageranzeige->AmpelText = (!empty($parentProduct->AttributeAssoc[$stockTextConstant]))
-                ? $parentProduct->AttributeAssoc[$stockTextConstant]
-                : Shop::Lang()->get($stockTextLangVar, 'global');
         }
+
+        return $parentProduct;
     }
 
     /**

@@ -50,7 +50,7 @@ class Author
             }
         }
         if ($authorID > 0) {
-            return $this->db->queryPrepared(
+            return (int)$this->db->queryPrepared(
                 'INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
                     VALUES (:realm, :aid, :cid)
                     ON DUPLICATE KEY UPDATE kAdminlogin = :aid',

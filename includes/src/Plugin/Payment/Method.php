@@ -298,6 +298,8 @@ class Method implements MethodInterface
         ], (array)$payment);
         $this->db->insert('tzahlungseingang', $model);
 
+        executeHook(HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT, ['oBestellung' => $order, 'oZahlungseingang' => $model]);
+
         return $this;
     }
 

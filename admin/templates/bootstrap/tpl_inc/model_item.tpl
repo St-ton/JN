@@ -20,7 +20,10 @@
         {continue}
     {/if}
     {if strpos($type, "\\") !== false && class_exists($type)}
-        {$cnt = $item->$name->count()}
+        {$cnt = 0}
+        {if $item->$name !== null}
+            {$cnt = $item->$name->count()}
+        {/if}
         {if $cnt === 0 && $addChild === false}
             {continue}
         {/if}

@@ -1142,9 +1142,10 @@ class Bestellung
     }
 
     /**
+     * @param bool $html
      * @return Collection
      */
-    public function getIncommingPayments(): Collection
+    public function getIncommingPayments(bool $html = true): Collection
     {
         if (($this->kBestellung ?? 0) === 0) {
             return new Collection();
@@ -1158,8 +1159,8 @@ class Bestellung
             [
                 'orderId' => $this->kBestellung,
             ]
-        )->map(static function ($item) {
-            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO)
+        )->map(static function ($item) use ($html) {
+            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO, $html)
                 . ' (' . Shop::Lang()->getTranslation('payedOn', 'login') . ' '
                 . (new DateTime($item->dZeit))->format('d.m.Y') . ')';
 

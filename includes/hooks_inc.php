@@ -1996,3 +1996,10 @@ const HOOK_REGISTRATION_CUSTOMER_CREATED = 362;
  * @param JTL\Router\Router router
  */
 const HOOK_ROUTER_PRE_DISPATCH = 400;
+
+/**
+ * @since 5.2.0
+ * @param stdClass              oBestellung - order object
+ * @param stdClass              oZahlungseingang
+ */
+const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;

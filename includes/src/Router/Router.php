@@ -320,7 +320,7 @@ class Router
      */
     public function getRequestUri(bool $decoded = false): string
     {
-        $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
+        $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH) ?? '';
         $basePath = \parse_url($this->getRequestURL(), \PHP_URL_PATH);
         $uri      = $basePath ? \mb_substr($basePath, \mb_strlen($shopPath) + 1) : '';
         $uri      = '/' . $uri;
@@ -597,7 +597,7 @@ class Router
         $shopPath = \parse_url(Shop::getURL(), \PHP_URL_PATH);
         $uri      = $request->getUri();
         if ($shopPath !== null) { // @todo find a better solution
-            $basePath = \parse_url($this->getRequestURL(), \PHP_URL_PATH);
+            $basePath = \parse_url($this->getRequestURL(), \PHP_URL_PATH) ?? '';
             $path     = '/' . \mb_substr($basePath, \mb_strlen($shopPath) + 1);
             $request  = $request->withUri($uri->withPath($path));
         }

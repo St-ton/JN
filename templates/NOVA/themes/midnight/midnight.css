@@ -26909,9 +26909,6 @@ header .btn-outline-primary:hover {
   padding-bottom: 0.5rem;
 }
 
-.full-width-mega .main-search-wrapper {
-  display: none;
-}
 .full-width-mega .main-search-wrapper .twitter-typeahead {
   flex: 1;
 }
@@ -26942,6 +26939,7 @@ header .btn-outline-primary:hover {
   }
   .full-width-mega .toggler-logo-wrapper {
     position: initial;
+    width: max-content;
   }
 }
 .full-width-mega .nav-icons-wrapper {

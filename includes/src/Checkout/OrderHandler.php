@@ -5,12 +5,14 @@ namespace JTL\Checkout;
 use JTL\Campaign;
 use JTL\Cart\Cart;
 use JTL\Cart\CartItem;
+use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
+use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
@@ -373,15 +375,18 @@ class OrderHandler
 
         $this->persistOrder(false, $orderNo);
 
-        $order = new Bestellung($_SESSION['kBestellung']);
-        $order->fuelleBestellung(false);
+        $order  = (new Bestellung($_SESSION['kBestellung']))->fuelleBestellung(false);
+        $helper = new Order($order);
+        $amount = $helper->getTotal(2);
 
         $upd              = new stdClass();
         $upd->kKunde      = $this->cart->kKunde;
         $upd->kBestellung = (int)$order->kBestellung;
         $this->db->update('tbesucher', 'kKunde', $upd->kKunde, $upd);
-        $obj->tkunde      = $this->customer;
-        $obj->tbestellung = $order;
+        $obj->tkunde         = $this->customer;
+        $obj->tbestellung    = $order;
+        $obj->totalLocalized = Preise::getLocalizedPriceString($amount->total[1], $amount->currency, false);
+        $obj->payments       = $order->getIncommingPayments(false);
 
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {
             $obj->tbestellung->cEstimatedDeliveryEx = Date::dateAddWeekday(

@@ -11,7 +11,6 @@ Thank you for your order at {$Einstellungen.global.global_shopname}.
 
     {/foreach}
 {/if}
-
 Your order with the order number {$Bestellung->cBestellNr} consists of the following items:
 
 {foreach $Bestellung->Positionen as $Position}
@@ -35,11 +34,20 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 
 Total: {$Bestellung->WarensummeLocalized[0]}
 
+{if isset($payments) && $payments|@count > 0}
+Received Payments:
+{foreach $payments as $incommingPayment}
+    {foreach $incommingPayment as $payment}
+    {$payment->cZahlungsanbieter}: {$payment->paymentLocalization}
+    {/foreach}
+{/foreach}
+Pending Payment: {if isset($totalLocalized)}{$totalLocalized}{else}$Bestellung->WarensummeLocalized[0]}{/if}
+{/if}
+
 Delivery time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
 
 
 Your billing address:
-
 {if !empty($Kunde->cFirma)}{$Kunde->cFirma} - {if !empty($Kunde->cZusatz)}{$Kunde->cZusatz}{/if}{/if}
 {$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
@@ -78,14 +86,14 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 
 {if $Bestellung->Zahlungsart->cModulId === 'za_ueberweisung_jtl'}
     Please make the following cash transfer:
+
     Account owner:{$Firma->cKontoinhaber}
     Bank name:{$Firma->cBank}
     IBAN:{$Firma->cIBAN}
     BIC:{$Firma->cBIC}
 
     Reference:{$Bestellung->cBestellNr}
-    Total:{$Bestellung->WarensummeLocalized[0]}
-
+    Total:{if isset($totalLocalized)}{$totalLocalized}{else}{$Bestellung->WarensummeLocalized[0]}{/if}
 
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
@@ -98,6 +106,7 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 
 
 {/if}
+
 {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}

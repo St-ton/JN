@@ -39,7 +39,7 @@ class Migration_20221017082222 extends Migration implements IMigration
     public function down()
     {
         $languageId      = (int)$this->fetchOne("SELECT kSprache FROM tsprache WHERE cISO = 'eng'")->kSprache;
-        $emailTemplateId = (int)$this->fetchOne("SELECT kEmailvorlage FROM temailvorlage ' " .
+        $emailTemplateId = (int)$this->fetchOne("SELECT kEmailvorlage FROM temailvorlage " .
             " WHERE cModulId = 'core_jtl_account_geloescht'")->kEmailvorlage;
         $where           = " WHERE cBetreff ='Your account has been deleted' AND ksprache = " . $languageId .
             " AND kEmailvorlage = " . $emailTemplateId;

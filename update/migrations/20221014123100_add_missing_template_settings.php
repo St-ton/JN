@@ -28,6 +28,7 @@ class Migration_20221014123100 extends Migration implements IMigration
                 }
             }
         }
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
     }
 
     /**
@@ -40,12 +41,13 @@ class Migration_20221014123100 extends Migration implements IMigration
             foreach ($this->getMissingTemplateSettings() as $setting) {
                 $this->execute(
                     "DELETE FROM ttemplateeinstellungen
-                WHERE cTemplate = '" . $currentTemplate->getDir() . "' 
-                AND cSektion = '" . $setting->section . "' 
-                AND cName='" . $setting->name . "'"
+                        WHERE cTemplate = '" . $currentTemplate->getDir() . "'
+                        AND cSektion = '" . $setting->section . "'
+                        AND cName='" . $setting->name . "'"
                 );
             }
         }
+        Shop::Container()->getCache()->flushTags([\CACHING_GROUP_OPTION, \CACHING_GROUP_TEMPLATE]);
     }
 
     /**

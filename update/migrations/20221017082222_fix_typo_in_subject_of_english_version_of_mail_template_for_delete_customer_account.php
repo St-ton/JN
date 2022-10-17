@@ -23,14 +23,31 @@ class Migration_20221017082222 extends Migration implements IMigration
      */
     public function up()
     {
-        $languageId      = (int)$this->fetchOne("SELECT kSprache FROM tsprache WHERE cISO = 'eng'")->kSprache;
-        $emailTemplateId = (int)$this->fetchOne("SELECT kEmailvorlage FROM temailvorlage " .
-            " WHERE cModulId = 'core_jtl_account_geloescht'")->kEmailvorlage;
-        $where           = " WHERE cBetreff ='You account has been deleted' AND ksprache = " . $languageId .
-            " AND kEmailvorlage = " . $emailTemplateId;
+        $this->execute(
+            "UPDATE temailvorlagespracheoriginal emailOrig
+                    INNER JOIN
+                tsprache ON tsprache.kSprache = emailOrig.kSprache
+                    INNER JOIN
+                temailvorlage ON temailvorlage.kEmailvorlage = emailOrig.kEmailvorlage 
+            SET 
+                emailOrig.cBetreff = 'Your account has been deleted'
+            WHERE
+                tsprache.cISO = 'eng'
+                    AND temailvorlage.cModulId = 'core_jtl_account_geloescht'
+                    AND emailOrig.cBetreff = 'You account has been deleted'");
 
-        $this->execute("UPDATE temailvorlagespracheoriginal SET cBetreff = 'Your account has been deleted'" . $where);
-        $this->execute("UPDATE temailvorlagesprache SET cBetreff = 'Your account has been deleted'" . $where);
+        $this->execute(
+            "UPDATE temailvorlagesprache emailCust
+                    INNER JOIN
+                tsprache ON tsprache.kSprache = emailCust.kSprache
+                    INNER JOIN
+                temailvorlage ON temailvorlage.kEmailvorlage = emailCust.kEmailvorlage 
+            SET 
+                emailCust.cBetreff = 'Your account has been deleted'
+            WHERE
+                tsprache.cISO = 'eng'
+                    AND temailvorlage.cModulId = 'core_jtl_account_geloescht'
+                    AND emailCust.cBetreff = 'You account has been deleted'");
     }
 
     /**
@@ -38,13 +55,30 @@ class Migration_20221017082222 extends Migration implements IMigration
      */
     public function down()
     {
-        $languageId      = (int)$this->fetchOne("SELECT kSprache FROM tsprache WHERE cISO = 'eng'")->kSprache;
-        $emailTemplateId = (int)$this->fetchOne("SELECT kEmailvorlage FROM temailvorlage " .
-            " WHERE cModulId = 'core_jtl_account_geloescht'")->kEmailvorlage;
-        $where           = " WHERE cBetreff ='Your account has been deleted' AND ksprache = " . $languageId .
-            " AND kEmailvorlage = " . $emailTemplateId;
+        $this->execute(
+            "UPDATE temailvorlagespracheoriginal emailOrig
+                    INNER JOIN
+                tsprache ON tsprache.kSprache = emailOrig.kSprache
+                    INNER JOIN
+                temailvorlage ON temailvorlage.kEmailvorlage = emailOrig.kEmailvorlage 
+            SET 
+                emailOrig.cBetreff = 'You account has been deleted'
+            WHERE
+                tsprache.cISO = 'eng'
+                    AND temailvorlage.cModulId = 'core_jtl_account_geloescht'
+                    AND emailOrig.cBetreff = 'Your account has been deleted'");
 
-        $this->execute("UPDATE temailvorlagespracheoriginal SET cBetreff = 'You account has been deleted'" . $where);
-        $this->execute("UPDATE temailvorlagesprache SET cBetreff = 'You account has been deleted'" . $where);
+        $this->execute(
+            "UPDATE temailvorlagesprache emailCust
+                    INNER JOIN
+                tsprache ON tsprache.kSprache = emailCust.kSprache
+                    INNER JOIN
+                temailvorlage ON temailvorlage.kEmailvorlage = emailCust.kEmailvorlage 
+            SET 
+                emailCust.cBetreff = 'You account has been deleted'
+            WHERE
+                tsprache.cISO = 'eng'
+                    AND temailvorlage.cModulId = 'core_jtl_account_geloescht'
+                    AND emailCust.cBetreff = 'Your account has been deleted'");
     }
 }

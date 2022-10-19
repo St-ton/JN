@@ -29,7 +29,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Media\Image\Variation;
+use JTL\Media\Image\Variation as VariationImage;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
 use JTL\Media\MultiSizeImage;
@@ -2778,7 +2778,7 @@ class Artikel implements RoutableInterface
                 foreach ($variBoxMatrixImages as $image) {
                     $image->kEigenschaft     = (int)$image->kEigenschaft;
                     $image->kEigenschaftWert = (int)$image->kEigenschaftWert;
-                    $variThumb               = Variation::getThumb(
+                    $variThumb               = VariationImage::getThumb(
                         Image::TYPE_VARIATION,
                         $image->kEigenschaftWert,
                         $image,

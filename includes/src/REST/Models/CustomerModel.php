@@ -127,6 +127,220 @@ use JTL\Model\ModelHelper;
 final class CustomerModel extends DataModel
 {
     /**
+     * @OA\Property(
+     *   property="id",
+     *   type="int",
+     *   example=99,
+     *   description="The primary key"
+     * )
+     * @OA\Property(
+     *   property="customerGroupID",
+     *   type="int",
+     *   example=1,
+     *   description="The customer group id"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   type="int",
+     *   example=1,
+     *   description="The language id"
+     * )
+     * @OA\Property(
+     *   property="customerNO",
+     *   type="string",
+     *   example="K123",
+     *   description="The customer number"
+     * )
+     * @OA\Property(
+     *   property="password",
+     *   type="string",
+     *   example="$2y$10$PGa6jYYE5jXP/QENgB0g8eB1MLqFXz/hiotazrib5yOuTRkt.e5xW",
+     *   description="The customer's password (hashed)"
+     * )
+     * @OA\Property(
+     *   property="salutation",
+     *   type="string",
+     *   example="m",
+     *   description="Salutation (m/w)"
+     * )
+     * @OA\Property(
+     *   property="title",
+     *   type="string",
+     *   example="Dr.",
+     *   description="Title"
+     * )
+     * @OA\Property(
+     *   property="firstname",
+     *   type="string",
+     *   example="Rainer",
+     *   description="Firstname"
+     * )
+     * @OA\Property(
+     *   property="surname",
+     *   type="string",
+     *   example="Zufall",
+     *   description="Lastname"
+     * )
+     * @OA\Property(
+     *   property="company",
+     *   type="string",
+     *   example="Example Co. Ltd.",
+     *   description="Company"
+     * )
+     * @OA\Property(
+     *   property="additional",
+     *   type="string",
+     *   example="",
+     *   description="Additional company data"
+     * )
+     * @OA\Property(
+     *   property="street",
+     *   type="string",
+     *   example="Example Street",
+     *   description="Street name"
+     * )
+     * @OA\Property(
+     *   property="streetNO",
+     *   type="string",
+     *   example="123",
+     *   description="Street number"
+     * )
+     * @OA\Property(
+     *   property="additionalAddress",
+     *   type="string",
+     *   example="c/o Claire Grube",
+     *   description="Additional address data"
+     * )
+     * @OA\Property(
+     *   property="zip",
+     *   type="string",
+     *   example="41836",
+     *   description="Zip code"
+     * )
+     * @OA\Property(
+     *   property="city",
+     *   type="string",
+     *   example="Hückelhoven",
+     *   description="City"
+     * )
+     * @OA\Property(
+     *   property="state",
+     *   type="string",
+     *   example="Nordrhein-Westfalen",
+     *   description="State"
+     * )
+     * @OA\Property(
+     *   property="country",
+     *   type="string",
+     *   example="Deutschland",
+     *   description="Country"
+     * )
+     * @OA\Property(
+     *   property="tel",
+     *   type="string",
+     *   example="+49 2433 8056801",
+     *   description="Telephone number"
+     * )
+     * @OA\Property(
+     *   property="mobile",
+     *   type="string",
+     *   example="+49 2433 8056801",
+     *   description="Mobile number"
+     * )
+     * @OA\Property(
+     *   property="fax",
+     *   type="string",
+     *   example="+49 2433 970433",
+     *   description="Fax number"
+     * )
+     * @OA\Property(
+     *   property="mail",
+     *   type="string",
+     *   example="info@jtl-software.com",
+     *   description="Email address"
+     * )
+     * @OA\Property(
+     *   property="ustidnr",
+     *   type="string",
+     *   example="DE257864472",
+     *   description="Tax ID"
+     * )
+     * @OA\Property(
+     *   property="www",
+     *   type="string",
+     *   example="www.jtl-software.com",
+     *   description="Homepage"
+     * )
+     * @OA\Property(
+     *   property="locked",
+     *   type="string",
+     *   example="N",
+     *   description="Is locked? (Y/N)"
+     * )
+     * @OA\Property(
+     *   property="balance",
+     *   type="float",
+     *   example="0",
+     *   description="Account balance"
+     * )
+     * @OA\Property(
+     *   property="newsletter",
+     *   type="string",
+     *   example="N",
+     *   description="Accepts newsletter? (Y/N)"
+     * )
+     * @OA\Property(
+     *   property="birthday",
+     *   type="string",
+     *   example="1984-09-01",
+     *   description="Birthday"
+     * )
+     * @OA\Property(
+     *   property="origin",
+     *   type="string",
+     *   example="",
+     *   description=""
+     * )
+     * @OA\Property(
+     *   property="created",
+     *   example="2022-09-22",
+     *   format="datetime",
+     *   description="Date created",
+     *   type="string"
+     * )
+     * @OA\Property(
+     *   property="modified",
+     *   example="2022-09-22 12:13:14",
+     *   format="datetime",
+     *   description="Date modified",
+     *   type="string"
+     * )
+     * @OA\Property(
+     *   property="active",
+     *   type="string",
+     *   example="Y",
+     *   description="Customer is active? (Y/N)"
+     * )
+     * @OA\Property(
+     *   property="fetched",
+     *   type="string",
+     *   example="Y",
+     *   description="Fetched by Wawi? (Y/N)"
+     * )
+     * @OA\Property(
+     *   property="registered",
+     *   type="string",
+     *   example="Y",
+     *   description="Registered customer? (Y/N)"
+     * )
+     * @OA\Property(
+     *   property="loginAttempts",
+     *   type="int",
+     *   example=0,
+     *   description="Failed login attempts"
+     * )
+     * /
+    /**
      * @inheritdoc
      */
     public function getTableName(): string

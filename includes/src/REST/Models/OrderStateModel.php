@@ -30,7 +30,6 @@ use JTL\Model\ModelHelper;
  */
 final class OrderStateModel extends DataModel
 {
-
     /**
      * @OA\Property(
      *   property="orderID",

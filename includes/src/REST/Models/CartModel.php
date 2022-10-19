@@ -44,22 +44,32 @@ final class CartModel extends DataModel
      *   title="id",
      *   format="int64",
      *   type="integer",
+     *   example=2,
      *   description="The cart's id"
      * )
      * @OA\Property(
      *   property="deliveryAddressID",
      *   type="integer",
+     *   example=1,
      *   description="The delivery address id"
      * )
      * @OA\Property(
      *   property="customerID",
      *   type="integer",
+     *   example=3,
      *   description="The customers's id"
      * )
      * @OA\Property(
      *   property="paymentInfoID",
      *   type="integer",
+     *   example=0,
      *   description="The payment method's id"
+     * )
+     * @OA\Property(
+     *   property="items",
+     *   type="array",
+     *   description="List of CartItemModel objects",
+     *   @OA\Items(ref="#/components/schemas/CartItemModel")
      * )
      */
 

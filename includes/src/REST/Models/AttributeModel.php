@@ -16,7 +16,6 @@ use JTL\Model\DataModel;
  *     description="Attribute model",
  * )
  *
-
  * @property int    $id
  * @property int    $kAttribut
  * @property int    $kArtikel
@@ -67,6 +66,12 @@ final class AttributeModel extends DataModel
      *   type="string",
      *   example="example",
      *   description="The text value"
+     * )
+     * @OA\Property(
+     *   property="localization",
+     *   type="array",
+     *   description="List of AttributeLocalizationModel objects",
+     *   @OA\Items(ref="#/components/schemas/AttributeLocalizationModel")
      * )
      */
 

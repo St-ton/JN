@@ -843,6 +843,7 @@ class AdminAccountController extends AbstractBackendController
             return;
         }
         \header('Location: ' . $url);
+        exit();
     }
 
     /**

@@ -38,12 +38,17 @@ class Menu
      */
     public function build(ServerRequestInterface $request): array
     {
-        $path          = $request->getUri()->getPath();
-        $requestedPath = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
-        $mainGroups    = [];
-        $adminMenu     = $this->getStructure();
-        $sections      = [];
-        $rootKey       = 0;
+        $params         = $request->getQueryParams();
+        $path           = $request->getUri()->getPath();
+        $requestedGroup = $params['group'] ?? null;
+        $requestedPath  = \parse_url($request->getUri()->getPath(), \PHP_URL_PATH);
+        if ($requestedGroup !== null) {
+            $requestedPath .= '?' . $requestedGroup;
+        }
+        $mainGroups = [];
+        $adminMenu  = $this->getStructure();
+        $sections   = [];
+        $rootKey    = 0;
         foreach ($adminMenu as $menuName => $menu) {
             foreach ($menu->items as $subMenuName => $subMenu) {
                 if (!\is_array($subMenu)) {
@@ -160,7 +165,13 @@ class Menu
                                 continue;
                             }
                             $urlPath = \parse_url($link->cURL, \PHP_URL_PATH) ?? '';
-                            if ($requestedPath === $urlPath) {
+                            if (\str_contains($link->cURL, '?group') && $requestedGroup !== null) {
+                                if (\str_ends_with(\parse_url($link->cURL, \PHP_URL_QUERY) ?? '', $requestedGroup)) {
+                                    $mainGroup->active  = true;
+                                    $linkGruppe->active = true;
+                                    $link->active       = true;
+                                }
+                            } elseif ($requestedPath === $urlPath) {
                                 $hash = \mb_strpos($link->cURL, '#');
                                 $url  = $link->cURL;
                                 if ($hash !== false) {

@@ -37,22 +37,22 @@ class PriceRange
     /**
      * @var float|int
      */
-    private $discount = 0;
+    private int|float $discount = 0;
 
     /**
      * @var array
      */
-    private static $calculatedRange = [];
+    private static array $calculatedRange = [];
 
     /**
      * @var float
      */
-    public $minNettoPrice;
+    public float $minNettoPrice = 0.0;
 
     /**
      * @var float
      */
-    public $maxNettoPrice;
+    public float $maxNettoPrice = 0.0;
 
     /**
      * @var float
@@ -110,20 +110,11 @@ class PriceRange
             }
             if ((int)$productData->nIstVater > 0 || $this->productData->kKonfiggruppe > 0) {
                 $key = $this->productData->kArtikel . ':' . $this->customerGroupID . $this->customerID;
-                if (isset(self::$calculatedRange[$key])) {
-                    $calculated           = self::$calculatedRange[$key];
-                    $this->minNettoPrice  = $calculated->minNettoPrice;
-                    $this->maxNettoPrice  = $calculated->maxNettoPrice;
-                    $this->minBruttoPrice = $calculated->minBruttoPrice;
-                    $this->maxBruttoPrice = $calculated->maxBruttoPrice;
+                if ($this->hasStaticCache($key)) {
+                    $this->loadStaticCache($key);
                 } else {
                     $this->loadPriceRange();
-                    self::$calculatedRange[$key] = (object)[
-                        'minNettoPrice' => $this->minNettoPrice,
-                        'maxNettoPrice' => $this->maxNettoPrice,
-                        'minBruttoPrice' => $this->minBruttoPrice,
-                        'maxBruttoPrice' => $this->maxBruttoPrice,
-                    ];
+                    $this->storeStaticCache($key);
                 }
             } else {
                 $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
@@ -134,6 +125,41 @@ class PriceRange
                 $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust, 4);
             }
         }
+    }
+
+    /**
+     * @param string $key
+     * @return void
+     */
+    private function storeStaticCache(string $key): void
+    {
+        self::$calculatedRange[$key] = [
+            'minNetto'  => $this->minNettoPrice,
+            'maxNetto'  => $this->maxNettoPrice,
+            'minBrutto' => $this->minBruttoPrice,
+            'maxBrutto' => $this->maxBruttoPrice,
+        ];
+    }
+
+    /**
+     * @param string $key
+     * @return void
+     */
+    private function loadStaticCache(string $key): void
+    {
+        $this->minNettoPrice  = self::$calculatedRange[$key]['minNetto'];
+        $this->maxNettoPrice  = self::$calculatedRange[$key]['maxNetto'];
+        $this->minBruttoPrice = self::$calculatedRange[$key]['minBrutto'];
+        $this->maxBruttoPrice = self::$calculatedRange[$key]['maxBrutto'];
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    private function hasStaticCache(string $key): bool
+    {
+        return isset(self::$calculatedRange[$key]);
     }
 
     /**
@@ -452,7 +478,7 @@ class PriceRange
      *
      * @return float|int
      */
-    public function rangeWidth()
+    public function rangeWidth(): float|int
     {
         return (int)$this->minNettoPrice !== 0
             ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
@@ -485,7 +511,7 @@ class PriceRange
      * @param int|null $netto
      * @return string|string[]
      */
-    public function getMinLocalized(int $netto = null)
+    public function getMinLocalized(?int $netto = null): array|string
     {
         $currency = Frontend::getCurrency();
 
@@ -507,7 +533,7 @@ class PriceRange
      * @param int|null $netto
      * @return string|string[]
      */
-    public function getMaxLocalized(int $netto = null)
+    public function getMaxLocalized(?int $netto = null): array|string
     {
         $currency = Frontend::getCurrency();
 

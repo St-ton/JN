@@ -134,8 +134,8 @@ msgstr "Number of possible variations <span data-html=\"true\" data-toggle=\"too
 msgid "header gallery"
 msgstr "Gallery"
 
-msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Show variation preview <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specifies the maximum number of variations displayed in the gallery view. At 0, no variations are displayed. If an item has more variations, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgid "Variationsvorschau in Galerie anzeigen"
+msgstr "Show variation preview <span data-html=\"true\" data-toggle=\"tooltip\" title=\"For parent-child relationships, this setting specifies the maximum number of variations displayed in the gallery view. At 0, no variations are displayed. If an item has more variations, they will only be displayed in the item details.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Number of initially visible filter options per filter <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Specify how many filter options are displayed by default per filter. Further filter options can be additionally displayed at any time.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"

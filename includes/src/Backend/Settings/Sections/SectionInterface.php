@@ -59,8 +59,9 @@ interface SectionInterface
 
     /**
      * @param string $filter
+     * @return array
      */
-    public function filter(string $filter): void;
+    public function filter(string $filter): array;
 
     /**
      * @return int

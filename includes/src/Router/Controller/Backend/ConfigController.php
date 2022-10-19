@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
 use JTL\Backend\Settings\Search;
 use JTL\Backend\Settings\SectionFactory;
+use JTL\Backend\Settings\Sections\Subsection;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -136,9 +137,17 @@ class ConfigController extends AbstractBackendController
                 $smarty->assign('cSearch', $searchInstance->getTitle())
                     ->assign('cSuche', $search);
             } else {
+                $group           = Request::verifyGPDataString('group');
                 $sectionInstance = $sectionFactory->getSection($sectionID, $settingManager);
                 $sectionInstance->load();
-                $sectionInstance->filter(Request::verifyGPDataString('group'));
+                $filtered = $sectionInstance->filter($group);
+                if ($group !== '' && \count($filtered) > 0) {
+                    $subsection = new Subsection();
+                    $subsection->setName(\__($group));
+                    $subsection->setItems($filtered);
+                    $sectionInstance->setItems([]);
+                    $sectionInstance->setSubsections([$subsection]);
+                }
                 $sections = [$sectionInstance];
             }
             $group = Text::filterXSS(Request::verifyGPDataString('group'));
@@ -151,7 +160,7 @@ class ConfigController extends AbstractBackendController
             ->assign('step', $step)
             ->assign('route', $this->route)
             ->assign('countries', ShippingMethod::getPossibleShippingCountries())
-            ->assign('waehrung', $defaultCurrency->cName)
+            ->assign('waehrung', $defaultCurrency->cName ?? '')
             ->getResponse('einstellungen.tpl');
     }
 }

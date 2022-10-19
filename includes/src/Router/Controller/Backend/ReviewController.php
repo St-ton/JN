@@ -49,6 +49,9 @@ class ReviewController extends AbstractBackendController
      */
     private Manager $manager;
 
+    /**
+     * @inheritdoc
+     */
     public function __construct(
         DbInterface $db,
         JTLCacheInterface $cache,
@@ -220,9 +223,24 @@ class ReviewController extends AbstractBackendController
         if (isset($obj->dAntwortDatum) && $obj->dAntwortDatum !== '') {
             $ins->dAntwortDatum = $obj->dAntwortDatum;
         }
-        if ($importType === Import::TYPE_OVERWRITE_EXISTING && isset($obj->kBewertung)) {
-            $ins->kBewertung = (int)$obj->kBewertung;
-            $ok              = $this->db->upsert('tbewertung', $ins) >= 0;
+        $exists = -1;
+        if ($importType !== Import::TYPE_TRUNCATE_BEFORE && $ins->kKunde > 0) {
+            $exists = $this->db->getSingleInt(
+                'SELECT kBewertung AS id 
+                    FROM tbewertung
+                    WHERE kKunde = :cid
+                        AND kArtikel = :pid',
+                'id',
+                ['cid' => $ins->kKunde, 'pid' => $ins->kArtikel],
+            );
+        }
+        if ($exists > 0) {
+            if ($importType === Import::TYPE_INSERT_NEW) {
+                $ok = true;
+            } else {
+                $ins->kBewertung = $exists;
+                $ok              = $this->db->upsert('tbewertung', $ins) >= 0;
+            }
         } else {
             $ok = $this->db->insert('tbewertung', $ins) > 0;
         }

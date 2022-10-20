@@ -80,7 +80,7 @@
                                                                 data-original="{$Variationswert->cName}"
                                                                 data-key="{$Variationswert->kEigenschaft}"
                                                                 data-value="{$Variationswert->kEigenschaftWert}"
-                                                                {if !empty($Variationswert->cBildPfadMini)}
+                                                                {if !empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))}
                                                                     data-list='{prepare_image_details item=$Variationswert json=true}'
                                                                     data-title='{$Variationswert->cName}'
                                                                 {/if}
@@ -121,7 +121,7 @@
                                                                    data-key="{$Variationswert->kEigenschaft}"
                                                                    data-value="{$Variationswert->kEigenschaftWert}"
                                                                    for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
-                                                                    {if !empty($Variationswert->cBildPfadMini)}
+                                                                    {if !empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))}
                                                                         data-list='{prepare_image_details item=$Variationswert json=true}'
                                                                     {/if}
                                                                     {if $Variationswert->notExists}
@@ -184,7 +184,7 @@
                                                                    data-key="{$Variationswert->kEigenschaft}"
                                                                    data-value="{$Variationswert->kEigenschaftWert}"
                                                                    for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
-                                                                    {if !empty($Variationswert->cBildPfadMini)}
+                                                                    {if !empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))}
                                                                         data-list='{prepare_image_details item=$Variationswert json=true}'
                                                                     {/if}
                                                                     {if $Variationswert->notExists}

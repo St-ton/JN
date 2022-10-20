@@ -28,12 +28,15 @@ class Migration_20221014111716 extends Migration implements IMigration
                     LEFT JOIN  tbewertung ON tartikelext.kArtikel = tbewertung.kArtikel AND tbewertung.nAktiv = 1
                 WHERE tbewertung.kArtikel IS NULL");
 
-        $this->execute("INSERT INTO tartikelext (kArtikel, fDurchschnittsBewertung)
+        $this->execute(
+            'INSERT INTO tartikelext (kArtikel, fDurchschnittsBewertung)
                 SELECT * FROM (
                     SELECT kArtikel, ROUND(SUM(nSterne) / COUNT(kBewertung), 1) AS avgStars
                     FROM tbewertung WHERE nAktiv = 1
-                    GROUP BY kArtikel) AS new
-                ON DUPLICATE KEY UPDATE fDurchschnittsBewertung = new.avgStars");
+                    GROUP BY kArtikel
+                ) AS new
+                ON DUPLICATE KEY UPDATE fDurchschnittsBewertung = new.avgStars'
+        );
     }
 
     /**

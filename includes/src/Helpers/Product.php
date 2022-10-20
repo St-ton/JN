@@ -2163,10 +2163,12 @@ class Product
         $available  = [];
         $outOfStock = [];
         foreach ($items as $item) {
-            if ($item->inWarenkorbLegbar === 1) {
-                $available[] = $item;
-            } else {
-                $outOfStock[] = $item;
+            if ($item->kArtikel !== null) {
+                if ($item->inWarenkorbLegbar === 1) {
+                    $available[] = $item;
+                } else {
+                    $outOfStock[] = $item;
+                }
             }
         }
         if ($shuffle) {

@@ -23,10 +23,13 @@ class Migration_20221014111716 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("DELETE tartikelext
+        $this->execute(
+            'DELETE tartikelext
                 FROM tartikelext
-                    LEFT JOIN  tbewertung ON tartikelext.kArtikel = tbewertung.kArtikel AND tbewertung.nAktiv = 1
-                WHERE tbewertung.kArtikel IS NULL");
+                    LEFT JOIN  tbewertung ON tartikelext.kArtikel = tbewertung.kArtikel
+                                            AND tbewertung.nAktiv = 1
+                WHERE tbewertung.kArtikel IS NULL'
+        );
 
         $this->execute(
             'INSERT INTO tartikelext (kArtikel, fDurchschnittsBewertung)

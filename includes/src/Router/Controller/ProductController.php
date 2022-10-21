@@ -40,6 +40,12 @@ class ProductController extends AbstractController
      */
     public function init(): bool
     {
+        if ($this->currentProduct !== null
+            && $this->currentProduct->kArtikel > 0
+            && $this->currentProduct->kArtikel === $this->state->productID
+        ) {
+            return true;
+        }
         parent::init();
         $this->currentProduct = new Artikel();
         $this->currentProduct->fuelleArtikel(

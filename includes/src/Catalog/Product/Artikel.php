@@ -1778,11 +1778,11 @@ class Artikel implements RoutableInterface
             ]
         );
         if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $opt                             = self::getDefaultOptions();
-            $opt->nStueckliste               = 1;
+            $opt               = self::getDefaultOptions();
+            $opt->nStueckliste = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
 
-            $bundles                         = $this->getDB()->selectAll(
+            $bundles = $this->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,

@@ -17,9 +17,9 @@ class Migration_20221005114100 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->setLocalization('ger', 'productDetails', 'configIsOptional','Diese Konfiguratiosngruppe ist optional.');
+        $this->setLocalization('ger', 'productDetails', 'configIsOptional','Diese Konfigurationsgruppe ist optional.');
         $this->setLocalization('eng', 'productDetails', 'configIsOptional','This configuration group is optional.');
-        $this->setLocalization('ger', 'productDetails', 'configIsNotCorrect','Diese Konfiguratiosngruppe ist noch nicht richtig eingestellt.');
+        $this->setLocalization('ger', 'productDetails', 'configIsNotCorrect','Diese Konfigurationsgruppe ist noch nicht richtig eingestellt.');
         $this->setLocalization('eng', 'productDetails', 'configIsNotCorrect','This configuration group must be configured correctly.');
     }
 

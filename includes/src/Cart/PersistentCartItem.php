@@ -121,23 +121,25 @@ class PersistentCartItem
     {
         $langCode = Shop::getLanguageCode();
         foreach ($attrValues as $value) {
-            if (isset($value->kEigenschaft)) {
-                if (isset($value->cEigenschaftWertName[$langCode], $value->cTyp)
-                    && ($value->cTyp === 'FREIFELD' || $value->cTyp === 'PFLICHT-FREIFELD')
-                ) {
-                    $attrFreeText = $value->cEigenschaftWertName[$langCode];
-                }
-                $attr = new PersistentCartItemProperty(
-                    $value->kEigenschaft,
-                    $value->kEigenschaftWert ?? 0,
-                    $attrFreeText ?? $value->cFreifeldWert ?? null,
-                    $value->cEigenschaftName[$langCode] ?? $value->cEigenschaftName ?? null,
-                    $value->cEigenschaftWertName[$langCode] ?? $value->cEigenschaftWertName ?? null,
-                    $this->kWarenkorbPersPos
-                );
-                $attr->schreibeDB();
-                $this->oWarenkorbPersPosEigenschaft_arr[] = $attr;
+            if (!isset($value->kEigenschaft)) {
+                continue;
             }
+            $attrFreeText = null;
+            if (isset($value->cEigenschaftWertName[$langCode], $value->cTyp)
+                && ($value->cTyp === 'FREIFELD' || $value->cTyp === 'PFLICHT-FREIFELD')
+            ) {
+                $attrFreeText = $value->cEigenschaftWertName[$langCode];
+            }
+            $attr = new PersistentCartItemProperty(
+                (int)$value->kEigenschaft,
+                isset($value->kEigenschaftWert) ? (int)$value->kEigenschaftWert : 0,
+                $attrFreeText ?? $value->cFreifeldWert ?? null,
+                $value->cEigenschaftName[$langCode] ?? $value->cEigenschaftName ?? null,
+                $value->cEigenschaftWertName[$langCode] ?? $value->cEigenschaftWertName ?? null,
+                $this->kWarenkorbPersPos
+            );
+            $attr->schreibeDB();
+            $this->oWarenkorbPersPosEigenschaft_arr[] = $attr;
         }
 
         return $this;

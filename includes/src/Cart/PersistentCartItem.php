@@ -132,7 +132,7 @@ class PersistentCartItem
             }
             $attr = new PersistentCartItemProperty(
                 (int)$value->kEigenschaft,
-                isset($value->kEigenschaftWert) ? (int)$value->kEigenschaftWert : 0,
+                (int)($value->kEigenschaftWert ?? 0),
                 $attrFreeText ?? $value->cFreifeldWert ?? null,
                 $value->cEigenschaftName[$langCode] ?? $value->cEigenschaftName ?? null,
                 $value->cEigenschaftWertName[$langCode] ?? $value->cEigenschaftWertName ?? null,

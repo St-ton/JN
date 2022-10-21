@@ -3834,7 +3834,7 @@ class Artikel implements RoutableInterface
         $this->kVaterArtikel                     = (int)$data->kVaterArtikel;
         $this->kStueckliste                      = (int)$data->kStueckliste;
         $this->dErstellt                         = $data->dErstellt;
-        $this->dErstellt_de                      = \date_format(\date_create($this->dErstellt), 'd.m.Y');
+        $this->dErstellt_de                      = \date_format(\date_create($this->dErstellt ?? 'now'), 'd.m.Y');
         $this->nSort                             = (int)$data->nSort;
         $this->fNettoPreis                       = $data->fNettoPreis;
         $this->bIsBestseller                     = (int)$data->bIsBestseller;

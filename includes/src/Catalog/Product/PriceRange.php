@@ -108,7 +108,10 @@ class PriceRange
             if ($productData->g1 !== null && $productData->g1 === $productData->g2) {
                 $this->productData->kKonfiggruppe = (int)$productData->g1;
             }
-            if ((int)$productData->nIstVater > 0 || $this->productData->kKonfiggruppe > 0) {
+            if ((int)$productData->nIstVater > 0
+                || (int)$productData->kArtikelVariation > 0
+                || $this->productData->kKonfiggruppe > 0
+            ) {
                 $key = $this->productData->kArtikel . ':' . $this->customerGroupID . $this->customerID;
                 if ($this->hasStaticCache($key)) {
                     $this->loadStaticCache($key);
@@ -169,7 +172,8 @@ class PriceRange
     private function getProduct(int $productID): ?stdClass
     {
         return $this->db->getSingleObject(
-            'SELECT tartikel.kArtikel, tartikel.nIstVater, tartikel.kSteuerklasse, tartikel.fLagerbestand,
+            'SELECT tartikel.kArtikel, tartikel.nIstVater, COALESCE(teigenschaft.kArtikel, 0) AS kArtikelVariation,
+                tartikel.kSteuerklasse, tartikel.fLagerbestand,
                 tartikel.fStandardpreisNetto fNettoPreis,
                 tartikelkonfiggruppe.kKonfiggruppe g1, tkonfigitem.kKonfiggruppe g2
                 FROM tartikel
@@ -177,6 +181,8 @@ class PriceRange
                     ON tartikelkonfiggruppe.kArtikel = tartikel.kArtikel
                 LEFT JOIN tkonfigitem
                     ON tkonfigitem.kKonfiggruppe = tartikelkonfiggruppe.kKonfiggruppe
+                LEFT JOIN teigenschaft
+                    ON teigenschaft.kArtikel = tartikel.kArtikel
                 WHERE tartikel.kArtikel = :pid',
             ['pid' => $productID]
         );

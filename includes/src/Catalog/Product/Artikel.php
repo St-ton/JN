@@ -1788,8 +1788,6 @@ class Artikel implements RoutableInterface
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
-            //Just to be sure
-            $opt->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
                 $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);

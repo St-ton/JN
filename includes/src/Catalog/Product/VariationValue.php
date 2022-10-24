@@ -109,76 +109,91 @@ class VariationValue
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfad;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfad;
+    public $cBildPfad = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfadMini;
+    public $cBildPfadMini = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadMiniFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
-    public $cBildPfadGross;
+    public $cBildPfadGross = \BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cBildPfadGrossFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadMini;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadMiniFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadKlein;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadKleinFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadNormal;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadNormalFull;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadGross;
 
     /**
      * @var string
+     * @deprecated since 5.2.0
      */
     public $cPfadGrossFull;
 
@@ -266,20 +281,11 @@ class VariationValue
      */
     public function addImages(string $path, string $imageBaseURL): bool
     {
-        if (!$path || !\file_exists(\PFAD_ROOT . \PFAD_VARIATIONSBILDER_NORMAL . $path)) {
+        if (!$path || !\file_exists(\STORAGE_VARIATIONS . $path)) {
             return false;
         }
-        $this->cPfad = $path;
         $this->generateAllImageSizes(true, 1, $path);
         $this->generateAllImageDimensions(1, $path);
-
-        $this->cBildPfadMini  = \PFAD_VARIATIONSBILDER_MINI . $path;
-        $this->cBildPfad      = \PFAD_VARIATIONSBILDER_NORMAL . $path;
-        $this->cBildPfadGross = \PFAD_VARIATIONSBILDER_GROSS . $path;
-
-        $this->cBildPfadMiniFull  = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $path;
-        $this->cBildPfadFull      = $imageBaseURL . \PFAD_VARIATIONSBILDER_NORMAL . $path;
-        $this->cBildPfadGrossFull = $imageBaseURL . \PFAD_VARIATIONSBILDER_GROSS . $path;
 
         // compatibility
         $this->cPfadMini   = \PFAD_VARIATIONSBILDER_MINI . $path;

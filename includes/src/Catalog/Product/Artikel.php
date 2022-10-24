@@ -29,6 +29,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
+use JTL\Media\Image\Variation as VariationImage;
 use JTL\Media\Image\Product;
 use JTL\Media\MediaImageRequest;
 use JTL\Media\MultiSizeImage;
@@ -2775,8 +2776,16 @@ class Artikel implements RoutableInterface
                 $attributeIDs = [];
                 // Gleiche Farben entfernen + komplette Vorschau nicht anzeigen
                 foreach ($variBoxMatrixImages as $image) {
-                    $image->kEigenschaft = (int)$image->kEigenschaft;
-                    $image->cBild        = $imageBaseURL . \PFAD_VARIATIONSBILDER_MINI . $image->cPfad;
+                    $image->kEigenschaft     = (int)$image->kEigenschaft;
+                    $image->kEigenschaftWert = (int)$image->kEigenschaftWert;
+                    $variThumb               = VariationImage::getThumb(
+                        Image::TYPE_VARIATION,
+                        $image->kEigenschaftWert,
+                        $image,
+                        Image::SIZE_SM
+                    );
+                    $image->cPfad            = \basename($variThumb);
+                    $image->cBild            = $imageBaseURL . $variThumb;
                     if (!\in_array($image->kEigenschaft, $attributeIDs, true) && \count($attributeIDs) > 0) {
                         $error = true;
                         break;
@@ -3825,7 +3834,7 @@ class Artikel implements RoutableInterface
         $this->kVaterArtikel                     = (int)$data->kVaterArtikel;
         $this->kStueckliste                      = (int)$data->kStueckliste;
         $this->dErstellt                         = $data->dErstellt;
-        $this->dErstellt_de                      = \date_format(\date_create($this->dErstellt), 'd.m.Y');
+        $this->dErstellt_de                      = \date_format(\date_create($this->dErstellt ?? 'now'), 'd.m.Y');
         $this->nSort                             = (int)$data->nSort;
         $this->fNettoPreis                       = $data->fNettoPreis;
         $this->bIsBestseller                     = (int)$data->bIsBestseller;

@@ -129,13 +129,13 @@ msgid "header list"
 msgstr "Liste"
 
 msgid "Variationsauswahl in Liste anzeigen"
-msgstr "Anzahl der möglichen Variationen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Listenansicht maximal angezeigt werden. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgstr "Anzahl der möglichen Variationen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Listenansicht maximal angezeigt werden. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "header gallery"
 msgstr "Galerie"
 
-msgid "Variationsauswahl in Galerie anzeigen"
-msgstr "Variationsvorschau anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt\"> <span class=\"fas fa-info-circle fa-fw\"></span> </span>"
+msgid "Variationsvorschau in Galerie anzeigen"
+msgstr "Variationsvorschau anzeigen <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Gibt für Varkombi-Artikel an, wie viele Variationen in der Galerieansicht maximal angezeigt werden können. Bei 0 werden keine Variationen angezeigt. Sollte ein Artikel mehr Variationen haben, so wird die Auswahl ausschließlich in den Artikeldetails angezeigt.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"
 
 msgid "Anzahl der sichtbaren Filteroptionen in Boxen"
 msgstr "Anzahl der initial sichtbaren Filteroptionen je Filter <span data-html=\"true\" data-toggle=\"tooltip\" title=\"Legt fest, wie viele Filteroptionen standardmäßig pro Filter angezeigt werden. Weitere Filteroptionen können jederzeit zusätzlich eingeblendet werden.\"><span class=\"fas fa-info-circle fa-fw\"></span> </span>"

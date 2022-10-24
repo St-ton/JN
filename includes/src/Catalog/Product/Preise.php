@@ -320,7 +320,7 @@ class Preise
 
         return $this->db->getSingleObject(
             'SELECT kPreis, noDiscount, kKunde
-                FROM tpreis
+                FROM tpreis AS p
                 WHERE kArtikel = :pid' . $customerFilter,
             $params
         );

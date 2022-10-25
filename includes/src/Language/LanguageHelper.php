@@ -817,7 +817,7 @@ class LanguageHelper
         $deleteFlag  = false;
         $updateCount = 0;
         $kSprachISO  = $this->mappekISO($iso);
-        if ($kSprachISO > 0) {
+        if ($kSprachISO === 0) {
             // Sprache noch nicht installiert
             $langIso       = new stdClass();
             $langIso->cISO = $iso;

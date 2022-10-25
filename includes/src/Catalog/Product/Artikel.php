@@ -3485,9 +3485,9 @@ class Artikel implements RoutableInterface
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
+            self::$products[$this->cacheID] = $toSave;
         }
         $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
-        self::$products[$this->cacheID] = $this;
 
         return $this;
     }

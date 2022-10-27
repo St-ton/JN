@@ -215,92 +215,41 @@ class Preise
         int $taxClassID = 0,
         ?DbInterface $db = null
     ) {
-        $this->db       = $db ?? Shop::Container()->getDB();
-        $customerFilter = ' AND p.kKundengruppe = :cgid';
-        if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
-            $customerFilter = ' AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
-                            SELECT min(IFNULL(p1.kKundengruppe, :cgid)), max(IFNULL(p1.kKunde, 0))
-                            FROM tpreis AS p1
-                            WHERE p1.kArtikel = :pid
-                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = :cgid)
-                                AND (p1.kKunde = 0 OR p1.kKunde = ' . $customerID . '))';
-        }
+        $this->db            = $db ?? Shop::Container()->getDB();
         $this->kArtikel      = $productID;
         $this->kKundengruppe = $customerGroupID;
         $this->kKunde        = $customerID;
 
-        $prices = $this->db->getObjects(
-            'SELECT *
-                FROM tpreis AS p
-                JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = :pid' . $customerFilter . '
-                ORDER BY d.nAnzahlAb',
-            ['pid' => $productID, 'cgid' => $customerGroupID]
-        );
-        if (\count($prices) > 0) {
+        $price   = $this->getPrice($customerGroupID, $productID, $customerID);
+        $taxData = $this->getTaxData($productID);
+        if ($price !== null && $taxData !== null) {
             if ($taxClassID === 0) {
-                $taxClassID = $this->db->getSingleInt(
-                    'SELECT kSteuerklasse
-                        FROM tartikel
-                        WHERE kArtikel = :pid',
-                    'kSteuerklasse',
-                    ['pid' => $productID]
-                );
+                $taxClassID = (int)$taxData->kSteuerklasse;
+            }
+            if ((int)$price->kKunde > 0) {
+                $this->Kundenpreis_aktiv = true;
+            }
+            if ((int)$price->noDiscount > 0) {
+                $this->noDiscount = true;
             }
             $this->fUst        = Tax::getSalesTax($taxClassID);
-            $tmp               = $this->db->select(
-                'tartikel',
-                'kArtikel',
-                $productID,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'fMwSt'
-            );
-            $defaultTax        = $tmp->fMwSt;
+            $defaultTax        = (int)$taxData->fMwSt;
             $currentTax        = $this->fUst;
             $specialPriceValue = null;
+            $prices            = $this->getPriceDetails((int)$price->kPreis);
             foreach ($prices as $i => $price) {
-                // Kundenpreis?
-                if ((int)$price->kKunde > 0) {
-                    $this->Kundenpreis_aktiv = true;
-                }
-                if ((int)$price->noDiscount > 0) {
-                    $this->noDiscount = true;
-                }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = $this->getRecalculatedNetPrice($price->fVKNetto, $defaultTax, $currentTax);
-                    $specialPrice   = $this->db->getSingleObject(
-                        "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
-                            DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
-                            FROM tsonderpreise
-                            JOIN tartikel 
-                                ON tartikel.kArtikel = :productID
-                            JOIN tartikelsonderpreis 
-                                ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tartikelsonderpreis.kArtikel = :productID
-                                AND tartikelsonderpreis.cAktiv = 'Y'
-                                AND tartikelsonderpreis.dStart <= CURDATE()
-                                AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
-                                AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
-                                    OR tartikelsonderpreis.nIstAnzahl = 0)
-                            WHERE tsonderpreise.kKundengruppe = :customerGroup",
-                        [
-                            'productID'     => $productID,
-                            'customerGroup' => $customerGroupID,
-                        ]
-                    );
+                    $specialPrice   = $this->getSpecialPrice($customerGroupID, $productID);
 
-                    if ($specialPrice !== null && isset($specialPrice->fNettoPreis)) {
+                    if ($specialPrice !== null) {
                         $specialPrice->fNettoPreis = $this->getRecalculatedNetPrice(
-                            $specialPrice->fNettoPreis,
+                            $specialPrice->fNettoPreis ?? 0.0,
                             $defaultTax,
                             $currentTax
                         );
-                        if ((double)$specialPrice->fNettoPreis < $this->fVKNetto) {
+                        if ((float)$specialPrice->fNettoPreis < $this->fVKNetto) {
                             $specialPriceValue       = $specialPrice->fNettoPreis;
                             $this->alterVKNetto      = $this->fVKNetto;
                             $this->fVKNetto          = $specialPriceValue;
@@ -341,6 +290,98 @@ class Preise
             'taxClassID'      => $taxClassID,
             'prices'          => $this
         ]);
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $productID
+     * @param int $customerID
+     * @return stdClass|null
+     */
+    protected function getPrice(
+        int $customerGroupID,
+        int $productID,
+        int $customerID = 0
+    ): ?stdClass {
+        $params         = [
+            'pid' => $productID,
+            'cgid' => $customerGroupID
+        ];
+        $customerFilter = ' AND kKundengruppe = :cgid';
+        if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
+            $params['cid']  = $customerID;
+            $customerFilter = ' AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
+                            SELECT min(IFNULL(p1.kKundengruppe, :cgid)), max(IFNULL(p1.kKunde, 0))
+                            FROM tpreis AS p1
+                            WHERE p1.kArtikel = :pid
+                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = :cgid)
+                                AND (p1.kKunde = 0 OR p1.kKunde = :cid))';
+        }
+
+        return $this->db->getSingleObject(
+            'SELECT kPreis, noDiscount, kKunde
+                FROM tpreis AS p
+                WHERE kArtikel = :pid' . $customerFilter,
+            $params
+        );
+    }
+
+    /**
+     * @param int $priceID
+     * @return array
+     */
+    protected function getPriceDetails(int $priceID): array
+    {
+        return $this->db->getObjects(
+            'SELECT nAnzahlAb, fVKNetto
+                FROM tpreisdetail
+                WHERE kPreis = :priceID
+                ORDER BY nAnzahlAb',
+            ['priceID' => $priceID]
+        );
+    }
+
+    /**
+     * @param int $customerGroupID
+     * @param int $productID
+     * @return stdClass|null
+     */
+    protected function getSpecialPrice(int $customerGroupID, int $productID): ?stdClass
+    {
+        return $this->db->getSingleObject(
+            "SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
+                DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
+                FROM tsonderpreise
+                JOIN tartikel 
+                    ON tartikel.kArtikel = :productID
+                JOIN tartikelsonderpreis 
+                    ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                    AND tartikelsonderpreis.kArtikel = :productID
+                    AND tartikelsonderpreis.cAktiv = 'Y'
+                    AND tartikelsonderpreis.dStart <= CURDATE()
+                    AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE()) 
+                    AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand 
+                        OR tartikelsonderpreis.nIstAnzahl = 0)
+                WHERE tsonderpreise.kKundengruppe = :customerGroup",
+            [
+                'productID'     => $productID,
+                'customerGroup' => $customerGroupID,
+            ]
+        );
+    }
+
+    /**
+     * @param int $productID
+     * @return stdClass|null
+     */
+    protected function getTaxData(int $productID): ?stdClass
+    {
+        return $this->db->getSingleObject(
+            'SELECT kSteuerklasse, fMwSt
+                FROM tartikel
+                WHERE kArtikel = :pid',
+            ['pid' => $productID]
+        );
     }
 
     /**

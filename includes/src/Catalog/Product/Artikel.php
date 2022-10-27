@@ -1094,6 +1094,11 @@ class Artikel implements RoutableInterface
     protected CustomerGroup $customerGroup;
 
     /**
+     * @var self[]
+     */
+    private static $products = [];
+
+    /**
      *
      */
     public function __wakeup()
@@ -1433,10 +1438,9 @@ class Artikel implements RoutableInterface
             $images = $this->getDB()->getObjects(
                 'SELECT tartikelpict.cPfad, tartikelpict.nNr
                     FROM tartikelpict
-                    JOIN tartikel 
-                        ON tartikel.cArtNr = :cartnr
-                    WHERE tartikelpict.kArtikel = tartikel.kArtikel
-                    GROUP BY tartikelpict.cPfad
+                    JOIN tartikel
+                         ON tartikelpict.kArtikel = tartikel.kArtikel
+                    WHERE tartikel.cArtNr = :cartnr
                     ORDER BY tartikelpict.nNr',
                 ['cartnr' => $this->getFunctionalAttributevalue(\ART_ATTRIBUT_BILDLINK)]
             );
@@ -1447,7 +1451,6 @@ class Artikel implements RoutableInterface
                 'SELECT cPfad, nNr
                     FROM tartikelpict 
                     WHERE kArtikel = :pid 
-                    GROUP BY cPfad 
                     ORDER BY nNr',
                 ['pid' => (int)$this->kArtikel]
             );
@@ -1474,9 +1477,14 @@ class Artikel implements RoutableInterface
 
             return $this;
         }
+        $paths = [];
         foreach ($images as $i => $item) {
-            $imgNo = (int)$item->nNr;
-            $image = new stdClass();
+            if (\in_array($item->cPfad, $paths)) {
+                continue;
+            }
+            $paths[] = $item->cPfad;
+            $imgNo   = (int)$item->nNr;
+            $image   = new stdClass();
             $this->generateAllImageSizes(false, $imgNo, $item->cPfad);
             $image->cPfadMini   = $this->images[$imgNo][Image::SIZE_XS];
             $image->cPfadKlein  = $this->images[$imgNo][Image::SIZE_SM];
@@ -3024,6 +3032,7 @@ class Artikel implements RoutableInterface
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = $this->getPrecision();
+        $prodVkNetto = $this->gibPreis(1, [], $customerGroupID, '', false);
         foreach ($varDetailPrices as $varDetailPrice) {
             $varDetailPrice->kArtikel         = (int)$varDetailPrice->kArtikel;
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
@@ -3037,7 +3046,6 @@ class Artikel implements RoutableInterface
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
             }
 
-            $prodVkNetto            = $this->gibPreis(1, [], $customerGroupID, '', false);
             $varVKNetto             = $tmpProduct->gibPreis(1, [], $customerGroupID, '', false);
             $variationPrice         = $this->oVariationDetailPreis_arr[$idx] ?? new stdClass();
             $variationPrice->Preise = clone $tmpProduct->Preise;
@@ -3477,6 +3485,7 @@ class Artikel implements RoutableInterface
             $toSave->oVariationKombiKinderAssoc_arr = null;
             $toSave->Preise                         = $basePrice;
             Shop::Container()->getCache()->set($this->cacheID, $toSave, $cacheTags);
+            self::$products[$this->cacheID] = $toSave;
         }
         $this->getCustomerPrice($customerGroupID, Frontend::getCustomer()->getID());
 
@@ -3530,7 +3539,11 @@ class Artikel implements RoutableInterface
         $this->cacheID = 'fa_' . $productID . '_' . $productHash;
         $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
-            return false;
+            if (isset(self::$products[$this->cacheID])) {
+                $product = self::$products[$this->cacheID];
+            } else {
+                return false;
+            }
         }
         if ($product === null) {
             return null;
@@ -4303,7 +4316,7 @@ class Artikel implements RoutableInterface
             $parentProduct = new self($this->getDB(), $this->customerGroup, $this->currency);
             $parentProduct->fuelleArtikel(
                 $this->kVaterArtikel,
-                self::getDefaultOptions(),
+                (object)['nAttribute' => 1],
                 $this->kKundengruppe,
                 $this->kSprache
             );
@@ -4881,14 +4894,14 @@ class Artikel implements RoutableInterface
         $minDeliveryDays = $favShipping->nMinLiefertage ?? 2;
         $maxDeliveryDays = $favShipping->nMaxLiefertage ?? 3;
         // get all pieces (even invisible) to calc delivery
-        $nAllPieces = $this->getDB()->getAffectedRows(
-            'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
-                FROM tartikel
-                JOIN tstueckliste
-                    ON tstueckliste.kArtikel = tartikel.kArtikel
-                    AND tstueckliste.kStueckliste = :plid',
+        $nAllPieces = empty($this->kStueckliste) ? 0 : (int)($this->getDB()->getSingleObject(
+            'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
+                FROM tstueckliste
+                JOIN tartikel
+                     ON tstueckliste.kArtikel = tartikel.kArtikel
+                WHERE tstueckliste.kStueckliste = :plid',
             ['plid' => $this->kStueckliste]
-        );
+        )->nAnzahl ?? 0);
         // check if this is a set product - if so, calculate the delivery time from the set of products
         // we don't have loaded the list of pieces yet, do so!
         $partList = null;
@@ -4902,17 +4915,14 @@ class Artikel implements RoutableInterface
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
         if ($isPartsList) {
-            $piecesNotInShop = $this->getDB()->getSingleObject(
+            $piecesNotInShop = (int)($this->getDB()->getSingleObject(
                 'SELECT COUNT(tstueckliste.kArtikel) AS nAnzahl
                     FROM tstueckliste
-                    LEFT JOIN tartikel
-                      ON tartikel.kArtikel = tstueckliste.kArtikel
-                    WHERE tstueckliste.kStueckliste = :plid
-                        AND tartikel.kArtikel IS NULL',
+                    WHERE tstueckliste.kStueckliste = :plid',
                 ['plid' => $this->kStueckliste]
-            );
+            )->nAnzahl ?? 0) - $nAllPieces;
 
-            if ($piecesNotInShop !== null && (int)$piecesNotInShop->nAnzahl > 0) {
+            if ($piecesNotInShop > 0) {
                 // this list has potentially invisible parts and can't calculated correctly
                 // handle this parts list as a normal product
                 $isPartsList = false;

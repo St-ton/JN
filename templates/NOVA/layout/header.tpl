@@ -494,8 +494,8 @@
 
         {if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
-                <div class="row">
-                    <div class="col-lg-8 col-xl-9 ml-auto-util">
+                <div class="row justify-content-lg-end">
+                    <div class="col-lg-8 col-xl-9 ml-auto-util ">
             {/block}
         {/if}
 

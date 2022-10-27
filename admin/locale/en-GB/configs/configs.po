@@ -2208,7 +2208,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Use customer review reminder"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase. Per default, customer review reminders are only sent to customers who have agreed to newsletters via the double opt-in option. You can set the customer groups for which double opt-in is required in Marketing > Promotions > Newsletter > Settings > \"Double opt-in for the following customers\". If \'Yes\' is selected, all customers receive a reminder."
+msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase. Per default, customer review reminders are only sent to customers who have agreed to newsletters via the double opt-in option. You can set the customer groups for which double opt-in is required in Marketing > Promotions > Newsletter > Settings > \"Double opt-in for the following customers\". If 'Yes' is selected, all customers receive a reminder."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Allow customer review reminder only for"

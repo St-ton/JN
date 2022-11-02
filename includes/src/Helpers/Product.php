@@ -2086,7 +2086,10 @@ class Product
     public static function getEditConfigMode(int $configID, JTLSmarty $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
+        if (!isset($cart->PositionenArr[$configID]->Artikel->FunktionsAttribute['jtl_voucher']) &&
+            !isset($cart->PositionenArr[$configID]->Artikel->FunktionsAttribute['jtl_voucher_flex']) &&
+            (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense())
+        ) {
             return;
         }
         $baseItem = $cart->PositionenArr[$configID];

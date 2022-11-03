@@ -380,19 +380,19 @@ class Router
             $pfx .= $this->path;
         }
         if ($forceDynamic === false && $byName === true) {
-            $scheme = $this->config['global']['routing_default_language'] ?? 'F';
-            if ($isDefaultLocale && $scheme === 'F') {
-                return $pfx . '/' . ($replacements['name'] ?? $replacements['id']);
+            if ($isDefaultLocale) {
+                $scheme = $this->config['global']['routing_default_language'] ?? 'F';
+            } else {
+                $scheme = $this->config['global']['routing_scheme'] ?? 'F';
             }
-            if ($isDefaultLocale && $scheme === 'L') {
-                return $pfx . '/' . $replacements['lang'] . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
+            if ($scheme === 'F') {
+                return $pfx . '/' . ($replacements['name'] ?? $replacements['id'])
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
-            $scheme = $this->config['global']['routing_scheme'] ?? 'F';
-            if (!$isDefaultLocale && $scheme === 'F') {
-                return $pfx . '/' . ($replacements['name'] ?? $replacements['id']);
-            }
-            if (!$isDefaultLocale && $scheme === 'L') {
-                return $pfx . '/' . $replacements['lang'] . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
+            if ($scheme === 'L') {
+                return $pfx . '/' . $replacements['lang'] . '/'
+                    . ($replacements['name'] ?? $replacements['id'] ?? '')
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
         }
 

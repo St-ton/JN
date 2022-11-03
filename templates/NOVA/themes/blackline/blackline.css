@@ -21093,11 +21093,6 @@ a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
 .basket-form-inline .col:first-child {
   margin-bottom: 1rem;
 }
-@media (min-width: 576px) {
-  .basket-form-inline .col:first-child {
-    margin-bottom: 0;
-  }
-}
 #form_bundles .row {
   margin-bottom: 4rem;
   margin-top: -0.5rem;

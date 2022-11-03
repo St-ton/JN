@@ -1718,7 +1718,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
                 $localizedNames,
                 1,
                 $fBrutto,
-                $packagings->kSteuerklasse,
+                (int)$packagings->kSteuerklasse,
                 C_WARENKORBPOS_TYP_VERPACKUNG,
                 false
             );

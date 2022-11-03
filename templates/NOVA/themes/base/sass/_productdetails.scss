@@ -596,9 +596,6 @@
 	margin-bottom: map_get($spacers, 3);
 	.col:first-child {
 		margin-bottom: map_get($spacers, 3);
-		@include media-breakpoint-up(sm) {
-			margin-bottom: 0;
-		}
 	}
 }
 

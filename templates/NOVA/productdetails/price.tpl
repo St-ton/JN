@@ -5,6 +5,31 @@
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}
                 {block name='productdetails-price-out-of-stock'}
                     <span class="price_label price_out_of_stock">{lang key='productOutOfStock' section='productDetails'}</span>
+                    {block name='productdetails-price-out-of-stock-microdata'}
+                        <span itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
+                            {if $Artikel->Preise->oPriceRange->isRange()}
+                                <meta itemprop="minPrice" content="{$Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata}">
+                                <meta itemprop="maxPrice" content="{$Artikel->Preise->oPriceRange->getMaxLocalized($NettoPreise)|formatForMicrodata}">
+                            {/if}
+                            <meta itemprop="price" content="{$Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata}">
+                            <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
+                            {if $Artikel->Preise->Sonderpreis_aktiv && $Artikel->dSonderpreisStart_en !== null && $Artikel->dSonderpreisEnde_en !== null}
+                                <meta itemprop="validFrom" content="{$Artikel->dSonderpreisStart_en}">
+                                <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
+                                <meta itemprop="priceValidUntil" content="{$Artikel->dSonderpreisEnde_en}">
+                            {/if}
+                            {if !empty($Artikel->cLocalizedVPE)}
+                                <span itemprop="priceSpecification" itemscope itemtype="https://schema.org/UnitPriceSpecification">
+                                    <meta itemprop="price" content="{if $Artikel->Preise->oPriceRange->isRange()}{($Artikel->Preise->oPriceRange->getMinLocalized($NettoPreise)|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{else}{($Artikel->Preise->cVKLocalized[$NettoPreise]|formatForMicrodata/$Artikel->fVPEWert)|string_format:"%.2f"}{/if}">
+                                    <meta itemprop="priceCurrency" content="{JTL\Session\Frontend::getCurrency()->getName()}">
+                                    <span itemprop="referenceQuantity" itemscope itemtype="https://schema.org/QuantitativeValue">
+                                        <meta itemprop="price" content="{$Artikel->cLocalizedVPE[$NettoPreise]}">
+                                        <meta itemprop="value" content="{$Artikel->fGrundpreisMenge}">
+                                        <meta itemprop="unitText" content="{$Artikel->cVPEEinheit|regex_replace:"/[\d ]/":""}">
+                                    </span>
+                                </span>
+                            {/if}
+                    {/block}
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}

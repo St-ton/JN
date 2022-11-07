@@ -16,7 +16,7 @@
                 {/block}
                 {block name='productdetails-config-options-collapse'}
                     {block name='productdetails-config-options-collapse-top'}
-                        <div class="cfg-group-info sticky-top">
+                        <div class="cfg-group-info {if !$isMobile}sticky-top{/if}">
                             {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                                 {badge variant="info" class="js-group-badge-checked"}
                                 {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}

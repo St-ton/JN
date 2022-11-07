@@ -1839,7 +1839,7 @@ class CheckoutController extends RegistrationController
                     $localizedNames,
                     1,
                     $fBrutto,
-                    $packagings->kSteuerklasse,
+                    (int)$packagings->kSteuerklasse,
                     \C_WARENKORBPOS_TYP_VERPACKUNG,
                     false
                 );

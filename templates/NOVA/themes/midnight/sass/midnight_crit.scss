@@ -497,7 +497,25 @@ header { box-shadow: 0 rem(16px) rem(9px) rem(-12px) transparentize($black, .94)
 }
 
 /* bootstrap end */
-
+@media (min-width: 992px){
+  .justify-content-lg-end {
+    justify-content: flex-end !important;
+  }
+}
+.list-gallery {
+  display: flex;
+  flex-direction: column;
+  .second-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  img.second {
+    opacity: 0;
+  }
+}
 .form-group {
   margin-bottom: 1rem;
 }

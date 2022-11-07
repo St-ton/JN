@@ -153,6 +153,14 @@
                                                 {/link}
                                             </li>
                                         {/if}
+                                        {if !empty($Einstellungen.template.footer.tiktok)}
+                                            <li>
+                                                {link href="{if $Einstellungen.template.footer.tiktok|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.tiktok}"
+                                                class="btn-icon-secondary btn-instagram btn btn-sm" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='TikTok'}"]  title="TikTok" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-tiktok fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
+                                        {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
                                             <li>
                                                 {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"

@@ -268,6 +268,7 @@ class Item extends AbstractItem implements RoutableInterface
         $this->commentCount      = $this->comments->getCommentsCount();
         $this->commentChildCount = $this->comments->getCommentsCount('child');
 
+        //todo: NewsItems verwenden die alte Bildordner. In DB 'tnews' steht noch "bilder/news/id/preview..."
         if (($preview = $this->getPreviewImage()) !== '') {
             $preview = \str_replace(\PFAD_NEWSBILDER, '', $preview);
             $this->generateAllImageSizes(true, 1, $preview);

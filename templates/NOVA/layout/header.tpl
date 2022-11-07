@@ -26,12 +26,36 @@
             <meta property="og:description" content="{$meta_description|truncate:1000:"":true}" />
             <meta property="og:url" content="{$cCanonicalURL}"/>
 
-            {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->Bilder)}
-                <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLGross}" />
-                <meta property="og:image" content="{$Artikel->Bilder[0]->cURLGross}">
-            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getPreviewImage())}
-                <meta itemprop="image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
-                <meta property="og:image" content="{$imageBaseURL}{$newsItem->getPreviewImage()}" />
+            {$showImage = true}
+            {$navData = null}
+            {if !empty($oNavigationsinfo)}
+                {if $oNavigationsinfo->getCategory() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['kategorie_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getCategory()}
+                {elseif $oNavigationsinfo->getManufacturer() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getManufacturer()}
+                {elseif $oNavigationsinfo->getCharacteristicValue() !== null}
+                    {$showImage = in_array($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'], ['B', 'BT'])}
+                    {$navData = $oNavigationsinfo->getCharacteristicValue()}
+                {/if}
+            {/if}
+
+            {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && !empty($Artikel->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$Artikel->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$Artikel->getImage(JTL\Media\Image::SIZE_LG)}">
+                <meta property="og:image:width" content="{$Artikel->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$Artikel->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
+            {elseif $nSeitenTyp === $smarty.const.PAGE_NEWSDETAIL && !empty($newsItem->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$newsItem->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$newsItem->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:width" content="{$newsItem->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$newsItem->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
+            {elseif !empty($navData) && !empty($navData->getImage(JTL\Media\Image::SIZE_LG))}
+                <meta itemprop="image" content="{$navData->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image" content="{$navData->getImage(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:width" content="{$navData->getImageWidth(JTL\Media\Image::SIZE_LG)}" />
+                <meta property="og:image:height" content="{$navData->getImageHeight(JTL\Media\Image::SIZE_LG)}" />
             {else}
                 <meta itemprop="image" content="{$ShopLogoURL}" />
                 <meta property="og:image" content="{$ShopLogoURL}" />

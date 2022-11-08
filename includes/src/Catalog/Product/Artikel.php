@@ -3508,9 +3508,10 @@ class Artikel implements RoutableInterface
             && ($this->conf['global']['artikel_artikelanzeigefilter_seo'] === 'seo')
         ) {
             $tmpOptions = clone $this->options;
+            $hidePrice  = $this->conf['global']['artikel_artikelanzeigefilter_seo'] === 'seo' ? 0 : 1;
 
             $tmpOptions->nKeinLagerbestandBeachten = 1;
-            $tmpOptions->nHidePrices               = 1;
+            $tmpOptions->nHidePrices               = $hidePrice;
             $tmpOptions->nShowOnlyOnSEORequest     = 1;
 
             if ($this->fuelleArtikel($productID, $tmpOptions, $customerGroupID, $this->kSprache, $noCache) !== null) {

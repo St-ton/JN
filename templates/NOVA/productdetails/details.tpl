@@ -184,7 +184,7 @@
                             {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
-                            <div class="product-offer"{*{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}*} itemprop="offers" itemscope itemtype="https://schema.org/Offer"{*{/if}*}>
+                            <div class="product-offer"{if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')} itemprop="offers" itemscope itemtype="https://schema.org/Offer"{/if}>
                                 {block name='productdetails-details-info-hidden'}
                                     {if !($Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                         <meta itemprop="url" content="{$Artikel->cURLFull}">

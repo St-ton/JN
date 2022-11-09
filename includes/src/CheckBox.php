@@ -623,7 +623,7 @@ class CheckBox
         $ins->nLogging          = $checkbox->nLogging;
         $ins->nSort             = $checkbox->nSort;
         $ins->dErstellt         = $checkbox->dErstellt;
-        $ins->kCheckBox = (int)$checkbox->kCheckBox;
+        $ins->kCheckBox         = (int)$checkbox->kCheckBox;
         $id                     = $this->db->insert('tcheckbox', $ins);
         $this->kCheckBox        = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
         $this->addLocalization($texts, $descriptions);

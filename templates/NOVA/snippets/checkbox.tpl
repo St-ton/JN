@@ -5,13 +5,13 @@
     {if empty($cPost_arr)}
         {assign var=cPost_arr value=$smarty.post}
     {/if}
-
     {getCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$cPlausi_arr cPost_arr=$cPost_arr assign='checkboxes'}
     {if !empty($checkboxes)}
         {block name='snippets-checkbox-checkboxes'}
             {foreach $checkboxes as $cb}
                 {formgroup class="snippets-checkbox-wrapper exclude-from-label-slide" label-for=" " description="{if !empty($cb->cBeschreibung)}{$cb->cBeschreibung}{/if}"}
                     {block name='snippets-checkbox-checkbox'}
+                        {if !$cb->identifier==='RightOfRevocationOfDownloadArticles' || ($cb->identifier==='RightOfRevocationOfDownloadArticles' && $hasDownloads)}
                         {checkbox
                             id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}"
                             name={$cb->cID}
@@ -34,6 +34,7 @@
                                 {/block}
                             {/if}
                         {/checkbox}
+                        {/if}
                     {/block}
                 {/formgroup}
             {/foreach}

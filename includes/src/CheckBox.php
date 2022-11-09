@@ -119,6 +119,8 @@ class CheckBox
      */
     public ?Link $oLink = null;
 
+    public string $identifier;
+
     /**
      * @var DbInterface
      */
@@ -148,6 +150,8 @@ class CheckBox
      * @var string|null
      */
     public ?string $cErrormsg = null;
+
+    public int  $nInternal = 0;
 
     /**
      * @param int              $id
@@ -205,6 +209,7 @@ class CheckBox
         $this->dErstellt_DE      = $checkbox->dErstellt_DE;
         $this->kKundengruppe_arr = Text::parseSSKint($checkbox->cKundengruppe);
         $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->cAnzeigeOrt);
+        $this->nInternal         = (int)$checkbox->nInternal;
         // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt
         if ($this->kCheckBoxFunktion > 0) {

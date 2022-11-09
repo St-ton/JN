@@ -423,6 +423,7 @@ class Plugins
                 : '';
             $error                   = isset($params['cPlausi_arr'][$checkbox->cID]);
             $checkbox->isActive      = isset($params['cPost_arr'][$checkbox->cID]);
+            $checkbox->identifier    = $checkbox->cName;
             $checkbox->cName         = $checkbox->oCheckBoxSprache_arr[$langID]->cText ?? '';
             $checkbox->cLinkURL      = $url;
             $checkbox->cLinkURLFull  = $url;

@@ -254,9 +254,13 @@ class LanguageController extends AbstractBackendController
         switch ($action) {
             case 'newvar':
                 // neue Variable erstellen
+                $customSectionId          = $this->db->getSingleInt(
+                    "SELECT kSprachsektion FROM tsprachsektion WHERE cName = 'custom'",
+                    'kSprachsektion'
+                );
                 $this->step               = 'newvar';
                 $variable                 = new stdClass();
-                $variable->kSprachsektion = (int)($_REQUEST['kSprachsektion'] ?? 1);
+                $variable->kSprachsektion = (int)($_REQUEST['kSprachsektion'] ?? $customSectionId);
                 $variable->cName          = $_REQUEST['cName'] ?? '';
                 $variable->cWert_arr      = [];
                 $this->smarty->assign('oVariable', $variable);

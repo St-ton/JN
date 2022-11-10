@@ -3,16 +3,21 @@
 namespace JTL\Router\Controller\Backend;
 
 use DateTimeImmutable;
+use JTL\Backend\AdminAccount;
 use JTL\Backend\Permissions;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
+use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\L10n\GetText;
 use JTL\Mapper\JobTypeToJob;
+use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -37,15 +42,34 @@ class CronController extends AbstractBackendController
     private JobHydrator $hydrator;
 
     /**
+     * CronController constructor
+     * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
+     * @param AlertServiceInterface $alertService
+     * @param AdminAccount          $account
+     * @param GetText               $getText
+     */
+    public function __construct(
+        DbInterface $db,
+        JTLCacheInterface $cache,
+        AlertServiceInterface $alertService,
+        AdminAccount $account,
+        GetText $getText
+    ) {
+        parent::__construct($db, $cache, $alertService, $account, $getText);
+
+        $this->logger   = Shop::Container()->getLogService();
+        $this->hydrator = new JobHydrator();
+        $this->getText->loadAdminLocale('pages/cron');
+    }
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CRON_VIEW);
-        $this->getText->loadAdminLocale('pages/cron');
-        $this->logger   = Shop::Container()->getLogService();
-        $this->hydrator = new JobHydrator();
 
         $deleted  = 0;
         $updated  = 0;

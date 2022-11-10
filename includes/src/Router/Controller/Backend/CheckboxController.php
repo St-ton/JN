@@ -76,6 +76,7 @@ class CheckboxController extends AbstractBackendController
                             'nInternal'         => $post['nInternal'],
                             'cAnzeigeOrt'       => ';' . $post['cAnzeigeOrt'][0] . ';',
                             'nPflicht'          => $post['nPflicht'],
+                            'kLink'             => $post['kLink'],
                             'nAktiv'            => $post['nAktiv'],
                             'nLogging'          => $post['nLogging'],
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion']

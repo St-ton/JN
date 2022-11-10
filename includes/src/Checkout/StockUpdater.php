@@ -271,7 +271,7 @@ class StockUpdater
             $options->nKeineSichtbarkeitBeachten = 1;
             foreach ($boms as $component) {
                 $tmpArtikel = new Artikel($this->db, $customerGroup, $currency);
-                $tmpArtikel->fuelleArtikel($component->kArtikel, $options, $customerGroupID, $languageID);
+                $tmpArtikel->fuelleArtikel((int)$component->kArtikel, $options, $customerGroupID, $languageID);
                 $compStockLevel = \floor(
                     $this->updateStock(
                         $tmpArtikel,

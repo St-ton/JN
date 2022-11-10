@@ -674,8 +674,8 @@ class Metadata implements MetadataInterface
                     $this->productFilter->getCategory()->getValue(),
                     $this->productFilter->getFilterConfig()->getLanguageID()
                 );
-                if (!empty($category->getCategoryAttribute(\KAT_ATTRIBUT_DARSTELLUNG))) {
-                    $defaultViewType = (int)$category->getCategoryAttribute(\KAT_ATTRIBUT_DARSTELLUNG);
+                if (!empty($category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_DARSTELLUNG))) {
+                    $defaultViewType = (int)$category->getCategoryFunctionAttribute(\KAT_ATTRIBUT_DARSTELLUNG);
                 }
             }
             if ($viewType === 0 && (int)$conf['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {

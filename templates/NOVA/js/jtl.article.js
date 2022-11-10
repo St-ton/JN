@@ -1595,7 +1595,7 @@
                     '       <div class="modal-content">' +
                     '           <div class="modal-header">' +
                     '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
-                    '               <h4 class="modal-title">' + title + '</h4>' +
+                    '               <div class="modal-title h4">' + title + '</div>' +
                     '           </div>' +
                     '           <div class="modal-body">' +
                     '               <div id="' + wrapper.slice(1) + '" style="min-height:100px">' +

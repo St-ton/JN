@@ -76,6 +76,14 @@ abstract class AbstractBackendController implements ControllerInterface
     ) {
         $this->baseURL = Shop::getAdminURL(true);
         $this->setLanguage();
+        $this->init();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
     }
 
     /**
@@ -118,14 +126,6 @@ abstract class AbstractBackendController implements ControllerInterface
     protected function hasPermissions(string $permissions): bool
     {
         return $this->account->permission($permissions);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function init(): bool
-    {
-        return true;
     }
 
     /**

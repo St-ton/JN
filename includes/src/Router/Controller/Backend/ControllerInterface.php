@@ -13,9 +13,9 @@ use Psr\Http\Message\ServerRequestInterface;
 interface ControllerInterface
 {
     /**
-     * @return bool
+     * @return void
      */
-    public function init(): bool;
+    public function init(): void;
 
     /**
      * @param ServerRequestInterface $request

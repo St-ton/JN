@@ -174,12 +174,11 @@
                         <input name="erstellen" type="hidden" value="1" />
                         <input name="tab" type="hidden" value="erstellen" />
                         {if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}
-                            <input name="kCheckBox" type="hidden" value="{$oCheckBox->kCheckBox}" />12
-                            {assign var="nInternalBox"  value=$oCheckBox->nInternal}
+                            <input name="kCheckBox" type="hidden" value="{$oCheckBox->kCheckBox}" />
                         {elseif isset($kCheckBox) && $kCheckBox > 0}
-                            <input name="kCheckBox" type="hidden" value="{$kCheckBox}" />34
-                            {assign var="nInternalBox"  value=$oCheckBox->nInternal}
+                            <input name="kCheckBox" type="hidden" value="{$kCheckBox}" />
                         {/if}
+                        {assign var="nInternalBox"  value=$oCheckBox->nInternal}
                         <input name="nInternal" type="hidden" value="{$nInternalBox}" />
 
                         <div class="settings">
@@ -248,6 +247,9 @@
                                 </div>
                             {/if}
 
+                            {if isset($nInternalBox) &&  $nInternalBox == 1}
+                                <input name="kLink"  type="hidden" value="{$oCheckBox->kLink}" />
+                            {/if}
                             <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cAnzeigeOrt)} form-error{/if}">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="cAnzeigeOrt">{__('checkboxLocation')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

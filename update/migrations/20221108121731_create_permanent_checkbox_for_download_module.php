@@ -22,7 +22,7 @@ class Migration_20221108121731 extends Migration implements IMigration
      */
     public function up()
     {
-       $this->execute('ALTER TABLE `tcheckbox` ADD COLUMN IF NOT EXISTS nInternal TINYINT(1)');
+       $this->execute('ALTER TABLE `tcheckbox` ADD COLUMN nInternal TINYINT(1)');
        $result = $this->exec('SELECT count(cName) as countNames FROM tcheckbox WHERE cName = "RightOfRevocationOfDownloadArticles"',8);
        if((int)$result['countNames'] === 0){
            $kCheckBox = $this->exec("INSERT INTO `tcheckbox` ( cName, cKundengruppe, cAnzeigeOrt, nAktiv, nPflicht, nLogging, nSort, dErstellt, `nInternal`)

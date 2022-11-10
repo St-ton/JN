@@ -71,6 +71,17 @@ class CheckboxController extends AbstractBackendController
                     ->assign('cPlausi_arr', $checks);
                 if ($checkboxID > 0) {
                     $smarty->assign('kCheckBox', $checkboxID);
+                    if ((int)$post['nInternal'] === 1) {
+                        $internalBox = [
+                            'nInternal'         => $post['nInternal'],
+                            'cAnzeigeOrt'       => ';' . $post['cAnzeigeOrt'][0] . ';',
+                            'nPflicht'          => $post['nPflicht'],
+                            'nAktiv'            => $post['nAktiv'],
+                            'nLogging'          => $post['nLogging'],
+                            'kCheckBoxFunktion' => $post['kCheckBoxFunktion']
+                        ];
+                    }
+                    $smarty->assign('oCheckBox', (object)$internalBox);
                 }
             }
             $tab = $step;

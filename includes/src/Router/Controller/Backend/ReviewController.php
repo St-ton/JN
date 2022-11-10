@@ -3,24 +3,19 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
-use JTL\Backend\AdminAccount;
 use JTL\Backend\Permissions;
-use JTL\Cache\JTLCacheInterface;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
-use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\L10n\GetText;
 use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
 use JTL\Review\Manager;
 use JTL\Review\ReviewBonusModel;
 use JTL\Review\ReviewModel;
 use JTL\Router\Route;
-use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -52,14 +47,8 @@ class ReviewController extends AbstractBackendController
     /**
      * @inheritdoc
      */
-    public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        AlertServiceInterface $alertService,
-        AdminAccount $account,
-        GetText $getText
-    ) {
-        parent::__construct($db, $cache, $alertService, $account, $getText);
+    public function init(): void
+    {
         $this->config  = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
         $this->manager = new Manager(
             $this->db,

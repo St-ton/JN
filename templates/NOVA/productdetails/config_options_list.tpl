@@ -10,9 +10,9 @@
             <div id="cfg-grp-{$configGroup->getID()}" class="cfg-group js-cfg-group mb-3 {if $configGroup@first}visited{/if}"
                  data-id="{$configGroup->getID()}">
                 {block name='productdetails-config-options-heading'}
-                    <h3 class="hr-sect">
+                    <div class="hr-sect h3">
                         {$configLocalization->getName()}
-                    </h3>
+                    </div>
                 {/block}
                 {block name='productdetails-config-options-collapse'}
                     {block name='productdetails-config-options-collapse-top'}

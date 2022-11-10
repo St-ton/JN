@@ -82,7 +82,7 @@ class CheckboxController extends AbstractBackendController
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
                             'kKundengruppe'     => $post['kKundengruppe'],
                         ];
-                    }else{
+                    } else {
                         $postBox = [
                             'nInternal'         => $post['nInternal'],
                             'cAnzeigeOrt'       => $post['cAnzeigeOrt'],
@@ -176,7 +176,9 @@ class CheckboxController extends AbstractBackendController
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
             $checks['nSort'] = 1;
         }
-        if (!isset($post['kKundengruppe']) || !\is_array($post['kKundengruppe']) || \count($post['kKundengruppe']) === 0) {
+        if (!isset($post['kKundengruppe'])
+            || !\is_array($post['kKundengruppe']) 
+            || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 

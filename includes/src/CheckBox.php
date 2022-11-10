@@ -584,7 +584,8 @@ class CheckBox
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')
+                AND (tcheckbox.nInternal = 0 OR tcheckbox.nInternal IS NULL) '
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -628,6 +629,7 @@ class CheckBox
         $ins->nLogging          = $checkbox->nLogging;
         $ins->nSort             = $checkbox->nSort;
         $ins->dErstellt         = $checkbox->dErstellt;
+        $ins->nInternal         = $checkbox->nInternal;
         if ((int)$checkbox->kCheckBox !== 0) {
             $ins->kCheckBox = (int)$checkbox->kCheckBox;
         }

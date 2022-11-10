@@ -177,7 +177,7 @@ class CheckboxController extends AbstractBackendController
             $checks['nSort'] = 1;
         }
         if (!isset($post['kKundengruppe'])
-            || !\is_array($post['kKundengruppe']) 
+            || !\is_array($post['kKundengruppe'])
             || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }

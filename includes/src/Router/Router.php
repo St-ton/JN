@@ -357,6 +357,7 @@ class Router
      * @param string     $type
      * @param array|null $replacements
      * @param bool       $byName
+     * @param bool       $forceDynamic
      * @return string
      */
     public function getURLByType(

@@ -59,7 +59,7 @@
                     <div id="product-configuration-sidebar" class="product-configuration-sidebar-wrapper sticky-top">
                         <div class="panel panel-primary no-margin">
                             <div class="panel-heading">
-                                <h2 class="panel-title">{lang key='yourConfiguration'}</h2>
+                                <div class="panel-title h2">{lang key='yourConfiguration'}</div>
                             </div>
                             <table class="table table-sm config-table">
                                 <tbody class="summary"></tbody>

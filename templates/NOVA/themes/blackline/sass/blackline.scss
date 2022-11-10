@@ -240,8 +240,7 @@ header {
   }
   &::after {
     content: "";
-    margin: 10px 0 0 0;
-    width: 300px;
+    margin: 10px 0 0 10px;
   }
   @include media-breakpoint-down(md) {
     border: 0;

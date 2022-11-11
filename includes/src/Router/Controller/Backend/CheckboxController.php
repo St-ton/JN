@@ -71,6 +71,8 @@ class CheckboxController extends AbstractBackendController
                     ->assign('cPlausi_arr', $checks);
                 if ($checkboxID > 0) {
                     $smarty->assign('kCheckBox', $checkboxID);
+
+                    $kKundengruppe = isset($post['kKundengruppe']) ? $post['kKundengruppe'] : ';;';
                     if ((int)$post['nInternal'] === 1) {
                         $postBox = [
                             'nInternal'         => $post['nInternal'],
@@ -80,19 +82,20 @@ class CheckboxController extends AbstractBackendController
                             'nAktiv'            => $post['nAktiv'],
                             'nLogging'          => $post['nLogging'],
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
-                            'kKundengruppe'     => $post['kKundengruppe'],
+                            'kKundengruppe'     => $kKundengruppe,
                         ];
                     } else {
-                        $postBox = [
+                        $cAnzeigeOrt = isset($post['cAnzeigeOrt']) ? $post['cAnzeigeOrt'] : ';;';
+                        $postBox     = [
                             'nInternal'         => $post['nInternal'],
-                            'cAnzeigeOrt'       => $post['cAnzeigeOrt'],
+                            'cAnzeigeOrt'       => $cAnzeigeOrt,
                             'nPflicht'          => $post['nPflicht'],
                             'nLink'             => $post['nLink'],
                             'kLink'             => $post['kLink'],
                             'nAktiv'            => $post['nAktiv'],
                             'nLogging'          => $post['nLogging'],
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
-                            'kKundengruppe'     => $post['kKundengruppe'],
+                            'kKundengruppe'     => $kKundengruppe,
                             ];
                     }
                     $smarty->assign('oCheckBox', (object)$postBox);

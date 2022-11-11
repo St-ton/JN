@@ -30,6 +30,15 @@
     {/literal}
 </script>
 
+{* translate Y/N values to int *}
+{function yesnoTranslator}
+    {if $data === 1 || $data === "Y"}
+        "Y"
+    {else}
+        "N"
+    {/if}
+{/function}
+
 {include file='tpl_inc/seite_header.tpl' cTitel=__('checkbox') cBeschreibung=__('checkboxDesc') cDokuURL=__('checkboxURL')}
 <div id="content">
     <div class="tabs">
@@ -263,7 +272,9 @@
                                             multiple="multiple"
                                             onClick="checkFunctionDependency();"
                                             data-selected-text-format="count > 2"
-                                            data-size="7" {if isset($nInternalBox) &&  $nInternalBox == 1}disabled{/if}>
+                                            data-size="7"
+                                            {if isset($nInternalBox) &&  $nInternalBox == 1}disabled{/if}
+                                            required>
                                         {foreach $cAnzeigeOrt_arr as $key => $cAnzeigeOrt}
                                             {assign var=bAOSelect value=false}
                                             {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $smarty.const.CHECKBOX_ORT_REGISTRIERUNG}
@@ -306,7 +317,7 @@
                             </div>
 
                             {if isset($nInternalBox) &&  $nInternalBox == 1}
-                                <input name="nPflicht"  type="hidden" value="{$oCheckBox->nPflicht}" />
+                                <input name="nPflicht"  type="hidden" value={yesnoTranslator data = $oCheckBox->nPflicht}  />
                             {/if}
 
                             <div class="form-group form-row align-items-center">
@@ -325,7 +336,7 @@
                             </div>
 
                             {if isset($nInternalBox) &&  $nInternalBox == 1}
-                                <input name="nAktiv"  type="hidden" value="{$oCheckBox->nAktiv}" />
+                                <input name="nAktiv"  type="hidden" value={yesnoTranslator data = $oCheckBox->nAktiv} />
                             {/if}
 
                             <div class="form-group form-row align-items-center">
@@ -344,7 +355,7 @@
                             </div>
 
                             {if isset($nInternalBox) &&  $nInternalBox == 1}
-                                <input name="nLogging"  type="hidden" value="{$oCheckBox->nLogging}" />
+                                <input name="nLogging"  type="hidden" value={yesnoTranslator data = $oCheckBox->nLogging} />
                             {/if}
 
                             <div class="form-group form-row align-items-center{if isset($cPlausi_arr.nSort)} form-error{/if}">
@@ -384,7 +395,8 @@
                                                 multiple="multiple"
                                                 data-selected-text-format="count > 2"
                                                 data-size="7"
-                                                data-actions-box="true">
+                                                data-actions-box="true"
+                                                required>
                                         {foreach $customerGroups as $customerGroup}
                                             {assign var=bKGSelect value=false}
                                             {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $customerGroup->isDefault()}

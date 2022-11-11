@@ -159,6 +159,8 @@ class LanguageController extends AbstractBackendController
             )
             ->cName;
 
+        $_SESSION['newVarSectionName'] = $variable->cSprachsektion;
+
         $data = $this->db->getObjects(
             'SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                 FROM tsprachwerte AS sw
@@ -254,9 +256,11 @@ class LanguageController extends AbstractBackendController
         switch ($action) {
             case 'newvar':
                 // neue Variable erstellen
+                $sectionName              = $_SESSION['newVarSectionName'] ?? 'custom';
                 $customSectionId          = $this->db->getSingleInt(
-                    "SELECT kSprachsektion FROM tsprachsektion WHERE cName = 'custom'",
-                    'kSprachsektion'
+                    'SELECT kSprachsektion FROM tsprachsektion WHERE cName = :sectionName',
+                    'kSprachsektion',
+                    ['sectionName' => $sectionName]
                 );
                 $this->step               = 'newvar';
                 $variable                 = new stdClass();

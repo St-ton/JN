@@ -282,11 +282,17 @@ class BackendRouter
         $this->router->post($basePath . Route::CODE . '/{redir}', CodeController::class . '::getResponse')
             ->setName(Route::CODE . 'POST');
 
+        $this->router->get($basePath . 'index.php', DashboardController::class . '::getResponse')
+            ->setName(Route::DASHBOARD . 'php')
+            ->middleware($updateCheckMiddleWare);
         $this->router->get($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD)
             ->middleware($updateCheckMiddleWare);
         $this->router->post($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD . 'POST')
+            ->middleware($updateCheckMiddleWare);
+        $this->router->post($basePath . 'index.php', DashboardController::class . '::getResponse')
+            ->setName(Route::DASHBOARD . 'POSTphp')
             ->middleware($updateCheckMiddleWare);
     }
 

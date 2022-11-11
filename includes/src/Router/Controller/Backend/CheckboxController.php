@@ -71,6 +71,31 @@ class CheckboxController extends AbstractBackendController
                     ->assign('cPlausi_arr', $checks);
                 if ($checkboxID > 0) {
                     $smarty->assign('kCheckBox', $checkboxID);
+                    if ((int)$post['nInternal'] === 1) {
+                        $postBox = [
+                            'nInternal'         => $post['nInternal'],
+                            'cAnzeigeOrt'       => ';' . $post['cAnzeigeOrt'][0] . ';',
+                            'nPflicht'          => $post['nPflicht'],
+                            'nLink'             => $post['nLink'],
+                            'nAktiv'            => $post['nAktiv'],
+                            'nLogging'          => $post['nLogging'],
+                            'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
+                            'kKundengruppe'     => $post['kKundengruppe'],
+                        ];
+                    } else {
+                        $postBox = [
+                            'nInternal'         => $post['nInternal'],
+                            'cAnzeigeOrt'       => $post['cAnzeigeOrt'],
+                            'nPflicht'          => $post['nPflicht'],
+                            'nLink'             => $post['nLink'],
+                            'kLink'             => $post['kLink'],
+                            'nAktiv'            => $post['nAktiv'],
+                            'nLogging'          => $post['nLogging'],
+                            'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
+                            'kKundengruppe'     => $post['kKundengruppe'],
+                            ];
+                    }
+                    $smarty->assign('oCheckBox', (object)$postBox);
                 }
             }
             $tab = $step;
@@ -124,13 +149,13 @@ class CheckboxController extends AbstractBackendController
         if (!$text) {
             $checks['cText'] = 1;
         }
-        if ((int)$post['nLink'] === 1) {
+        if (!isset($post['nLink']) || (int)$post['nLink'] === 1) {
             $link = isset($post['kLink']) && (int)$post['kLink'] > 0;
         }
         if (!$link) {
             $checks['kLink'] = 1;
         }
-        if (!\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
+        if (!isset($post['cAnzeigeOrt']) || !\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
             foreach ($post['cAnzeigeOrt'] as $cAnzeigeOrt) {
@@ -151,7 +176,9 @@ class CheckboxController extends AbstractBackendController
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
             $checks['nSort'] = 1;
         }
-        if (!\is_array($post['kKundengruppe']) || \count($post['kKundengruppe']) === 0) {
+        if (!isset($post['kKundengruppe'])
+            || !\is_array($post['kKundengruppe'])
+            || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 
@@ -194,6 +221,7 @@ class CheckboxController extends AbstractBackendController
         }
         $checkBox->nSort     = (int)$post['nSort'];
         $checkBox->dErstellt = 'NOW()';
+        $checkBox->nInternal = (int)$post['nInternal'];
         $texts               = [];
         $descr               = [];
         foreach ($languages as $language) {

@@ -119,7 +119,10 @@ class CheckBox
      */
     public ?Link $oLink = null;
 
-    public string $identifier;
+    /**
+     * @var string|null
+     */
+    public ?string $identifier = null;
 
     /**
      * @var DbInterface
@@ -151,6 +154,9 @@ class CheckBox
      */
     public ?string $cErrormsg = null;
 
+    /**
+     * @var int
+     */
     public int  $nInternal = 0;
 
     /**
@@ -584,7 +590,8 @@ class CheckBox
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')
+                AND (tcheckbox.nInternal = 0 OR tcheckbox.nInternal IS NULL) '
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -628,8 +635,12 @@ class CheckBox
         $ins->nLogging          = $checkbox->nLogging;
         $ins->nSort             = $checkbox->nSort;
         $ins->dErstellt         = $checkbox->dErstellt;
-        $id                     = $this->db->insert('tcheckbox', $ins);
-        $this->kCheckBox        = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
+        $ins->nInternal         = $checkbox->nInternal;
+        if ((int)$checkbox->kCheckBox !== 0) {
+            $ins->kCheckBox = (int)$checkbox->kCheckBox;
+        }
+        $id              = $this->db->insert('tcheckbox', $ins);
+        $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
         $this->addLocalization($texts, $descriptions);
 
         return $this;

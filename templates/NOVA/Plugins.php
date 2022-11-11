@@ -200,7 +200,7 @@ class Plugins
         if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
             $list2 = [];
             foreach ($list as $key => $item) {
-                if ($item->getCategoryAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) == $params['categoryBoxNumber']) {
+                if ($item->getCategoryFunctionAttribute(\KAT_ATTRIBUT_KATEGORIEBOX) == $params['categoryBoxNumber']) {
                     $list2[$key] = $item;
                 }
             }

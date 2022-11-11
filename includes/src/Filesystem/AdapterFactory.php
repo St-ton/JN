@@ -83,11 +83,14 @@ class AdapterFactory
      */
     public function getSftpConfig(): SftpConnectionProvider
     {
+        $pass = empty($this->config['sftp_pass']) ? null : $this->config['sftp_pass'];
+        $key  = empty($this->config['sftp_privkey']) ? null : $this->config['sftp_privkey'];
+
         return new SftpConnectionProvider(
             $this->config['sftp_hostname'],
             $this->config['sftp_user'],
-            $this->config['sftp_pass'],
-            $this->config['sftp_privkey'],
+            $pass,
+            $key,
             null,
             $this->config['sftp_port'],
             false,

@@ -119,7 +119,7 @@
                                         {block name='productdetails-details-info-manufacturer-wrapper'}
                                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                                                 {block name='productdetails-details-product-info-manufacturer'}
-                                                    <li  class="product-manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Organization">
+                                                    <li  class="product-manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Brand">
                                                         <strong>{lang key='manufacturers'}:</strong>
                                                         {if $Einstellungen.artikeldetails.artikel_weitere_artikel_hersteller_anzeigen === 'Y'}
                                                             <a href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerURL}{/if}"

@@ -229,7 +229,7 @@ class Hersteller implements RoutableInterface
             $this->setID((int)$item->kHersteller);
             $this->setSortNo((int)$item->nSortNr);
             $this->setName($item->cName ?? '', $langID);
-            $this->setMetaTitle($item->cBildpfad ?? '', $langID);
+            $this->setMetaTitle($item->cMetaTitle ?? '', $langID);
             $this->setMetaKeywords($item->cMetaKeywords ?? '', $langID);
             $this->setMetaDescription($item->cMetaDescription ?? '', $langID);
             $this->setDescription($item->cBeschreibung ?? '', $langID);

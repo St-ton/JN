@@ -671,7 +671,8 @@ class CheckBox
             $this->prepareLocalizationObject($iso, $text, $descriptions);
             $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = $this->db->update(
                 'tcheckboxsprache',
-                ['kCheckBox', 'kSprache'],[$kCheckBox,$this->oCheckBoxSprache_arr[$iso]->kSprache ],
+                ['kCheckBox', 'kSprache'],
+                [$kCheckBox, $this->oCheckBoxSprache_arr[$iso]->kSprache],
                 $this->oCheckBoxSprache_arr[$iso]
             );
         }

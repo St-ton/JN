@@ -3133,9 +3133,8 @@ class Artikel implements RoutableInterface
             $this->setSlug($slug->cSeo, (int)$slug->kSprache);
         }
         $this->createBySlug($this->kArtikel);
-        $this->cURL     = $this->getURLPath($this->kSprache);
+        $this->cURL     = \ltrim($this->getURLPath($this->kSprache), '/');
         $this->cURLFull = $this->getURL($this->kSprache);
-
         foreach (Frontend::getLanguages() as $language) {
             $code = $language->getCode();
             //$this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;

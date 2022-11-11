@@ -119,7 +119,10 @@ class CheckBox
      */
     public ?Link $oLink = null;
 
-    public string $identifier;
+    /**
+     * @var string|null
+     */
+    public ?string $identifier = null;
 
     /**
      * @var DbInterface
@@ -151,6 +154,9 @@ class CheckBox
      */
     public ?string $cErrormsg = null;
 
+    /**
+     * @var int
+     */
     public int  $nInternal = 0;
 
     /**

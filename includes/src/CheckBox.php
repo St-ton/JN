@@ -611,25 +611,23 @@ class CheckBox
         if (\count($texts) === 0) {
             return $this;
         }
-        $checkbox               = GeneralObject::copyMembers($this);
-        $ins                    = new stdClass();
-        $ins->kLink             = $checkbox->kLink;
-        $ins->kCheckBoxFunktion = $checkbox->kCheckBoxFunktion;
-        $ins->cName             = $checkbox->cName;
-        $ins->cKundengruppe     = $checkbox->cKundengruppe;
-        $ins->cAnzeigeOrt       = $checkbox->cAnzeigeOrt;
-        $ins->nAktiv            = $checkbox->nAktiv;
-        $ins->nPflicht          = $checkbox->nPflicht;
-        $ins->nLogging          = $checkbox->nLogging;
-        $ins->nSort             = $checkbox->nSort;
-        $ins->dErstellt         = $checkbox->dErstellt;
-        if ((int)$checkbox->kCheckBox !== 0) {
-            $ins->kCheckBox = (int)$checkbox->kCheckBox;
-        }
+        $ins = $this->createDatabaseObject();
+
         $id              = $this->db->insert('tcheckbox', $ins);
         $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
         $this->addLocalization($texts, $descriptions);
 
+        return $this;
+    }
+    public function updateDB(array $texts, array $descriptions, int $kCheckBox): self
+    {
+        if (\count($texts) === 0) {
+            return $this;
+        }
+        $ins            = $this->createDatabaseObject();
+        $ins->kCheckBox = $kCheckBox;
+        $this->db->update('tcheckbox', 'kCheckBox', $kCheckBox, $ins);
+        $this->updateLocalization($texts, $descriptions, $kCheckBox);
         return $this;
     }
 
@@ -645,14 +643,7 @@ class CheckBox
             if (\mb_strlen($text) === 0) {
                 continue;
             }
-            $this->oCheckBoxSprache_arr[$iso]                = new stdClass();
-            $this->oCheckBoxSprache_arr[$iso]->kCheckBox     = $this->kCheckBox;
-            $this->oCheckBoxSprache_arr[$iso]->kSprache      = $this->getSprachKeyByISO($iso);
-            $this->oCheckBoxSprache_arr[$iso]->cText         = $text;
-            $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = '';
-            if (isset($descriptions[$iso]) && \mb_strlen($descriptions[$iso]) > 0) {
-                $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = $descriptions[$iso];
-            }
+            $this->prepareLocalizationObject($iso, $text, $descriptions);
             $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = $this->db->insert(
                 'tcheckboxsprache',
                 $this->oCheckBoxSprache_arr[$iso]
@@ -662,6 +653,48 @@ class CheckBox
         return $this;
     }
 
+
+    private function updateLocalization(array $texts, array $descriptions, int $kCheckBox): self
+    {
+        //dismiss obsolete languages
+        $this->db->queryPrepared(
+            'DELETE FROM tcheckboxsprache 
+                    WHERE kSprache NOT IN (SELECT kSprache FROM tsprache) AND kCheckBox = :kCheckBox',
+            ['kCheckBox' => $kCheckBox ]
+        );
+
+        $this->oCheckBoxSprache_arr = [];
+        foreach ($texts as $iso => $text) {
+            if (\mb_strlen($text) === 0) {
+                continue;
+            }
+            $this->prepareLocalizationObject($iso, $text, $descriptions);
+            $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = $this->db->update(
+                'tcheckboxsprache',
+                ['kCheckBox', 'kSprache'],[$kCheckBox,$this->oCheckBoxSprache_arr[$iso]->kSprache ],
+                $this->oCheckBoxSprache_arr[$iso]
+            );
+        }
+
+        return $this;
+    }
+    /**
+     * @param int|string $iso
+     * @param mixed $text
+     * @param array $descriptions
+     * @return void
+     */
+    private function prepareLocalizationObject(int|string $iso, mixed $text, array $descriptions): void
+    {
+        $this->oCheckBoxSprache_arr[$iso]                = new stdClass();
+        $this->oCheckBoxSprache_arr[$iso]->kCheckBox     = $this->kCheckBox;
+        $this->oCheckBoxSprache_arr[$iso]->kSprache      = $this->getSprachKeyByISO($iso);
+        $this->oCheckBoxSprache_arr[$iso]->cText         = $text;
+        $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = '';
+        if (isset($descriptions[$iso]) && \mb_strlen($descriptions[$iso]) > 0) {
+            $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = $descriptions[$iso];
+        }
+    }
     /**
      * @param string $iso
      * @return int
@@ -765,5 +798,26 @@ class CheckBox
     public function getLink(): Link
     {
         return $this->oLink;
+    }
+
+    /**
+     * @return array
+     */
+    public function createDatabaseObject(): object
+    {
+        $checkbox               = GeneralObject::copyMembers($this);
+        $ins                    = new stdClass();
+        $ins->kLink             = $checkbox->kLink;
+        $ins->kCheckBoxFunktion = $checkbox->kCheckBoxFunktion;
+        $ins->cName             = $checkbox->cName;
+        $ins->cKundengruppe     = $checkbox->cKundengruppe;
+        $ins->cAnzeigeOrt       = $checkbox->cAnzeigeOrt;
+        $ins->nAktiv            = $checkbox->nAktiv;
+        $ins->nPflicht          = $checkbox->nPflicht;
+        $ins->nLogging          = $checkbox->nLogging;
+        $ins->nSort             = $checkbox->nSort;
+        $ins->dErstellt         = $checkbox->dErstellt;
+
+        return $ins;
     }
 }

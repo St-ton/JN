@@ -611,8 +611,7 @@ class CheckBox
         if (\count($texts) === 0) {
             return $this;
         }
-        $ins = $this->createDatabaseObject();
-
+        $ins             = $this->createDatabaseObject();
         $id              = $this->db->insert('tcheckbox', $ins);
         $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
         $this->addLocalization($texts, $descriptions);
@@ -628,6 +627,7 @@ class CheckBox
         $ins->kCheckBox = $kCheckBox;
         $this->db->update('tcheckbox', 'kCheckBox', $kCheckBox, $ins);
         $this->updateLocalization($texts, $descriptions, $kCheckBox);
+
         return $this;
     }
 
@@ -653,15 +653,15 @@ class CheckBox
         return $this;
     }
 
-
-    private function updateLocalization(array $texts, array $descriptions, int $kCheckBox): self
+    /**
+     * @param array $texts
+     * @param array $descriptions
+     * @param int $kCheckBox
+     * @return void
+     */
+    private function updateLocalization(array $texts, array $descriptions, int $kCheckBox): void
     {
-        //dismiss obsolete languages
-        $this->db->queryPrepared(
-            'DELETE FROM tcheckboxsprache 
-                    WHERE kSprache NOT IN (SELECT kSprache FROM tsprache) AND kCheckBox = :kCheckBox',
-            ['kCheckBox' => $kCheckBox ]
-        );
+        $this->dismissObsoleteLanguages($kCheckBox);
 
         $this->oCheckBoxSprache_arr = [];
         foreach ($texts as $iso => $text) {
@@ -676,9 +676,8 @@ class CheckBox
                 $this->oCheckBoxSprache_arr[$iso]
             );
         }
-
-        return $this;
     }
+
     /**
      * @param int|string $iso
      * @param mixed $text
@@ -696,6 +695,7 @@ class CheckBox
             $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = $descriptions[$iso];
         }
     }
+
     /**
      * @param string $iso
      * @return int
@@ -802,7 +802,7 @@ class CheckBox
     }
 
     /**
-     * @return array
+     * @return object
      */
     public function createDatabaseObject(): object
     {
@@ -820,5 +820,18 @@ class CheckBox
         $ins->dErstellt         = $checkbox->dErstellt;
 
         return $ins;
+    }
+
+    /**
+     * @param int $kCheckBox
+     * @return void
+     */
+    public function dismissObsoleteLanguages(int $kCheckBox): void
+    {
+        $this->db->queryPrepared(
+            'DELETE FROM tcheckboxsprache 
+                    WHERE kSprache NOT IN (SELECT kSprache FROM tsprache) AND kCheckBox = :kCheckBox',
+            ['kCheckBox' => $kCheckBox]
+        );
     }
 }

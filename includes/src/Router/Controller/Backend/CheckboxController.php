@@ -174,6 +174,38 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
+     * @param array $post
+     * @param array $languages
+     * @return CheckBox
+     */
+    private function insertCheckBox(array $post, array $languages): CheckBox
+    {
+        $checkBox = new CheckBox(0, $this->db);
+        $this->prepareCheckbox($checkBox, $post);
+        list($texts, $descr) = $this->prepareTranslations($languages, $post);
+        $checkBox->insertDB($texts, $descr);
+        $this->cache->flushTags(['checkbox']);
+
+        return $checkBox;
+    }
+
+    /**
+     * @param array $post
+     * @param array $languages
+     * @return CheckBox
+     */
+    private function updateCheckBox(array $post, array $languages): CheckBox
+    {
+        $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
+        $this->prepareCheckbox($checkBox, $post);
+        list($texts, $descr) = $this->prepareTranslations($languages, $post);
+        $checkBox->updateDB($texts, $descr, (int)$checkBox->kCheckBox);
+        $this->cache->flushTags(['checkbox']);
+
+        return $checkBox;
+    }
+
+    /**
      * @param CheckBox $checkBox
      * @param array $post
      * @return void
@@ -226,26 +258,5 @@ class CheckboxController extends AbstractBackendController
         }
 
         return array($texts, $descr);
-    }
-
-    private function insertCheckBox(array $post, array $languages)
-    {
-        $checkBox = new CheckBox(0, $this->db);
-        $this->prepareCheckbox($checkBox, $post);
-        list($texts, $descr) = $this->prepareTranslations($languages, $post);
-        $checkBox->insertDB($texts, $descr);
-        $this->cache->flushTags(['checkbox']);
-
-        return $checkBox;
-    }
-
-    private function updateCheckBox(array $post, array $languages)
-    {
-        $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
-        $this->prepareCheckbox($checkBox, $post);
-        list($texts, $descr) = $this->prepareTranslations($languages, $post);
-        $checkBox->updateDB($texts, $descr, (int)$checkBox->kCheckBox);
-
-        return $checkBox;
     }
 }

@@ -182,7 +182,6 @@ abstract class AbstractController implements ControllerInterface
     public function updateProductFilter(): State
     {
         Shop::getProductFilter()->initStates($this->state->getAsParams());
-        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
 
         return $this->state;
     }

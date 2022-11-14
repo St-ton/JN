@@ -121,24 +121,29 @@ trait RoutableTrait
                 }
             }
         }
-        if ($fallbackID !== null && \count($this->slugs) < \count($languages)) {
-            foreach ($languages as $languageModel) {
-                $langID = $languageModel->getId();
-                if (!\array_key_exists($langID, $this->slugs)) {
-                    $route = $router->getPathByType(
-                        $this->getRouteType(),
-                        \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                        false
-                    );
-                    $this->setURLPath($route, $langID);
-                    $url = $router->getURLByType(
-                        $this->getRouteType(),
-                        \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                        false
-                    );
-                    $this->setURL($url, $langID);
-                }
+        if ($fallbackID === null || \count($this->slugs) >= \count($languages)) {
+            return;
+        }
+        foreach ($languages as $languageModel) {
+            $langID = $languageModel->getId();
+            if (\array_key_exists($langID, $this->slugs)) {
+                continue;
             }
+            $route = $router->getPathByType(
+                $this->getRouteType(),
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
+                false
+            );
+            $this->setURLPath($route, $langID);
+            $url = $router->getURLByType(
+                $this->getRouteType(),
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
+                false
+            );
+            if (!$languageModel->isShopDefault() && !\str_contains($url, '?')) {
+                $url .= '?lang=' . $languageModel->getCode();
+            }
+            $this->setURL($url, $langID);
         }
     }
 

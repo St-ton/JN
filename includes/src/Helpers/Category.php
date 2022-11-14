@@ -114,7 +114,8 @@ class Category
         $seo = self::$db->getObjects(
             'SELECT tseo.kSprache, GROUP_CONCAT(
                 COALESCE(tseo.cSeo, tkategoriesprache.cSeo, tkategorie.kKategorie)
-                    ORDER BY tkategorie.lft ASC SEPARATOR \'/\') slug
+                    ORDER BY tkategorie.lft ASC SEPARATOR \'/\') AS slug,
+                COUNT(tseo.cSeo) AS seoCount, COUNT(tkategorie.kKategorie) AS catCount
                 FROM tkategorie
                 JOIN tsprache
                     ON tsprache.active = 1
@@ -135,7 +136,9 @@ class Category
         }
         $slugs = [];
         foreach ($seo as $item) {
-            $slugs[(int)$item->kSprache] = $item->slug;
+            if ($item->seoCount === $item->catCount) {
+                $slugs[(int)$item->kSprache] = $item->slug;
+            }
         }
 
         return $slugs;

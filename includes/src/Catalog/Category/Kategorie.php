@@ -374,7 +374,9 @@ class Kategorie implements RoutableInterface
             $this->customImgName = $item->customImgName;
             $this->lft           = (int)$item->lft;
             $this->rght          = (int)$item->rght;
-            $this->setSlug($item->cSeo, $languageID);
+            if ($item->cSeo !== '') {
+                $this->setSlug($item->cSeo, $languageID);
+            }
             if (\mb_strlen($item->cName) > 0) {
                 // non-localized categories may have an empty string as name - but the fallback uses NULL
                 $this->setName($item->cName, $languageID);

@@ -320,11 +320,13 @@ class Kategorie implements RoutableInterface
         $attributes                       = $this->db->getCollection(
             'SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
-                    COALESCE(tkategorieattributsprache.kSprache, -1) kSprache,
+                    COALESCE(tkategorieattributsprache.kSprache, tsprache.kSprache) kSprache,
                     tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                LEFT JOIN tsprache
+					ON tsprache.cStandard = \'Y\'
                 WHERE kKategorie = :cid
                 ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
             ['cid' => $this->getID()]

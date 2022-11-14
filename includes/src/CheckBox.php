@@ -622,18 +622,18 @@ class CheckBox
     /**
      * @param array $texts
      * @param array $descriptions
-     * @param int $kCheckBox
+     * @param int $checkBoxId
      * @return $this
      */
-    public function updateDB(array $texts, array $descriptions, int $kCheckBox): self
+    public function updateDB(array $texts, array $descriptions, int $checkBoxId): self
     {
         if (\count($texts) === 0) {
             return $this;
         }
         $ins            = $this->createDatabaseObject();
-        $ins->kCheckBox = $kCheckBox;
-        $this->db->update('tcheckbox', 'kCheckBox', $kCheckBox, $ins);
-        $this->updateLocalization($texts, $descriptions, $kCheckBox);
+        $ins->kCheckBox = $checkBoxId;
+        $this->db->update('tcheckbox', 'kCheckBox', $checkBoxId, $ins);
+        $this->updateLocalization($texts, $descriptions, $checkBoxId);
 
         return $this;
     }

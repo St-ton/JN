@@ -182,7 +182,7 @@ class CheckboxController extends AbstractBackendController
     {
         $checkBox = new CheckBox(0, $this->db);
         $this->prepareCheckbox($checkBox, $post);
-        list($texts, $descr) = $this->prepareTranslations($languages, $post);
+        [$texts, $descr] = $this->prepareTranslations($languages, $post);
         $checkBox->insertDB($texts, $descr);
         $this->cache->flushTags(['checkbox']);
 
@@ -198,7 +198,7 @@ class CheckboxController extends AbstractBackendController
     {
         $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
         $this->prepareCheckbox($checkBox, $post);
-        list($texts, $descr) = $this->prepareTranslations($languages, $post);
+        [$texts, $descr] = $this->prepareTranslations($languages, $post);
         $checkBox->updateDB($texts, $descr, (int)$checkBox->kCheckBox);
         $this->cache->flushTags(['checkbox']);
 

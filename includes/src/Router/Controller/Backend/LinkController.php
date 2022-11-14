@@ -239,9 +239,9 @@ class LinkController extends AbstractBackendController
         $link       = $this->db->select('tlink', 'kLink', $linkID);
         $parentLink = $this->db->select('tlink', 'kLink', $parentLinkID);
 
-        if (isset($link->kLink)
+        if ($link !== null
             && $link->kLink > 0
-            && ((isset($parentLink->kLink) && $parentLink->kLink > 0) || $parentLinkID === 0)
+            && (($parentLink !== null && $parentLink->kLink > 0) || $parentLinkID === 0)
         ) {
             $this->db->update('tlink', 'kLink', $linkID, (object)['kVaterLink' => $parentLinkID]);
 
@@ -316,7 +316,7 @@ class LinkController extends AbstractBackendController
             $linkID = $link->getReference();
         }
         $targetLinkGroup = $this->db->select('tlinkgruppe', 'kLinkgruppe', $targetLinkGroupID);
-        if (!isset($targetLinkGroup->kLinkgruppe) || $targetLinkGroup->kLinkgruppe <= 0) {
+        if ($targetLinkGroup === null || $targetLinkGroup->kLinkgruppe <= 0) {
             return self::ERROR_LINK_GROUP_NOT_FOUND;
         }
         $exists = $this->db->select(
@@ -324,7 +324,7 @@ class LinkController extends AbstractBackendController
             ['linkID', 'linkGroupID'],
             [$linkID, $targetLinkGroupID]
         );
-        if (!empty($exists)) {
+        if ($exists !== null) {
             return self::ERROR_LINK_ALREADY_EXISTS;
         }
         $ref            = new stdClass();
@@ -357,7 +357,7 @@ class LinkController extends AbstractBackendController
             return self::ERROR_LINK_NOT_FOUND;
         }
         $linkgruppe = $this->db->select('tlinkgruppe', 'kLinkgruppe', $newLinkGroupID);
-        if (!isset($linkgruppe->kLinkgruppe) || $linkgruppe->kLinkgruppe <= 0) {
+        if ($linkgruppe === null || $linkgruppe->kLinkgruppe <= 0) {
             return self::ERROR_LINK_GROUP_NOT_FOUND;
         }
         $exists = $this->db->select(

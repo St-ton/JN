@@ -880,7 +880,7 @@ class CouponsController extends AbstractBackendController
             // put all together
             $coupon->Kategorien      = $categories;
             $coupon->Artikel         = $products;
-            $coupon->AngezeigterName = $localized->cName;
+            $coupon->AngezeigterName = $localized->cName ?? '';
             $coupon->Hersteller      = $manufacturers;
             $obj                     = new stdClass();
             $obj->tkupon             = $coupon;

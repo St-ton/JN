@@ -125,7 +125,7 @@ class SearchConfigController extends AbstractBackendController
             ->assign('step', $step)
             ->assign('supportFulltext', \version_compare($mysqlVersion, '5.6', '>='))
             ->assign('createIndex', $createIndex)
-            ->assign('waehrung', $standardwaehrung->cName)
+            ->assign('waehrung', $standardwaehrung->cName ?? '')
             ->assign('route', $this->route)
             ->getResponse('sucheinstellungen.tpl');
     }

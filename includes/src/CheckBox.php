@@ -618,6 +618,13 @@ class CheckBox
 
         return $this;
     }
+
+    /**
+     * @param array $texts
+     * @param array $descriptions
+     * @param int $kCheckBox
+     * @return $this
+     */
     public function updateDB(array $texts, array $descriptions, int $kCheckBox): self
     {
         if (\count($texts) === 0) {

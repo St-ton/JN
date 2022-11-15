@@ -19,13 +19,13 @@ class Migration_20221109110600 extends Migration implements IMigration
      */
     public function up(): void
     {
-        $this->db->executeQuery("Alter table tland ADD UNIQUE UC_cISO (cISO);");
+        $this->db->executeQuery('Alter table tland ADD UNIQUE UC_cISO(cISO)');
         $this->db->executeQuery("INSERT IGNORE INTO  
             tland 
                 (cISO, cDeutsch, cEnglisch, nEU, cKontinent, bPermitRegistration, bRequireStateDefinition) 
             VALUES 
-                ('MF', 'Saint-Martin', 'Saint Martin',1,'Nordamerika',0,0),
-                ('SX', 'Sint Maarten', 'Sint Maarten',0,'Nordamerika',0,0)");
+                ('MF', 'Saint-Martin', 'Saint Martin', 1, 'Nordamerika', 0, 0),
+                ('SX', 'Sint Maarten', 'Sint Maarten', 0, 'Nordamerika', 0, 0)");
         Shop::Container()->getCache()->flush(CountryService::CACHE_ID);
 
     }
@@ -35,7 +35,7 @@ class Migration_20221109110600 extends Migration implements IMigration
      */
     public function down(): void
     {
-        $this->db->executeQuery("ALTER TABLE tland DROP INDEX UC_cISO;");
+        $this->db->executeQuery('ALTER TABLE tland DROP INDEX UC_cISO');
         $this->db->delete('tland', 'cISO', 'MF');
         $this->db->delete('tland', 'cISO', 'SX');
         Shop::Container()->getCache()->flush(CountryService::CACHE_ID);

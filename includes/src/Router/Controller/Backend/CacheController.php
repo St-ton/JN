@@ -178,7 +178,7 @@ class CacheController extends AbstractBackendController
             [\CONF_CACHING, 'caching_types_disabled']
         );
         $currentlyDisabled = [];
-        if (\is_object($deactivated) && isset($deactivated->cWert)) {
+        if ($deactivated !== null && isset($deactivated->cWert)) {
             $currentlyDisabled = ($deactivated->cWert !== '')
                 ? \unserialize($deactivated->cWert, ['allowed_classes' => false])
                 : [];

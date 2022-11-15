@@ -148,7 +148,7 @@ abstract class AbstractBackendController implements ControllerInterface
         if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
             // Wähle explizit gesetzte Sprache als aktuelle Sprache
             $language = $this->db->select('tsprache', 'kSprache', Request::postInt('kSprache'));
-            if ((int)$language->kSprache > 0) {
+            if ($language !== null && (int)$language->kSprache > 0) {
                 $_SESSION['editLanguageID']   = (int)$language->kSprache;
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
@@ -159,7 +159,7 @@ abstract class AbstractBackendController implements ControllerInterface
             $_SESSION['editLanguageCode'] = 'ger';
             // Wähle Standardsprache als aktuelle Sprache
             $language = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            if ((int)$language->kSprache > 0) {
+            if ($language !== null && (int)$language->kSprache > 0) {
                 $_SESSION['editLanguageID']   = (int)$language->kSprache;
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
@@ -167,7 +167,7 @@ abstract class AbstractBackendController implements ControllerInterface
         if (isset($_SESSION['editLanguageID']) && empty($_SESSION['editLanguageCode'])) {
             // Fehlendes cISO ergänzen
             $language = $this->db->select('tsprache', 'kSprache', $_SESSION['editLanguageID']);
-            if ((int)$language->kSprache > 0) {
+            if ($language !== null && (int)$language->kSprache > 0) {
                 $_SESSION['editLanguageCode'] = $language->cISO;
             }
         }
@@ -276,7 +276,7 @@ abstract class AbstractBackendController implements ControllerInterface
         } elseif ($valueName === 'bewertungserinnerung_kundengruppen') {
             // Leere Kundengruppen Work Around
             $customerGroup = $this->db->select('tkundengruppe', 'cStandard', 'Y');
-            if ($customerGroup->kKundengruppe > 0) {
+            if ($customerGroup !== null && $customerGroup->kKundengruppe > 0) {
                 $this->db->delete(
                     'teinstellungen',
                     ['kEinstellungenSektion', 'cName'],

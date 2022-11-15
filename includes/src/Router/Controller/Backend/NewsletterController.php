@@ -44,8 +44,13 @@ class NewsletterController extends AbstractBackendController
 
         $inactiveSearchSQL        = new SqlObject();
         $activeSearchSQL          = new SqlObject();
-        $customerGroup            = $this->db->select('tkundengruppe', 'cStandard', 'Y');
-        $_SESSION['Kundengruppe'] = new CustomerGroup((int)$customerGroup->kKundengruppe);
+        $cgID                     = $this->db->getSingleInt(
+            'SELECT kKundengruppe 
+                FROM tkundengruppe
+                WHERE cStandard = \'Y\'',
+            'kKundengruppe'
+        );
+        $_SESSION['Kundengruppe'] = new CustomerGroup($cgID);
         $instance                 = new Newsletter($this->db, $conf);
         $postData                 = Text::filterXSS($_POST);
         if (Form::validateToken()) {
@@ -176,8 +181,7 @@ class NewsletterController extends AbstractBackendController
                     $step                  = 'vorlage_std_erstellen';
                     $kNewsletterVorlageStd = Request::verifyGPCDataInt('kNewsletterVorlageStd');
                     // Hole Std Vorlage
-                    $tpl = $admin->getDefaultTemplate($kNewsletterVorlageStd);
-                    $smarty->assign('oNewslettervorlageStd', $tpl);
+                    $smarty->assign('oNewslettervorlageStd', $admin->getDefaultTemplate($kNewsletterVorlageStd));
                 }
                 if (Request::postVar('saveAndContinue', '') === 'std') {
                     $admin->save(Request::verifyGPCDataInt('kNewslettervorlageStd'), $smarty);
@@ -196,7 +200,7 @@ class NewsletterController extends AbstractBackendController
                 }
                 if (Request::postVar('saveAndContinue', '') === '1') {
                     $checks = $admin->saveTemplate($_POST);
-                    if (is_array($checks) && count($checks) > 0) {
+                    if (\is_array($checks) && \count($checks) > 0) {
                         $smarty->assign('cPlausiValue_arr', $checks)
                             ->assign('cPostVar_arr', $_POST)
                             ->assign('oNewsletterVorlage', $newsletterTPL);
@@ -228,21 +232,9 @@ class NewsletterController extends AbstractBackendController
                     if ($newsletterTPL !== null && $newsletterTPL->kNewsletterVorlage > 0) {
                         $newsletterTPL->oZeit       = $admin->getDateData($newsletterTPL->dStartZeit);
                         $productData                = $admin->getProductData($newsletterTPL->cArtikel);
-                        $newsletterTPL->cArtikel    = \mb_substr(
-                            \mb_substr($newsletterTPL->cArtikel, 1),
-                            0,
-                            -1
-                        );
-                        $newsletterTPL->cHersteller = \mb_substr(
-                            \mb_substr($newsletterTPL->cHersteller, 1),
-                            0,
-                            -1
-                        );
-                        $newsletterTPL->cKategorie  = \mb_substr(
-                            \mb_substr($newsletterTPL->cKategorie, 1),
-                            0,
-                            -1
-                        );
+                        $newsletterTPL->cArtikel    = \mb_substr(\mb_substr($newsletterTPL->cArtikel, 1), 0, -1);
+                        $newsletterTPL->cHersteller = \mb_substr(\mb_substr($newsletterTPL->cHersteller, 1), 0, -1);
+                        $newsletterTPL->cKategorie  = \mb_substr(\mb_substr($newsletterTPL->cKategorie, 1), 0, -1);
                         $smarty->assign('kArtikel_arr', $productData->kArtikel_arr)
                             ->assign('cArtNr_arr', $productData->cArtNr_arr)
                             ->assign('kKundengruppe_arr', $admin->getCustomerGroupData($newsletterTPL->cKundengruppe));
@@ -358,12 +350,12 @@ class NewsletterController extends AbstractBackendController
                     ORDER BY cName',
                 ['lid' => $this->currentLanguageID]
             );
-            foreach ($defaultData as $tpl) {
-                $tpl->oNewsletttervorlageStdVar_arr = $this->db->getObjects(
+            foreach ($defaultData as $item) {
+                $item->oNewsletttervorlageStdVar_arr = $this->db->getObjects(
                     'SELECT *
                         FROM tnewslettervorlagestdvar
                         WHERE kNewslettervorlageStd = :tid',
-                    ['tid' => (int)$tpl->kNewslettervorlageStd]
+                    ['tid' => (int)$item->kNewslettervorlageStd]
                 );
             }
             $inactiveRecipients = $this->db->getObjects(

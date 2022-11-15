@@ -447,7 +447,7 @@ class URL
                 } elseif (!empty($obj->cSeo)) {
                     $slug = $obj->cSeo;
                 }
-                if ($slug !== null && $slug !== '') {
+                if ($slug !== null) {
                     return $full
                         ? $router->getURLByType(
                             Router::TYPE_CATEGORY,

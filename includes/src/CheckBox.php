@@ -829,7 +829,7 @@ class CheckBox
         ]);
         //Well, it wasn't necessarily loaded from database here, but DataModel will try to insert in case
         // it wasn't loaded.. so to update a record
-        if($ins->getKCheckBox() > 0) {
+        if ($ins->getKCheckBox() > 0) {
             $ins->setWasLoaded(true);
         }
         $ins->save();

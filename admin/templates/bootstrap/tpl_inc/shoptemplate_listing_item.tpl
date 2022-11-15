@@ -1,7 +1,8 @@
 <tr>
-    <td class="text-center" width="140">
+    <td class="text-center">
+        {$preview = $listingItem->getPreview()}
         <div class="thumb-box thumb-sm">
-            <div class="thumb" style="background-image:url({if $listingItem->getPreview()|strlen > 0}{$shopURL}/{$smarty.const.PFAD_TEMPLATES}{$listingItem->getDir()}/{$listingItem->getPreview()}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
+            <div class="thumb" style="background-image:url({$shopURL}/{if $preview !== null && $preview|strlen > 0}{$smarty.const.PFAD_TEMPLATES}{$listingItem->getDir()}/{$preview}{else}gfx/keinBild.gif{/if})"></div>
         </div>
     </td>
     <td>

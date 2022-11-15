@@ -23,7 +23,7 @@ class Migration_20221110114000 extends Migration implements IMigration
             tland 
                 (cISO, cDeutsch, cEnglisch, nEU, cKontinent, bPermitRegistration, bRequireStateDefinition) 
             VALUES ,
-                ('SS', 'Südsudan', 'South Sudan',0,'Afrika',0,0)");
+                ('SS', 'Südsudan', 'South Sudan', 0, 'Afrika', 0, 0)");
         Shop::Container()->getCache()->flush(CountryService::CACHE_ID);
 
     }

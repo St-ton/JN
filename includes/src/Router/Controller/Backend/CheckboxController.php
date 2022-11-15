@@ -257,6 +257,6 @@ class CheckboxController extends AbstractBackendController
                 : '';
         }
 
-        return array($texts, $descr);
+        return [$texts, $descr];
     }
 }

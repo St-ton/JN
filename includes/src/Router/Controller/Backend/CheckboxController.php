@@ -199,7 +199,7 @@ class CheckboxController extends AbstractBackendController
         $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
         $this->prepareCheckbox($checkBox, $post);
         [$texts, $descr] = $this->prepareTranslations($languages, $post);
-        $checkBox->updateDB($texts, $descr, (int)$checkBox->kCheckBox);
+        $checkBox->updateDB($texts, $descr);
         $this->cache->flushTags(['checkbox']);
 
         return $checkBox;

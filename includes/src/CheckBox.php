@@ -16,6 +16,7 @@ use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
+use JTL\Model\TCheckboxModel as CheckBoxModel;
 use stdClass;
 
 /**
@@ -605,15 +606,15 @@ class CheckBox
      * @param array $texts
      * @param array $descriptions
      * @return $this
+     * @throws \Exception
      */
     public function insertDB(array $texts, array $descriptions): self
     {
         if (\count($texts) === 0) {
             return $this;
         }
-        $ins             = $this->createDatabaseObject();
-        $id              = $this->db->insert('tcheckbox', $ins);
-        $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
+        $ins             = $this->saveCheckBox();
+        $this->kCheckBox = $ins->getKCheckBox();
         $this->addLocalization($texts, $descriptions);
 
         return $this;
@@ -622,18 +623,16 @@ class CheckBox
     /**
      * @param array $texts
      * @param array $descriptions
-     * @param int $checkBoxId
      * @return $this
+     * @throws \Exception
      */
-    public function updateDB(array $texts, array $descriptions, int $checkBoxId): self
+    public function updateDB(array $texts, array $descriptions): self
     {
         if (\count($texts) === 0) {
             return $this;
         }
-        $ins            = $this->createDatabaseObject();
-        $ins->kCheckBox = $checkBoxId;
-        $this->db->update('tcheckbox', 'kCheckBox', $checkBoxId, $ins);
-        $this->updateLocalization($texts, $descriptions, $checkBoxId);
+        $ins = $this->saveCheckBox();
+        $this->updateLocalization($texts, $descriptions, $ins->getKCheckBox());
 
         return $this;
     }
@@ -663,12 +662,12 @@ class CheckBox
     /**
      * @param array $texts
      * @param array $descriptions
-     * @param int $kCheckBox
+     * @param int $CheckBoxId
      * @return void
      */
-    private function updateLocalization(array $texts, array $descriptions, int $kCheckBox): void
+    private function updateLocalization(array $texts, array $descriptions, int $CheckBoxId): void
     {
-        $this->dismissObsoleteLanguages($kCheckBox);
+        $this->dismissObsoleteLanguages($CheckBoxId);
 
         $this->oCheckBoxSprache_arr = [];
         foreach ($texts as $iso => $text) {
@@ -679,7 +678,7 @@ class CheckBox
             $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = $this->db->update(
                 'tcheckboxsprache',
                 ['kCheckBox', 'kSprache'],
-                [$kCheckBox, $this->oCheckBoxSprache_arr[$iso]->kSprache],
+                [$CheckBoxId, $this->oCheckBoxSprache_arr[$iso]->kSprache],
                 $this->oCheckBoxSprache_arr[$iso]
             );
         }
@@ -809,22 +808,31 @@ class CheckBox
     }
 
     /**
-     * @return object
+     * @return CheckBoxModel
+     * @throws \Exception
      */
-    public function createDatabaseObject(): object
+    public function saveCheckBox(): CheckBoxModel
     {
-        $checkbox               = GeneralObject::copyMembers($this);
-        $ins                    = new stdClass();
-        $ins->kLink             = $checkbox->kLink;
-        $ins->kCheckBoxFunktion = $checkbox->kCheckBoxFunktion;
-        $ins->cName             = $checkbox->cName;
-        $ins->cKundengruppe     = $checkbox->cKundengruppe;
-        $ins->cAnzeigeOrt       = $checkbox->cAnzeigeOrt;
-        $ins->nAktiv            = $checkbox->nAktiv;
-        $ins->nPflicht          = $checkbox->nPflicht;
-        $ins->nLogging          = $checkbox->nLogging;
-        $ins->nSort             = $checkbox->nSort;
-        $ins->dErstellt         = $checkbox->dErstellt;
+        $ins = new CheckBoxModel($this->db);
+        $ins->fill([
+            'kCheckBox'         => $this->kCheckBox,
+            'klink'             => $this->kLink,
+            'kCheckBoxFunktion' => $this->kCheckBoxFunktion,
+            'cName'             => $this->cName,
+            'cKundengruppe'     => $this->cKundengruppe,
+            'cAnzeigeOrt'       => $this->cAnzeigeOrt,
+            'nAktiv'            => $this->nAktiv,
+            'nPflicht'          => $this->nPflicht,
+            'nLogging'          => $this->nLogging,
+            'nSort'             => $this->nSort,
+            'dErstellt'         => date('y-m-d H:i:s', time()),
+        ]);
+        //Well, it wasn't necessarily loaded from database here, but DataModel will try to insert in case
+        // it wasn't loaded.. so to update a record
+        if($ins->getKCheckBox() > 0) {
+            $ins->setWasLoaded(true);
+        }
+        $ins->save();
 
         return $ins;
     }

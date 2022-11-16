@@ -4,14 +4,12 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Backend\Permissions;
-use JTL\Catalog\Currency;
 use JTL\Cron\Checker;
 use JTL\Cron\Job\Export;
 use JTL\Cron\JobFactory;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\Queue;
 use JTL\Cron\Type;
-use JTL\Customer\CustomerGroup;
 use JTL\Export\ExporterFactory;
 use JTL\Export\Model;
 use JTL\Helpers\Form;
@@ -266,7 +264,7 @@ class ExportQueueController extends AbstractBackendController
             'foreignKeyID',
             $exportID
         );
-        if (isset($cron->cronID) && $cron->cronID > 0) {
+        if ($cron !== null && $cron->cronID > 0) {
             return -1;
         }
         $job = new Export($this->db, Shop::Container()->getLogService(), new JobHydrator(), $this->cache);

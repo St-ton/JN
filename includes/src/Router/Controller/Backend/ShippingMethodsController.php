@@ -781,6 +781,7 @@ class ShippingMethodsController extends AbstractBackendController
      */
     private function createOrUpdate(array $postData, Manager $manager): stdClass
     {
+        $oldShippingMethod                              = null;
         $postCountries                                  = $postData['land'] ?? [];
         $languages                                      = LanguageHelper::getInstance()->gibInstallierteSprachen();
         $this->shippingMethod                           = new stdClass();
@@ -916,7 +917,7 @@ class ShippingMethodsController extends AbstractBackendController
             }
             $manager->updateRegistrationCountries(
                 \array_diff(
-                    isset($oldShippingMethod->cLaender)
+                    $oldShippingMethod !== null
                         ? \explode(' ', \trim($oldShippingMethod->cLaender))
                         : [],
                     $postCountries

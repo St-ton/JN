@@ -37,15 +37,22 @@ class CronController extends AbstractBackendController
     private JobHydrator $hydrator;
 
     /**
+     * C@inheritdoc
+     */
+    public function init(): void
+    {
+        $this->logger   = Shop::Container()->getLogService();
+        $this->hydrator = new JobHydrator();
+        $this->getText->loadAdminLocale('pages/cron');
+    }
+
+    /**
      * @inheritdoc
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CRON_VIEW);
-        $this->getText->loadAdminLocale('pages/cron');
-        $this->logger   = Shop::Container()->getLogService();
-        $this->hydrator = new JobHydrator();
 
         $deleted  = 0;
         $updated  = 0;

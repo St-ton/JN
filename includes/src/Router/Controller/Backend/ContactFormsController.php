@@ -227,7 +227,7 @@ class ContactFormsController extends AbstractBackendController
                         continue;
                     }
                     $kndgrp  = $this->db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
-                    $groups .= ' ' . $kndgrp->cName;
+                    $groups .= ' ' . ($kndgrp->cName ?? '');
                 }
             }
             $subject->Kundengruppen = $groups;

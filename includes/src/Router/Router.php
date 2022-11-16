@@ -117,6 +117,16 @@ class Router
      */
     private array $customRoutes = [];
 
+    /**
+     * @var array
+     */
+    private array $languages = [];
+
+    /**
+     * @var ControllerInterface[]
+     */
+    private array $controllers = [];
+
     public const TYPE_CATEGORY             = 'categories';
     public const TYPE_CHARACTERISTIC_VALUE = 'characteristics';
     public const TYPE_MANUFACTURER         = 'manufacturers';
@@ -158,20 +168,24 @@ class Router
             new OptinMiddleware(),
         ];
 
-        $root        = new RootController($db, $cache, $state, $this->config, $alert);
-        $consent     = new ConsentController();
-        $io          = new IOController($db, $cache, $state, $this->config, $alert);
-        $controllers = [
-            new ProductController($db, $cache, $state, $this->config, $alert),
-            new CharacteristicValueController($db, $cache, $state, $this->config, $alert),
-            new CategoryController($db, $cache, $state, $this->config, $alert),
-            new SearchSpecialController($db, $cache, $state, $this->config, $alert),
-            new SearchQueryController($db, $cache, $state, $this->config, $alert),
-            new ManufacturerController($db, $cache, $state, $this->config, $alert),
-            new NewsController($db, $cache, $state, $this->config, $alert),
-            new SearchController($db, $cache, $state, $this->config, $alert),
-            new PageController($db, $cache, $state, $this->config, $alert),
-            new MediaImageController($db, $cache, $state, $this->config, $alert),
+        $root              = new RootController($db, $cache, $state, $this->config, $alert);
+        $consent           = new ConsentController();
+        $io                = new IOController($db, $cache, $state, $this->config, $alert);
+        $this->controllers = [
+            ProductController::class             => new ProductController($db, $cache, $state, $this->config, $alert),
+            CharacteristicValueController::class =>
+                new CharacteristicValueController($db, $cache, $state, $this->config, $alert),
+            CategoryController::class            => new CategoryController($db, $cache, $state, $this->config, $alert),
+            SearchSpecialController::class       =>
+                new SearchSpecialController($db, $cache, $state, $this->config, $alert),
+            SearchQueryController::class         =>
+                new SearchQueryController($db, $cache, $state, $this->config, $alert),
+            ManufacturerController::class        =>
+                new ManufacturerController($db, $cache, $state, $this->config, $alert),
+            NewsController::class                => new NewsController($db, $cache, $state, $this->config, $alert),
+            SearchController::class              => new SearchController($db, $cache, $state, $this->config, $alert),
+            PageController::class                => new PageController($db, $cache, $state, $this->config, $alert),
+            MediaImageController::class          => new MediaImageController($db, $cache, $state, $this->config, $alert)
         ];
         $this->registerAPI();
         foreach ($this->collectHosts() as $data) {
@@ -181,7 +195,6 @@ class Router
             $group        = new RouteGroup($localePrefix, function (RouteGroup $route) use (
                 &$registeredDefault,
                 $data,
-                $controllers,
                 $io,
                 $root,
                 $consent,
@@ -201,7 +214,7 @@ class Router
                     $io->register($route, $dynName);
                     $root->register($route, $dynName);
                 }
-                foreach ($controllers as $controller) {
+                foreach ($this->controllers as $controller) {
                     $controller->register($route, $dynName);
                 }
             }, $this->router);
@@ -296,6 +309,9 @@ class Router
         return $routes;
     }
 
+    /**
+     * @return void
+     */
     protected function registerDefaultController(): void
     {
         foreach ($this->routes as $group) {
@@ -373,6 +389,7 @@ class Router
      * @param string     $type
      * @param array|null $replacements
      * @param bool       $byName
+     * @param bool       $forceDynamic
      * @return string
      */
     public function getURLByType(
@@ -381,6 +398,9 @@ class Router
         bool $byName = true,
         bool $forceDynamic = false
     ): string {
+        if (isset($replacements['name']) && $replacements['name'] === '') {
+            unset($replacements['name']);
+        }
         $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
         if (empty($replacements['lang'])) {
             $replacements['lang'] = $this->defaultLocale;
@@ -396,19 +416,31 @@ class Router
             $pfx .= $this->path;
         }
         if ($forceDynamic === false && $byName === true) {
-            $scheme = $this->config['global']['routing_default_language'] ?? 'F';
-            if ($isDefaultLocale && $scheme === 'F') {
-                return $pfx . '/' . ($replacements['name'] ?? $replacements['id']);
+            $scheme = $isDefaultLocale
+                    ? ($this->config['global']['routing_default_language'] ?? 'F')
+                    : ($this->config['global']['routing_scheme'] ?? 'F');
+            if ($scheme === 'F') {
+                if (!isset($replacements['name'])) {
+                    $param       = $this->getFallbackParam($type);
+                    $queryParams = [$param => $replacements['id']];
+                    if (!$isDefaultLocale) {
+                        $queryParams['lang'] = $this->languages[$replacements['lang']];
+                    }
+                    if (isset($replacements['currency'])) {
+                        $queryParams['curr'] = $replacements['currency'];
+                    }
+                    $named = '?' . \http_build_query($queryParams);
+                } else {
+                    $named = ($replacements['name'] ?? $replacements['id']);
+                }
+
+                return $pfx . '/' . $named
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
-            if ($isDefaultLocale && $scheme === 'L') {
-                return $pfx . '/' . $replacements['lang'] . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
-            }
-            $scheme = $this->config['global']['routing_scheme'] ?? 'F';
-            if (!$isDefaultLocale && $scheme === 'F') {
-                return $pfx . '/' . ($replacements['name'] ?? $replacements['id']);
-            }
-            if (!$isDefaultLocale && $scheme === 'L') {
-                return $pfx . '/' . $replacements['lang'] . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
+            if ($scheme === 'L') {
+                return $pfx . '/' . $replacements['lang'] . '/'
+                    . ($replacements['name'] ?? $replacements['id'] ?? '')
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
         }
 
@@ -665,6 +697,8 @@ class Router
             $default   = $language->isShopDefault();
             $code      = $language->getCode();
             $locales[] = $language->getIso639();
+
+            $this->languages[$language->getIso639()] = $code;
             if (\EXPERIMENTAL_MULTILANG_SHOP === false && $default) {
                 $url     = \URL_SHOP;
                 $host    = \parse_url($url);
@@ -731,6 +765,41 @@ class Router
         $this->hosts = $hosts;
 
         return $hosts;
+    }
+
+    /**
+     * @param string $type
+     * @return string
+     */
+    public function getFallbackParam(string $type): string
+    {
+        return match ($type) {
+            self::TYPE_CATEGORY             => 'k',
+            self::TYPE_CHARACTERISTIC_VALUE => 'm',
+            self::TYPE_MANUFACTURER         => 'h',
+            self::TYPE_NEWS                 => 'n',
+            self::TYPE_PAGE                 => 's',
+            self::TYPE_PRODUCT              => 'a',
+            self::TYPE_SEARCH_SPECIAL       => 'q',
+            self::TYPE_SEARCH_QUERY         => 'l'
+        };
+    }
+
+    /**
+     * @return ControllerInterface[]
+     */
+    public function getControllers(): array
+    {
+        return $this->controllers;
+    }
+
+    /**
+     * @param string $class
+     * @return ControllerInterface|null
+     */
+    public function getControllerByClassName(string $class): ?ControllerInterface
+    {
+        return $this->controllers[$class] ?? null;
     }
 
     /**

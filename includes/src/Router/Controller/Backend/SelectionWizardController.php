@@ -143,7 +143,7 @@ class SelectionWizardController extends AbstractBackendController
                 $defaultLanguage = $this->db->select('tsprache', 'cShopStandard', 'Y');
                 $select          = 'tmerkmal.*';
                 $join            = '';
-                if ((int)$defaultLanguage->kSprache !== $this->currentLanguageID) {
+                if ($defaultLanguage !== null && (int)$defaultLanguage->kSprache !== $this->currentLanguageID) {
                     $select = 'tmerkmalsprache.*';
                     $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . $this->currentLanguageID;

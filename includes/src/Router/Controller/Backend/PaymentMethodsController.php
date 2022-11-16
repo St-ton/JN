@@ -76,8 +76,7 @@ class PaymentMethodsController extends AbstractBackendController
             && Form::validateToken()
         ) {
             $method = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-
-            if (isset($method->cModulId) && \mb_strlen($method->cModulId) > 0) {
+            if ($method !== null && \mb_strlen($method->cModulId) > 0) {
                 (new ZahlungsLog($method->cModulId))->loeschen();
                 $this->alertService->addSuccess(\sprintf(\__('successLogReset'), $method->cName), 'successLogReset');
             }
@@ -119,7 +118,7 @@ class PaymentMethodsController extends AbstractBackendController
         }
 
         return $this->smarty->assign('step', $this->step)
-            ->assign('waehrung', $defaultCurrency->cName)
+            ->assign('waehrung', $defaultCurrency->cName ?? '')
             ->assign('recommendations', $recommendations)
             ->assign('route', $this->route)
             ->getResponse('zahlungsarten.tpl');
@@ -171,7 +170,10 @@ class PaymentMethodsController extends AbstractBackendController
     {
         $paymentMethodID = Request::verifyGPCDataInt('kZahlungsart');
         $method          = $this->db->select('tzahlungsart', 'kZahlungsart', $paymentMethodID);
-        $pluginID        = PluginHelper::getIDByModuleID($method->cModulId);
+        if ($method === null) {
+            return;
+        }
+        $pluginID = PluginHelper::getIDByModuleID($method->cModulId);
         if ($pluginID > 0) {
             try {
                 $this->getText->loadPluginLocale(
@@ -258,7 +260,7 @@ class PaymentMethodsController extends AbstractBackendController
         $filterStandard->addDaterangefield('Zeitraum', 'dDatum');
         $filterStandard->assemble();
 
-        if (isset($method->cModulId) && \mb_strlen($method->cModulId) > 0) {
+        if ($method !== null && \mb_strlen($method->cModulId) > 0) {
             $paginationPaymentLog = (new Pagination('standard'))
                 ->setItemCount(ZahlungsLog::count($method->cModulId, -1, $filterStandard->getWhereSQL()))
                 ->assemble();

@@ -535,7 +535,7 @@ class EmailTemplateController extends AbstractBackendController
             'kEmailvorlage',
             $templateID
         );
-        if (isset($data->cDateiname) && \mb_strlen($data->cDateiname) > 0) {
+        if ($data !== null && \mb_strlen($data->cDateiname) > 0) {
             self::resetFromFile($templateID, $data, $db);
         }
 

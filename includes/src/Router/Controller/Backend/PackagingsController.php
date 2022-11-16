@@ -168,7 +168,7 @@ class PackagingsController extends AbstractBackendController
     private function actionEdit(int $packagingID): void
     {
         $packaging = $this->db->select('tverpackung', 'kVerpackung', $packagingID);
-        if (isset($packaging->kVerpackung) && $packaging->kVerpackung > 0) {
+        if ($packaging !== null && $packaging->kVerpackung > 0) {
             $packaging->oSprach_arr = [];
             $localizations          = $this->db->selectAll(
                 'tverpackungsprache',

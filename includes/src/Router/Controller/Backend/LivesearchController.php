@@ -83,11 +83,14 @@ class LivesearchController extends AbstractBackendController
             return;
         }
         foreach ($queryIDs as $queryID) {
-            $data          = $this->db->select(
+            $data = $this->db->select(
                 'tsuchanfrage',
                 'kSuchanfrage',
                 $queryID
             );
+            if ($data === null) {
+                continue;
+            }
             $obj           = new stdClass();
             $obj->kSprache = (int)$data->kSprache;
             $obj->cSuche   = $data->cSuche;
@@ -362,7 +365,7 @@ class LivesearchController extends AbstractBackendController
         }
         foreach (\array_map('\intval', $data) as $mappingID) {
             $queryMapping = $this->db->select('tsuchanfragemapping', 'kSuchanfrageMapping', $mappingID);
-            if (isset($queryMapping->cSuche) && \mb_strlen($queryMapping->cSuche) > 0) {
+            if ($queryMapping !== null && \mb_strlen($queryMapping->cSuche) > 0) {
                 $this->db->delete(
                     'tsuchanfragemapping',
                     'kSuchanfrageMapping',
@@ -434,6 +437,9 @@ class LivesearchController extends AbstractBackendController
                     ['cKey', 'kKey', 'kSprache'],
                     ['kSuchanfrage', $active, $languageID]
                 );
+                if ($query === null) {
+                    continue;
+                }
                 // Aktivierte Suchanfragen in tseo eintragen
                 $ins           = new stdClass();
                 $ins->cSeo     = Seo::checkSeo(Seo::getSeo($query->cSuche));

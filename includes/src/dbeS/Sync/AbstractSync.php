@@ -209,7 +209,7 @@ abstract class AbstractSync
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         $product                             = new Artikel($this->db);
-        $product->fuelleArtikel($data->kArtikel, $options);
+        $product->fuelleArtikel((int)$data->kArtikel, $options);
         if ($product->kArtikel === null) {
             return;
         }

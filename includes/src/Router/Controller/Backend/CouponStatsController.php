@@ -29,12 +29,10 @@ class CouponStatsController extends AbstractBackendController
         $this->checkPermissions(Permissions::STATS_COUPON_VIEW);
         $this->getText->loadAdminLocale('pages/kuponstatistik');
 
-        $step      = 'kuponstatistik_uebersicht';
-        $cWhere    = '';
-        $coupons   = $this->db->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
-        $oDateShop = $this->db->getSingleObject('SELECT MIN(DATE(dZeit)) AS startDate FROM tbesucherarchiv');
-        $endDate   = DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
-
+        $step    = 'kuponstatistik_uebersicht';
+        $cWhere  = '';
+        $coupons = $this->db->getArrays('SELECT kKupon, cName FROM tkupon ORDER BY cName DESC');
+        $endDate = DateTime::createFromFormat('Y-m-j', \date('Y-m-j'));
         if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateToken()) {
             if (Request::postInt('kKupon') > -1) {
                 $couponID = Request::postInt('kKupon');
@@ -150,7 +148,6 @@ class CouponStatsController extends AbstractBackendController
 
         return $smarty->assign('overview_arr', $overview)
             ->assign('usedCouponsOrder', $usedCouponsOrder)
-            ->assign('startDateShop', $oDateShop->startDate)
             ->assign('startDate', $startDate->format('Y-m-d'))
             ->assign('endDate', $endDate->format('Y-m-d'))
             ->assign('coupons_arr', $coupons)

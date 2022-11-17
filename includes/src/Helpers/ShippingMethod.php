@@ -339,11 +339,7 @@ class ShippingMethod
     public static function getShippingCosts(string $country, string $zip, string &$errorMsg = ''): bool
     {
         if (\mb_strlen($country) > 0 && \mb_strlen($zip) > 0) {
-            $cgroupID = Frontend::getCustomerGroup()->getID();
-            if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-                $cgroupID = $_SESSION['Kunde']->kKundengruppe;
-            }
-
+            $cgroupID        = Frontend::getCustomer()->getGroupID();
             $shippingMethods = self::getPossibleShippingMethods(
                 $country,
                 $zip,

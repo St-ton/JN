@@ -5509,9 +5509,7 @@ class Artikel implements RoutableInterface
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? (Frontend::getCustomer()->getGroupID() > 0
-            ? Frontend::getCustomer()->getGroupID()
-            : $this->customerGroup->getID());
+        $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? Frontend::getCustomer()->getGroupID();
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = \is_array($this->Preise->fVK)
             ? $helper->getFreeShippingCountries($this->Preise->fVK, $customerGroupID, $this->kVersandklasse)

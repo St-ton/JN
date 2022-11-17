@@ -1813,7 +1813,7 @@ class Cart
             return null;
         }
         $currency         = Frontend::getCurrency();
-        $customerGroupID  = $_SESSION['Kunde']->kKundengruppe ?? 0;
+        $customerGroupID  = Frontend::getCustomer()->getGroupID();
         $customerGroupSQL = $customerGroupID > 0
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
             : '';

@@ -829,7 +829,9 @@ class Customer
      */
     public function getGroupID(): int
     {
-        return (int)$this->kKundengruppe;
+        $customerGroupID = (int)$this->kKundengruppe > 0 ? (int)$this->kKundengruppe : CustomerGroup::getCurrent();
+
+        return $customerGroupID > 0 ? $customerGroupID : CustomerGroup::getDefaultGroupID();
     }
 
     /**

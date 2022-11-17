@@ -19,6 +19,7 @@ class CartcheckMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        \executeHook(\HOOK_INDEX_NAVI_HEAD_POSTGET);
         CartHelper::checkAdditions();
 
         return $handler->handle($request);

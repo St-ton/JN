@@ -29,8 +29,8 @@ class SyncController extends AbstractBackendController
         }
         $user = $this->db->select('tsynclogin', 'kSynclogin', 1);
 
-        return $smarty->assign('wawiuser', \htmlentities($user->cName))
-            ->assign('wawipass', $user->cPass)
+        return $smarty->assign('wawiuser', \htmlentities($user->cName ?? ''))
+            ->assign('wawipass', ($user->cPass ?? ''))
             ->assign('route', $this->route)
             ->getResponse('wawisync.tpl');
     }

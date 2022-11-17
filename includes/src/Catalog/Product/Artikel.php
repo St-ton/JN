@@ -1704,6 +1704,7 @@ class Artikel implements RoutableInterface
             $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache, $db);
             if (!isset($this->oMerkmale_arr[$item->kMerkmal])) {
                 $this->oMerkmale_arr[$item->kMerkmal] = new Merkmal($item->kMerkmal, false, $this->kSprache, $db);
+                $this->oMerkmale_arr[$item->kMerkmal]->setCharacteristicValues([]);
             }
             $this->oMerkmale_arr[$item->kMerkmal]->addCharacteristicValue($charValue);
         }
@@ -3132,9 +3133,8 @@ class Artikel implements RoutableInterface
             $this->setSlug($slug->cSeo, (int)$slug->kSprache);
         }
         $this->createBySlug($this->kArtikel);
-        $this->cURL     = $this->getURLPath($this->kSprache);
+        $this->cURL     = \ltrim($this->getURLPath($this->kSprache), '/');
         $this->cURLFull = $this->getURL($this->kSprache);
-
         foreach (Frontend::getLanguages() as $language) {
             $code = $language->getCode();
             //$this->cSprachURL_arr[$code] = '?a=' . $this->kArtikel . '&amp;lang=' . $code;

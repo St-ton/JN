@@ -81,7 +81,7 @@ class NewsletterImportController extends AbstractBackendController
             $email
         );
 
-        return !empty($blacklist->cMail);
+        return $blacklist !== null && !empty($blacklist->cMail);
     }
 
     /**
@@ -179,7 +179,7 @@ class NewsletterImportController extends AbstractBackendController
         }
         $instance = new Newsletter($this->db, []);
         $oldMail  = $this->db->select('tnewsletterempfaenger', 'cEmail', $recipient->cEmail);
-        if (isset($oldMail->kNewsletterEmpfaenger) && $oldMail->kNewsletterEmpfaenger > 0) {
+        if ($oldMail !== null && $oldMail->kNewsletterEmpfaenger > 0) {
             return \sprintf(\__('errorEmailExists'), $recipient->cEmail);
         }
 

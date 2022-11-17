@@ -130,7 +130,7 @@ class BrandingController extends AbstractBackendController
             $conf->cBrandingBild = 'kBranding_' . $brandingID . $this->mapFileType($files['cBrandingBild']['type']);
         } else {
             $tmpConf             = $db->select('tbrandingeinstellung', 'kBranding', $brandingID);
-            $conf->cBrandingBild = empty($tmpConf->cBrandingBild) ? '' : $tmpConf->cBrandingBild;
+            $conf->cBrandingBild = $tmpConf === null || empty($tmpConf->cBrandingBild) ? '' : $tmpConf->cBrandingBild;
         }
 
         if ($conf->kBranding > 0 && \mb_strlen($conf->cPosition) > 0 && \mb_strlen($conf->cBrandingBild) > 0) {

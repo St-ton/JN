@@ -439,14 +439,13 @@ class URL
 
             case \URLART_KATEGORIE:
                 $slug = null;
-                $id   = null;
+                $id   = $obj !== null && \method_exists($obj, 'getID')
+                    ? $obj->getID()
+                    : ($obj->kKategorie ?? null);
                 if ($obj instanceof MenuItem) {
                     $slug = $obj->getURL();
                 } elseif (!empty($obj->cSeo)) {
                     $slug = $obj->cSeo;
-                    $id   = \method_exists($obj, 'getID')
-                        ? $obj->getID()
-                        : $obj->kKategorie ?? null;
                 }
                 if ($slug !== null) {
                     return $full
@@ -460,7 +459,7 @@ class URL
                         );
                 }
 
-                return $prefix . '?k=' . $obj->kKategorie . self::getLocalizedFallback();
+                return $prefix . '?k=' . $id . self::getLocalizedFallback();
 
             case \URLART_SEITE:
                 if (!empty($obj->cSeo)) {

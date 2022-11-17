@@ -19,7 +19,7 @@ final class DeliveryNotes extends AbstractSync
     {
         foreach ($starter->getXML(true) as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            $fileName     = \pathinfo($file)['basename'];
+            $fileName     = \pathinfo($file, \PATHINFO_BASENAME);
             if ($fileName === 'lief.xml') {
                 $this->handleInserts($xml);
             } elseif ($fileName === 'del_lief.xml') {

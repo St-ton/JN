@@ -43,7 +43,7 @@ final class Images extends AbstractSync
         $this->db->query('START TRANSACTION');
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            switch (\pathinfo($file)['basename']) {
+            switch (\pathinfo($file, \PATHINFO_BASENAME)) {
                 case 'bilder_ka.xml':
                 case 'bilder_a.xml':
                 case 'bilder_k.xml':
@@ -467,7 +467,7 @@ final class Images extends AbstractSync
     {
         $imageName = $image->cPfad;
         if (empty($image->kKategorie) || !$this->config['bilder_kategorie_namen']) {
-            return $this->getNewFilename((\pathinfo($imageName)['filename']) . '.' . $ext);
+            return $this->getNewFilename((\pathinfo($imageName, \PATHINFO_FILENAME)) . '.' . $ext);
         }
         $data = $this->db->getSingleObject(
             "SELECT tseo.cSeo, tkategorie.cName
@@ -484,7 +484,7 @@ final class Images extends AbstractSync
         if ($data !== null && !empty($data->cName) && (int)$this->config['bilder_kategorie_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
-            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
         }
 
         return $this->getNewFilename($imageName);
@@ -506,7 +506,7 @@ final class Images extends AbstractSync
         if ($data !== null && !empty($data->cSeo) && (int)$this->config['bilder_hersteller_namen'] === 1) {
             $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
         } else {
-            $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+            $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
         }
 
         return $this->getNewFilename($imageName);
@@ -535,7 +535,7 @@ final class Images extends AbstractSync
             if ($data !== null && !empty($data->cSeo) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($data->cSeo ?: $this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
-                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+                $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
             }
         }
 
@@ -562,7 +562,7 @@ final class Images extends AbstractSync
             if ($data !== null && !empty($data->cName) && $conf === 1) {
                 $imageName = $this->removeSpecialChars($this->convertUmlauts($data->cName)) . '.' . $ext;
             } else {
-                $imageName = \pathinfo($image->cPfad)['filename'] . '.' . $ext;
+                $imageName = \pathinfo($image->cPfad, \PATHINFO_FILENAME) . '.' . $ext;
             }
         }
 
@@ -996,7 +996,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        return \pathinfo($path)['filename'] . '.' . $this->getNewExtension($path);
+        return \pathinfo($path, \PATHINFO_FILENAME) . '.' . $this->getNewExtension($path);
     }
 
     /**

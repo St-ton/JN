@@ -1988,7 +1988,7 @@ class Cart
     {
         return Request::postVar('land')
             ?? Frontend::get('Lieferadresse')->cLand
-            ?? Frontend::getCustomer()->getCountry()
+            ?? (Frontend::getCustomer()->getCountry() === '' ? null : Frontend::getCustomer()->getCountry())
             ?? Frontend::get('cLieferlandISO');
     }
 

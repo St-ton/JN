@@ -37,17 +37,17 @@ final class Customers extends AbstractPush
         $crypto     = Shop::Container()->getCryptoService();
         $attributes = [];
         foreach ($customers as &$customer) {
-            $customer['cAnrede']   = Customer::mapSalutation($customer['cAnrede'], (int)$customer['kSprache']);
-            $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname']));
-            $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma']));
-            $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse']));
+            $customer['cAnrede']   = Customer::mapSalutation($customer['cAnrede'] ?? '', (int)$customer['kSprache']);
+            $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname'] ?? ''));
+            $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma'] ?? ''));
+            $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse'] ?? ''));
             // Strasse und Hausnummer zusammenfuehren
             $customer['cStrasse'] .= ' ' . \trim($customer['cHausnummer']);
             unset($customer['cHausnummer'], $customer['cPasswort']);
             $attribute  = $this->buildAttributes($customer);
             $additional = $customer['cZusatz'];
             unset($customer['cZusatz']);
-            $customer['cZusatz']         = \trim($crypto->decryptXTEA($additional));
+            $customer['cZusatz']         = \trim($crypto->decryptXTEA($additional ?? ''));
             $customer['tkundenattribut'] = $this->db->getArrays(
                 'SELECT * 
                     FROM tkundenattribut 

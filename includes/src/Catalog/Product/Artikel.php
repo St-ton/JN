@@ -1704,6 +1704,7 @@ class Artikel implements RoutableInterface
             $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache, $db);
             if (!isset($this->oMerkmale_arr[$item->kMerkmal])) {
                 $this->oMerkmale_arr[$item->kMerkmal] = new Merkmal($item->kMerkmal, false, $this->kSprache, $db);
+                $this->oMerkmale_arr[$item->kMerkmal]->setCharacteristicValues([]);
             }
             $this->oMerkmale_arr[$item->kMerkmal]->addCharacteristicValue($charValue);
         }

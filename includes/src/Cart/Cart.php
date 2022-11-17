@@ -645,7 +645,7 @@ class Cart
         $cartItem->kKonfigitem     = $configItemID;
         $cartItem->kArtikel        = $productID;
         //fixes #4967
-        if (\is_object($_SESSION['Kundengruppe']) && Frontend::getCustomerGroup()->isMerchant()) {
+        if (Frontend::getCustomerGroup()->isMerchant()) {
             if ($grossPrice) {
                 $cartItem->fPreis = $price / (100 + Tax::getSalesTax($taxClassID)) * 100.0;
             }
@@ -1127,14 +1127,10 @@ class Cart
             $total = \round($total, 2);
         }
         if (!empty($considerBalance)
-            && isset(
-                $_SESSION['Bestellung']->GuthabenNutzen,
-                $_SESSION['Bestellung']->fGuthabenGenutzt,
-                $_SESSION['Kunde']->fGuthaben
-            )
+            && isset($_SESSION['Bestellung']->GuthabenNutzen, $_SESSION['Bestellung']->fGuthabenGenutzt)
             && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
-            && $_SESSION['Kunde']->fGuthaben > 0
+            && Frontend::getCustomer()->fGuthaben > 0
         ) {
             // check and correct the SESSION-values for "Guthaben"
             $total -= Order::getOrderCredit() * $conversionFactor;
@@ -1831,7 +1827,7 @@ class Cart
         $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
         $shippingMethods = map(ShippingMethod::getPossibleShippingMethods(
             $countryCode,
-            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
+            $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->getZipCode(),
             $shippingClasses,
             $customerGroupID
         ), static function ($e) {
@@ -1992,7 +1988,7 @@ class Cart
     {
         return Request::postVar('land')
             ?? Frontend::get('Lieferadresse')->cLand
-            ?? Frontend::getCustomer()->cLand
+            ?? Frontend::getCustomer()->getCountry()
             ?? Frontend::get('cLieferlandISO');
     }
 

@@ -825,6 +825,70 @@ class Customer
     }
 
     /**
+     * @return float
+     */
+    public function getDiscount(): float
+    {
+        return (float)($this->fRabatt ?? 0);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->cNachname ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->cVorname ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->cMail ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCity(): string
+    {
+        return $this->cOrt ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountry(): string
+    {
+        return $this->cLand ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getZipCode(): string
+    {
+        return $this->cPLZ ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTaxID(): string
+    {
+        return $this->cUSTID ?? '';
+    }
+
+    /**
      * @return int
      */
     public function getGroupID(): int

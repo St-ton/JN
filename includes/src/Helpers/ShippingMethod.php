@@ -1383,7 +1383,7 @@ class ShippingMethod
             }
             $shippingMethods = map(self::getPossibleShippingMethods(
                 $iso,
-                $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->cPLZ,
+                $_SESSION['Lieferadresse']->cPLZ ?? Frontend::getCustomer()->getZipCode(),
                 $shippingClasses,
                 $customerGroupID
             ), static function ($e) {

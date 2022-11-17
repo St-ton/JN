@@ -478,12 +478,13 @@ class NewsController extends AbstractController
             return true;
         }
         if ($checkedOK) {
+            $customer            = Frontend::getCustomer();
             $comment             = new stdClass();
             $comment->kNews      = (int)$data['kNews'];
-            $comment->kKunde     = (int)$_SESSION['Kunde']->kKunde;
+            $comment->kKunde     = $customer->getID();
             $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y' ? 0 : 1;
-            $comment->cName      = $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname[0] . '.';
-            $comment->cEmail     = $_SESSION['Kunde']->cMail;
+            $comment->cName      = $customer->cVorname . ' ' . $customer->cNachname[0] . '.';
+            $comment->cEmail     = $customer->cMail;
             $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
             $comment->dErstellt  = 'now()';
 
@@ -539,7 +540,7 @@ class NewsController extends AbstractController
             ) {
                 $checks['nAnzahl'] = 1;
             }
-            $post['cEmail'] = Frontend::getCustomer()->cMail;
+            $post['cEmail'] = Frontend::getCustomer()->getEmail();
         } else {
             // Kunde ist nicht eingeloggt - Name prüfen
             if (empty($post['cName'])) {

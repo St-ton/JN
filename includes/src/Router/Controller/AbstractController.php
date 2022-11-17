@@ -331,7 +331,7 @@ abstract class AbstractController implements ControllerInterface
         $this->productFilter->setAvailableFilters($filters);
         $linkHelper->activate($pageType);
 
-        $origin          = Frontend::getCustomer()->cLand ?? '';
+        $origin          = Frontend::getCustomer()->getCountry();
         $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($this->customerGroupID, $origin);
         $cartValueGros   = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $origin);
         $cartValueNet    = $cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], false, true, $origin);

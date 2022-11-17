@@ -58,9 +58,9 @@ class Tax
             $merchantCountryCode = \STEUERSATZ_STANDARD_LAND;
         }
         $deliveryCountryCode = $merchantCountryCode;
-        if (!empty(Frontend::getCustomer()->cLand)) {
-            $deliveryCountryCode = Frontend::getCustomer()->cLand;
-            $billingCountryCode  = Frontend::getCustomer()->cLand;
+        if (!empty(Frontend::getCustomer()->getCountry())) {
+            $deliveryCountryCode = Frontend::getCustomer()->getCountry();
+            $billingCountryCode  = $deliveryCountryCode;
         }
         if (!empty($_SESSION['Lieferadresse']->cLand)) {
             $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
@@ -82,12 +82,13 @@ class Tax
         // Kunde hat eine zum Rechnungland passende, gueltige USt-ID gesetzt &&
         // Firmen-Land != Kunden-Rechnungsland && Firmen-Land != Kunden-Lieferland
         $UstBefreiungIGL = false;
+        $taxID           = Frontend::getCustomer()->getTaxID();
         if ($merchantCountryCode !== $deliveryCountryCode
             && $merchantCountryCode !== $billingCountryCode
-            && !empty(Frontend::getCustomer()->cUSTID)
-            && (\strcasecmp($billingCountryCode, \mb_substr(Frontend::getCustomer()->cUSTID, 0, 2)) === 0
+            && !empty($taxID)
+            && (\strcasecmp($billingCountryCode, \mb_substr($taxID, 0, 2)) === 0
                 || (\strcasecmp($billingCountryCode, 'GR') === 0
-                    && \strcasecmp(\mb_substr(Frontend::getCustomer()->cUSTID, 0, 2), 'EL') === 0))
+                    && \strcasecmp(\mb_substr($taxID, 0, 2), 'EL') === 0))
         ) {
             $countryHelper   = Shop::Container()->getCountryService();
             $deliveryCountry = $countryHelper->getCountry($deliveryCountryCode);

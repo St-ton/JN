@@ -183,9 +183,7 @@ class PriceRange extends AbstractFilter
         $this->condition     = '';
         $conversionFactor    = $currency->getConversionFactor();
         $groupDiscount       = Frontend::getCustomerGroup()->getDiscount();
-        $discount            = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
-            ? (float)$_SESSION['Kunde']->fRabatt
-            : 0.0;
+        $discount            = Frontend::getCustomer()->getDiscount();
         $rateKeys            = \array_keys($_SESSION['Steuersatz']);
         if (Frontend::getCustomerGroup()->isMerchant()) {
             $this->condition .= ' ROUND(LEAST((tpreisdetail.fVKNetto * ' .
@@ -316,9 +314,7 @@ class PriceRange extends AbstractFilter
     public function getPriceRangeSQL($oPreis, $currency, array $ranges = []): string
     {
         $sql               = '';
-        $customerDisctount = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
-            ? $_SESSION['Kunde']->fRabatt
-            : 0.0;
+        $customerDisctount = Frontend::getCustomer()->getDiscount();
         if ($this->getConfig('navigationsfilter')['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $minPrice = $oPreis->fMinPreis;
             $step     = $oPreis->fStep;
@@ -382,9 +378,7 @@ class PriceRange extends AbstractFilter
         $groupDiscount = ($groupDiscount = Frontend::getCustomerGroup()->getDiscount()) > 0
             ? $groupDiscount
             : 0.0;
-        $discount      = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
-            ? (float)$_SESSION['Kunde']->fRabatt
-            : 0.0;
+        $discount      = Frontend::getCustomer()->getDiscount();
         $state         = (new StateSQL())->from($this->productFilter->getCurrentStateData(self::class));
         if (!$isMerchant && GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             $maxTaxRate = \max($_SESSION['Steuersatz']);

@@ -54,7 +54,7 @@
             {block name='snippets-wishlist-content-heading'}
                 <div class="h2">
                     {if $isCurrenctCustomer === false && $CWunschliste->getCustomer() !== null}
-                        {$CWunschliste->getName()} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->getCustomer()->cVorname}
+                        {$CWunschliste->getName()} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->getCustomer()->getFirstName()}
                     {else}
                         {lang key='myWishlists'}
                     {/if}

@@ -194,7 +194,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                             'oNewsletterEmpfaengerHistory' => $history
                         ]);
                         if (($this->conf['newsletter']['newsletter_doubleopt'] === 'U'
-                            && empty($_SESSION['Kunde']->kKunde))
+                            && Frontend::getCustomer()->getID() > 0)
                             || $this->conf['newsletter']['newsletter_doubleopt'] === 'A'
                         ) {
                             // opt-in mail (only for unknown users)
@@ -259,11 +259,8 @@ class OptinNewsletter extends OptinBase implements OptinInterface
         $optinCodePrefix               = '/?oc=';
         $recipient                     = new stdClass();
         $recipient->kSprache           = Shop::getLanguageID();
-        $recipient->kKunde             = isset($_SESSION['Kunde']->kKunde)
-            ? (int)$_SESSION['Kunde']->kKunde
-            : 0;
-        $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0;
+        $recipient->kKunde             = Frontend::getCustomer()->getID();
+        $recipient->nAktiv             = $recipient->kKunde > 0;
         $recipient->cAnrede            = $this->refData->getSalutation();
         $recipient->cVorname           = $this->refData->getFirstName();
         $recipient->cNachname          = $this->refData->getLastName();

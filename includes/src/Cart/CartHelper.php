@@ -1820,8 +1820,8 @@ class CartHelper
                 $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_GRATISGESCHENK);
             }
         }
-        if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $persCart = PersistentCart::getInstance($_SESSION['Kunde']->kKunde);
+        if (Frontend::getCustomer()->getID() > 0) {
+            $persCart = PersistentCart::getInstance(Frontend::getCustomer()->getID());
             $persCart->entferneAlles()->bauePersVonSession();
         }
     }

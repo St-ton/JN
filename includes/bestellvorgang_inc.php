@@ -306,7 +306,7 @@ function pruefeRechnungsadresseStep(array $get): string
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step, $Kunde;
     //sondersteps Rechnungsadresse ändern
-    if (!empty(Frontend::getCustomer()->cOrt)
+    if (!empty(Frontend::getCustomer()->getCity())
         && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
     ) {
         Kupon::resetNewCustomerCoupon();
@@ -314,12 +314,12 @@ function pruefeRechnungsadresseStep(array $get): string
         $step  = 'edit_customer_address';
     }
 
-    if (!empty(Frontend::getCustomer()->cOrt)
+    if (!empty(Frontend::getCustomer()->getCity())
         && count(ShippingMethod::getPossibleShippingCountries(
             Frontend::getCustomerGroup()->getID(),
             false,
             false,
-            [Frontend::getCustomer()->cLand]
+            [Frontend::getCustomer()->getCountry()]
         )) === 0
     ) {
         Shop::Smarty()->assign('forceDeliveryAddress', 1);
@@ -681,11 +681,11 @@ function gibStepZahlung()
     $smarty     = Shop::Smarty();
     $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$lieferland) {
-        $lieferland = Frontend::getCustomer()->cLand;
+        $lieferland = Frontend::getCustomer()->getCountry();
     }
     $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
     if (!$poCode) {
-        $poCode = Frontend::getCustomer()->cPLZ;
+        $poCode = Frontend::getCustomer()->getZipCode();
     }
     $customerGroupID = Frontend::getCustomer()->getGroupID();
     if (!$customerGroupID) {
@@ -865,11 +865,11 @@ function gibStepVersand(): void
     $cart            = Frontend::getCart();
     $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$deliveryCountry) {
-        $deliveryCountry = Frontend::getCustomer()->cLand;
+        $deliveryCountry = Frontend::getCustomer()->getCountry();
     }
     $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
     if (!$poCode) {
-        $poCode = Frontend::getCustomer()->cPLZ;
+        $poCode = Frontend::getCustomer()->getZipCode();
     }
     $customerGroupID = Frontend::getCustomer()->getGroupID();
     if (!$customerGroupID) {
@@ -1734,11 +1734,11 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
     }
     $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
     if (!$deliveryCountry) {
-        $deliveryCountry = Frontend::getCustomer()->cLand;
+        $deliveryCountry = Frontend::getCustomer()->getCountry();
     }
     $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
     if (!$poCode) {
-        $poCode = Frontend::getCustomer()->cPLZ;
+        $poCode = Frontend::getCustomer()->getZipCode();
     }
     $shippingClasses = ShippingMethod::getShippingClasses(Frontend::getCart());
     $depending       = 'N';

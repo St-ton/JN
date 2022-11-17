@@ -168,7 +168,7 @@ class RegistrationForm extends AbstractValidator
         if (!isset($this->data['ustid']) || $this->data['ustid'] === '') {
             return;
         }
-        if (Frontend::getCustomer()->cUSTID === $this->data['ustid']) {
+        if (Frontend::getCustomer()->getTaxID() === $this->data['ustid']) {
             return;
         }
         $analizeCheck   = false;

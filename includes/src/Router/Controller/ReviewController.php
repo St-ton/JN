@@ -145,16 +145,17 @@ class ReviewController extends PageController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $review = ReviewModel::loadByAttributes(
+        $review   = ReviewModel::loadByAttributes(
             ['productID' => $productID, 'customerID' => $customerID],
             $this->db,
             ReviewHelpfulModel::ON_NOTEXISTS_NEW
         );
+        $customer = Frontend::getCustomer();
         /** @var ReviewModel $review */
         $review->productID  = $productID;
         $review->customerID = $customerID;
         $review->languageID = $langID;
-        $review->name       = $_SESSION['Kunde']->cVorname . ' ' . \mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
+        $review->name       = $customer->getFirstName() . ' ' . \mb_substr($customer->getName(), 0, 1);
         $review->title      = $title;
         $review->content    = \strip_tags($text);
         $review->helpful    = 0;

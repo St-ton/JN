@@ -693,7 +693,7 @@ final class JTLCache implements JTLCacheInterface
         // add customer ID
         if ($customerID === true) {
             $baseID .= '_cid';
-            $baseID .= $_SESSION['Kunde']->kKunde ?? '-1';
+            $baseID .= Frontend::getCustomer()->getID();
         } elseif (\is_numeric($customerID)) {
             $baseID .= '_cid' . (int)$customerID;
         }

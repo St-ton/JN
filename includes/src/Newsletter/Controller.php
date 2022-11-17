@@ -94,11 +94,11 @@ final class Controller
                     $recipient->Datum = (new DateTime($recipient->dEingetragen))->format('d.m.Y H:i');
                 }
                 // Pruefen ob Kunde bereits eingetragen
-                if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+                if (Frontend::getCustomer()->getID() > 0) {
                     $nlCustomer = $this->db->select(
                         'tnewsletterempfaenger',
                         'kKunde',
-                        (int)$_SESSION['Kunde']->kKunde
+                        Frontend::getCustomer()->getID()
                     );
                 }
                 if ((isset($recipient->cEmail) && \mb_strlen($recipient->cEmail) > 0)
@@ -120,7 +120,7 @@ final class Controller
                     $instance                      = new Newsletter($this->db, []);
                     $recipient                     = new stdClass();
                     $recipient->kSprache           = Shop::getLanguageID();
-                    $recipient->kKunde             = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                    $recipient->kKunde             = Frontend::getCustomer()->getID();
                     $recipient->nAktiv             = $recipient->kKunde > 0
                         && $this->config['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
                     $recipient->cAnrede            = $customer->cAnrede;
@@ -139,7 +139,7 @@ final class Controller
                     $this->db->insert('tnewsletterempfaenger', $recipient);
                     $history               = new stdClass();
                     $history->kSprache     = Shop::getLanguageID();
-                    $history->kKunde       = (int)($_SESSION['Kunde']->kKunde ?? 0);
+                    $history->kKunde       = Frontend::getCustomer()->getID();
                     $history->cAnrede      = $customer->cAnrede;
                     $history->cVorname     = $customer->cVorname;
                     $history->cNachname    = $customer->cNachname;
@@ -161,7 +161,7 @@ final class Controller
                     ]);
                     $this->db->delete('tnewsletterempfaengerblacklist', 'cMail', $customer->cEmail);
                     if (($this->config['newsletter']['newsletter_doubleopt'] === 'U'
-                            && empty($_SESSION['Kunde']->kKunde))
+                            && Frontend::getCustomer()->getID() > 0)
                         || $this->config['newsletter']['newsletter_doubleopt'] === 'A'
                     ) {
                         $nlBase = Shop::Container()->getLinkService()->getStaticRoute('newsletter.php')

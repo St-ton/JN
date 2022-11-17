@@ -27,8 +27,8 @@
                                 {$selectedISO = "
                                     {if isset($VersandPLZ)}
                                         {$VersandPLZ}
-                                    {elseif JTL\Session\Frontend::getCustomer()->cPLZ !== null}
-                                        {JTL\Session\Frontend::getCustomer()->cPLZ}
+                                    {elseif JTL\Session\Frontend::getCustomer()->getZipCode() !== ''}
+                                        {JTL\Session\Frontend::getCustomer()->getZipCode()}
                                     {/if}"|trim}
                                 {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text"

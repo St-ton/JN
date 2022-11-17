@@ -75,7 +75,7 @@ class Characteristic extends AbstractImage
                     ? $mixed->getImagePath()
                     : ($mixed->path ?? $mixed->cBildpfad ?? null);
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:
@@ -87,7 +87,7 @@ class Characteristic extends AbstractImage
                 break;
         }
         if ($result === null && $mixed->currentImagePath !== null) {
-            $result = \pathinfo($mixed->currentImagePath)['filename'];
+            $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
         }
 
         return empty($result) ? 'image' : Image::getCleanFilename((string)$result);

@@ -1161,8 +1161,7 @@ class NewsController extends AbstractBackendController
             } elseif (\str_starts_with($image, 'Bild')) {
                 $placeholder = '$#Bild' . \substr(\explode('.', $image)[0], 4) . '#$';
             } else {
-                $info        = \pathinfo($image);
-                $placeholder = '$#' . $info['filename'] . '#$';
+                $placeholder = '$#' . \pathinfo($image, \PATHINFO_FILENAME) . '#$';
             }
             $text = \str_replace(
                 $placeholder,

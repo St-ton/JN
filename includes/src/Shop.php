@@ -290,8 +290,8 @@ final class Shop extends ShopBC
         $nl     = \PHP_SAPI === 'cli' ? \PHP_EOL : '<br>';
         $trace  = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, $backtrace);
         $callee = first($trace);
-        $info   = \pathinfo($callee['file']);
-        echo $info['basename'] . ':' . $callee['line'] . ' ';
+        $base   = \pathinfo($callee['file'], \PATHINFO_BASENAME);
+        echo $base . ':' . $callee['line'] . ' ';
         if ($beforeString !== null) {
             echo $beforeString . $nl;
         }

@@ -36,7 +36,7 @@ final class Customer extends AbstractSync
     {
         foreach ($starter->getXML() as $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            $fileName     = \pathinfo($file)['basename'];
+            $fileName     = \pathinfo($file, \PATHINFO_BASENAME);
             // the first 5 cases come from Kunden_xml.php
             if ($fileName === 'del_kunden.xml') {
                 $this->handleDeletes($xml);

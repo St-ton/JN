@@ -66,18 +66,18 @@ class Category extends AbstractImage
     public static function getCustomName($mixed): string
     {
         if (\is_string($mixed)) {
-            $result = \pathinfo($mixed)['filename'];
+            $result = \pathinfo($mixed, \PATHINFO_FILENAME);
         } elseif (isset($mixed->customImgName)) {
             $result = $mixed->customImgName;
         } elseif (isset($mixed->currentImagePath)) {
-            $result = \pathinfo($mixed->currentImagePath)['filename'];
+            $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
         } else {
             switch (Image::getSettings()['naming'][Image::TYPE_CATEGORY]) {
                 case 2:
                     /** @var string|null $result */
                     $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                     if ($result !== null) {
-                        $result = \pathinfo($result)['filename'];
+                        $result = \pathinfo($result, \PATHINFO_FILENAME);
                     }
                     break;
                 case 1:

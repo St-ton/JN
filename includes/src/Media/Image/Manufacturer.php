@@ -67,7 +67,7 @@ class Manufacturer extends AbstractImage
                 /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? null;
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:

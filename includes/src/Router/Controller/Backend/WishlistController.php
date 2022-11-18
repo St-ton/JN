@@ -86,7 +86,7 @@ class WishlistController extends AbstractBackendController
         foreach ($sentWishLists as $wishList) {
             if ($wishList->kKunde !== null) {
                 $customer            = new Customer((int)$wishList->kKunde);
-                $wishList->cNachname = $customer->cNachname;
+                $wishList->cNachname = $customer->getName();
             }
         }
         $wishLists = $this->db->getObjects(
@@ -108,7 +108,7 @@ class WishlistController extends AbstractBackendController
         foreach ($wishLists as $wishList) {
             if ($wishList->kKunde !== null) {
                 $customer            = new Customer((int)$wishList->kKunde);
-                $wishList->cNachname = $customer->cNachname;
+                $wishList->cNachname = $customer->getName();
             }
         }
         $wishListPositions = $this->db->getObjects(

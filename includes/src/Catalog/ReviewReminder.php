@@ -113,7 +113,7 @@ class ReviewReminder
                 $productVisible = (new Artikel($db))->fuelleArtikel(
                     (int)$item->kArtikel,
                     $defaultOptions,
-                    (int)$customer->kKundengruppe
+                    $customer->getGroupID()
                 );
                 if ($productVisible !== null && $productVisible->kArtikel > 0) {
                     $res = $db->getSingleObject(

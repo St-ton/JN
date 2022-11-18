@@ -427,9 +427,9 @@ class Frontend extends AbstractSession
      */
     public function setCustomer(Customer $customer): self
     {
-        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
+        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->getCountry());
         $_SESSION['Kunde']         = $customer;
-        $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customer->kKundengruppe);
+        $_SESSION['Kundengruppe']  = new CustomerGroup($customer->getGroupID());
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
             ->setMayViewPrices(1)
             ->initAttributes();

@@ -841,8 +841,8 @@ class CouponsController extends AbstractBackendController
         }
         foreach ($customerData as $customerID) {
             $customer = new Customer($customerID);
-            $langID   = $customer->kSprache;
-            $cgID     = $customer->kKundengruppe;
+            $langID   = $customer->getLanguageID();
+            $cgID     = $customer->getGroupID();
             $language = Shop::Lang()->getIsoFromLangID($langID);
             if (!$language) {
                 $language = $defaultLang;

@@ -153,7 +153,7 @@ final class Orders extends AbstractSync
             if ($module) {
                 $module->cancelOrder($orderID);
             } else {
-                if (!empty($customer->cMail) && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)) {
+                if (!empty($customer->getEmail()) && ($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
@@ -194,7 +194,9 @@ final class Orders extends AbstractSync
                 $tmpOrder = new Bestellung($orderID);
                 $customer = new Customer($tmpOrder->kKunde);
                 $tmpOrder->fuelleBestellung();
-                if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
+                if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO)
+                    && \strlen($customer->getEmail()) > 0
+                ) {
                     $data              = new stdClass();
                     $data->tkunde      = $customer;
                     $data->tbestellung = $tmpOrder;
@@ -617,7 +619,7 @@ final class Orders extends AbstractSync
                 }
             } else {
                 $customer    = new Customer($shopOrder->kKunde);
-                $trackingURL = \str_replace('#PLZ#', $customer->cPLZ, $trackingURL);
+                $trackingURL = \str_replace('#PLZ#', $customer->getZipCode(), $trackingURL);
             }
             $trackingURL = \str_replace('#IdentCode#', $order->cIdentCode, $trackingURL);
         }

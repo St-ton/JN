@@ -285,7 +285,7 @@ class AccountController
                 $item->fGuthabenBonusLocalized = Preise::getLocalizedPriceString($item->fGuthabenBonus, $currency);
             });
         }
-        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->fGuthaben, $currency);
+        $customer->cGuthabenLocalized = Preise::getLocalizedPriceString($customer->getBalance(), $currency);
         $this->smarty->assign('Kunde', $customer)
             ->assign('customerAttributes', $customer->getCustomerAttributes())
             ->assign('bewertungen', $ratings)

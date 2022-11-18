@@ -751,7 +751,7 @@ function gibStepZahlung()
             ->assign('Kunde', Frontend::getCustomer())
             ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
             ->assign('OrderAmount', Frontend::getCart()->gibGesamtsummeWaren(true))
-            ->assign('ShopCreditAmount', Frontend::getCustomer()->fGuthaben);
+            ->assign('ShopCreditAmount', Frontend::getCustomer()->getBalance());
 
         executeHook(HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
 
@@ -2012,15 +2012,15 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
         }
     }
 
-    $customer->cMail                 = mb_convert_case($customer->cMail, MB_CASE_LOWER);
+    $customer->cMail                 = mb_convert_case($customer->getEmail(), MB_CASE_LOWER);
     $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
         : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
-    $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
-    if (!empty($customer->cBundesland)) {
-        $region = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
-        if (is_object($region)) {
+    $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->getCountry());
+    if (!empty($customer->getState())) {
+        $region = Staat::getRegionByIso($customer->getState(), $customer->getCountry());
+        if ($region !== null) {
             $customer->cBundesland = $region->cName;
         }
     }
@@ -2060,7 +2060,7 @@ function getLieferdaten(array $post)
 function guthabenMoeglich(): bool
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
-    return (Frontend::getCustomer()->fGuthaben > 0
+    return (Frontend::getCustomer()->getBalance() > 0
         && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
 }
 

@@ -1010,7 +1010,7 @@ class CheckoutController extends RegistrationController
      */
     public function canUseBalance(): bool
     {
-        return ($this->customer->fGuthaben > 0
+        return ($this->customer->getBalance() > 0
             && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen));
     }
 
@@ -1529,7 +1529,7 @@ class CheckoutController extends RegistrationController
                 ->assign('Kunde', $this->customer)
                 ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
                 ->assign('OrderAmount', $this->cart->gibGesamtsummeWaren(true))
-                ->assign('ShopCreditAmount', $this->customer->fGuthaben);
+                ->assign('ShopCreditAmount', $this->customer->getBalance());
 
             \executeHook(\HOOK_BESTELLVORGANG_PAGE_STEPZAHLUNG);
 

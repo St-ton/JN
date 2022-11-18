@@ -173,12 +173,12 @@ class Order extends CartHelper
     {
         $customer  = Frontend::getCustomer();
         $cartTotal = (float)Frontend::getCart()->gibGesamtsummeWaren(true, false);
-        $credit    = \min((float)$customer->fGuthaben, $cartTotal);
+        $credit    = \min($customer->getBalance(), $cartTotal);
 
         \executeHook(\HOOK_BESTELLUNG_SETZEGUTHABEN, [
             'creditToUse'    => &$credit,
             'cartTotal'      => $cartTotal,
-            'customerCredit' => (float)$customer->fGuthaben
+            'customerCredit' => $customer->getBalance()
         ]);
 
         if ($order !== null) {

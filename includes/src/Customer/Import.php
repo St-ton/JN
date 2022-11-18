@@ -185,33 +185,36 @@ class Import
             }
         }
 
-        if (Text::filterEmailAddress($customer->cMail) === false) {
+        if (Text::filterEmailAddress($customer->getEmail()) === false) {
             $this->errors[] = \__('row') . ' ' . $index . ': '
-                . \sprintf(\__('errorInvalidEmail'), $customer->cMail);
+                . \sprintf(\__('errorInvalidEmail'), $customer->getEmail());
             return false;
         }
 
         if ($this->usePasswordsFromCsv === true
-            && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
+            && (!$customer->getPassword() || $customer->getPassword() === 'd41d8cd98f00b204e9800998ecf8427e')
         ) {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoPassword');
             return false;
         }
 
-        if (!$customer->cNachname) {
+        if ($customer->getName() === '') {
             $this->errors[] = \__('row') . ' ' . $index . ': ' . \__('errorNoSurname');
+
             return false;
         }
 
-        $oldMail = $this->db->select('tkunde', 'cMail', $customer->cMail);
-        if (isset($oldMail->kKunde) && $oldMail->kKunde > 0) {
-            $this->errors[] = \__('row') . ' ' . $index . ': ' . \sprintf(\__('errorEmailDuplicate'), $customer->cMail);
+        $oldMail = $this->db->select('tkunde', 'cMail', $customer->getEmail());
+        if ($oldMail !== null && $oldMail->kKunde > 0) {
+            $this->errors[] = \__('row') . ' ' . $index . ': '
+                . \sprintf(\__('errorEmailDuplicate'), $customer->getEmail());
+
             return false;
         }
-
-        if ($customer->cAnrede === 'f' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'frau') {
+        $salutation = $customer->getSalutation();
+        if ($salutation === 'f' || \mb_convert_case($salutation, \MB_CASE_LOWER) === 'frau') {
             $customer->cAnrede = 'w';
-        } elseif ($customer->cAnrede === 'h' || \mb_convert_case($customer->cAnrede, \MB_CASE_LOWER) === 'herr') {
+        } elseif ($salutation === 'h' || \mb_convert_case($salutation, \MB_CASE_LOWER) === 'herr') {
             $customer->cAnrede = 'm';
         }
 

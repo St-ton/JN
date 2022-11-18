@@ -339,7 +339,7 @@ class ActivationController extends AbstractBackendController
         );
         foreach ($newsComments as $comment) {
             $customer           = new Customer(isset($comment->kKunde) ? (int)$comment->kKunde : null);
-            $comment->cNachname = $customer->cNachname;
+            $comment->cNachname = $customer->getName();
         }
 
         return $newsComments;

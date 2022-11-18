@@ -78,13 +78,13 @@ class Form
             }
         }
 
-        $customer->cMail                 = mb_convert_case($customer->cMail, MB_CASE_LOWER);
-        $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
-        $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
+        $customer->cMail                 = mb_convert_case($customer->getEmail(), MB_CASE_LOWER);
+        $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->getBirthday());
+        $customer->dGeburtstag_formatted = $customer->getBirthday() === '_DBNULL_'
             ? ''
-            : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
+            : DateTime::createFromFormat('Y-m-d', $customer->getBirthday())->format('d.m.Y');
         $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
-        if (!empty($customer->cBundesland)) {
+        if (!empty($customer->getState())) {
             $region = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
             if ($region !== null) {
                 $customer->cBundesland = $region->cName;

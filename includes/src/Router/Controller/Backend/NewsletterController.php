@@ -377,7 +377,7 @@ class NewsletterController extends AbstractBackendController
             );
             foreach ($inactiveRecipients as $recipient) {
                 $customer                = new Customer(isset($recipient->kKunde) ? (int)$recipient->kKunde : null);
-                $recipient->cNachname    = Text::filterXSS($customer->cNachname);
+                $recipient->cNachname    = Text::filterXSS($customer->getName());
                 $recipient->newsVorname  = Text::filterXSS($recipient->newsVorname);
                 $recipient->newsNachname = Text::filterXSS($recipient->newsNachname);
                 $recipient->cVorname     = Text::filterXSS($recipient->cVorname);

@@ -1130,7 +1130,7 @@ class Cart
             && isset($_SESSION['Bestellung']->GuthabenNutzen, $_SESSION['Bestellung']->fGuthabenGenutzt)
             && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1
             && $_SESSION['Bestellung']->fGuthabenGenutzt > 0
-            && Frontend::getCustomer()->fGuthaben > 0
+            && Frontend::getCustomer()->getBalance() > 0
         ) {
             // check and correct the SESSION-values for "Guthaben"
             $total -= Order::getOrderCredit() * $conversionFactor;

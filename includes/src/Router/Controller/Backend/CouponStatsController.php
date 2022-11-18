@@ -99,7 +99,7 @@ class CouponStatsController extends AbstractBackendController
         foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
             $usedCouponOrder['kKunde']           = (int)($usedCouponOrder['kKunde'] ?? 0);
             $customer                            = new Customer($usedCouponOrder['kKunde']);
-            $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
+            $usedCouponsOrder[$key]['cUserName'] = $customer->getFirstName() . ' ' . $customer->getName();
             unset($customer);
             $usedCouponsOrder[$key]['nCouponValue']        =
                 Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);

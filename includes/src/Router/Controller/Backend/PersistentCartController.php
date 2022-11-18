@@ -109,8 +109,8 @@ class PersistentCartController extends AbstractBackendController
         foreach ($customers as $item) {
             $customer = new Customer((int)$item->kKunde);
 
-            $item->cNachname = $customer->cNachname;
-            $item->cFirma    = $customer->cFirma;
+            $item->cNachname = $customer->getName();
+            $item->cFirma    = $customer->getCompany();
         }
 
         $this->smarty->assign('oKunde_arr', $customers)
@@ -152,8 +152,8 @@ class PersistentCartController extends AbstractBackendController
         foreach ($carts as $cart) {
             $customer = new Customer((int)$cart->kKundeTMP);
 
-            $cart->cNachname = $customer->cNachname;
-            $cart->cFirma    = $customer->cFirma;
+            $cart->cNachname = $customer->getName();
+            $cart->cFirma    = $customer->getCompany();
         }
 
         $this->smarty->assign('oWarenkorbPersPos_arr', $carts)

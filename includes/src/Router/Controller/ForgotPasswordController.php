@@ -99,7 +99,7 @@ class ForgotPasswordController extends AbstractController
             $resetItem = $this->db->select('tpasswordreset', 'cKey', $_POST['fpwh']);
             if ($resetItem !== null && new DateTime($resetItem->dExpires) >= new DateTime()) {
                 $customer = new Customer((int)$resetItem->kKunde);
-                if ($customer->kKunde > 0 && $customer->cSperre !== 'Y') {
+                if ($customer->getID() > 0 && !$customer->isLocked()) {
                     $customer->updatePassword($_POST['pw_new']);
                     $this->db->delete('tpasswordreset', 'kKunde', $customer->kKunde);
 

@@ -239,26 +239,26 @@ class OrderHandler
             }
         }
         $billingAddress                = new Rechnungsadresse();
-        $billingAddress->kKunde        = $customer->kKunde;
-        $billingAddress->cAnrede       = $customer->cAnrede;
-        $billingAddress->cTitel        = $customer->cTitel;
-        $billingAddress->cVorname      = $customer->cVorname;
-        $billingAddress->cNachname     = $customer->cNachname;
-        $billingAddress->cFirma        = $customer->cFirma;
-        $billingAddress->cZusatz       = $customer->cZusatz;
-        $billingAddress->cStrasse      = $customer->cStrasse;
-        $billingAddress->cHausnummer   = $customer->cHausnummer;
-        $billingAddress->cAdressZusatz = $customer->cAdressZusatz;
-        $billingAddress->cPLZ          = $customer->cPLZ;
-        $billingAddress->cOrt          = $customer->cOrt;
-        $billingAddress->cBundesland   = $customer->cBundesland;
-        $billingAddress->cLand         = $customer->cLand;
-        $billingAddress->cTel          = $customer->cTel;
-        $billingAddress->cMobil        = $customer->cMobil;
-        $billingAddress->cFax          = $customer->cFax;
-        $billingAddress->cUSTID        = $customer->cUSTID;
-        $billingAddress->cWWW          = $customer->cWWW;
-        $billingAddress->cMail         = $customer->cMail;
+        $billingAddress->kKunde        = $customer->getID();
+        $billingAddress->cAnrede       = $customer->getSalutation();
+        $billingAddress->cTitel        = $customer->getTitle();
+        $billingAddress->cVorname      = $customer->getFirstName();
+        $billingAddress->cNachname     = $customer->getName();
+        $billingAddress->cFirma        = $customer->getCompany();
+        $billingAddress->cZusatz       = $customer->getAdditionalInformation();
+        $billingAddress->cStrasse      = $customer->getStreet();
+        $billingAddress->cHausnummer   = $customer->getStreetNumber();
+        $billingAddress->cAdressZusatz = $customer->getAdditionalAddressInformation();
+        $billingAddress->cPLZ          = $customer->getZipCode();
+        $billingAddress->cOrt          = $customer->getCity();
+        $billingAddress->cBundesland   = $customer->getState();
+        $billingAddress->cLand         = $customer->getCompany();
+        $billingAddress->cTel          = $customer->getPhoneNumber();
+        $billingAddress->cMobil        = $customer->getMobilePhoneNumber();
+        $billingAddress->cFax          = $customer->getFaxNumber();
+        $billingAddress->cUSTID        = $customer->getTaxID();
+        $billingAddress->cWWW          = $customer->getWebsite();
+        $billingAddress->cMail         = $customer->getEmail();
 
         \executeHook(\HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE, ['billingAddress' => $billingAddress]);
 
@@ -489,23 +489,23 @@ class OrderHandler
         $order->fWaehrungsFaktor = Frontend::getCurrency()->getConversionFactor();
 
         $order->oRechnungsadresse              = $order->oRechnungsadresse ?? new Rechnungsadresse();
-        $order->oRechnungsadresse->cVorname    = $customer->cVorname;
-        $order->oRechnungsadresse->cNachname   = $customer->cNachname;
-        $order->oRechnungsadresse->cFirma      = $customer->cFirma;
-        $order->oRechnungsadresse->kKunde      = $customer->kKunde;
-        $order->oRechnungsadresse->cAnrede     = $customer->cAnrede;
-        $order->oRechnungsadresse->cTitel      = $customer->cTitel;
-        $order->oRechnungsadresse->cStrasse    = $customer->cStrasse;
-        $order->oRechnungsadresse->cHausnummer = $customer->cHausnummer;
-        $order->oRechnungsadresse->cPLZ        = $customer->cPLZ;
-        $order->oRechnungsadresse->cOrt        = $customer->cOrt;
-        $order->oRechnungsadresse->cLand       = $customer->cLand;
-        $order->oRechnungsadresse->cTel        = $customer->cTel;
-        $order->oRechnungsadresse->cMobil      = $customer->cMobil;
-        $order->oRechnungsadresse->cFax        = $customer->cFax;
-        $order->oRechnungsadresse->cUSTID      = $customer->cUSTID;
-        $order->oRechnungsadresse->cWWW        = $customer->cWWW;
-        $order->oRechnungsadresse->cMail       = $customer->cMail;
+        $order->oRechnungsadresse->cVorname    = $customer->getFirstName();
+        $order->oRechnungsadresse->cNachname   = $customer->getName();
+        $order->oRechnungsadresse->cFirma      = $customer->getCompany();
+        $order->oRechnungsadresse->kKunde      = $customer->getID();
+        $order->oRechnungsadresse->cAnrede     = $customer->getSalutation();
+        $order->oRechnungsadresse->cTitel      = $customer->getTitle();
+        $order->oRechnungsadresse->cStrasse    = $customer->getStreet();
+        $order->oRechnungsadresse->cHausnummer = $customer->getStreetNumber();
+        $order->oRechnungsadresse->cPLZ        = $customer->getZipCode();
+        $order->oRechnungsadresse->cOrt        = $customer->getCity();
+        $order->oRechnungsadresse->cLand       = $customer->getCountry();
+        $order->oRechnungsadresse->cTel        = $customer->getPhoneNumber();
+        $order->oRechnungsadresse->cMobil      = $customer->getMobilePhoneNumber();
+        $order->oRechnungsadresse->cFax        = $customer->getFaxNumber();
+        $order->oRechnungsadresse->cUSTID      = $customer->getTaxID();
+        $order->oRechnungsadresse->cWWW        = $customer->getWebsite();
+        $order->oRechnungsadresse->cMail       = $customer->getEmail();
 
         if (\mb_strlen(Frontend::getDeliveryAddress()->cVorname) > 0) {
             $order->Lieferadresse = $this->getShippingAddress();
@@ -627,64 +627,64 @@ class OrderHandler
         $customer           = new Customer();
         $sessionCustomer    = $this->customer;
         $customerAttributes = Frontend::get('customerAttributes');
-        if ($sessionCustomer->kKunde > 0) {
-            $customer->kKunde = $sessionCustomer->kKunde;
+        if ($sessionCustomer->getID() > 0) {
+            $customer->kKunde = $sessionCustomer->getID();
             $customer->getCustomerAttributes()->load($customer->getID());
         } elseif ($customerAttributes !== null) {
             $customer->getCustomerAttributes()->assign($customerAttributes);
         }
         $customer->kKundengruppe = $this->customer->getGroupID();
-        if ($sessionCustomer->kKundengruppe > 0) {
-            $customer->kKundengruppe = $sessionCustomer->kKundengruppe;
+        if ($sessionCustomer->getGroupID() > 0) {
+            $customer->kKundengruppe = $sessionCustomer->getGroupID();
         }
         $customer->kSprache = $this->languageID;
-        if ($sessionCustomer->kSprache > 0) {
-            $customer->kSprache = $sessionCustomer->kSprache;
+        if ($sessionCustomer->getLanguageID() > 0) {
+            $customer->kSprache = $sessionCustomer->getLanguageID();
         }
-        if ($sessionCustomer->cKundenNr) {
-            $customer->cKundenNr = $sessionCustomer->cKundenNr;
+        if ($sessionCustomer->getCustomerNo()) {
+            $customer->cKundenNr = $sessionCustomer->getCustomerNo();
         }
-        if ($sessionCustomer->cPasswort) {
-            $customer->cPasswort = $sessionCustomer->cPasswort;
+        if ($sessionCustomer->getPassword()) {
+            $customer->cPasswort = $sessionCustomer->getPassword();
         }
-        if ($sessionCustomer->fGuthaben) {
-            $customer->fGuthaben = $sessionCustomer->fGuthaben;
+        if ($sessionCustomer->getBalance()) {
+            $customer->fGuthaben = $sessionCustomer->getBalance();
         }
-        if ($sessionCustomer->fRabatt) {
-            $customer->fRabatt = $sessionCustomer->fRabatt;
+        if ($sessionCustomer->getDiscount()) {
+            $customer->fRabatt = $sessionCustomer->getDiscount();
         }
-        if ($sessionCustomer->dErstellt) {
-            $customer->dErstellt = $sessionCustomer->dErstellt;
+        if ($sessionCustomer->getDateCreated()) {
+            $customer->dErstellt = $sessionCustomer->getDateCreated();
         }
-        if ($sessionCustomer->cAktiv) {
-            $customer->cAktiv = $sessionCustomer->cAktiv;
+        if ($sessionCustomer->getActive()) {
+            $customer->cAktiv = $sessionCustomer->getActive();
         }
-        if ($sessionCustomer->cAbgeholt) {
-            $customer->cAbgeholt = $sessionCustomer->cAbgeholt;
+        if ($sessionCustomer->getSynced()) {
+            $customer->cAbgeholt = $sessionCustomer->getSynced();
         }
-        if (isset($sessionCustomer->nRegistriert)) {
-            $customer->nRegistriert = $sessionCustomer->nRegistriert;
+        if ($sessionCustomer->getRegistered() !== null) {
+            $customer->nRegistriert = $sessionCustomer->getRegistered();
         }
-        $customer->cAnrede       = Text::unhtmlentities($sessionCustomer->cAnrede);
-        $customer->cVorname      = Text::unhtmlentities($sessionCustomer->cVorname);
-        $customer->cNachname     = Text::unhtmlentities($sessionCustomer->cNachname);
-        $customer->cStrasse      = Text::unhtmlentities($sessionCustomer->cStrasse);
-        $customer->cHausnummer   = Text::unhtmlentities($sessionCustomer->cHausnummer);
-        $customer->cPLZ          = Text::unhtmlentities($sessionCustomer->cPLZ);
-        $customer->cOrt          = Text::unhtmlentities($sessionCustomer->cOrt);
-        $customer->cLand         = Text::unhtmlentities($sessionCustomer->cLand);
-        $customer->cMail         = Text::unhtmlentities($sessionCustomer->cMail);
-        $customer->cTel          = Text::unhtmlentities($sessionCustomer->cTel);
-        $customer->cFax          = Text::unhtmlentities($sessionCustomer->cFax);
-        $customer->cFirma        = Text::unhtmlentities($sessionCustomer->cFirma);
-        $customer->cZusatz       = Text::unhtmlentities($sessionCustomer->cZusatz);
-        $customer->cTitel        = Text::unhtmlentities($sessionCustomer->cTitel);
-        $customer->cAdressZusatz = Text::unhtmlentities($sessionCustomer->cAdressZusatz);
-        $customer->cMobil        = Text::unhtmlentities($sessionCustomer->cMobil);
-        $customer->cWWW          = Text::unhtmlentities($sessionCustomer->cWWW);
-        $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->cUSTID);
-        $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
-        $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
+        $customer->cAnrede       = Text::unhtmlentities($sessionCustomer->getSalutation());
+        $customer->cVorname      = Text::unhtmlentities($sessionCustomer->getFirstName());
+        $customer->cNachname     = Text::unhtmlentities($sessionCustomer->getName());
+        $customer->cStrasse      = Text::unhtmlentities($sessionCustomer->getStreet());
+        $customer->cHausnummer   = Text::unhtmlentities($sessionCustomer->getStreetNumber());
+        $customer->cPLZ          = Text::unhtmlentities($sessionCustomer->getZipCode());
+        $customer->cOrt          = Text::unhtmlentities($sessionCustomer->getCity());
+        $customer->cLand         = Text::unhtmlentities($sessionCustomer->getCountry());
+        $customer->cMail         = Text::unhtmlentities($sessionCustomer->getEmail());
+        $customer->cTel          = Text::unhtmlentities($sessionCustomer->getPhoneNumber());
+        $customer->cFax          = Text::unhtmlentities($sessionCustomer->getFaxNumber());
+        $customer->cFirma        = Text::unhtmlentities($sessionCustomer->getCompany());
+        $customer->cZusatz       = Text::unhtmlentities($sessionCustomer->getAdditionalInformation());
+        $customer->cTitel        = Text::unhtmlentities($sessionCustomer->getTitle());
+        $customer->cAdressZusatz = Text::unhtmlentities($sessionCustomer->getAdditionalAddressInformation());
+        $customer->cMobil        = Text::unhtmlentities($sessionCustomer->getMobilePhoneNumber());
+        $customer->cWWW          = Text::unhtmlentities($sessionCustomer->getWebsite());
+        $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->getTaxID());
+        $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->getBirthday());
+        $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->getState());
 
         $_SESSION['Kunde'] = $customer;
 

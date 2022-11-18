@@ -825,11 +825,27 @@ class Customer
     }
 
     /**
+     * @return bool
+     */
+    public function isLocked(): bool
+    {
+        return $this->cSperre === 'Y';
+    }
+
+    /**
      * @return float
      */
     public function getDiscount(): float
     {
         return (float)($this->fRabatt ?? 0);
+    }
+
+    /**
+     * @return float
+     */
+    public function getBalance(): float
+    {
+        return (float)($this->fGuthaben ?? 0);
     }
 
     /**
@@ -875,6 +891,70 @@ class Customer
     /**
      * @return string
      */
+    public function getStreet(): string
+    {
+        return $this->cStrasse ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreetNumber(): string
+    {
+        return $this->cHausnummer ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalutation(): string
+    {
+        return $this->cAnrede ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhoneNumber(): string
+    {
+        return $this->cTel ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getMobilePhoneNumber(): string
+    {
+        return $this->cMobil ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getFaxNumber(): string
+    {
+        return $this->cFax ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getWebsite(): string
+    {
+        return $this->cWWW ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompany(): string
+    {
+        return $this->cFirma ?? '';
+    }
+
+    /**
+     * @return string
+     */
     public function getZipCode(): string
     {
         return $this->cPLZ ?? '';
@@ -883,9 +963,105 @@ class Customer
     /**
      * @return string
      */
+    public function getAdditionalAddressInformation(): string
+    {
+        return $this->cAdressZusatz ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionalInformation(): string
+    {
+        return $this->cZusatz ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getState(): string
+    {
+        return $this->cBundesland ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getBirthday(): string
+    {
+        return $this->dGeburtstag ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->cTitel ?? '';
+    }
+
+    /**
+     * @return string
+     */
     public function getTaxID(): string
     {
         return $this->cUSTID ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerNo(): string
+    {
+        return $this->cKundenNr ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->cPasswort ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getActive(): string
+    {
+        return $this->cAktiv ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateCreated(): string
+    {
+        return $this->dErstellt ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrigin(): string
+    {
+        return $this->cHerkunft ?? '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getSynced(): string
+    {
+        return $this->cAbgeholt ?? '';
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getRegistered(): ?int
+    {
+        return $this->nRegistriert ?? null;
     }
 
     /**

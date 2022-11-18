@@ -626,7 +626,7 @@ class Method implements MethodInterface
             case \MAILTEMPLATE_BESTELLUNG_VERSANDT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if ($customer->cMail !== '') {
+                if ($customer->getEmail() !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -634,7 +634,7 @@ class Method implements MethodInterface
             case \MAILTEMPLATE_BESTELLUNG_BEZAHLT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_EINGANG) && $customer->getEmail() !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -642,7 +642,7 @@ class Method implements MethodInterface
             case \MAILTEMPLATE_BESTELLUNG_STORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && $customer->getEmail() !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -650,7 +650,7 @@ class Method implements MethodInterface
             case \MAILTEMPLATE_BESTELLUNG_RESTORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_RESTORNO) && $customer->cMail !== '') {
+                if (($order->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_RESTORNO) && $customer->getEmail() !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;

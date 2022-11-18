@@ -70,7 +70,7 @@ final class Customer extends AbstractSync
             $customerData->kKundenGruppe = (int)$customerData->kKundenGruppe;
 
             $customer = new CustomerClass($customerData->kKunde);
-            if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
+            if ($customer->getID() > 0 && $customer->getGroupID() !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
                     'kKunde',
@@ -80,7 +80,7 @@ final class Customer extends AbstractSync
                 $customer->kKundengruppe = $customerData->kKundenGruppe;
                 $obj                     = new stdClass();
                 $obj->tkunde             = $customer;
-                if ($customer->cMail) {
+                if ($customer->getEmail() !== '') {
                     $mailer = Shop::Container()->get(Mailer::class);
                     $mail   = new Mail();
                     $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
@@ -101,7 +101,7 @@ final class Customer extends AbstractSync
                 continue;
             }
             $customer = new CustomerClass((int)$customerData->kKunde);
-            if ($customer->nRegistriert === 1 && $customer->cMail) {
+            if ($customer->nRegistriert === 1 && $customer->getEmail() !== '') {
                 $customer->prepareResetPassword();
             } else {
                 \syncException(
@@ -187,7 +187,7 @@ final class Customer extends AbstractSync
             $obj                     = new stdClass();
             $obj->tkunde             = $customer;
             $obj->tgutschein         = $voucher;
-            if ($customer->cMail) {
+            if ($customer->getEmail() !== '') {
                 $mail = new Mail();
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_GUTSCHEIN, $obj));
             }
@@ -239,7 +239,7 @@ final class Customer extends AbstractSync
                 'nRegistriert',
                 1,
                 'cMail',
-                $customer->cMail,
+                $customer->getEmail(),
                 null,
                 null,
                 false,
@@ -368,7 +368,7 @@ final class Customer extends AbstractSync
         // mail an Kunden mit Accounterstellung durch Shopbetreiber
         $obj         = new stdClass();
         $obj->tkunde = $customer;
-        if ($customer->cMail) {
+        if ($customer->getEmail() !== '') {
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
@@ -403,11 +403,11 @@ final class Customer extends AbstractSync
         $customer->cAktiv      = 'Y';
         $customer->dVeraendert = 'NOW()';
 
-        if ($customer->cMail !== $oldCustomer->cMail) {
+        if ($customer->getEmail() !== $oldCustomer->getEmail()) {
             // E-Mail Adresse geändert - Verwendung prüfen!
-            if (Text::filterEmailAddress($customer->cMail) === false
-                || SimpleMail::checkBlacklist($customer->cMail)
-                || $this->db->select('tkunde', 'cMail', $customer->cMail, 'nRegistriert', 1) !== null
+            if (Text::filterEmailAddress($customer->getEmail()) === false
+                || SimpleMail::checkBlacklist($customer->getEmail())
+                || $this->db->select('tkunde', 'cMail', $customer->getEmail(), 'nRegistriert', 1) !== null
             ) {
                 // E-Mail ist invalide, blacklisted bzw. wird bereits im Shop verwendet
                 $res['keys']['tkunde attr']['kKunde'] = 0;
@@ -424,13 +424,13 @@ final class Customer extends AbstractSync
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
-        $customer->cPasswort    = $oldCustomer->cPasswort;
-        $customer->nRegistriert = $oldCustomer->nRegistriert;
-        $customer->dErstellt    = $oldCustomer->dErstellt;
-        $customer->fGuthaben    = $oldCustomer->fGuthaben;
-        $customer->cHerkunft    = $oldCustomer->cHerkunft;
+        $customer->cPasswort    = $oldCustomer->getPassword();
+        $customer->nRegistriert = $oldCustomer->getRegistered();
+        $customer->dErstellt    = $oldCustomer->getDateCreated();
+        $customer->fGuthaben    = $oldCustomer->getBalance();
+        $customer->cHerkunft    = $oldCustomer->getOrigin();
         // schaue, ob dieser Kunde diese Kundengruppe schon hat
-        if ($oldCustomer->kKundengruppe !== $customer->kKundengruppe && $customer->cMail) {
+        if ($customer->getEmail() !== '' && $oldCustomer->getGroupID() !== $customer->getGroupID()) {
             // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
             $obj         = new stdClass();
             $obj->tkunde = $customer;
@@ -442,12 +442,12 @@ final class Customer extends AbstractSync
         // Hausnummer extrahieren
         $this->extractStreet($customer);
         // Workaround for WAWI-39370
-        $customer->cLand = Adresse::checkISOCountryCode($customer->cLand);
+        $customer->cLand = Adresse::checkISOCountryCode($customer->getCountry());
         // $this->upsert('tkunde', [$Kunde], 'kKunde');
         $customer->updateInDB();
         DataHistory::saveHistory($oldCustomer, $customer, DataHistory::QUELLE_DBES);
         if (\count($customerAttributes) > 0) {
-            $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
+            $this->saveAttribute($customer->getID(), $customer->getLanguageID(), $customerAttributes);
         }
         $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
         $res['keys']['tkunde']                = '';

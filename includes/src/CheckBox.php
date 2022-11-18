@@ -293,12 +293,8 @@ class CheckBox
         bool $special = false,
         bool $logging = false
     ): array {
-        if (!$customerGroupID) {
-            if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-                $customerGroupID = Frontend::getCustomerGroup()->getID();
-            } else {
-                $customerGroupID = CustomerGroup::getDefaultGroupID();
-            }
+        if ($customerGroupID === 0) {
+            $customerGroupID = Frontend::getCustomer()->getGroupID();
         }
         $sql = '';
         if ($active) {

@@ -235,9 +235,7 @@ class IOMethods
             Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
         ];
 
-        $customerGroupID = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
-            ? $_SESSION['Kunde']->kKundengruppe
-            : Frontend::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomer()->getGroupID();
 
         $smarty->assign('Boxen', $boxesToShow)
             ->assign('WarenkorbWarensumme', $sum)

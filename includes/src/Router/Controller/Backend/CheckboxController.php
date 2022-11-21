@@ -216,6 +216,9 @@ class CheckboxController extends AbstractBackendController
         if ((int)$post['nLink'] === 1) {
             $checkBox->kLink = (int)$post['kLink'];
         }
+        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] >0) {
+            $checkBox->kCheckBox = (int)$post['kCheckBox'];
+        }
         $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
         $checkBox->cName             = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
         $checkBox->cKundengruppe     = Text::createSSK($post['kKundengruppe']);

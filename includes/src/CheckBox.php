@@ -3,6 +3,9 @@
 namespace JTL;
 
 use InvalidArgumentException;
+use JTL\CheckBox\CheckBoxDataObject;
+use JTL\CheckBox\CheckBoxRepository;
+use JTL\CheckBox\CheckBoxService;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
@@ -150,6 +153,8 @@ class CheckBox
      */
     public ?string $cErrormsg = null;
 
+    protected CheckBoxService $service;
+
     /**
      * @param int              $id
      * @param DbInterface|null $db
@@ -159,8 +164,14 @@ class CheckBox
         $this->db    = $db ?? Shop::Container()->getDB();
         $this->oLink = new Link($this->db);
         $this->loadFromDB($id);
+        $this->dependencies();
     }
 
+    private function dependencies(): void
+    {
+        $repository    = new CheckBoxRepository($this->db);
+        $this->service = new CheckBoxService($repository);
+    }
     /**
      * @param int $id
      * @return $this
@@ -512,17 +523,7 @@ class CheckBox
      */
     public function activate(array $checkboxIDs): bool
     {
-        if (\count($checkboxIDs) === 0) {
-            return false;
-        }
-        $this->db->query(
-            'UPDATE tcheckbox
-                SET nAktiv = 1
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
-        );
-        Shop::Container()->getCache()->flushTags(['checkbox']);
-
-        return true;
+        return $this->service->activate($checkboxIDs);
     }
 
     /**
@@ -542,17 +543,7 @@ class CheckBox
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        if (\count($checkboxIDs) === 0) {
-            return false;
-        }
-        $this->db->query(
-            'UPDATE tcheckbox
-                SET nAktiv = 0
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
-        );
-        Shop::Container()->getCache()->flushTags(['checkbox']);
-
-        return true;
+        return $this->service->deactivate($checkboxIDs);
     }
 
     /**
@@ -613,8 +604,8 @@ class CheckBox
         if (\count($texts) === 0) {
             return $this;
         }
-        $ins             = $this->saveCheckBox();
-        $this->kCheckBox = $ins->getKCheckBox();
+        $checkBoxDataObject = $this->getCheckBoxDataObject();
+        $this->kCheckBox    = $this->service->insertCheckbox($checkBoxDataObject);
         $this->addLocalization($texts, $descriptions);
 
         return $this;
@@ -631,8 +622,9 @@ class CheckBox
         if (\count($texts) === 0) {
             return $this;
         }
-        $ins = $this->saveCheckBox();
-        $this->updateLocalization($texts, $descriptions, $ins->getKCheckBox());
+        $checkBoxDataObject = $this->getCheckBoxDataObject();
+        $this->service->saveCheckBox($checkBoxDataObject);
+        $this->updateLocalization($texts, $descriptions, $checkBoxDataObject->getKCheckBox());
 
         return $this;
     }
@@ -807,34 +799,12 @@ class CheckBox
         return $this->oLink;
     }
 
-    /**
-     * @return CheckBoxModel
-     * @throws \Exception
-     */
-    public function saveCheckBox(): CheckBoxModel
+    protected function getCheckBoxDataObject() : CheckBoxDataObject
     {
-        $ins = new CheckBoxModel($this->db);
-        $ins->fill([
-            'kCheckBox'         => $this->kCheckBox,
-            'klink'             => $this->kLink,
-            'kCheckBoxFunktion' => $this->kCheckBoxFunktion,
-            'cName'             => $this->cName,
-            'cKundengruppe'     => $this->cKundengruppe,
-            'cAnzeigeOrt'       => $this->cAnzeigeOrt,
-            'nAktiv'            => $this->nAktiv,
-            'nPflicht'          => $this->nPflicht,
-            'nLogging'          => $this->nLogging,
-            'nSort'             => $this->nSort,
-            'dErstellt'         => date('y-m-d H:i:s', time()),
-        ]);
-        //Well, it wasn't necessarily loaded from database here, but DataModel will try to insert in case
-        // it wasn't loaded.. so to update a record
-        if ($ins->getKCheckBox() > 0) {
-            $ins->setWasLoaded(true);
-        }
-        $ins->save();
+        $dataObject = new CheckBoxDataObject();
+        $dataObject->hydrate(get_object_vars($this));
 
-        return $ins;
+        return $dataObject;
     }
 
     /**

@@ -216,7 +216,7 @@ class CheckboxController extends AbstractBackendController
         if ((int)$post['nLink'] === 1) {
             $checkBox->kLink = (int)$post['kLink'];
         }
-        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] >0) {
+        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
             $checkBox->kCheckBox = (int)$post['kCheckBox'];
         }
         $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];

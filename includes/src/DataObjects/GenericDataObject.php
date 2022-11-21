@@ -19,7 +19,7 @@ abstract class GenericDataObject implements DataObjectInterface
             if (is_callable(array($this, $method))) {
                 $this->$method($value);
             }
-            if($attribut === $this->primaryKey && (int)$value > 0){
+            if ($attribut === $this->primaryKey && (int)$value > 0) {
                 $this->$attribut = $value;
             }
         }

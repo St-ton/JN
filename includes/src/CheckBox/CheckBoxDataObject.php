@@ -67,7 +67,7 @@ class CheckBoxDataObject extends GenericDataObject
     {
         return $this->kCheckBox;
     }
-    
+
     /**
      * @return int
      */

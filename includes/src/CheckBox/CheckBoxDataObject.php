@@ -6,7 +6,7 @@ use JTL\DataObjects\GenericDataObject;
 
 class CheckBoxDataObject extends GenericDataObject
 {
-    protected string $primaryKey = 'kCheckBox';
+    private string $primaryKey = 'kCheckBox';
 
     protected int $kCheckBox         = 0;
     protected int $kLink             = 0;
@@ -36,10 +36,9 @@ class CheckBoxDataObject extends GenericDataObject
         'isInternal'             => 'nInternal',
     ];
 
-
     public function __set(string $name, $value): void
     {
-        if ($name === 'kCheckBox') {
+        if ($name === $this->primaryKey) {
             $this->kCheckBox = (int)$value;
         }
     }
@@ -49,6 +48,7 @@ class CheckBoxDataObject extends GenericDataObject
         if ($name === 'kCheckBox') {
             return $this->kCheckBox;
         }
+
 
         return null;
     }
@@ -61,6 +61,14 @@ class CheckBoxDataObject extends GenericDataObject
     public function __unset($name)
     {
         unset($this->$name);
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKey(): string
+    {
+        return $this->primaryKey;
     }
 
     public function getKCheckBox(): ?int
@@ -167,6 +175,14 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
+     * @return bool
+     */
+    public function getNAktiv(): bool
+    {
+        return $this->nAktiv;
+    }
+
+    /**
      * @param $nAktiv
      * @return CheckBoxDataObject
      */
@@ -185,6 +201,14 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
+     * @return bool
+     */
+    public function getNPflicht(): bool
+    {
+        return $this->nPflicht;
+    }
+
+    /**
      * @param bool $nPflicht
      * @return CheckBoxDataObject
      */
@@ -198,6 +222,14 @@ class CheckBoxDataObject extends GenericDataObject
      * @return bool
      */
     public function isNLogging(): bool
+    {
+        return $this->nLogging;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getNLogging(): bool
     {
         return $this->nLogging;
     }
@@ -257,6 +289,14 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
+     * @return bool
+     */
+    public function getNInternal(): bool
+    {
+        return $this->nInternal;
+    }
+
+    /**
      * @param bool $nInternal
      * @return CheckBoxDataObject
      */
@@ -271,12 +311,12 @@ class CheckBoxDataObject extends GenericDataObject
         return get_object_vars($this);
     }
 
-    public function getMapping()
+    public function getMapping(): array
     {
         return $this->mapping;
     }
 
-    public function getReverseMapping()
+    public function getReverseMapping(): array
     {
         return array_flip($this->mapping);
     }

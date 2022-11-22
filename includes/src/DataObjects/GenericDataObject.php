@@ -8,19 +8,25 @@ use ReflectionProperty;
 
 abstract class GenericDataObject implements DataObjectInterface
 {
-    abstract public function getMapping();
+    abstract public function getMapping(): array;
 
-    abstract public function getReverseMapping();
+    abstract public function getReverseMapping(): array;
+
+
 
     public function hydrate($data, bool $useMapping = false): self
     {
-        foreach ($data as $attribut => $value) {
-            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $attribut)));
+        $attributeMap = $this->getMapping();
+        foreach ($data as $attribute => $value) {
+            if ($useMapping === true && in_array($attribute, $attributeMap, true)) {
+                $attribute = $attributeMap[$attribute];
+            }
+            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $attribute)));
             if (is_callable(array($this, $method))) {
                 $this->$method($value);
             }
-            if ($attribut === $this->primaryKey && (int)$value > 0) {
-                $this->$attribut = $value;
+            if ($attribute === $this->getPrimaryKey() && (int)$value > 0) {
+                $this->$attribute = $value;
             }
         }
 
@@ -34,12 +40,16 @@ abstract class GenericDataObject implements DataObjectInterface
 
     public function extract(bool $useReverseMapping = false): array
     {
-        $reflect   = new ReflectionClass($this);
-        $props     = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-        $extracted = [];
-        foreach ($props as $prop) {
-            $method                   = 'get' . \ucfirst((string)$prop->name) . '()';
-            $extracted[$prop['name']] = $this->$method;
+        $attributeMap = $this->getMapping();
+        $reflect      = new ReflectionClass($this);
+        $attributes   = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $extracted    = [];
+        foreach ($attributes as $attribute) {
+            if ($useReverseMapping === true && in_array($attribut, $attributeMap, true)) {
+                $attribut = $attributeMap[$attribut];
+            }
+            $method                      = 'get' . \ucfirst((string)$attribute->name);
+            $extracted[$attribute->name] = $this->$method();
         }
 
         return $extracted;

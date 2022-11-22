@@ -310,8 +310,7 @@ class CheckBox
         bool $lang = false,
         bool $special = false,
         bool $logging = false
-    ): array
-    {
+    ): array {
         if (!$customerGroupID) {
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
@@ -385,8 +384,7 @@ class CheckBox
         bool  $active,
         array $post,
         array $params = []
-    ): self
-    {
+    ): self {
         $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, true, true);
         foreach ($checkboxes as $checkbox) {
             if (!isset($post[$checkbox->cID])) {

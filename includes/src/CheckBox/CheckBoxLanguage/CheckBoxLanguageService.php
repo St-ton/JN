@@ -37,5 +37,4 @@ class CheckBoxLanguageService
     {
             return $this->repository->update($checkBoxLanguage);
     }
-
 }

@@ -97,7 +97,7 @@ class CheckBoxLanguageRepository
             foreach ($keyValue as $_v) {
                 $assigns[] = $_v;
             }
-        } 
+        }
         $stmt = 'UPDATE ' . $tableName . ' SET ' . \implode(',', $updates) . $where;
 
         return [$assigns, $stmt];
@@ -110,7 +110,7 @@ class CheckBoxLanguageRepository
      */
     public function prepareInsertStatementFromArray(CheckBoxLanguageDataObject $checkBoxSprache): array
     {
-        $arr      = $checkBoxSprache->toArray();
+        $arr = $checkBoxSprache->toArray();
         if (!isset($arr[$this->ignoreIfNotSet]) || (int)$arr[$this->ignoreIfNotSet] === 0) {
             unset($arr[$this->ignoreIfNotSet]);
         }

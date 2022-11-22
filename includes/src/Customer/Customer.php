@@ -538,10 +538,10 @@ class Customer
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname));
-        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma));
-        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz));
-        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse));
+        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname ?? ''));
+        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma ?? ''));
+        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz ?? ''));
+        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse ?? ''));
 
         return $this;
     }

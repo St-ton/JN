@@ -317,7 +317,7 @@ class CheckoutController extends RegistrationController
             ->assign('step', $this->step)
             ->assign(
                 'editRechnungsadresse',
-                $this->customer->nRegistriert === 1 ? 1 : Request::verifyGPCDataInt('editRechnungsadresse')
+                $this->customer->getRegistered() === 1 ? 1 : Request::verifyGPCDataInt('editRechnungsadresse')
             )
             ->assign('WarensummeLocalized', $this->cart->gibGesamtsummeWarenLocalized())
             ->assign('Warensumme', $this->cart->gibGesamtsummeWaren())
@@ -477,8 +477,8 @@ class CheckoutController extends RegistrationController
                 $post,
                 ['oKunde' => $this->customer]
             )->checkLogging(\CHECKBOX_ORT_REGISTRIERUNG, $this->customerGroupID, $post, true);
-            $this->customer->nRegistriert = 0;
-            $_SESSION['Kunde']            = $this->customer;
+            $this->customer->setRegistered(false);
+            $_SESSION['Kunde'] = $this->customer;
             if (isset($_SESSION['Warenkorb']->kWarenkorb)
                 && $this->cart->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL]) > 0
             ) {
@@ -1088,19 +1088,19 @@ class CheckoutController extends RegistrationController
     public function checkStepBillingAddress(): string
     {
         // sondersteps Rechnungsadresse ändern
-        if (!empty($this->customer->cOrt)
+        if (!empty($this->customer->getCity())
             && (Request::getInt('editRechnungsadresse') === 1 || Request::getInt('editLieferadresse') === 1)
         ) {
             Kupon::resetNewCustomerCoupon();
             $this->updateStep('edit_customer_address');
         }
 
-        if (!empty($this->customer->cOrt)
+        if (!empty($this->customer->getCity())
             && \count(ShippingMethod::getPossibleShippingCountries(
                 $this->customerGroupID,
                 false,
                 false,
-                [$this->customer->cLand]
+                [$this->customer->getCountry()]
             )) === 0
         ) {
             $this->smarty->assign('forceDeliveryAddress', 1);
@@ -1411,11 +1411,11 @@ class CheckoutController extends RegistrationController
         }
         $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$deliveryCountry) {
-            $deliveryCountry = $this->customer->cLand;
+            $deliveryCountry = $this->customer->getCountry();
         }
         $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
         if (!$poCode) {
-            $poCode = $this->customer->cPLZ;
+            $poCode = $this->customer->getZipCode();
         }
         $shippingMethods = ShippingMethod::getPossibleShippingMethods(
             $deliveryCountry,
@@ -1466,11 +1466,11 @@ class CheckoutController extends RegistrationController
     {
         $lieferland = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$lieferland) {
-            $lieferland = $this->customer->cLand;
+            $lieferland = $this->customer->getCountry();
         }
         $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
         if (!$poCode) {
-            $poCode = $this->customer->cPLZ;
+            $poCode = $this->customer->getZipCode();
         }
         $shippingMethods = ShippingMethod::getPossibleShippingMethods(
             $lieferland,
@@ -1854,11 +1854,11 @@ class CheckoutController extends RegistrationController
         }
         $deliveryCountry = $_SESSION['Lieferadresse']->cLand ?? null;
         if (!$deliveryCountry) {
-            $deliveryCountry = $this->customer->cLand;
+            $deliveryCountry = $this->customer->getCountry();
         }
         $poCode = $_SESSION['Lieferadresse']->cPLZ ?? null;
         if (!$poCode) {
-            $poCode = $this->customer->cPLZ;
+            $poCode = $this->customer->getZipCode();
         }
         $shippingClasses = ShippingMethod::getShippingClasses($this->cart);
         $depending       = 'N';

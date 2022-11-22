@@ -70,32 +70,32 @@ class OrderHandler
         $order->cBestellNr = $orderNo ?? $this->createOrderNo();
         $cartItems         = [];
         if ($this->customer->getID() <= 0) {
-            $customerAttributes      = $customer->getCustomerAttributes();
-            $customer->kKundengruppe = $this->customer->getGroupID();
-            $customer->kSprache      = $this->languageID;
-            $customer->cAbgeholt     = 'N';
-            $customer->cAktiv        = 'Y';
-            $customer->cSperre       = 'N';
-            $customer->dErstellt     = 'NOW()';
-            $customer->nRegistriert  = 0;
-            $cPasswortKlartext       = '';
-            if ($customer->cPasswort) {
-                $customer->nRegistriert = 1;
-                $cPasswortKlartext      = $customer->cPasswort;
-                $customer->cPasswort    = \md5($customer->cPasswort);
+            $customerAttributes = $customer->getCustomerAttributes();
+            $customer->setGroupID($this->customer->getGroupID());
+            $customer->setLanguageID($this->languageID);
+            $customer->setSynced(false);
+            $customer->setActive(true);
+            $customer->setLocked(false);
+            $customer->setDateCreated('NOW()');
+            $customer->setRegistered(false);
+            $password = '';
+            if ($customer->getPassword() !== '') {
+                $customer->setRegistered(true);
+                $password = $customer->getPassword();
+                $customer->setPassword(\md5($password));
             }
             $this->cart->kKunde = $customer->insertInDB();
             if (Frontend::get('customerAttributes') !== null) {
                 $customerAttributes->assign(Frontend::get('customerAttributes'));
             }
-            $customer->kKunde = $this->cart->kKunde;
-            $customer->cLand  = $customer->pruefeLandISO($customer->cLand);
-            $customerAttributes->setCustomerID($customer->kKunde);
+            $customer->setID($this->cart->kKunde);
+            $customer->setCountry($customer->pruefeLandISO($customer->getCountry()));
+            $customerAttributes->setCustomerID($customer->getID());
             $customerAttributes->save();
             Frontend::set('customerAttributes', null);
 
-            if (!empty($customer->cPasswort)) {
-                $customer->cPasswortKlartext = $cPasswortKlartext;
+            if (!empty($customer->getPassword())) {
+                $customer->cPasswortKlartext = $password;
 
                 $obj         = new stdClass();
                 $obj->tkunde = $customer;
@@ -107,11 +107,11 @@ class OrderHandler
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
             }
         } else {
-            $this->cart->kKunde = $customer->kKunde;
+            $this->cart->kKunde = $customer->getID();
             $this->db->update(
                 'tkunde',
                 'kKunde',
-                $customer->kKunde,
+                $customer->getID(),
                 (object)['cAbgeholt' => 'N']
             );
         }
@@ -297,7 +297,7 @@ class OrderHandler
                     'cid'  => (int)$order->kKunde
                 ]
             );
-            $customer->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
+            $customer->setBalance($customer->getBalance() - $_SESSION['Bestellung']->fGuthabenGenutzt);
         }
         // Gesamtsumme entspricht 0
         if ($order->fGesamtsumme == 0) {
@@ -628,7 +628,7 @@ class OrderHandler
         $sessionCustomer    = $this->customer;
         $customerAttributes = Frontend::get('customerAttributes');
         if ($sessionCustomer->getID() > 0) {
-            $customer->kKunde = $sessionCustomer->getID();
+            $customer->setID($sessionCustomer->getID());
             $customer->getCustomerAttributes()->load($customer->getID());
         } elseif ($customerAttributes !== null) {
             $customer->getCustomerAttributes()->assign($customerAttributes);
@@ -637,54 +637,56 @@ class OrderHandler
         if ($sessionCustomer->getGroupID() > 0) {
             $customer->kKundengruppe = $sessionCustomer->getGroupID();
         }
-        $customer->kSprache = $this->languageID;
+        $customer->setLanguageID($this->languageID);
         if ($sessionCustomer->getLanguageID() > 0) {
-            $customer->kSprache = $sessionCustomer->getLanguageID();
+            $customer->setLanguageID($sessionCustomer->getLanguageID());
         }
-        if ($sessionCustomer->getCustomerNo()) {
-            $customer->cKundenNr = $sessionCustomer->getCustomerNo();
+        if ($sessionCustomer->getCustomerNo() !== '') {
+            $customer->setCustomerNo($sessionCustomer->getCustomerNo());
         }
         if ($sessionCustomer->getPassword()) {
-            $customer->cPasswort = $sessionCustomer->getPassword();
+            $customer->setPassword($sessionCustomer->getPassword());
         }
         if ($sessionCustomer->getBalance()) {
-            $customer->fGuthaben = $sessionCustomer->getBalance();
+            $customer->setBalance($sessionCustomer->getBalance());
         }
         if ($sessionCustomer->getDiscount()) {
-            $customer->fRabatt = $sessionCustomer->getDiscount();
+            $customer->setDiscount($sessionCustomer->getDiscount());
         }
-        if ($sessionCustomer->getDateCreated()) {
-            $customer->dErstellt = $sessionCustomer->getDateCreated();
+        if ($sessionCustomer->getDateCreated() !== '') {
+            $customer->setDateCreated($sessionCustomer->getDateCreated());
         }
-        if ($sessionCustomer->getActive()) {
-            $customer->cAktiv = $sessionCustomer->getActive();
+        if ($sessionCustomer->getActive() !== '') {
+            $customer->setActive($sessionCustomer->getActive());
         }
-        if ($sessionCustomer->getSynced()) {
-            $customer->cAbgeholt = $sessionCustomer->getSynced();
+        if ($sessionCustomer->getSynced() !== '') {
+            $customer->setSynced($sessionCustomer->getSynced());
         }
         if ($sessionCustomer->getRegistered() !== null) {
-            $customer->nRegistriert = $sessionCustomer->getRegistered();
+            $customer->setRegistered($sessionCustomer->getRegistered());
         }
-        $customer->cAnrede       = Text::unhtmlentities($sessionCustomer->getSalutation());
-        $customer->cVorname      = Text::unhtmlentities($sessionCustomer->getFirstName());
-        $customer->cNachname     = Text::unhtmlentities($sessionCustomer->getName());
-        $customer->cStrasse      = Text::unhtmlentities($sessionCustomer->getStreet());
-        $customer->cHausnummer   = Text::unhtmlentities($sessionCustomer->getStreetNumber());
-        $customer->cPLZ          = Text::unhtmlentities($sessionCustomer->getZipCode());
-        $customer->cOrt          = Text::unhtmlentities($sessionCustomer->getCity());
-        $customer->cLand         = Text::unhtmlentities($sessionCustomer->getCountry());
-        $customer->cMail         = Text::unhtmlentities($sessionCustomer->getEmail());
-        $customer->cTel          = Text::unhtmlentities($sessionCustomer->getPhoneNumber());
-        $customer->cFax          = Text::unhtmlentities($sessionCustomer->getFaxNumber());
-        $customer->cFirma        = Text::unhtmlentities($sessionCustomer->getCompany());
-        $customer->cZusatz       = Text::unhtmlentities($sessionCustomer->getAdditionalInformation());
-        $customer->cTitel        = Text::unhtmlentities($sessionCustomer->getTitle());
-        $customer->cAdressZusatz = Text::unhtmlentities($sessionCustomer->getAdditionalAddressInformation());
-        $customer->cMobil        = Text::unhtmlentities($sessionCustomer->getMobilePhoneNumber());
-        $customer->cWWW          = Text::unhtmlentities($sessionCustomer->getWebsite());
-        $customer->cUSTID        = Text::unhtmlentities($sessionCustomer->getTaxID());
-        $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->getBirthday());
-        $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->getState());
+        $customer->setSalutation(Text::unhtmlentities($sessionCustomer->getSalutation()));
+        $customer->setFirstName(Text::unhtmlentities($sessionCustomer->getFirstName()));
+        $customer->setName(Text::unhtmlentities($sessionCustomer->getName()));
+        $customer->setStreet(Text::unhtmlentities($sessionCustomer->getStreet()));
+        $customer->setStreetNumber(Text::unhtmlentities($sessionCustomer->getStreetNumber()));
+        $customer->setZipCode(Text::unhtmlentities($sessionCustomer->getZipCode()));
+        $customer->setCity(Text::unhtmlentities($sessionCustomer->getCity()));
+        $customer->setCountry(Text::unhtmlentities($sessionCustomer->getCountry()));
+        $customer->setEmail(Text::unhtmlentities($sessionCustomer->getEmail()));
+        $customer->setPhoneNumber(Text::unhtmlentities($sessionCustomer->getPhoneNumber()));
+        $customer->setFaxNumber(Text::unhtmlentities($sessionCustomer->getFaxNumber()));
+        $customer->setCompany(Text::unhtmlentities($sessionCustomer->getCompany()));
+        $customer->setAdditionalInformation(Text::unhtmlentities($sessionCustomer->getAdditionalInformation()));
+        $customer->setTitle(Text::unhtmlentities($sessionCustomer->getTitle()));
+        $customer->setAdditionalAddressInformation(
+            Text::unhtmlentities($sessionCustomer->getAdditionalAddressInformation())
+        );
+        $customer->setMobilePhoneNumber(Text::unhtmlentities($sessionCustomer->getMobilePhoneNumber()));
+        $customer->setWebsite(Text::unhtmlentities($sessionCustomer->getWebsite()));
+        $customer->setTaxID(Text::unhtmlentities($sessionCustomer->getTaxID()));
+        $customer->setBirthday(Text::unhtmlentities($sessionCustomer->getBirthday()));
+        $customer->setState(Text::unhtmlentities($sessionCustomer->getState()));
 
         $_SESSION['Kunde'] = $customer;
 

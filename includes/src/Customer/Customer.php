@@ -825,11 +825,63 @@ class Customer
     }
 
     /**
+     * @param int $id
+     * @return void
+     */
+    public function setID(int $id): void
+    {
+        $this->kKunde = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLoginAttempts(): int
+    {
+        return (int)$this->nLoginversuche;
+    }
+
+    /**
+     * @param int $attempts
+     * @return void
+     */
+    public function setLoginAttempts(int $attempts): void
+    {
+        $this->nLoginversuche = $attempts;
+    }
+
+    /**
      * @return bool
      */
     public function isLocked(): bool
     {
         return $this->cSperre === 'Y';
+    }
+
+    /**
+     * @param mixed $value
+     * @return void
+     */
+    public function setLocked(mixed $value): void
+    {
+        $this->cSperre = $this->getYesNoValue($value);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewsletter(): string
+    {
+        return $this->cNewsletter;
+    }
+
+    /**
+     * @param mixed $value
+     * @return void
+     */
+    public function setNewsletter(mixed $value): void
+    {
+        $this->cNewsletter = $this->getYesNoValue($value);
     }
 
     /**
@@ -841,11 +893,29 @@ class Customer
     }
 
     /**
+     * @param float $discount
+     * @return void
+     */
+    public function setDiscount(float $discount): void
+    {
+        $this->fRabatt = $discount;
+    }
+
+    /**
      * @return float
      */
     public function getBalance(): float
     {
         return (float)($this->fGuthaben ?? 0);
+    }
+
+    /**
+     * @param float $balance
+     * @return void
+     */
+    public function setBalance(float $balance): void
+    {
+        $this->fGuthaben = $balance;
     }
 
     /**
@@ -857,11 +927,29 @@ class Customer
     }
 
     /**
+     * @param string $name
+     * @return void
+     */
+    public function setName(string $name): void
+    {
+        $this->cNachname = $name;
+    }
+
+    /**
      * @return string
      */
     public function getFirstName(): string
     {
         return $this->cVorname ?? '';
+    }
+
+    /**
+     * @param string $name
+     * @return void
+     */
+    public function setFirstName(string $name): void
+    {
+        $this->cVorname = $name;
     }
 
     /**
@@ -873,11 +961,29 @@ class Customer
     }
 
     /**
+     * @param string $email
+     * @return void
+     */
+    public function setEmail(string $email): void
+    {
+        $this->cMail = $email;
+    }
+
+    /**
      * @return string
      */
     public function getCity(): string
     {
         return $this->cOrt ?? '';
+    }
+
+    /**
+     * @param string $city
+     * @return void
+     */
+    public function setCity(string $city): void
+    {
+        $this->cOrt = $city;
     }
 
     /**
@@ -889,11 +995,29 @@ class Customer
     }
 
     /**
+     * @param string $country
+     * @return void
+     */
+    public function setCountry(string $country): void
+    {
+        $this->cLand = $country;
+    }
+
+    /**
      * @return string
      */
     public function getStreet(): string
     {
         return $this->cStrasse ?? '';
+    }
+
+    /**
+     * @param string $street
+     * @return void
+     */
+    public function setStreet(string $street): void
+    {
+        $this->cStrasse = $street;
     }
 
     /**
@@ -905,11 +1029,29 @@ class Customer
     }
 
     /**
+     * @param string $number
+     * @return void
+     */
+    public function setStreetNumber(string $number): void
+    {
+        $this->cHausnummer = $number;
+    }
+
+    /**
      * @return string
      */
     public function getSalutation(): string
     {
         return $this->cAnrede ?? '';
+    }
+
+    /**
+     * @param string $salutation
+     * @return void
+     */
+    public function setSalutation(string $salutation): void
+    {
+        $this->cAnrede = $salutation;
     }
 
     /**
@@ -921,11 +1063,29 @@ class Customer
     }
 
     /**
+     * @param string $number
+     * @return void
+     */
+    public function setPhoneNumber(string $number): void
+    {
+        $this->cTel = $number;
+    }
+
+    /**
      * @return string
      */
     public function getMobilePhoneNumber(): string
     {
         return $this->cMobil ?? '';
+    }
+
+    /**
+     * @param string $number
+     * @return void
+     */
+    public function setMobilePhoneNumber(string $number): void
+    {
+        $this->cMobil = $number;
     }
 
     /**
@@ -937,11 +1097,29 @@ class Customer
     }
 
     /**
+     * @param string $number
+     * @return void
+     */
+    public function setFaxNumber(string $number): void
+    {
+        $this->cFax = $number;
+    }
+
+    /**
      * @return string
      */
     public function getWebsite(): string
     {
         return $this->cWWW ?? '';
+    }
+
+    /**
+     * @param string $website
+     * @return void
+     */
+    public function setWebsite(string $website): void
+    {
+        $this->cWWW = $website;
     }
 
     /**
@@ -953,11 +1131,29 @@ class Customer
     }
 
     /**
+     * @param string $comapny
+     * @return void
+     */
+    public function setCompany(string $comapny): void
+    {
+        $this->cFirma = $comapny;
+    }
+
+    /**
      * @return string
      */
     public function getZipCode(): string
     {
         return $this->cPLZ ?? '';
+    }
+
+    /**
+     * @param string $zip
+     * @return void
+     */
+    public function setZipCode(string $zip): void
+    {
+        $this->cPLZ = $zip;
     }
 
     /**
@@ -969,11 +1165,29 @@ class Customer
     }
 
     /**
+     * @param string $info
+     * @return void
+     */
+    public function setAdditionalAddressInformation(string $info): void
+    {
+        $this->cAdressZusatz = $info;
+    }
+
+    /**
      * @return string
      */
     public function getAdditionalInformation(): string
     {
         return $this->cZusatz ?? '';
+    }
+
+    /**
+     * @param string $info
+     * @return void
+     */
+    public function setAdditionalInformation(string $info): void
+    {
+        $this->cZusatz = $info;
     }
 
     /**
@@ -985,11 +1199,29 @@ class Customer
     }
 
     /**
+     * @param string $info
+     * @return void
+     */
+    public function setState(string $info): void
+    {
+        $this->cBundesland = $info;
+    }
+
+    /**
      * @return string
      */
     public function getBirthday(): string
     {
         return $this->dGeburtstag ?? '';
+    }
+
+    /**
+     * @param string $birthday
+     * @return void
+     */
+    public function setBirthday(string $birthday): void
+    {
+        $this->dGeburtstag = $birthday;
     }
 
     /**
@@ -1001,11 +1233,29 @@ class Customer
     }
 
     /**
+     * @param string $title
+     * @return void
+     */
+    public function setTitle(string $title): void
+    {
+        $this->cTitel = $title;
+    }
+
+    /**
      * @return string
      */
     public function getTaxID(): string
     {
         return $this->cUSTID ?? '';
+    }
+
+    /**
+     * @param string $taxID
+     * @return void
+     */
+    public function setTaxID(string $taxID): void
+    {
+        $this->cUSTID = $taxID;
     }
 
     /**
@@ -1017,11 +1267,29 @@ class Customer
     }
 
     /**
+     * @param string $customerNo
+     * @return void
+     */
+    public function setCustomerNo(string $customerNo): void
+    {
+        $this->cKundenNr = $customerNo;
+    }
+
+    /**
      * @return string
      */
     public function getPassword(): string
     {
         return $this->cPasswort ?? '';
+    }
+
+    /**
+     * @param string $password
+     * @return void
+     */
+    public function setPassword(string $password): void
+    {
+        $this->cPasswort = $password;
     }
 
     /**
@@ -1033,11 +1301,46 @@ class Customer
     }
 
     /**
+     * @param mixed $active
+     * @return void
+     */
+    public function setActive(mixed $active): void
+    {
+        $this->cAktiv = $this->getYesNoValue($active);
+    }
+
+    /**
      * @return string
      */
     public function getDateCreated(): string
     {
         return $this->dErstellt ?? '';
+    }
+
+    /**
+     * @param string $date
+     * @return void
+     */
+    public function setDateCreated(string $date): void
+    {
+        $this->dErstellt = $date;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateModified(): string
+    {
+        return $this->dVeraendert ?? '';
+    }
+
+    /**
+     * @param string $date
+     * @return void
+     */
+    public function setDateModified(string $date): void
+    {
+        $this->dVeraendert = $date;
     }
 
     /**
@@ -1049,11 +1352,29 @@ class Customer
     }
 
     /**
+     * @param string $origin
+     * @return void
+     */
+    public function setOrigin(string $origin): void
+    {
+        $this->cHerkunft = $origin;
+    }
+
+    /**
      * @return string
      */
     public function getSynced(): string
     {
         return $this->cAbgeholt ?? '';
+    }
+
+    /**
+     * @param mixed $synced
+     * @return void
+     */
+    public function setSynced(mixed $synced): void
+    {
+        $this->cAbgeholt = $this->getYesNoValue($synced);
     }
 
     /**
@@ -1065,6 +1386,20 @@ class Customer
     }
 
     /**
+     * @param mixed $registered
+     * @return void
+     */
+    public function setRegistered(mixed $registered): void
+    {
+        if ($registered === false || $registered === 'N') {
+            $registered = 0;
+        } elseif ($registered === true || $registered === 'Y') {
+            $registered = 1;
+        }
+        $this->nRegistriert = $registered;
+    }
+
+    /**
      * @return int
      */
     public function getGroupID(): int
@@ -1072,6 +1407,15 @@ class Customer
         $customerGroupID = (int)$this->kKundengruppe > 0 ? (int)$this->kKundengruppe : CustomerGroup::getCurrent();
 
         return $customerGroupID > 0 ? $customerGroupID : CustomerGroup::getDefaultGroupID();
+    }
+
+    /**
+     * @param int $id
+     * @return void
+     */
+    public function setGroupID(int $id): void
+    {
+        $this->kKundengruppe = $id;
     }
 
     /**
@@ -1429,5 +1773,21 @@ class Customer
         }
 
         return $this;
+    }
+
+    /**
+     * @param mixed $data
+     * @return string
+     */
+    protected function getYesNoValue(mixed $data): string
+    {
+        $value = 'N';
+        if (\in_array($data, ['N', 'Y', 'n', 'y'])) {
+            $value = \mb_strtoupper($data);
+        } elseif ($data === true || $data === 1 || $data === '1') {
+            $value = 'Y';
+        }
+
+        return $value;
     }
 }

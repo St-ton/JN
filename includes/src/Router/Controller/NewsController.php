@@ -483,8 +483,8 @@ class NewsController extends AbstractController
             $comment->kNews      = (int)$data['kNews'];
             $comment->kKunde     = $customer->getID();
             $comment->nAktiv     = $this->config['news']['news_kommentare_freischalten'] === 'Y' ? 0 : 1;
-            $comment->cName      = $customer->cVorname . ' ' . $customer->cNachname[0] . '.';
-            $comment->cEmail     = $customer->cMail;
+            $comment->cName      = $customer->getFirstName() . ' ' . \mb_substr($customer->getName(), 0, 1) . '.';
+            $comment->cEmail     = $customer->getEmail();
             $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
             $comment->dErstellt  = 'now()';
 

@@ -78,16 +78,16 @@ class Form
             }
         }
 
-        $customer->cMail                 = mb_convert_case($customer->getEmail(), MB_CASE_LOWER);
-        $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->getBirthday());
+        $customer->setEmail(\mb_convert_case($customer->getEmail(), \MB_CASE_LOWER));
+        $customer->setBirthday(Date::convertDateToMysqlStandard($customer->getBirthday()));
         $customer->dGeburtstag_formatted = $customer->getBirthday() === '_DBNULL_'
             ? ''
             : DateTime::createFromFormat('Y-m-d', $customer->getBirthday())->format('d.m.Y');
-        $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
+        $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->getCountry());
         if (!empty($customer->getState())) {
-            $region = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
+            $region = Staat::getRegionByIso($customer->getState(), $customer->getCountry());
             if ($region !== null) {
-                $customer->cBundesland = $region->cName;
+                $customer->setState($region->cName);
             }
         }
 

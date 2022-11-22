@@ -164,7 +164,7 @@ class RegistrationController extends PageController
             )->checkLogging(\CHECKBOX_ORT_REGISTRIERUNG, $this->customerGroupID, $post, true);
 
             if ($edit && $_SESSION['Kunde']->kKunde > 0) {
-                $customerData->cAbgeholt = 'N';
+                $customerData->setSynced(false);
                 $customerData->updateInDB();
                 $customerData->cPasswort = null;
                 // Kundendatenhistory
@@ -177,18 +177,18 @@ class RegistrationController extends PageController
                 $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde);
                 $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
             } else {
-                $customerData->kKundengruppe     = $this->customerGroupID;
-                $customerData->kSprache          = $this->languageID;
-                $customerData->cAbgeholt         = 'N';
-                $customerData->cSperre           = 'N';
-                $customerData->cAktiv            = $conf === 'A' ? 'N' : 'Y';
-                $cPasswortKlartext               = $customerData->cPasswort;
-                $customerData->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
-                $customerData->dErstellt         = 'NOW()';
-                $customerData->nRegistriert      = 1;
-                $customerData->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($customerData->cLand);
-                $cLand                           = $customerData->cLand;
-                $customerData->cPasswortKlartext = $cPasswortKlartext;
+                $customerData->setGroupID($this->customerGroupID);
+                $customerData->setLanguageID($this->languageID);
+                $customerData->setSynced(false);
+                $customerData->setLocked(false);
+                $customerData->setActive($conf !== 'A');
+                $password = $customerData->getPassword();
+                $customerData->setPassword(Shop::Container()->getPasswordService()->hash($password));
+                $customerData->setDateCreated('NOW()');
+                $customerData->setRegistered(true);
+                $country                         = $customerData->getCountry();
+                $customerData->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($country);
+                $customerData->cPasswortKlartext = $password;
                 $obj                             = new stdClass();
                 $obj->tkunde                     = $customerData;
 
@@ -196,13 +196,13 @@ class RegistrationController extends PageController
                 $mail   = new Mail();
                 $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_NEUKUNDENREGISTRIERUNG, $obj));
 
-                $customerData->cLand = $cLand;
+                $customerData->setCountry($country);
                 unset($customerData->cPasswortKlartext, $customerData->Anrede);
 
-                $customerData->kKunde = $customerData->insertInDB();
+                $customerData->setID($customerData->insertInDB());
 
                 \executeHook(\HOOK_REGISTRATION_CUSTOMER_CREATED, [
-                    'customerID' => $customerData->kKunde,
+                    'customerID' => $customerData->getID(),
                 ]);
 
                 // Kampagne
@@ -210,11 +210,11 @@ class RegistrationController extends PageController
                     Campaign::setCampaignAction(\KAMPAGNE_DEF_ANMELDUNG, $customerData->kKunde, 1.0); // Anmeldung
                 }
                 // Insert Kundenattribute
-                $customerAttributes->setCustomerID($customerData->kKunde);
+                $customerAttributes->setCustomerID($customerData->getID());
                 $customerAttributes->save();
                 if ($conf !== 'A') {
-                    $_SESSION['Kunde'] = new Customer($customerData->kKunde);
-                    $_SESSION['Kunde']->getCustomerAttributes()->load($customerData->kKunde);
+                    $_SESSION['Kunde'] = new Customer($customerData->getID());
+                    $_SESSION['Kunde']->getCustomerAttributes()->load($customerData->getID());
                 } else {
                     $this->step = 'formular eingegangen';
                 }

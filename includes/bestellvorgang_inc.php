@@ -130,8 +130,8 @@ function pruefeUnregistriertBestellen($post): int
             $post,
             ['oKunde' => $Kunde]
         )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true);
-        $Kunde->nRegistriert = 0;
-        $_SESSION['Kunde']   = $Kunde;
+        $Kunde->setRegistered(false);
+        $_SESSION['Kunde'] = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb)
             && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
@@ -2012,8 +2012,8 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
         }
     }
 
-    $customer->cMail                 = mb_convert_case($customer->getEmail(), MB_CASE_LOWER);
-    $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
+    $customer->setEmail(mb_convert_case($customer->getEmail(), MB_CASE_LOWER));
+    $customer->setBirthday(Date::convertDateToMysqlStandard($customer->dGeburtstag ?? ''));
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
         : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
@@ -2021,7 +2021,7 @@ function getKundendaten(array $post, $customerAccount, $htmlentities = 1)
     if (!empty($customer->getState())) {
         $region = Staat::getRegionByIso($customer->getState(), $customer->getCountry());
         if ($region !== null) {
-            $customer->cBundesland = $region->cName;
+            $customer->setState($region->cName);
         }
     }
 

@@ -1298,8 +1298,8 @@ class Artikel implements RoutableInterface
     {
         $customer = Frontend::getCustomer();
 
-        return ($customer->getID() > 0 && (double)$customer->fRabatt > $maxDiscount)
-            ? (double)$customer->fRabatt
+        return ($customer->getID() > 0 && (double)$customer->getDiscount() > $maxDiscount)
+            ? (double)$customer->getDiscount()
             : $maxDiscount;
     }
 
@@ -5375,8 +5375,8 @@ class Artikel implements RoutableInterface
         }
         // Existiert für diesen Kunden ein Rabatt?
         $customer = Frontend::getCustomer();
-        if ($customer->getID() > 0 && $customer->fRabatt != 0) {
-            $discounts[] = $customer->fRabatt;
+        if ($customer->getID() > 0 && $customer->getDiscount() !== 0 - 0) {
+            $discounts[] = $customer->getDiscount();
         }
         // Maximalen Rabatt setzen
         if (\count($discounts) > 0) {

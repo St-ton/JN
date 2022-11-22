@@ -398,11 +398,10 @@ final class Customer extends AbstractSync
         array $res
     ): array {
         // Angaben vom alten Kunden übernehmen
-        $customer->kKunde      = $kInetKunde;
-        $customer->cAbgeholt   = 'Y';
-        $customer->cAktiv      = 'Y';
-        $customer->dVeraendert = 'NOW()';
-
+        $customer->setID($kInetKunde);
+        $customer->setSynced('Y');
+        $customer->setActive('Y');
+        $customer->setDateModified('NOW()');
         if ($customer->getEmail() !== $oldCustomer->getEmail()) {
             // E-Mail Adresse geändert - Verwendung prüfen!
             if (Text::filterEmailAddress($customer->getEmail()) === false
@@ -424,11 +423,11 @@ final class Customer extends AbstractSync
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
-        $customer->cPasswort    = $oldCustomer->getPassword();
-        $customer->nRegistriert = $oldCustomer->getRegistered();
-        $customer->dErstellt    = $oldCustomer->getDateCreated();
-        $customer->fGuthaben    = $oldCustomer->getBalance();
-        $customer->cHerkunft    = $oldCustomer->getOrigin();
+        $customer->setPassword($oldCustomer->getPassword());
+        $customer->setRegistered($oldCustomer->getRegistered());
+        $customer->setDateCreated($oldCustomer->getDateCreated());
+        $customer->setBalance($oldCustomer->getBalance());
+        $customer->setOrigin($oldCustomer->getOrigin());
         // schaue, ob dieser Kunde diese Kundengruppe schon hat
         if ($customer->getEmail() !== '' && $oldCustomer->getGroupID() !== $customer->getGroupID()) {
             // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
@@ -442,7 +441,7 @@ final class Customer extends AbstractSync
         // Hausnummer extrahieren
         $this->extractStreet($customer);
         // Workaround for WAWI-39370
-        $customer->cLand = Adresse::checkISOCountryCode($customer->getCountry());
+        $customer->setCountry(Adresse::checkISOCountryCode($customer->getCountry()));
         // $this->upsert('tkunde', [$Kunde], 'kKunde');
         $customer->updateInDB();
         DataHistory::saveHistory($oldCustomer, $customer, DataHistory::QUELLE_DBES);

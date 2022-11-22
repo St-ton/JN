@@ -213,24 +213,18 @@ class Import
         }
         $salutation = $customer->getSalutation();
         if ($salutation === 'f' || \mb_convert_case($salutation, \MB_CASE_LOWER) === 'frau') {
-            $customer->cAnrede = 'w';
+            $customer->setSalutation('w');
         } elseif ($salutation === 'h' || \mb_convert_case($salutation, \MB_CASE_LOWER) === 'herr') {
-            $customer->cAnrede = 'm';
+            $customer->setSalutation('m');
         }
+        $customer->setNewsletter($customer->getNewsletter());
 
-        if ($customer->cNewsletter === '1' || $customer->cNewsletter === 'y' || $customer->cNewsletter === 'Y') {
-            $customer->cNewsletter = 'Y';
-        } else {
-            $customer->cNewsletter = 'N';
+        if (empty($customer->getCountry()) && $this->defaultCountryCode !== null) {
+            $customer->setCountry($this->defaultCountryCode);
         }
-
-        if (empty($customer->cLand) && $this->defaultCountryCode !== null) {
-            $customer->cLand = $this->defaultCountryCode;
-        }
-
         if ($this->usePasswordsFromCsv === false) {
-            $password            = $this->passwordService->generate(\PASSWORD_DEFAULT_LENGTH);
-            $customer->cPasswort = $this->passwordService->hash($password);
+            $password = $this->passwordService->generate(\PASSWORD_DEFAULT_LENGTH);
+            $customer->setPassword($this->passwordService->hash($password));
         }
 
         if ($customer->insertInDB() === 0) {
@@ -239,7 +233,7 @@ class Import
         }
 
         if ($this->usePasswordsFromCsv === false) {
-            $this->noPasswordCustomerIds[] = $customer->kKunde;
+            $this->noPasswordCustomerIds[] = $customer->getID();
         }
 
         return true;
@@ -262,14 +256,14 @@ class Import
      */
     private function getCustomer(): Customer
     {
-        $customer                = new Customer();
-        $customer->kKundengruppe = $this->getCustomerGroupID();
-        $customer->kSprache      = $this->getLanguageID();
-        $customer->cAbgeholt     = 'Y';
-        $customer->cSperre       = 'N';
-        $customer->cAktiv        = 'Y';
-        $customer->nRegistriert  = 1;
-        $customer->dErstellt     = 'NOW()';
+        $customer = new Customer();
+        $customer->setGroupID($this->getCustomerGroupID());
+        $customer->setLanguageID($this->getLanguageID());
+        $customer->setSynced(true);
+        $customer->setLocked(false);
+        $customer->setActive(true);
+        $customer->setRegistered(true);
+        $customer->setDateCreated('NOW()');
 
         return $customer;
     }

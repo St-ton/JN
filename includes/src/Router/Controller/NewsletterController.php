@@ -49,9 +49,9 @@ class NewsletterController extends PageController
         if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             $post = Text::filterXSS($_POST);
             if ($customer->getID() > 0) {
-                $post['cAnrede']   = $post['cAnrede'] ?? $customer->cAnrede;
-                $post['cVorname']  = $post['cVorname'] ?? $customer->cVorname;
-                $post['cNachname'] = $post['cNachname'] ?? $customer->cNachname;
+                $post['cAnrede']   = $post['cAnrede'] ?? $customer->getSalutation();
+                $post['cVorname']  = $post['cVorname'] ?? $customer->getFirstName();
+                $post['cNachname'] = $post['cNachname'] ?? $customer->getName();
                 $post['kKunde']    = $customer->getID();
             }
             if (Text::filterEmailAddress($post['cEmail']) !== false) {

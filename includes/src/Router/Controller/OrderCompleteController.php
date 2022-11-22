@@ -169,7 +169,7 @@ class OrderCompleteController extends CheckoutController
         //abfragen, ob diese Bestellung dem Kunden auch gehoert
         //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
         if ($order->oKunde !== null
-            && $order->oKunde->nRegistriert === 1
+            && $order->oKunde->getRegistered() === 1
             && $order->kKunde !== Frontend::getCustomer()->getID()
         ) {
             return new RedirectResponse($linkHelper->getStaticRoute('jtl.php'), 303);

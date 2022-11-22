@@ -583,8 +583,8 @@ class IOMethods
                 $error           = $smarty->getTemplateVars('fehler') ?? '';
                 if ($customer->getGroupID() > 0) {
                     $customerGroupID = $customer->getGroupID();
-                    $country         = $customer->cLand;
-                    $plz             = $customer->cPLZ;
+                    $country         = $customer->getCountry();
+                    $plz             = $customer->getZipCode();
                 }
 
                 $shippingFreeMin = ShippingMethod::getFreeShippingMinimum($customerGroupID, $country);

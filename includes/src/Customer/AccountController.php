@@ -314,10 +314,10 @@ class AccountController
         $captchaState = $customer->verifyLoginCaptcha($_POST);
         if ($captchaState === true) {
             $returnCode = $customer->holLoginKunde($userLogin, $passLogin);
-            $tries      = $customer->nLoginversuche;
+            $attempts   = $customer->getLoginAttempts();
         } else {
             $returnCode = Customer::ERROR_CAPTCHA;
-            $tries      = $captchaState;
+            $attempts   = $captchaState;
         }
         if ($returnCode === Customer::OK && $customer->getID() > 0) {
             $this->initCustomer($customer);
@@ -328,7 +328,7 @@ class AccountController
         } elseif ($returnCode === Customer::ERROR_NOT_ACTIVATED_YET) {
             $this->alertService->addNotice(Shop::Lang()->get('loginNotActivated'), 'loginNotActivated');
         } else {
-            $this->checkLoginCaptcha($tries);
+            $this->checkLoginCaptcha($attempts);
             $this->alertService->addNotice(Shop::Lang()->get('incorrectLogin'), 'incorrectLogin');
         }
 
@@ -952,7 +952,7 @@ class AccountController
         }
         $step                      = 'bestellung';
         $customer                  = Frontend::getCustomer();
-        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
+        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->getCountry());
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
             ->assign('Lieferadresse', $order->Lieferadresse ?? null)
@@ -1333,7 +1333,7 @@ class AccountController
         \executeHook(\HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
 
         if ($returnCode) {
-            $customerData->cAbgeholt = 'N';
+            $customerData->setSynced(false);
             $customerData->updateInDB();
             $checkBox->triggerSpecialFunction(
                 \CHECKBOX_ORT_KUNDENDATENEDITIEREN,

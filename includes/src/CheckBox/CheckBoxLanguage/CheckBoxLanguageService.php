@@ -1,40 +1,66 @@
 <?php declare(strict_types=1);
 
-namespace JTL\CheckBox\CheckBoxLanguage;
+namespace JTL\Checkbox\CheckboxLanguage;
 
-use JTL\CheckBox\CheckBoxLanguage\CheckBoxLanguageDataObject;
-use JTL\CheckBox\CheckBoxLanguage\CheckBoxLanguageRepository;
-
-use JTL\Shop;
+use JTL\CheckBox\CheckBoxLanguage\CheckboxLanguageDataObject;
+use JTL\CheckBox\CheckBoxLanguage\CheckboxLanguageRepository;
 
 /**
- * Class CheckBox
+ * Class Checkbox
  * @package JTL
  */
-class CheckBoxLanguageService
+class CheckboxLanguageService
 {
-    protected CheckBoxLanguageRepository $repository;
+    /**
+     * @var CheckboxLanguageRepository
+     */
+    protected CheckboxLanguageRepository $repository;
 
     /**
-     * @param CheckBoxLanguageRepository $repository
+     * @param CheckboxLanguageRepository $repository
      */
-    public function __construct(CheckBoxLanguageRepository $repository)
+    public function __construct(CheckboxLanguageRepository $repository)
     {
         $this->repository = $repository;
     }
 
+    /**
+     * @param array $filter
+     * @return array
+     */
+    public function getList(array $filter): array
+    {
+        $languageList      = [];
+        $checkboxLanguages = $this->repository->getList($filter);
+        foreach ($checkboxLanguages as $checkboxLanguage) {
+            $language       = new CheckboxLanguageDataObject();
+            $languageList[] = $language->hydrateWithObject($checkboxLanguage);
+        }
 
-    public function insert(CheckBoxLanguageDataObject $checkBoxLanguage): int
+        return $languageList;
+    }
+
+    /**
+     * @param CheckboxLanguageDataObject $checkBoxLanguage
+     * @return int
+     */
+    public function insert(CheckboxLanguageDataObject $checkBoxLanguage): int
     {
         return $this->repository->insert($checkBoxLanguage);
     }
 
     /**
-     * @param CheckBoxLanguageDataObject $checkBoxLanguage
+     * @param CheckboxLanguageDataObject $checkboxLanguage
      * @return bool
      */
-    public function update(CheckBoxLanguageDataObject $checkBoxLanguage): bool
+    public function update(CheckboxLanguageDataObject $checkboxLanguage): bool
     {
-            return $this->repository->update($checkBoxLanguage);
+        //need checkBoxLanguageId, not provided by post
+        $checkboxLanguage->checkboxLanguageID = $this->getList([
+            'kCheckBox' => $checkboxLanguage->checkboxID,
+            'kSprache'  => $checkboxLanguage->languageID])[0]
+            ->checkboxLanguageID;
+
+        return $this->repository->update($checkboxLanguage);
     }
 }

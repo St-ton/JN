@@ -1,30 +1,79 @@
 <?php declare(strict_types=1);
 
-namespace JTL\CheckBox;
+namespace JTL\Checkbox;
 
 use JTL\DataObjects\GenericDataObject;
 
-class CheckBoxDataObject extends GenericDataObject
+/**
+ *
+ */
+class CheckboxDataObject extends GenericDataObject
 {
+    /**
+     * @var string
+     */
     private string $primaryKey = 'kCheckBox';
 
-    protected int $kCheckBox         = 0;
-    protected int $kLink             = 0;
+    /**
+     * @var int
+     */
+    protected int $kCheckBox = 0;
+    /**
+     * @var int
+     */
+    protected int $kLink = 0;
+    /**
+     * @var int
+     */
     protected int $kCheckBoxFunktion = 0;
-    protected string $cName          = '';
-    protected string $cKundengruppe  = '';
-    protected string $cAnzeigeOrt    = '';
-    protected bool $nAktiv           = true;
-    protected bool $nPflicht         = false;
-    protected bool $nLogging         = true;
-    protected int $nSort             = 0;
-    protected string $dErstellt      = '';
-    protected bool $nInternal        = false;
+    /**
+     * @var string
+     */
+    protected string $cName = '';
+    /**
+     * @var string
+     */
+    protected string $cKundengruppe = '';
+    /**
+     * @var string
+     */
+    protected string $cAnzeigeOrt = '';
+    /**
+     * @var bool
+     */
+    protected bool $nAktiv = true;
+    /**
+     * @var bool
+     */
+    protected bool $nPflicht = false;
+    /**
+     * @var bool
+     */
+    protected bool $nLogging = true;
+    /**
+     * @var int
+     */
+    protected int $nSort = 0;
+    /**
+     * @var string
+     */
+    protected string $dErstellt = '';
+    /**
+     * @var string
+     */
+    private string $dErstellt_DE = '';
+    /**
+     * @var bool
+     */
+    protected bool $nInternal = false;
 
-    protected array $mapping = [
+    /**
+     * @var array|string[]
+     */
+    private array $mapping = [
         'checkboxID'             => 'kCheckBox',
         'linkID'                 => 'kLink',
-        'checkBoxFunctionID'     => 'kCheckBoxFunktion',
+        'checkboxFunctionID'     => 'kCheckBoxFunktion',
         'name'                   => 'cName',
         'customerGroupsSelected' => 'cKundengruppe',
         'displayAt'              => 'cAnzeigeOrt',
@@ -33,9 +82,15 @@ class CheckBoxDataObject extends GenericDataObject
         'hasLogging'             => 'nLogging',
         'sort'                   => 'nSort',
         'created'                => 'dErstellt',
+        'created_DE'             => 'dErstellt_DE',
         'isInternal'             => 'nInternal',
     ];
 
+    /**
+     * @param string $name
+     * @param $value
+     * @return void
+     */
     public function __set(string $name, $value): void
     {
         if ($name === $this->primaryKey) {
@@ -43,21 +98,39 @@ class CheckBoxDataObject extends GenericDataObject
         }
     }
 
-    public function __get(string $name): ?int
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get(string $name): mixed
     {
         if ($name === 'kCheckBox') {
             return $this->kCheckBox;
+        }
+
+        if (isset($this->mapping[$name])) {
+            $prop = $this->mapping[$name];
+
+            return $this->$prop;
         }
 
 
         return null;
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function __isset($name)
     {
         return isset($this->name);
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function __unset($name)
     {
         unset($this->$name);
@@ -71,6 +144,9 @@ class CheckBoxDataObject extends GenericDataObject
         return $this->primaryKey;
     }
 
+    /**
+     * @return int|null
+     */
     public function getKCheckBox(): ?int
     {
         return $this->kCheckBox;
@@ -85,12 +161,12 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $kLink
-     * @return CheckBoxDataObject
+     * @param  $kLink
+     * @return CheckboxDataObject
      */
-    public function setKLink(int $kLink): CheckBoxDataObject
+    public function setKLink($kLink): CheckboxDataObject
     {
-        $this->kLink = $kLink;
+        $this->kLink = (int)$kLink;
         return $this;
     }
 
@@ -103,12 +179,12 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $kCheckBoxFunktion
-     * @return CheckBoxDataObject
+     * @param  $kCheckBoxFunktion
+     * @return CheckboxDataObject
      */
-    public function setKCheckBoxFunktion(int $kCheckBoxFunktion): CheckBoxDataObject
+    public function setKCheckBoxFunktion($kCheckBoxFunktion): CheckboxDataObject
     {
-        $this->kCheckBoxFunktion = $kCheckBoxFunktion;
+        $this->kCheckBoxFunktion = (int)$kCheckBoxFunktion;
         return $this;
     }
 
@@ -122,9 +198,9 @@ class CheckBoxDataObject extends GenericDataObject
 
     /**
      * @param string $cName
-     * @return CheckBoxDataObject
+     * @return CheckboxDataObject
      */
-    public function setCName(string $cName): CheckBoxDataObject
+    public function setCName(string $cName): CheckboxDataObject
     {
         $this->cName = $cName;
         return $this;
@@ -140,9 +216,9 @@ class CheckBoxDataObject extends GenericDataObject
 
     /**
      * @param string $cKundengruppe
-     * @return CheckBoxDataObject
+     * @return CheckboxDataObject
      */
-    public function setCKundengruppe(string $cKundengruppe): CheckBoxDataObject
+    public function setCKundengruppe(string $cKundengruppe): CheckboxDataObject
     {
         $this->cKundengruppe = $cKundengruppe;
         return $this;
@@ -158,9 +234,9 @@ class CheckBoxDataObject extends GenericDataObject
 
     /**
      * @param string $cAnzeigeOrt
-     * @return CheckBoxDataObject
+     * @return CheckboxDataObject
      */
-    public function setCAnzeigeOrt(string $cAnzeigeOrt): CheckBoxDataObject
+    public function setCAnzeigeOrt(string $cAnzeigeOrt): CheckboxDataObject
     {
         $this->cAnzeigeOrt = $cAnzeigeOrt;
         return $this;
@@ -184,9 +260,9 @@ class CheckBoxDataObject extends GenericDataObject
 
     /**
      * @param $nAktiv
-     * @return CheckBoxDataObject
+     * @return CheckboxDataObject
      */
-    public function setNAktiv(int $nAktiv): CheckBoxDataObject
+    public function setNAktiv($nAktiv): CheckboxDataObject
     {
         $this->nAktiv = (bool)$nAktiv;
         return $this;
@@ -209,10 +285,10 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param bool $nPflicht
-     * @return CheckBoxDataObject
+     * @param $nPflicht
+     * @return CheckboxDataObject
      */
-    public function setNPflicht(int $nPflicht): CheckBoxDataObject
+    public function setNPflicht($nPflicht): CheckboxDataObject
     {
         $this->nPflicht = (bool)$nPflicht;
         return $this;
@@ -235,10 +311,10 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param bool $nLogging
-     * @return CheckBoxDataObject
+     * @param  $nLogging
+     * @return CheckboxDataObject
      */
-    public function setNLogging(int  $nLogging): CheckBoxDataObject
+    public function setNLogging($nLogging): CheckboxDataObject
     {
         $this->nLogging = (bool)$nLogging;
         return $this;
@@ -253,12 +329,12 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $nSort
-     * @return CheckBoxDataObject
+     * @param  $nSort
+     * @return CheckboxDataObject
      */
-    public function setNSort(int $nSort): CheckBoxDataObject
+    public function setNSort($nSort): CheckboxDataObject
     {
-        $this->nSort = $nSort;
+        $this->nSort = (int)$nSort;
         return $this;
     }
 
@@ -272,11 +348,30 @@ class CheckBoxDataObject extends GenericDataObject
 
     /**
      * @param string $dErstellt
-     * @return CheckBoxDataObject
+     * @return CheckboxDataObject
+     * @noinspection PhpUnused
      */
-    public function setDErstellt(string $dErstellt): CheckBoxDataObject
+    public function setDErstellt(string $dErstellt): CheckboxDataObject
     {
         $this->dErstellt = $dErstellt;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDErstelltDE(): string
+    {
+        return $this->dErstellt_DE;
+    }
+
+    /**
+     * @param string $dErstellt_DE
+     * @return CheckboxDataObject
+     */
+    public function setDErstelltDE(string $dErstellt_DE): CheckboxDataObject
+    {
+        $this->dErstellt_DE = $dErstellt_DE;
         return $this;
     }
 
@@ -297,25 +392,26 @@ class CheckBoxDataObject extends GenericDataObject
     }
 
     /**
-     * @param bool $nInternal
-     * @return CheckBoxDataObject
+     * @param  $nInternal
+     * @return CheckboxDataObject
      */
-    public function setNInternal(bool $nInternal): CheckBoxDataObject
+    public function setNInternal($nInternal): CheckboxDataObject
     {
-        $this->nInternal = $nInternal;
+        $this->nInternal = (bool)$nInternal;
         return $this;
     }
 
-    public function toArray(): array
-    {
-        return get_object_vars($this);
-    }
-
+    /**
+     * @return array|string[]
+     */
     public function getMapping(): array
     {
         return $this->mapping;
     }
 
+    /**
+     * @return array
+     */
     public function getReverseMapping(): array
     {
         return array_flip($this->mapping);

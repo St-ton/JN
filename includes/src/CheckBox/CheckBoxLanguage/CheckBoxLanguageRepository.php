@@ -1,23 +1,29 @@
 <?php declare(strict_types=1);
 
-namespace JTL\CheckBox\CheckBoxLanguage;
+namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\DB\NiceDB;
 
 /**
- * Class CheckBoxRepository
+ * Class CheckboxLanguageRepository
  * @package JTL
  */
-class CheckBoxLanguageRepository
+class CheckboxLanguageRepository
 {
-
+    /**
+     * @var NiceDB|null
+     */
     protected ?NiceDB $db = null;
 
+    /**
+     * @var string
+     */
     protected string $tableName = 'tcheckboxsprache';
 
-    protected array $keyNames = ['kCheckBox', 'kSprache'];
-
-    protected string $ignoreIfNotSet = 'kCheckBoxSprache';
+    /**
+     * @var string
+     */
+    protected string $keyName = 'kCheckBoxSprache';
 
     /**
      * @param NiceDB $db
@@ -28,10 +34,29 @@ class CheckBoxLanguageRepository
     }
 
     /**
-     * @param CheckBoxLanguageDataObject $checkbox
+     * @param array $filter
+     * @return array
+     */
+    public function getList(array $filter = []): array
+    {
+        $keys      = array_keys($filter);
+        $keyValues = array_values($filter);
+        if ($keys === []) {
+            return [];
+        }
+
+        return $this->db->selectAll(
+            'tcheckboxsprache',
+            $keys,
+            $keyValues
+        );
+    }
+
+    /**
+     * @param CheckboxLanguageDataObject $checkbox
      * @return int
      */
-    public function insert(CheckBoxLanguageDataObject $checkbox): int
+    public function insert(CheckboxLanguageDataObject $checkbox): int
     {
         [$assigns, $stmt] = $this->prepareInsertStatementFromArray($checkbox);
 
@@ -44,35 +69,31 @@ class CheckBoxLanguageRepository
     }
 
     /**
-     * @param CheckBoxLanguageDataObject $checkbox
+     * @param CheckboxLanguageDataObject $checkboxSprache
      * @return bool
      */
-    public function update(CheckBoxLanguageDataObject $checkBoxSprache): bool
+    public function update(CheckboxLanguageDataObject $checkboxSprache): bool
     {
-        [$assigns, $stmt] = $this->prepareUpdateStatement($checkBoxSprache);
+        [$assigns, $stmt] = $this->prepareUpdateStatement($checkboxSprache);
 
         return $this->db->query($this->db->readableQuery($stmt, $assigns));
     }
 
     /**
      * Logic from niceDB Class
-     * @param $checkBoxSprache
+     * @param $checkboxSprache
      * @return array
      */
-    protected function prepareUpdateStatement($checkBoxSprache): array
+    protected function prepareUpdateStatement($checkboxSprache): array
     {
-        $arr = $checkBoxSprache->toArray();
-        if (!isset($arr[$this->ignoreIfNotSet]) || (int)$arr[$this->ignoreIfNotSet] === 0) {
-            unset($arr[$this->ignoreIfNotSet]);
-        }
-        $keyNames  = $this->keyNames;
-        $keyValue  = [$arr[$this->keyNames[0]], $arr[$this->keyNames[1]]];
+        $arr       = $checkboxSprache->toArray();
+        $keyName   = $this->keyName;
+        $keyValue  = $arr[$this->keyName];
         $tableName = $this->tableName;
-        unset($arr['mapping'], $arr['primaryKey']);
 
         $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; // list of values to insert as param for ->prepare()
-        if (!$keyNames || !$keyValue) {
+        if (!$keyName || !$keyValue) {
             return [[],[]];
         }
         foreach ($arr as $_key => $_val) {
@@ -89,14 +110,17 @@ class CheckBoxLanguageRepository
                 $assigns[] = $_val;
             }
         }
-        if (\is_array($keyNames) && \is_array($keyValue)) {
+        if (\is_array($keyName) && \is_array($keyValue)) {
             $keynamePrepared = \array_map(static function ($_v): string {
                 return '`' . $_v . '`=?';
-            }, $keyNames);
+            }, $keyName);
             $where           = ' WHERE ' . \implode(' AND ', $keynamePrepared);
             foreach ($keyValue as $_v) {
                 $assigns[] = $_v;
             }
+        } else {
+            $assigns[] = $keyValue;
+            $where     = ' WHERE `' . $keyName . '`=?';
         }
         $stmt = 'UPDATE ' . $tableName . ' SET ' . \implode(',', $updates) . $where;
 
@@ -105,17 +129,13 @@ class CheckBoxLanguageRepository
 
     /**
      * Logik from niceDB Class
-     * @param CheckBoxLanguageDataObject $checkBoxSprache
+     * @param CheckboxLanguageDataObject $checkboxSprache
      * @return array
      */
-    public function prepareInsertStatementFromArray(CheckBoxLanguageDataObject $checkBoxSprache): array
+    public function prepareInsertStatementFromArray(CheckboxLanguageDataObject $checkboxSprache): array
     {
-        $arr = $checkBoxSprache->toArray();
-        if (!isset($arr[$this->ignoreIfNotSet]) || (int)$arr[$this->ignoreIfNotSet] === 0) {
-            unset($arr[$this->ignoreIfNotSet]);
-        }
+        $arr       = $checkboxSprache->toArray();
         $tableName = $this->tableName;
-        unset($arr['mapping'], $arr['primaryKey']);
 
         $keys    = []; // column names
         $values  = []; // column values - either sql statement like "now()" or prepared like ":my-var-name"
@@ -127,9 +147,6 @@ class CheckBoxLanguageRepository
                 $val = null;
             } elseif ($val === null) {
                 $val = '';
-            }
-            if (\is_array($val)) {
-                $val = serialize($val);
             }
             $lc = \mb_convert_case((string)$val, \MB_CASE_LOWER);
             if ($lc === 'now()' || $lc === 'current_timestamp') {

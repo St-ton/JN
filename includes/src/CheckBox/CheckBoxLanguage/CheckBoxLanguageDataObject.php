@@ -1,22 +1,42 @@
 <?php
 
-namespace JTL\CheckBox\CheckBoxLanguage;
+namespace JTL\CheckBox\CheckboxLanguage;
 
-use JTL\DataObjects\DataObjectInterface as DataObjectInterface;
-use JTL\DataObjects\GenericDataObject as GenericDataObject;
+use JTL\DataObjects\GenericDataObject;
 
-class CheckBoxLanguageDataObject extends GenericDataObject
+class CheckboxLanguageDataObject extends GenericDataObject
 {
-    private string $primaryKey      = 'kCheckBoxSprache';
+    /**
+     * @var string
+     */
+    private string $primaryKey = 'kCheckBoxSprache';
+    /**
+     * @var int
+     */
     protected int $kCheckBoxSprache = 0;
-    protected int $kCheckBox        = 0;
-    protected int $kSprache         = 0;
-    protected string $cText         = '';
+    /**
+     * @var int
+     */
+    protected int $kCheckBox = 0;
+    /**
+     * @var int
+     */
+    protected int $kSprache = 0;
+    /**
+     * @var string
+     */
+    protected string $cText = '';
+    /**
+     * @var string
+     */
     protected string $cBeschreibung = '';
 
-    protected $mapping = [
-        'checkBoxLanguageID' => 'kCheckBoxSprache',
-        'checkBoxID'         => 'kCheckBox',
+    /**
+     * @var string[]
+     */
+    private array $mapping = [
+        'checkboxLanguageID' => 'kCheckBoxSprache',
+        'checkboxID'         => 'kCheckBox',
         'languageID'         => 'kSprache',
         'text'               => 'cText',
         'description'        => 'cBeschreibung',
@@ -30,34 +50,55 @@ class CheckBoxLanguageDataObject extends GenericDataObject
         return $this->primaryKey;
     }
 
+    /**
+     * @param string $name
+     * @param $value
+     * @return void
+     */
     public function __set(string $name, $value): void
     {
         if ($name === $this->primaryKey) {
             $this->kCheckBoxSprache = (int)$value;
         }
 
-//        if (in_array($name, $this->mapping)) {
-//            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $this->mapping[$name])));
-//            $property = $this->mapping[$name];
-//            $this->$method( $value);
-//        }
+        if (isset($this->mapping[$name])) {
+            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $this->mapping[$name])));
+            $this->$method($value);
+        }
     }
 
-    public function __get(string $name): ?int
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    public function __get(string $name): mixed
     {
         if ($name === 'kCheckBoxSprache') {
             return $this->kCheckBox;
         }
 
+        if (isset($this->mapping[$name])) {
+            $prop = $this->mapping[$name];
+
+            return $this->$prop;
+        }
 
         return null;
     }
 
+    /**
+     * @param $name
+     * @return bool
+     */
     public function __isset($name)
     {
         return isset($this->name);
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     public function __unset($name)
     {
         unset($this->$name);
@@ -72,12 +113,12 @@ class CheckBoxLanguageDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $kCheckBoxSprache
-     * @return CheckBoxLanguageDataObject
+     * @param $kCheckBoxSprache
+     * @return CheckboxLanguageDataObject
      */
-    public function setKCheckBoxSprache(int $kCheckBoxSprache): CheckBoxLanguageDataObject
+    public function setKCheckBoxSprache($kCheckBoxSprache): CheckboxLanguageDataObject
     {
-        $this->kCheckBoxSprache = $kCheckBoxSprache;
+        $this->kCheckBoxSprache = (int)$kCheckBoxSprache;
         return $this;
     }
 
@@ -90,12 +131,12 @@ class CheckBoxLanguageDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $kCheckBox
-     * @return CheckBoxLanguageDataObject
+     * @param  $kCheckBox
+     * @return CheckboxLanguageDataObject
      */
-    public function setKCheckBox(int $kCheckBox): CheckBoxLanguageDataObject
+    public function setKCheckBox($kCheckBox): CheckboxLanguageDataObject
     {
-        $this->kCheckBox = $kCheckBox;
+        $this->kCheckBox = (int)$kCheckBox;
         return $this;
     }
 
@@ -108,12 +149,12 @@ class CheckBoxLanguageDataObject extends GenericDataObject
     }
 
     /**
-     * @param int $kSprache
-     * @return CheckBoxLanguageDataObject
+     * @param  $kSprache
+     * @return CheckboxLanguageDataObject
      */
-    public function setKSprache(int $kSprache): CheckBoxLanguageDataObject
+    public function setKSprache($kSprache): CheckboxLanguageDataObject
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = (int)$kSprache;
         return $this;
     }
 
@@ -127,9 +168,9 @@ class CheckBoxLanguageDataObject extends GenericDataObject
 
     /**
      * @param string $cText
-     * @return CheckBoxLanguageDataObject
+     * @return CheckboxLanguageDataObject
      */
-    public function setCText(string $cText): CheckBoxLanguageDataObject
+    public function setCText(string $cText): CheckboxLanguageDataObject
     {
         $this->cText = $cText;
         return $this;
@@ -145,19 +186,25 @@ class CheckBoxLanguageDataObject extends GenericDataObject
 
     /**
      * @param string $cBeschreibung
-     * @return CheckBoxLanguageDataObject
+     * @return CheckboxLanguageDataObject
      */
-    public function setCBeschreibung(string $cBeschreibung): CheckBoxLanguageDataObject
+    public function setCBeschreibung(string $cBeschreibung): CheckboxLanguageDataObject
     {
         $this->cBeschreibung = $cBeschreibung;
         return $this;
     }
 
+    /**
+     * @return string[]
+     */
     public function getMapping(): array
     {
         return $this->mapping;
     }
 
+    /**
+     * @return array
+     */
     public function getReverseMapping(): array
     {
         return array_flip($this->mapping);

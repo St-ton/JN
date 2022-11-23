@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace JTL\CheckBox;
+namespace JTL\Checkbox;
 
 use JTL\DB\NiceDB;
 
@@ -8,13 +8,21 @@ use JTL\DB\NiceDB;
  * Class CheckBoxRepository
  * @package JTL
  */
-class CheckBoxRepository
+class CheckboxRepository
 {
-
+    /**
+     * @var NiceDB|null
+     */
     protected ?NiceDB $db = null;
 
+    /**
+     * @var string
+     */
     protected string $tableName = 'tcheckbox';
 
+    /**
+     * @var string
+     */
     protected string $keyName = 'kCheckBox';
 
     /**
@@ -26,10 +34,37 @@ class CheckBoxRepository
     }
 
     /**
-     * @param CheckBoxDataObject $checkbox
+     * @param int $id
+     * @return array
+     */
+    public function get(int $id): array
+    {
+        return $this->db->getSingleArray(
+            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
+                FROM tcheckbox
+                WHERE kCheckBox = :cbid",
+            ['cbid' => $id]
+        );
+    }
+
+    /**
+     * @param int $checkboxFunctionID
+     * @return object
+     */
+    public function getCheckBoxFunction(int $checkboxFunctionID): object
+    {
+        return $this->db->select(
+            'tcheckboxfunktion',
+            'kCheckBoxFunktion',
+            $checkboxFunctionID
+        );
+    }
+
+    /**
+     * @param CheckboxDataObject $checkbox
      * @return int
      */
-    public function insert(CheckBoxDataObject $checkbox): int
+    public function insert(CheckboxDataObject $checkbox): int
     {
         [$assigns, $stmt] = $this->prepareInsertStatementFromArray($checkbox);
 
@@ -42,10 +77,10 @@ class CheckBoxRepository
     }
 
     /**
-     * @param CheckBoxDataObject $checkbox
+     * @param CheckboxDataObject $checkbox
      * @return bool
      */
-    public function update(CheckBoxDataObject $checkbox): bool
+    public function update(CheckboxDataObject $checkbox): bool
     {
         [$assigns, $stmt] = $this->prepareUpdateStatement($checkbox);
 
@@ -54,16 +89,15 @@ class CheckBoxRepository
 
     /**
      * Logic from niceDB Class
-     * @param $checkBox
+     * @param $checkbox
      * @return array
      */
-    protected function prepareUpdateStatement($checkBox): array
+    protected function prepareUpdateStatement(CheckboxDataObject $checkbox): array
     {
-        $arr       = $checkBox->toArray();
+        $arr       = $checkbox->toArray();
         $keyName   = $this->keyName;
         $keyValue  = $arr[$this->keyName];
         $tableName = $this->tableName;
-        unset($arr['mapping'], $arr['primaryKey']);
 
         $updates = []; // list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; // list of values to insert as param for ->prepare()
@@ -103,20 +137,20 @@ class CheckBoxRepository
 
     /**
      * Logik from niceDB Class
-     * @param CheckBoxDataObject $checkBox
+     * @param CheckboxDataObject $checkbox
      * @return array
      */
-    public function prepareInsertStatementFromArray(CheckBoxDataObject $checkBox): array
+    public function prepareInsertStatementFromArray(CheckboxDataObject $checkbox): array
     {
-        $data      = $checkBox->toArray();
+        $arr       = $checkbox->toArray();
         $tableName = $this->tableName;
-        unset($data['mapping'], $data['primaryKey'], $data['kCheckBox']);
+        unset($arr['mapping'], $arr['primaryKey'], $arr['kCheckBox'], $arr['dErstellt_DE']);
 
         $keys    = []; // column names
         $values  = []; // column values - either sql statement like "now()" or prepared like ":my-var-name"
         $assigns = []; // assignments from prepared var name to values, will be inserted in ->prepare()
 
-        foreach ($data as $col => $val) {
+        foreach ($arr as $col => $val) {
             $keys[] = '`' . $col . '`';
             if ($val === '_DBNULL_') {
                 $val = null;
@@ -141,7 +175,7 @@ class CheckBoxRepository
     }
 
     /**
-     * From CheckBox.php
+     * From Checkbox.php
      */
 
     /**

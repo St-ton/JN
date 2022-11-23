@@ -13,57 +13,88 @@ abstract class GenericDataObject implements DataObjectInterface
     abstract public function getReverseMapping(): array;
 
 
-
-    public function hydrate($data, bool $useMapping = false): self
+    /**
+     * will hydrate the DataObject with Data from an array
+     * Keys may use mapped values
+     * @param $data
+     * @param bool $useMapping
+     * @return $this
+     */
+    public function hydrate(array $data, bool $useMapping = false): self
     {
         $attributeMap = $this->getMapping();
         foreach ($data as $attribute => $value) {
-            if ($useMapping === true && in_array($attribute, $attributeMap, true)) {
+            if ($useMapping === true && \is_array($attributeMap) && \in_array($attribute, $attributeMap, true)) {
                 $attribute = $attributeMap[$attribute];
             }
-            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $attribute)));
-            if (is_callable(array($this, $method))) {
+            $method = 'set' . str_replace(' ', '', \ucwords(str_replace('_', ' ', $attribute)));
+            if (\is_callable(array($this, $method))) {
                 $this->$method($value);
             }
-            if ($attribute === $this->getPrimaryKey() && (int)$value > 0) {
-                $this->$attribute = $value;
+            if ((int)$value > 0 && $attribute === $this->getPrimaryKey()) {
+                $this->$attribute = (int)$value;
             }
         }
 
         return $this;
     }
 
+    /**
+     * Will ship an array containing Keys and values of protected and public properties
+     * @return array
+     */
     public function toArray(): array
     {
-        return get_object_vars($this);
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $toArray[$property->getName()] = $property->getValue($this);
+        }
+
+        return $toArray;
     }
 
+    /**
+     * if $useReverseMapping is true the array shipped will use mapped class properties
+     * @param bool $useReverseMapping
+     * @return array
+     */
     public function extract(bool $useReverseMapping = false): array
     {
-        $attributeMap = $this->getMapping();
+        $attributeMap = $this->getReverseMapping();
         $reflect      = new ReflectionClass($this);
         $attributes   = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $extracted    = [];
         foreach ($attributes as $attribute) {
-            if ($useReverseMapping === true && in_array($attribut, $attributeMap, true)) {
+            if ($useReverseMapping === true && \in_array($attribute, $attributeMap, true)) {
                 $attribut = $attributeMap[$attribut];
             }
-            $method                      = 'get' . \ucfirst((string)$attribute->name);
+            $method                      = 'get' . \ucfirst($attribute->name);
             $extracted[$attribute->name] = $this->$method();
         }
 
         return $extracted;
     }
 
-    public function hydrateWithObject($object, bool $useMapping = false): self
+    /**
+     * Will accept data from an object.
+     * @param $object
+     * @param bool $useMapping
+     * @return $this
+     */
+    public function hydrateWithObject($object): self
     {
-        $reflect = new ReflectionClass($this);
-        $props   = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-        foreach ($props as $prop) {
-            $getMethod = 'get' . ucfirst((string)$prop->name);
-            $setMethod = 'set' . ucfirst((string)$prop->name);
-            if (method_exists($object, $getMethod)) {
+        //Mapping has to be implemented later
+        $reflect    = new ReflectionClass($this);
+        $attributes = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        foreach ($attributes as $attribut) {
+            $getMethod = 'get' . \ucfirst($attribut->name);
+            $setMethod = 'set' . \ucfirst($attribut->name);
+            if (\method_exists($object, $getMethod)) {
                 $this->$setMethod($object->$getMethod());
+            } elseif (\property_exists($object, $attribut->name)) {
+                $this->$setMethod($object->{$attribut->name});
             }
         }
 

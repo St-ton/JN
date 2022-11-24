@@ -574,7 +574,7 @@ $(function() {
                     <div class="query-sub">
                         <span class="text-muted" title="Millisekunden"><i class="fa fa-clock-o" aria-hidden="true"></i> &nbsp;{"`$info.time*1000`"|number_format:2} ms</span>
                         <span class="text-muted"><i class="fa fa-database" aria-hidden="true"></i> &nbsp;{$count|number_format:0} {__('dataEntries')}</span>
-                        <a href="{$adminURL}{$route}?command&query={$info.statement|urlencode}&token={$smarty.session.jtl_token}">
+                        <a href="{$adminURL}{$route}?command&query={urlencode($info.statement)}&token={$smarty.session.jtl_token}">
                             <i class="fa fa-pencil" aria-hidden="true"></i> {__('edit')}
                         </a>
                     </div>

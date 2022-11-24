@@ -165,7 +165,7 @@ class Category extends BaseCategory
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
-            if (count(\array_filter($sql->getJoins(), static function (Join $join) {
+            if (\count(\array_filter($sql->getJoins(), static function (Join $join) {
                 return $join->getOrigin() === __CLASS__ . '::getSQLJoin';
             })) === 0) {
                 $sql->addJoin((new Join())

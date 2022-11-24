@@ -2,9 +2,9 @@
 
 namespace JTL\CheckBox\CheckboxLanguage;
 
-use JTL\DataObjects\GenericDataObject;
+use JTL\DataObjects\AbstractGenericDataObject;
 
-class CheckboxLanguageDataObject extends GenericDataObject
+class CheckboxLanguageDataObject extends AbstractGenericDataObject
 {
     /**
      * @var string

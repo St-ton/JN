@@ -6,7 +6,7 @@ use JTL\DataObjects\DataObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
 
-abstract class GenericDataObject implements DataObjectInterface
+abstract class AbstractGenericDataObject implements DataObjectInterface
 {
     abstract public function getMapping(): array;
 

@@ -1,6 +1,6 @@
 {if $standalonePage}
     {include file='tpl_inc/header.tpl'}
-    {$cTitel = {sprintf(__('searchResultsFor'), $query)}
+    {$cTitel = sprintf(__('searchResultsFor'), $query)}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
     <div class="card">
         <div class="card-body search-page">

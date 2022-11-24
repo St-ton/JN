@@ -118,13 +118,13 @@
                             <label class="col col-sm-4 col-form-label text-sm-right"for="kAuthor">{__('newsAuthor')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select class="custom-select" id="kAuthor" name="kAuthor">
-                                    <option value="0">{if $oPossibleAuthors_arr|count > 0}{__('selectAuthor')}{else}{__('authorNotAvailable')}{/if}</option>
+                                    <option value="0">{if count($oPossibleAuthors_arr) > 0}{__('selectAuthor')}{else}{__('authorNotAvailable')}{/if}</option>
                                     {foreach $oPossibleAuthors_arr as $oPossibleAuthor}
                                         <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
                                     {/foreach}
                                 </select>
                             </div>
-                            {if $oPossibleAuthors_arr|count === 0}
+                            {if count($oPossibleAuthors_arr) === 0}
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                     <span data-html="true" data-toggle="tooltip" data-placement="left" title="" data-original-title="{__('noNewsAuthor')}">
                                         <span class="fas fa-info-circle fa-fw"></span>

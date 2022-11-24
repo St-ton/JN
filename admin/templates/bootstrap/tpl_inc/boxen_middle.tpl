@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                {if $oBox_arr|count > 0}
+                {if count($oBox_arr) > 0}
                     <div class="table-responsive">
                         <table class="table table-hover table-align-top">
                             <thead>

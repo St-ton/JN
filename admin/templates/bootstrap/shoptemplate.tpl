@@ -17,7 +17,7 @@
 <style>#form_settings .fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
 
 <div id="content">
-{if isset($templateConfig) && $templateConfig|count > 0}
+{if isset($templateConfig) && count($templateConfig) > 0}
     {include file='tpl_inc/shoptemplate_detail.tpl'}
 {else}
     {include file='tpl_inc/shoptemplate_overview.tpl'}

@@ -295,7 +295,7 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    {if $tests.recommendations|count > 0}
+                    {if count($tests.recommendations) > 0}
                         <table class="table table-condensed table-striped table-blank">
                             <thead>
                             <tr>
@@ -309,7 +309,7 @@
                                 <tr class="text-vcenter">
                                     <td>
                                         <div class="test-name">
-                                            {if $test->getDescription()|count_characters > 0}
+                                            {if $test->getDescription() !== null && strlen($test->getDescription()) > 0}
                                                 <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
                                                 {$test->getName()}

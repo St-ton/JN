@@ -11,8 +11,8 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0}
-                    <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}"
+                {if count($missingLinkTranslations) > 0}
+                    <i title="{__('missingTranslations')}: {count($missingLinkTranslations)}"
                        class="fal fa-exclamation-triangle text-warning"
                        data-toggle="tooltip"
                        data-placement="top"></i>

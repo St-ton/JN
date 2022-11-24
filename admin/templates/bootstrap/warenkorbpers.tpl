@@ -26,7 +26,7 @@
                         </div>
                     </form>
                 </div>
-                {if isset($oKunde_arr) && $oKunde_arr|count > 0}
+                {if isset($oKunde_arr) && count($oKunde_arr) > 0}
             {assign var=cParam_arr value=[]}
             {if isset($cSuche)}
                 {append var=cParam_arr index='cSuche' value=$cSuche}

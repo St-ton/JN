@@ -7,13 +7,13 @@
 {$alertList->displayAlertByKey('zipArchiveError')}
 
 <div class="card collapsed">
-    <div {if $modifiedFiles|count > 0}class="card-header accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}class="card-header"{/if}>
+    <div {if count($modifiedFiles) > 0}class="card-header accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}class="card-header"{/if}>
         <div class="card-title">
-            {if $modifiedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
-            {__('fileCheckNumberModifiedFiles')}: {$modifiedFiles|count}
+            {if count($modifiedFiles) > 0}<i class="fa fas fa-plus"></i> {/if}
+            {__('fileCheckNumberModifiedFiles')}: {count($modifiedFiles)}
         </div>
     </div>
-    {if $modifiedFiles|count > 0}
+    {if count($modifiedFiles) > 0}
         <div class="card-body collapse" id="pageCheckModifiedFiles">
             <p class="alert alert-warning">{__('fileCheckModifiedFilesNote')}</p>
             <div id="contentModifiedFilesCheck">
@@ -36,13 +36,13 @@
     {/if}
 </div>
 <div class="card collapsed">
-    <div class="card-header{if $orphanedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckOrphanedFiles" style="cursor:pointer"{else}"{/if}>
+    <div class="card-header{if count($orphanedFiles) > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckOrphanedFiles" style="cursor:pointer"{else}"{/if}>
         <div class="card-title">
-            {if $orphanedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
-            {__('fileCheckNumberOrphanedFiles')}: {$orphanedFiles|count}
+            {if count($orphanedFiles) > 0}<i class="fa fas fa-plus"></i> {/if}
+            {__('fileCheckNumberOrphanedFiles')}: {count($orphanedFiles)}
         </div>
     </div>
-    {if $orphanedFiles|count > 0}
+    {if count($orphanedFiles) > 0}
         <div class="card-body collapse" id="pageCheckOrphanedFiles">
             <p class="alert alert-info">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
@@ -54,7 +54,7 @@
                         </tr>
                     </thead>
                     {$cnt = 0}
-                    {$ofc = $orphanedFiles|count}
+                    {$ofc = count($orphanedFiles)}
                     {foreach $orphanedFiles as $file}
                         <tr class="filestate mod{$file@iteration % 2} orphaned">
                             <td class="text-left">{$file->name}</td>

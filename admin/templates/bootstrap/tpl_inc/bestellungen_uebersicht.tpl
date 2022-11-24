@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
 <div id="content">
-    {if $orders|count > 0}
+    {if count($orders) > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('order')}</div>

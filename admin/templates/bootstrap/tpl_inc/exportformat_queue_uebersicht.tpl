@@ -22,7 +22,7 @@
                     <div>
                         <div class="subheading1">{__('exportformatQueue')}</div>
                         <hr class="mb-3">
-                        {if $oExportformatCron_arr && $oExportformatCron_arr|count > 0}
+                        {if $oExportformatCron_arr && count($oExportformatCron_arr) > 0}
                             <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table table-striped table-align-top">
                                     <thead>
@@ -145,7 +145,7 @@
                     <div class="subheading1">{__('exportformatTodaysWork')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|count > 0}
+                    {if $oExportformatQueueBearbeitet_arr && count($oExportformatQueueBearbeitet_arr) > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped table-align-top">
                                 <thead>

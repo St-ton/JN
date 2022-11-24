@@ -9,7 +9,7 @@
 
                 <div class="alert alert-danger">
                     <p><strong>{__('danger')}</strong></p>
-                    {if $affectedLinkNames|count > 0}
+                    {if count($affectedLinkNames) > 0}
                         <p>{__('dangerDeleteLinksAlso')}:</p>
                         <ul class="list">
                             {foreach $affectedLinkNames as $link}

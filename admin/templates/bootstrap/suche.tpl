@@ -6,7 +6,7 @@
         <div class="card-body search-page">
 {/if}
 
-{if $adminMenuItems|count}
+{if count($adminMenuItems)}
     <div class="dropdown-header">{__('pagesMenu')}</div>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}

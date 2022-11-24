@@ -98,7 +98,7 @@
             </div>
         {/if}
 
-        {if $tests.recommendations|count > 0}
+        {if count($tests.recommendations) > 0}
             <div class="page-header">
                 <h1>{__('suggestedAdjustments')}</h1>
             </div>
@@ -132,7 +132,7 @@
             </div>
         {/if}
 
-        {if $tests.programs|count > 0}
+        {if count($tests.programs) > 0}
             <div class="page-header">
                 <h1>{__('installedSoftware')}</h1>
             </div>
@@ -168,7 +168,7 @@
             </div>
         {/if}
 
-        {if $tests.apache_config|count > 0}
+        {if count($tests.apache_config) > 0}
             <div class="page-header">
                 <h1>{__('neededApacheModules')}</h1>
             </div>
@@ -204,7 +204,7 @@
             </div>
         {/if}
 
-        {if $tests.php_modules|count > 0}
+        {if count($tests.php_modules) > 0}
             <div class="page-header">
                 <h1>{__('neededPHPExtensions')}</h1>
             </div>
@@ -238,7 +238,7 @@
             </div>
         {/if}
 
-        {if $tests.php_config|count > 0}
+        {if count($tests.php_config) > 0}
             <div class="page-header">
                 <h1>{__('needPHPSetting')}</h1>
             </div>

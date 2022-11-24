@@ -143,7 +143,7 @@
                 </form>
             </div>
             <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active show{/if}">
-                {if is_array($stats) && $stats|count > 0}
+                {if is_array($stats) && count($stats) > 0}
                     <div>
                         <div class="subheading1 mb-3">{__('objectcache')}</div>
                         <div>
@@ -199,7 +199,7 @@
                         <div>
                             <div class="subheading1 mt-5 mb-3">{__('slowlog')}</div>
                             <div>
-                            {if $stats.slow|count > 0}
+                            {if count($stats.slow) > 0}
                                 <table class="table">
                                     {foreach $stats.slow as $slow}
                                         <tr>
@@ -282,10 +282,10 @@
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
                                     <td class="value">
-                                        {$tplcacheStats->frontend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                        {count($tplcacheStats->frontend)}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
                                     </td>
                                 </tr>
-                                {if $tplcacheStats->frontend|count > 0}
+                                {if count($tplcacheStats->frontend) > 0}
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
                                         <div id="cachefilesFrontendDetail" class=" collapse">
@@ -303,10 +303,10 @@
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('backend')}</td>
                                     <td class="value">
-                                        {$tplcacheStats->backend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                        {count($tplcacheStats->backend)}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
                                     </td>
                                 </tr>
-                                {if $tplcacheStats->backend|count > 0}
+                                {if count($tplcacheStats->backend) > 0}
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
                                         <div id="cachefilesBackendDetail" class=" collapse">
@@ -327,7 +327,7 @@
                 {/if}
             </div>
             <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active show{/if}">
-                {if !empty($all_methods) && $all_methods|count > 0}
+                {if !empty($all_methods) && count($all_methods) > 0}
                     <div class="settings">
                         <div class="subheading1">{__('settings')}</div>
                         <hr class="mb-3">

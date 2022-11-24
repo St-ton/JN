@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({$tables|count})</kbd>" cDokuURL=__('dbcheckURL')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('dbManager') cBeschreibung="<kbd>{__('tableViews')}({count($tables)})</kbd>" cDokuURL=__('dbcheckURL')}
 
 {function table_scope_header table=null}
     <h2>{__('table')}: {$table}
@@ -454,7 +454,7 @@ $(function() {
                 <!-- ###################################################### -->
 
             {elseif $sub === 'default'}
-                {if isset($tables) && $tables|count > 0}
+                {if isset($tables) && count($tables) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-condensed table-bordered table-hover table-sticky-header">
                             <thead>
@@ -541,7 +541,7 @@ $(function() {
                             </legend>
 
                             <div class="fieldset-body">
-                                {if isset($filter.where.col) && $filter.where.col|count > 0}
+                                {if isset($filter.where.col) && count($filter.where.col) > 0}
                                     {for $i=0 to count($filter.where.col) - 1}
                                         {filter_row headers=$headers col=$filter.where.col[$i] op=$filter.where.op[$i] val=$filter.where.val[$i] remove=$i}
                                     {/for}

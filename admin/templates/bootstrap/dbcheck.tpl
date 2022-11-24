@@ -15,11 +15,11 @@
         {/if}
     {/if}
     <div id="pageCheck">
-        {if $cDBFileStruct_arr|count > 0}
+        {if count($cDBFileStruct_arr) > 0}
             {if isset($engineUpdate)}
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
-                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|count}</div>
+                <div class="alert alert-info"><strong>{__('countTables')}:</strong> {count($cDBFileStruct_arr)}<br /><strong>{__('showModifiedTables')}:</strong> {count($cDBError_arr)}</div>
             {/if}
             <form action="{$adminURL}{$route}" method="post">
                 {$jtl_token}
@@ -111,10 +111,14 @@
                         <div class="col-sm-6 col-xl-auto">
                             <button type="submit" class="btn btn-primary">{__('send')}</button>
                         </div>
-                        {if $cDBError_arr|count > 0}
+                        {if count($cDBError_arr) > 0}
                         <div class="col-sm-6 col-xl-auto ml-auto">
-                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="{__('showAll')}">
+                                <i class="fa fa-share"></i> {__('showAll')}
+                            </button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="{__('showModified')}">
+                                <i class="fal fa-exclamation-triangle"></i> {__('showModified')}
+                            </button>
                         </div>
                         {/if}
                     </div>

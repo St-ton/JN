@@ -83,7 +83,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        {if $bannerFiles|count > 0}
+                        {if count($bannerFiles) > 0}
                             <select id="cPath" name="cPath" class="custom-select">
                                 <option value="">{__('chooseBanner')}</option>
                                 {foreach $bannerFiles as $file}
@@ -505,7 +505,7 @@
                     </table>
 
                 </div>
-            {if $banners|count === 0}
+            {if count($banners) === 0}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}

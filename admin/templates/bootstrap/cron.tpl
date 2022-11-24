@@ -30,7 +30,7 @@
     </nav>
     <div class="tab-content">
         <div id="overview" class="settings tab-pane fade{if $tab === 'overview'} active show{/if}">
-            {if $jobs|count > 0}
+            {if count($jobs) > 0}
                 <div>
                     <div class="subheading1">{__('queueEntries')}</div>
                     <hr class="mb-3">

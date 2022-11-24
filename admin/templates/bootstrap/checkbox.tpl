@@ -49,7 +49,7 @@
         </nav>
         <div class="tab-content">
             <div id="uebersicht" class="tab-pane fade {if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                {if isset($oCheckBox_arr) && $oCheckBox_arr|count > 0}
+                {if isset($oCheckBox_arr) && count($oCheckBox_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='uebersicht'}
                     <div id="tabellenLivesuche">
                         <form name="uebersichtForm" method="post" action="{$adminURL}{$route}">
@@ -187,7 +187,7 @@
                                 </div>
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxName')}</div>
                             </div>
-                            {if $availableLanguages|count > 0}
+                            {if count($availableLanguages) > 0}
                                 {foreach $availableLanguages as $language}
                                     {assign var=cISO value=$language->getCode()}
                                     {assign var=kSprache value=$language->getId()}
@@ -215,7 +215,7 @@
                                 {/foreach}
                             {/if}
 
-                            {if isset($oLink_arr) && $oLink_arr|count > 0}
+                            {if isset($oLink_arr) && count($oLink_arr) > 0}
                                 <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kLink)} form-error{/if}">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="nLink">{__('internalLinkTitle')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -259,13 +259,13 @@
                                             {assign var=bAOSelect value=false}
                                             {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $smarty.const.CHECKBOX_ORT_REGISTRIERUNG}
                                                 {assign var=bAOSelect value=true}
-                                            {elseif isset($oCheckBox->kAnzeigeOrt_arr) && $oCheckBox->kAnzeigeOrt_arr|count > 0}
+                                            {elseif isset($oCheckBox->kAnzeigeOrt_arr) && count($oCheckBox->kAnzeigeOrt_arr) > 0}
                                                 {foreach $oCheckBox->kAnzeigeOrt_arr as $kAnzeigeOrt}
                                                     {if $key == $kAnzeigeOrt}
                                                         {assign var=bAOSelect value=true}
                                                     {/if}
                                                 {/foreach}
-                                            {elseif isset($cPost_arr.cAnzeigeOrt) && $cPost_arr.cAnzeigeOrt|count > 0}
+                                            {elseif isset($cPost_arr.cAnzeigeOrt) && count($cPost_arr.cAnzeigeOrt) > 0}
                                                 {foreach $cPost_arr.cAnzeigeOrt as $cBoxAnzeigeOrt}
                                                     {if $cBoxAnzeigeOrt == $key}
                                                         {assign var=bAOSelect value=true}
@@ -332,7 +332,7 @@
                                 <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('hintCheckboxOrder')}</div>
                             </div>
 
-                            {if isset($oCheckBoxFunktion_arr) && $oCheckBoxFunktion_arr|count > 0}
+                            {if isset($oCheckBoxFunktion_arr) && count($oCheckBoxFunktion_arr) > 0}
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="kCheckBoxFunktion">{__('specialShopFunction')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -347,7 +347,7 @@
                                 </div>
                             {/if}
 
-                            {if $customerGroups|count > 0}
+                            {if count($customerGroups) > 0}
                                 <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} form-error{/if}">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -362,13 +362,13 @@
                                             {assign var=bKGSelect value=false}
                                             {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $customerGroup->isDefault()}
                                                 {assign var=bKGSelect value=true}
-                                            {elseif isset($oCheckBox->kKundengruppe_arr) && $oCheckBox->kKundengruppe_arr|count > 0}
+                                            {elseif isset($oCheckBox->kKundengruppe_arr) && count($oCheckBox->kKundengruppe_arr) > 0}
                                                 {foreach $oCheckBox->kKundengruppe_arr as $kKundengruppe}
                                                     {if $kKundengruppe == $customerGroup->getID()}
                                                         {assign var=bKGSelect value=true}
                                                     {/if}
                                                 {/foreach}
-                                            {elseif isset($cPost_arr.kKundengruppe) && $cPost_arr.kKundengruppe|count > 0}
+                                            {elseif isset($cPost_arr.kKundengruppe) && count($cPost_arr.kKundengruppe) > 0}
                                                 {foreach $cPost_arr.kKundengruppe as $kKundengruppe}
                                                     {if $kKundengruppe == $customerGroup->getID()}
                                                         {assign var=bKGSelect value=true}

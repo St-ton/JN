@@ -19,7 +19,7 @@
         <div class="tab-pane fade active show" id="pages">
             <div>
                 {assign var=allPages value=$opcPageDB->getPages()}
-                {if $allPages|count > 0}
+                {if count($allPages) > 0}
                     {assign var=pages value=array_slice(
                         $allPages,
                         $pagesPagi->getFirstPageItem(),
@@ -203,7 +203,7 @@
         <div class="tab-pane fade" id="blueprints">
             <div>
                 {assign var=blueprints value=$opc->getBlueprints()}
-                {if $blueprints|count > 0}
+                {if count($blueprints) > 0}
                     <div class="table-responsive">
                         <table class="list table table-striped">
                             <thead>

@@ -218,12 +218,12 @@
                                         </select>
                                         {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                             <div class="kundenfeld_wert">
-                                                <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fal fa-plus-square-o"></i> {__('addValue')}</button>
+                                                <button name="button" type="button" class="btn btn-primary add" value="{__('addValue')}" onclick="addKundenfeldWert()"><i class="fal fa-plus-square-o"></i> {__('addValue')}</button>
                                             </div>
                                         {/if}
                                     </td>
                                 </tr>
-                                {if isset($oKundenfeld->oKundenfeldWert_arr) && $oKundenfeld->oKundenfeldWert_arr|count > 0}
+                                {if isset($oKundenfeld->oKundenfeldWert_arr) && count($oKundenfeld->oKundenfeldWert_arr) > 0}
                                     {foreach $oKundenfeld->oKundenfeldWert_arr as $key => $oKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
@@ -245,7 +245,7 @@
                                             </td>
                                         </tr>
                                     {/foreach}
-                                {elseif isset($xPostVar_arr.cfValues) && $xPostVar_arr.cfValues|count > 0}
+                                {elseif isset($xPostVar_arr.cfValues) && count($xPostVar_arr.cfValues) > 0}
                                     {foreach $xPostVar_arr.cfValues as $key => $cKundenfeldWert}
                                         {assign var=i value=$key+1}
                                         {assign var=j value=$key+6}
@@ -286,7 +286,7 @@
                     <div class="subheading1">{__('kundenfeldExistingDesc')}</div>
                     <hr class="mb-3">
                     <div>
-                    {if isset($oKundenfeld_arr) && $oKundenfeld_arr|count > 0}
+                    {if isset($oKundenfeld_arr) && count($oKundenfeld_arr) > 0}
                         <form method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
                             <input name="kundenfelder" type="hidden" value="1">

@@ -107,7 +107,7 @@ var pies = [];
                                                         <strong>{__('statement')}:</strong> <code class="sql">{$query->statement}</code><br />
                                                     {/if}
                                                     {if $query->data !== null}
-                                                        {assign var=data value=$query->data|unserialize}
+                                                        {assign var=data value=unserialize($query->data)}
                                                         <strong>{__('backtrace')}:</strong>
                                                         <ol class="backtrace">
                                                             {foreach $data.backtrace as $backtrace}

@@ -89,7 +89,7 @@
                                     </td>
                                     <td class="text-center">{$cg.key_count}</td>
                                     <td class="text-center">
-                                        {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
+                                        {if $cache_enabled === false || in_array($cg.value, $disabled_caches)}
                                             <span class="fal fa-times text-danger"></span>
                                         {else}
                                             <span class="fal fa-check text-success"></span>
@@ -157,7 +157,7 @@
                                 {if isset($stats.mem) && $stats.mem !== null}
                                     <tr class="cache-row">
                                         <td>{__('fullSize')}:</td>
-                                        <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
+                                        <td>{$stats.mem} Bytes{if strpos($stats.mem, '/') === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
                                     </tr>
                                 {/if}
                                 {if isset($stats.entries) && $stats.entries !== null}
@@ -170,7 +170,7 @@
                                     <tr class="cache-row">
                                         <td>{__('misses')}:</td>
                                         <td>{$stats.misses}
-                                            {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
+                                            {if isset($stats.mps) && $stats.mps !== null && strpos($stats.mps, '/') === false}
                                                 <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
                                             {/if}
                                         </td>
@@ -180,7 +180,7 @@
                                     <tr class="cache-row">
                                         <td>Hits:</td>
                                         <td>{$stats.hits}
-                                            {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
+                                            {if isset($stats.hps) && $stats.hps !== null && strpos($stats.hps, '/') === false}
                                                 <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
                                             {/if}
                                         </td>
@@ -391,7 +391,7 @@
                                                 data-size="7"
                                                 data-actions-box="true">
                                             {foreach $all_methods as $method}
-                                                <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
+                                                <option value="{$method}"{if !empty($smarty.post.methods) && in_array($method, $smarty.post.methods)}selected{/if}>{$method}</option>
                                             {/foreach}
                                         </select>
                                     </div>

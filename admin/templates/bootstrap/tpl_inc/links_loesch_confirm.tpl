@@ -17,7 +17,7 @@
                             {/foreach}
                         </ul>
                     {/if}
-                    <p>{{__('sureDeleteLinkGroup')}|sprintf:{$linkGroup->getName()}}</p>
+                    <p>{sprintf(__('sureDeleteLinkGroup'), $linkGroup->getName())}</p>
                 </div>
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto mb-2">

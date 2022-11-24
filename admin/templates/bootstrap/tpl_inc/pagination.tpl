@@ -2,7 +2,7 @@
     {assign var=cParam_arr value=[]}
 {/if}
 
-{assign var=cUrlAppend value=$cParam_arr|http_build_query}
+{assign var=cUrlAppend value=http_build_query($cParam_arr)}
 
 {if isset($cAnchor)}
     {assign var=cUrlAppend value=$cUrlAppend|cat:'#'|cat:$cAnchor}

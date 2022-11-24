@@ -7,7 +7,7 @@
                 {__('Version %s available', $avail->getVersion())}
             </span>
         {/if}
-        <p class="mb-0 mt-2">{__('Managed by %s')|sprintf:$license->getParent()->getName()}</p>
+        <p class="mb-0 mt-2">{sprintf(__('Managed by %s'), $license->getParent()->getName())}</p>
     {elseif $referencedItem !== null}
         {$licData = $license->getLicense()}
         {$subscription = $licData->getSubscription()}

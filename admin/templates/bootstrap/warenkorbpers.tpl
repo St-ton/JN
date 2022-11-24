@@ -57,7 +57,7 @@
                                     <div class="btn-group">
                                         <a href="{$adminURL}{$route}?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2 delete-confirm"
-                                           data-modal-body="{__('confirmDeleteBasket')|sprintf:$oKunde->cNachname:$oKunde->Datum}"
+                                           data-modal-body="{sprintf(__('confirmDeleteBasket'), $oKunde->cNachname, $oKunde->Datum)}"
                                            data-toggle="tooltip"
                                             title="{__('delete')}">
                                             <span class="icon-hover">

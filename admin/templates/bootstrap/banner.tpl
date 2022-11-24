@@ -1,6 +1,5 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
-
 <div id="content">
 {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
@@ -92,7 +91,7 @@
                                 {/foreach}
                             </select>
                         {else}
-                            {{__('warningNoBannerInDir')}|sprintf:{$smarty.const.PFAD_BILDER_BANNER}}
+                            {sprintf(__('warningNoBannerInDir'), $smarty.const.PFAD_BILDER_BANNER)}
                         {/if}
                         </span>
                     </div>
@@ -351,7 +350,7 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$banner|json_encode nofilter}
+                'data': {json_encode($banner)}
             });
 
             $('#article_unlink').on('click', () => {

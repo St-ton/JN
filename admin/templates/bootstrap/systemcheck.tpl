@@ -78,12 +78,12 @@
                             Bitte laden Sie <a href="http://www.ioncube.com/loaders.php">hier</a> den ionCube-Loader herunter und entpacken Sie das Archiv nach {$platform->getDocumentRoot()} auf dem Server.<br>
                             Erstellen Sie auf dem Server eine Datei <code>php.ini</code> mit dem folgenden Inhalt:<br><br>
                         <pre>[Zend]
-    zend_extension = {$platform->getDocumentRoot()}/ioncube/ioncube_loader_lin_{$version|substr:0:3}.so</pre>
+    zend_extension = {$platform->getDocumentRoot()}/ioncube/ioncube_loader_lin_{substr($version, 0, 3)}.so</pre>
                         {elseif $platform->getProvider() === '1und1'}
                             Bitte laden Sie <a href="http://www.ioncube.com/loaders.php">hier</a> den ionCube-Loader herunter und entpacken Sie das Archiv nach {$platform->getDocumentRoot()} auf dem Server.<br>
                             Erstellen Sie auf dem Server eine Datei <code>php.ini</code> mit dem folgenden Inhalt:<br><br>
                         <pre>[Zend]
-    zend_extension = {$platform->getDocumentRoot()}/ioncube/ioncube_loader_lin_{$version|substr:0:3}.so</pre>
+    zend_extension = {$platform->getDocumentRoot()}/ioncube/ioncube_loader_lin_{substr($version, 0, 3)}.so</pre>
                         {/if}
                     </p>
                 </div>
@@ -97,7 +97,7 @@
                 {__('noteImportantCheckSettings')}
             </div>
         {/if}
-        
+
         {if $tests.recommendations|count > 0}
             <div class="page-header">
                 <h1>{__('suggestedAdjustments')}</h1>

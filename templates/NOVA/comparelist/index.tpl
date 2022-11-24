@@ -195,10 +195,10 @@
                                                             {else}
                                                                 <div>
                                                                     <span>
-                                                                        {$oArtikel->$row['key']|substr:0:$descriptionLength}
+                                                                        {substr($oArtikel->$row['key'], 0, $descriptionLength)}
                                                                     </span>
                                                                     {collapse tag='span' id="read-more-{$oArtikel->kArtikel}-"|cat:$row['key']}
-                                                                        {$oArtikel->$row['key']|substr:$descriptionLength}
+                                                                        {substr($oArtikel->$row['key'], $descriptionLength)}
                                                                     {/collapse}
                                                                 </div>
                                                                 {block name='comparelist-index-products-row-description-more'}

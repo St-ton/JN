@@ -59,7 +59,7 @@
                                         <span {if $CWunschliste->isOnline}data-toggle="tooltip" title="{__('wishlistCustomerOnline')}{/if}">
                                             <a href="{$adminURL}{$route}?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
                                                class="btn btn-link px-2 delete-confirm {if $CWunschliste->isOnline} disabled {/if}"
-                                               data-modal-body="{__('wishlistDelete')|sprintf:$CWunschliste->cName:$name}"
+                                               data-modal-body="{sprintf(__('wishlistDelete'), $CWunschliste->cName, $name)}"
                                                data-toggle="tooltip"
                                                title="{__('delete')}">
                                                 <span class="icon-hover">

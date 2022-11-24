@@ -59,13 +59,13 @@
                                                 <span class="icon-hover">
                                                     <span class="far fa-info"></span><span class="fas fa-info"></span>
                                                 </span>
-                                                {$page->cPageId|htmlentities}
+                                                {htmlentities($page->cPageId)}
                                             </a>
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraftAll')}"
-                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->cPageId|htmlentities}"
+                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={htmlentities($page->cPageId)}"
                                                    data-toggle="tooltip"
                                                    data-modal-body="{$page->cPageUrl}">
                                                     <span class="icon-hover">

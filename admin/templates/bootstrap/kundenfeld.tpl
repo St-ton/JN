@@ -166,7 +166,7 @@
                                     <td><label for="nSort">{__('sorting')}</label></td>
                                     <td>
                                         {if !empty($nHighestSortValue)}
-                                            {assign var=nNextHighestSort value=$nHighestSortValue|intval + $nHighestSortDiff|intval}
+                                            {assign var=nNextHighestSort value=(intval($nHighestSortValue) + intval($nHighestSortDiff))}
                                             <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{else}{$nNextHighestSort}{/if}"/>
                                         {else}
                                             <input id="nSort" name="nSort" type="number" class="{if isset($xPlausiVar_arr.nSort)}fieldfillout{/if} form-control" value="{if isset($xPostVar_arr.nSort)}{$xPostVar_arr.nSort}{elseif isset($oKundenfeld->nSort)}{$oKundenfeld->nSort}{/if}" placeholder="{__('kundenfeldSortDesc')}"/>

@@ -104,7 +104,7 @@ $fileExtraData                 |         | you also need to add the jtl_token: j
             initialPreviewCount: 1,
             {/if}
             theme: 'fas',
-            language: '{$language|mb_substr:0:2}',
+            language: '{mb_substr($language, 0, 2)}',
             browseOnZoneClick: true,
             {if !isset($fileMaxSize) || $fileMaxSize}
             maxFileSize: {$fileMaxSize|default:6000},

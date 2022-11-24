@@ -40,8 +40,8 @@
 {/capture}
 
 <script>
-var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
-{if isset($info) && isset($info.statement)}var sql_query = {$info.statement|json_encode};{/if}
+var $add_row_tpl = $({json_encode($filter_row_tpl_data|strip)});
+{if isset($info) && isset($info.statement)}var sql_query = {json_encode($info.statement)};{/if}
 
 $(function() {
     var new_content = '<form action="{$adminURL}{$route}?command" method="POST">';
@@ -417,7 +417,7 @@ $(function() {
                 <form action="{$adminURL}{$route}?command" method="POST">
                     {$jtl_token}
                     <div class="form-group">
-                        <textarea name="query" id="query" class="codemirror sql" data-hint='{$jsTypo|json_encode}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
+                        <textarea name="query" id="query" class="codemirror sql" data-hint='{json_encode($jsTypo)}'>{if isset($info) && isset($info.statement)}{$info.statement}{/if}</textarea>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('execute')}</button>
@@ -468,7 +468,7 @@ $(function() {
                             </tr>
                             </thead>
                             {foreach $tables as $table}
-                                <tr class="text-vcenter{if count($definedTables) > 0 && !($table@key|in_array:$definedTables || $table@key|substr:0:8 === 'xplugin_')} warning{/if}" id="table-{$table@key}">
+                                <tr class="text-vcenter{if count($definedTables) > 0 && !(in_array($table@key, $definedTables) || substr($table@key, 0, 8) === 'xplugin_')} warning{/if}" id="table-{$table@key}">
                                     <td><a href="{$adminURL}{$route}?select={$table@key}&token={$smarty.session.jtl_token}">{$table@key}</a></td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-xs" role="group">
@@ -531,7 +531,7 @@ $(function() {
                 {table_scope_header table=$selectedTable}
                 {$headers = array_keys($columns)}
                 <div id="filter">
-                    <form method="GET" action="{$adminURL}{$route}" data-sql={$info.statement|json_encode}>
+                    <form method="GET" action="{$adminURL}{$route}" data-sql={json_encode($info.statement)}>
                         <input type="hidden" name="token" value="{$smarty.session.jtl_token}">
                         <input type="hidden" name="select" value="{$selectedTable}">
 
@@ -597,10 +597,10 @@ $(function() {
                                         {$class = 'none'}
                                         {$info = $columns[$h]->Type_info}
 
-                                        {if $info->Name|in_array:['varchar', 'tinytext', 'text', 'mediumtext', 'longtext']}
+                                        {if in_array($info->Name, ['varchar', 'tinytext', 'text', 'mediumtext', 'longtext'], true)}
                                             {$class = 'str'}
                                             {$value = $value|escape:'html'|truncate:100:'...'}
-                                        {elseif $info->Name|in_array:['float', 'decimal']}
+                                        {elseif in_array($info->Name, ['float', 'decimal'], true)}
                                             {$class = 'float'}
                                             {if is_array($info->Size)}
                                                 {$decimals = (int)$info->Size[1]}
@@ -608,14 +608,14 @@ $(function() {
                                             {else}
                                                 {$value = $value|number_format:4}
                                             {/if}
-                                        {elseif $info->Name|in_array:['double']}
+                                        {elseif in_array($info->Name, ['double'], true)}
                                             {$class = 'float'}
                                             {$value = $value|number_format:4}
-                                        {elseif $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
+                                        {elseif in_array($info->Name, ['tinyint', 'smallint', 'mediumint', 'int', 'bigint'], true)}
                                             {$class = 'int'}
-                                        {elseif $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
+                                        {elseif in_array($info->Name, ['date', 'datetime', 'time', 'timestamp', 'year'], true)}
                                             {$class = 'date'}
-                                        {elseif $info->Name|in_array:['bit', 'char']}
+                                        {elseif in_array($info->Name, ['bit', 'char'], true)}
                                             {$class = 'char'}
                                         {/if}
 

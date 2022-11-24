@@ -347,7 +347,7 @@
     {foreach $sections as $section}
         {foreach $section->getSubsections() as $subsection}
             {foreach $subsection->getItems() as $config}
-                {if $config->getValueName()|strpos:'_guthaben'}
+                {if strpos($config->getValueName(), '_guthaben')}
                     ioCall(
                         'getCurrencyConversion',
                         [0, $('#{$config->getValueName()}').val(), 'EinstellungAjax_{$config->getValueName()}'],

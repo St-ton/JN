@@ -12,7 +12,7 @@
                 <div class="alert alert-danger">
                     <p><strong>{__('danger')}</strong>: {__('resetEmailTemplate')}</p>
 
-                    <p>{{__('sureResetEmailTemplate')}|sprintf:{__('name_'|cat:$mailTemplate->getModuleID())}}</p>
+                    <p>{sprintf(__('sureResetEmailTemplate'), __('name_'|cat:$mailTemplate->getModuleID()))}</p>
                 </div>
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto mb-2">

@@ -15,11 +15,11 @@
         {$style = "{$style} background-image:url('{$imgAttribs.src}');"}
         {$style = "{$style} background-size:cover;"}
     {else}
-        {$data = $data|array_merge:[
+        {$data = array_merge($data, [
             'parallax'  => 'scroll',
             'z-index'   => '1',
             'image-src' => $imgAttribs.src
-        ]}
+        ])}
     {/if}
 {elseif $instance->getProperty('background-flag') === 'video'}
     {$style          = "{$style} overflow:hidden;"}

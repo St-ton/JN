@@ -183,11 +183,11 @@
                     {lang key='agb' assign='agb'}
                     {if !empty($AGB->cAGBContentHtml)}
                         {block name='checkout-step5-confirmation-modal-agb-html'}
-                            {modal id="agb-modal" title=$agb}{$AGB->cAGBContentHtml}{/modal}
+                            {modal id="agb-modal" title="sssddddddddddd"}aaa{/modal}
                         {/block}
                     {elseif !empty($AGB->cAGBContentText)}
                         {block name='checkout-step5-confirmation-modal-agb-text'}
-                            {modal id="agb-modal" title=$agb}{$AGB->cAGBContentText}{/modal}
+                            {modal id="agb-modal" title=$agb}bbb{/modal}
                         {/block}
                     {/if}
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
@@ -195,20 +195,17 @@
                         {lang key='wrbform' assign='wrbform'}
                         {if !empty($AGB->cWRBContentHtml)}
                             {block name='checkout-step5-confirmation-modal-wrb-html'}
-                                {modal id="wrb-modal" title=$wrb}{$AGB->cWRBContentHtml}{/modal}
                             {/block}
                         {elseif !empty($AGB->cWRBContentText)}
                             {block name='checkout-step5-confirmation-modal-wrb-text'}
-                                {modal id="wrb-modal" title=$wrb}{$AGB->cWRBContentText}{/modal}
                             {/block}
                         {/if}
                         {if !empty($AGB->cWRBFormContentHtml)}
                             {block name='checkout-step5-confirmation-modal-wrb-form-html'}
-                                {modal id="wrb-form-modal" title=$wrbform}{$AGB->cWRBFormContentHtml}{/modal}
                             {/block}
                         {elseif !empty($AGB->cWRBFormContentText)}
                             {block name='checkout-step5-confirmation-modal-wrb-form-text'}
-                                {modal id="wrb-form-modal" title=$wrbform}{$AGB->cWRBFormContentText}{/modal}
+                                {modal id="wrb-form-modal" title=$wrbform}jjj{/modal}
                             {/block}
                         {/if}
                     {/if}

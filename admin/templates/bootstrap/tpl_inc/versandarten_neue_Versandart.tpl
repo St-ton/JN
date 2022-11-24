@@ -73,7 +73,7 @@
 {assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=__('modifyedShippingTypeTitle')|sprintf:$Versandart->cName}
+    {assign var=cTitel value=sprintf(__('modifyedShippingTypeTitle'), $Versandart->cName)}
     {assign var=cBeschreibung value=""}
 {/if}
 
@@ -391,7 +391,7 @@
                                                     {else}
                                                         {$vkID = '-'|explode:$VK}
                                                         {foreach $versandKlassen as $vclass}
-                                                        <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
+                                                        <option value="{$vclass->kVersandklasse}"{if in_array($vclass->kVersandklasse, $vkID)} selected{/if}>{$vclass->cName}</option>
                                                     {/foreach}
                                                     {/if}
                                                 </select>

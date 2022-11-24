@@ -62,7 +62,7 @@
                         </tr>
                         {if $cnt++ > 98}
                             <tr>
-                                <td colspan="2"><strong>{__('And %d more')|sprintf:($ofc - $cnt)}</strong></td>
+                                <td colspan="2"><strong>{sprintf(__('And %d more'), $ofc - $cnt)}</strong></td>
                             </tr>
                             {break}
                         {/if}

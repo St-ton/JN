@@ -19,7 +19,7 @@
                             {$preset.name}
                         </option>
                     {/foreach}
-                    <option value="-1" data-layout="{json_encode(['', '', '', ''])}"
+                    <option value="-1" data-layout="{htmlentities(json_encode(['', '', '', '']))}"
                             {if $propval.preset == -1}selected{/if}>
                         {__('Custom')}
                     </option>

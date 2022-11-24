@@ -38,7 +38,7 @@
                             </thead>
                             <tbody>
                                 {foreach $pages as $page}
-                                    {assign var=pageIdHash value=$page->cPageId|md5}
+                                    {assign var=pageIdHash value=md5($page->cPageId)}
                                     {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                     <tr>
                                         <td>

@@ -63,7 +63,7 @@
                                                     href=$wishlistItem->getURL()
                                                     data=["name"=>"Wunschliste.remove",
                                                     "toggle"=>"product-actions",
-                                                    "value"=>['a'=>json_encode($wishlistItem->getID()])|escape:'html'
+                                                    "value"=>json_encode(['a'=>$wishlistItem->getID()])|escape:'html'
                                                     ]
                                                     title="{lang section='login' key='wishlistremoveItem'}"
                                                     aria=["label"=>"{lang section='login' key='wishlistremoveItem'}"]}

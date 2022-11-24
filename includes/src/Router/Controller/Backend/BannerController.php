@@ -15,7 +15,6 @@ use JTL\Media\Image;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Statusmail;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -65,13 +64,6 @@ class BannerController extends AbstractBackendController
             ->setRange(4)
             ->setItemArray($this->getBanners())
             ->assemble();
-        $test = new Statusmail($this->db);
-        $logLevels = [];
-        $logLevels[] = \JTLLOG_LEVEL_ERROR;
-        $logLevels[] = \JTLLOG_LEVEL_CRITICAL;
-        $logLevels[] = \JTLLOG_LEVEL_ALERT;
-        $logLevels[] = \JTLLOG_LEVEL_EMERGENCY;
-        $smarty->assign('xxx', $test->getLogEntries($logLevels));
 
         return $smarty->assign('action', $this->action)
             ->assign('validPageTypes', BoxController::getMappedValidPageTypes())

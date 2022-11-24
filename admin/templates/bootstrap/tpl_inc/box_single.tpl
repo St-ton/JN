@@ -73,7 +73,7 @@
             {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
                 {$boxToDelete = "Container #{$oBox->getID()}"}
             {else}
-                {$boxToDelete = htmlentities(escape($oBox->getTitle()))}
+                {$boxToDelete = htmlentities($oBox->getTitle()|escape)}
             {/if}
             <a href="{$adminURL}{$route}?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('remove')}"

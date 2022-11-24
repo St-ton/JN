@@ -14,7 +14,7 @@
             <div class="select-wrapper">
                 <select class="form-control" id="config-{$propname}" name="{$propname}[preset]">
                     {foreach $propdesc.presets as $i => $preset}
-                        <option value="{$i}" data-layout="{htmlentities($preset.layout))}"
+                        <option value="{$i}" data-layout="{htmlentities(json_encode($preset.layout))}"
                                 {if $propval.preset == $i}selected{/if}>
                             {$preset.name}
                         </option>

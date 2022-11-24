@@ -165,14 +165,14 @@ class Product extends Artikel
             \str_replace(
                 $findTwo,
                 $replaceTwo,
-                \str_replace('"', '&quot;', $this->cBeschreibung)
+                \str_replace('"', '&quot;', $this->cBeschreibung ?? '')
             )
         );
         $this->cKurzBeschreibungHTML = Text::removeWhitespace(
             \str_replace(
                 $findTwo,
                 $replaceTwo,
-                \str_replace('"', '&quot;', $this->cKurzBeschreibung)
+                \str_replace('"', '&quot;', $this->cKurzBeschreibung ?? '')
             )
         );
         $this->cName                 = Text::removeWhitespace(

@@ -116,7 +116,7 @@ class Category extends BaseCategory
     public function getSQLJoin()
     {
         $join = (new Join())
-            ->setOrigin(__CLASS__)
+            ->setOrigin(__CLASS__ . '::getSQLJoin')
             ->setComment('join from ' . __METHOD__)
             ->setType('JOIN');
         if ($this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF') {
@@ -165,20 +165,24 @@ class Category extends BaseCategory
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
-            $sql->addJoin((new Join())
-                ->setComment('join1 from ' . __METHOD__)
-                ->setType('JOIN')
-                ->setTable('(
-            SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
-                FROM tkategorieartikel
-                INNER JOIN tkategorie 
-                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                INNER JOIN tkategorie oberkategorie 
-                    ON tkategorie.lft BETWEEN oberkategorie.lft 
-                    AND oberkategorie.rght
-                ) tkategorieartikelgesamt')
-                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
-                ->setOrigin(__CLASS__));
+            if (\count(\array_filter($sql->getJoins(), static function (Join $join) {
+                return $join->getOrigin() === __CLASS__ . '::getSQLJoin';
+            })) === 0) {
+                $sql->addJoin((new Join())
+                    ->setComment('join1 from ' . __METHOD__)
+                    ->setType('JOIN')
+                    ->setTable('(
+                SELECT tkategorieartikel.kArtikel, oberkategorie.kOberKategorie, oberkategorie.kKategorie
+                    FROM tkategorieartikel
+                    INNER JOIN tkategorie
+                        ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                    INNER JOIN tkategorie oberkategorie
+                        ON tkategorie.lft BETWEEN oberkategorie.lft
+                        AND oberkategorie.rght
+                    ) tkategorieartikelgesamt')
+                        ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
+                        ->setOrigin(__CLASS__ . '::getOptions'));
+            }
             $sql->addJoin((new Join())
                 ->setComment('join2 from ' . __METHOD__)
                 ->setType('JOIN')

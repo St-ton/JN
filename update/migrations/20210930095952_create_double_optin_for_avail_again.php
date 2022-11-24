@@ -42,6 +42,7 @@ class Migration_20210930095952 extends Migration implements IMigration
         );
         $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
+        $this->db->commit();
         foreach ($subscriptions as $subscription) {
             $product = (new Artikel($this->db))->fuelleArtikel((int)$subscription->kArtikel, $options);
             if (empty($product->kArtikel) || empty($subscription->cMail)) {

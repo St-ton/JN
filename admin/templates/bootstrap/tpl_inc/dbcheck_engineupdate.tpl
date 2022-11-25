@@ -7,7 +7,7 @@
 {/if}
 <div class="alert alert-warning">
     <div class="card-title">{__('structureMigrationNeeded')}</div>
-    {sprintf(__('structureMigrationNeededLong'), $engineUpdate->tableCount, $engineUpdate->dataSize)|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
+    {sprintf(__('structureMigrationNeededLong'), $engineUpdate->tableCount, $engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;')}}
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
     {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}

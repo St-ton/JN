@@ -19,8 +19,8 @@
                     <tbody>
                       {$migrationIndex = 1}
                       {$executedMigrations = $manager->getExecutedMigrations()}
-                      {foreach $manager->getMigrations()|array_reverse as $m}
-                          {$executed = $m->getId()|in_array:$executedMigrations}
+                      {foreach array_reverse($manager->getMigrations()) as $m}
+                          {$executed = in_array($m->getId(), $executedMigrations)}
                           {if $filter === 0 || ($filter === 1 && $executed) || ($filter === 2 && !$executed)}
                               <tr>
                                   <td>{$migrationIndex++}</td>
@@ -89,7 +89,7 @@
         {else}
             <div class="alert alert-success h4">
                 <p class="text-center">
-                    {{__('dbUpToDate')}|sprintf:{$currentDatabaseVersion}}
+                    {sprintf(__('dbUpToDate'), $currentDatabaseVersion)}
                 </p>
             </div>
         {/if}

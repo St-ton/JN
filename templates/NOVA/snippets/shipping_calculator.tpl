@@ -24,12 +24,12 @@
                         {/block}
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=3}
-                                {$selectedISO = "
+                                {$selectedISO = trim("
                                     {if isset($VersandPLZ)}
                                         {$VersandPLZ}
                                     {elseif JTL\Session\Frontend::getCustomer()->getZipCode() !== ''}
                                         {JTL\Session\Frontend::getCustomer()->getZipCode()}
-                                    {/if}"|trim}
+                                    {/if}")}
                                 {formgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
                                     {input type="text"
                                         id="plz"

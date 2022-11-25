@@ -7,13 +7,13 @@
 {/if}
 <div class="alert alert-warning">
     <div class="card-title">{__('structureMigrationNeeded')}</div>
-    {{__('structureMigrationNeededLong')}|sprintf:{$engineUpdate->tableCount}:{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
+    {sprintf(__('structureMigrationNeededLong'), $engineUpdate->tableCount, $engineUpdate->dataSize)|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
     {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}
         <div class="alert alert-warning">
             <div class="card-title">{__('warningOldDBVersion')}</div>
-            {{__('warningOldDBVersionLong')}|sprintf:{$DB_Version->server}}
+            {sprintf(__('warningOldDBVersionLong'), $DB_Version->server)}
             {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
                 <ul>
                     {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N')}
@@ -21,7 +21,7 @@
                     {/if}
                     {if $FulltextIndizes !== false}
                     {foreach $FulltextIndizes as $index}
-                    <li>{{__('fullTextDelete')}|sprintf:{$index->INDEX_NAME}:{$index->TABLE_NAME}}</li>
+                    <li>{sprintf(__('fullTextDelete'), $index->INDEX_NAME, $index->TABLE_NAME)}</li>
                     {/foreach}
                     {/if}
                 </ul>
@@ -31,7 +31,7 @@
     {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
         <div class="alert alert-warning">
             <div class="card-title">{__('notEnoughTableSpace')}</div>
-            {{__('notEnoughTableSpaceLong')}|sprintf:{$DB_Version->innodb->size|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
+            {sprintf(__('notEnoughTableSpaceLong'), $DB_Version->innodb->size|formatByteSize:'%.0f'|upper|strip:'&nbsp;')}
         </div>
     {/if}
     <div class="tabs">
@@ -60,7 +60,7 @@
             <div id="update_automatic" class="tab-pane fade{if $tab === 'update_automatic'} show active{/if}">
                 <h3>{__('automatic')}</h3>
                 <p>{__('noteRecommendMigration')}</p>
-                {{__('notePatienceOne')}|sprintf:{$engineUpdate->tableCount}:{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
+                {sprintf(__('notePatienceOne'), $engineUpdate->tableCount, $engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;')}
                 <p>
                     {if $engineUpdate->estimated[0] < 60}
                         {__('lessThanOneMinute')}
@@ -76,7 +76,7 @@
                     {else}
                         {__('approximately')} {($engineUpdate->estimated[1] / 3600)|ceil} {__('hours')}
                     {/if}
-                    {{__('notePatienceTwo')}|sprintf:{$adminURL}}
+                    {sprintf(__('notePatienceTwo'), $adminURL)}
                 </p>
                 <div class="alert alert-warning">{__('warningDoBackup')}</div>
                 <form method="post" action="{$adminURL}{$route}">
@@ -118,7 +118,7 @@
                 <p>{__('noteMigrationScript')}</p>
                 <p>{__('noteMigrationScriptClick')}</p>
                 <p>{__('noteMigrationScriptDesc')}</p>
-                <p>{{__('noteMigrationScriptMaintenance')}|sprintf:{$adminURL}}</p>
+                <p>{sprintf(__('noteMigrationScriptMaintenance'), $adminURL)}</p>
                 <div class="alert alert-warning">{__('warningDoBackupScript')}</div>
                 <div class="alert alert-warning">{__('warningUseConsoleScript')}</div>
                 <div class="alert alert-warning">{__('warningUseThisShopScript')}</div>
@@ -250,13 +250,13 @@
     {if !$DB_Version->innodb->support}
     <div class="alert alert-danger">
         <div class="card-title">{__('errorNoInnoDBSupport')}</div>
-        {{__('errorNoInnoDBSupportDesc')}|sprintf:{$DB_Version->server}}
+        {sprintf(__('errorNoInnoDBSupportDesc'), $DB_Version->server)}
     </div>
     {/if}
     {if !$DB_Version->collation_utf8}
         <div class="alert alert-danger">
             <div class="card-title">{__('errorNoUTF8Support')}</div>
-            {{__('errorNoUTF8SupportDesc')}|sprintf:{$DB_Version->server}}
+            {sprintf(__('errorNoUTF8SupportDesc'), $DB_Version->server)}
         </div>
     {/if}
 {/if}

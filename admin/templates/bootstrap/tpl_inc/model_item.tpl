@@ -39,7 +39,7 @@
             <script>
                 $(document).ready(function () {
                     $('#add-child-model-item').on('click', function () {
-                        $('#childmodelappend').append(`{$cmdata|trim}`);
+                        $('#childmodelappend').append(`{trim($cmdata)}`);
                     });
                 });
             </script>

@@ -26,7 +26,7 @@
                 {$defaultLang = $language->getCode()}
             {/if}
         {/foreach}
-        {if isset($validation) && $validation|count > 0 && isset($validation.lang) && !in_array($defaultLang, $validation.lang, true)}
+        {if isset($validation) && count($validation) > 0 && isset($validation.lang) && !in_array($defaultLang, $validation.lang, true)}
             $('#lang').val('{$validation.lang[0]}').trigger('change');
         {/if}
     });
@@ -111,7 +111,7 @@
                                 }
                             </div>
                         </div>
-                        {if $files|count > 0}
+                        {if count($files) > 0}
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                                 <div>

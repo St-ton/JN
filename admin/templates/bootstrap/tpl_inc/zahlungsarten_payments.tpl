@@ -9,7 +9,7 @@
         <input type="hidden" name="a" value="payments" />
         <input type="hidden" name="kZahlungsart" value="{$oZahlungsart->kZahlungsart}" />
         <div class="card">
-            {if $oZahlunseingang_arr|count > 0}
+            {if count($oZahlunseingang_arr) > 0}
                 <div class="table-responsive">
                     <table class="table">
                         <thead>

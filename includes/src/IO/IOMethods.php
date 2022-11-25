@@ -836,7 +836,7 @@ class IOMethods
         if ($parentID <= 0) {
             return $ioResponse;
         }
-        $amount   = (float)$values['anzahl'];
+        $amount   = (float)($values['anzahl'] ?? 0);
         $valueIDs = \array_filter((array)$values['eigenschaftwert']);
         $wrapper  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 

@@ -109,7 +109,7 @@
                                     {image src=$ShopLogoURL
                                         alt=$Einstellungen.global.global_shopname
                                         class="maintenance-main-image"
-                                        style="{if $ShopLogoURL|strpos:'.svg' !== false}height: 100px;{/if}"}
+                                        style="{if strpos($ShopLogoURL, '.svg') !== false}height: 100px;{/if}"}
                                 {else}
                                     <span class="h1">{$Einstellungen.global.global_shopname}</span>
                                 {/if}

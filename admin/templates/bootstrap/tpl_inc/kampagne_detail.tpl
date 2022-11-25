@@ -56,7 +56,7 @@
                             <label class="col-sm-3 col-form-label" for="kKampagne">{__('kampagneSingle')}:</label>
                             <div class="col-sm">
                                 <select id="kKampagne" name="kKampagne" class="custom-select combo" onChange="selectSubmit(this);">
-                                    {if isset($oKampagne_arr) && $oKampagne_arr|count > 0}
+                                    {if isset($oKampagne_arr) && count($oKampagne_arr) > 0}
                                         {foreach $oKampagne_arr as $oKampagneTMP}
                                             <option value="{$oKampagneTMP->kKampagne}"{if $oKampagneTMP->kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagneTMP->getName()}</option>
                                         {/foreach}
@@ -172,7 +172,7 @@
         </nav>
         <div class="tab-content">
             <div id="detailansicht" class="tab-pane fade {if $cTab === '' || $cTab === 'detailansicht'} active show{/if}">
-                {if isset($oKampagneStat_arr) && $oKampagneStat_arr|count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|count > 0}
+                {if isset($oKampagneStat_arr) && count($oKampagneStat_arr) > 0 && isset($oKampagneDef_arr) && count($oKampagneDef_arr) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped text-center">
                             <thead>
@@ -220,7 +220,7 @@
                 {/if}
             </div>
             <div id="detailgraphen" class="tab-pane fade{if $cTab === 'detailgraphen'} active show{/if}">
-                {if $Charts|count > 0}
+                {if count($Charts) > 0}
                     {foreach $Charts as $key => $Chart}
                         <div class="my-5">
                             <div class="subheading1 mb-1">{$TypeNames[$key]}:</div>

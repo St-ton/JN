@@ -78,7 +78,7 @@
                 {__('currentCorruptedPics')}
             </h1>
             <div class="description">
-                {__('corruptedPicsNote')|sprintf:$smarty.const.MAX_CORRUPTED_IMAGES}
+                {sprintf(__('corruptedPicsNote'), $smarty.const.MAX_CORRUPTED_IMAGES)}
             </div>
         </div>
         <div class="card">

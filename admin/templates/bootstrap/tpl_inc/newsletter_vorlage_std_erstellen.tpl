@@ -123,11 +123,11 @@
                                 <select id="dTag" name="dTag" class="custom-select combo">
                                     {section name=dTag start=1 loop=32 step=1}
                                         {if $smarty.section.dTag.index < 10}
-                                            <option value="0{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'d' == $smarty.section.dTag.index} selected{/if}{/if}>
+                                            <option value="0{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'d' == $smarty.section.dTag.index} selected{/if}{/if}>
                                                 0{$smarty.section.dTag.index}
                                             </option>
                                         {else}
-                                            <option value="{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'d' == $smarty.section.dTag.index} selected{/if}{/if}>
+                                            <option value="{$smarty.section.dTag.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[0] == $smarty.section.dTag.index} selected{/if}{else}{if $smarty.now|date_format:'d' == $smarty.section.dTag.index} selected{/if}{/if}>
                                                 {$smarty.section.dTag.index}
                                             </option>
                                         {/if}
@@ -138,11 +138,11 @@
                                 <select id="dMonat" name="dMonat" class="custom-select combo">
                                     {section name=dMonat start=1 loop=13 step=1}
                                         {if $smarty.section.dMonat.index < 10}
-                                            <option value="0{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'m' == $smarty.section.dMonat.index} selected{/if}{/if}>
+                                            <option value="0{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'m' == $smarty.section.dMonat.index} selected{/if}{/if}>
                                                 0{$smarty.section.dMonat.index}
                                             </option>
                                         {else}
-                                            <option value="{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'m' == $smarty.section.dMonat.index} selected{/if}{/if}>
+                                            <option value="{$smarty.section.dMonat.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[1] == $smarty.section.dMonat.index} selected{/if}{else}{if $smarty.now|date_format:'m' == $smarty.section.dMonat.index} selected{/if}{/if}>
                                                 {$smarty.section.dMonat.index}
                                             </option>
                                         {/if}
@@ -153,7 +153,7 @@
                                 <select id="dJahr" name="dJahr" class="custom-select combo">
                                     {$Y = $smarty.now|date_format:'%Y'}
                                     {section name=dJahr start=$Y loop=($Y+2) step=1}
-                                        <option value="{$smarty.section.dJahr.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:'Y' == $smarty.section.dJahr.index} selected{/if}{/if}>
+                                        <option value="{$smarty.section.dJahr.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[2] == $smarty.section.dJahr.index} selected{/if}{else}{if $smarty.now|date_format:'Y' == $smarty.section.dJahr.index} selected{/if}{/if}>
                                             {$smarty.section.dJahr.index}
                                         </option>
                                     {/section}
@@ -164,11 +164,11 @@
                                 <select id="dStunde" name="dStunde" class="custom-select combo">
                                     {section name=dStunde start=0 loop=24 step=1}
                                         {if $smarty.section.dStunde.index < 10}
-                                            <option value="0{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'H' == $smarty.section.dStunde.index} selected{/if}{/if}>
+                                            <option value="0{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'H' == $smarty.section.dStunde.index} selected{/if}{/if}>
                                                 0{$smarty.section.dStunde.index}
                                             </option>
                                         {else}
-                                            <option value="{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'H' == $smarty.section.dStunde.index} selected{/if}{/if}>
+                                            <option value="{$smarty.section.dStunde.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[3] == $smarty.section.dStunde.index} selected{/if}{else}{if $smarty.now|date_format:'H' == $smarty.section.dStunde.index} selected{/if}{/if}>
                                                 {$smarty.section.dStunde.index}
                                             </option>
                                         {/if}
@@ -179,11 +179,11 @@
                                 <select id="dMinute" name="dMinute" class="custom-select combo">
                                     {section name=dMinute start=0 loop=60 step=1}
                                         {if $smarty.section.dMinute.index < 10}
-                                            <option value="0{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'i' == $smarty.section.dMinute.index} selected{/if}{/if}>
+                                            <option value="0{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'i' == $smarty.section.dMinute.index} selected{/if}{/if}>
                                                 0{$smarty.section.dMinute.index}
                                             </option>
                                         {else}
-                                            <option value="{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && $oNewslettervorlageStd->oZeit->cZeit_arr|count > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'i' == $smarty.section.dMinute.index} selected{/if}{/if}>
+                                            <option value="{$smarty.section.dMinute.index}"{if isset($oNewslettervorlageStd->oZeit->cZeit_arr) && count($oNewslettervorlageStd->oZeit->cZeit_arr) > 0}{if $oNewslettervorlageStd->oZeit->cZeit_arr[4] == $smarty.section.dMinute.index} selected{/if}{else}{if $smarty.now|date_format:'i' == $smarty.section.dMinute.index} selected{/if}{/if}>
                                                 {$smarty.section.dMinute.index}
                                             </option>
                                         {/if}
@@ -317,7 +317,7 @@
                     </div>
                 </div>
 
-                {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && $oNewslettervorlageStd->oNewslettervorlageStdVar_arr|count > 0}
+                {if isset($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && count($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) > 0}
                     {foreach $oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $oNewslettervorlageStdVar}
                         {if $oNewslettervorlageStdVar->cTyp === 'BILD'}
                             <div class="form-group form-row align-items-center">

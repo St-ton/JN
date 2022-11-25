@@ -1,5 +1,5 @@
 {include file='tpl_inc/header.tpl'}
-{assign var=cBeschreibung value=__('shoptemplatesDesc')|sprintf:($shopURL|cat:'/?preview'):($shopURL|cat:'/?preview')}
+{assign var=cBeschreibung value=sprintf(__('shoptemplatesDesc'), ($shopURL|cat:'/?preview'), ($shopURL|cat:'/?preview'))}
 {if isset($templateConfig) && $templateConfig}
     {assign var=cTitel value={__('settings')}|cat:': '|cat:$template->getName()}
     {if !empty($template->getDocumentationURL())}
@@ -17,7 +17,7 @@
 <style>#form_settings .fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
 
 <div id="content">
-{if isset($templateConfig) && $templateConfig|count > 0}
+{if isset($templateConfig) && count($templateConfig) > 0}
     {include file='tpl_inc/shoptemplate_detail.tpl'}
 {else}
     {include file='tpl_inc/shoptemplate_overview.tpl'}

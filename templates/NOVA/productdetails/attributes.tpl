@@ -28,8 +28,8 @@
                                                     aria-label="{$characteristicValue->getValue()|escape:'html'}"
                                                 >
                                                     {$img = $characteristicValue->getImage(\JTL\Media\Image::SIZE_XS)}
-                                                    {if $img !== null && $img|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false
-                                                    && $img|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                    {if $img !== null && strpos($img, $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN) === false
+                                                    && strpos($img, $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                                                         {include file='snippets/image.tpl'
                                                             item=$characteristicValue
                                                             square=false

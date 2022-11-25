@@ -15,7 +15,7 @@
                 <span class="badge badge-default">
                     <i class="far fa-folder" aria-hidden="true"></i> {$listingItem->getDir()}
                 </span>
-                {if $listingItem->isChild() === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$listingItem->getParent()}}">{$listingItem->getParent()}</abbr></span>{/if}
+                {if $listingItem->isChild() === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{sprintf(__('inheritsFrom'), $listingItem->getParent())}">{$listingItem->getParent()}</abbr></span>{/if}
 
                 {if isset($oStoredTemplate_arr[$listingItem->getDir()])}
                     {foreach $oStoredTemplate_arr[$listingItem->getDir()] as $oStored}
@@ -51,7 +51,7 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="tplModal{$listingItem->getName()}Label">
-                                    {$listingItem->getName()} – {__('modifiedFiles')} ({$check|count})
+                                    {$listingItem->getName()} – {__('modifiedFiles')} ({count($check)})
                                 </h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>

@@ -1,7 +1,7 @@
 {$license = $data->getLicense()}
 <h2>{__('License')}</h2>
 <table class="table-striped table">
-    {if $data|is_a:JTL\License\Struct\ExpiredExsLicense::class}
+    {if is_a($data, JTL\License\Struct\ExpiredExsLicense::class)}
         <div class="alert alert-danger">{__('No license found.')}</div>
     {else}
         <tbody>

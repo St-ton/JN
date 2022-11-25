@@ -57,7 +57,7 @@
                 item=$navData
                 square=false
                 lazy=false
-                sizes="{if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}(min-width: 992px) 67vw, (min-width: 1300px) 75vw, 100vw{/if} "
+                sizes="{if !$bExclusive && $boxes.left !== null && !empty(trim(strip_tags($boxes.left))) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}(min-width: 992px) 67vw, (min-width: 1300px) 75vw, 100vw{/if} "
                 alt="{if $oNavigationsinfo->getCategory() !== null && !empty($navData->getImageAlt())}{$navData->getImageAlt()}{else}{$navData->getDescription()|default:''|strip_tags|truncate:50}{/if}"}
         {/if}
         {if $oNavigationsinfo->getName() && $showTitle}
@@ -113,12 +113,12 @@
                                         <div class="subcategories-image d-none d-md-flex">
                                             {image fluid=true lazy=true webp=true
                                                 src=$imgSrc
-                                                width="{if $imgSrc|strpos:'keinBild.gif' !== false}
+                                                width="{if strpos($imgSrc, 'keinBild.gif') !== false}
                                                     130
                                                 {else}
                                                     {$subCategory->getImageWidth(\JTL\Media\Image::SIZE_MD)}
                                                 {/if}"|strip
-                                                height="{if $imgSrc|strpos:'keinBild.gif' !== false}
+                                                height="{if strpos($imgSrc, 'keinBild.gif') !== false}
                                                     130
                                                 {else}
                                                     {$subCategory->getImageHeight(\JTL\Media\Image::SIZE_MD)}

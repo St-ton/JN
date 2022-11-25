@@ -1413,16 +1413,16 @@
         },
         {
             "name": "jtlshop/scc",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/jtl-software/jtl-shop/tools/scc.git",
-                "reference": "277f2eefceb3408de483000784652f2e181b76e2"
+                "reference": "4b2fb88c8ef78b12883818db6cd1a9b8f5a64d67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=277f2eefceb3408de483000784652f2e181b76e2",
-                "reference": "277f2eefceb3408de483000784652f2e181b76e2",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fscc/repository/archive.zip?sha=4b2fb88c8ef78b12883818db6cd1a9b8f5a64d67",
+                "reference": "4b2fb88c8ef78b12883818db6cd1a9b8f5a64d67",
                 "shasum": ""
             },
             "require": {
@@ -1450,9 +1450,9 @@
                 "jtl-shop"
             ],
             "support": {
-                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/scc/-/tree/1.1.0"
+                "source": "https://gitlab.com/jtl-software/jtl-shop/tools/scc/-/tree/1.1.1"
             },
-            "time": "2022-08-23T09:07:47+00:00"
+            "time": "2022-11-25T09:32:02+01:00"
         },
         {
             "name": "jtlshop/sccbs3",

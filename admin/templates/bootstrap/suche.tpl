@@ -1,12 +1,12 @@
 {if $standalonePage}
     {include file='tpl_inc/header.tpl'}
-    {$cTitel = {__('searchResultsFor')}|sprintf:$query}
+    {$cTitel = sprintf(__('searchResultsFor'), $query)}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
     <div class="card">
         <div class="card-body search-page">
 {/if}
 
-{if $adminMenuItems|count}
+{if count($adminMenuItems)}
     <div class="dropdown-header">{__('pagesMenu')}</div>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}

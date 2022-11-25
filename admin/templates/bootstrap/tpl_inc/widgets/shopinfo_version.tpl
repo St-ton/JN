@@ -17,7 +17,7 @@
                 <tr>
                     <td colspan="2" id="version" class="h1">
                         {if $bUpdateAvailable}
-                            <span class="badge badge-info">{__('Version %s available')|sprintf:$strLatestVersion}</span>
+                            <span class="badge badge-info">{sprintf(__('Version %s available'), $strLatestVersion)}</span>
                         {else}
                             <span class="badge badge-success">{__('shopVersionUpToDate')}</span>
                         {/if}

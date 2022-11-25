@@ -1,6 +1,6 @@
 {$src = $instance->getProperty($propdesc.srcProp)}
 
-<input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
+<input type="hidden" id="config-{$propname}" name="{$propname}" value="{htmlentities(json_encode($propval))}"
        data-prop-type="json">
 
 {if empty($src)}

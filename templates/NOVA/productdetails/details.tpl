@@ -198,7 +198,7 @@
                                         {input type="hidden" name="VariKindArtikel" value=$Artikel->kVariKindArtikel}
                                     {/if}
                                     {if isset($smarty.get.ek)}
-                                        {input type="hidden" name="ek" value=$smarty.get.ek|intval}
+                                        {input type="hidden" name="ek" value=intval($smarty.get.ek)}
                                     {/if}
                                     {input type="hidden" name="AktuellerkArtikel" class="current_article" name="a" value=$Artikel->kArtikel}
                                     {input type="hidden" name="wke" value="1"}

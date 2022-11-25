@@ -30,7 +30,7 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{__($branding->cBildKategorie)}}</div>
+                        <div class="subheading1">{sprintf(__('headingEditBrandingForProduct'), __($branding->cBildKategorie))}</div>
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">

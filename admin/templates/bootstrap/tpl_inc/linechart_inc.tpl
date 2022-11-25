@@ -81,7 +81,7 @@
                         width: 2,
                         color: '#ddd'
                     }],
-                    {if isset($ymin) && $ymin|count_characters > 0}
+                    {if isset($ymin) && strlen($ymin) > 0}
                         min: {$ymin}
                     {/if}
                 },

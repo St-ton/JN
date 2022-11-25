@@ -70,7 +70,7 @@
         </nav>
         <div class="tab-content">
             <div id="bewertungen" class="tab-pane fade {if $cTab === '' || $cTab === 'bewertungen'} active show{/if}">
-                {if $ratings|count > 0}
+                {if count($ratings) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -159,7 +159,7 @@
                 {/if}
             </div>
             <div id="livesearch" class="tab-pane fade {if $cTab === 'livesearch'} active show{/if}">
-                {if $searchQueries|count > 0}
+                {if count($searchQueries) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                     <div>
                         <form method="post" action="{$adminURL}{$route}">
@@ -243,7 +243,7 @@
                 {/if}
             </div>
             <div id="newscomments" class="tab-pane fade {if $cTab === 'newscomments'} active show{/if}">
-                {if $comments|count > 0 && $comments}
+                {if count($comments) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                     <div>
                         <form method="post" action="{$adminURL}{$route}">
@@ -328,7 +328,7 @@
                 {/if}
             </div>
             <div id="newsletter" class="tab-pane fade {if $cTab === 'newsletter'} active show{/if}">
-                {if $recipients|count > 0}
+                {if count($recipients) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                     <div>
                         <form method="post" action="{$adminURL}{$route}">

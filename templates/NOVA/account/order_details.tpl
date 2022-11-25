@@ -57,7 +57,7 @@
                                                     </dd>
                                                 {/if}
                                                 {foreach $incommingPayments as $paymentProvider => $incommingPayment}
-                                                    <dt>{$paymentProvider|htmlentities}</dt>
+                                                    <dt>{htmlentities($paymentProvider)}</dt>
                                                     {foreach $incommingPayment as $payment}
                                                         <dd>{$payment->paymentLocalization}</dd>
                                                     {/foreach}
@@ -307,7 +307,7 @@
         {/if}
 
         {block name='account-order-details-order-comment'}
-            {if $Bestellung->cKommentar !== null && !empty($Bestellung->cKommentar|trim)}
+            {if $Bestellung->cKommentar !== null && !empty(trim($Bestellung->cKommentar))}
                 <div class="h3">{lang key='yourOrderComment' section='login'}</div>
                 <p>{$Bestellung->cKommentar}</p>
             {/if}

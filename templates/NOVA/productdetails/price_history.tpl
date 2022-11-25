@@ -25,7 +25,7 @@
                 ]
             };
 
-            {foreach $preisverlaufData|array_reverse as $pv}
+            {foreach array_reverse($preisverlaufData) as $pv}
                 chartData.labels.push('{$pv->date}');
                 chartData.datasets[0].data.push('{$pv->fPreis}');
                 chartDataCurrency = '{$pv->currency}';

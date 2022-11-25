@@ -37,7 +37,7 @@
     </nav>
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active show{/if}">
-            {if isset($Suchanfragen) && $Suchanfragen|count > 0}
+            {if isset($Suchanfragen) && count($Suchanfragen) > 0}
                 <div class="search-toolbar mb-3">
                     <form class="" name="suche" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -161,7 +161,7 @@
             {/if}
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active show{/if}">
-            {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|count > 0}
+            {if $Suchanfragenerfolglos && count($Suchanfragenerfolglos) > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}
@@ -243,7 +243,7 @@
             {/if}
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active show{/if}">
-            {if $Suchanfragenmapping && $Suchanfragenmapping|count > 0}
+            {if $Suchanfragenmapping && count($Suchanfragenmapping) > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="{$adminURL}{$route}">
                     {$jtl_token}

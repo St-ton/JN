@@ -48,11 +48,11 @@
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
                             </a>
-                            {if $missingTranslations|count > 0}
+                            {if count($missingTranslations) > 0}
                                 <i class="fal fa-exclamation-triangle text-warning"
                                       data-toggle="tooltip"
                                       data-placement="top"
-                                      title="{__('missingTranslations')}: {$missingTranslations|count}"></i>
+                                      title="{__('missingTranslations')}: {count($missingTranslations)}"></i>
                             {/if}
                             <i title="{__('hasAtLeastOneDuplicateSpecialLink')}"
                                class="d-none duplicate-special-page-warning fal fa-exclamation-triangle text-danger"

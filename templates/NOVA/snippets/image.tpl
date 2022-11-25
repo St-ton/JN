@@ -119,7 +119,7 @@
                 {else}
                     {$alt=$alt|strip_tags|escape:'quotes'|escape:'html'}
                 {/if}
-                {if $item->getImage($srcSize)|strpos:'keinBild.gif' !== false}
+                {if strpos($item->getImage($srcSize), 'keinBild.gif') !== false}
                     {image fluid=$fluid lazy=$lazy webp=$webp center=$center
                         src=$item->getImage($srcSize)
                         alt=$alt

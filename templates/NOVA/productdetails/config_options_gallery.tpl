@@ -14,7 +14,7 @@
             {foreach $Artikel->oKonfig_arr as $configGroup}
                 {if $configGroup->getItemCount() > 0}
                     {$configLocalization = $configGroup->getSprache()}
-                    {$configGroupHasImage = ($configGroup->getImage(\JTL\Media\Image::SIZE_MD)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
+                    {$configGroupHasImage = (strpos($configGroup->getImage(\JTL\Media\Image::SIZE_MD), $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN)) === false}
                     {$kKonfiggruppe = $configGroup->getKonfiggruppe()}
                     <div id="cfg-grp-{$configGroup->getID()}" class="cfg-group js-cfg-group mb-3 {if $configGroup@first}visited{/if}"
                          data-id="{$configGroup->getID()}">
@@ -93,7 +93,7 @@
                                                 || (!empty($aKonfigerror_arr)
                                                 && isset($smarty.post.item)
                                                 && isset($smarty.post.item[$kKonfiggruppe])
-                                                && $oItem->getKonfigitem()|in_array:$smarty.post.item[$kKonfiggruppe])
+                                                && in_array($oItem->getKonfigitem(), $smarty.post.item[$kKonfiggruppe]))
                                                 || ($oItem->getSelektiert()
                                                 && !isset($kEditKonfig)
                                                 && (!isset($aKonfigerror_arr)

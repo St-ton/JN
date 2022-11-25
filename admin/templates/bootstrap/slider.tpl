@@ -10,7 +10,7 @@
     {else}
         <div id="settings">
             <div class="card">
-                {if $oSlider_arr|count == 0}
+                {if count($oSlider_arr) == 0}
                     <div class="card-body">
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>

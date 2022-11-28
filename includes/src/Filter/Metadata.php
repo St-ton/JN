@@ -798,19 +798,15 @@ class Metadata implements MetadataInterface
 
     /**
      * @param string      $metaProposal the proposed meta text value.
-     * @param string|null $metaSuffix append suffix to meta value that wont be shortened
-     * @param int         $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
+     * @param string|null $metaSuffix appended to already shortened $metaProposal
+     * @param int         $maxLength $metaProposal will be truncated to $maxlength
      * @return string truncated meta value with optional suffix (always appended if set)
      */
     public static function prepareMeta(string $metaProposal, ?string $metaSuffix = null, int $maxLength = 0): string
     {
         $metaStr = \trim(\preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
 
-        if ($metaSuffix !== null) {
-            $maxLength -= \mb_strlen($metaSuffix);
-        }
-
-        return Text::htmlentitiesSubstr($metaStr, $maxLength) . ($metaSuffix ?? '');
+        return Text::htmlentitiesSubstr($metaStr, $maxLength ?? 0) . ($metaSuffix ?? '');
     }
 
     /**

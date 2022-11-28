@@ -17,7 +17,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
     /**
      * @var int
      */
-    protected int $checkBoxID = 0;
+    protected int $checkboxID = 0;
 
     /**
      * @var int
@@ -85,7 +85,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
      * @var array|string[]
      */
     private array $mapping = [
-        'checkboxID'             => 'checkBoxID',
+        'checkboxID'             => 'checkboxID',
         'linkID'                 => 'linkID',
         'checkboxFunctionID'     => 'checkboxFunctionID',
         'name'                   => 'name',
@@ -101,7 +101,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
     ];
 
     private array $columnMapping = [
-        'kCheckBox'              => 'checkBoxID',
+        'kCheckBox'              => 'checkboxID',
         'kLink'                  => 'linkID',
         'kCheckBoxFunktion'      => 'checkboxFunctionID',
         'cName'                  => 'name',
@@ -124,7 +124,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
     public function __set(string $name, $value): void
     {
         if ($name === $this->primaryKey) {
-            $this->checkBoxID = (int)$value;
+            $this->checkboxID = (int)$value;
         }
     }
 
@@ -134,11 +134,10 @@ class CheckboxDataObject extends AbstractGenericDataObject
      */
     public function __get(string $name): mixed
     {
-
         $map = $this->getMapping();
 
         if ($name === 'kCheckBox') {
-            return $this->checkBoxID;
+            return $this->checkboxID;
         }
 
         if (isset($map[$name])) {
@@ -146,7 +145,6 @@ class CheckboxDataObject extends AbstractGenericDataObject
 
             return $this->$prop;
         }
-
 
         return null;
     }
@@ -204,18 +202,18 @@ class CheckboxDataObject extends AbstractGenericDataObject
     /**
      * @return int
      */
-    public function getCheckBoxID(): int
+    public function getCheckboxID(): int
     {
-        return $this->checkBoxID;
+        return $this->checkboxID;
     }
 
     /**
-     * @param int $checkBoxID
+     * @param int $checkboxID
      * @return CheckboxDataObject
      */
-    public function setCheckBoxID(int $checkBoxID): CheckboxDataObject
+    public function setCheckboxID(int $checkboxID): CheckboxDataObject
     {
-        $this->checkBoxID = $checkBoxID;
+        $this->checkboxID = $checkboxID;
         return $this;
     }
 

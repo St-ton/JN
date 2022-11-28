@@ -400,9 +400,10 @@ class Router
             $pfx .= $this->path;
         }
         if ($forceDynamic === false && $byName === true) {
-            $scheme = $isDefaultLocale
-                    ? ($this->config['global']['routing_default_language'] ?? 'F')
-                    : ($this->config['global']['routing_scheme'] ?? 'F');
+            $scheme    = $isDefaultLocale
+                ? ($this->config['global']['routing_default_language'] ?? 'F')
+                : ($this->config['global']['routing_scheme'] ?? 'F');
+            $currParam = isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '';
             if ($scheme === 'F') {
                 if (!isset($replacements['name'])) {
                     $param       = $this->getFallbackParam($type);
@@ -415,16 +416,14 @@ class Router
                     }
                     $named = '?' . \http_build_query($queryParams);
                 } else {
-                    $named = ($replacements['name'] ?? $replacements['id']);
+                    $named = ($replacements['name'] ?? $replacements['id']). $currParam;
                 }
 
-                return $pfx . '/' . $named
-                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
+                return $pfx . '/' . $named;
             }
             if ($scheme === 'L') {
                 return $pfx . '/' . $replacements['lang'] . '/'
-                    . ($replacements['name'] ?? $replacements['id'] ?? '')
-                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
+                    . ($replacements['name'] ?? $replacements['id'] ?? '') . $currParam;
             }
         }
 

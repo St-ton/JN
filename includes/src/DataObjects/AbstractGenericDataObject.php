@@ -1,8 +1,7 @@
-<?php  declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace JTL\DataObjects;
 
-use JTL\DataObjects\DataObjectInterface;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -12,26 +11,26 @@ abstract class AbstractGenericDataObject implements DataObjectInterface
 
     abstract public function getReverseMapping(): array;
 
+    abstract public function getColumnMapping(): array;
 
     /**
      * will hydrate the DataObject with Data from an array
      * Keys may use mapped values
-     * @param $data
-     * @param bool $useMapping
+     * @param array $data
      * @return $this
      */
-    public function hydrate(array $data, bool $useMapping = false): self
+    public function hydrate(array $data): self
     {
         $attributeMap = $this->getMapping();
         foreach ($data as $attribute => $value) {
-            if ($useMapping === true && \is_array($attributeMap) && \in_array($attribute, $attributeMap, true)) {
+            if (\is_array($attributeMap) && \array_key_exists($attribute, $attributeMap)) {
                 $attribute = $attributeMap[$attribute];
             }
-            $method = 'set' . str_replace(' ', '', \ucwords(str_replace('_', ' ', $attribute)));
-            if (\is_callable(array($this, $method))) {
+            $method = 'set' . \str_replace(' ', '', \ucwords(\str_replace('_', ' ', $attribute)));
+            if (\is_callable([$this, $method])) {
                 $this->$method($value);
             }
-            if ((int)$value > 0 && $attribute === $this->getPrimaryKey()) {
+            if ($attribute === $this->getPrimaryKey() && (int)$value > 0) {
                 $this->$attribute = (int)$value;
             }
         }
@@ -41,15 +40,23 @@ abstract class AbstractGenericDataObject implements DataObjectInterface
 
     /**
      * Will ship an array containing Keys and values of protected and public properties
+     * @param bool $tableColumns
      * @return array
      */
-    public function toArray(): array
+    public function toArray(bool $tableColumns = true): array
     {
+        if ($tableColumns) {
+            $columnMap = $this->getColumnMapping();
+        }
         $reflect    = new ReflectionClass($this);
         $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $toArray    = [];
         foreach ($properties as $property) {
-            $toArray[$property->getName()] = $property->getValue($this);
+            $propertyName = $property->getName();
+            if ($tableColumns) {
+                $propertyName = $columnMap[$propertyName];
+            }
+            $toArray[$propertyName] = $property->getValue($this);
         }
 
         return $toArray;
@@ -67,8 +74,8 @@ abstract class AbstractGenericDataObject implements DataObjectInterface
         $attributes   = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
         $extracted    = [];
         foreach ($attributes as $attribute) {
-            if ($useReverseMapping === true && \in_array($attribute, $attributeMap, true)) {
-                $attribut = $attributeMap[$attribut];
+            if ($useReverseMapping === true && \array_key_exists($attribute->getName(), $attributeMap)) {
+                $attribute = $attributeMap[$attribute->getName()];
             }
             $method                      = 'get' . \ucfirst($attribute->name);
             $extracted[$attribute->name] = $this->$method();
@@ -80,21 +87,20 @@ abstract class AbstractGenericDataObject implements DataObjectInterface
     /**
      * Will accept data from an object.
      * @param $object
-     * @param bool $useMapping
      * @return $this
      */
     public function hydrateWithObject($object): self
     {
-        //Mapping has to be implemented later
-        $reflect    = new ReflectionClass($this);
-        $attributes = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-        foreach ($attributes as $attribut) {
-            $getMethod = 'get' . \ucfirst($attribut->name);
-            $setMethod = 'set' . \ucfirst($attribut->name);
-            if (\method_exists($object, $getMethod)) {
-                $this->$setMethod($object->$getMethod());
-            } elseif (\property_exists($object, $attribut->name)) {
-                $this->$setMethod($object->{$attribut->name});
+        $attributeMap     = $this->getMapping();
+        $objectAttributes = get_object_vars($object);
+        foreach ($objectAttributes as $name => $attribute) {
+            $propertyName = $name;
+            if (\array_key_exists($name, $attributeMap)) {
+                $propertyName = $attributeMap[$name];
+            }
+            $setMethod = 'set' . \ucfirst($propertyName);
+            if (\method_exists($this, $setMethod)) {
+                $this->$setMethod($object->{$name});
             }
         }
 

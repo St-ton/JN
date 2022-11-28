@@ -2,6 +2,7 @@
 
 namespace JTL\Checkbox;
 
+use JTL\DB\DbInterface;
 use JTL\DB\NiceDB;
 
 /**
@@ -10,11 +11,6 @@ use JTL\DB\NiceDB;
  */
 class CheckboxRepository
 {
-    /**
-     * @var NiceDB|null
-     */
-    protected ?NiceDB $db = null;
-
     /**
      * @var string
      */
@@ -28,9 +24,9 @@ class CheckboxRepository
     /**
      * @param NiceDB $db
      */
-    public function __construct(NiceDB $db)
-    {
-        $this->db = $db;
+    public function __construct(
+        protected DbInterface $db
+    ) {
     }
 
     /**
@@ -89,7 +85,7 @@ class CheckboxRepository
 
     /**
      * Logic from niceDB Class
-     * @param $checkbox
+     * @param CheckboxDataObject $checkbox
      * @return array
      */
     protected function prepareUpdateStatement(CheckboxDataObject $checkbox): array

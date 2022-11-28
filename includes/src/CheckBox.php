@@ -610,7 +610,7 @@ class CheckBox
             return $this;
         }
         //Since method used to do the update too
-        if ((int)$this->kCheckBox > 0) {
+        if ($this->kCheckBox > 0) {
             return $this->updateDB($texts, $descriptions);
         }
         $checkBoxDataObject = $this->getCheckBoxDataObject();
@@ -631,9 +631,9 @@ class CheckBox
         if (\count($texts) === 0) {
             return $this;
         }
-        $checkBoxDataObject = $this->getCheckBoxDataObject();
+        $checkBoxDataObject = $this->getCheckboxDataObject();
         $this->service->update($checkBoxDataObject);
-        $this->updateLocalization($texts, $descriptions, $checkBoxDataObject->getKCheckBox());
+        $this->updateLocalization($texts, $descriptions, $checkBoxDataObject->getCheckboxID());
 
         return $this;
     }
@@ -687,13 +687,14 @@ class CheckBox
      */
     private function prepareLocalizationObject(int|string $iso, mixed $text, array $descriptions): void
     {
+        /** @var CheckboxLanguageDataObject $this->oCheckBoxSprache_arr[$iso] */
         $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataObject();
-        $this->oCheckBoxSprache_arr[$iso]->setKCheckBox($this->kCheckBox);
-        $this->oCheckBoxSprache_arr[$iso]->setKSprache($this->getSprachKeyByISO($iso));
-        $this->oCheckBoxSprache_arr[$iso]->setCText($text);
-        $this->oCheckBoxSprache_arr[$iso]->setCBeschreibung('');
+        $this->oCheckBoxSprache_arr[$iso]->setCheckboxID($this->kCheckBox);
+        $this->oCheckBoxSprache_arr[$iso]->setLanguageID($this->getSprachKeyByISO($iso));
+        $this->oCheckBoxSprache_arr[$iso]->setText($text);
+        $this->oCheckBoxSprache_arr[$iso]->setDescription('');
         if (isset($descriptions[$iso]) && \mb_strlen($descriptions[$iso]) > 0) {
-            $this->oCheckBoxSprache_arr[$iso]->setCBeschreibung($descriptions[$iso]);
+            $this->oCheckBoxSprache_arr[$iso]->setDescription($descriptions[$iso]);
         }
     }
 

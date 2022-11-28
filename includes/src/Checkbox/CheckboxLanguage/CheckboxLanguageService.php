@@ -2,9 +2,6 @@
 
 namespace JTL\Checkbox\CheckboxLanguage;
 
-use JTL\CheckBox\CheckBoxLanguage\CheckboxLanguageDataObject;
-use JTL\CheckBox\CheckBoxLanguage\CheckboxLanguageRepository;
-
 /**
  * Class Checkbox
  * @package JTL
@@ -56,10 +53,11 @@ class CheckboxLanguageService
     public function update(CheckboxLanguageDataObject $checkboxLanguage): bool
     {
         //need checkBoxLanguageId, not provided by post
-        $checkboxLanguage->checkboxLanguageID = $this->getList([
+        $language                             = $this->getList([
             'kCheckBox' => $checkboxLanguage->checkboxID,
-            'kSprache'  => $checkboxLanguage->languageID])[0]
-            ->checkboxLanguageID;
+            'kSprache'  => $checkboxLanguage->languageID
+        ])[0];
+        $checkboxLanguage->checkboxLanguageID = $language->checkboxLanguageID;
 
         return $this->repository->update($checkboxLanguage);
     }

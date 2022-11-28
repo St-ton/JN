@@ -2,11 +2,7 @@
 
 namespace JTL\Checkbox;
 
-use JTL\Checkbox\CheckboxDataObject;
-use JTL\Checkbox\CheckboxRepository;
-
 use JTL\Shop;
-use PhpParser\Node\Expr\Cast\Object_;
 
 /**
  * Class Checkbox
@@ -15,16 +11,11 @@ use PhpParser\Node\Expr\Cast\Object_;
 class CheckboxService
 {
     /**
-     * @var CheckboxRepository
-     */
-    protected CheckboxRepository $repository;
-
-    /**
      * @param CheckboxRepository $repository
      */
-    public function __construct(CheckboxRepository $repository)
-    {
-        $this->repository = $repository;
+    public function __construct(
+        protected CheckboxRepository $repository
+    ) {
     }
 
     /**

@@ -46,8 +46,8 @@
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
             pageKey:     {$pageKey},
-            error:       {$error|json_encode},
-            messages:    {$opc->getEditorMessages()|json_encode},
+            error:       {json_encode($error)},
+            messages:    {json_encode($opc->getEditorMessages())},
         });
 
         opc.init();

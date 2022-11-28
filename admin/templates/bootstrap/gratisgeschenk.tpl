@@ -31,7 +31,7 @@
         </nav>
         <div class="tab-content">
             <div id="aktivegeschenke" class="tab-pane fade {if $cTab === '' || $cTab === 'aktivegeschenke'} active show{/if}">
-                {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|count > 0}
+                {if isset($oAktiveGeschenk_arr) && count($oAktiveGeschenk_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                     <div class="settings table-responsive">
                         <table class="table table-striped table-align-top">
@@ -61,7 +61,7 @@
                 {/if}
             </div>
             <div id="haeufigegeschenke" class="tab-pane fade {if $cTab === 'haeufigegeschenke'} active show{/if}">
-                {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|count > 0}
+                {if isset($oHaeufigGeschenk_arr) && count($oHaeufigGeschenk_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                     <div class="settings table-responsive">
                         <table class="table table-striped table-align-top">
@@ -95,7 +95,7 @@
                 {/if}
             </div>
             <div id="letzten100geschenke" class="tab-pane fade {if $cTab === 'letzten100geschenke'} active show{/if}">
-                {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|count > 0}
+                {if isset($oLetzten100Geschenk_arr) && count($oLetzten100Geschenk_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                     <div class="settings table-responsive">
                         <table class="table table-striped table-align-top">

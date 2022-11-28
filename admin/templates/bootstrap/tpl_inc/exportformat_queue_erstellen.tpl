@@ -24,7 +24,7 @@
         {if $cronID > 0}
             <input type="hidden" name="kCron" value="{$cronID}" />
         {/if}
-        {if $exportFormats|count > 0}
+        {if count($exportFormats) > 0}
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</div>

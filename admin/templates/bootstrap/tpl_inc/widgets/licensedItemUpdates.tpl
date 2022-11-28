@@ -2,13 +2,13 @@
         <div class="row">
             <div class="col-md-4 border-right">
                 <div class="text-center">
-                    <h2>{$licenseItemUpdates->count()}{if $securityFixes > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{n__('Includes %d security fix', 'Includes %d security fixes', $securityFixes)|sprintf:$securityFixes}"></i>{/if}</h2>
+                    <h2>{$licenseItemUpdates->count()}{if $securityFixes > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{sprintf(n__('Includes %d security fix', 'Includes %d security fixes', $securityFixes), $securityFixes)}"></i>{/if}</h2>
                     <p>{n__('Update available', 'Updates available', $licenseItemUpdates->count())}</p>
                 </div>
             </div>
             <div class="col-md-4 border-right">
                 <div class="text-center">
-                    <h2>{$licenses->count()}{if $aboutToExpire->count() > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count())|sprintf:($aboutToExpire->count())}"></i>{/if}</h2>
+                    <h2>{$licenses->count()}{if $aboutToExpire->count() > 0} <i class="fa fa-warning" data-toggle="tooltip" data-placement="top" title="{sprintf(n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count()), $aboutToExpire->count())}"></i>{/if}</h2>
                     <p>{n__('Licensed item', 'Licensed items', $licenses->count())}</p>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                 <table class="table table-condensed">
                     <thead>
                     <tr>
-                        <th class="w-75">{n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count())|sprintf:($aboutToExpire->count())}</th>
+                        <th class="w-75">{sprintf(n__('%d license about to expire', '%d licenses about to expire', $aboutToExpire->count()), $aboutToExpire->count())}</th>
                         <th class="w-25">{__('Expiration')}</th>
                     </tr>
                     </thead>
@@ -58,7 +58,7 @@
                             <td>
                                 <a href="{$adminURL}/{JTL\Router\Route::LICENSE}#license-item-{$license->getID()}">
                                     {$license->getName()}
-                                </a>{if $days > 0} <span class="badge badge-danger">{n__('%d day remaining', '%d days remaining', $days)|sprintf:$days}</span>{/if}
+                                </a>{if $days > 0} <span class="badge badge-danger">{sprintf(n__('%d day remaining', '%d days remaining', $days), $days)}</span>{/if}
                             </td>
                             <td>
                                 {if $license->getLicense()->getValidUntil() !== null}

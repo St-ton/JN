@@ -56,7 +56,7 @@
                 <div class="card-body">
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
-                    {if isset($oStat_arr) && $oStat_arr|count > 0}
+                    {if isset($oStat_arr) && count($oStat_arr) > 0}
                         <div class="table-responsive">
                             <table class="table table-striped table-sm">
                                 <thead>
@@ -112,7 +112,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {if $crawler_arr|count}
+                        {if count($crawler_arr)}
                             {foreach $crawler_arr as $crawler}
                                 <tr scope="row" class="tab_bg{$crawler@iteration % 2}">
                                     <td class="check">

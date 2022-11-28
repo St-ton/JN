@@ -15,7 +15,7 @@
         <ul class="nav categories">
             {foreach $oLinkOberGruppe_arr as $oLinkOberGruppe}
                 {assign var=rootEntryName value=$oLinkOberGruppe->cName|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
-                {if $oLinkOberGruppe->oLinkGruppe_arr|count === 0 && $oLinkOberGruppe->oLink_arr|count === 1}
+                {if count($oLinkOberGruppe->oLinkGruppe_arr) === 0 && count($oLinkOberGruppe->oLink_arr) === 1}
                     <li class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
                                {if $oLinkOberGruppe->active === true}active{/if}">
                         <a href="{$oLinkOberGruppe->oLink_arr[0]->cURL}" class="nav-link">
@@ -46,7 +46,7 @@
                                             {$oLinkGruppe->cName}
                                         </a>
                                     </li>
-                                {elseif $oLinkGruppe->oLink_arr|count > 0}
+                                {elseif count($oLinkGruppe->oLink_arr) > 0}
                                     <li id="dropdown-header-{$entryName}"
                                         class="nav-item {if $oLinkGruppe->active === true} active{/if}">
                                         <a class="nav-link {if $oLinkGruppe->active === false}collapsed{/if}"

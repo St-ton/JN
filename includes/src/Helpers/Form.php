@@ -169,10 +169,7 @@ class Form
     {
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         if (!$customerGroupID) {
-            $customerGroupID = (int)$_SESSION['Kunde']->kKundengruppe;
-            if (!$customerGroupID) {
-                $customerGroupID = CustomerGroup::getDefaultGroupID();
-            }
+            $customerGroupID = Frontend::getCustomer()->getGroupID();
         }
 
         $subjects = Shop::Container()->getDB()->getObjects(

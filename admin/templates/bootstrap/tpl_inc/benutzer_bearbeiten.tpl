@@ -8,7 +8,7 @@ $(document).ready(function() {
         }
     });
     $('#dGueltigBis').datetimepicker({
-        locale: '{$language|mb_substr:0:2}',
+        locale: '{mb_substr($language, 0, 2)}',
         format: 'DD.MM.YYYY HH:mm:ss',
         useCurrent: false,
         icons: {
@@ -169,7 +169,7 @@ $(document).ready(function() {
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cLogin)} form-error{/if}">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}
                                 {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
-                                    <span class="input-group-addon text-danger" data-html="true" data-toggle="tooltip" data-original-title="{{__('usernameNotAvailable')}|sprintf:{$oAccount->cLogin}}"><i class="fa fa-exclamation-triangle"></i></span>
+                                    <span class="input-group-addon text-danger" data-html="true" data-toggle="tooltip" data-original-title="{sprintf(__('usernameNotAvailable'), $oAccount->cLogin)}"><i class="fa fa-exclamation-triangle"></i></span>
                                 {/if}:
                             </label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

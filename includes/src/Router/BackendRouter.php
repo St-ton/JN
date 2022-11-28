@@ -287,7 +287,8 @@ class BackendRouter
             ->middleware($updateCheckMiddleWare);
         $this->router->get($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD)
-            ->middleware($updateCheckMiddleWare);
+            ->middleware($updateCheckMiddleWare)
+            ->middleware(new WizardCheckMiddleware($this->db));
         $this->router->post($basePath, DashboardController::class . '::getResponse')
             ->setName(Route::DASHBOARD . 'POST')
             ->middleware($updateCheckMiddleWare);

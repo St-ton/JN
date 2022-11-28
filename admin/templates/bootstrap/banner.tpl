@@ -1,6 +1,5 @@
 {include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
-
 <div id="content">
 {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
@@ -84,7 +83,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        {if $bannerFiles|count > 0}
+                        {if count($bannerFiles) > 0}
                             <select id="cPath" name="cPath" class="custom-select">
                                 <option value="">{__('chooseBanner')}</option>
                                 {foreach $bannerFiles as $file}
@@ -92,7 +91,7 @@
                                 {/foreach}
                             </select>
                         {else}
-                            {{__('warningNoBannerInDir')}|sprintf:{$smarty.const.PFAD_BILDER_BANNER}}
+                            {sprintf(__('warningNoBannerInDir'), $smarty.const.PFAD_BILDER_BANNER)}
                         {/if}
                         </span>
                     </div>
@@ -326,7 +325,7 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}}">
+                        <a class="btn btn-outline-primary btn-block" href="{$adminURL}{$route}">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
@@ -351,7 +350,7 @@
                 'save': '#area_save',
                 'add': '#area_new',
                 'info': '#area_info',
-                'data': {$banner|json_encode nofilter}
+                'data': {json_encode($banner)}
             });
 
             $('#article_unlink').on('click', () => {
@@ -506,7 +505,7 @@
                     </table>
 
                 </div>
-            {if $banners|count === 0}
+            {if count($banners) === 0}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination isBottom=true}

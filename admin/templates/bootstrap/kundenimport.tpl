@@ -2,7 +2,7 @@
 
 {if !empty($noPasswordCustomerIds)}
     <script>
-        let noPasswordCustomerIds = {$noPasswordCustomerIds|json_encode};
+        let noPasswordCustomerIds = {json_encode($noPasswordCustomerIds)};
         let totalCustomerIds      = noPasswordCustomerIds.length;
         let numCustomersProcessed = 0;
 

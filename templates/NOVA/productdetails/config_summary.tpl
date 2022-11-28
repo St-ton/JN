@@ -11,7 +11,7 @@
         {block name='productdetails-config-summary-conf-groups'}
             {foreach $oKonfig->oKonfig_arr as $configGroup}
                 {$configLocalization = $configGroup->getSprache()}
-                {$isValid = $configGroup->getID()|in_array:$oKonfig->invalidGroups|default:[]}
+                {$isValid = in_array($configGroup->getID(), $oKonfig->invalidGroups|default:[])}
                 {if !empty($configGroup->getMin()) || !empty($configGroup->getMax())}
                     {if $configGroup->getMin() === 1 && $configGroup->getMax() === 1}
                         {$incorrectText="{lang key='configChooseOneComponent' section='productDetails'}"}

@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailhistory') cBeschreibung=__('emailhistoryDesc') cDokuURL=__('emailhistoryURL')}
 <div id="content">
-    {if $oEmailhistory_arr|count > 0 && $oEmailhistory_arr}
+    {if count($oEmailhistory_arr) > 0}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('emailhistory')}</div>

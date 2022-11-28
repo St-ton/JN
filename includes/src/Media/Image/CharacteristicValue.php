@@ -73,13 +73,13 @@ class CharacteristicValue extends AbstractImage
                 /** @var string|null $result */
                 $result = $mixed->path ?? $mixed->cBildpfad ?? $mixed->currentImagePath ?? null;
                 if ($result !== null) {
-                    $result = \pathinfo($result)['filename'];
+                    $result = \pathinfo($result, \PATHINFO_FILENAME);
                 }
                 break;
             case 1:
                 $result = $mixed->seoPath ?? $mixed->val ?? null;
                 if ($result === null && !empty($mixed->currentImagePath)) {
-                    $result = \pathinfo($mixed->currentImagePath)['filename'];
+                    $result = \pathinfo($mixed->currentImagePath, \PATHINFO_FILENAME);
                 }
                 break;
             case 0:

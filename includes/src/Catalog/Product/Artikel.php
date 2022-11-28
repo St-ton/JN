@@ -1704,6 +1704,7 @@ class Artikel implements RoutableInterface
             $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache, $db);
             if (!isset($this->oMerkmale_arr[$item->kMerkmal])) {
                 $this->oMerkmale_arr[$item->kMerkmal] = new Merkmal($item->kMerkmal, false, $this->kSprache, $db);
+                $this->oMerkmale_arr[$item->kMerkmal]->setCharacteristicValues([]);
             }
             $this->oMerkmale_arr[$item->kMerkmal]->addCharacteristicValue($charValue);
         }
@@ -5509,9 +5510,7 @@ class Artikel implements RoutableInterface
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? (Frontend::getCustomer()->getGroupID() > 0
-            ? Frontend::getCustomer()->getGroupID()
-            : $this->customerGroup->getID());
+        $customerGroupID       = $customerGroupID ?? $this->kKundengruppe ?? Frontend::getCustomer()->getGroupID();
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = \is_array($this->Preise->fVK)
             ? $helper->getFreeShippingCountries($this->Preise->fVK, $customerGroupID, $this->kVersandklasse)

@@ -106,7 +106,7 @@
                     </form>
                 </div>
                 {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
-                {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|count > 0}
+                {if isset($oSitemapDownload_arr) && count($oSitemapDownload_arr) > 0}
                     <div>
                         <form name="sitemapdownload" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
@@ -206,7 +206,7 @@
                 </div>
                 {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
 
-                {if isset($oSitemapReport_arr) && $oSitemapReport_arr|count > 0}
+                {if isset($oSitemapReport_arr) && count($oSitemapReport_arr) > 0}
                     <div>
                         <form name="sitemapreport" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
@@ -237,7 +237,7 @@
                                             <td class="text-center">{$oSitemapReport->nTotalURL}</td>
                                             <td class="text-center">{$oSitemapReport->dErstellt_DE}</td>
                                             <td>
-                                                {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|count > 0}
+                                                {if isset($oSitemapReport->oSitemapReportFile_arr) && count($oSitemapReport->oSitemapReportFile_arr) > 0}
                                                     <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;">
                                                         <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
                                                     </a>
@@ -246,7 +246,7 @@
                                                 {/if}
                                             </td>
                                         </tr>
-                                        {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|count > 0}
+                                        {if isset($oSitemapReport->oSitemapReportFile_arr) && count($oSitemapReport->oSitemapReportFile_arr) > 0}
                                             <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
                                                 <td class="border-top-0">&nbsp;</td>
                                                 <td class="border-top-0" colspan="4">

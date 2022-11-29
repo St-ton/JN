@@ -131,14 +131,12 @@ trait RoutableTrait
             }
             $route = $router->getPathByType(
                 $this->getRouteType(),
-                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                false
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional)
             );
             $this->setURLPath($route, $langID);
             $url = $router->getURLByType(
                 $this->getRouteType(),
-                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                false
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional)
             );
             if (!$languageModel->isShopDefault() && !\str_contains($url, '?')) {
                 $url .= '?lang=' . $languageModel->getCode();

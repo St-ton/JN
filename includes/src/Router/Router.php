@@ -407,8 +407,7 @@ class Router
         $name = $this->getRouteName($type, $replacements, $byName);
         try {
             $route = $this->router->getNamedRoute($name);
-        } catch (Exception $e) {
-            die($e->getMessage());
+        } catch (Exception) {
             return '';
         }
         $pfx = $this->getPrefix($route->getHost());

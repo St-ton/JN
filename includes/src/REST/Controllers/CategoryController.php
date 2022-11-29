@@ -10,6 +10,7 @@ use JTL\REST\Models\CategoryImageModel;
 use JTL\REST\Models\CategoryModel;
 use JTL\REST\Models\ProductCategoriesModel;
 use JTL\REST\Models\SeoModel;
+use JTL\Shop;
 use Laminas\Diactoros\UploadedFile;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
@@ -118,7 +119,7 @@ class CategoryController extends AbstractController
     {
         $routeGroup->get('/category', [$this, 'index']);
         $routeGroup->get('/category/{id}', [$this, 'show']);
-        $routeGroup->post('/category/{id}', [$this, 'update']);
+        $routeGroup->put('/category/{id}', [$this, 'update']);
         $routeGroup->post('/category', [$this, 'create']);
         $routeGroup->delete('/category/{id}', [$this, 'delete']);
     }

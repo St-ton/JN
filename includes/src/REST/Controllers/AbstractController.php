@@ -3,6 +3,8 @@
 namespace JTL\REST\Controllers;
 
 use Exception;
+use InvalidArgumentException;
+use JsonException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
@@ -164,7 +166,11 @@ abstract class AbstractController
             return $this->sendNotFoundResponse('Item with id ' . $id . ' does not exist');
         }
         /** @var DataModelInterface $result */
-        $result = $this->updateFromRequest($result, $request);
+        try {
+            $result = $this->updateFromRequest($result, $request);
+        } catch (Exception $e) {
+            return $this->sendCustomResponse(500, 'Error occurred: ' . $e->getMessage());
+        }
         if (\array_key_exists('lastModified', $result->getAttributes())) {
             $result->lastModified = 'now()';
         }
@@ -182,13 +188,21 @@ abstract class AbstractController
      * @param DataModelInterface     $model
      * @param ServerRequestInterface $request
      * @return DataModelInterface
+     * @throws JsonException
      */
     protected function updateFromRequest(DataModelInterface $model, ServerRequestInterface $request): DataModelInterface
     {
-        $queryParams = $request->getQueryParams();
-        foreach (\array_keys($model->getAttributes()) as $attr) {
-            if (isset($queryParams[$attr])) {
-                $model->$attr = $queryParams[$attr];
+        $contentType     = $request->getHeader('content-type');
+        $modelAttributes = $model->getAttributes();
+        if (\strtolower($contentType[0] ?? '') === 'application/json') {
+            $json = \json_decode((string)$request->getBody(), null, 512, \JSON_THROW_ON_ERROR);
+            $src  = (array)$json;
+        } else {
+            $src = $request->getQueryParams();
+        }
+        foreach ($src as $attr => $value) {
+            if (\array_key_exists($attr, $modelAttributes)) {
+                $model->$attr = $value;
             }
         }
 

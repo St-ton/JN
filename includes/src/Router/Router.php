@@ -123,7 +123,7 @@ class Router
     /**
      * @var ControllerInterface[]
      */
-    private array $controllers = [];
+    private array $controllers;
 
     public const TYPE_CATEGORY             = 'categories';
     public const TYPE_CHARACTERISTIC_VALUE = 'characteristics';
@@ -339,30 +339,44 @@ class Router
      */
     public function getPathByType(string $type, ?array $replacements = null, bool $byName = true): string
     {
+        if (isset($replacements['name']) && $replacements['name'] === '') {
+            unset($replacements['name']);
+        }
         $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
         if (empty($replacements['lang'])) {
             $replacements['lang'] = $this->defaultLocale;
+            $isDefaultLocale      = true;
         }
-        $name = $this->getRouteName($type, $replacements, $byName);
-
+        $name   = $this->getRouteName($type, $replacements, $byName);
+        $scheme = $isDefaultLocale
+            ? ($this->config['global']['routing_default_language'] ?? 'F')
+            : ($this->config['global']['routing_scheme'] ?? 'F');
+        if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
+            $byName = false;
+        }
         if ($byName === true) {
-            $scheme = $this->config['global']['routing_default_language'] ?? 'F';
-            if ($isDefaultLocale && $scheme === 'F') {
-                return $this->path . '/' . ($replacements['name'] ?? $replacements['id']);
+            if ($scheme === 'F') {
+                if (!isset($replacements['name'])) {
+                    $param       = $this->getFallbackParam($type);
+                    $queryParams = [$param => $replacements['id']];
+                    if (!$isDefaultLocale) {
+                        $queryParams['lang'] = $this->languages[$replacements['lang']];
+                    }
+                    if (isset($replacements['currency'])) {
+                        $queryParams['curr'] = $replacements['currency'];
+                    }
+                    $named = '?' . \http_build_query($queryParams);
+                } else {
+                    $named = ($replacements['name'] ?? $replacements['id']);
+                }
+
+                return '/' . $named
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
-            if ($isDefaultLocale && $scheme === 'L') {
-                return $this->path
-                    . '/' . $replacements['lang']
-                    . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
-            }
-            $scheme = $this->config['global']['routing_scheme'] ?? 'F';
-            if (!$isDefaultLocale && $scheme === 'F') {
-                return $this->path . '/' . ($replacements['name'] ?? $replacements['id']);
-            }
-            if (!$isDefaultLocale && $scheme === 'L') {
-                return $this->path
-                    . '/' . $replacements['lang']
-                    . '/' . ($replacements['name'] ?? $replacements['id'] ?? '');
+            if ($scheme === 'L') {
+                return '/' . $replacements['lang'] . '/'
+                    . ($replacements['name'] ?? $replacements['id'] ?? '')
+                    . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
         }
 
@@ -388,6 +402,7 @@ class Router
         $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
         if (empty($replacements['lang'])) {
             $replacements['lang'] = $this->defaultLocale;
+            $isDefaultLocale      = true;
         }
         $name = $this->getRouteName($type, $replacements, $byName);
         try {
@@ -399,10 +414,13 @@ class Router
         if ($this->path !== '/') {
             $pfx .= $this->path;
         }
+        $scheme = $isDefaultLocale
+            ? ($this->config['global']['routing_default_language'] ?? 'F')
+            : ($this->config['global']['routing_scheme'] ?? 'F');
+        if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
+            $byName = false;
+        }
         if ($forceDynamic === false && $byName === true) {
-            $scheme = $isDefaultLocale
-                    ? ($this->config['global']['routing_default_language'] ?? 'F')
-                    : ($this->config['global']['routing_scheme'] ?? 'F');
             if ($scheme === 'F') {
                 if (!isset($replacements['name'])) {
                     $param       = $this->getFallbackParam($type);
@@ -717,8 +735,9 @@ class Router
                 $this->defaultLocale = $language->getIso639();
             }
         }
-        $scheme = $this->config['global']['routing_scheme'] ?? 'F';
-        if ($scheme === 'LP' || $scheme === 'L') {
+        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
+        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
+        if ($defaultScheme !== 'F' || $otherSchemes !== 'F') {
             if ($this->isMultiDomain === false && \count($locales) > 1) {
                 $host2              = $hosts[0];
                 $this->isMultilang  = true;
@@ -726,10 +745,8 @@ class Router
                 $host2['localized'] = true;
                 $hosts[]            = $host2;
             }
-            $scheme = $this->config['global']['routing_default_language'] ?? 'F';
-            if ($scheme !== 'LP' && $scheme !== 'L') {
-                $this->router->middleware(new LocaleRedirectMiddleware($this->defaultLocale));
-            }
+        } else {
+            $this->router->middleware(new LocaleRedirectMiddleware($this->defaultLocale));
         }
         $currencies = \array_map(static function (Currency $e): string {
             return $e->getCode();
@@ -740,15 +757,14 @@ class Router
             $this->isMulticrncy  = true;
             foreach ($hosts as $host) {
                 $base             = $host;
-                $base['prefix']   = $currencyRegex . $base['prefix'];
+                $base['prefix']   = \rtrim($currencyRegex . $base['prefix'], '/');
                 $base['currency'] = true;
                 $hosts[]          = $base;
             }
         }
-        $hosts       = \array_reverse($hosts);
-        $this->hosts = $hosts;
+        $this->hosts = \array_reverse($hosts);
 
-        return $hosts;
+        return $this->hosts;
     }
 
     /**

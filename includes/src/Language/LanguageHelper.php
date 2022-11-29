@@ -1153,7 +1153,10 @@ class LanguageHelper
         if (\count($currencies) > 1) {
             $currentCurrencyCode = Frontend::getCurrency()->getID();
             foreach ($currencies as $currency) {
-                $code = $currency->getCode();
+                $code       = $currency->getCode();
+                $additional = $currency->getID() === $currentCurrencyCode
+                    ? []
+                    : ['currency' => $code];
                 if ($currentLocale !== null && $state->currentRouteName !== null && $state->routeData !== null) {
                     $url = Shop::getRouter()->getURLByType(
                         $state->currentRouteName,
@@ -1161,27 +1164,39 @@ class LanguageHelper
                         true,
                         true
                     );
-                } elseif (isset($AktuellerArtikel)) {
-                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel);
-                    $url = $AktuellerArtikel->getURL($currentLangID);
-                } elseif ($page !== null) {
-                    $page->createBySlug($page->getID());
-                    $url = $page->getURL($currentLangID);
-                } elseif ($specialPage !== null) {
-                    $specialPage->createBySlug($specialPage->getID());
-                    $url = $specialPage->getURL($currentLangID);
-                } else {
-                    $url = $productFilter->getFilterURL()->getURL();
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
                 }
+                if (isset($AktuellerArtikel)) {
+                    $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
+                    $url = $AktuellerArtikel->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                if ($page !== null) {
+                    $page->createBySlug($page->getID(), $additional);
+                    $url = $page->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                if ($specialPage !== null) {
+                    $specialPage->createBySlug($specialPage->getID(), $additional);
+                    $url = $specialPage->getURL($currentLangID);
+                    $currency->setURL($url);
+                    $currency->setURLFull($url);
+                    continue;
+                }
+                $url = $productFilter->getFilterURL()->getURL(null, false, $additional);
                 if ($currency->getID() !== $currentCurrencyCode && !\str_contains($url, '/' . $code . '/')) {
                     $url .= (!\str_contains($url, '?') ? '?' : '&') . 'curr=' . $code;
                 }
-                $fullURL = $url;
-                if (!\str_contains($fullURL, Shop::getURL())) {
-                    $fullURL = $shopURL . $fullURL;
-                }
                 $currency->setURL($url);
-                $currency->setURLFull($fullURL);
+                $currency->setURLFull(!\str_contains($url, Shop::getURL())
+                    ? ($shopURL . $url)
+                    : $url);
             }
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [

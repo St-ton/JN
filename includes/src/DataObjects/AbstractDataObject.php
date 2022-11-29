@@ -91,10 +91,10 @@ abstract class AbstractDataObject implements DataObjectInterface
 
     /**
      * Will accept data from an object.
-     * @param $object
+     * @param object $object
      * @return $this
      */
-    public function hydrateWithObject($object): self
+    public function hydrateWithObject(object $object): self
     {
         $attributeMap     = $this->getMapping();
         $objectAttributes = \get_object_vars($object);

@@ -2,12 +2,13 @@
 
 namespace JTL\Checkbox;
 
-use JTL\DataObjects\AbstractGenericDataObject;
+use JTL\DataObjects\AbstractDataObject;
 
 /**
- *
+ * Class CheckboxDataObject
+ * @package JTL\Checkbox
  */
-class CheckboxDataObject extends AbstractGenericDataObject
+class CheckboxDataObject extends AbstractDataObject
 {
     /**
      * @var string
@@ -91,7 +92,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
         'name'                   => 'name',
         'customerGroupsSelected' => 'customerGroupsSelected',
         'displayAt'              => 'displayAt',
-        'active'               => 'active',
+        'active'                 => 'active',
         'isMandatory'            => 'isMandatory',
         'hasLogging'             => 'hasLogging',
         'sort'                   => 'sort',
@@ -100,72 +101,24 @@ class CheckboxDataObject extends AbstractGenericDataObject
         'isInternal'             => 'isInternal',
     ];
 
+    /**
+     * @var array|string[]
+     */
     private array $columnMapping = [
-        'kCheckBox'              => 'checkboxID',
-        'kLink'                  => 'linkID',
-        'kCheckBoxFunktion'      => 'checkboxFunctionID',
-        'cName'                  => 'name',
-        'cKundengruppe'          => 'customerGroupsSelected',
-        'cAnzeigeOrt'            => 'displayAt',
-        'nAktiv'                 => 'active',
-        'nPflicht'               => 'isMandatory',
-        'nLogging'               => 'hasLogging',
-        'nSort'                  => 'sort',
-        'dErstellt'              => 'created',
-        'dErstellt_DE'           => 'created_DE',
-        'nInternal'              => 'isInternal',
+        'kCheckBox'         => 'checkboxID',
+        'kLink'             => 'linkID',
+        'kCheckBoxFunktion' => 'checkboxFunctionID',
+        'cName'             => 'name',
+        'cKundengruppe'     => 'customerGroupsSelected',
+        'cAnzeigeOrt'       => 'displayAt',
+        'nAktiv'            => 'active',
+        'nPflicht'          => 'isMandatory',
+        'nLogging'          => 'hasLogging',
+        'nSort'             => 'sort',
+        'dErstellt'         => 'created',
+        'dErstellt_DE'      => 'created_DE',
+        'nInternal'         => 'isInternal',
     ];
-
-    /**
-     * @param string $name
-     * @param $value
-     * @return void
-     */
-    public function __set(string $name, $value): void
-    {
-        if ($name === $this->primaryKey) {
-            $this->checkboxID = (int)$value;
-        }
-    }
-
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function __get(string $name): mixed
-    {
-        $map = $this->getMapping();
-
-        if ($name === 'kCheckBox') {
-            return $this->checkboxID;
-        }
-
-        if (isset($map[$name])) {
-            $prop = $map[$name];
-
-            return $this->$prop;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return isset($this->$name);
-    }
-
-    /**
-     * @param $name
-     * @return void
-     */
-    public function __unset($name)
-    {
-        unset($this->$name);
-    }
 
     /**
      * @return string
@@ -180,7 +133,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
      */
     public function getMapping(): array
     {
-        return array_merge($this->mapping, $this->columnMapping);
+        return \array_merge($this->mapping, $this->columnMapping);
     }
 
     /**
@@ -188,7 +141,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
      */
     public function getReverseMapping(): array
     {
-        return array_flip($this->mapping);
+        return \array_flip($this->mapping);
     }
 
     /**
@@ -196,7 +149,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
      */
     public function getColumnMapping(): array
     {
-        return array_flip($this->columnMapping);
+        return \array_flip($this->columnMapping);
     }
 
     /**
@@ -208,12 +161,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param int $checkboxID
+     * @param int|string $checkboxID
      * @return CheckboxDataObject
      */
-    public function setCheckboxID(int $checkboxID): CheckboxDataObject
+    public function setCheckboxID(int|string $checkboxID): CheckboxDataObject
     {
-        $this->checkboxID = $checkboxID;
+        $this->checkboxID = (int)$checkboxID;
+
         return $this;
     }
 
@@ -226,12 +180,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param int $linkID
+     * @param int|string $linkID
      * @return CheckboxDataObject
      */
-    public function setLinkID(int $linkID): CheckboxDataObject
+    public function setLinkID(int|string  $linkID): CheckboxDataObject
     {
-        $this->linkID = $linkID;
+        $this->linkID = (int)$linkID;
+
         return $this;
     }
 
@@ -244,12 +199,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param int $checkboxFunctionID
+     * @param int|string  $checkboxFunctionID
      * @return CheckboxDataObject
      */
-    public function setCheckboxFunctionID(int $checkboxFunctionID): CheckboxDataObject
+    public function setCheckboxFunctionID(int|string  $checkboxFunctionID): CheckboxDataObject
     {
-        $this->checkboxFunctionID = $checkboxFunctionID;
+        $this->checkboxFunctionID = (int)$checkboxFunctionID;
+
         return $this;
     }
 
@@ -268,6 +224,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
     public function setName(string $name): CheckboxDataObject
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -280,13 +237,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $customerGroupsSelected
+     * @param array|string $customerGroupsSelected
      * @return CheckboxDataObject
      */
-    public function setCustomerGroupsSelected($customerGroupsSelected): CheckboxDataObject
+    public function setCustomerGroupsSelected(array|string $customerGroupsSelected): CheckboxDataObject
     {
         if (\is_array($customerGroupsSelected)) {
-            $customerGroupsSelected = ';' . implode(';', $customerGroupsSelected) . ';';
+            $customerGroupsSelected = ';' . \implode(';', $customerGroupsSelected) . ';';
         }
         $this->customerGroupsSelected = $customerGroupsSelected;
 
@@ -302,13 +259,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $displayAt
+     * @param array|string $displayAt
      * @return CheckboxDataObject
      */
-    public function setDisplayAt($displayAt): CheckboxDataObject
+    public function setDisplayAt(array|string $displayAt): CheckboxDataObject
     {
         if (\is_array($displayAt)) {
-            $displayAt = ';' . implode(';', $displayAt) . ';';
+            $displayAt = ';' . \implode(';', $displayAt) . ';';
         }
         $this->displayAt = $displayAt;
 
@@ -324,12 +281,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $active
+     * @param bool|int|string $active
      * @return CheckboxDataObject
      */
-    public function setActive($active): CheckboxDataObject
+    public function setActive(bool|int|string $active): CheckboxDataObject
     {
         $this->active = (bool)$active;
+
         return $this;
     }
 
@@ -342,12 +300,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $isMandatory
+     * @param  bool|int|string $isMandatory
      * @return CheckboxDataObject
      */
-    public function setIsMandatory($isMandatory): CheckboxDataObject
+    public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataObject
     {
         $this->isMandatory = (bool)$isMandatory;
+
         return $this;
     }
 
@@ -360,12 +319,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $hasLogging
+     * @param  bool|int|string $hasLogging
      * @return CheckboxDataObject
      */
-    public function setHasLogging($hasLogging): CheckboxDataObject
+    public function setHasLogging(bool|int|string $hasLogging): CheckboxDataObject
     {
         $this->hasLogging = (bool)$hasLogging;
+
         return $this;
     }
 
@@ -378,12 +338,13 @@ class CheckboxDataObject extends AbstractGenericDataObject
     }
 
     /**
-     * @param  $sort
+     * @param int|string $sort
      * @return CheckboxDataObject
      */
-    public function setSort($sort): CheckboxDataObject
+    public function setSort(int|string $sort): CheckboxDataObject
     {
         $this->sort = (int)$sort;
+
         return $this;
     }
 
@@ -402,6 +363,7 @@ class CheckboxDataObject extends AbstractGenericDataObject
     public function setCreated(string $created): CheckboxDataObject
     {
         $this->created = $created;
+
         return $this;
     }
 
@@ -420,24 +382,26 @@ class CheckboxDataObject extends AbstractGenericDataObject
     public function setCreatedDE(string $created_DE): CheckboxDataObject
     {
         $this->created_DE = $created_DE;
+
         return $this;
     }
 
     /**
      * @return bool
      */
-    public function isInternal(): bool
+    public function getIsInternal(): bool
     {
         return $this->isInternal;
     }
 
     /**
-     * @param  $isInternal
+     * @param  bool|int|string $isInternal
      * @return CheckboxDataObject
      */
-    public function setIsInternal($isInternal): CheckboxDataObject
+    public function setIsInternal(bool|int|string $isInternal): CheckboxDataObject
     {
         $this->isInternal = (bool)$isInternal;
+
         return $this;
     }
 }

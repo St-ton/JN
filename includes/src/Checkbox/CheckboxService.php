@@ -5,8 +5,8 @@ namespace JTL\Checkbox;
 use JTL\Shop;
 
 /**
- * Class Checkbox
- * @package JTL
+ * Class CheckboxService
+ * @package JTL\Checkbox
  */
 class CheckboxService
 {
@@ -51,7 +51,7 @@ class CheckboxService
      */
     public function update(CheckboxDataObject $checkbox): bool
     {
-        if ($checkbox->kCheckBox > 0) {
+        if ($checkbox->getCheckboxID() > 0) {
             return $this->repository->update($checkbox);
         }
 

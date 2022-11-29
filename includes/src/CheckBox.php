@@ -2,6 +2,7 @@
 
 namespace JTL;
 
+use Exception;
 use InvalidArgumentException;
 use JTL\Checkbox\CheckboxDataObject;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageRepository;
@@ -159,7 +160,7 @@ class CheckBox
     protected CheckboxLanguageService $languageService;
 
     /**
-     * @param int $id
+     * @param int              $id
      * @param DbInterface|null $db
      */
     public function __construct(int $id = 0, DbInterface $db = null)
@@ -170,10 +171,12 @@ class CheckBox
         $this->dependencies();
     }
 
+    /**
+     * @return void
+     */
     private function dependencies(): void
     {
-        $this->service = new CheckboxService(new CheckBoxRepository($this->db));
-
+        $this->service         = new CheckboxService(new CheckBoxRepository($this->db));
         $this->languageService = new CheckboxLanguageService(new CheckboxLanguageRepository($this->db));
     }
 
@@ -294,8 +297,8 @@ class CheckBox
     }
 
     /**
-     * @param int $location
-     * @param int $customerGroupID
+     * @param int  $location
+     * @param int  $customerGroupID
      * @param bool $active
      * @param bool $lang
      * @param bool $special
@@ -351,10 +354,10 @@ class CheckBox
     }
 
     /**
-     * @param int $location
-     * @param int $customerGroupID
+     * @param int   $location
+     * @param int   $customerGroupID
      * @param array $post
-     * @param bool $active
+     * @param bool  $active
      * @return array
      */
     public function validateCheckBox(int $location, int $customerGroupID, array $post, bool $active = false): array
@@ -370,9 +373,9 @@ class CheckBox
     }
 
     /**
-     * @param int $location
-     * @param int $customerGroupID
-     * @param bool $active
+     * @param int   $location
+     * @param int   $customerGroupID
+     * @param bool  $active
      * @param array $post
      * @param array $params
      * @return $this
@@ -415,10 +418,10 @@ class CheckBox
     }
 
     /**
-     * @param int $location
-     * @param int $customerGroupID
+     * @param int   $location
+     * @param int   $customerGroupID
      * @param array $post
-     * @param bool $active
+     * @param bool  $active
      * @return $this
      */
     public function checkLogging(int $location, int $customerGroupID, array $post, bool $active = false): self
@@ -440,7 +443,7 @@ class CheckBox
 
     /**
      * @param string $idx
-     * @param array $post
+     * @param array  $post
      * @return bool
      */
     private function checkboxWasChecked(string $idx, array $post): bool
@@ -462,7 +465,7 @@ class CheckBox
 
     /**
      * @param string $limitSQL
-     * @param bool $active
+     * @param bool   $active
      * @return CheckBox[]
      * @deprecated since 5.1.0
      */
@@ -474,7 +477,7 @@ class CheckBox
 
     /**
      * @param string $limitSQL
-     * @param bool $active
+     * @param bool   $active
      * @return CheckBox[]
      */
     public function getAll(string $limitSQL = '', bool $active = false): array
@@ -602,7 +605,7 @@ class CheckBox
      * @param array $texts
      * @param array $descriptions
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function insertDB(array $texts, array $descriptions): self
     {
@@ -624,7 +627,7 @@ class CheckBox
      * @param array $texts
      * @param array $descriptions
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateDB(array $texts, array $descriptions): self
     {
@@ -680,14 +683,13 @@ class CheckBox
     }
 
     /**
-     * @param int|string $iso
+     * @param string $iso
      * @param mixed $text
      * @param array $descriptions
      * @return void
      */
-    private function prepareLocalizationObject(int|string $iso, mixed $text, array $descriptions): void
+    private function prepareLocalizationObject(string $iso, mixed $text, array $descriptions): void
     {
-        /** @var CheckboxLanguageDataObject $this->oCheckBoxSprache_arr[$iso] */
         $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataObject();
         $this->oCheckBoxSprache_arr[$iso]->setCheckboxID($this->kCheckBox);
         $this->oCheckBoxSprache_arr[$iso]->setLanguageID($this->getSprachKeyByISO($iso));
@@ -709,7 +711,7 @@ class CheckBox
 
     /**
      * @param object $customer
-     * @param int $location
+     * @param int    $location
      * @return bool
      * @throws Exceptions\CircularReferenceException
      * @throws Exceptions\ServiceNotFoundException
@@ -731,7 +733,7 @@ class CheckBox
                 ->getOptinInstance()
                 ->createOptin($refData, $location)
                 ->sendActivationMail();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Shop::Container()->getLogService()->error($e->getMessage());
         }
 
@@ -741,7 +743,7 @@ class CheckBox
     /**
      * @param object $customer
      * @param object $checkBox
-     * @param int $location
+     * @param int    $location
      * @return bool
      */
     public function sfCheckBoxMailToAdmin($customer, $checkBox, int $location): bool
@@ -803,6 +805,9 @@ class CheckBox
         return $this->oLink;
     }
 
+    /**
+     * @return CheckboxDataObject
+     */
     protected function getCheckBoxDataObject(): CheckboxDataObject
     {
         $dataObject = new CheckboxDataObject();

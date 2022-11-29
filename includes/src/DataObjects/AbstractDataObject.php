@@ -119,15 +119,18 @@ abstract class AbstractDataObject implements DataObjectInterface
      */
     public function toArray(bool $tableColumns = true): array
     {
+        $columnMap = [];
         if ($tableColumns) {
             $columnMap = $this->getColumnMapping();
         }
-        $reflect    = new ReflectionClass($this);
-        $properties = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
-        $toArray    = [];
+        $reflect        = new ReflectionClass($this);
+        $properties     = $reflect->getProperties(ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED);
+        $toArray        = [];
+        $primaryKeyName = \method_exists($this, 'getPrimaryKey') ? $this->getPrimaryKey() : null;
         foreach ($properties as $property) {
             $propertyName = $property->getName();
-            if ($propertyName === 'primaryKey' && (int)$property->getValue() === 0) {
+            if (($propertyName === $primaryKeyName || $primaryKeyName === $columnMap[$propertyName])
+                && (int)$property->getValue($this) === 0) {
                 continue;
             }
             if ($tableColumns) {

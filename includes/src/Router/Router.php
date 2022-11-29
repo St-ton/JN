@@ -757,7 +757,7 @@ class Router
             $this->isMulticrncy  = true;
             foreach ($hosts as $host) {
                 $base             = $host;
-                $base['prefix']   = $currencyRegex . $base['prefix'];
+                $base['prefix']   = \rtrim($currencyRegex . $base['prefix'], '/');
                 $base['currency'] = true;
                 $hosts[]          = $base;
             }

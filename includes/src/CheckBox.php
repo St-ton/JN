@@ -651,9 +651,9 @@ class CheckBox
     /**
      * @param array $texts
      * @param array $descriptions
-     * @return $this
+     * @return void
      */
-    private function addLocalization(array $texts, array $descriptions): self
+    private function addLocalization(array $texts, array $descriptions): void
     {
         $this->oCheckBoxSprache_arr = [];
         foreach ($texts as $iso => $text) {
@@ -664,8 +664,6 @@ class CheckBox
             $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache =
                 $this->languageService->insert($this->oCheckBoxSprache_arr[$iso]);
         }
-
-        return $this;
     }
 
     /**
@@ -691,7 +689,7 @@ class CheckBox
     /**
      * @param string $iso
      * @param mixed $text
-     * @param array $descriptions
+     * @param string $description
      * @return void
      */
     private function prepareLocalizationObject(string $iso, string $text, string $description = ''): void

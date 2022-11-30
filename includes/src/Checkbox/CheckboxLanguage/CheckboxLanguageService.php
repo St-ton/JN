@@ -48,10 +48,11 @@ class CheckboxLanguageService
     public function update(CheckboxLanguageDataObject $checkboxLanguage): bool
     {
         //need checkboxLanguageId, not provided by post
-        $language = $this->getList([
+        $languageList = $this->getList([
             'kCheckBox' => $checkboxLanguage->getCheckboxID(),
             'kSprache'  => $checkboxLanguage->getLanguageID()
-        ])[0];
+        ]);
+        $language     = $language[0] ?? null;
         if (\is_null($language)) {
             return $this->insert($checkboxLanguage) > 0;
         }

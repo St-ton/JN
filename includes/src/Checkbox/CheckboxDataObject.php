@@ -78,11 +78,6 @@ class CheckboxDataObject extends AbstractDataObject
     private string $created_DE = '';
 
     /**
-     * @var bool
-     */
-    protected bool $isInternal = false;
-
-    /**
      * @var array|string[]
      */
     private array $mapping = [
@@ -98,7 +93,6 @@ class CheckboxDataObject extends AbstractDataObject
         'sort'                   => 'sort',
         'created'                => 'created',
         'created_DE'             => 'created_DE',
-        'isInternal'             => 'isInternal',
     ];
 
 
@@ -118,7 +112,6 @@ class CheckboxDataObject extends AbstractDataObject
         'nSort'             => 'sort',
         'dErstellt'         => 'created',
         'dErstellt_DE'      => 'created_DE',
-        'nInternal'         => 'isInternal',
     ];
 
     /**
@@ -384,25 +377,6 @@ class CheckboxDataObject extends AbstractDataObject
     public function setCreatedDE(string $created_DE): CheckboxDataObject
     {
         $this->created_DE = $created_DE;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsInternal(): bool
-    {
-        return $this->isInternal;
-    }
-
-    /**
-     * @param  bool|int|string $isInternal
-     * @return CheckboxDataObject
-     */
-    public function setIsInternal(bool|int|string $isInternal): CheckboxDataObject
-    {
-        $this->isInternal = (bool)$isInternal;
 
         return $this;
     }

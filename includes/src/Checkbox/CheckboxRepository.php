@@ -5,26 +5,20 @@ namespace JTL\Checkbox;
 use JTL\DB\DbInterface;
 
 /**
- * Class CheckBoxRepository
+ * Class CheckboxRepository
  * @package JTL\Checkbox
  */
 class CheckboxRepository
 {
     /**
-     * @var string
-     */
-    protected string $tableName = 'tcheckbox';
-
-    /**
-     * @var string
-     */
-    protected string $keyName = 'kCheckBox';
-
-    /**
      * @param DbInterface $db
+     * @param string $tableName
+     * @param string $keyName
      */
     public function __construct(
-        protected DbInterface $db
+        protected DbInterface $db,
+        protected readonly string $tableName = 'tcheckbox',
+        protected readonly string $keyName = 'kCheckBox'
     ) {
     }
 
@@ -55,19 +49,6 @@ class CheckboxRepository
                 FROM :tableName
                 WHERE :keyName = :cbid",
             ['tableName' => $this->getTableName(),'keyName' => $this->getKeyName(),'cbid' => $id]
-        );
-    }
-
-    /**
-     * @param int $checkboxFunctionID
-     * @return object
-     */
-    public function getCheckBoxFunction(int $checkboxFunctionID): object
-    {
-        return $this->db->select(
-            'tcheckboxfunktion',
-            'kCheckBoxFunktion',
-            $checkboxFunctionID
         );
     }
 

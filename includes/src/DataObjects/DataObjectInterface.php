@@ -16,17 +16,18 @@ interface DataObjectInterface
 
     /**
      * Will ship an array containing Keys and values of protected and public properties.
-     * Will use getColumnMapping() if $tableColumns = true
+     * Shall use getColumnMapping() if $tableColumns = true
      *
      * @param bool $tableColumns
      * @return array
      */
-    public function toArray(bool $tableColumns): array;
+    public function toArray(bool $tableColumns = true): array;
 
     /**
+     * @param bool $useReverseMapping
      * @return array
      */
-    public function extract(): array;
+    public function extract(bool $useReverseMapping = false): array;
 
     /**
      * Object should have properties matching DataObject - or DataObject mapping
@@ -37,9 +38,10 @@ interface DataObjectInterface
 
     /**
      * Creates and returns object from data provided in toArray()
+     * @param bool $tableColumns
      * @return object
      */
-    public function toObject(): object;
+    public function toObject(bool $tableColumns = true): object;
 
     /**
      * Shall use setter to insert property data.

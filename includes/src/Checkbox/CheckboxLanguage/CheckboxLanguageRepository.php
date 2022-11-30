@@ -12,20 +12,14 @@ use JTL\Shop;
 class CheckboxLanguageRepository
 {
     /**
-     * @var string
-     */
-    protected string $tableName = 'tcheckboxsprache';
-
-    /**
-     * @var string
-     */
-    protected string $keyName = 'kCheckBoxSprache';
-
-    /**
      * @param DbInterface|null $db
+     * @param string $tableName
+     * @param string $keyName
      */
     public function __construct(
-        protected ?DbInterface $db
+        protected ?DbInterface $db,
+        protected readonly string $tableName = 'tcheckboxsprache',
+        protected readonly string $keyName = 'kCheckBoxSprache'
     ) {
         if (\is_null($db)) {
             $this->db = Shop::Container()->getDB();
@@ -82,11 +76,12 @@ class CheckboxLanguageRepository
      */
     public function update(CheckboxLanguageDataObject $checkboxLanguage): bool
     {
-        return (bool)$this->db->updateRow(
+        return ($this->db->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
             $checkboxLanguage->getCheckboxLanguageID(),
             $checkboxLanguage->toObject()
+        ) !== -1
         );
     }
 }

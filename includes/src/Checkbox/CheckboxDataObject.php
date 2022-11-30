@@ -101,6 +101,7 @@ class CheckboxDataObject extends AbstractDataObject
         'isInternal'             => 'isInternal',
     ];
 
+
     /**
      * @var array|string[]
      */
@@ -128,8 +129,9 @@ class CheckboxDataObject extends AbstractDataObject
         return $this->primaryKey;
     }
 
+
     /**
-     * @return array|string[]
+     * @return array
      */
     public function getMapping(): array
     {

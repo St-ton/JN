@@ -156,7 +156,14 @@ class CheckBox
      */
     public ?string $cErrormsg = null;
 
+    /**
+     * @var CheckboxService
+     */
     protected CheckboxService $service;
+
+    /**
+     * @var CheckboxLanguageService
+     */
     protected CheckboxLanguageService $languageService;
 
     /**
@@ -653,7 +660,7 @@ class CheckBox
             if (\mb_strlen($text) === 0) {
                 continue;
             }
-            $this->prepareLocalizationObject($iso, $text, $descriptions);
+            $this->prepareLocalizationObject($iso, $text, $descriptions[$iso]);
             $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache =
                 $this->languageService->insert($this->oCheckBoxSprache_arr[$iso]);
         }
@@ -676,8 +683,7 @@ class CheckBox
             if (\mb_strlen($text) === 0) {
                 continue;
             }
-            $this->prepareLocalizationObject($iso, $text, $descriptions);
-
+            $this->prepareLocalizationObject($iso, $text, $descriptions[$iso]);
             $this->languageService->update($this->oCheckBoxSprache_arr[$iso]);
         }
     }
@@ -688,16 +694,13 @@ class CheckBox
      * @param array $descriptions
      * @return void
      */
-    private function prepareLocalizationObject(string $iso, mixed $text, array $descriptions): void
+    private function prepareLocalizationObject(string $iso, string $text, string $description = ''): void
     {
         $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataObject();
         $this->oCheckBoxSprache_arr[$iso]->setCheckboxID($this->kCheckBox);
         $this->oCheckBoxSprache_arr[$iso]->setLanguageID($this->getSprachKeyByISO($iso));
         $this->oCheckBoxSprache_arr[$iso]->setText($text);
-        $this->oCheckBoxSprache_arr[$iso]->setDescription('');
-        if (isset($descriptions[$iso]) && \mb_strlen($descriptions[$iso]) > 0) {
-            $this->oCheckBoxSprache_arr[$iso]->setDescription($descriptions[$iso]);
-        }
+        $this->oCheckBoxSprache_arr[$iso]->setDescription($description);
     }
 
     /**

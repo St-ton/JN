@@ -52,6 +52,9 @@ class CheckboxLanguageService
             'kCheckBox' => $checkboxLanguage->getCheckboxID(),
             'kSprache'  => $checkboxLanguage->getLanguageID()
         ])[0];
+        if (\is_null($language)) {
+            return $this->insert($checkboxLanguage) > 0;
+        }
         $checkboxLanguage->setCheckboxLanguageID($language->getCheckboxLanguageID());
 
         return $this->repository->update($checkboxLanguage);

@@ -193,6 +193,7 @@ class CheckboxController extends AbstractBackendController
      * @param array $post
      * @param array $languages
      * @return CheckBox
+     * @throws \Exception
      */
     private function updateCheckBox(array $post, array $languages): CheckBox
     {
@@ -213,7 +214,7 @@ class CheckboxController extends AbstractBackendController
     private function prepareCheckbox(CheckBox $checkBox, array $post): void
     {
         $checkBox->kLink = 0;
-        if ((int)$post['nLink'] === 1) {
+        if (isset($post['nLink']) && (int)$post['nLink'] === 1) {
             $checkBox->kLink = (int)$post['kLink'];
         }
         if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {

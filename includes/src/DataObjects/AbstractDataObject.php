@@ -114,6 +114,8 @@ abstract class AbstractDataObject implements DataObjectInterface
 
     /**
      * Will ship an array containing Keys and values of protected and public properties
+     * $tableColumns = true will ship an array using table column names as array keys
+     *
      * @param bool $tableColumns
      * @return array
      */
@@ -143,6 +145,8 @@ abstract class AbstractDataObject implements DataObjectInterface
     }
 
     /**
+     * $tableColumns = true will ship an object using table column names as array keys
+     *
      * @param bool $tableColumns
      * @return object
      */

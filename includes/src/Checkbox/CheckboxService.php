@@ -28,15 +28,6 @@ class CheckboxService
     }
 
     /**
-     * @param int $checkBoxFunctionID
-     * @return object
-     */
-    public function getCheckBoxFunction(int $checkBoxFunctionID): object
-    {
-        return $this->repository->getCheckBoxFunction($checkBoxFunctionID);
-    }
-
-    /**
      * @param  CheckboxDataObject $checkbox
      * @return int
      */

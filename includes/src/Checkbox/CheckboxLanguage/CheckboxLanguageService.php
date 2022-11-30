@@ -52,7 +52,7 @@ class CheckboxLanguageService
             'kCheckBox' => $checkboxLanguage->getCheckboxID(),
             'kSprache'  => $checkboxLanguage->getLanguageID()
         ]);
-        $language     = $language[0] ?? null;
+        $language     = $languageList[0] ?? null;
         if (\is_null($language)) {
             return $this->insert($checkboxLanguage) > 0;
         }

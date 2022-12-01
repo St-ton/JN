@@ -70,6 +70,30 @@ class ShippingMethod
     }
 
     /**
+     * @param int $minDelivery
+     * @param int $maxDelivery
+     * @param string $languageVar
+     * @return string
+     */
+    private static function getDeliveryText(int $minDelivery, int $maxDelivery, string $languageVar): string
+    {
+        if (!\strpos($languageVar, 'simple')) {
+            return \str_replace(
+                ['#MINDELIVERYTIME#', '#MAXDELIVERYTIME#'],
+                [(string)$minDelivery, (string)$maxDelivery],
+                Shop::Lang()->get($languageVar)
+            );
+        }
+
+        return \str_replace(
+            '#DELIVERYTIME#',
+            (string)$minDelivery,
+            Shop::Lang()->get($languageVar)
+        );
+    }
+
+
+    /**
      * @param float|int $freeFromX
      * @return array
      */
@@ -164,6 +188,7 @@ class ShippingMethod
             $filterSQL           = ' AND tzahlungsart.kZahlungsart = :paymentID ';
             $params['paymentID'] = $filterPaymentID;
         }
+
         return Shop::Container()->getDB()->getObjects(
             'SELECT tversandartzahlungsart.*, tzahlungsart.*
                  FROM tversandartzahlungsart, tzahlungsart
@@ -184,14 +209,14 @@ class ShippingMethod
      * @param string $countryCode
      * @param string $zip
      * @param string $shippingClasses
-     * @param int    $cgroupID
+     * @param int $cgroupID
      * @return array
      */
     public static function getPossibleShippingMethods(
         string $countryCode,
         string $zip,
         string $shippingClasses,
-        int $cgroupID
+        int    $cgroupID
     ): array {
         $minSum    = 10000;
         $vatNote   = null;
@@ -678,20 +703,20 @@ class ShippingMethod
     }
 
     /**
-     * @param string              $deliveryCountry
-     * @param string              $shippingClasses
-     * @param int                 $customerGroupID
+     * @param string $deliveryCountry
+     * @param string $shippingClasses
+     * @param int $customerGroupID
      * @param Artikel|object|null $product
-     * @param bool                $checkProductDepedency
+     * @param bool $checkProductDepedency
      * @return mixed
      * @former gibGuenstigsteVersandart()
      */
     public static function getFavourableShippingMethod(
         string $deliveryCountry,
         string $shippingClasses,
-        int $customerGroupID,
+        int    $customerGroupID,
         $product,
-        bool $checkProductDepedency = true
+        bool   $checkProductDepedency = true
     ) {
         $favourableIDX   = 0;
         $minVersand      = 10000;
@@ -736,8 +761,8 @@ class ShippingMethod
      * wird die hinzukommende Versandsumme fuer den Artikel
      * der hinzugefuegt werden soll errechnet und zurueckgegeben.
      *
-     * @param Artikel   $product
-     * @param string    $iso
+     * @param Artikel $product
+     * @param string $iso
      * @param float|int $productAmount
      * @return bool|stdClass
      */
@@ -804,17 +829,17 @@ class ShippingMethod
     }
 
     /**
-     * @param string    $country
-     * @param Artikel   $product
+     * @param string $country
+     * @param Artikel $product
      * @param int|float $amount
-     * @param bool      $checkDeliveryAddress
+     * @param bool $checkDeliveryAddress
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(
-        string $country,
+        string  $country,
         Artikel $product,
         $amount,
-        bool $checkDeliveryAddress = true
+        bool    $checkDeliveryAddress = true
     ) {
         $taxRate    = null;
         $hookReturn = false;
@@ -868,7 +893,7 @@ class ShippingMethod
                                     Tax::getNet((float)$item->fKosten, $taxRate),
                                     $currency
                                 ) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' .
-                                Shop::Lang()->get('vat', 'productDetails');
+                                    Shop::Lang()->get('vat', 'productDetails');
                             } else {
                                 $item->cPreisLocalized = Preise::getLocalizedPriceString($item->fKosten, $currency);
                             }
@@ -922,14 +947,14 @@ class ShippingMethod
 
     /**
      * @param string $country
-     * @param array  $items
-     * @param bool   $checkDelivery
+     * @param array $items
+     * @param bool $checkDelivery
      * @return array
      */
     public static function gibArtikelabhaengigeVersandkostenImWK(
         string $country,
-        array $items,
-        bool $checkDelivery = true
+        array  $items,
+        bool   $checkDelivery = true
     ): array {
         $shippingItems = [];
         $items         = \array_filter($items, static function ($item): bool {
@@ -974,8 +999,8 @@ class ShippingMethod
 
     /**
      * @param Versandart|stdClass $shippingMethod
-     * @param string              $iso
-     * @param string              $zip
+     * @param string $iso
+     * @param string $zip
      * @return stdClass|null
      * @former gibVersandZuschlag()
      */
@@ -998,10 +1023,10 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|stdClass   $shippingMethod
-     * @param String                $iso
+     * @param Versandart|stdClass $shippingMethod
+     * @param String $iso
      * @param Artikel|stdClass|null $additionalProduct
-     * @param Artikel|null          $product
+     * @param Artikel|null $product
      * @return int|float
      * @former berechneVersandpreis()
      * @todo fWarenwertNetto vom Zusatzartikel darf kein Netto sein - der Preis muss in Brutto angegeben werden.
@@ -1177,10 +1202,10 @@ class ShippingMethod
     /**
      * calculate shipping costs for exports
      *
-     * @param string   $iso
-     * @param Artikel  $product
+     * @param string $iso
+     * @param Artikel $product
      * @param int|bool $allowCash
-     * @param int      $customerGroupID
+     * @param int $customerGroupID
      * @return int|float
      * @former gibGuenstigsteVersandkosten()
      */
@@ -1243,17 +1268,30 @@ class ShippingMethod
      */
     public static function getDeliverytimeEstimationText(int $minDeliveryDays, int $maxDeliveryDays): string
     {
-        $deliveryText = $minDeliveryDays === $maxDeliveryDays
-            ? \str_replace(
-                '#DELIVERYDAYS#',
-                (string)$minDeliveryDays,
-                Shop::Lang()->get('deliverytimeEstimationSimple')
-            )
-            : \str_replace(
-                ['#MINDELIVERYDAYS#', '#MAXDELIVERYDAYS#'],
-                [(string)$minDeliveryDays, (string)$maxDeliveryDays],
-                Shop::Lang()->get('deliverytimeEstimation')
-            );
+        switch (true) {
+            case ($maxDeliveryDays < \DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT):
+                $minDelivery = $minDeliveryDays;
+                $maxDelivery = $maxDeliveryDays;
+                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                    ? 'deliverytimeEstimationSimple'
+                    : 'deliverytimeEstimation';
+                break;
+            case ($maxDeliveryDays < \DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT):
+                $minDelivery = (int)($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
+                $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
+                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                    ? 'deliverytimeEstimationSimpleWeeks'
+                    : 'deliverytimeEstimationWeeks';
+                break;
+            default:
+                $minDelivery = (int)($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
+                $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
+                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                    ? 'deliverytimeEstimationSimpleMonths'
+                    : 'deliverytimeEstimationMonths';
+        }
+
+        $deliveryText = self::getDeliveryText($minDelivery, $maxDelivery, $languageVar);
 
         \executeHook(\HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT, [
             'min'  => $minDeliveryDays,
@@ -1266,8 +1304,8 @@ class ShippingMethod
 
     /**
      * @param Versandart|object $method
-     * @param float             $cartSumGros
-     * @param float             $cartSumNet
+     * @param float $cartSumGros
+     * @param float $cartSumNet
      * @return string
      * @former baueVersandkostenfreiString()
      */
@@ -1316,8 +1354,8 @@ class ShippingMethod
 
     /**
      * @param Versandart $method
-     * @param float|int  $cartSumGros
-     * @param float|int  $cartSumNet
+     * @param float|int $cartSumGros
+     * @param float|int $cartSumNet
      * @return float
      */
     public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
@@ -1362,7 +1400,7 @@ class ShippingMethod
     }
 
     /**
-     * @param int    $customerGroupID
+     * @param int $customerGroupID
      * @param string $country
      * @return int|mixed
      * @former gibVersandkostenfreiAb()
@@ -1436,18 +1474,18 @@ class ShippingMethod
     }
 
     /**
-     * @param int   $customerGroupID
-     * @param bool  $ignoreConf
-     * @param bool  $force
+     * @param int $customerGroupID
+     * @param bool $ignoreConf
+     * @param bool $force
      * @param array $filterISO
      * @return array
      * @former gibBelieferbareLaender()
      * @since 5.0.0
      */
     public static function getPossibleShippingCountries(
-        int $customerGroupID = 0,
-        bool $ignoreConf = false,
-        bool $force = false,
+        int   $customerGroupID = 0,
+        bool  $ignoreConf = false,
+        bool  $force = false,
         array $filterISO = []
     ): array {
         if (empty($customerGroupID)) {
@@ -1537,7 +1575,7 @@ class ShippingMethod
 
     /**
      * @param object[]|null $shippingMethods
-     * @param int           $paymentMethodID
+     * @param int $paymentMethodID
      * @return object|null
      */
     public static function getFirstShippingMethod(?array $shippingMethods = null, int $paymentMethodID = 0): ?object

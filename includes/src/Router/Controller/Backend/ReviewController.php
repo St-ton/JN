@@ -3,24 +3,19 @@
 namespace JTL\Router\Controller\Backend;
 
 use Exception;
-use JTL\Backend\AdminAccount;
 use JTL\Backend\Permissions;
-use JTL\Cache\JTLCacheInterface;
 use JTL\CSV\Export;
 use JTL\CSV\Import;
-use JTL\DB\DbInterface;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\L10n\GetText;
 use JTL\Model\DataModelInterface;
 use JTL\Pagination\Pagination;
 use JTL\Review\Manager;
 use JTL\Review\ReviewBonusModel;
 use JTL\Review\ReviewModel;
 use JTL\Router\Route;
-use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -49,14 +44,11 @@ class ReviewController extends AbstractBackendController
      */
     private Manager $manager;
 
-    public function __construct(
-        DbInterface $db,
-        JTLCacheInterface $cache,
-        AlertServiceInterface $alertService,
-        AdminAccount $account,
-        GetText $getText
-    ) {
-        parent::__construct($db, $cache, $alertService, $account, $getText);
+    /**
+     * @inheritdoc
+     */
+    public function init(): void
+    {
         $this->config  = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_BEWERTUNG]);
         $this->manager = new Manager(
             $this->db,
@@ -220,9 +212,24 @@ class ReviewController extends AbstractBackendController
         if (isset($obj->dAntwortDatum) && $obj->dAntwortDatum !== '') {
             $ins->dAntwortDatum = $obj->dAntwortDatum;
         }
-        if ($importType === Import::TYPE_OVERWRITE_EXISTING && isset($obj->kBewertung)) {
-            $ins->kBewertung = (int)$obj->kBewertung;
-            $ok              = $this->db->upsert('tbewertung', $ins) >= 0;
+        $exists = -1;
+        if ($importType !== Import::TYPE_TRUNCATE_BEFORE && $ins->kKunde > 0) {
+            $exists = $this->db->getSingleInt(
+                'SELECT kBewertung AS id 
+                    FROM tbewertung
+                    WHERE kKunde = :cid
+                        AND kArtikel = :pid',
+                'id',
+                ['cid' => $ins->kKunde, 'pid' => $ins->kArtikel],
+            );
+        }
+        if ($exists > 0) {
+            if ($importType === Import::TYPE_INSERT_NEW) {
+                $ok = true;
+            } else {
+                $ins->kBewertung = $exists;
+                $ok              = $this->db->upsert('tbewertung', $ins) >= 0;
+            }
         } else {
             $ok = $this->db->insert('tbewertung', $ins) > 0;
         }

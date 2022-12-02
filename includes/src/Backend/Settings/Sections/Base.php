@@ -382,7 +382,7 @@ class Base implements SectionInterface
     /**
      * @inheritdoc
      */
-    public function filter(string $filter): void
+    public function filter(string $filter): array
     {
         $keys = [
             'configgroup_5_product_question'  => [
@@ -417,22 +417,23 @@ class Base implements SectionInterface
             ];
         }
 
-        if ($filter !== '' && isset($keys[$filter])) {
-            $keysToFilter = $keys[$filter];
-        } else {
-            $keysToFilter = flatten($keys);
-        }
-
-        $this->items = filter($this->getItems(), static function (Item $e) use ($keysToFilter): bool {
+        $keysToFilter = ($filter !== '' && isset($keys[$filter]))
+            ? $keys[$filter]
+            : flatten($keys);
+        $filtered     = [];
+        $this->items  = filter($this->getItems(), static function (Item $e) use ($keysToFilter): bool {
             return !\in_array($e->getValueName(), $keysToFilter, true);
         });
         foreach ($this->getSubsections() as $subsection) {
             foreach ($subsection->getItems() as $i => $item) {
                 if (\in_array($item->getValueName(), $keysToFilter, true)) {
+                    $filtered[] = $item;
                     $subsection->removeItemAtIndex($i);
                 }
             }
         }
+
+        return $filtered;
     }
 
     /**

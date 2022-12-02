@@ -237,6 +237,22 @@ class Item implements JsonSerializable
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             }
+
+            return $this->assignData($item, $languageID, $customerGroupID);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param object $item
+     * @param int    $languageID
+     * @param int    $customerGroupID
+     * @return $this
+     */
+    public function assignData(object $item, int $languageID, int $customerGroupID): self
+    {
+        if ($item->kKonfigitem > 0) {
             $this->kKonfiggruppe     = (int)$item->kKonfiggruppe;
             $this->kKonfigitem       = (int)$item->kKonfigitem;
             $this->kArtikel          = (int)$item->kArtikel;
@@ -296,14 +312,14 @@ class Item implements JsonSerializable
         $customerGroupID = Frontend::getCustomerGroup()->getID();
 
         return Shop::Container()->getDB()->getCollection(
-            'SELECT kKonfigitem 
+            'SELECT *
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
             ['groupID' => $groupID]
         )
             ->map(static function (stdClass $item) use ($languageID, $customerGroupID): self {
-                return new self((int)$item->kKonfigitem, $languageID, $customerGroupID);
+                return (new self())->assignData($item, $languageID, $customerGroupID);
             })
             ->filter(static function (Item $item): bool {
                 return $item->isValid();

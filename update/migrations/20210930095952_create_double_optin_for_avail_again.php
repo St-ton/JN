@@ -44,7 +44,7 @@ class Migration_20210930095952 extends Migration implements IMigration
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($subscriptions as $subscription) {
             $product = (new Artikel($this->db))->fuelleArtikel((int)$subscription->kArtikel, $options);
-            if ($product === null || empty($subscription->cMail)) {
+            if (empty($product->kArtikel) || empty($subscription->cMail)) {
                 continue;
             }
             /** @var OptinAvailAgain $availAgainOptin */

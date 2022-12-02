@@ -240,8 +240,7 @@ header {
   }
   &::after {
     content: "";
-    margin: 10px 0 0 0;
-    width: 300px;
+    margin: 10px 0 0 10px;
   }
   @include media-breakpoint-down(md) {
     border: 0;
@@ -362,15 +361,6 @@ header {
   top: map_get($spacers, 6);
 }
 
-@include media-breakpoint-up(md) {
-  .productlist-page-nav .displayoptions {
-    width: 100%;
-    text-align: right;
-    padding-bottom: map_get($spacers, 2);
-    margin-bottom:  map_get($spacers, 2);
-    border-bottom: $hr-border-width solid $hr-border-color;
-  }
-}
 .productlist-page-nav-top {
   border-color: $gray-dark;
   margin-bottom: map_get($spacers, 2);

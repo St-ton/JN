@@ -20,7 +20,7 @@ final class ExtensionDir extends AbstractItem
             return InstallCode::INVALID_PLUGIN_ID;
         }
 
-        return $baseNode['PluginID'] === \pathinfo($this->getDir())['basename']
+        return $baseNode['PluginID'] === \pathinfo($this->getDir(), \PATHINFO_BASENAME)
             ? InstallCode::OK
             : InstallCode::WRONG_EXT_DIR;
     }

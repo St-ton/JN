@@ -220,7 +220,7 @@ class CampaignController extends AbstractBackendController
                     FROM tkampagnevorgang
                     ' . $where . '
                         AND kKampagne = ' . $campaignID . '
-                        AND kKampagneDef = ' . (int)$definition->kKampagneDef
+                        AND kKampagneDef = ' . (int)($definition->kKampagneDef ?? 0)
                 );
 
                 $paginationDefinitionDetail = (new Pagination('defdetail'))

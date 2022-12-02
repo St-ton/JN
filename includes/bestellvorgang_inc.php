@@ -477,10 +477,10 @@ function pruefeZahlungsartStep(array $get): string
 
 /**
  * @param array $post
- * @return string
+ * @return int|null
  * @deprecated since 5.2.0
  */
-function pruefeZahlungsartwahlStep(array $post): string
+function pruefeZahlungsartwahlStep(array $post): ?int
 {
     trigger_error(__FUNCTION__ . ' is deprecated and should not be used anymore.', E_USER_DEPRECATED);
     global $step, $zahlungsangaben;
@@ -491,7 +491,7 @@ function pruefeZahlungsartwahlStep(array $post): string
         ) {
             $zahlungsangaben = zahlungsartKorrekt((int)$_SESSION['Zahlungsart']->kZahlungsart);
         } else {
-            return $step;
+            return null;
         }
     } else {
         $zahlungsangaben = zahlungsartKorrekt((int)$post['Zahlungsart']);
@@ -505,18 +505,19 @@ function pruefeZahlungsartwahlStep(array $post): string
                 'fillPayment'
             );
             $step = 'Zahlung';
-            break;
+
+            return 0;
         case 1:
             $step = 'ZahlungZusatzschritt';
-            break;
+
+            return 1;
         case 2:
             $step = 'Bestaetigung';
-            break;
-        default:
-            break;
-    }
 
-    return $step;
+            return 2;
+        default:
+            return null;
+    }
 }
 
 /**
@@ -1718,7 +1719,7 @@ function versandartKorrekt(int $shippingMethodID, $formValues = 0)
                 $localizedNames,
                 1,
                 $fBrutto,
-                $packagings->kSteuerklasse,
+                (int)$packagings->kSteuerklasse,
                 C_WARENKORBPOS_TYP_VERPACKUNG,
                 false
             );

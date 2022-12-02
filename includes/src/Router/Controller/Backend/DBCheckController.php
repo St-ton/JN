@@ -8,7 +8,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Backend;
-use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Update\DBMigrationHelper;
 use JTLShop\SemVer\Parser;
@@ -56,7 +55,6 @@ class DBCheckController extends AbstractBackendController
         }
 
         $dbStruct = $this->getDBStruct(true, true);
-        $conf     = Shop::getSettings([\CONF_GLOBAL, \CONF_ARTIKELUEBERSICHT]);
         if (empty($dbFileStruct)) {
             $errorMsg = \__('errorReadStructureFile');
         } elseif ($valid && !empty($_POST['action']) && !empty($_POST['check'])) {
@@ -404,8 +402,8 @@ class DBCheckController extends AbstractBackendController
         $result .= '-- @important: !!! PLEASE MAKE A BACKUP OF STRUCTURE AND DATA FOR `' . $database . '` !!!' . $nl;
         $result .= '-- ' . $nl;
         $result .= $nl;
-        $result .= '-- ---------------------------------------------------------' .
-            '-------------------------------------------' . $nl;
+        $result .= '-- ---------------------------------------------------------'
+            . '-------------------------------------------' . $nl;
         $result .= '-- ' . $nl;
         $result .= 'use `' . $database . '`;' . $nl;
 

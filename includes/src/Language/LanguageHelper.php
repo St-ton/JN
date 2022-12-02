@@ -265,17 +265,12 @@ class LanguageHelper
                     ON iso.cISO = tsprache.cISO
                 LEFT JOIN tsprachsektion
                     ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion'
-        )->groupBy(['langID', 'sectionName'])->toArray();
-        foreach ($collection as $langID => $sections) {
-            foreach ($sections as $section => $data) {
-                $variables = [];
-                foreach ($data as $variable) {
-                    $variables[$variable->name] = $variable->val;
-                }
-                $collection[$langID][$section] = $variables;
-            }
+        );
+
+        $this->langVars = [];
+        foreach ($collection as $data) {
+            $this->langVars[$data->langID][$data->sectionName][$data->name] = $data->val;
         }
-        $this->langVars = $collection;
         $this->getPluginLangVars();
         $this->saveLangVars();
 
@@ -822,7 +817,7 @@ class LanguageHelper
         $deleteFlag  = false;
         $updateCount = 0;
         $kSprachISO  = $this->mappekISO($iso);
-        if ($kSprachISO > 0) {
+        if ($kSprachISO === 0) {
             // Sprache noch nicht installiert
             $langIso       = new stdClass();
             $langIso->cISO = $iso;

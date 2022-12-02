@@ -351,6 +351,9 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
+        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            $scheme = 'F';
+        }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
             $byName = false;
         }
@@ -417,6 +420,9 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
+        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            $scheme = 'F';
+        }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
             $byName = false;
         }
@@ -516,6 +522,9 @@ class Router
             $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
             $defaultScheme   = $this->config['global']['routing_default_language'] ?? 'F';
             $scheme          = $this->config['global']['routing_scheme'] ?? 'F';
+            if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+                $scheme = 'F';
+            }
             if (!$isDefaultLocale && ($scheme === 'LP' || $scheme === 'L')) {
                 $name .= '_LOCALIZED';
             } elseif ($isDefaultLocale && ($defaultScheme === 'LP' || $defaultScheme === 'L')) {
@@ -737,6 +746,10 @@ class Router
         }
         $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
         $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
+        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            $defaultScheme = 'xF';
+            $otherSchemes  = 'xF';
+        }
         if ($defaultScheme !== 'F' || $otherSchemes !== 'F') {
             if ($this->isMultiDomain === false && \count($locales) > 1) {
                 $host2              = $hosts[0];

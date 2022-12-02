@@ -152,6 +152,11 @@ class Base implements SectionInterface
         );
         $configItems = [];
         foreach ($data as $item) {
+            if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false && (
+                $item->cWertName === 'routing_scheme' || $item->cWertName === 'routing_default_language')
+            ) {
+                continue;
+            }
             if ($item->cConf === 'N' && ($item->cInputTyp === '' || $item->cInputTyp === null)) {
                 $config = new Subsection();
             } else {

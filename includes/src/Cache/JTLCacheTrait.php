@@ -303,7 +303,7 @@ trait JTLCacheTrait
     {
         if ($this->journal === null) {
             $this->journal = ($j = $this->load($this->journalID)) !== false
-                ? $j
+                ? $j ?? []
                 : [];
         }
 

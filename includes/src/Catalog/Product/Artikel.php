@@ -1054,6 +1054,11 @@ class Artikel implements RoutableInterface
     public ?string $cVaterURL = null;
 
     /**
+     * @var string|null
+     */
+    public ?string $cVaterURLFull = null;
+
+    /**
      * @var array|null
      */
     public ?array $VaterFunktionsAttribute = null;
@@ -5588,7 +5593,7 @@ class Artikel implements RoutableInterface
             };
         }
         if ($isCanonical === true) {
-            $url = Shop::getURL() . '/' . $childProduct->cVaterURL;
+            $url = $childProduct->cVaterURLFull;
         }
 
         return $url;

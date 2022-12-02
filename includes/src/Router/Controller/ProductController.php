@@ -204,7 +204,7 @@ class ProductController extends AbstractController
         }
         // Canonical bei non SEO Shops oder wenn SEO kein Ergebnis geliefert hat
         if (empty($this->canonicalURL)) {
-            $this->canonicalURL = $shopURL . $this->currentProduct->cSeo;
+            $this->canonicalURL = $this->currentProduct->cURLFull;
         }
         $this->currentProduct->berechneSieSparenX((int)$this->config['artikeldetails']['sie_sparen_x_anzeigen']);
 

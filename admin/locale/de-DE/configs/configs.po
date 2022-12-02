@@ -3053,8 +3053,18 @@ msgstr "Routing"
 msgid "routing_scheme_name"
 msgstr "Routing-Schema"
 
+msgid "routing_scheme_desc"
+msgstr "Dieses Feature ist aktuell experimentell und nur via define ENABLE_EXPERIMENTAL_ROUTING_SCHEMES aktivierbar. "
+"Wenn Sie dieses Feature nutzen wollen, beachten sie die offenen Tickets im Issuetracker LINK. "
+"Das Feature wird in einer zukünftigen Version vom Status experimentell zur normalen Einstellung wechseln."
+
 msgid "routing_default_language_name"
 msgstr "Routing-Schema für Standardsprache"
+
+msgid "routing_default_language_desc"
+msgstr "Dieses Feature ist aktuell experimentell und nur via define ENABLE_EXPERIMENTAL_ROUTING_SCHEMES aktivierbar. "
+"Wenn Sie dieses Feature nutzen wollen, beachten sie die offenen Tickets im Issuetracker LINK. "
+"Das Feature wird in einer zukünftigen Version vom Status experimentell zur normalen Einstellung wechseln."
 
 msgid "routing_duplicates_name"
 msgstr "Behandlung von Nicht-Standardrouten"

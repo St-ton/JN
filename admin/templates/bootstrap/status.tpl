@@ -99,7 +99,7 @@
                                     {$cacheOptions = $status->getObjectCache()->getOptions()}
                                     <i class="fal fa-check-circle text-four-times text-success"></i>
                                     <h3 style="margin-top:10px;margin-bottom:0">{__('activated')}</h3>
-                                    <span style="color:#c7c7c7">{$cacheOptions.method|ucfirst}</span>
+                                    <span style="color:#c7c7c7">{ucfirst($cacheOptions.method)}</span>
                                 {else}
                                     <i class="fa fa-exclamation-circle text-four-times text-info"></i>
                                     <h3 style="margin-top:10px;margin-bottom:0">{__('deactivated')}</h3>
@@ -150,7 +150,7 @@
                                         <h3 style="margin-top:10px;margin-bottom:0">{__('expired')}</h3>
                                     {else}
                                         <i class="fa fa-exclamation-circle text-four-times text-info"></i>
-                                        <h3 style="margin-top:10px;margin-bottom:0">{{__('expiresInXDays')}|sprintf:{$sub->nDayDiff}}</h3>
+                                        <h3 style="margin-top:10px;margin-bottom:0">{sprintf(__('expiresInXDays'), $sub->nDayDiff)}</h3>
                                     {/if}
                                 {/if}
                             </div>
@@ -295,7 +295,7 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    {if $tests.recommendations|count > 0}
+                    {if count($tests.recommendations) > 0}
                         <table class="table table-condensed table-striped table-blank">
                             <thead>
                             <tr>
@@ -309,7 +309,7 @@
                                 <tr class="text-vcenter">
                                     <td>
                                         <div class="test-name">
-                                            {if $test->getDescription()|count_characters > 0}
+                                            {if $test->getDescription() !== null && strlen($test->getDescription()) > 0}
                                                 <abbr title="{$test->getDescription()|escape:'html'}">{$test->getName()}</abbr>
                                             {else}
                                                 {$test->getName()}

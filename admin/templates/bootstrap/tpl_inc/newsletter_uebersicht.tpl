@@ -52,7 +52,7 @@
         </nav>
         <div class="tab-content">
             <div id="inaktiveabonnenten" class="tab-pane fade{if $cTab === '' || $cTab === 'inaktiveabonnenten'} active show{/if}">
-                {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|count > 0}
+                {if isset($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0}
                     <div class="search-toolbar mb-3">
                         <form name="suche" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
@@ -146,7 +146,7 @@
                 {/if}
             </div>
             <div id="alleabonnenten" class="tab-pane fade{if $cTab === 'alleabonnenten'} active show{/if}">
-                {if isset($oAbonnenten_arr) && $oAbonnenten_arr|count > 0}
+                {if isset($oAbonnenten_arr) && count($oAbonnenten_arr) > 0}
                     <div class="search-toolbar mb-3">
                         <form name="suche" method="post" action="{$adminURL}{$route}">
                             {$jtl_token}
@@ -303,7 +303,7 @@
                 </form>
             </div>
             <div id="newsletterqueue" class="tab-pane fade{if $cTab === 'newsletterqueue'} active show{/if}">
-                {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|count > 0}
+                {if isset($oNewsletterQueue_arr) && count($oNewsletterQueue_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -375,7 +375,7 @@
                 {/if}
             </div>
             <div id="newslettervorlagen" class="tab-pane fade{if $cTab === 'newslettervorlagen'} active show{/if}">
-                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
+                {if isset($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -470,14 +470,14 @@
                                                 <label class="custom-control-label" for="ALLMSGS5">{__('globalSelectAll')}</label>
                                             </div>
                                         </div>
-                                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
+                                        {if isset($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0}
                                             <div class="ml-auto col-sm-6 col-xl-auto">
                                                 <button class="btn btn-danger btn-block" name="loeschen" type="submit" value="{__('delete')}">
                                                     <i class="fas fa-trash-alt"></i> {__('delete')}
                                                 </button>
                                             </div>
                                         {/if}
-                                        <div class="{if !(isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                        <div class="{if !(isset($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0)}ml-auto{/if} col-sm-6 col-xl-auto">
                                             <button name="vorlage_erstellen" class="btn btn-primary btn-block" type="submit">
                                                 {__('newsletterdraftcreate')}
                                             </button>
@@ -494,9 +494,9 @@
                         <input name="newslettervorlagen" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newslettervorlagen">
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                            <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}btn-group{/if}">
+                            <div class="submit {if isset($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0}btn-group{/if}">
                                 <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
-                                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|count > 0}
+                                {if isset($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0}
                                     <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 {/if}
                             </div>
@@ -504,7 +504,7 @@
                 {/if}
             </div>
             <div id="newslettervorlagenstd" class="tab-pane fade{if $cTab === 'newslettervorlagenstd'} active show{/if}">
-                {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|count > 0}
+                {if isset($oNewslettervorlageStd_arr) && count($oNewslettervorlageStd_arr) > 0}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
                         <input name="newslettervorlagenstd" type="hidden" value="1" />
@@ -553,7 +553,7 @@
                 {/if}
             </div>
             <div id="newsletterhistory" class="tab-pane fade{if $cTab === 'newsletterhistory'} active show{/if}">
-                {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|count > 0}
+                {if isset($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory'}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}

@@ -1,7 +1,7 @@
 {block name='snippets-pagination'}
     {assign var=cParam_arr value=$cParam_arr|default:[]}
     {assign var=noWrapper value=$noWrapper|default:false}
-    {assign var=cUrlAppend value=$cParam_arr|http_build_query}
+    {assign var=cUrlAppend value=http_build_query($cParam_arr)}
     {* parts list to display: label, pagination, items-per-page-options, sort-options *}
     {assign var=parts value=$parts|default:['label','pagi','count','sort']}
 

@@ -24,7 +24,7 @@
         </nav>
         <div class="tab-content">
             <div id="letztenvergleiche" class="tab-pane fade {if $cTab === '' || $cTab === 'letztenvergleiche'} active show{/if}">
-                {if $Letzten20Vergleiche && $Letzten20Vergleiche|count > 0}
+                {if $Letzten20Vergleiche && count($Letzten20Vergleiche) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
                     <div class="settings table-responsive">
                         <table class="table table-striped table-align-top">
@@ -105,7 +105,7 @@
                     <hr class="mb-3">
                 </div>
                 <div>
-                    {if isset($TopVergleiche) && $TopVergleiche|count > 0}
+                    {if isset($TopVergleiche) && count($TopVergleiche) > 0}
                         <div class="settings table-responsive">
                             <table class="bottom table table-striped table-align-top">
                                 <thead>

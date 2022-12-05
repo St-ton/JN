@@ -29,7 +29,7 @@
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
                         <div>
-                            {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0}
+                            {if isset($oAuswahlAssistentGruppe_arr) && count($oAuswahlAssistentGruppe_arr) > 0}
                                 <div class="table-responsive">
                                     <table class="list table">
                                         <thead>
@@ -71,7 +71,7 @@
                                                     </td>
                                                     <td class="text-center" width="265">
                                                         <div class="btn-group">
-                                                            {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|count > 0}
+                                                            {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && count($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) > 0}
                                                                 <a href="#" class="btn btn-link px-2 down"
                                                                    id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                                    title="{__('showQuestions')}"
@@ -94,7 +94,7 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|count > 0}
+                                                {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && count($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) > 0}
                                                     <tr>
                                                         <td class="text-left" colspan="5"
                                                             id="row_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
@@ -170,14 +170,14 @@
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
-                                    {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0}
+                                    {if isset($oAuswahlAssistentGruppe_arr) && count($oAuswahlAssistentGruppe_arr) > 0}
                                         <div class="ml-auto col-sm-6 col-xl-auto submit">
                                             <button type="submit" name="a" value="delGrp" class="btn btn-danger btn-block">
                                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                                             </button>
                                         </div>
                                     {/if}
-                                    <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|count > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
+                                    <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && count($oAuswahlAssistentGruppe_arr) > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
                                         <button type="submit" name="a" value="newQuest" class="btn btn-outline-primary btn-block">
                                             <i class="fa fa-share"></i> {__('aaQuestion')}
                                         </button>

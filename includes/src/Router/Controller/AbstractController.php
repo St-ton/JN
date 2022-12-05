@@ -527,7 +527,8 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function assignMetaData(LinkInterface $link): void
     {
-        $metaTitle       = $this->metaTitle ?? $link->getMetaTitle();
+        $maxLength       = (int)$this->config['metaangaben']['global_meta_maxlaenge_title'];
+        $metaTitle       = Metadata::prepareMeta($this->metaTitle ?? $link->getMetaTitle(), null, $maxLength);
         $metaDescription = $this->metaDescription ?? $link->getMetaDescription();
         $metaKeywords    = $this->metaKeywords ?? $link->getMetaKeyword();
         if ($this->currentProduct !== null) {
@@ -537,16 +538,11 @@ abstract class AbstractController implements ControllerInterface
         }
         $globalMetaData = Metadata::getGlobalMetaData()[$this->languageID] ?? null;
         if (empty($metaTitle)) {
-            $metaTitle = $globalMetaData->Title ?? null;
+            $metaTitle = Metadata::prepareMeta($globalMetaData->Title ?? '', null, $maxLength);
         }
         if (empty($metaDescription)) {
             $metaDescription = $globalMetaData->Meta_Description ?? null;
         }
-        $metaTitle       = Metadata::prepareMeta(
-            $metaTitle ?? '',
-            null,
-            (int)$this->config['metaangaben']['global_meta_maxlaenge_title']
-        );
         $metaDescription = Metadata::prepareMeta(
             $metaDescription ?? '',
             null,

@@ -24,7 +24,7 @@
                 {/foreach}
             </tbody>
         </table>
-        {__('moreDetailsStatistics')|sprintf:$adminURL}
+        {sprintf(__('moreDetailsStatistics'), $adminURL)}
     {else}
         <div class="alert alert-info">{__('noStatisticsFound')}</div>
     {/if}

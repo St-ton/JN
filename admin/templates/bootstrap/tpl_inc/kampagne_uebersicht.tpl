@@ -27,7 +27,7 @@
                 <div>
                     <div class="subheading1">{__('kampagneIntern')}</div>
                     <hr class="mb-3">
-                    {if $oKampagne_arr|count > 0}
+                    {if count($oKampagne_arr) > 0}
                         <div class="table-responsive">
                             <table class="table table-striped table-align-top">
                                 <thead>
@@ -193,7 +193,7 @@
                         </div>
                     </div>
                 </div>
-                {if isset($oKampagne_arr) && $oKampagne_arr|count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|count > 0}
+                {if isset($oKampagne_arr) && count($oKampagne_arr) > 0 && isset($oKampagneDef_arr) && count($oKampagneDef_arr) > 0}
                     <div class="table-responsive">
                         <table class="table table-striped table-align-top">
                             <thead>

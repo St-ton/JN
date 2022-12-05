@@ -8,7 +8,7 @@
             {__('kampagneOverall')}: {$nGesamtAnzahlDefDetail}
         </div>
         <div class="card-body">
-            {if isset($oKampagneStat_arr) && $oKampagneStat_arr|count > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
+            {if isset($oKampagneStat_arr) && count($oKampagneStat_arr) > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiDefDetail
                          cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
                                      'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,

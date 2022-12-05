@@ -104,10 +104,9 @@ class BaseCharacteristic extends AbstractFilter
         return (new Join())
             ->setType('JOIN')
             ->setComment('JOIN from ' . __METHOD__)
-            ->setTable('(SELECT kArtikel
+            ->setTable('(SELECT DISTINCT kArtikel
                               FROM tartikelmerkmal
                               WHERE kMerkmalWert = ' . $this->getValue() . '
-                              GROUP BY tartikelmerkmal.kArtikel
                               ) AS tmerkmaljoin')
             ->setOrigin(__CLASS__)
             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');

@@ -1,5 +1,5 @@
-{if $header|count > 1}Invalid header length!{/if}
-{$targetLength = ($header[0]|default:[])|count}
+{if count($header) > 1}Invalid header length!{/if}
+{$targetLength = count($header[0]|default:[])}
 
 {if $targetLength > 0}
     <div class="table-responsive">

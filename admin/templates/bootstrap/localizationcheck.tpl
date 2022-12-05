@@ -16,7 +16,7 @@
                         {if $failed}
                             <i class="fa fas fa-plus"></i>
                         {/if}
-                        {__($result->getClassName())} &ndash; {__('%d errors')|sprintf:$result->getErrorCount()}
+                        {__($result->getClassName())} &ndash; {sprintf(__('%d errors'), $result->getErrorCount())}
                     </div>
                 </div>
                 {if $failed}
@@ -53,7 +53,7 @@
                         {/if}
                         {if $missing->count() > 0}
                             <h2>{__('Missing translations')}</h2>
-                            <span class="path">{__('Can be found: ')}{($result->getLocation()|htmlspecialchars)}</span>
+                            <span class="path">{__('Can be found: ')}{htmlspecialchars($result->getLocation())}</span>
                             <hr>
                             <div class="table-responsive">
                                 <table class="table table-sm table-borderless table-striped">

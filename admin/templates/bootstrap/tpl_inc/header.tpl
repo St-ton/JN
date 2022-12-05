@@ -49,7 +49,7 @@
     </script>
 
     <script type="text/javascript"
-            src="{$templateBaseURL}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+            src="{$templateBaseURL}js/fileinput/locales/{mb_substr($language, 0, 2)}.js"></script>
     <script type="module" src="{$templateBaseURL}js/app/app.js"></script>
     {include file='snippets/selectpicker.tpl'}
 </head>

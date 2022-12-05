@@ -124,7 +124,7 @@
                     'za_lastschrift_jtl'
                 ]}
 
-                {if !$zahlungsart->cModulId|in_array:$filters}
+                {if !in_array($zahlungsart->cModulId, $filters)}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nWaehrendBestellung">{__('duringOrder')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

@@ -26,7 +26,7 @@
                         </div>
                     </form>
                 </div>
-                {if isset($oKunde_arr) && $oKunde_arr|count > 0}
+                {if isset($oKunde_arr) && count($oKunde_arr) > 0}
             {assign var=cParam_arr value=[]}
             {if isset($cSuche)}
                 {append var=cParam_arr index='cSuche' value=$cSuche}
@@ -57,7 +57,7 @@
                                     <div class="btn-group">
                                         <a href="{$adminURL}{$route}?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link px-2 delete-confirm"
-                                           data-modal-body="{__('confirmDeleteBasket')|sprintf:$oKunde->cNachname:$oKunde->Datum}"
+                                           data-modal-body="{sprintf(__('confirmDeleteBasket'), $oKunde->cNachname, $oKunde->Datum)}"
                                            data-toggle="tooltip"
                                             title="{__('delete')}">
                                             <span class="icon-hover">

@@ -1,6 +1,6 @@
 <div class="form-group form-row align-items-center {if $cnf->isHighlight() || (isset($cSuche) && $cnf->getID() == $cSuche)} highlight{/if}">
     <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->getValueName()}">
-        {$cnf->getName()}{if $cnf->getValueName()|strpos:'_guthaben' && $cnf->getInputType() !== 'selectbox'} <span id="EinstellungAjax_{$cnf->getValueName()}"></span>{/if}:
+        {$cnf->getName()}{if strpos($cnf->getValueName(), '_guthaben') && $cnf->getInputType() !== 'selectbox'} <span id="EinstellungAjax_{$cnf->getValueName()}"></span>{/if}:
     </label>
     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
         {if $cnf->getInputType() === 'selectbox'}
@@ -59,7 +59,7 @@
                        id="{$cnf->getValueName()}"
                        value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"
                        tabindex="1"
-                        {if $cnf->getValueName()|strpos:'_guthaben' || $cnf->getValueName()|strpos:'_bestandskundenguthaben' || $cnf->getValueName()|strpos:'_neukundenguthaben'}
+                        {if strpos($cnf->getValueName(), '_guthaben') || strpos($cnf->getValueName(), '_bestandskundenguthaben') || strpos($cnf->getValueName(), '_neukundenguthaben')}
                             onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$cnf->getValueName()}', this);"
                         {/if}
                 />
@@ -74,7 +74,7 @@
                    name="{$cnf->getValueName()}"
                    id="{$cnf->getValueName()}"
                    value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"
-                   {if $cnf->getValueName()|strpos:'_guthaben' || $cnf->getValueName()|strpos:'_bestandskundenguthaben' || $cnf->getValueName()|strpos:'_neukundenguthaben'}
+                   {if strpos($cnf->getValueName(), '_guthaben') || strpos($cnf->getValueName(), '_bestandskundenguthaben') || strpos($cnf->getValueName(), '_neukundenguthaben')}
                        onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$cnf->getValueName()}', this);"
                    {/if}
                    tabindex="1" />

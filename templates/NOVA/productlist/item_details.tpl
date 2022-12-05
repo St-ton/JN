@@ -42,7 +42,7 @@
         {block name='productlist-item-details-manufacturer'}
             {col tag='dt' cols=6}{lang key='manufacturer' section='productDetails'}:{/col}
             {col tag='dd' cols=6 itemprop='manufacturer' itemscope=true itemtype='https://schema.org/Organization'}
-                {link href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerSeo}{/if}"
+                {link href="{if !empty($Artikel->cHerstellerHomepage)}{$Artikel->cHerstellerHomepage}{else}{$Artikel->cHerstellerURL}{/if}"
                     class="text-decoration-none-util"
                     itemprop="url"
                     target="{if !empty($Artikel->cHerstellerHomepage)}_blank{else}_self{/if}"}

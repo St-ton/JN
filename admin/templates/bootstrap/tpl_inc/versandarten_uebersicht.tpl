@@ -67,7 +67,7 @@
                         </td>
                         <td>
                             <ul class="list-unstyled">
-                            {if $versandart->versandklassen|count == 1 && $versandart->versandklassen[0] === 'Alle'}
+                            {if count($versandart->versandklassen) == 1 && $versandart->versandklassen[0] === 'Alle'}
                                 <li><span class="badge badge-primary text-wrap">{__('all')}</span></li>
                             {else}
                                 {foreach $versandart->versandklassen as $versandklasse}

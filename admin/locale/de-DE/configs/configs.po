@@ -3049,10 +3049,10 @@ msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamsch
 
 msgid "configgroup_1_routing"
 msgstr "Routing <br><span class=\"text-danger\">"
-"Dieses Feature ist aktuell experimentell und nur via define ENABLE_EXPERIMENTAL_ROUTING_SCHEMES aktivierbar. "
-"Wenn Sie dieses Feature nutzen wollen, beachten sie die offenen Tickets im "
-"<a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">Issuetracker</a>. "
-"Das Feature wird in einer zukünftigen Version vom Status experimentell zur normalen Einstellung wechseln."
+"Dieses Feature befindet sich aktuell noch in der Entwicklung und ist noch nicht vollumfänglich ausgereift. "
+"Es ist darum derzeit nur via define 'ENABLE_EXPERIMENTAL_ROUTING_SCHEMES' aktivierbar und sollte nur mit entsprechenden Fachkenntnissen genutzt werden. "
+"Wenn Sie dieses Feature nutzen wollen, beachten Sie bitte die offenen Tickets im <a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">JTL-Issue Tracker</a>. "
+"Das Feature wird in einer zukünftigen Version als normale Einstellung implementiert."
 "</span>"
 
 msgid "routing_scheme_name"

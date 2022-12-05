@@ -19,7 +19,7 @@
         <div class="tab-pane fade active show" id="pages">
             <div>
                 {assign var=allPages value=$opcPageDB->getPages()}
-                {if $allPages|count > 0}
+                {if count($allPages) > 0}
                     {assign var=pages value=array_slice(
                         $allPages,
                         $pagesPagi->getFirstPageItem(),
@@ -38,7 +38,7 @@
                             </thead>
                             <tbody>
                                 {foreach $pages as $page}
-                                    {assign var=pageIdHash value=$page->cPageId|md5}
+                                    {assign var=pageIdHash value=md5($page->cPageId)}
                                     {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                     <tr>
                                         <td>
@@ -59,13 +59,13 @@
                                                 <span class="icon-hover">
                                                     <span class="far fa-info"></span><span class="fas fa-info"></span>
                                                 </span>
-                                                {$page->cPageId|htmlentities}
+                                                {htmlentities($page->cPageId)}
                                             </a>
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a class="btn btn-link px-2 delete-confirm" title="{__('deleteDraftAll')}"
-                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={$page->cPageId|htmlentities}"
+                                                   href="?token={$smarty.session.jtl_token}&action=restore&pageId={htmlentities($page->cPageId)}"
                                                    data-toggle="tooltip"
                                                    data-modal-body="{$page->cPageUrl}">
                                                     <span class="icon-hover">
@@ -203,7 +203,7 @@
         <div class="tab-pane fade" id="blueprints">
             <div>
                 {assign var=blueprints value=$opc->getBlueprints()}
-                {if $blueprints|count > 0}
+                {if count($blueprints) > 0}
                     <div class="table-responsive">
                         <table class="list table table-striped">
                             <thead>

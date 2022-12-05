@@ -28,7 +28,7 @@
                     <div class="heading-right">
                         {if $hasAuth}
                             <button name="action" value="revoke" class="btn btn-default">
-                                <i class="fas fa-unlink"></i> {if $tokenOwner !== null} {{__('unlink from %s')}|sprintf:{$tokenOwner->given_name|cat:' '|cat:$tokenOwner->family_name}}
+                                <i class="fas fa-unlink"></i> {if $tokenOwner !== null} {sprintf(__('unlink from %s'), $tokenOwner->given_name|cat:' '|cat:$tokenOwner->family_name)}
                                 {else} {__('unlink')}{/if}
                             </button>
                         {/if}

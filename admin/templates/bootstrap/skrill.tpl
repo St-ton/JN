@@ -42,7 +42,7 @@
                 <div class="subheading1">{__('mbHeaderEmail')}</div>
             </div>
             <div class="card-body">
-                <p>{{__('mbEmailValidationSuccess')}|sprintf:{$email}:{$customerId}}</p>
+                <p>{sprintf(__('mbEmailValidationSuccess'), $email, $customerId)}</p>
             </div>
             <div class="card-footer">
                 <form method="post" action="">

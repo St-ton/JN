@@ -28,7 +28,7 @@
         </nav>
         <div class="tab-content">
             <div id="wunschlistepos" class="tab-pane fade {if $cTab === '' || $cTab === 'wunschlistepos'} active show{/if}">
-                {if isset($CWunschliste_arr) && $CWunschliste_arr|count > 0}
+                {if isset($CWunschliste_arr) && count($CWunschliste_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos'}
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -59,7 +59,7 @@
                                         <span {if $CWunschliste->isOnline}data-toggle="tooltip" title="{__('wishlistCustomerOnline')}{/if}">
                                             <a href="{$adminURL}{$route}?delete={$CWunschliste->kWunschliste}&token={$smarty.session.jtl_token}"
                                                class="btn btn-link px-2 delete-confirm {if $CWunschliste->isOnline} disabled {/if}"
-                                               data-modal-body="{__('wishlistDelete')|sprintf:$CWunschliste->cName:$name}"
+                                               data-modal-body="{sprintf(__('wishlistDelete'), $CWunschliste->cName, $name)}"
                                                data-toggle="tooltip"
                                                title="{__('delete')}">
                                                 <span class="icon-hover">
@@ -80,7 +80,7 @@
                 {/if}
             </div>
             <div id="wunschlisteartikel" class="tab-pane fade {if $cTab === 'wunschlisteartikel'} active show{/if}">
-                {if isset($CWunschlistePos_arr) && $CWunschlistePos_arr|count > 0}
+                {if isset($CWunschlistePos_arr) && count($CWunschlistePos_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -110,7 +110,7 @@
                 {/if}
             </div>
             <div id="wunschlistefreunde" class="tab-pane fade {if $cTab === 'wunschlistefreunde'} active show{/if}">
-                {if $CWunschlisteVersand_arr && $CWunschlisteVersand_arr|count > 0}
+                {if $CWunschlisteVersand_arr && count($CWunschlisteVersand_arr) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
                     <div class="table-responsive">
                         <table class="table table-striped">

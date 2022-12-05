@@ -176,7 +176,7 @@
                             <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
                                       rows="20">{$mailTemplate->getText($kSprache)}</textarea>
                         </div>
-                        {if $mailTemplate->getAttachments($kSprache)|count > 0}
+                        {if count($mailTemplate->getAttachments($kSprache)) > 0}
                             <div class="row mt-4">
                                 <div class="col-sm-auto col-form-label">{__('currentFiles')}:</div>
                                 <div class="col-sm-auto">

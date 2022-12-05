@@ -538,10 +538,10 @@ class Customer
     {
         $cryptoService = Shop::Container()->getCryptoService();
 
-        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname));
-        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma));
-        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz));
-        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse));
+        $this->cNachname = \trim($cryptoService->decryptXTEA($this->cNachname ?? ''));
+        $this->cFirma    = \trim($cryptoService->decryptXTEA($this->cFirma ?? ''));
+        $this->cZusatz   = \trim($cryptoService->decryptXTEA($this->cZusatz ?? ''));
+        $this->cStrasse  = \trim($cryptoService->decryptXTEA($this->cStrasse ?? ''));
 
         return $this;
     }
@@ -829,7 +829,9 @@ class Customer
      */
     public function getGroupID(): int
     {
-        return (int)$this->kKundengruppe;
+        $customerGroupID = (int)$this->kKundengruppe > 0 ? (int)$this->kKundengruppe : CustomerGroup::getCurrent();
+
+        return $customerGroupID > 0 ? $customerGroupID : CustomerGroup::getDefaultGroupID();
     }
 
     /**

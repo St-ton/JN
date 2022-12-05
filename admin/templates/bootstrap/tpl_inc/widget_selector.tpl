@@ -11,6 +11,6 @@
         <div class="dropdown-divider"></div>
     {/if}
 {/foreach}
-{if $oAvailableWidget_arr|count == 0}
+{if count($oAvailableWidget_arr) == 0}
     <span class="ml-3 font-weight-bold">{__('noMoreWidgets')}</span>
 {/if}

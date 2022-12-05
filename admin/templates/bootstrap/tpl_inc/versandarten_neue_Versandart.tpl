@@ -1,6 +1,6 @@
 <script type="text/javascript">
     {assign var=addOne value=1}
-    var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|count > 0}Number({$VersandartStaffeln|count}) + 1{else}2{/if};
+    var i = {if isset($VersandartStaffeln) && count($VersandartStaffeln) > 0}Number({count($VersandartStaffeln)}) + 1{else}2{/if};
     function addInputRow() {ldelim}
         $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
@@ -73,7 +73,7 @@
 {assign var=cBeschreibung value=__('createShippingMethodDesc')}
 
 {if isset($Versandart->kVersandart) && $Versandart->kVersandart > 0}
-    {assign var=cTitel value=__('modifyedShippingTypeTitle')|sprintf:$Versandart->cName}
+    {assign var=cTitel value=sprintf(__('modifyedShippingTypeTitle'), $Versandart->cName)}
     {assign var=cBeschreibung value=""}
 {/if}
 
@@ -255,7 +255,7 @@
                                 <table id="price_range" class="table">
                                     <thead></thead>
                                     <tbody>
-                                    {if isset($VersandartStaffeln) && $VersandartStaffeln|count > 0}
+                                    {if isset($VersandartStaffeln) && count($VersandartStaffeln) > 0}
                                         {foreach $VersandartStaffeln as $oPreisstaffel}
                                             {if $oPreisstaffel->fBis != 999999999}
                                                 <tr>
@@ -391,7 +391,7 @@
                                                     {else}
                                                         {$vkID = '-'|explode:$VK}
                                                         {foreach $versandKlassen as $vclass}
-                                                        <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
+                                                        <option value="{$vclass->kVersandklasse}"{if in_array($vclass->kVersandklasse, $vkID)} selected{/if}>{$vclass->cName}</option>
                                                     {/foreach}
                                                     {/if}
                                                 </select>

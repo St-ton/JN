@@ -33,6 +33,7 @@ class WizardCheckMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->getMethod() === 'GET'
+            && Shop::isAdmin()
             && !Backend::get('redirectedToWizard')
             && Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_wizard_done') === 'N'
             && !\str_contains($request->getUri()->getPath(), Route::WIZARD)

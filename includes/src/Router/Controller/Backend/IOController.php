@@ -183,7 +183,9 @@ class IOController extends AbstractBackendController
             'request' => &$req
         ]);
 
-        \ob_end_clean();
+        if (\ob_get_length() > 0) {
+            \ob_end_clean();
+        }
 
         return $io->getResponse($io->handleRequest($req));
     }

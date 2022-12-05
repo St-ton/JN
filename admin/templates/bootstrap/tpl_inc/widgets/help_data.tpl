@@ -2,7 +2,7 @@
     <li>
         <p>
             {if $oHelp->cIconURL|strlen > 0}
-                <img src="{$oHelp->cIconURL|urldecode}" alt="" title="{$oHelp->cTitle}" />
+                <img src="{urldecode($oHelp->cIconURL)}" alt="" title="{$oHelp->cTitle}" />
             {/if}
             <a href="{$oHelp->cURL}" title="{$oHelp->cTitle}" target="_blank" rel="noopener">
                 {$oHelp->cTitle|truncate:50:'...'}

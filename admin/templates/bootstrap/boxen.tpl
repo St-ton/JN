@@ -110,7 +110,7 @@
         </nav>
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if $cTab === '' || $cTab === 'uebersicht'} active show{/if}">
-                {if $invisibleBoxes|count > 0}
+                {if count($invisibleBoxes) > 0}
                     <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
                     <form action="{$adminURL}{$route}" method="post" class="block">
                         {$jtl_token}
@@ -174,7 +174,7 @@
                         </div>
                     </form>
                 {/if}
-                {if !is_array($oBoxenContainer) || $oBoxenContainer|count == 0}
+                {if !is_array($oBoxenContainer) || count($oBoxenContainer) == 0}
                     <div class="alert alert-danger">{__('noTemplateConfig')}</div>
                 {elseif !$oBoxenContainer.left && !$oBoxenContainer.right && !$oBoxenContainer.top && !$oBoxenContainer.bottom}
                     <div class="alert alert-danger">{__('noBoxActivated')}</div>

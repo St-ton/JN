@@ -97,7 +97,7 @@
                                         {$oMedienDatei->cBeschreibung}
                                     {/col}
                                     {col cols=12}
-                                        {if $oMedienDatei->cURL|strpos:'youtube' !== false || $oMedienDatei->cURL|strpos:'youtu.be' !== false}
+                                        {if strpos($oMedienDatei->cURL, 'youtube') !== false || strpos($oMedienDatei->cURL, 'youtu.be') !== false}
                                             {include file='productdetails/mediafile_youtube_embed.tpl'}
                                         {else}
                                             {if isset($oMedienDatei->oEmbed) && $oMedienDatei->oEmbed->code}

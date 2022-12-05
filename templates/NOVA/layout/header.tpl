@@ -516,7 +516,7 @@
             <div id="content">
         {/block}
 
-        {if !$bExclusive && $boxes.left !== null && !empty($boxes.left|strip_tags|trim) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
+        {if !$bExclusive && $boxes.left !== null && !empty(trim(strip_tags($boxes.left))) && (($Einstellungen.template.theme.left_sidebar === 'Y' && $boxesLeftActive) || $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp)}
             {block name='layout-header-content-productlist-starttags'}
                 <div class="row justify-content-lg-end">
                     <div class="col-lg-8 col-xl-9 ml-auto-util ">

@@ -31,12 +31,7 @@ class ImageMap implements IExtensionPoint
     public function __construct(private DbInterface $db)
     {
         $this->kSprache      = Shop::getLanguageID();
-        $this->kKundengruppe = isset($_SESSION['Kundengruppe']->kKundengruppe)
-            ? Frontend::getCustomerGroup()->getID()
-            : null;
-        if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-            $this->kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
-        }
+        $this->kKundengruppe = Frontend::getCustomer()->getGroupID();
     }
 
     /**

@@ -6,7 +6,7 @@
                 {__('btnAddVar')}
             </a>
         </div>
-        {if $oWert_arr|count > 0}
+        {if count($oWert_arr) > 0}
             <div class="col-sm-6 col-xl-auto">
                 <button type="submit" class="btn btn-primary btn-block" name="action" value="saveall">
                     {__('saveWithIcon')}
@@ -38,7 +38,7 @@
                 <div class="col-sm-6 col-xl-auto mb-3">
                     {include file='tpl_inc/language_switcher.tpl' id='kSprache' action=$adminURL|cat:$route}
                 </div>
-                {if $oWert_arr|count > 0}
+                {if count($oWert_arr) > 0}
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
                     </div>
@@ -70,7 +70,7 @@
                 <div>
                     <form action="{$adminURL}{$route}" method="post">
                         {$jtl_token}
-                        {if $oWert_arr|count > 0}
+                        {if count($oWert_arr) > 0}
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -160,7 +160,7 @@
             </div>
             <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
                 <div class="table-responsive">
-                    {if $oNotFound_arr|count > 0}
+                    {if count($oNotFound_arr) > 0}
                         <table class="table table-hover">
                             <thead>
                                 <tr>

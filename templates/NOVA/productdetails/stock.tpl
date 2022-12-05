@@ -50,7 +50,7 @@
                             {if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}
                                 data-toggle="popover"
                                 data-placement="top"
-                                data-content="{if $selectedCountry !== null}{lang|sprintf:$selectedCountry->getName():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='productDetails'}{/if}"
+                                data-content="{if $selectedCountry !== null}{lang key='shippingInformation' section='productDetails' assign=silv}{sprintf($silv, $selectedCountry->getName(), $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL(), $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL())}{/if}"
                             {/if}>
                             {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">

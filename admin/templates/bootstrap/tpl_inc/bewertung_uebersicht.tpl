@@ -46,7 +46,7 @@
         </nav>
         <div class="tab-content">
             <div id="freischalten" class="tab-pane fade {if $cTab === '' || $cTab === 'freischalten'} active show{/if}">
-                {if $inactiveReviews|count > 0}
+                {if count($inactiveReviews) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
                     <form method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -132,7 +132,7 @@
                 {/if}
             </div>
             <div id="letzten50" class="tab-pane fade {if $cTab === 'letzten50'} active show{/if}">
-                {if $activeReviews|count > 0}
+                {if count($activeReviews) > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
                     <form name="letzten50" method="post" action="{$adminURL}{$route}">
                         {$jtl_token}
@@ -258,11 +258,11 @@
                         {if isset($cArtNr) && $cArtNr|strlen > 0}
                             <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                         {/if}
-                        {if !(isset($filteredReviews) && $filteredReviews|count > 0)}
+                        {if !(isset($filteredReviews) && count($filteredReviews) > 0)}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
                     </div>
-                    {if isset($filteredReviews) && $filteredReviews|count > 0}
+                    {if isset($filteredReviews) && count($filteredReviews) > 0}
                         <div>
                             <div class="subheading1">{$cArtNr}</div>
                             <hr class="mb-3">
@@ -347,7 +347,7 @@
     {foreach $sections as $section}
         {foreach $section->getSubsections() as $subsection}
             {foreach $subsection->getItems() as $config}
-                {if $config->getValueName()|strpos:'_guthaben'}
+                {if strpos($config->getValueName(), '_guthaben')}
                     ioCall(
                         'getCurrencyConversion',
                         [0, $('#{$config->getValueName()}').val(), 'EinstellungAjax_{$config->getValueName()}'],

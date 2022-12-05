@@ -18,7 +18,7 @@
             let enabledList   = root.find('.filters-enabled');
             let availableList = root.find('.available-filters');
             let searcherInput = $('#config-{$propdesc.searcher}');
-            let filters       = {$propval|json_encode};
+            let filters       = {json_encode($propval)};
             let lastRequest   = null;
 
             searcherInput.on('input', () => {

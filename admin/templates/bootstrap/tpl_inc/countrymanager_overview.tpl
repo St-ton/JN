@@ -62,7 +62,7 @@
                                             class="btn btn-link px-2 delete-confirm"
                                             title="{__('delete')}"
                                             data-toggle="tooltip"
-                                            data-modal-body="{__('confirmDeleteCountry')|sprintf:$country->getName():$country->getISO()}">
+                                            data-modal-body="{sprintf(__('confirmDeleteCountry'), $country->getName(), $country->getISO())}">
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
                                             <span class="fas fa-trash-alt"></span>

@@ -3048,7 +3048,12 @@ msgid "forgot_password_captcha_desc"
 msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
 
 msgid "configgroup_1_routing"
-msgstr "Routing"
+msgstr "Routing <br><span class=\"text-danger\">"
+"Dieses Feature befindet sich aktuell noch in der Entwicklung und ist noch nicht vollumfänglich ausgereift. "
+"Es ist darum derzeit nur via define 'ENABLE_EXPERIMENTAL_ROUTING_SCHEMES' aktivierbar und sollte nur mit entsprechenden Fachkenntnissen genutzt werden. "
+"Wenn Sie dieses Feature nutzen wollen, beachten Sie bitte die offenen Tickets im <a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">JTL-Issue Tracker</a>. "
+"Das Feature wird in einer zukünftigen Version als normale Einstellung implementiert."
+"</span>"
 
 msgid "routing_scheme_name"
 msgstr "Routing-Schema"

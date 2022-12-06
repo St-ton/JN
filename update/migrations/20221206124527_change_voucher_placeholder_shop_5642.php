@@ -19,15 +19,21 @@ class Migration_20221206124527 extends Migration implements IMigration
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function up()
     {
+        $this->setLocalization('ger', 'productDetails', 'voucherFlexPlaceholder', 'Gutscheinwert');
+        $this->setLocalization('eng', 'productDetails', 'voucherFlexPlaceholder', 'Voucher value');
     }
 
     /**
      * @inheritDoc
+     * @throws Exception
      */
     public function down()
     {
+        $this->setLocalization('ger', 'productDetails', 'voucherFlexPlaceholder', 'Gutscheinwert in %s');
+        $this->setLocalization('eng', 'productDetails', 'voucherFlexPlaceholder', 'Voucher value in %s');
     }
 }

@@ -36,7 +36,10 @@
                                                 value="{if isset($voucherPrice)}{$voucherPrice}{/if}"
                                                 name="{$smarty.const.FKT_ATTRIBUT_VOUCHER_FLEX}Value"
                                                 required=true
-                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails' printf=$smarty.session.Waehrung->getName()}"}
+                                                onfocus="placeholder = ''"
+                                                onblur="placeholder = '{lang key='voucherFlexPlaceholder' section='productDetails'}'"
+                                                placeholder="{lang key='voucherFlexPlaceholder' section='productDetails'}"
+                                                }
                                             {inputgroupappend}
                                                 {inputgrouptext class="form-control"}
                                                     {JTL\Session\Frontend::getCurrency()->getName()}

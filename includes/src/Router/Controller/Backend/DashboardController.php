@@ -85,6 +85,13 @@ class DashboardController extends AbstractBackendController
             return $this->redirectToURI($uri);
         }
         $_SESSION['loginIsValid'] = true;
+        if (isset($GLOBALS['plgSafeMode'])) {
+            if ($GLOBALS['plgSafeMode']) {
+                \touch(\SAFE_MODE_LOCK);
+            } elseif (\file_exists(\SAFE_MODE_LOCK)) {
+                \unlink(\SAFE_MODE_LOCK);
+            }
+        }
 
         if ($this->hasPermissions('DASHBOARD_VIEW')) {
             $smarty->assign('bDashboard', true)

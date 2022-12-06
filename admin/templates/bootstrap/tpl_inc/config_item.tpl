@@ -10,7 +10,7 @@
                         <option value="{$country->getISO()}" {if $cnf->getSetValue() == $country->getISO()}selected{/if}>{$country->getName()}</option>
                     {/foreach}
                 </select>
-            {elseif $ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false && (
+            {elseif $smarty.const.ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false && (
                 $cnf->getValueName() === 'routing_scheme' || $cnf->getValueName() === 'routing_default_language')
             }
                 <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" disabled>

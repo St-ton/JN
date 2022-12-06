@@ -153,7 +153,6 @@ class ConfigController extends AbstractBackendController
             $group = Text::filterXSS(Request::verifyGPDataString('group'));
             $smarty->assign('section', $section)
                 ->assign('title', \__('settings') . ': ' . ($group !== '' ? \__($group) : \__($section->getName())))
-                ->assign('ENABLE_EXPERIMENTAL_ROUTING_SCHEMES', \ENABLE_EXPERIMENTAL_ROUTING_SCHEMES)
                 ->assign('sections', $sections);
         }
 

@@ -168,10 +168,12 @@ class DBManagerController extends AbstractBackendController
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = 'SELECT * FROM ' . $table;
+        $baseQuery    = 'SELECT * FROM ' . $table;
+        $countAllRows = 'SELECT COUNT(*) as allRowsFound FROM ' . $table;
         // query parts
         $queryParams = [];
         $queryParts  = ['select' => $baseQuery];
+        $countParts  = ['select' => $countAllRows];
         // where
         if (isset($filter['where']['col'])) {
             $whereParts  = [];
@@ -185,18 +187,20 @@ class DBManagerController extends AbstractBackendController
                         $op  = 'LIKE';
                         $val = \sprintf('%%%s%%', \trim($val, '%'));
                     }
-                    $whereParts[]                  = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
+                    $whereParts[] = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
+                    /** @var string[] $queryParams */
                     $queryParams["where_{$i}_val"] = $val;
                 }
             }
             if (\count($whereParts) > 0) {
                 $queryParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
+                $countParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
             }
         }
         // count without limit
-        $query = \implode(' ', $queryParts);
-        $count = $this->db->getAffectedRows($query, $queryParams);
-        $pages = (int)\ceil($count / $filter['limit']);
+        $countQuery = \implode(' ', $countParts);
+        $count      = $this->db->getSingleArray($countQuery, $queryParams)['allRowsFound'];
+        $pages      = (int)\ceil($count / $filter['limit']);
         // limit
         $queryParams['limit_count']  = $filter['limit'];
         $queryParams['limit_offset'] = $filter['offset'];

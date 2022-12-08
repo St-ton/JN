@@ -7,6 +7,7 @@ use Exception;
 use JTL\Backend\Menu;
 use JTL\Backend\Permissions;
 use JTL\Backend\TwoFA;
+use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -954,12 +955,15 @@ class AdminAccountController extends AbstractBackendController
 
     /**
      * @inheritdoc
+     * @throws PermissionException
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->url    = $this->baseURL . $this->route;
         $this->smarty = $smarty;
-        $this->checkPermissions(Permissions::ACCOUNT_VIEW);
+        if ($request->getQueryParams()['action'] !== 'quick_change_language') {
+            $this->checkPermissions(Permissions::ACCOUNT_VIEW);
+        }
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
         $this->finalize($this->getNextAction());
 

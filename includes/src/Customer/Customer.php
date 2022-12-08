@@ -15,6 +15,7 @@ use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\JTL\PasswordServiceInterface;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;
@@ -265,11 +266,33 @@ class Customer
     ];
 
     /**
+     * @var string
+     */
+    public string $cLoginHash = '';
+
+    /**
+     * @var string
+     */
+    public string $dLastLogin = '';
+
+    /**
+     * @var PasswordServiceInterface
+     */
+    private PasswordServiceInterface $passwordService;
+
+    /**
+     * @var bool
+     */
+    private bool $newLoginLocation = false;
+
+    /**
      * Customer constructor.
      * @param int|null $id
      */
     public function __construct(int $id = null)
     {
+        $this->passwordService = Shop::Container()->getPasswordService();
+
         if ($id > 0) {
             $this->loadFromDB($id);
         }
@@ -349,6 +372,7 @@ class Customer
         }
         if ($user->kKunde > 0) {
             $this->initCustomer($user);
+            $this->checkAndMarkLoginLocation($user);
         }
         \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
             'oKunde'        => &$this,
@@ -360,6 +384,8 @@ class Customer
             $this->entschluesselKundendaten();
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
+            $this->dLastLogin         = 'NOW()';
+            $this->updateInDB();
 
             return self::OK;
         }
@@ -392,15 +418,14 @@ class Customer
      */
     private function initCustomer(stdClass $user): void
     {
-        $passwordService = Shop::Container()->getPasswordService();
         foreach (\get_object_vars($user) as $k => $v) {
             $this->$k = $v;
         }
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-        if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+        if (isset($user->cPasswort) && $this->passwordService->needsRehash($user->cPasswort)) {
             $upd            = new stdClass();
-            $upd->cPasswort = $passwordService->hash($user->cPasswort);
+            $upd->cPasswort = $this->passwordService->hash($user->cPasswort);
             Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
         }
     }
@@ -413,11 +438,10 @@ class Customer
      */
     public function checkCredentials(string $user, string $pass)
     {
-        $user            = \mb_substr($user, 0, 255);
-        $pass            = \mb_substr($pass, 0, 255);
-        $passwordService = Shop::Container()->getPasswordService();
-        $db              = Shop::Container()->getDB();
-        $customer        = $db->select(
+        $user     = \mb_substr($user, 0, 255);
+        $pass     = \mb_substr($pass, 0, 255);
+        $db       = Shop::Container()->getDB();
+        $customer = $db->select(
             'tkunde',
             'cMail',
             $user,
@@ -440,15 +464,15 @@ class Customer
             ? $customer->dGeburtstag_formatted
             : '';
 
-        if (!$passwordService->verify($pass, $customer->cPasswort)) {
+        if (!$this->passwordService->verify($pass, $customer->cPasswort)) {
             $tries = ++$customer->nLoginversuche;
             Shop::Container()->getDB()->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
 
             return false;
         }
         $update = false;
-        if ($passwordService->needsRehash($customer->cPasswort)) {
-            $customer->cPasswort = $passwordService->hash($pass);
+        if ($this->passwordService->needsRehash($customer->cPasswort)) {
+            $customer->cPasswort = $this->passwordService->hash($pass);
             $update              = true;
         }
 
@@ -590,9 +614,9 @@ class Customer
         $obj->nRegistriert   = $this->nRegistriert;
         $obj->nLoginversuche = $this->nLoginversuche;
         $obj->dGeburtstag    = Date::convertDateToMysqlStandard($this->dGeburtstag);
-
-        $obj->cLand   = $this->pruefeLandISO($obj->cLand);
-        $this->kKunde = Shop::Container()->getDB()->insert('tkunde', $obj);
+        $obj->cLand          = $this->pruefeLandISO($obj->cLand);
+        $obj->cLoginHash     = $this->cLoginHash;
+        $this->kKunde        = Shop::Container()->getDB()->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
@@ -640,6 +664,8 @@ class Customer
         }
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
+        $obj->cLoginHash  = $this->cLoginHash;
+        $obj->dLastLogin  = $this->dLastLogin;
         $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
 
         if ($obj->dGeburtstag === '_DBNULL_') {
@@ -746,10 +772,9 @@ class Customer
      */
     public function updatePassword($password = null): self
     {
-        $passwordService = Shop::Container()->getPasswordService();
         if ($password === null) {
-            $clearTextPassword = $passwordService->generate(12);
-            $this->cPasswort   = $passwordService->hash($clearTextPassword);
+            $clearTextPassword = $this->passwordService->generate(12);
+            $this->cPasswort   = $this->passwordService->hash($clearTextPassword);
 
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
@@ -764,7 +789,7 @@ class Customer
             $mail   = new Mail();
             $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_PASSWORT_VERGESSEN, $obj));
         } else {
-            $this->cPasswort = $passwordService->hash(\mb_substr($password, 0, 255));
+            $this->cPasswort = $this->passwordService->hash(\mb_substr($password, 0, 255));
 
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
@@ -1189,5 +1214,21 @@ class Customer
         }
 
         return $this;
+    }
+
+    /**
+     * @param stdClass $user
+     * @return bool
+     * @throws Exception
+     */
+    protected function checkAndMarkLoginLocation(stdClass $user): bool
+    {
+        $loginHash = $this->passwordService->hash($_SERVER['SERVER_ADDR'] . $user->dLastLogin);
+        if ($loginHash !== $user->cLoginHash) {
+            $this->newLoginLocation = true;
+            $this->cLoginHash       = $loginHash;
+        }
+
+        return $this->newLoginLocation;
     }
 }

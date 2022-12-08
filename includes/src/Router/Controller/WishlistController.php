@@ -321,7 +321,7 @@ class WishlistController extends AbstractController
                 $event->dErstellt    = 'NOW()';
 
                 $this->db->insert('tkampagnevorgang', $event);
-                $_SESSION['Kampagnenbesucher'] = $campaign;
+                $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
             }
         }
 

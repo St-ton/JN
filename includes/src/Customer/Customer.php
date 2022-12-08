@@ -299,6 +299,14 @@ class Customer
     }
 
     /**
+     * @return bool
+     */
+    public function getNewLoginLocation(): bool
+    {
+        return $this->newLoginLocation;
+    }
+
+    /**
      * get customer by email address
      *
      * @param string $mail
@@ -1217,6 +1225,7 @@ class Customer
     }
 
     /**
+     * Logic is just a suggestion.
      * @param stdClass $user
      * @return bool
      * @throws Exception

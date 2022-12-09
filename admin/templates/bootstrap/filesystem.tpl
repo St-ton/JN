@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 
-{include file='tpl_inc/seite_header.tpl' cTitel=__('fs') cBeschreibung=__('fsDesc') cDokuURL=__('fsUrl')}
+{include file='tpl_inc/seite_header.tpl' cTitel=__('fs') cBeschreibung=__('fsDesc') cDokuURL=__('fsURL')}
 
 <div id="content">
     <div id="settings">

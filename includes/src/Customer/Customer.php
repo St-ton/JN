@@ -6,6 +6,7 @@ use DateInterval;
 use DateTime;
 use Exception;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\DbInterface;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -268,42 +269,25 @@ class Customer
     /**
      * @var string
      */
-    public string $cLoginHash = '';
-
-    /**
-     * @var string
-     */
     public string $dLastLogin = '';
-
-    /**
-     * @var PasswordServiceInterface
-     */
-    private PasswordServiceInterface $passwordService;
-
-    /**
-     * @var bool
-     */
-    private bool $newLoginLocation = false;
 
     /**
      * Customer constructor.
      * @param int|null $id
+     * @param PasswordServiceInterface|null $passwordService
+     * @param DbInterface|null $db
      */
-    public function __construct(int $id = null)
-    {
-        $this->passwordService = Shop::Container()->getPasswordService();
+    public function __construct(
+        int $id = null,
+        private ?PasswordServiceInterface $passwordService = null,
+        private ?DbInterface $db = null
+    ) {
+        $this->passwordService = $passwordService ?? Shop::Container()->getPasswordService();
+        $this->db              = $db ?? Shop::Container()->getDB();
 
         if ($id > 0) {
             $this->loadFromDB($id);
         }
-    }
-
-    /**
-     * @return bool
-     */
-    public function getNewLoginLocation(): bool
-    {
-        return $this->newLoginLocation;
     }
 
     /**
@@ -315,7 +299,7 @@ class Customer
     public function holRegKundeViaEmail(string $mail): ?Customer
     {
         if ($mail !== '') {
-            $data = Shop::Container()->getDB()->select(
+            $data = $this->db->select(
                 'tkunde',
                 'cMail',
                 Text::filterXSS($mail),
@@ -344,7 +328,7 @@ class Customer
         $conf = Shop::getSettingValue(\CONF_KUNDEN, 'kundenlogin_max_loginversuche');
         $mail = $post['email'] ?? '';
         if ($mail !== '' && $conf > 1) {
-            $attempts = Shop::Container()->getDB()->getSingleInt(
+            $attempts = $this->db->getSingleInt(
                 'SELECT nLoginversuche
                     FROM tkunde
                     WHERE cMail = :ml AND nRegistriert = 1',
@@ -380,7 +364,6 @@ class Customer
         }
         if ($user->kKunde > 0) {
             $this->initCustomer($user);
-            $this->checkAndMarkLoginLocation($user);
         }
         \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
             'oKunde'        => &$this,
@@ -434,7 +417,7 @@ class Customer
         if (isset($user->cPasswort) && $this->passwordService->needsRehash($user->cPasswort)) {
             $upd            = new stdClass();
             $upd->cPasswort = $this->passwordService->hash($user->cPasswort);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
+            $this->db->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
         }
     }
 
@@ -448,8 +431,7 @@ class Customer
     {
         $user     = \mb_substr($user, 0, 255);
         $pass     = \mb_substr($pass, 0, 255);
-        $db       = Shop::Container()->getDB();
-        $customer = $db->select(
+        $customer = $this->db->select(
             'tkunde',
             'cMail',
             $user,
@@ -474,7 +456,7 @@ class Customer
 
         if (!$this->passwordService->verify($pass, $customer->cPasswort)) {
             $tries = ++$customer->nLoginversuche;
-            Shop::Container()->getDB()->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
+            $this->db->update('tkunde', 'cMail', $user, (object)['nLoginversuche' => $tries]);
 
             return false;
         }
@@ -491,7 +473,7 @@ class Customer
         if ($update) {
             $update = (array)$customer;
             unset($update['dGeburtstag_formatted']);
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
+            $this->db->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
         }
 
         return $customer;
@@ -514,7 +496,7 @@ class Customer
         if ($id <= 0) {
             return $this;
         }
-        $data = Shop::Container()->getDB()->select('tkunde', 'kKunde', $id);
+        $data = $this->db->select('tkunde', 'kKunde', $id);
         if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
             $members = \array_keys(\get_object_vars($data));
             foreach ($members as $member) {
@@ -623,8 +605,7 @@ class Customer
         $obj->nLoginversuche = $this->nLoginversuche;
         $obj->dGeburtstag    = Date::convertDateToMysqlStandard($this->dGeburtstag);
         $obj->cLand          = $this->pruefeLandISO($obj->cLand);
-        $obj->cLoginHash     = $this->cLoginHash;
-        $this->kKunde        = Shop::Container()->getDB()->insert('tkunde', $obj);
+        $this->kKunde        = $this->db->insert('tkunde', $obj);
         $this->entschluesselKundendaten();
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
@@ -672,9 +653,8 @@ class Customer
         }
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
-        $obj->cLoginHash  = $this->cLoginHash;
         $obj->dLastLogin  = $this->dLastLogin;
-        $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $return           = $this->db->update('tkunde', 'kKunde', $obj->kKunde, $obj);
 
         if ($obj->dGeburtstag === '_DBNULL_') {
             $obj->dGeburtstag = '';
@@ -729,7 +709,7 @@ class Customer
      */
     public function verschluesselAlleKunden(): self
     {
-        foreach (Shop::Container()->getDB()->getObjects('SELECT * FROM tkunde') as $customer) {
+        foreach ($this->db->getObjects('SELECT * FROM tkunde') as $customer) {
             if ($customer->kKunde > 0) {
                 unset($tmp);
                 $tmp = new self((int)$customer->kKunde);
@@ -787,7 +767,7 @@ class Customer
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
             $upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
+            $this->db->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
 
             $obj                 = new stdClass();
             $obj->tkunde         = $this;
@@ -802,7 +782,7 @@ class Customer
             $upd                 = new stdClass();
             $upd->cPasswort      = $this->cPasswort;
             $upd->nLoginversuche = 0;
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
+            $this->db->update('tkunde', 'kKunde', (int)$this->kKunde, $upd);
         }
 
         return $this;
@@ -825,7 +805,7 @@ class Customer
         $expires    = new DateTime();
         $interval   = new DateInterval('P1D');
         $expires->add($interval);
-        Shop::Container()->getDB()->queryPrepared(
+        $this->db->queryPrepared(
             'INSERT INTO tpasswordreset(kKunde, cKey, dExpires)
                 VALUES (:kKunde, :cKey, :dExpires)
                 ON DUPLICATE KEY UPDATE cKey = :cKey, dExpires = :dExpires',
@@ -982,7 +962,7 @@ class Customer
             if ($this->nRegistriert === 0) {
                 return self::CUSTOMER_DELETE_NO;
             }
-            Shop::Container()->getDB()->update('tkunde', 'kKunde', $customerID, (object)[
+            $this->db->update('tkunde', 'kKunde', $customerID, (object)[
                 'cPasswort'    => '',
                 'nRegistriert' => 0,
             ]);
@@ -1023,7 +1003,7 @@ class Customer
     public function getOpenOrders()
     {
         $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
-        $db               = Shop::Container()->getDB();
+        $db               = $this->db;
         $customerID       = $this->getID();
 
         $openOrders               = $db->getSingleObject(
@@ -1082,7 +1062,7 @@ class Customer
     private function erasePersonalData(string $issuerType, int $issuerID): void
     {
         $customerID = $this->getID();
-        $db         = Shop::Container()->getDB();
+        $db         = $this->db;
         if (empty($customerID)) {
             return;
         }
@@ -1222,22 +1202,5 @@ class Customer
         }
 
         return $this;
-    }
-
-    /**
-     * Logic is just a suggestion.
-     * @param stdClass $user
-     * @return bool
-     * @throws Exception
-     */
-    protected function checkAndMarkLoginLocation(stdClass $user): bool
-    {
-        $loginHash = $this->passwordService->hash($_SERVER['SERVER_ADDR'] . $user->dLastLogin);
-        if ($loginHash !== $user->cLoginHash) {
-            $this->newLoginLocation = true;
-            $this->cLoginHash       = $loginHash;
-        }
-
-        return $this->newLoginLocation;
     }
 }

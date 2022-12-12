@@ -8,6 +8,7 @@
 
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use JTL\Update\DBManager;
 
 /**
  * Class Migration_20221207165951
@@ -19,8 +20,11 @@ class Migration_20221207165951 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute('ALTER TABLE tkunde ADD COLUMN IF NOT EXISTS dLastLogin DATETIME DEFAULT CURRENT_TIMESTAMP() AFTER nLoginversuche');
-        $this->execute('ALTER TABLE tkunde ADD COLUMN IF NOT EXISTS cLoginHash VARCHAR(40) DEFAULT "" AFTER nLoginversuche');
+        $table = 'tkunde';
+        if (!\array_key_exists('dLastLogin', DBManager::getColumns($table))) {
+            $this->execute('ALTER TABLE ' . $table .
+            ' ADD COLUMN dLastLogin DATETIME DEFAULT CURRENT_TIMESTAMP() AFTER nLoginversuche');
+        }
     }
 
     /**
@@ -29,6 +33,5 @@ class Migration_20221207165951 extends Migration implements IMigration
     public function down()
     {
         $this->dropColumn('tkunde', 'dLastLogin');
-        $this->dropColumn('tkunde', 'cLoginHash');
     }
 }

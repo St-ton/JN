@@ -375,8 +375,7 @@ class Customer
             $this->entschluesselKundendaten();
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $this->dLastLogin         = 'NOW()';
-            $this->updateInDB();
+            $this->setLastLogin($this->kKunde);
 
             return self::OK;
         }
@@ -471,12 +470,25 @@ class Customer
             $update                   = true;
         }
         if ($update) {
-            $update = (array)$customer;
-            unset($update['dGeburtstag_formatted']);
-            $this->db->update('tkunde', 'kKunde', $customer->kKunde, (object)$update);
+            $customerData = (array)$customer;
+            unset($customerData['dGeburtstag_formatted']);
+            $this->db->update('tkunde', 'kKunde', $customer->kKunde, (object)$customerData);
         }
 
         return $customer;
+    }
+
+    /**
+     * @param int $customerID
+     * @return void
+     */
+    protected function setLastLogin(int $customerID): void
+    {
+        $this->dLastLogin = $this->db->getSingleArray('select NOW() as today')['today'];
+        $this->db->queryPrepared(
+            'UPDATE tkunde SET dLastLogin = :today WHERE kKunde = :kKunde',
+            ['kKunde' => $customerID, 'today' => $this->dLastLogin]
+        );
     }
 
     /**

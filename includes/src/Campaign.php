@@ -300,12 +300,11 @@ class Campaign
             if (!\is_array($_SESSION['Kampagnenbesucher'])) {
                 $tmpCampaign = $_SESSION['Kampagnenbesucher'];
                 unset($_SESSION['Kampagnenbesucher']);
-                if ($tmpCampaign instanceof self) {
-                    $_SESSION['Kampagnenbesucher'][$tmpCampaign->kKampagne] = $tmpCampaign;
-                } else {
-                    $_SESSION['Kampagnenbesucher'] = [];
-                }
+                $_SESSION['Kampagnenbesucher'] = $tmpCampaign instanceof self
+                    ? [$tmpCampaign->kKampagne => $tmpCampaign]
+                    : [];
             }
+
             foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
                 $event               = new stdClass();
                 $event->kKampagne    = $campaign->kKampagne;

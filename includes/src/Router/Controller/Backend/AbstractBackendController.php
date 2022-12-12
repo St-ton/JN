@@ -107,16 +107,50 @@ abstract class AbstractBackendController implements ControllerInterface
     protected function checkPermissions(string $permissions): void
     {
         // grant full access to admin
-        $account = $this->account->account();
-        if ($account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP) {
+        if ($this->checkIfAdmin()) {
             return;
         }
+        $throwException = true;
+        if (Request::getVar('action') !== 'quick_change_language') {
+            $this->checkIfHasAccess($permissions, $throwException);
+        } else {
+            $throwException = false;
+            if (!$this->checkIfHasAccess($permissions, $throwException) && $this->getRoute() === '/users') {
+                if (Request::getVar('referer') !== null) {
+                    $this->setRoute(Request::verifyGPDataString('referer'));
+                } else {
+                    throw new PermissionException('No permissions to access page');
+                }
+            }
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function checkIfAdmin(): bool
+    {
+        $account = $this->account->account();
+
+        return $account !== false && (int)$account->oGroup->kAdminlogingruppe === \ADMINGROUP;
+    }
+
+    /**
+     * @param string $permissions
+     * @param bool $throwException
+     * @return bool
+     * @throws PermissionException
+     */
+    public function checkIfHasAccess(string $permissions, bool $throwException = true): bool
+    {
         $hasAccess = (isset($_SESSION['AdminAccount']->oGroup->oPermission_arr)
             && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
             && \in_array($permissions, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
-        if (!$hasAccess) {
+        if (!$hasAccess && $throwException) {
             throw new PermissionException('No permissions to access page');
         }
+
+        return $hasAccess;
     }
 
     /**

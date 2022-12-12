@@ -961,9 +961,7 @@ class AdminAccountController extends AbstractBackendController
     {
         $this->url    = $this->baseURL . $this->route;
         $this->smarty = $smarty;
-        if ($request->getQueryParams()['action'] !== 'quick_change_language') {
-            $this->checkPermissions(Permissions::ACCOUNT_VIEW);
-        }
+        $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
         $this->finalize($this->getNextAction());
 

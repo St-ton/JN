@@ -168,12 +168,10 @@ class DBManagerController extends AbstractBackendController
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery    = 'SELECT * FROM ' . $table;
-        $countAllRows = 'SELECT COUNT(*) as allRowsFound FROM ' . $table;
         // query parts
         $queryParams = [];
-        $queryParts  = ['select' => $baseQuery];
-        $countParts  = ['select' => $countAllRows];
+        $queryParts  = ['table' => ' FROM ' . $table . ' '];
+
         // where
         if (isset($filter['where']['col'])) {
             $whereParts  = [];
@@ -189,24 +187,26 @@ class DBManagerController extends AbstractBackendController
                     }
                     $whereParts[] = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
                     /** @var string[] $queryParams */
-                    $queryParams["where_{$i}_val"] = $val;
+                    $queryParams['where_' . $i . '_val'] = $val;
                 }
             }
             if (\count($whereParts) > 0) {
                 $queryParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
-                $countParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
             }
         }
+        $fromWhere = \implode(' ', $queryParts);
         // count without limit
-        $countQuery = \implode(' ', $countParts);
-        $count      = $this->db->getSingleArray($countQuery, $queryParams)['allRowsFound'];
-        $pages      = (int)\ceil($count / $filter['limit']);
+        $count = $this->db->getSingleArray(
+            'SELECT COUNT(*) as allRowsFound' . $fromWhere,
+            $queryParams
+        )['allRowsFound'];
+        $pages = (int)\ceil($count / $filter['limit']);
         // limit
         $queryParams['limit_count']  = $filter['limit'];
         $queryParams['limit_offset'] = $filter['offset'];
-        $queryParts['limit']         = 'LIMIT :limit_offset, :limit_count';
+        $offsetLimit                 = ' LIMIT :limit_offset, :limit_count';
 
-        $query = \implode(' ', $queryParts);
+        $query = 'SELECT * ' . $fromWhere . $offsetLimit;
         $info  = null;
         $data  = $this->db->queryPrepared(
             $query,
@@ -258,7 +258,7 @@ class DBManagerController extends AbstractBackendController
         $version    = SemVerParser::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
-            $preRelease  = $version->getPreRelease();
+            $preRelease = $version->getPreRelease();
             $versionStr .= '-' . $preRelease->getGreek();
             if ($preRelease->getReleaseNumber() > 0) {
                 $versionStr .= '-' . $preRelease->getReleaseNumber();

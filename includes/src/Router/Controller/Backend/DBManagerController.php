@@ -258,7 +258,7 @@ class DBManagerController extends AbstractBackendController
         $version    = SemVerParser::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
-            $preRelease = $version->getPreRelease();
+            $preRelease  = $version->getPreRelease();
             $versionStr .= '-' . $preRelease->getGreek();
             if ($preRelease->getReleaseNumber() > 0) {
                 $versionStr .= '-' . $preRelease->getReleaseNumber();

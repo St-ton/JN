@@ -2191,3 +2191,9 @@ msgstr "Problem beim Kompilieren des CSS: %s"
 
 msgid "Cannot write to file %s."
 msgstr "Kann Datei %s nicht schreiben."
+
+msgid "No Theme selected. Please try to save the Template-Settings again."
+msgstr "Kein Theme ausgewählt. Versuchen Sie bitte die Template-Einstellungen erneut zu speichern."
+
+msgid "Theme %s does not exist."
+msgstr "Das Theme %s existiert nicht."

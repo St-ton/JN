@@ -53,6 +53,9 @@ class OrderCompleteController extends CheckoutController
         $handler    = new OrderHandler($this->db, Frontend::getCustomer(), $cart);
         $linkHelper = Shop::Container()->getLinkService();
         $order      = null;
+        if (isset($_SESSION['NeukundenKuponAngenommen'])) {
+            $_SESSION['NeukundenKuponAngenommen'] = true;
+        }
         if (isset($_GET['i'])) {
             $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
             if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {

@@ -1041,7 +1041,7 @@ class Kupon
             $type = \C_WARENKORBPOS_TYP_NEUKUNDENKUPON;
             $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
             $_SESSION['NeukundenKupon']           = $this;
-            $_SESSION['NeukundenKuponAngenommen'] = true;
+            $_SESSION['NeukundenKuponAngenommen'] = false;
             //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
             if ($logger->isHandling(\JTLLOG_LEVEL_NOTICE)) {
                 $logger->notice('Der Neukundenkupon' . \print_r($this, true) . ' wurde genutzt.');

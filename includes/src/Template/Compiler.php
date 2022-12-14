@@ -164,6 +164,9 @@ class Compiler
      */
     private function validateTemplateDir(string $theme, string $templateDir): string
     {
+        if ($theme === '') {
+            throw new Exception(\sprintf(\__('No Theme selected. Please try to save the Template-Settings again.')));
+        }
         $directory  = \realpath(\PFAD_ROOT . $templateDir . $theme);
         $compareDir = \str_replace(['/', '\\'], \DIRECTORY_SEPARATOR, \realpath(\PFAD_ROOT . \PFAD_TEMPLATES));
         if ($directory === false || !\str_starts_with($directory . '/', $compareDir)) {

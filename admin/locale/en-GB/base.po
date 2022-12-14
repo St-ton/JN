@@ -2184,3 +2184,9 @@ msgstr "An error occured while compiling the CSS: %s"
 
 msgid "Cannot write to file %s."
 msgstr "Cannot write to file %s."
+
+msgid "No Theme selected. Please try to save the Template-Settings again."
+msgstr "No Theme selected. Please try to save the Template-Settings again."
+
+msgid "Theme %s does not exist."
+msgstr "Theme %s does not exist."

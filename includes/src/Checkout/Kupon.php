@@ -1160,7 +1160,8 @@ class Kupon
         $categories  = [];
         $catQry      = '';
         $customerQry = '';
-        if (isset($_SESSION['NeukundenKuponAngenommen']) && $_SESSION['NeukundenKuponAngenommen']) {
+        //if newCustomerCoupon is activated, no other coupan can be applied
+        if (isset($_SESSION['NeukundenKupon'])) {
             return 0;
         }
         $db   = Shop::Container()->getDB();

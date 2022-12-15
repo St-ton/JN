@@ -209,7 +209,7 @@ class ShippingMethod
      * @param string $countryCode
      * @param string $zip
      * @param string $shippingClasses
-     * @param int $cgroupID
+     * @param int    $cgroupID
      * @return array
      */
     public static function getPossibleShippingMethods(
@@ -703,11 +703,11 @@ class ShippingMethod
     }
 
     /**
-     * @param string $deliveryCountry
-     * @param string $shippingClasses
-     * @param int $customerGroupID
+     * @param string              $deliveryCountry
+     * @param string              $shippingClasses
+     * @param int                 $customerGroupID
      * @param Artikel|object|null $product
-     * @param bool $checkProductDepedency
+     * @param bool                $checkProductDepedency
      * @return mixed
      * @former gibGuenstigsteVersandart()
      */
@@ -761,8 +761,8 @@ class ShippingMethod
      * wird die hinzukommende Versandsumme fuer den Artikel
      * der hinzugefuegt werden soll errechnet und zurueckgegeben.
      *
-     * @param Artikel $product
-     * @param string $iso
+     * @param Artikel   $product
+     * @param string    $iso
      * @param float|int $productAmount
      * @return bool|stdClass
      */
@@ -829,10 +829,10 @@ class ShippingMethod
     }
 
     /**
-     * @param string $country
-     * @param Artikel $product
+     * @param string    $country
+     * @param Artikel   $product
      * @param int|float $amount
-     * @param bool $checkDeliveryAddress
+     * @param bool      $checkDeliveryAddress
      * @return bool|stdClass
      */
     public static function gibArtikelabhaengigeVersandkosten(
@@ -947,8 +947,8 @@ class ShippingMethod
 
     /**
      * @param string $country
-     * @param array $items
-     * @param bool $checkDelivery
+     * @param array  $items
+     * @param bool   $checkDelivery
      * @return array
      */
     public static function gibArtikelabhaengigeVersandkostenImWK(
@@ -999,8 +999,8 @@ class ShippingMethod
 
     /**
      * @param Versandart|stdClass $shippingMethod
-     * @param string $iso
-     * @param string $zip
+     * @param string              $iso
+     * @param string              $zip
      * @return stdClass|null
      * @former gibVersandZuschlag()
      */
@@ -1023,10 +1023,10 @@ class ShippingMethod
     }
 
     /**
-     * @param Versandart|stdClass $shippingMethod
-     * @param String $iso
+     * @param Versandart|stdClass   $shippingMethod
+     * @param String                $iso
      * @param Artikel|stdClass|null $additionalProduct
-     * @param Artikel|null $product
+     * @param Artikel|null          $product
      * @return int|float
      * @former berechneVersandpreis()
      * @todo fWarenwertNetto vom Zusatzartikel darf kein Netto sein - der Preis muss in Brutto angegeben werden.
@@ -1202,10 +1202,10 @@ class ShippingMethod
     /**
      * calculate shipping costs for exports
      *
-     * @param string $iso
-     * @param Artikel $product
+     * @param string   $iso
+     * @param Artikel  $product
      * @param int|bool $allowCash
-     * @param int $customerGroupID
+     * @param int      $customerGroupID
      * @return int|float
      * @former gibGuenstigsteVersandkosten()
      */
@@ -1304,8 +1304,8 @@ class ShippingMethod
 
     /**
      * @param Versandart|object $method
-     * @param float $cartSumGros
-     * @param float $cartSumNet
+     * @param float             $cartSumGros
+     * @param float             $cartSumNet
      * @return string
      * @former baueVersandkostenfreiString()
      */
@@ -1354,8 +1354,8 @@ class ShippingMethod
 
     /**
      * @param Versandart $method
-     * @param float|int $cartSumGros
-     * @param float|int $cartSumNet
+     * @param float|int  $cartSumGros
+     * @param float|int  $cartSumNet
      * @return float
      */
     public static function getShippingFreeDifference($method, $cartSumGros, $cartSumNet = 0): float
@@ -1400,7 +1400,7 @@ class ShippingMethod
     }
 
     /**
-     * @param int $customerGroupID
+     * @param int    $customerGroupID
      * @param string $country
      * @return int|mixed
      * @former gibVersandkostenfreiAb()
@@ -1474,9 +1474,9 @@ class ShippingMethod
     }
 
     /**
-     * @param int $customerGroupID
-     * @param bool $ignoreConf
-     * @param bool $force
+     * @param int   $customerGroupID
+     * @param bool  $ignoreConf
+     * @param bool  $force
      * @param array $filterISO
      * @return array
      * @former gibBelieferbareLaender()

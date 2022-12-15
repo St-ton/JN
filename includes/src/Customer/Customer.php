@@ -479,7 +479,6 @@ class Customer
     }
 
     /**
-     * @param int $customerID
      * @return void
      */
     protected function setLastLogin(): void

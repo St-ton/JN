@@ -16,12 +16,12 @@ use JTL\Update\DBManager;
 class Migration_20221207165951 extends Migration implements IMigration
 {
     protected $author = 'sl';
-    protected $description = 'add dLastLogin and lastLoginHash to tkunde';
+    protected $description = 'add dLastLogin to tkunde';
 
     public function up()
     {
         $table = 'tkunde';
-        if (!\array_key_exists('dLastLogin', DBManager::getColumns($table))) {
+        if (!array_key_exists('dLastLogin', DBManager::getColumns($table))) {
             $this->execute('ALTER TABLE ' . $table .
             ' ADD COLUMN dLastLogin DATETIME DEFAULT CURRENT_TIMESTAMP() AFTER nLoginversuche');
         }

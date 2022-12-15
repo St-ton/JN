@@ -375,7 +375,7 @@ class Customer
             $this->entschluesselKundendaten();
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $this->setLastLogin($this->kKunde);
+            $this->setLastLogin();
 
             return self::OK;
         }
@@ -482,12 +482,12 @@ class Customer
      * @param int $customerID
      * @return void
      */
-    protected function setLastLogin(int $customerID): void
+    protected function setLastLogin(): void
     {
         $this->dLastLogin = $this->db->getSingleArray('select NOW() as today')['today'];
         $this->db->queryPrepared(
             'UPDATE tkunde SET dLastLogin = :today WHERE kKunde = :kKunde',
-            ['kKunde' => $customerID, 'today' => $this->dLastLogin]
+            ['kKunde' => (int)$this->kKunde, 'today' => $this->dLastLogin]
         );
     }
 

@@ -269,7 +269,7 @@ class Customer
     /**
      * @var string|null
      */
-    public ?string $dLastLogin = null;
+    protected ?string $dLastLogin = null;
 
     /**
      * Customer constructor.
@@ -288,6 +288,14 @@ class Customer
         if ($id > 0) {
             $this->loadFromDB($id);
         }
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDLastLogin(): ?string
+    {
+        return $this->dLastLogin;
     }
 
     /**
@@ -664,7 +672,6 @@ class Customer
         }
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
-        $obj->dLastLogin  = $this->dLastLogin;
         $return           = $this->db->update('tkunde', 'kKunde', $obj->kKunde, $obj);
 
         if ($obj->dGeburtstag === '_DBNULL_') {

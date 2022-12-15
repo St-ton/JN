@@ -267,9 +267,9 @@ class Customer
     ];
 
     /**
-     * @var string
+     * @var string|null
      */
-    public string $dLastLogin = '';
+    public ?string $dLastLogin = null;
 
     /**
      * Customer constructor.

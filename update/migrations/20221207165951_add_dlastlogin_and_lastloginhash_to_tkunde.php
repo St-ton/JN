@@ -23,7 +23,7 @@ class Migration_20221207165951 extends Migration implements IMigration
         $table = 'tkunde';
         if (!array_key_exists('dLastLogin', DBManager::getColumns($table))) {
             $this->execute('ALTER TABLE ' . $table .
-            ' ADD COLUMN dLastLogin DATETIME DEFAULT CURRENT_TIMESTAMP() AFTER nLoginversuche');
+            ' ADD COLUMN dLastLogin DATETIME DEFAULT NULL AFTER nLoginversuche');
         }
     }
 

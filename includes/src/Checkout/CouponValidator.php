@@ -66,9 +66,7 @@ class CouponValidator
             // unregistrierte Neukunden, keine Kupons für Gastbestellungen zugelassen
             return;
         }
-        if (($_SESSION['VersandKupon']->cKuponTyp ?? '') === Kupon::TYPE_SHIPPING
-            || ($_SESSION['Kupon']->cKuponTyp ?? '') === Kupon::TYPE_STANDARD
-            || empty($customer->cMail)) {
+        if (($_SESSION['Kupon']->cKuponTyp ?? '') === 'standard' || empty($customer->cMail)) {
             return;
         }
         // not for already registered customers with order(s)

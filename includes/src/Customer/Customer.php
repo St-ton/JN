@@ -291,14 +291,6 @@ class Customer
     }
 
     /**
-     * @return string|null
-     */
-    public function getLastLogin(): ?string
-    {
-        return $this->dLastLogin;
-    }
-
-    /**
      * get customer by email address
      *
      * @param string $mail
@@ -496,6 +488,14 @@ class Customer
             'UPDATE tkunde SET dLastLogin = :today WHERE kKunde = :kKunde',
             ['kKunde' => (int)$this->kKunde, 'today' => $this->dLastLogin]
         );
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLastLogin(): ?string
+    {
+        return $this->dLastLogin;
     }
 
     /**

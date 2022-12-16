@@ -293,7 +293,7 @@ class Customer
     /**
      * @return string|null
      */
-    public function getDLastLogin(): ?string
+    public function getLastLogin(): ?string
     {
         return $this->dLastLogin;
     }

@@ -1,5 +1,7 @@
+@charset "UTF-8";
 @import "../fonts/FontAwesomeFree/css/fontawesome.min.css";
 @import "../fonts/FontAwesomeFree/css/solid.min.css";
+@import "../fonts/FontAwesomeFree/css/regular.min.css";
 @font-face {
   font-family: "Open Sans";
   font-style: normal;
@@ -105,6 +107,15 @@ button {
   background-color: #22a4f3;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+.row > * {
+  flex: 1;
+}
+
 .button-group {
   display: flex;
   flex-direction: row;
@@ -175,7 +186,7 @@ button {
   display: flex;
 }
 .modal .modal-window {
-  width: 512px;
+  width: 550px;
   background-color: #fff;
   font-size: 14px;
   color: #435a6b;
@@ -194,6 +205,9 @@ button {
 .modal .modal-window .modal-header button {
   flex: none;
 }
+.modal .modal-window .modal-header button:hover {
+  color: #d5eefd;
+}
 .modal .modal-window .modal-body {
   margin: 24px;
 }
@@ -202,6 +216,49 @@ button {
 }
 .modal .modal-window .modal-footer .button-group {
   justify-content: right;
+}
+
+.control {
+  border: 1px solid #435a6b;
+  border-radius: 5px;
+  height: 38px;
+  padding: 8px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.form-group input[type=radio],
+.form-group input[type=checkbox] {
+  display: none;
+}
+.form-group input[type=radio] + label,
+.form-group input[type=checkbox] + label {
+  margin-bottom: 0;
+}
+.form-group input[type=radio] + label:before,
+.form-group input[type=checkbox] + label:before {
+  font-family: "Font Awesome 6 Free", sans-serif;
+  margin-right: 8px;
+}
+.form-group input[type=radio] + label:before {
+  content: "";
+}
+.form-group input[type=radio]:checked + label:before {
+  content: "";
+}
+.form-group input[type=checkbox] + label:before {
+  content: "";
+}
+.form-group input[type=checkbox]:checked + label:before {
+  content: "";
+  font-weight: 900;
 }
 
 #editor {

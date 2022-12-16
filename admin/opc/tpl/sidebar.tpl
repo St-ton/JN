@@ -11,7 +11,7 @@
                 <button type="button" class="opc-dropdown-item" onclick="opc.gui.exportDraft()">
                     <i class="fa fas fa-download fa-fw"></i> {__('Export')}
                 </button>
-                <button type="button" class="opc-dropdown-item" id="btnHelp" onclick="opc.tutorial.start()" ">
+                <button type="button" class="opc-dropdown-item" id="btnHelp" onclick="opc.tutorial.start()">
                     <i class="fa fas fa-question-circle fa-fw"></i> {__('help')}
                 </button>
             </div>

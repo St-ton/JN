@@ -83,6 +83,16 @@ button {
     }
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+
+    > * {
+        flex: 1;
+    }
+}
+
 .button-group {
     display: flex;
     flex-direction: row;
@@ -161,7 +171,7 @@ button {
     }
 
     .modal-window {
-        width: 512px;
+        width: 550px;
         background-color: #fff;
         font-size: 14px;
         color: $text-color;
@@ -180,6 +190,10 @@ button {
 
             button {
                 flex: none;
+
+                &:hover {
+                    color: $primary-lighter;
+                }
             }
         }
         .modal-body {
@@ -192,6 +206,59 @@ button {
             .button-group {
                 justify-content: right;
             }
+        }
+    }
+}
+
+.control {
+    border: 1px solid $text-color;
+    border-radius: 5px;
+    height: 38px;
+    padding: 8px;
+    font-size: 14px;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 16px;
+
+    label {
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+
+    input[type=radio] ,
+    input[type=checkbox] {
+        display: none;
+
+        & + label {
+            margin-bottom: 0;
+        }
+
+        & + label:before {
+            font-family: "Font Awesome 6 Free", sans-serif;
+            margin-right: 8px;
+        }
+    }
+
+    input[type=radio] {
+        & + label:before {
+            content: "\f111";
+        }
+
+        &:checked + label:before {
+            content: "\f192";
+        }
+    }
+
+    input[type=checkbox] {
+        & + label:before {
+            content: "\f0c8";
+        }
+
+        &:checked + label:before {
+            content: "\f14a";
+            font-weight: 900;
         }
     }
 }

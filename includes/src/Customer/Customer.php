@@ -662,7 +662,8 @@ class Customer
             $obj->cAnredeLocalized,
             $obj->cGuthabenLocalized,
             $obj->dErstellt_DE,
-            $obj->cPasswortKlartext
+            $obj->cPasswortKlartext,
+            $obj->dLastLogin
         );
         if ($obj->dGeburtstag === null || $obj->dGeburtstag === '') {
             $obj->dGeburtstag = '_DBNULL_';

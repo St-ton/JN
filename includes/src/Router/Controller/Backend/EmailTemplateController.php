@@ -519,8 +519,12 @@ class EmailTemplateController extends AbstractBackendController
     public static function resetTemplate(int $templateID, DbInterface $db): bool
     {
         $db->queryPrepared(
-            'DELETE FROM temailvorlagesprache
-                WHERE kEmailvorlage = :tid',
+            'DELETE evs FROM
+            temailvorlagesprache evs
+                JOIN
+            temailvorlagespracheoriginal evso ON evs.kEmailvorlage = evso.kEmailvorlage
+                AND evs.kSprache = evso.kSprache 
+            WHERE evs.kEmailvorlage = :tid',
             ['tid' => $templateID]
         );
         $db->queryPrepared(

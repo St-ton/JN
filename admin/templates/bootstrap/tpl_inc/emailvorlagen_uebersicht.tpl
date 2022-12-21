@@ -10,10 +10,22 @@
             {/if}
         </strong>
     </div>
+    <form name="uebersichtForm" method="post" action="{$adminURL}{$route}">
     {include file='tpl_inc/mailtemplate_list.tpl' heading=__('emailTemplates') mailTemplates=$mailTemplates}
     {include file='tpl_inc/mailtemplate_list.tpl' heading=__('pluginTemplates') mailTemplates=$pluginMailTemplates isPlugin=true}
-    <div class="save-wrapper">
+     <div class="save-wrapper">
         <div class="row">
+            <div class="col-sm-6 col-xl-auto text-left">
+                <div class="custom-control custom-checkbox">
+                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                    <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                </div>
+            </div>
+            <div class="ml-auto col-sm-6 col-xl-auto">
+                <button name="resetSelectedTemplates" class="btn btn-danger btn-block btn-reset-all" type="submit" value="1">
+                    <i class="fas fa-refresh"></i> {__('reset')}
+                </button>
+            </div>
             <div class="ml-auto col-sm-6 col-xl-auto">
                 <button type="button" class="btn btn-primary btn-block btn-syntaxcheck-all">
                     <i class="fa fa-check"></i> {__('Check syntax')}
@@ -21,9 +33,11 @@
             </div>
         </div>
     </div>
+    </form>
 </div>
 <script>
     {literal}
+
     function updateSyntaxNotify() {
         if (doNotify) {
             window.clearTimeout(doNotify);
@@ -33,6 +47,28 @@
             doNotify = null;
         }, 1500);
     }
+
+    function resetTemplate(tplID) {
+        simpleAjaxCall(BACKEND_URL + 'emailtemplates', {
+            jtl_token: JTL_TOKEN,
+                    "resetEmailvorlage": 1,
+                    "kEmailvorlage": tplID,
+                     "resetConfirmJaSubmit": 1
+                },function (result) {
+            createNotify({
+                title: '{/literal}{__('successTemplateReset')}{literal}',
+                message: '{/literal}{__('ok')}{literal}',
+            }, {
+                allow_dismiss: true,
+                type: 'success',
+                delay: 1500
+            });
+            if (result.state && result.state !== '') {
+                $('#tplState_' + tplID).html(result.state);
+            }
+        })
+    }
+
     function validateTemplateSyntax(tplID, massCheck) {
         $('#tplState_' + tplID).html('<span class="fa fa-spinner fa-spin"></span>');
         simpleAjaxCall(BACKEND_URL + 'io', {
@@ -120,6 +156,12 @@
                 validateTemplateSyntax(id, true);
             }
         });
+    });
+    $('.btn-reset').on('click', function (e) {
+            let id = $(this).data('id');
+            if (id) {
+                resetTemplate(id);
+            }
     })
     {/literal}
 </script>

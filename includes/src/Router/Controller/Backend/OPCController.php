@@ -75,7 +75,7 @@ class OPCController extends AbstractBackendController
 
             return $smarty->assign('error', $error)
                 ->assign('page', $page)
-                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor2.tpl');
+                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
         }
         if ($action !== '' && Form::validateToken() === false) {
             // OPC action while XSRF validation failed

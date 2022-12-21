@@ -16,6 +16,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Kupon
@@ -270,6 +271,23 @@ class Kupon
         if ($name === 'cLocalizedValue') {
             $this->cLocalizedWert = $value;
         }
+    }
+    /**
+     * @inheritDoc
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'db';
+        });
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __wakeup(): void
+    {
+        $this->db = Shop::Container()->getDB();
     }
 
     /**
@@ -1208,7 +1226,7 @@ class Kupon
                     AND (nVerwendungen = 0
                         OR nVerwendungen > nVerwendungenBisher)
                     AND (cArtikel = '' " . $productQry . ")
-                    AND (cHersteller IS NULL OR cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
+                    AND (cHersteller = '' OR cHersteller = '-1' " . $manufQry . ")
                     AND (cKategorien = ''
                         OR cKategorien = '-1' " . $catQry . ")
                     AND (cKunden = ''

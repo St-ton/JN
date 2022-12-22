@@ -167,14 +167,58 @@ class CheckboxController extends AbstractBackendController
     private function save(array $post, array $languages): CheckBox
     {
         if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
-            $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
-            $checkBox->delete([(int)$post['kCheckBox']]);
-        } else {
-            $checkBox = new CheckBox(0, $this->db);
+            return $this->updateCheckBox($post, $languages);
         }
+
+        return $this->insertCheckBox($post, $languages);
+    }
+
+    /**
+     * @param array $post
+     * @param array $languages
+     * @return CheckBox
+     */
+    private function insertCheckBox(array $post, array $languages): CheckBox
+    {
+        $checkBox = new CheckBox(0, $this->db);
+        $this->prepareCheckbox($checkBox, $post);
+        [$texts, $descr] = $this->prepareTranslations($languages, $post);
+        $checkBox->insertDB($texts, $descr);
+        $this->cache->flushTags(['checkbox']);
+
+        return $checkBox;
+    }
+
+    /**
+     * @param array $post
+     * @param array $languages
+     * @return CheckBox
+     * @throws \Exception
+     */
+    private function updateCheckBox(array $post, array $languages): CheckBox
+    {
+        $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
+        $this->prepareCheckbox($checkBox, $post);
+        [$texts, $descr] = $this->prepareTranslations($languages, $post);
+        $checkBox->updateDB($texts, $descr);
+        $this->cache->flushTags(['checkbox']);
+
+        return $checkBox;
+    }
+
+    /**
+     * @param CheckBox $checkBox
+     * @param array $post
+     * @return void
+     */
+    private function prepareCheckbox(CheckBox $checkBox, array $post): void
+    {
         $checkBox->kLink = 0;
-        if ((int)$post['nLink'] === 1) {
+        if (isset($post['nLink']) && (int)$post['nLink'] === 1) {
             $checkBox->kLink = (int)$post['kLink'];
+        }
+        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
+            $checkBox->kCheckBox = (int)$post['kCheckBox'];
         }
         $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
         $checkBox->cName             = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
@@ -194,17 +238,29 @@ class CheckboxController extends AbstractBackendController
         }
         $checkBox->nSort     = (int)$post['nSort'];
         $checkBox->dErstellt = 'NOW()';
-        $texts               = [];
-        $descr               = [];
+    }
+
+    /**
+     * @param array $languages
+     * @param array $post
+     * @return array[]
+     */
+    private function prepareTranslations(array $languages, array $post): array
+    {
+        $texts = [];
+        $descr = [];
         foreach ($languages as $language) {
             $code         = $language->getIso();
-            $texts[$code] = \str_replace('"', '&quot;', $post['cText_' . $code]);
-            $descr[$code] = \str_replace('"', '&quot;', $post['cBeschreibung_' . $code]);
+            $textCode     = 'cText_' . $code;
+            $descrCode    = 'cBeschreibung_' . $code;
+            $texts[$code] = isset($post[$textCode])
+                ? \str_replace('"', '&quot;', $post[$textCode])
+                : '';
+            $descr[$code] = isset($post[$descrCode])
+                ? \str_replace('"', '&quot;', $post[$descrCode])
+                : '';
         }
 
-        $checkBox->insertDB($texts, $descr);
-        $this->cache->flushTags(['checkbox']);
-
-        return $checkBox;
+        return [$texts, $descr];
     }
 }

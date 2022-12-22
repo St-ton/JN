@@ -8,18 +8,18 @@ use JTL\Interfaces\ServiceInterface;
 abstract class AbstractService implements ServiceInterface
 {
     /**
-     * @param RepositoryInterface $repository
+     * @param RepositoryInterface|null $repository
      */
     public function __construct(
-        protected RepositoryInterface $repository
+        protected ?RepositoryInterface $repository = null
     ) {
+        if (\is_null($this->repository)) {
+            $this->getRepository();
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function getRepository(): RepositoryInterface
-    {
-        return $this->repository;
-    }
+    abstract public function getRepository(): RepositoryInterface;
 }

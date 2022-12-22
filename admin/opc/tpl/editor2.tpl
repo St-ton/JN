@@ -16,7 +16,10 @@
         <div id="editor">
             <div id="sidebar">
                 <div id="header">
-                    <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    <button data-dropdown=""><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    <div class="dropdown">
+                        Hello World
+                    </div>
                     <div class="title">
                         {__('editPortletPrefix')}&bdquo;{$pageName}&ldquo;{__('editPortletPostfix')}
                     </div>
@@ -178,7 +181,7 @@
                     <div class="row">
                         <div class="form-group">
                             <label for="publishFrom">{__('publicFrom')}</label>
-                            <input class="control" id="publishFrom" name="publishFrom" value="">
+                            <input type="datetime-local" class="control" id="publishFrom" name="publishFrom" value="">
                         </div>
                         <div class="form-group">
                             <label for="publishTo">{__('publicTill')}</label>

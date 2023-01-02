@@ -5,7 +5,7 @@ msgid "fsDesc"
 msgstr " "
 
 msgid "fsURL"
-msgstr " "
+msgstr "https://jtl-url.de/0-tcf"
 
 msgid "fsSave"
 msgstr "Save"

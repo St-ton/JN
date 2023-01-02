@@ -825,7 +825,7 @@ class AdminAccountController extends AbstractBackendController
                 $action = $this->actionGroupDelete();
                 break;
             case 'quick_change_language':
-                $this->actionQuickChangeLanguage();
+                $action = 'account_view';
                 break;
         }
 
@@ -959,6 +959,9 @@ class AdminAccountController extends AbstractBackendController
     {
         $this->url    = $this->baseURL . $this->route;
         $this->smarty = $smarty;
+        if (Request::getVar('action') === 'quick_change_language') {
+            $this->actionQuickChangeLanguage();
+        }
         $this->checkPermissions(Permissions::ACCOUNT_VIEW);
         $this->getText->loadAdminLocale('pages/benutzerverwaltung');
         $this->finalize($this->getNextAction());

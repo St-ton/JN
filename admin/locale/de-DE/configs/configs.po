@@ -2208,7 +2208,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Bewertungserinnerung nutzen"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Bewertungserinnerungen werden nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Standardmäßig werden Bewertungserinnerungen nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen. Bei „Ja“ erhalten alle Kunden eine Erinnerung."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Bewertungserinnerung nur zulassen für"

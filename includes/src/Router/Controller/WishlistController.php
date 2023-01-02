@@ -269,10 +269,18 @@ class WishlistController extends AbstractController
         if ($customerID > 0) {
             $wishlists = Wishlist::getWishlists();
             if (($invisibleItemCount = Wishlist::getInvisibleItemCount($wishlists, $wishlist, $wishlistID)) > 0) {
-                $this->alertService->addWarning(
-                    \sprintf(Shop::Lang()->get('warningInvisibleItems', 'wishlist'), $invisibleItemCount),
-                    'warningInvisibleItems'
-                );
+                if ($action === 'search') {
+                    $productsFound = \count($wishlist->getItems());
+                    $this->alertService->addInfo(
+                        \sprintf(Shop::Lang()->get('infoItemsFound', 'wishlist'), $productsFound),
+                        'infoItemsFound'
+                    );
+                } else {
+                    $this->alertService->addWarning(
+                        \sprintf(Shop::Lang()->get('warningInvisibleItems', 'wishlist'), $invisibleItemCount),
+                        'warningInvisibleItems'
+                    );
+                }
             }
         } elseif ($wishlist->getID() === 0) {
             return new RedirectResponse($linkHelper->getStaticRoute('jtl.php') . '?r=' . \R_LOGIN_WUNSCHLISTE);
@@ -313,7 +321,7 @@ class WishlistController extends AbstractController
                 $event->dErstellt    = 'NOW()';
 
                 $this->db->insert('tkampagnevorgang', $event);
-                $_SESSION['Kampagnenbesucher'] = $campaign;
+                $_SESSION['Kampagnenbesucher'][$campaign->kKampagne] = $campaign;
             }
         }
 

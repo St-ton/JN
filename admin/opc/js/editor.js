@@ -1,20 +1,93 @@
-window.publishButton.onclick = () => showModal(publishModal);
+window.publishButton.addEventListener('click', () => showModal(window.publishModal));
 
-window.navScrollRight.onclick = () => {
+window.navScrollRight.addEventListener('click', () => {
     window.navtabs.scrollLeft += 64;
-};
+});
 
-window.navScrollLeft.onclick = () => {
+window.navScrollLeft.addEventListener('click', () => {
     window.navtabs.scrollLeft -= 64;
-};
+});
 
-window.resizer.onmousedown = e => {
-    let resizerStartX     = 0;
-    let resizerStartWidth = 0;
+// tabs
 
-    let sidebar       = window.sidebar;
-    resizerStartWidth = sidebar.offsetWidth;
-    resizerStartX     = e.clientX;
+document.querySelectorAll('[data-tab]').forEach(tab => {
+    let tabPane = document.querySelector('#' + tab.dataset.tab);
+    let allTabs = tab.closest('.tabs').querySelectorAll('[data-tab]');
+
+    tab.addEventListener('click', () => {
+        allTabs.forEach(tab => {
+            let tabPane = document.querySelector('#' + tab.dataset.tab);
+            tab.classList.remove('active');
+            tabPane.classList.remove('active');
+        });
+
+        tab.classList.add('active')
+        tab.scrollIntoView();
+        tabPane.classList.add('active');
+    });
+});
+
+// collapses
+
+document.querySelectorAll('[data-collapse]').forEach(collapseBtn => {
+    let collapse = document.querySelector('#' + collapseBtn.dataset.collapse);
+
+    collapse.addEventListener('transitionend', () => {
+        if (!collapseBtn.classList.contains('collapsed')) {
+            collapse.style.removeProperty('height');
+        }
+    });
+
+    collapseBtn.addEventListener('click', async() => {
+        if (collapseBtn.classList.contains('collapsed')) {
+            let curHeight = collapse.offsetHeight;
+            collapse.style.removeProperty('height');
+            let orgHeight = collapse.offsetHeight;
+            collapse.style.height = curHeight + 'px';
+            await sleep(0);
+            collapse.style.height = orgHeight + 'px';
+        } else {
+            collapse.style.height = collapse.offsetHeight + 'px';
+            await sleep(0);
+            collapse.style.height = 0;
+        }
+
+        collapseBtn.classList.toggle('collapsed');
+    });
+});
+
+// tooltips
+
+document.querySelectorAll('[data-tooltip]').forEach(elm => {
+    let title = elm.title;
+    let tooltip = document.createElement('div');
+    let arrow = document.createElement('div');
+
+    arrow.classList.add('tooltip-arrow');
+    arrow.setAttribute('data-popper-arrow', true);
+    tooltip.classList.add('tooltip');
+    tooltip.innerText = title;
+    tooltip.append(arrow);
+    document.body.append(tooltip);
+    elm.title = '';
+
+    let popper = Popper.createPopper(elm, tooltip, {modifiers: [{name: 'offset', options: {offset: [0, 8]}}]});
+
+    elm.addEventListener('mouseenter', () => {
+        tooltip.classList.add('shown');
+        popper.update();
+    });
+
+    elm.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('shown');
+    });
+})
+
+// resizer
+
+window.resizer.addEventListener('mousedown', e => {
+    let resizerStartWidth = window.sidebar.offsetWidth;
+    let resizerStartX = e.clientX;
 
     window.addEventListener('mousemove', resize);
     window.addEventListener('mouseup', stopResize);
@@ -36,16 +109,17 @@ window.resizer.onmousedown = e => {
 
     function setSiderbarSize(width)
     {
-        let sidebar          = window.sidebar;
-        let portlets         = window.portlets;
-        let portlets_per_row = 16;
+        window.sidebar.style.width = width + 'px';
+        let portletsPerRow = 16;
 
-        while (portlets_per_row > 1 && width < portlets_per_row * 96 + (portlets_per_row - 1) * 22 + 24 * 2) {
-            portlets_per_row --;
+        while (
+            portletsPerRow > 1 &&
+            window.sidebar.offsetWidth < portletsPerRow * 96 + (portletsPerRow - 1) * 22 + 24 * 2
+        ) {
+            portletsPerRow --;
         }
 
-        sidebar.style.width = width + 'px';
-        portlets.style.setProperty('--portlets-per-row', portlets_per_row);
+        window.portlets.style.setProperty('--portlets-per-row', portletsPerRow);
     }
 
     function stopResize(e)
@@ -55,63 +129,20 @@ window.resizer.onmousedown = e => {
         window.removeEventListener('mouseup', stopResize);
         document.body.classList.remove('resizing');
     }
-};
-
-document.querySelectorAll('.tabs').forEach(tabGroup => {
-    let tabs = tabGroup.querySelectorAll('[data-tab]');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(tab => {
-                tab.classList.remove('active')
-                document.querySelector('#' + tab.dataset.tab).classList.remove('active');
-            });
-
-            tab.classList.add('active');
-            document.querySelector('#' + tab.dataset.tab).classList.add('active');
-            tab.scrollIntoView();
-        });
-    });
 });
 
-document.querySelectorAll('[data-collapse]').forEach(collapse => {
-    let target = document.querySelector('#' + collapse.dataset.collapse);
+// close buttons
 
-    target.addEventListener('transitionend', () => {
-        if (target.offsetHeight) {
-            target.style.removeProperty('height');
-        }
+document.querySelectorAll('[data-close]').forEach(closeBtn => {
+    let modal = closeBtn.closest('.modal');
+
+    closeBtn.addEventListener('click', () => {
+        modal.style.opacity = 0;
+
+        modal.addEventListener('transitionend', () => {
+            modal.classList.remove('shown');
+        }, {once: true});
     });
-
-    collapse.addEventListener('click', async() => {
-        let height = target.offsetHeight;
-
-        if (height) {
-            target.style.height = height + 'px';
-            await sleep(0);
-            target.style.height = 0;
-        } else {
-            target.style.removeProperty('height');
-            height              = target.offsetHeight;
-            target.style.height = 0;
-            await sleep(0);
-            target.style.height = height + 'px';
-        }
-
-        collapse.classList.toggle('collapsed');
-    });
-})
-
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.querySelectorAll('[data-close]').forEach(closer => {
-        closer.addEventListener('click', () => {
-            modal.style.opacity = 0;
-
-            modal.addEventListener('transitionend', () => {
-                modal.classList.remove('shown');
-            }, {once: true});
-        })
-    })
 });
 
 async function showModal(modal)
@@ -121,6 +152,8 @@ async function showModal(modal)
     await sleep(0);
     modal.style.opacity = 1;
 }
+
+// helpers
 
 function sleep(ms)
 {

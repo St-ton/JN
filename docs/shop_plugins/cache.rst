@@ -316,8 +316,6 @@ Die seit JTL-Shop 4.05 enthaltene Methode *Dateien (erweitert)* versucht, diese 
 Hierbei werden im Ordner ``templates_c/filecache/`` für jeden Tag Unterordner angelegt, die Symlinks zu den
 einzelnen Cache-Einträgen enthalten. Hierdurch kann eine bessere Parallelität beim Schreiben von neuen Einträgen
 erreicht werden. |br|
-Unter bislang ungeklärten Umständen kann es jedoch vorkommen, dass fehlerhafte Links erstellt werden, sodass der
-Cache-Ordner nicht mehr geleert werden kann. Dies wird aktuell (Stand: Februar 2020) noch untersucht.
 
 APC-Cache
 """""""""

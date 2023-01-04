@@ -60,8 +60,7 @@ Darüber hinaus können eventuelle Performance-Probleme mit Plugins anhand des P
 
     define('PROFILE_PLUGINS', true);
 
-Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "System -> Profiler" (bis JTL-Shop 4.x)
-bzw. "Fehlerbehebung -> Plugin-Profiler" (ab JTL-Shop 5.x) im Tab "*Plugins*" eine genauere Analyse der ausgeführten
+Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "Fehlerbehebung -> Plugin-Profiler" (ab JTL-Shop 5.x) im Tab "*Plugins*" eine genauere Analyse der ausgeführten
 Plugins und deren Hooks.
 
 XHProf / Tideways
@@ -85,7 +84,7 @@ Sämtliche über die NiceDB-Klasse ausgeführten SQL-Queries können via
     define('PROFILE_QUERIES', true);
 
 im Profiler gespeichert werden. |br|
-Unter "System -> Profiler" (bis JTL-Shop 4.x), bzw. "Plugin-Profiler" (ab JTL-Shop 5.x) sind sie anschließend
+Unter "Plugin-Profiler" (ab JTL-Shop 5.x) sind sie anschließend
 im Tab "*SQL*" zu sehen.
 
 Alternativ lassen sie sich via
@@ -177,25 +176,7 @@ Beispiel:
 SQL
 ---
 
-JTL-Shop 4 vereinfacht einige häufige Aufrufe der NiceDB-Klasse, sodass nicht mehr auf das globale NiceDB-Objekt
-zugegriffen werden muss und die Methoden-Namen leichter zu merken sind. Die Parameter sind dabei unverändert geblieben.
-Eine Übersicht findet sich in der folgenden Tabelle.
-
-+-------------------------------------------+--------------------------+
-| Shop 3                                    | Shop 4                   |
-+===========================================+==========================+
-| ``$GLOBALS['NiceDB']->executeQuery()``    | ``Shop::DB()->query()``  |
-+-------------------------------------------+--------------------------+
-| ``$GLOBALS['NiceDB']->deleteRow()``       | ``Shop::DB()->delete()`` |
-+-------------------------------------------+--------------------------+
-| ``$GLOBALS['NiceDB']->selectSingleRow()`` | ``Shop::DB()->select()`` |
-+-------------------------------------------+--------------------------+
-| ``$GLOBALS['NiceDB']->insertRow()``       | ``Shop::DB()->insert()`` |
-+-------------------------------------------+--------------------------+
-| ``$GLOBALS['NiceDB']->updateRow()``       | ``Shop::DB()->update()`` |
-+-------------------------------------------+--------------------------+
-
-Inbesondere ab Version 4.0 wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete()`` und
+Es wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete()`` und
 ``NiceDB::update()`` anstelle von ``NiceDB::executeQuery()`` zu nutzen. |br|
 Nur diese Varianten nutzen *Prepared Statements*!
 
@@ -211,8 +192,8 @@ zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Si
 
        public function __constructor()
        {
-           $dbHandler = Shop::Container()->getDB();
-           $dbHandler->select(/*...*/);
+           $this->dbHandler = Shop::Container()->getDB();
+           $this->dbHandler->select(/*...*/);
        }
    }
 
@@ -226,7 +207,7 @@ in SQL-Queries zu integrieren!
 
 .. code-block:: php
 
-    $row = $GLOBALS['NiceDB']->executeQuery("SELECT * FROM my_table WHERE id = " . $_POST['id'], 1);
+    $row = Shop::DB()->executeQuery("SELECT * FROM my_table WHERE id = " . $_POST['id'], 1);
 
 Falls es sich bei der Spalte ``id`` um einen numerischen Datentyp handelt, sollte zumindest ein Datentyp-Casting
 vorgenommen werden, z. B. mittels ``(int)$_POST['id']``.
@@ -257,7 +238,7 @@ Analog zum Selektieren ein Beispiel mit einem *Insert*:
 
 .. code-block:: php
 
-    $i = $GLOBALS['NiceDB']->executeQuery("
+    $i = Shop::DB()->executeQuery("
         INSERT INTO my_table
             ('id', 'text', 'foo')
             VALUES (" . $_POST['id'] . ", '" . $_POST['text'] . "', '" . $_POST['foo'] . "')", 3
@@ -280,7 +261,7 @@ Löschen von Zeilen
 
 .. code-block:: php
 
-    $GLOBALS['NiceDB']->executeQuery("
+    Shop::DB()->executeQuery("
         DELETE FROM my_table
             WHERE id = " . $_POST['id'], 3
     );
@@ -306,7 +287,7 @@ Aktualisieren von Zeilen
 
 .. code-block:: php
 
-    $GLOBALS['NiceDB']->executeQuery("
+    Shop::DB()->executeQuery("
         UPDATE my_table
             SET id = " . $_POST['new_id'] . ",
                 foo = '" . $_POST['foo'] . "',
@@ -329,12 +310,10 @@ Aktualisieren von Zeilen
     Sollte es nicht möglich sein, die beschriebenen Methoden zu nutzen, so sollten sämtliche potentiell
     gefährlichen Werte über ``Shop::DB()->escape()`` zuvor maskiert, bzw. im Fall von Numeralen konvertiert, werden.
 
-Änderungen von JTL-Shop 3.x zu JTL-Shop 4.x
--------------------------------------------
+Tipps
+-----
 
-Eine kurze Übersicht von Änderungen in JTL-Shop 4:
-
-* ``smarty->assign()`` kann nun *gechaint* werden:
+* ``smarty->assign()`` kann *gechaint* werden:
 
 .. code-block:: php
 

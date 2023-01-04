@@ -35,28 +35,7 @@ Das neuere Pluginverzeichnis würde demnach beim Upload das ältere überschreib
 würde nicht mehr funktionieren. Wir empfehlen, den Pluginverzeichnisnamen um eindeutige Merkmale
 wie z. B. den Firmennamen des Autors zu erweitern.
 
-**Bis JTL-Shop 4.x** liegt das Pluginverzeichnis ``plugins/``, in dem alle Plugins des Shops zu finden sind,
-im Ordner ``<Shop-Root>/includes/``. |br|
-Demnach könnte ein typisches Plugin unter ``[Shop-Rot]/includes/plugins/[Ihr_Pluginordner]`` zu finden sein.
-
-Jedes Plugin in einem Onlineshop der Version 4.x muss mindestens einen *Versionsordner* enthalten. |br|
-Die Versionen fangen bei der Ganzzahl 100 an (Bedeutung: Version 1.00) und werden mit 101, 102 usw. weitergeführt.
-Die ganzzahligen Versionsnummern sind gleichzeitig die Ordnernamen unterhalb des *Versionsordners*. |br|
-Jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen).
-
-.. code-block:: console
-   :emphasize-lines: 2-3
-
-    [Shop-Root]/includes/plugins/[PluginName]/
-    ├── version
-    │   └── 100
-    │       ├── adminmenu
-    │       ├── frontend
-    │       └── sql
-    ├── info.xml
-    └── README.md
-
-**Ab JTL-Shop 5.x** befindet sich der Pluginordner direkt unterhalb der Shop-Root,
+**Seit JTL-Shop 5.x** befindet sich der Pluginordner direkt unterhalb der Shop-Root,
 also ``[Shop-Root]/plugins/[Ihr_Pluginordner]``.
 
 .. attention::
@@ -94,48 +73,24 @@ Mögliche Unterverzeichnisse
 +--------------------+-------------------------------------------------------------------------------------------------------------+
 | ``paymentmethod/`` | Implementierung von Zahlungsmethoden im Onlineshop.                                                         |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``sql/``           | Nur bis 4.x; SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern.      |
+| ``src/``           | pluginspezifische Helper-Klassen (organisiert als Packages)                                       |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``src/``           | Ab 5.0.0, pluginspezifische Helper-Klassen (organisiert als Packages)                                       |
+| ``locale/``        | Übersetzungsdateien                                                                               |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``locale/``        | Ab 5.0.0, Übersetzungsdateien                                                                               |
+| ``Migrations/``    | SQL-Migrationen                                                                                   |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``Migrations/``    | Ab 5.0.0, SQL-Migrationen                                                                                   |
+| ``Portlets/``      | OPC-Portlets                                                                                      |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``Portlets/``      | Ab 5.0.0, OPC-Portlets                                                                                      |
-+--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``blueprints/``    | Ab 5.0.0, OPC-Blueprints                                                                                    |
+| ``blueprints/``    | OPC-Blueprints                                                                                    |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
 
 Verzeichnisstruktur Payment
 """""""""""""""""""""""""""
 
 Ein Plugin kann beliebig viele Zahlungsmethoden im Onlineshop implementieren. |br|
-Hierfür wird ein Unterordner namens ``paymentmethod/`` benötigt, der in JTL-Shop 4.x unterhalb der jeweiligen
-Pluginversion und ab JTL-Shop 5.x direkt unterhalb der Plugin-Root liegt.
+Hierfür wird ein Unterordner namens ``paymentmethod/`` benötigt, der ab JTL-Shop 5.x direkt unterhalb der Plugin-Root liegt.
 
-**Beispiel, JTL-Shop 4.x**
-
-.. code-block:: console
-   :emphasize-lines: 8-9
-
-    [Shop-Root]/includes/plugins/[PluginName]/
-    ├── version
-    │   └── 100
-    │       ├── adminmenu
-    │       │   └── ...
-    │       ├── frontend
-    │       │   └── ...
-    │       ├── paymentmethod
-    │       │   └── ...
-    │       └── sql
-    │           └── ...
-    ├── preview.png
-    ├── info.xml
-    ├── README.md
-    └── LICENSE.md
-
-**Beispiel, JTL-Shop 5.x**
+**Beispiel**
 
 .. code-block:: console
    :emphasize-lines: 6-7
@@ -191,51 +146,6 @@ Versionierung
 Wie die XML-Definition der Plugin-Version aussieht, finden Sie
 im ``info.xml``-Abschnitt ":ref:`label_infoxml_versionierung`".
 
-Bis JTL-Shop 4.x
-""""""""""""""""
-
-Da sich Plugins mit der Zeit auch weiterentwickeln können, gibt es eine Versionierung der Plugins. |br|
-Damit besteht die Möglichkeit, ein Plugin über den Updatemechanismus des Pluginsystems zu aktualisieren,
-um neue Funktionalität einzuführen oder Fehler zu beheben.
-
-Jedes Plugin muss den Ordner ``version/`` enthalten. |br|
-Dieser Ordner enthält alle bisher erschienenen Versionen des Plugins. Jedes Plugin muss die niedrigste Version
-100 (Bedeutung Version 1.00) enthalten. |br|
-In diesen Unterordnern (Versionsordnern) befinden sich alle Ressourcen des Plugins für die jeweilige Version.
-
-.. code-block:: console
-   :emphasize-lines: 2,3
-
-    [Shop-Root]/includes/plugins/[PluginName]/
-    ├── version
-    │   └── 100
-    │       ├── adminmenu
-    │       │   └── ...
-    │       ├── frontend
-    │       │   └── ...
-    │       └── sql
-    │           └── ...
-    ├── preview.png
-    ├── info.xml
-    ├── README.md
-    └── LICENSE.md
-
-Wird eine neue Version entwickelt, wird die Version um 1 hochgezählt. Die Versionierung
-ist also fortlaufend: 100, 101, 102, 103 und so weiter. Eine Versionsgrenze nach oben existiert nicht.
-
-Um ein Plugin zu aktualisieren, übertragen Sie die ``info.xml`` in das jeweilige Pluginverzeichnis. |br|
-Alle neuen Versionsverzeichnisse übertragen Sie in das Verzeichnis ``/version`` des jeweiligen Pluginverzeichnisses.
-Wenn also eine neue Version eines Plugins erstellt wurde, kopieren Sie die Datei ``<pluginname>/info.xml`` sowie
-alle ``<pluginname>/version/*``-Versionsverzeichnisse in den Onlineshop.
-Die Pluginverwaltung im Adminbereich erkennt dabei automatisch, ob Updates zu einem Plugin vorliegen und bietet
-einen entsprechenden Updatebutton an.
-
-Beispiel:
-In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner von *version* wie folgt
-aussehen: */version/100/* und */version/101/*.
-
-Für jede Version, die in der Installationsdatei definiert wurde, muss auch ein physischer Ordner existieren.
-
 Ab JTL-Shop 5.x
 """""""""""""""
 
@@ -268,61 +178,6 @@ im entsprechenden Abschnitt ":ref:`label_infoxml_versionierung`".
 
 SQL im Plugin
 -------------
-
-Bis JTL-Shop 4.x
-""""""""""""""""
-
-Jede Version eines Plugins hat die Möglichkeit, eine SQL-Datei anzugeben, welche beliebige SQL-Befehle ausführt. |br|
-Diese SQL-Datei kann z. B. zum Erstellen neuer Tabellen oder zum Verändern von Daten in der Datenbank genutzt werden.
-Falls in der ``info.xml`` eine SQL-Datei angegeben wurde, muss diese auch physikalisch vorhanden sein. |br|
-Wenn eine neue Tabelle in der SQL-Datei angelegt wird, also der SQL Befehl ``CREATE TABLE``
-genutzt wird, muss der Tabellenname eine bestimmte Konvention einhalten.
-Der Name muss mit ``xplugin_`` beginnen, gefolgt von der eindeutigen ``[PluginID]_``. Er kann mit einem
-beliebigen Namen enden. |br|
-Daraus ergibt sich dann: ``xplugin_[PluginID]_[Name]``.
-
-Beispiel: Lautet die Plugin-ID "*jtl_exampleplugin*" und die Tabelle soll "*tuser*" heißen, so muss der Tabellenname
-letztlich "*xplugin_jtl_exampleplugin_tuser*" lauten. |br|
-Der SQL-Ordner liegt im Ordner der jeweiligen Pluginversion.
-
-**Beispiel:**
-
-Bei einem Plugin in der Version 102 muss der entsprechende Abschnitt der ``info.xml`` dann wie folgt aussehen:
-
-.. code-block:: xml
-
-    <Version nr ="102">
-        <SQL>install.sql</SQL>
-        <CreateDate>2016-03-17</CreateDate>
-    </Version>
-
-Hier muss die Datei ``install.sql`` im SQL-Ordner namens ``sql/`` der Version 102 liegen. |br|
-Die Verzeichnisstruktur sieht daher in diesem Beispiel wie folgt aus:
-
-.. code-block:: console
-    :emphasize-lines: 11
-
-    includes/plugins/[PluginName]/
-    ├── info.xml
-    └── version
-        ├── 100
-        │   └── ...
-        ├── 101
-        │   └── ...
-        └── 102
-            ├── adminmenu
-            ├── sql
-            │    └── install-102.sql
-            └── frontend
-
-Pro Pluginversion kann es immer nur eine SQL-Datei geben. Falls in der ``info.xml`` keine SQL-Datei für eine Version
-angegeben wurde, sollte man das SQL-Verzeichnis in der jeweiligen Version *weglassen*.
-
-Bei der Installation wird jede SQL-Datei von der kleinsten zur größten Version inkrementell abgearbeitet. |br|
-Wenn also ein Plugin in der Version 1.23 vorliegt, so werden bei der Installation die SQL-Dateien der Versionen
-Version 1.00-1.23 nacheinander ausgeführt. |br|
-Analog verhält es sich bei einem Update. Sie haben Version 1.07 eines Plugin installiert und möchten nun
-auf Version 1.13 updaten. Beim Update werden alle SQL-Dateien ab 1.08 bis 1.13 ausgeführt.
 
 ab JTL-Shop 5.x
 """""""""""""""
@@ -436,8 +291,7 @@ Einen exemplarischen Überblick, wie Sie dies mit Hilfe der ``info.xml`` bewerks
 "adminmenu/" Struktur
 ---------------------
 
-Das *Adminmenu* befindet sich bei Onlineshops einer Version bis 4.x in jedem Versionsordner des Plugins und
-bei Onlineshops ab Version 5.x direkt in der Plugin-Root. |br|
+Das *Adminmenu* befindet sich bei Onlineshops ab Version 5.x direkt in der Plugin-Root. |br|
 (Falls kein *Adminmenu* in der ``info.xml`` definiert wurde, können Sie diesen Ordner auch weglassen.)
 
 Ein Plugin kann beliebig viele eigene Links (:ref:`label_infoxml_custom_links`) im Adminbereich enthalten. |br|
@@ -481,8 +335,7 @@ Es ist natürlich auch möglich, das Adminmenü nur mit Einstellungen (:ref:`lab
 
 Im Frontendmenü können Sie selbst definierte Links im Frontend von JTL-Shop erstellen, so dass dort eigene PHP-Dateien
 ausgeführt werden. |br|
-Der Ordner ``frontend/`` befindet sich bei JTL-Shop 4.x im jeweiligen Versionsordner des Plugins und ab
-JTL-Shop 5.x direkt in der Plugin-Root. |br|
+Der Ordner ``frontend/`` befindet sich ab JTL-Shop 5.x direkt in der Plugin-Root. |br|
 (Falls kein Frontendmenü in der ``info.xml`` definiert wurde, können Sie diesen Ordner auch weglassen. |br|
 Es können beliebig viele *Frontend Links* eingebunden werden.
 
@@ -524,11 +377,9 @@ Der Pfad zur Templatedatei für das untere Beispiel würde also ``/meinplugin/ve
 
 Hierfür bietet die Pluginverwaltung die Spalte "Linkgruppe".
 Falls *Frontend Links* vorhanden sind, wird dort eine Schaltfläche angezeigt. Die Schaltfläche führt zur Verwaltung der
-Linkgruppen (in JTL-Shop 4.x: "Seiten" -> "Eigene Seiten",
-ab JTL-Shop 5.x: "Darstellung" -> "Eigene Inhalte" -> "Seiten"). |br|
+Linkgruppen (in JTL-Shop 5.x: "Darstellung" -> "Eigene Inhalte" -> "Seiten"). |br|
 
-Die Installation des Plugins stellt *Frontend Links*  ab JTL-Shop 4 in die Linkgruppe "*hidden*" ein
-(in JTL-Shop 3 in die erste CMS Linkgruppe).
+Die Installation des Plugins stellt *Frontend Links* in die Linkgruppe "*hidden*" ein.
 
 Die Links des jeweiligen Plugins werden hier farblich hervorgehoben, um das Auffinden der *Frontend Links*  des Plugins
 zu erleichtern. |br|
@@ -541,35 +392,6 @@ Frontend-Ressourcen
 -------------------
 
 Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlichen "*Frontend-Ressourcen*".
-
-**Beispiel bis JTL-Shop 4.x:**
-
-.. code-block:: console
-   :emphasize-lines: 11-17
-
-   includes/plugins/[PluginName]/
-   ├── version
-   │    ├── 100
-   │    │   └── ...
-   │    ├── 101
-   │    │   └── ...
-   │    └── 102
-   │        ├── adminmenu
-   │        ├── sql
-   │        └── frontend
-   │           ├── css
-   │           │   ├── bar.css
-   │           │   ├── bar_custom.css
-   │           │   └── foo.css
-   │           ├── js
-   │           │   ├── bar.js
-   │           │   └── foo.js
-   │           ├── template
-   │           │   └── ...
-   │           └── ...
-   ├── info.xml
-   ├── README.md
-   └── ...
 
 **Beispiel ab JTL-Shop 5.x:**
 
@@ -675,34 +497,6 @@ Boxen
 Ein Plugin kann ebenso Boxen für das Frontend von JTL-Shop mitbringen. |br|
 Das Verzeichnis für diese Darstellungselemente befinden sich ebenfalls im Ordner ``frontend/``.
 
-**Beispiel bis JTL-Shop 4.x:**
-
-.. code-block:: console
-   :emphasize-lines: 11,12
-
-   includes/plugins/[PluginName]/
-   ├── version
-   │    ├── 100
-   │    │   └── ...
-   │    ├── 101
-   │    │   └── ...
-   │    └── 102
-   │        ├── adminmenu
-   │        ├── sql
-   │        └── frontend
-   │           ├── boxen
-   │           │   └── example_box.tpl
-   │           ├── css
-   │           │   └── ...
-   │           ├── js
-   │           │   └── ...
-   │           ├── template
-   │           │   └── ...
-   │           └── ...
-   ├── info.xml
-   ├── README.md
-   └── ...
-
 .. hint::
 
     Von JTL-Shop 4.x zu JTL-Shop 5.0 hat sich der Name dieses Verzeichnisses von ``boxen/`` zu ``boxes/`` geändert.
@@ -746,28 +540,6 @@ Hierfür werden *Widgets* eingesetzt. Wie sie der Logik des Shops bekannt gemach
 
 Platziert werden die zugehörigen Dateien wie folgt:
 
-**Bis JTL-Shop 4.x:**
-
-.. code-block:: console
-   :emphasize-lines: 9-11
-
-   includes/plugins/[PluginName]/
-   ├── version
-   │    ├── 100
-   │    │   └── ...
-   │    ├── 101
-   │    │   └── ...
-   │    └── 102
-   │        ├── adminmenu
-   │        │   └── widget
-   │        │       ├── examplewidgettemplate.tpl
-   │        │       └── class.WidgetInfo_jtl_test.php
-   │        ├── sql
-   │        └── frontend
-   ├── info.xml
-   ├── README.md
-   └── ...
-
 **Ab JTL-Shop 5.x:**
 
 .. code-block:: console
@@ -799,27 +571,6 @@ Nähere Informationen hierzu finden Sie im Kapitel ``info.xml`` unter dem Abschn
 
 Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
 
-**Bis JTL-Shop 4.x:**
-
-.. code-block:: console
-   :emphasize-lines: 11,12
-
-   includes/plugins/[PluginName]/
-   ├── version
-   │    ├── 100
-   │    │   └── ...
-   │    ├── 101
-   │    │   └── ...
-   │    └── 102
-   │        ├── adminmenu
-   │        ├── frontend
-   │        ├── sql
-   │        └── licence
-   │            └── class.PluginLicence.php
-   ├── info.xml
-   ├── README.md
-   └── ...
-
 **Ab JTL-Shop 5.x:**
 
 .. code-block:: console
@@ -836,8 +587,6 @@ Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
    ├── README.md
    ├── Bootstrap.php
    └── ...
-
-Die Stelle im Root-Verzeichnis des Plugins ist für JTL-Shop 4.x sowie JTL-Shop 5.x der gleiche. |br|
 
 
 

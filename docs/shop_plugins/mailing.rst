@@ -11,17 +11,13 @@ erläutert die Unterschiede zwischen JTL-Shop 3, 4 und 5.x.
 Wie Sie neue E-Mail-Templates in der ``info.xml`` Ihres Plugins definieren, finden Sie
 im Abschnitt ":ref:`label_infoxml_email`".
 
-JTL-Shop 3.x/4.x
-----------------
+JTL-Shop 5.x
+------------
 
-Die in der ``info.xml`` definierten E-Mail-Templates eines Plugins können bis einschließlich JTL-Shop 4 über die
-Methode ``sendeMail()`` aus der ``includes/mailTools.php`` versendet werden.
+Der Mailversand funktioniert über den Service ``JTL\Mail\Mailer``. |br|
+Die neue Klasse ``JTL\Mail\Mail`` ermöglicht eine flexiblere Konfiguration der zu versendenden E-Mail.
 
-.. note::
-
-    Die ``includes/mailTools.php`` muss ggf. manuell required werden.
-
-Die Template-ID berechnet sich dabei immer aus dem Präfix ``kPlugin_``, der numerischen *Plugin-ID,* einem
+Die Template-ID berechnet sich aus dem Präfix ``kPlugin_``, der numerischen *Plugin-ID,* einem
 weiteren ``_`` sowie der in der ``info.xml`` definierten ``ModulId``.
 
 **Regel:** ``kPlugin_[PluginID]_[ModulId]``
@@ -34,23 +30,7 @@ Als weiteren Parameter akzeptiert die Funktion ein *stdClass*-Objekt, das im Sma
 Variable ``$oPluginMail`` bereitgestellt wird. Befindet sich in diesem Objekt eine Eigenschaft mit dem
 Namen ``tkunde``, so wird versucht, die E-Mail an die im Kundenkonto hinterlegte E-Mail-Adresse zu versenden.
 
-**Beispiel:**
-
-.. code-block:: php
-
-    $data = new stdClass();
-    $data->tkunde = new Kunde(1);
-    $data->test = 123;
-    sendeMail('kPlugin_' . $plugin->kPlugin . '_mymailmoduleid', $data);
-
-
-JTL-Shop 5.x
-------------
-
-Das Grundprinzip in JTL-Shop 5 ist ähnlich, funktioniert nun aber über den Service ``JTL\Mail\Mailer``. |br|
-Darüber hinaus ermöglicht die neue Klasse ``JTL\Mail\Mail`` eine flexiblere Konfiguration der zu versendenden E-Mail.
-
-Um ein Plugin-Template analog dem o.g. Beispiel zu versenden, könnte der entsprechende Code so aussehen:
+Um ein Plugin-Template zu versenden, könnte der entsprechende Code so aussehen:
 
 **Beispiel:**
 

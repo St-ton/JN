@@ -48,4 +48,4 @@
 
 :doc:`/shop_plugins/hinweise`
     Allgemeine Hinweise |br|
-    Tipps und Tricks zur Entwicklung von Plugins, insbesondere für JTL-Shop 4.x
+    Tipps und Tricks zur Entwicklung von Plugins, ab JTL-Shop 4.x

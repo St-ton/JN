@@ -9,8 +9,7 @@ Cache
 in ``<Shop-Root>/classes/CachingMethods/`` bzw. ``<Shop-Root>/includes/src/Cache/Methods/`` wird seit JTL-Shop 4 ein
 Objektcache bereitgestellt, welcher auch in Plugins genutzt werden kann.
 
-Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Wartung -> Cache*" (bis JTL-Shop 4.x) und
-"*System -> Cache*" (ab JTL-Shop 5.x).
+Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Cache*" (ab JTL-Shop 5.x).
 
 Standardmäßig unterstützt JTL-Shop die folgenden Caching-Methoden:
 
@@ -21,7 +20,7 @@ Standardmäßig unterstützt JTL-Shop die folgenden Caching-Methoden:
 * Dateien (erweitert)
 * XCache
 
-Darüber hinaus erfolgt eine Gruppierung von Cache-Einträgen über Gruppen und Tags (seit JTL-Shop 4).
+Darüber hinaus erfolgt eine Gruppierung von Cache-Einträgen über Gruppen und Tags.
 
 Cache-Group-Tags
 ----------------

@@ -35,17 +35,7 @@ Die globalen Informationen können dabei nicht weggelassen werden.
 Der Rumpf
 ---------
 
-Das Hauptelement stellt den Rumpf der XML-Datei dar. Es heißt
-sowohl **für JTL-Shop 3 als auch JTL-Shop 4** ``<jtlshop3plugin>``. |br|
-**Ab JTL-Shop 5.x** heißt es ``<jtlshopplugin>``.
-
-**Bis JTL-Shop 4.x:**
-
-.. code-block:: xml
-
-  <jtlshop3plugin>
-    ...
-  </jtlshop3plugin>
+Das Hauptelement stellt den Rumpf der XML-Datei dar. Es heißt ``<jtlshopplugin>``.
 
 **Ab JTL-Shop 5.x:**
 
@@ -86,24 +76,19 @@ Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemen
 +----------------------+-----------------------------------------------------+
 | ``<XMLVersion>`` *   | Version der ``info.xml`` (``[0-9]{3}``)             |
 +----------------------+-----------------------------------------------------+
-| ``<ShopVersion>``    | Mindestversion von JTL-Shop |br|                    |
-|                      | (>= 300, < 400, >= 500 oder auch *5.0.0-beta.3*)    |
+| ``<MinShopVersion>`` | Mindestversion von JTL-Shop 5            |
 +----------------------+-----------------------------------------------------+
-| ``<MinShopVersion>`` | ab 5.0.0 - Mindestversion von JTL-Shop 5            |
-+----------------------+-----------------------------------------------------+
-| ``<MaxShopVersion>`` | ab 5.0.0 - Maximalversion von JTL-Shop 5            |
-+----------------------+-----------------------------------------------------+
-| ``<Shop4Version>``   | Mindestversion von JTL-Shop 4 (>= 400)              |
+| ``<MaxShopVersion>`` | Maximalversion von JTL-Shop 5            |
 +----------------------+-----------------------------------------------------+
 | ``<PluginID>`` *     | Plugin-Identifikator (``[a-zA-Z0-9_]``)             |
 +----------------------+-----------------------------------------------------+
 | ``<Icon>``           | Dateiname zu einem Icon                             |
 +----------------------+-----------------------------------------------------+
-| ``<Version>``        | ab JTL-Shop 5.0.0 - die Plugin-Version (``[0-9]+``) |
+| ``<Version>``        | die Plugin-Version (``[0-9]+``) |
 +----------------------+-----------------------------------------------------+
-| ``<CreateDate>``     | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)            |
+| ``<CreateDate>``     | Erstellungsdatum (YYYY-MM-DD)            |
 +----------------------+-----------------------------------------------------+
-| ``<ExsID>``          | ab 5.0.0 - ExtensionStore-ID                        |
+| ``<ExsID>``          | ExtensionStore-ID                        |
 +----------------------+-----------------------------------------------------+
 
 (*)Pflichtfelder
@@ -142,14 +127,7 @@ für das eigene Plugin zur Verfügung zu haben.
 ShopVersion
 """""""""""
 
-*ShopVersion* gibt die Version von JTL-Shop an, die mindestens benötigt wird. Ist sie höher als die aktuell
-installierte Version des Onlineshops, wird eine Fehlermeldung im Backend angezeigt und das Plugin kann nicht
-installiert werden. Falls nur dieser Wert, nicht aber ``Shop4Version``, konfiguriert wurde, erscheint in JTL-Shop 4.00+
-der Hinweis, dass das Plugin möglicherweise in dieser Version nicht funktioniert. Es kann jedoch trotzdem installiert
-werden. |br|
-Das explizite Angeben einer einzelnen Versionsnummer ist ebenfalls möglich, ergibt allerdings nur temporär zu
-Entwicklerzwecken Sinn (siehe z. B.: *5.0.0-beta.3*)
-**Ab JTL-Shop 5.0.0 sollte dieser Tag durch <MinShopVersion> ersetzt werden**
+**Ab JTL-Shop 5.0.0 wird dieser Tag nicht mehr unterstützt!**
 
 MinShopVersion
 """"""""""""""
@@ -165,8 +143,6 @@ Version von JTL-Shop höher, wird im Backend eine Warnung angezeigt.
 Shop4Version
 """"""""""""
 
-*Shop4Version* gibt die Mindest-Version für JTL-Shop 4 an. Wurde nur dieser Wert und nicht ``ShopVersion`` konfiguriert,
-ist eine Installation nur in JTL-Shop 4.x möglich. |br|
 **Ab JTL-Shop 5.0.0 wird dieser Tag nicht mehr unterstützt!**
 
 Plugin-ID
@@ -232,57 +208,8 @@ Versionierung
 Wie die zur Definition passende Verzeichnisstruktur aussieht, finden Sie unter "Aufbau"
 im Abschnitt ":ref:`label_aufbau_versionierung`".
 
-Bis JTL-Shop 4.x
-""""""""""""""""
-
-Ein Plugin kann beliebig viele Versionen beinhalten. Die Versionierung fängt bei Version 100 an und wird dann
-mit 101, 102 usw. weitergeführt. Es muss mindestens ein Block mit der Version 100 vorhanden sein.
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <CreateDate>2015-05-17</CreateDate>
-    </Version>
-
-Es besteht zu jeder Version die Möglichkeit, eine SQL-Datei anzugeben, die bei der Installation bzw. Aktualisierung
-ausgeführt wird. Hierbei gilt es, die Pluginverzeichnisstruktur für SQL-Dateien zu beachten.
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <SQL>install.sql</SQL>
-        <CreateDate>2016-05-17</CreateDate>
-    </Version>
-
-+-------------+-----------------------------------------------+
-| Elementname | Funktion                                      |
-+=============+===============================================+
-| nr*         | Versionsnummer des Plugins (``[0-9]+``)       |
-+-------------+-----------------------------------------------+
-| SQL         | SQL-Datei                                     |
-+-------------+-----------------------------------------------+
-| CreateDate  | Erstellungsdatum der Version (``YYYY-MM-DD``) |
-+-------------+-----------------------------------------------+
-
-(*)Pflichtfelder
-
-Lesen Sie hierzu unter Aufbau auch den Abschnitt ":ref:`label_infoxml_sql`".
-
-Falls weitere Versionen zu einem Plugin existieren, werden diese untereinander aufgeführt.
-
-.. code-block:: xml
-
-    <Version nr="100">
-        <CreateDate>2015-03-25</CreateDate>
-    </Version>
-    <Version nr="101">
-        <CreateDate>2015-04-15</CreateDate>
-    </Version>
-
 Ab JTL-Shop 5.x
 """""""""""""""
-
-**Ab JTL-Shop 5.0.0 entfällt dieser Block!**
 
 Es befindet sich in der ``info.xml`` lediglich die wesentlich vereinfachtere Struktur:
 
@@ -326,7 +253,7 @@ können Sie den entsprechenden Hook benutzen, um dies zu erledigen.
 +================+============================================================================+
 | ``<id>`` *     | Eindeutige Hook-ID (``[0-9]+``)                                            |
 +----------------+----------------------------------------------------------------------------+
-| ``<priority>`` | Priorität (ab JTL-Shop 4.05, niedriger => frühere Ausführung) (``[0-9]+``) |
+| ``<priority>`` | Priorität (niedriger => frühere Ausführung) (``[0-9]+``) |
 +----------------+----------------------------------------------------------------------------+
 | ``<Hook>``     | PHP-Datei im Ordner ``frontend/``, die an ID ausgeführt wird               |
 +----------------+----------------------------------------------------------------------------+
@@ -378,59 +305,6 @@ ein:
 
 Wo Sie die benötigten Dateien ablegen können, erfahren Sie im Kapitel "Aufbau"
 im Abschnitt ":ref:`label_aufbau_license`".
-
-**Bis JTL-Shop 4.x**
-
-**Beispiel:**
-
-.. code-block:: xml
-   :emphasize-lines: 9,10
-
-    <?xml version='1.0' encoding="ISO-8859-1"?>
-    <jtlshop3plugin>
-        <Name>Lizenz-Beispiel</Name>
-        <Description>Ein einfaches Beispiel</Description>
-        <Author>JTL-Software-GmbH</Author>
-        <URL>https://www.jtl-software.de</URL>
-        <XMLVersion>100</XMLVersion>
-        <ShopVersion>300</ShopVersion>
-        <PluginID>jtl_license_example</PluginID>
-        <LicenceClass>jtl_license_examplePluginLicence</LicenceClass>
-        <LicenceClassFile>class.PluginLicence.php</LicenceClassFile>
-        <Install>
-            ...
-        </Install>
-    </jtlshop3plugin>
-
-Die Lizenzprüfungsklasse muss im Ordner ``licence/`` liegen, der sich wiederum im Ordner der jeweiligen Pluginversion
-befindet, beispielsweise: ``[pluginname]/version/100/licence/``.
-
-In unserem Beispiel heißt die Lizenzprüfungsklasse des Plugins ``jtl_license_examplePluginLicence`` und befindet sich
-in der Datei ``class.PluginLicence.php``.
-
-**Beispiel:**
-
-.. code-block:: php
-
-    <?php
-
-    class jtl_license_exmplePluginLicence implements PluginLizenz
-    {
-        /**
-        * @param string $cLicence
-        * @return bool - true if successfully validated
-        */
-        public function checkLicence($cLicence)
-        {
-            return $cLicence === '123';
-        }
-    }
-
-Wie im Beispiel zu erkennen ist, erbt die in der ``info.xml`` angegebene Lizenzprüfungsklasse
-``jtl_license_exmplePluginLicence`` vom Interface ``PluginLizenz``. Dieses Interface schreibt die Implementierung der
-Methode ``checkLicence()`` vor. |br|
-In unserem Beispiel fragt diese Methode den Parameter ``$cLicence`` ab. Die Methode muss den boolschen Wert
-*true* zurückgeben, damit das System dieses Plugin ausführt.
 
 **Ab JTL-Shop 5.x**
 
@@ -771,32 +645,6 @@ Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
 +-------------------+-----------------------------------------------------------------------+
 
 (*) Pflichtfeld
-
-Widgets bis JTL-Shop 4.x
-""""""""""""""""""""""""
-
-Der Klassenname wird bis einschließlich JTL-Shop 4.x wie folgt generiert:
-
-* Annahme: Das XML schreibt vor, die Klasse heißt `"<Class>Info</Class>"`
-  und die Plugin-ID lautet ``<PluginID>jtl_test</PluginID>``.
-
-* Dann muss im Verzeichnis ``version/[Versionsnummer]/adminmenu/widget/`` des Plugins die folgende Klasse
-  mit Namen ``class.WidgetInfo_jtl_test.php`` liegen |br|
-  (Regel: ``class.Widget + <Class> + _ + <PluginID> + .php``, siehe auch:
-  Abschnitt ":ref:`Aufbau / Widgets<label_aufbau_widgets>`")
-
-* Die Klasse in der Datei muss den Namen ``Widget + <Class> +_ + <PluginID>`` tragen
-  und muss von der Basisklasse ``WidgetBase`` abgeleitet sein. |br|
-
-**Beispiel:**
-
-.. code-block:: php
-
-   <?php
-
-   class WidgetInfo_jtl_test extends WidgetBase
-   {
-   }
 
 Widgets ab JTL-Shop 5.x
 """""""""""""""""""""""
@@ -1343,8 +1191,6 @@ und den Inhalt zu verwalten. |br|
 Sie können beliebig viele Elemente des Typs ``<Link>`` anlegen. Falls kein *Frontend-Link* angegeben wird, sollten Sie
 den Block ``<FrontendLink>`` komplett weglassen. |br|
 
-In Versionen bis JTL-Shop 4.x werden Links in *Linkgruppen-Verwaltung* unter CMS ("Seiten -> Eigene Seiten") angelegt.
-Dort können durch Plugins angelegte Links im Nachhinein verwaltet werden. |br|
 Ab JTL-Shop 5.x werden neue *Frontend-Links*, unter "Eigene Inhalte" -> "Seiten", der Linkgruppe "Hidden" zugewiesen.
 
 Um nun beispielsweise den Frontend-Link "JTL Test Page" des JTL-Plugins
@@ -1477,7 +1323,7 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
 
 (*) Pflichtfeld
 
-**Beispiel, JTL-Shop 4.x:** |br|
+**Beispiel** |br|
 
 .. code-block:: xml
    :emphasize-lines: 12,13
@@ -1493,7 +1339,7 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
         <Soap>0</Soap>
         <Curl>1</Curl>
         <Sockets>0</Sockets>
-        <ClassFile>class/PayPalPlus.class.php</ClassFile>
+        <ClassFile>PayPalPlus.php</ClassFile>
         <ClassName>PayPalPlus</ClassName>
         <TemplateFile>template/paypalplus.tpl</TemplateFile>
         <MethodLanguage iso="GER">
@@ -1506,19 +1352,6 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
             <Description>Verwendeter Name auf der PayPal-Seite</Description>
             <ValueName>brand</ValueName>
         </Setting>
-    </Method>
-
-**JTL-Shop 5.x:**
-
-Für JTL-Shop 5 sieht der in der oberen Abbildung gelb hervorgehobene Teil der Struktur wie folgt aus:
-
-.. code-block:: xml
-
-    <Method>
-        ...
-        <ClassFile>PayPalPlus.php</ClassFile>
-        <ClassName>PayPalPlus</ClassName>
-        ...
     </Method>
 
 +------------------------------+-----------------------------------------------------------------+
@@ -1737,14 +1570,6 @@ Es sei folgendes Beispiel-XML gegeben:
     </Install>
 
 Der Wert der Sprachvariablen kann via PHP auf folgende Weise ausgegeben werden:
-
-JTL-Shop 4.x
-""""""""""""
-
-.. code-block:: php
-
-    $test1 = $oPlugin->oPluginSprachvariableAssoc_arr['lang_var_one']; // hat Wert "Ich bin variabel!"
-    $test2 = sprintf($oPlugin->oPluginSprachvariableAssoc_arr['lang_var_two'], "Peter"); // hat Wert "Hallo, mein Name ist Peter."
 
 JTL-Shop 5.x
 """"""""""""

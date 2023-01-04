@@ -101,9 +101,7 @@ Ein neues Child-Template erstellen
 Sie könnten Beispiel-Child-Templates manuell von der Projektseite
 `Child-Templates <https://gitlab.com/jtl-software/jtl-shop/child-templates/>`_ herunterladen.
 
-Das Anlegen eines Child-Templates ist in Shop 4.x und 5.x fast identisch, lediglich der Aufbau der einzelnen Templates
-unterscheidet sich. |br|
-So existiert für jedes der von JTL ausgelieferten Templates ein entsprechendes **Beispiel**.
+Für jedes der von JTL ausgelieferten Templates existiert ein entsprechendes **Beispiel**.
 
 .. caution::
 
@@ -185,7 +183,7 @@ Klicken Sie anschließend am Ende der Seite auf :guilabel:`Speichern`, um Ihr Te
 
 Nach dem Ändern von Templateeinstellungen und/oder dem Wechsel von Themes empfiehlt es sich, die entsprechenden
 Zwischenspeicher des Shops zu leeren. |br|
-Hierzu navigieren Sie im Backend-Menü auf den Menüpunkt "**System**" (Shop 4.x) bzw. "**Einstellungen**" (Shop 5.x)
+Hierzu navigieren Sie im Backend-Menü auf den Menüpunkt "**Einstellungen**" (Shop 5.x)
 und klicken auf "**Cache**". Wählen Sie hier "*Template*" in der dazugehörigen Checkbox aus.
 Anschließend klicken Sie am Ende der Seite auf den Button :guilabel:`absenden`, um den Cache zu leeren.
 

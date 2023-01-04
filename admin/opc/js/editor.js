@@ -83,6 +83,50 @@ document.querySelectorAll('[data-tooltip]').forEach(elm => {
     });
 })
 
+// dropdowns
+
+document.querySelectorAll('[data-dropdown]').forEach(btn => {
+    let dropdown = document.querySelector('#' + btn.dataset.dropdown);
+
+    let popper = Popper.createPopper(btn, dropdown, {
+        modifiers: [
+            {
+                name: 'offset', options: {
+                    offset: ({popper, reference}) => [popper.width / 2 - reference.width / 2, 0]
+                }
+            }
+        ]
+    });
+
+    btn.addEventListener('click', e => {
+        if (!dropdown.classList.contains('shown')) {
+            dropdown.classList.add('shown');
+            popper.update();
+            e.stopPropagation()
+        }
+    });
+
+    window.addEventListener('click', () => {
+        if (dropdown.classList.contains('shown')) {
+            dropdown.classList.remove('shown');
+        }
+    });
+})
+
+// close buttons
+
+document.querySelectorAll('[data-close]').forEach(closeBtn => {
+    let modal = closeBtn.closest('.modal');
+
+    closeBtn.addEventListener('click', () => {
+        modal.style.opacity = 0;
+
+        modal.addEventListener('transitionend', () => {
+            modal.classList.remove('shown');
+        }, {once: true});
+    });
+});
+
 // resizer
 
 window.resizer.addEventListener('mousedown', e => {
@@ -131,19 +175,7 @@ window.resizer.addEventListener('mousedown', e => {
     }
 });
 
-// close buttons
-
-document.querySelectorAll('[data-close]').forEach(closeBtn => {
-    let modal = closeBtn.closest('.modal');
-
-    closeBtn.addEventListener('click', () => {
-        modal.style.opacity = 0;
-
-        modal.addEventListener('transitionend', () => {
-            modal.classList.remove('shown');
-        }, {once: true});
-    });
-});
+// functions
 
 async function showModal(modal)
 {
@@ -152,8 +184,6 @@ async function showModal(modal)
     await sleep(0);
     modal.style.opacity = 1;
 }
-
-// helpers
 
 function sleep(ms)
 {

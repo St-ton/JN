@@ -267,6 +267,31 @@ $scrollbar-size: 6px;
         }
     }
 
+    .dropdown {
+        display: flex;
+        flex-direction: column;
+        color: $text-color;
+        background-color: #fff;
+        z-index: 1000;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+        border-radius: 2px;
+        font-size: 14px;
+        line-height: 1.5;
+
+        &:not(.shown) {
+            display: none;
+        }
+
+        > * {
+            padding: 8px 12px;
+            text-align: left;
+
+            &:hover {
+                background-color: $light-bg;
+            }
+        }
+    }
+
     .modal {
         position: fixed;
         left: 0;
@@ -376,7 +401,7 @@ $scrollbar-size: 6px;
                 padding: 1em;
                 color: #fff;
 
-                button {
+                > button {
                     width: 17px;
                     height: 17px;
                     flex: none;
@@ -384,6 +409,10 @@ $scrollbar-size: 6px;
                     &:hover {
                         color: $primary-lighter;
                     }
+                }
+
+                .dropdown {
+                    min-width: 200px;
                 }
 
                 #title {

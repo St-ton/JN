@@ -232,6 +232,27 @@
 .opc .tooltip[data-popper-placement^=right] > .tooltip-arrow {
   left: -4px;
 }
+.opc .dropdown {
+  display: flex;
+  flex-direction: column;
+  color: #435a6b;
+  background-color: #fff;
+  z-index: 1000;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.opc .dropdown:not(.shown) {
+  display: none;
+}
+.opc .dropdown > * {
+  padding: 8px 12px;
+  text-align: left;
+}
+.opc .dropdown > *:hover {
+  background-color: #f5f7fa;
+}
 .opc .modal {
   position: fixed;
   left: 0;
@@ -327,13 +348,16 @@
   padding: 1em;
   color: #fff;
 }
-.opc #editor #sidebar #header button {
+.opc #editor #sidebar #header > button {
   width: 17px;
   height: 17px;
   flex: none;
 }
-.opc #editor #sidebar #header button:hover {
+.opc #editor #sidebar #header > button:hover {
   color: #d5eefd;
+}
+.opc #editor #sidebar #header .dropdown {
+  min-width: 200px;
 }
 .opc #editor #sidebar #header #title {
   flex: auto;

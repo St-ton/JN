@@ -17,9 +17,20 @@
         <div id="editor">
             <div id="sidebar">
                 <div id="header">
-                    <button type="button">
+                    <button type="button" data-dropdown="menu">
                         <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
+                    <div id="menu" class="dropdown">
+                        <button type="button">
+                            <i class="fa fas fa-upload fa-fw"></i> {__('Import')}
+                        </button>
+                        <button type="button">
+                            <i class="fa fas fa-download fa-fw"></i> {__('Export')}
+                        </button>
+                        <button type="button">
+                            <i class="fa fas fa-question-circle fa-fw"></i> {__('help')}
+                        </button>
+                    </div>
                     <div id="title">
                         {__('editPortletPrefix')}
                         &bdquo;<span id="titlePageName">{$pageName}</span>&ldquo;

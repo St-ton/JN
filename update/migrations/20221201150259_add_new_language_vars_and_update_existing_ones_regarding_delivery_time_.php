@@ -57,10 +57,10 @@ class Migration_20221201150259 extends Migration implements IMigration
         }
 
         $this->execute(
-            'UPDATE tsprachwerte 
-                   SET cWert= REPLACE(cWert, "DELIVERYDAYS", "DELIVERYTIME"), 
-                       cStandard = REPLACE(cStandard, "DELIVERYDAYS", "DELIVERYTIME")
-                   WHERE cName IN ("deliverytimeEstimation","deliverytimeEstimationSimple")');
+            "UPDATE tsprachwerte 
+                   SET cWert= REPLACE(cWert, 'DELIVERYDAYS', 'DELIVERYTIME'), 
+                       cStandard = REPLACE(cStandard, 'DELIVERYDAYS', 'DELIVERYTIME')
+                   WHERE cName IN ('deliverytimeEstimation','deliverytimeEstimationSimple')");
     }
 
     /**

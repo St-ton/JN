@@ -27,8 +27,8 @@ class Migration_20221201150259 extends Migration implements IMigration
         $newVars = [
             'deliverytimeEstimationSimpleWeeks' =>
                  [
-                     'ger' => '#DELIVERYTIME# Wochen',
-                     'eng' => '#DELIVERYTIME# weeks'
+                     'ger' => 'ca. #DELIVERYTIME# Wochen',
+                     'eng' => 'ca. #DELIVERYTIME# weeks'
                  ]
             ,
             'deliverytimeEstimationWeeks' =>
@@ -39,8 +39,8 @@ class Migration_20221201150259 extends Migration implements IMigration
             ,
             'deliverytimeEstimationSimpleMonths' =>
                  [
-                     'ger' => '#DELIVERYTIME# Monate',
-                     'eng' => '#DELIVERYTIME# months'
+                     'ger' => 'ca. #DELIVERYTIME# Monate',
+                     'eng' => 'ca. #DELIVERYTIME# months'
                  ]
             ,
             'deliverytimeEstimationMonths' =>

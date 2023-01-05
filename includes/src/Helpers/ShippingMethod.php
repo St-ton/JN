@@ -77,7 +77,7 @@ class ShippingMethod
      */
     private static function getDeliveryText(int $minDelivery, int $maxDelivery, string $languageVar): string
     {
-        if (!\strpos($languageVar, 'simple')) {
+        if (!\stripos($languageVar, 'simple')) {
             return \str_replace(
                 ['#MINDELIVERYTIME#', '#MAXDELIVERYTIME#'],
                 [(string)$minDelivery, (string)$maxDelivery],
@@ -1277,16 +1277,16 @@ class ShippingMethod
                     : 'deliverytimeEstimation';
                 break;
             case ($maxDeliveryDays < \DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT):
-                $minDelivery = (int)($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
+                $minDelivery = (int)\ceil($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
                 $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_WEEK);
-                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                $languageVar = $minDelivery === $maxDelivery
                     ? 'deliverytimeEstimationSimpleWeeks'
                     : 'deliverytimeEstimationWeeks';
                 break;
             default:
-                $minDelivery = (int)($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
+                $minDelivery = (int)\ceil($minDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
                 $maxDelivery = (int)\ceil($maxDeliveryDays / \DELIVERY_TIME_DAYS_PER_MONTH);
-                $languageVar = $minDeliveryDays === $maxDeliveryDays
+                $languageVar = $minDelivery === $maxDelivery
                     ? 'deliverytimeEstimationSimpleMonths'
                     : 'deliverytimeEstimationMonths';
         }

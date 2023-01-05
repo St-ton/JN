@@ -1163,7 +1163,11 @@ class AccountController
         }
 
         if (isset($postData['backToCheckout'])) {
-            $_SESSION['shippingAddressPresetID'] = $template->kLieferadresse;
+            if ($template->kLieferadresse === 0) {
+                unset($_SESSION['shippingAddressPresetID']);
+            } else {
+                $_SESSION['shippingAddressPresetID'] = $template->kLieferadresse;
+            }
             \header('Location: '
                 . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php')
                 . '?editRechnungsadresse=1');

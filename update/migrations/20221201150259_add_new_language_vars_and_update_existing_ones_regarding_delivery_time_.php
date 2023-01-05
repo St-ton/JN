@@ -52,7 +52,7 @@ class Migration_20221201150259 extends Migration implements IMigration
         ];
         foreach ($newVars as $newVar => $values) {
             foreach ($values as $iso => $value) {
-                $this->setLocalization($iso, 'global', $newVar, $value,true);
+                $this->setLocalization($iso, 'global', $newVar, $value, true);
             }
         }
 

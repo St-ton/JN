@@ -154,7 +154,9 @@ class Firma
                 $this->country = $countryHelper->getCountry($iso);
                 $obj->country  = $this->country;
             }
-            $this->cache->set('jtl_company', $obj, [\CACHING_GROUP_CORE]);
+            if ($obj !== null) {
+                $this->cache->set('jtl_company', $obj, [\CACHING_GROUP_CORE]);
+            }
         }
         \executeHook(\HOOK_FIRMA_CLASS_LOADFROMDB, ['instance' => $this, 'cached' => $cached]);
 

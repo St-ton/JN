@@ -78,7 +78,7 @@ class Form
             }
         }
 
-        $customer->cMail                 = mb_convert_case($customer->cMail, MB_CASE_LOWER);
+        $customer->cMail                 = \mb_convert_case($customer->cMail, \MB_CASE_LOWER);
         $customer->dGeburtstag           = Date::convertDateToMysqlStandard($customer->dGeburtstag ?? '');
         $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
             ? ''

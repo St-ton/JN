@@ -4,7 +4,7 @@
 {function table_scope_header table=null}
     <h2>{__('table')}: {$table}
         <div class="btn-group btn-group-xs" role="group">
-            <a href="{$adminURL}{$route}table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
+            <a href="{$adminURL}{$route}?table={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-equalizer"></span> {__('structure')}</a>
             <a href="{$adminURL}{$route}?select={$table}&token={$smarty.session.jtl_token}" class="btn btn-default"><span class="glyphicon glyphicon-list"></span> {__('show')}</a>
         </div>
     </h2>

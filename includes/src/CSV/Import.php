@@ -273,7 +273,7 @@ class Import
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tartikel.cArtNr = :artno
                 LIMIT 1",
-            ['iso' => mb_convert_case($iso, MB_CASE_LOWER), 'artno' => $data->cArtNr]
+            ['iso' => \mb_convert_case($iso, \MB_CASE_LOWER), 'artno' => $data->cArtNr]
         );
         if ($item === null) {
             return;

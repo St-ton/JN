@@ -261,7 +261,7 @@
             jtl_token: JTL_TOKEN,
             io : JSON.stringify({
                 name: 'testExport',
-                params : [tplID]
+                params : [parseInt(tplID, 10)]
             })
         }, function (result) {
             $('#testResults').html(result.html);

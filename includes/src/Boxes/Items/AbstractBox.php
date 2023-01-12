@@ -93,9 +93,9 @@ abstract class AbstractBox implements BoxInterface
     protected int $itemCount = 0;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    protected bool $show = false;
+    protected ?bool $show = null;
 
     /**
      * @var string
@@ -355,7 +355,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function show(): bool
     {
-        return $this->show;
+        return $this->show ?? false;
     }
 
     /**
@@ -363,7 +363,7 @@ abstract class AbstractBox implements BoxInterface
      */
     public function getShow(): bool
     {
-        return $this->show;
+        return $this->show ?? false;
     }
 
     /**

@@ -45,7 +45,7 @@ Theme
 """""
 
 Theme
-    Für das NOVA-Template ist aktuell nur das Standard-Theme verfügbar, weitere Themes werden jedoch folgen.
+    Für das NOVA-Template gibt es aktuell die Themes clear (Standard), midnight und blackline.
 
 Sliderposition / Full-Width Slider |br| Bannerposition / Full-Width Banner
     Diese beiden Optionen entscheiden, ob Slider und Banner über die gesamte Bildschirmbreite hinweg dargestellt

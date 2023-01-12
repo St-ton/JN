@@ -207,7 +207,7 @@ in SQL-Queries zu integrieren!
 
 .. code-block:: php
 
-    $row = Shop::DB()->executeQuery("SELECT * FROM my_table WHERE id = " . $_POST['id'], 1);
+    $row = Shop::Container()->getDB()->executeQuery("SELECT * FROM my_table WHERE id = " . $_POST['id'], 1);
 
 Falls es sich bei der Spalte ``id`` um einen numerischen Datentyp handelt, sollte zumindest ein Datentyp-Casting
 vorgenommen werden, z. B. mittels ``(int)$_POST['id']``.

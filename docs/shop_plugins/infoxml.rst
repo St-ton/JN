@@ -76,19 +76,21 @@ Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemen
 +----------------------+-----------------------------------------------------+
 | ``<XMLVersion>`` *   | Version der ``info.xml`` (``[0-9]{3}``)             |
 +----------------------+-----------------------------------------------------+
-| ``<MinShopVersion>`` | Mindestversion von JTL-Shop 5            |
+| ``<ShopVersion>``    | synonym für MinShopVersion                          |
 +----------------------+-----------------------------------------------------+
-| ``<MaxShopVersion>`` | Maximalversion von JTL-Shop 5            |
+| ``<MinShopVersion>`` | Mindestversion von JTL-Shop 5                       |
++----------------------+-----------------------------------------------------+
+| ``<MaxShopVersion>`` | Maximalversion von JTL-Shop 5                       |
 +----------------------+-----------------------------------------------------+
 | ``<PluginID>`` *     | Plugin-Identifikator (``[a-zA-Z0-9_]``)             |
 +----------------------+-----------------------------------------------------+
 | ``<Icon>``           | Dateiname zu einem Icon                             |
 +----------------------+-----------------------------------------------------+
-| ``<Version>``        | die Plugin-Version (``[0-9]+``) |
+| ``<Version>``        | die Plugin-Version (``[0-9]+``)                     |
 +----------------------+-----------------------------------------------------+
-| ``<CreateDate>``     | Erstellungsdatum (YYYY-MM-DD)            |
+| ``<CreateDate>``     | Erstellungsdatum (YYYY-MM-DD)                       |
 +----------------------+-----------------------------------------------------+
-| ``<ExsID>``          | ExtensionStore-ID                        |
+| ``<ExsID>``          | ExtensionStore-ID                                   |
 +----------------------+-----------------------------------------------------+
 
 (*)Pflichtfelder
@@ -127,7 +129,7 @@ für das eigene Plugin zur Verfügung zu haben.
 ShopVersion
 """""""""""
 
-**Ab JTL-Shop 5.0.0 wird dieser Tag nicht mehr unterstützt!**
+**Ab JTL-Shop 5.0.0 ist dieser Tag ein Synonym für <MinShopVersion>**
 
 MinShopVersion
 """"""""""""""

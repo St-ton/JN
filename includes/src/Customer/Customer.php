@@ -292,7 +292,7 @@ class Customer
     }
 
     /**
-     * @inheritDoc
+     * @return array
      */
     public function __sleep(): array
     {
@@ -302,7 +302,7 @@ class Customer
     }
 
     /**
-     * @inheritDoc
+     * @return void
      */
     public function __wakeup(): void
     {

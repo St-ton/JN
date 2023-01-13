@@ -18,6 +18,7 @@ use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Shopsetting;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class Customer
@@ -273,6 +274,25 @@ class Customer
         if ($id > 0) {
             $this->loadFromDB($id);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __sleep(): array
+    {
+        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
+            return $e !== 'db' && $e !== 'passwordService';
+        });
+    }
+
+    /**
+     * @return void
+     */
+    public function __wakeup(): void
+    {
+        $this->passwordService = Shop::Container()->getPasswordService();
+        $this->db              = Shop::Container()->getDB();
     }
 
     /**

@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.2.1",
-    "bootstrap5": "npm:bootstrap@^5.2.3"
+    "bootstrap5": "npm:bootstrap@^5.2.3",
+    "jquery": "^3.6.3",
+    "moment": "^2.29.4"
   }
 }

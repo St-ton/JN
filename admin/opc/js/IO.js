@@ -1,13 +1,21 @@
-class IO
+import {capitalize} from "./utils.js";
+
+export class IO
 {
-    init()
+    constructor({jtlToken, shopUrl})
     {
-        return Promise.all([
-            new Promise((res, rej) => ioCall('opcGetIOFunctionNames', [], res, rej))
-                .then(names => this.generateIoFunctions(names)),
-            new Promise((res, rej) => ioCall('opcGetPageIOFunctionNames', [], res, rej))
-                .then(names => this.generateIoFunctions(names)),
-        ]);
+        this.jtlToken = jtlToken;
+        this.ioUrl = shopUrl + '/admin/io';
+    }
+
+    async init()
+    {
+        let names = [].concat(...(await Promise.all([
+            this.ioCall('opcGetIOFunctionNames'),
+            this.ioCall('opcGetPageIOFunctionNames'),
+        ])));
+
+        this.generateIoFunctions(names);
     }
 
     generateIoFunctions(names)
@@ -19,26 +27,25 @@ class IO
 
     generateIoFunction(publicName)
     {
-        return function(...args) {
-            let jqxhr   = null;
-            opc.emit('io.' + publicName, args);
-            let promise = new Promise((res, rej) => {
-                jqxhr = ioCall(
-                    publicName,
-                    args,
-                    (...resolveArgs) => {
-                        opc.emit('io.' + publicName + ':resolve', resolveArgs);
-                        return res.apply(this, resolveArgs);
-                    },
-                    (...rejectArgs) => {
-                        opc.emit('io.' + publicName + ':reject', rejectArgs);
-                        return rej.apply(this, rejectArgs);
-                    }
-                );
-            });
-            promise.jqxhr = jqxhr;
-            return promise;
+        return async (...args) => {
+            try {
+                let result = await this.ioCall(publicName, ...args);
+                window.opc.emit('io.' + publicName + ':resolve', result);
+                return result;
+            } catch (e) {
+                window.opc.emit('io.' + publicName + ':reject', e);
+                throw e;
+            }
         };
+    }
+
+    async ioCall(name, ...params)
+    {
+        let formData = new FormData();
+        formData.append('jtl_token', this.jtlToken);
+        formData.append('io', JSON.stringify({name, params}));
+        let response = await fetch(this.ioUrl, {method: 'POST', body: formData});
+        return await response.json();
     }
 
     createPortlet(portletClass)

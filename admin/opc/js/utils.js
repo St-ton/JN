@@ -1,6 +1,3 @@
-var localDateFormat = 'DD.MM.YYYY - HH:mm';
-var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
-
 class Subject
 {
     constructor()
@@ -34,7 +31,7 @@ class Subject
     }
 }
 
-class Emitter
+export class Emitter
 {
     constructor()
     {
@@ -132,9 +129,14 @@ function installJqueryFixes()
     };
 }
 
-function capitalize(str)
+export function capitalize(str)
 {
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function sleep(ms)
+{
+    return new Promise(res => setTimeout(res, ms));
 }
 
 function bindProtoOnHandlers(obj)

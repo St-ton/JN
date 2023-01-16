@@ -1,16 +1,5 @@
 @import "fonts";
-
-$primary-color: #5cbcf6;
-$primary-lighter: lighten($primary-color, 25%);
-$primary-darker: darken($primary-color, 12%);
-$light-bg: #f5f7fa;
-$muted-color: #bdbdbd;
-$text-color: #435a6b;
-$grey-dark: #525252;
-$grey-light: #9b9b9b;
-$portlets-gap: 22px;
-$portlets-inner-padding: 24px;
-$scrollbar-size: 6px;
+@import "variables";
 
 .opc {
     font-family: "Open Sans", sans-serif;
@@ -292,6 +281,18 @@ $scrollbar-size: 6px;
         }
     }
 
+    .alert {
+        border: 1px solid #c00;
+        background-color: #fcc;
+        padding: 8px 16px;
+        color: #c00;
+        border-radius: 4px;
+
+        i {
+            margin-right: 8px;
+        }
+    }
+
     .modal {
         position: fixed;
         left: 0;
@@ -369,6 +370,7 @@ $scrollbar-size: 6px;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
             overflow: hidden;
             flex: none;
+            z-index: 0;
 
             ::-webkit-scrollbar {
                 width: $scrollbar-size;
@@ -563,6 +565,7 @@ $scrollbar-size: 6px;
                     opacity: 0;
                     color: #000;
                     width: calc(100% - 32px);
+                    cursor: pointer;
 
                     &:focus {
                         opacity: 100%;
@@ -640,6 +643,7 @@ $scrollbar-size: 6px;
             cursor: ew-resize;
             user-select: none;
             -webkit-user-select: none;
+            z-index: 0;
         }
 
         #pageview {

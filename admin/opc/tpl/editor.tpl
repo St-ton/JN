@@ -6,8 +6,18 @@
         <title>{__('onPageComposer')}</title>
         <link rel="stylesheet" href="{$shopUrl}/includes/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
         <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
+        <script src="{$shopUrl}/includes/node_modules/jquery/dist/jquery.min.js"></script>
         <script src="{$shopUrl}/includes/node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
         <script type="module" src="{$shopUrl}/admin/opc/js/editor.js"></script>
+        <script type="application/json" id="editorConfig">
+            {
+                "jtlToken": "{$smarty.session.jtl_token}",
+                "shopUrl":  "{$shopUrl}",
+                "pageKey":  {$pageKey},
+                "error":    {json_encode($error)},
+                "messages": {json_encode($opc->getEditorMessages())}
+            }
+        </script>
     </head>
     <body class="opc">
         {$pageName = 'No Page'}
@@ -149,6 +159,20 @@
             <div id="resizer"></div>
             <div id="pageview">
                 <iframe id="iframe"></iframe>
+            </div>
+        </div>
+        <div id="errorModal" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title" id="errorTitle">{__('error')}</div>
+                    <button data-close><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fa-solid fa-triangle-exclamation fa-lg"></i>
+                        <span id="errorAlert">{__('somethingHappend')}</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="publishModal" class="modal">

@@ -253,6 +253,16 @@
 .opc .dropdown > *:hover {
   background-color: #f5f7fa;
 }
+.opc .alert {
+  border: 1px solid #c00;
+  background-color: #fcc;
+  padding: 8px 16px;
+  color: #c00;
+  border-radius: 4px;
+}
+.opc .alert i {
+  margin-right: 8px;
+}
 .opc .modal {
   position: fixed;
   left: 0;
@@ -320,6 +330,7 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   flex: none;
+  z-index: 0;
 }
 .opc #editor #sidebar ::-webkit-scrollbar {
   width: 6px;
@@ -481,6 +492,7 @@
   opacity: 0;
   color: #000;
   width: calc(100% - 32px);
+  cursor: pointer;
 }
 .opc #editor #sidebar #publishPanel #draftNameInput:focus {
   opacity: 100%;
@@ -542,6 +554,7 @@
   cursor: ew-resize;
   user-select: none;
   -webkit-user-select: none;
+  z-index: 0;
 }
 .opc #editor #pageview {
   flex: auto;

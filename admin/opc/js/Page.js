@@ -1,144 +1,126 @@
-class Page
+import {sleep} from "./utils.js";
+import moment from "../../../includes/node_modules/moment/dist/moment.js";
+
+const localDateFormat = 'DD.MM.YYYY - HH:mm';
+const internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
+
+export class Page
 {
-    constructor(io, shopUrl, key)
+    constructor(io, {shopUrl, pageKey})
     {
-        bindProtoOnHandlers(this);
-
-        this.io             = io;
-        this.shopUrl        = shopUrl;
-        this.key            = key;
-        this.lockTimeout    = null;
-        this.offscreenAreas = {};
+        this.io = io;
+        this.shopUrl = shopUrl;
+        this.key = pageKey;
     }
 
-    lock(errorcb)
+    async lock(delayed = false)
     {
-        return this.io.lockDraft(this.key).then(state => {
-            if (state === 0) {
-                this.lockTimeout = setTimeout(() => {
-                    this.lock(errorcb);
-                }, 1000 * 60);
+        if (delayed) {
+            await sleep(1000 * 60);
+        }
 
-                return Promise.resolve();
-            } else {
-                if (this.lockTimeout !== null) {
-                    clearTimeout(this.lockTimeout);
-                    this.lockTimeout = null;
-                }
+        let state = await this.io.lockDraft(this.key);
 
-                errorcb(state);
-                return Promise.reject(state);
-            }
-        });
+        if (state === 0) {
+            this.lock(true);
+        } else {
+            throw state;
+        }
     }
 
-    unlock()
+    async unlock()
     {
-        clearTimeout(this.lockTimeout);
-        this.lockTimeout = null;
-        return this.io.unlockDraft(this.key);
+        await this.io.unlockDraft(this.key);
     }
 
-    updateFlipcards()
+    async getRevisionList()
     {
-        this.rootAreas.find('.opc-Flipcard').each((i, elm) => elm.updateFlipcardHeight());
+        return await this.io.getRevisionList(this.key);
     }
 
-    getRevisionList()
+    async loadMetaData()
     {
-        return this.io.getRevisionList(this.key);
+        let pageData = await this.io.getDraft(this.key);
+
+        this.id = pageData.id;
+        this.name = pageData.name;
+        this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
+        this.publishTo = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
+        this.url = pageData.url;
+        this.lastModified = pageData.lastModified;
+        this.fullUrl = this.shopUrl + this.url;
     }
 
-    initIframe(jq)
+    async getPreview()
     {
-        this.jq        = jq;
-        this.rootAreas = this.jq('.opc-rootarea');
-
-        return this.loadDraftPreview();
+        return await this.io.getDraftPreview(this.key);
     }
 
-    loadDraft()
-    {
-        return this.io.getDraft(this.key)
-            .then(pageData => {
-                this.id          = pageData.id;
-                this.name        = pageData.name;
-                this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
-                this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
-                this.url         = pageData.url;
-                this.lastModified= pageData.lastModified;
-                this.fullUrl     = this.shopUrl + this.url;
-            });
-    }
-
-    loadDraftPreview()
-    {
-        return this.io.getDraftPreview(this.key).then(this.onLoad)
-    }
-
-    loadRev(revId)
+    async getRevisionPreview(revId)
     {
         if(revId === -1) {
-            return this.loadPageFromWebStorage();
+            return await this.getPreviewFromWebStorage();
         } else if(revId === 0) {
-            return this.io.getDraftPreview(this.key).then(this.onLoad);
+            return await this.io.getDraftPreview(this.key);
         } else {
-            return this.io.getRevisionPreview(revId).then(this.onLoad);
+            return await this.io.getRevisionPreview(revId);
         }
     }
 
-    loadFromData(data)
+    async getPreviewFromData(data)
     {
-        opc.emit('page.loadFromData', data);
-        return this.io.createPagePreview({areas: data.areas})
-            .then(this.onLoad);
+        opc.emit('page.getPreviewFromData', data);
+        return await this.io.createPagePreview({areas: data.areas});
     }
 
-    loadFromJSON(json)
+    async getPreviewFromJSON(json)
     {
-        try {
-            var data = JSON.parse(json);
-        } catch (e) {
-            return Promise.reject({error:{message:'JSON data could not be loaded'}});
-        }
-
-        return this.loadFromData(data);
+        let data = JSON.parse(json);
+        return await this.getPreviewFromData(data);
     }
 
-    loadFromImport()
+    async getPreviewFromImport()
     {
-        return new Promise(res => {
+        let file = await new Promise(res => {
             this.jq('<input type="file" accept=".json">')
-                .on('change', res).click();
-        }).then(e => {
-            return new Promise(res => {
-                this.importReader = new FileReader();
-                this.importReader.onload = res;
-                this.importReader.readAsText(e.target.files[0]);
-            });
-        }).then(() => this.loadFromJSON(this.importReader.result));
+                .on('change', e => res(e.target.files[0]))
+                .click();
+        });
+
+        let json = await new Promise(res => {
+            let importReader = new FileReader();
+            importReader.onload = () => res(importReader.result);
+            importReader.readAsText(file);
+        });
+
+        return await this.getPreviewFromJSON(json);
     }
 
-    loadPageFromWebStorage()
+    async getPreviewFromWebStorage()
     {
         let pageJson = window.localStorage.getItem(this.getStorageId());
 
-        if(pageJson !== null) {
-            this.clear();
-            return this.loadFromJSON(pageJson);
-        } else {
-            return Promise.reject({error:{message:'could not find locally stored draft data'}});
+        if (pageJson !== null) {
+            return await this.getPreviewFromJSON(pageJson);
         }
+
+        throw 'could not find locally stored draft data';
     }
 
-    publicate()
+    async publicate()
     {
-        return this.io.publicateDraft({
+        await this.io.publicateDraft({
             key: this.key,
             publishFrom: this.publishFrom ? this.encodeDate(this.publishFrom) : null,
             publishTo: this.publishTo ? this.encodeDate(this.publishTo) : null,
             name: this.name,
         });
+    }
+
+    async save()
+    {
+        await this.io.saveDraft(this.toJSON());
+        this.lastModified = moment().format(internalDateFormat);
     }
 
     encodeDate(localDate)
@@ -154,185 +136,5 @@ class Page
     getStorageId()
     {
         return 'opcpage.' + this.key;
-    }
-
-    onLoad(preview)
-    {
-        let areas = this.rootAreas;
-        this.clear();
-
-        areas.each((i, area) => {
-            area = this.jq(area);
-            if (area.data('area-foreign')) return;
-            let areaId = area.data('area-id');
-            area.html(preview[areaId]);
-            delete preview[areaId];
-        });
-
-        this.offscreenAreas = this.jq([]);
-
-        Object.entries(preview).forEach(([areaId, areaContent]) => {
-            let area = $('<div class="opc-area opc-rootarea" data-area-id="' + areaId + '">')
-                .html(areaContent);
-            this.offscreenAreas = this.offscreenAreas.add(area);
-        });
-    }
-
-    save()
-    {
-        return this.io.saveDraft(this.toJSON()).then(() => {
-            this.lastModified = moment().format(internalDateFormat);
-        });
-    }
-
-    savePageToWebStorage()
-    {
-        window.localStorage.setItem(this.getStorageId(), JSON.stringify(this.toJSON()));
-    }
-
-    clearPageWebStorage ()
-    {
-        window.localStorage.removeItem(this.getStorageId());
-    }
-
-    hasUnsavedContent ()
-    {
-        return window.localStorage.getItem(this.getStorageId()) !== null;
-    }
-
-    exportAsDownload()
-    {
-        download(JSON.stringify(this), this.name + '.json', 'application/json');
-    }
-
-    clear()
-    {
-        this.rootAreas.not('[data-area-foreign]').empty();
-    }
-
-    toJSON(withDom)
-    {
-        withDom = withDom || false;
-
-        let result = {
-            id:    this.id,
-            url:   this.url,
-            key:   this.key,
-            areas: {}
-        };
-
-        let areas = this.rootAreas;
-
-        for(let i=0; i<areas.length; i++) {
-            let area     = this.jq(areas[i]);
-            let areaData = this.areaToJSON(area, withDom);
-
-            if(areaData.content.length) {
-                result.areas[areaData.id] = areaData;
-            }
-        }
-
-        areas = this.offscreenAreas;
-
-        for(let i=0; i<areas.length; i++) {
-            let area     = this.jq(areas[i]);
-            let areaData = this.areaToJSON(area, withDom);
-
-            if(areaData.content.length) {
-                result.areas[areaData.id] = areaData;
-            }
-        }
-
-        return result;
-    }
-
-    areaToJSON(area, withDom)
-    {
-        withDom = withDom || false;
-
-        let result   = {id: area.data('area-id'), content: []};
-        let portlets = area.children('[data-portlet]');
-
-        portlets.each((i, portlet) => {
-            result.content.push(this.portletToJSON(this.jq(portlet), withDom));
-        });
-
-        return result;
-    }
-
-    portletToJSON(portlet, withDom)
-    {
-        withDom = withDom || false;
-
-        let data = portlet.data('portlet');
-
-        let result = {
-            class: data.class,
-            title: data.title,
-            properties: data.properties,
-            subareas: {},
-        };
-
-        let subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
-
-        if (data.class === 'MissingPortlet') {
-            result.missingClass = data.missingClass;
-        }
-
-        subareas.each((i, subarea) => {
-            subarea = this.jq(subarea);
-            let subareaData = this.areaToJSON(subarea, withDom);
-            result.subareas[subareaData.id] = subareaData;
-        });
-
-        result.widthHeuristics = this.computePortletWidthHeuristics(portlet);
-
-        if(withDom) {
-            result.elm = portlet;
-        }
-
-        return result;
-    }
-
-    computePortletWidthHeuristics(portlet)
-    {
-        let elm             = portlet;
-        let widthHeuristics = {xs: 1, sm: 1, md: 1, lg: 1};
-        
-        while (!elm.is(this.rootAreas) && !elm.is(this.offscreenAreas)) {
-            if (elm[0].classList.contains('opc-col')) {
-                let areaId = elm.data('area-id').match(/^col-([0-9])+$/)[1];
-                elm        = elm.parent();
-                let data   = elm.data('portlet');
-
-                if (data) {
-                    let cls = data.class;
-
-                    if (cls === 'Row') {
-                        let layout = data.properties.layout;
-                        let xs     = layout.xs.split('+')[areaId] || 12;
-                        let sm     = layout.sm.split('+')[areaId] || 12;
-                        let md     = layout.md.split('+')[areaId] || 12;
-                        let lg     = layout.lg.split('+')[areaId] || 12;
-
-                        widthHeuristics.xs *= xs / 12;
-                        widthHeuristics.sm *= sm / 12;
-                        widthHeuristics.md *= md / 12;
-                        widthHeuristics.lg *= lg / 12;
-                    }
-                }
-            }
-
-            elm = elm.parent();
-        }
-
-        return widthHeuristics;
-    }
-
-    removeOffscreenArea(area)
-    {
-        this.offscreenAreas = this.offscreenAreas.filter((i,elm) => (
-            elm !== area[0]
-        ));
     }
 }

@@ -55,7 +55,7 @@ build_create()
     fi
 
 	# insert git sha hash into defines_inc.php -> APPLICATION_BUILD_SHA
-    sed -i "s/'APPLICATION_BUILD_SHA', '#DEV#'/'APPLICATION_BUILD_SHA', '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
+    sed -ri "s/const APPLICATION_BUILD_SHA( *)= '#DEV#'/const APPLICATION_BUILD_SHA\1= '${APPLICATION_BUILD_SHA}'/g" ${REPOSITORY_DIR}/includes/defines_inc.php
 
     echo "Executing composer";
     build_composer_execute;

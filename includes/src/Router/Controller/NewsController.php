@@ -155,7 +155,13 @@ class NewsController extends AbstractController
                 $pagination = new Pagination('comments');
                 $newsItemID = $this->state->newsItemID;
                 $newsItem   = new Item($this->db);
-                $newsItem->load($newsItemID);
+                try {
+                    $newsItem->load($newsItemID);
+                } catch (Exception $e) {
+                    if ($e->getCode() === 404) {
+                        return $this->notFoundResponse($request, $args, $smarty);
+                    }
+                }
                 $newsItem->checkVisibility($this->customerGroupID);
                 $this->canonicalURL    = $newsItem->getURL();
                 $this->metaTitle       = $newsItem->getMetaTitle();

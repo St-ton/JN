@@ -201,7 +201,7 @@ class Item extends AbstractItem implements RoutableInterface
             ['nid' => $this->id]
         );
         if (\count($items) === 0) {
-            throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.');
+            throw new InvalidArgumentException('Provided news item id ' . $this->id . ' not found.', 404);
         }
         $mapped = $this->map($items);
         $this->cache->set($cacheID, $mapped, [\CACHING_GROUP_NEWS]);

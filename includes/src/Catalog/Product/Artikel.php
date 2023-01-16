@@ -1775,29 +1775,28 @@ class Artikel implements RoutableInterface
 
         $main = $this->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kStueckliste
-                FROM
-                (
-                    SELECT kStueckliste
-                        FROM tstueckliste
-                        WHERE kArtikel = :kArtikel
-                ) AS sub
-                JOIN tartikel 
-                    ON tartikel.kStueckliste = sub.kStueckliste',
-            ['kArtikel' => $this->kArtikel]
+                FROM tstueckliste
+                INNER JOIN tartikel ON tartikel.kStueckliste = tstueckliste.kStueckliste
+                LEFT JOIN tartikelsichtbarkeit t on tartikel.kArtikel = t.kArtikel
+                    AND t.kKundengruppe = :customerGroupId
+                WHERE tstueckliste.kArtikel = :kArtikel
+                    AND t.kArtikel IS NULL',
+            [
+                'kArtikel' => $this->kArtikel,
+                'customerGroupId' => $this->getCustomerGroupID()
+            ]
         );
         if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $opt                             = self::getDefaultOptions();
-            $opt->nKeineSichtbarkeitBeachten = 1;
-            $opt->nStueckliste               = 1;
+            $opt               = self::getDefaultOptions();
+            $opt->nStueckliste = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
 
-            $bundles                         = $this->getDB()->selectAll(
+            $bundles = $this->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
-            $opt->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
                 $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);

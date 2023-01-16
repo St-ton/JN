@@ -91,7 +91,7 @@
                         </form>
                     </div>
                 </div>
-                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
+                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}" data-parent="#accordion2">
                     {if $linkgruppe->getLinks()->count() > 0}
                         <div class="table-responsive">
                             <table class="table">

@@ -13,6 +13,11 @@ class Plugin extends AbstractTemplate
     protected $id = 'core_jtl_plugin';
 
     /**
+     * @var string
+     */
+    protected string $settingsTable = 'tpluginemailvorlageeinstellungen';
+
+    /**
      * @inheritdoc
      */
     public function preRender(JTLSmarty $smarty, $data): void

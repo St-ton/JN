@@ -5,7 +5,11 @@ build_create()
     # $1 repository dir
     export REPOSITORY_DIR=$1;
     # $2 target build version
-    export APPLICATION_VERSION=$2;
+    if [[ $1 =~ (release)?\/?v?(.*) ]]; then
+      export APPLICATION_VERSION=${BASH_REMATCH[2]};
+    else
+      export APPLICATION_VERSION=$2;
+    fi
     # $3 last commit sha
     local APPLICATION_BUILD_SHA=$3;
     # $4 database host

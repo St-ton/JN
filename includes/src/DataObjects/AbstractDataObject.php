@@ -15,10 +15,6 @@ abstract class AbstractDataObject implements DataObjectInterface
 
     abstract public function getReverseMapping(): array;
 
-    abstract public function getColumnMapping(): array;
-
-    abstract public function getID(): mixed;
-
     /**
      * @param string $name
      * @param mixed $value

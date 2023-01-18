@@ -80,16 +80,4 @@ interface DataObjectInterface
      * @return array
      */
     public function getReverseMapping(): array;
-
-    /**
-     * keep $columnMapping-array private to prevent it from being shipped with toArray() or extract()
-     * @return array
-     */
-    public function getColumnMapping(): array;
-
-    /**
-     * Always provide an ID.
-     * @return mixed
-     */
-    public function getID(): mixed;
 }

@@ -3,11 +3,15 @@
 namespace JTL\Interfaces;
 
 use JTL\DataObjects\DataObjectInterface;
+use JTL\DataObjects\DataTableObjectInterface;
 use JTL\DB\DbInterface;
 
 /**
  * Should be the only place to store SQL Statements and/or to access the database
  * It is recommended to use the corresponding service to access this class
+ *
+ * No DELETE Requirement because there may be reasons to not provide a delete-method
+ *
  * @property DbInterface $db
  */
 interface RepositoryInterface
@@ -29,20 +33,14 @@ interface RepositoryInterface
     public function getList(array $filters): array;
 
     /**
-     * @param DataObjectInterface $object $object
+     * @param DataTableObjectInterface $object $object
      * @return int
      */
-    public function insert(DataObjectInterface $object): int;
+    public function insert(DataTableObjectInterface $object): int;
 
     /**
-     * @param DataObjectInterface $object
+     * @param DataTableObjectInterface $object
      * @return bool
      */
-    public function update(DataObjectInterface $object): bool;
-
-    /**
-     * @param int $id
-     * @return bool
-     */
-    public function delete(int $id): bool;
+    public function update(DataTableObjectInterface $object): bool;
 }

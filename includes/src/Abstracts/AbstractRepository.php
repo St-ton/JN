@@ -2,7 +2,7 @@
 
 namespace JTL\Abstracts;
 
-use JTL\DataObjects\DataObjectInterface;
+use JTL\DataObjects\DataTableObjectInterface;
 use JTL\DB\DbInterface;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Shop;
@@ -13,10 +13,19 @@ use stdClass;
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
-    protected string $tableName = '';
+    protected const QUERY_FAILED = -1;
+    
+    /**
+     * Every Repository has to have these properties set and initialized
+     * @var string
+     */
+    private string $tableName = '';
 
-    protected string $keyName = '';
+    private string $keyName = '';
 
+    /**
+     * @param DbInterface|null $db
+     */
     public function __construct(
         protected ?DbInterface $db = null,
     ) {
@@ -26,33 +35,19 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @inheritDoc
-     */
-    abstract public function delete(int $id): bool;
-
-    /**
-     * @return string
+     * @inheritdoc
      */
     public function getTableName(): string
     {
         return $this->tableName;
     }
 
-
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getKeyName(): string
     {
         return $this->keyName;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function insert(DataObjectInterface $object): int
-    {
-        return $this->db->insertRow($this->getTableName(), $object->toObject());
     }
 
     /**
@@ -70,7 +65,7 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getList(array $filters): array
     {
@@ -86,17 +81,44 @@ abstract class AbstractRepository implements RepositoryInterface
             $keyValues
         );
     }
+
     /**
-     * @inheritDoc
+     * @param int $id
+     * @return bool
      */
-    public function update(DataObjectInterface $object): bool
+    public function delete(int $id): bool
     {
+        return ($this->db->deleteRow(
+            $this->getTableName(),
+            $this->getKeyName(),
+            $id
+        ) !== self::QUERY_FAILED
+        );
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function insert(DataTableObjectInterface $object): int
+    {
+        return $this->db->insertRow($this->getTableName(), $object);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function update(DataTableObjectInterface $object): bool
+    {
+        if ($object->getID() === null) {
+            return false;
+        }
+
         return ($this->db->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
             $object->getID(),
-            $object->toObject()
-        ) !== -1
+            $object
+        ) !== self::QUERY_FAILED
         );
     }
 }

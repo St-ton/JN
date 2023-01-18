@@ -3,7 +3,8 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
-use JTL\DataObjects\DataObjectInterface;
+use JTL\DataObjects\AbstractDataObject;
+use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Shop;
 
@@ -15,33 +16,11 @@ class CheckboxService extends AbstractService
 {
     /**
      * @param int $id
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function get(int $id): CheckboxDataObject
+    public function get(int $id): CheckboxDataTableObject
     {
-        return (new CheckboxDataObject())->hydrateWithObject($this->repository->get($id));
-    }
-
-    /**
-     * @param  CheckboxDataObject $checkbox
-     * @return int
-     */
-    public function insertCheckbox(DataObjectInterface $checkbox): int
-    {
-        return $this->repository->insert($checkbox);
-    }
-
-    /**
-     * @param CheckboxDataObject $checkbox
-     * @return bool
-     */
-    public function update(DataObjectInterface $checkbox): bool
-    {
-        if ($checkbox->getCheckboxID() > 0) {
-            return $this->repository->update($checkbox);
-        }
-
-        return false;
+        return (new CheckboxDataTableObject())->hydrateWithObject($this->repository->get($id));
     }
 
     /**

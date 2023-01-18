@@ -13,15 +13,15 @@ use stdClass;
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
-    protected const QUERY_FAILED = -1;
+    protected const UPDATE_OR_UPSERT_FAILED = -1;
+    protected const DELETE_FAILED           = -1;
     
     /**
      * Every Repository has to have these properties set and initialized
-     * @var string
+     *     protected string $tableName = '';
+     *     protected string $keyName = '';
      */
-    private string $tableName = '';
 
-    private string $keyName = '';
 
     /**
      * @param DbInterface|null $db
@@ -92,7 +92,7 @@ abstract class AbstractRepository implements RepositoryInterface
             $this->getTableName(),
             $this->getKeyName(),
             $id
-        ) !== self::QUERY_FAILED
+        ) !== self::DELETE_FAILED
         );
     }
 
@@ -101,7 +101,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function insert(DataTableObjectInterface $object): int
     {
-        return $this->db->insertRow($this->getTableName(), $object);
+        return $this->db->insertRow($this->getTableName(), $object->toObject());
     }
 
     /**
@@ -109,16 +109,12 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function update(DataTableObjectInterface $object): bool
     {
-        if ($object->getID() === null) {
-            return false;
-        }
-
         return ($this->db->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
             $object->getID(),
-            $object
-        ) !== self::QUERY_FAILED
+            $object->toObject()
+        ) !== self::UPDATE_OR_UPSERT_FAILED
         );
     }
 }

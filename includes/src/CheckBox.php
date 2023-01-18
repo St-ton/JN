@@ -4,13 +4,12 @@ namespace JTL;
 
 use Exception;
 use InvalidArgumentException;
-use JTL\Checkbox\CheckboxDataObject;
+use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageRepository;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
-use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataObject;
+use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
 use JTL\Checkbox\CheckboxRepository;
 use JTL\Checkbox\CheckboxService;
-use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -620,7 +619,7 @@ class CheckBox
             return $this->updateDB($texts, $descriptions);
         }
         $checkBoxDataObject = $this->getCheckBoxDataObject();
-        $this->kCheckBox    = $this->service->insertCheckbox($checkBoxDataObject);
+        $this->kCheckBox    = $this->service->insert($checkBoxDataObject);
         $this->addLocalization($texts, $descriptions);
 
         return $this;
@@ -690,7 +689,7 @@ class CheckBox
      */
     private function prepareLocalizationObject(string $iso, string $text, string $description = ''): void
     {
-        $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataObject();
+        $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataTableObject();
         $this->oCheckBoxSprache_arr[$iso]->setCheckboxID($this->kCheckBox);
         $this->oCheckBoxSprache_arr[$iso]->setLanguageID($this->getSprachKeyByISO($iso));
         $this->oCheckBoxSprache_arr[$iso]->setText($text);
@@ -803,11 +802,11 @@ class CheckBox
     }
 
     /**
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    protected function getCheckBoxDataObject(): CheckboxDataObject
+    protected function getCheckBoxDataObject(): CheckboxDataTableObject
     {
-        $dataObject = new CheckboxDataObject();
+        $dataObject = new CheckboxDataTableObject();
         $dataObject->hydrate(get_object_vars($this));
 
         return $dataObject;

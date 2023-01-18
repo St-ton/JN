@@ -3,7 +3,6 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\DataObjects\DataObjectInterface;
 use stdClass;
 
 /**
@@ -28,31 +27,6 @@ class CheckboxRepository extends AbstractRepository
                 . ' WHERE ' . $this->getKeyName() . ' = :cbid',
             ['cbid' => $id]
         );
-    }
-
-    /**
-     * @param CheckboxDataObject $checkbox
-     * @return int
-     */
-    public function insert(DataObjectInterface $checkbox): int
-    {
-        return $this->db->insertRow($this->getTableName(), $checkbox->toObject());
-    }
-
-    /**
-     * @param CheckboxDataObject $checkbox
-     * @return bool
-     */
-    public function update(DataObjectInterface $checkbox): bool
-    {
-        $result = $this->db->updateRow(
-            $this->getTableName(),
-            $this->getKeyName(),
-            $checkbox->getCheckboxID(),
-            $checkbox->toObject()
-        );
-
-        return $result !== -1;
     }
 
     /**
@@ -93,11 +67,5 @@ class CheckboxRepository extends AbstractRepository
         );
 
         return true;
-    }
-
-    public function delete(int $id): bool
-    {
-        // TODO: Implement delete() method.
-        return false;
     }
 }

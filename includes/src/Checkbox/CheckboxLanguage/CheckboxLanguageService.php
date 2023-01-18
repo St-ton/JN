@@ -2,8 +2,9 @@
 
 namespace JTL\Checkbox\CheckboxLanguage;
 
-use JTL\Abstracts\AbstractRepository;
 use JTL\Abstracts\AbstractService;
+use JTL\DataObjects\AbstractDataObject;
+use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 
 /**
@@ -13,15 +14,15 @@ use JTL\Interfaces\RepositoryInterface;
 class CheckboxLanguageService extends AbstractService
 {
     /**
-     * @param array $filter
+     * @param array $filters
      * @return array
      */
-    public function getList(array $filter): array
+    public function getList(array $filters): array
     {
         $languageList      = [];
-        $checkboxLanguages = $this->repository->getList($filter);
+        $checkboxLanguages = $this->repository->getList($filters);
         foreach ($checkboxLanguages as $checkboxLanguage) {
-            $language       = new CheckboxLanguageDataObject();
+            $language       = new CheckboxLanguageDataTableObject();
             $languageList[] = $language->hydrateWithObject($checkboxLanguage);
         }
 
@@ -29,20 +30,14 @@ class CheckboxLanguageService extends AbstractService
     }
 
     /**
-     * @param CheckboxLanguageDataObject $checkBoxLanguage
-     * @return int
-     */
-    public function insert(CheckboxLanguageDataObject $checkBoxLanguage): int
-    {
-        return $this->repository->insert($checkBoxLanguage);
-    }
-
-    /**
-     * @param CheckboxLanguageDataObject $checkboxLanguage
+     * @param AbstractDataObject $checkboxLanguage
      * @return bool
      */
-    public function update(CheckboxLanguageDataObject $checkboxLanguage): bool
+    public function update(AbstractDataObject $checkboxLanguage): bool
     {
+        if (!$checkboxLanguage instanceof DataTableObjectInterface) {
+            return false;
+        }
         //need checkboxLanguageId, not provided by post
         $languageList = $this->getList([
             'kCheckBox' => $checkboxLanguage->getCheckboxID(),
@@ -57,6 +52,9 @@ class CheckboxLanguageService extends AbstractService
         return $this->repository->update($checkboxLanguage);
     }
 
+    /**
+     * @return RepositoryInterface
+     */
     public function getRepository(): RepositoryInterface
     {
         if (\is_null($this->repository)) {

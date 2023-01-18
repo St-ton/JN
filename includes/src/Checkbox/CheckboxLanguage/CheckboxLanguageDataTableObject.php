@@ -3,12 +3,13 @@
 namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\DataObjects\AbstractDataObject;
+use JTL\DataObjects\DataTableObjectInterface;
 
 /**
- * Class CheckboxLanguageDataObject
+ * Class CheckboxLanguageDataTableObject
  * @package JTL\Checkbox\CheckboxLanguage
  */
-class CheckboxLanguageDataObject extends AbstractDataObject
+class CheckboxLanguageDataTableObject extends AbstractDataObject implements DataTableObjectInterface
 {
     /**
      * @var string
@@ -112,9 +113,9 @@ class CheckboxLanguageDataObject extends AbstractDataObject
 
     /**
      * @param int|string $checkboxLanguageID
-     * @return CheckboxLanguageDataObject
+     * @return CheckboxLanguageDataTableObject
      */
-    public function setCheckboxLanguageID(int|string $checkboxLanguageID): CheckboxLanguageDataObject
+    public function setCheckboxLanguageID(int|string $checkboxLanguageID): CheckboxLanguageDataTableObject
     {
         $this->checkboxLanguageID = (int)$checkboxLanguageID;
 
@@ -131,9 +132,9 @@ class CheckboxLanguageDataObject extends AbstractDataObject
 
     /**
      * @param int|string $checkboxID
-     * @return CheckboxLanguageDataObject
+     * @return CheckboxLanguageDataTableObject
      */
-    public function setCheckboxID(int|string $checkboxID): CheckboxLanguageDataObject
+    public function setCheckboxID(int|string $checkboxID): CheckboxLanguageDataTableObject
     {
         $this->checkboxID = (int)$checkboxID;
 
@@ -150,9 +151,9 @@ class CheckboxLanguageDataObject extends AbstractDataObject
 
     /**
      * @param int|string $languageID
-     * @return CheckboxLanguageDataObject
+     * @return CheckboxLanguageDataTableObject
      */
-    public function setLanguageID(int|string $languageID): CheckboxLanguageDataObject
+    public function setLanguageID(int|string $languageID): CheckboxLanguageDataTableObject
     {
         $this->languageID = (int)$languageID;
 
@@ -169,9 +170,9 @@ class CheckboxLanguageDataObject extends AbstractDataObject
 
     /**
      * @param string $text
-     * @return CheckboxLanguageDataObject
+     * @return CheckboxLanguageDataTableObject
      */
-    public function setText(string $text): CheckboxLanguageDataObject
+    public function setText(string $text): CheckboxLanguageDataTableObject
     {
         $this->text = $text;
 
@@ -188,9 +189,9 @@ class CheckboxLanguageDataObject extends AbstractDataObject
 
     /**
      * @param string $description
-     * @return CheckboxLanguageDataObject
+     * @return CheckboxLanguageDataTableObject
      */
-    public function setDescription(string $description): CheckboxLanguageDataObject
+    public function setDescription(string $description): CheckboxLanguageDataTableObject
     {
         $this->description = $description;
 

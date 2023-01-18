@@ -130,7 +130,7 @@ class CheckboxController extends AbstractBackendController
         if (!$link) {
             $checks['kLink'] = 1;
         }
-        if (!\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
+        if (!isset($post['cAnzeigeOrt']) || !\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
             foreach ($post['cAnzeigeOrt'] as $cAnzeigeOrt) {
@@ -151,7 +151,9 @@ class CheckboxController extends AbstractBackendController
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
             $checks['nSort'] = 1;
         }
-        if (!\is_array($post['kKundengruppe']) || \count($post['kKundengruppe']) === 0) {
+        if (!isset($post['kKundengruppe'])
+            || !\is_array($post['kKundengruppe'])
+            || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 

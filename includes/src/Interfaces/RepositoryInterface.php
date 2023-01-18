@@ -2,7 +2,6 @@
 
 namespace JTL\Interfaces;
 
-use JTL\DataObjects\DataObjectInterface;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\DB\DbInterface;
 

@@ -3,13 +3,13 @@
 namespace JTL\Checkbox;
 
 use JTL\DataObjects\AbstractDataObject;
-use JTL\DataObjects\DataObjectInterface;
+use JTL\DataObjects\DataTableObjectInterface;
 
 /**
- * Class CheckboxDataObject
+ * Class CheckboxDataTableObject
  * @package JTL\Checkbox
  */
-class CheckboxDataObject extends AbstractDataObject
+class CheckboxDataTableObject extends AbstractDataObject implements DataTableObjectInterface
 {
     /**
      * @var string
@@ -166,9 +166,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param int|string $checkboxID
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setCheckboxID(int|string $checkboxID): CheckboxDataObject
+    public function setCheckboxID(int|string $checkboxID): CheckboxDataTableObject
     {
         $this->checkboxID = (int)$checkboxID;
 
@@ -185,9 +185,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param int|string $linkID
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setLinkID(int|string  $linkID): CheckboxDataObject
+    public function setLinkID(int|string  $linkID): CheckboxDataTableObject
     {
         $this->linkID = (int)$linkID;
 
@@ -204,9 +204,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param int|string  $checkboxFunctionID
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setCheckboxFunctionID(int|string  $checkboxFunctionID): CheckboxDataObject
+    public function setCheckboxFunctionID(int|string  $checkboxFunctionID): CheckboxDataTableObject
     {
         $this->checkboxFunctionID = (int)$checkboxFunctionID;
 
@@ -223,9 +223,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param string $name
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setName(string $name): CheckboxDataObject
+    public function setName(string $name): CheckboxDataTableObject
     {
         $this->name = $name;
 
@@ -242,9 +242,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param array|string $customerGroupsSelected
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setCustomerGroupsSelected(array|string $customerGroupsSelected): CheckboxDataObject
+    public function setCustomerGroupsSelected(array|string $customerGroupsSelected): CheckboxDataTableObject
     {
         if (\is_array($customerGroupsSelected)) {
             $customerGroupsSelected = ';' . \implode(';', $customerGroupsSelected) . ';';
@@ -264,9 +264,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param array|string $displayAt
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setDisplayAt(array|string $displayAt): CheckboxDataObject
+    public function setDisplayAt(array|string $displayAt): CheckboxDataTableObject
     {
         if (\is_array($displayAt)) {
             $displayAt = ';' . \implode(';', $displayAt) . ';';
@@ -286,9 +286,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param bool|int|string $active
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setActive(bool|int|string $active): CheckboxDataObject
+    public function setActive(bool|int|string $active): CheckboxDataTableObject
     {
         $this->active = (bool)$active;
 
@@ -305,9 +305,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param  bool|int|string $isMandatory
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataObject
+    public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataTableObject
     {
         $this->isMandatory = (bool)$isMandatory;
 
@@ -324,9 +324,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param  bool|int|string $hasLogging
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setHasLogging(bool|int|string $hasLogging): CheckboxDataObject
+    public function setHasLogging(bool|int|string $hasLogging): CheckboxDataTableObject
     {
         $this->hasLogging = (bool)$hasLogging;
 
@@ -343,9 +343,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param int|string $sort
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setSort(int|string $sort): CheckboxDataObject
+    public function setSort(int|string $sort): CheckboxDataTableObject
     {
         $this->sort = (int)$sort;
 
@@ -362,9 +362,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param string $created
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setCreated(string $created): CheckboxDataObject
+    public function setCreated(string $created): CheckboxDataTableObject
     {
         $this->created = $created;
 
@@ -381,9 +381,9 @@ class CheckboxDataObject extends AbstractDataObject
 
     /**
      * @param string $created_DE
-     * @return CheckboxDataObject
+     * @return CheckboxDataTableObject
      */
-    public function setCreatedDE(string $created_DE): CheckboxDataObject
+    public function setCreatedDE(string $created_DE): CheckboxDataTableObject
     {
         $this->created_DE = $created_DE;
 

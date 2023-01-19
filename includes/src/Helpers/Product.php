@@ -2012,7 +2012,7 @@ class Product
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                Tax::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse ?? 0)
             ) * $_amount,
             $product->gibPreis($amount, $selectedProperties) * $_amount
         ];

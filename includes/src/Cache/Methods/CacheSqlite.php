@@ -178,6 +178,7 @@ class CacheSqlite implements ICachingMethod
     {
         $res1 = $this->db->exec('DELETE FROM cache_tag');
         $res2 = $this->db->exec('DELETE FROM cache');
+        $this->db->exec('VACUUM');
 
         return $res1 && $res2;
     }
@@ -187,10 +188,6 @@ class CacheSqlite implements ICachingMethod
      */
     public function getStats(): array
     {
-        // Defragmentiere die Datenbank
-        $this->db->exec('PRAGMA auto_vacuum = FULL;');
-        $this->db->exec('VACUUM;');
-
         $result    = $this->db->query('SELECT COUNT(*) num FROM cache');
         $resultTag = $this->db->query('SELECT COUNT(*) num FROM cache_tag');
         $num       = $result->fetchArray(\SQLITE3_ASSOC)['num'];

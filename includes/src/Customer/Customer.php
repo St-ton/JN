@@ -277,25 +277,6 @@ class Customer
     }
 
     /**
-     * @return array
-     */
-    public function __sleep(): array
-    {
-        return select(\array_keys(\get_object_vars($this)), static function ($e): bool {
-            return $e !== 'db' && $e !== 'passwordService';
-        });
-    }
-
-    /**
-     * @return void
-     */
-    public function __wakeup(): void
-    {
-        $this->passwordService = Shop::Container()->getPasswordService();
-        $this->db              = Shop::Container()->getDB();
-    }
-
-    /**
      * get customer by email address
      *
      * @param string $mail

@@ -1052,6 +1052,9 @@ class Product
             $group->Artikel = self::separateByAvailability($group->Artikel);
             unset($group->productIDs);
         }
+        if (!isset($xSelling->Kauf->Artikel) || !\is_array($xSelling->Kauf->Artikel)) {
+            $xSelling->Kauf->Artikel = [];
+        }
         foreach ($xSelling->Kauf->productIDs as $id) {
             $product = new Artikel($db, $cgroup, $currency);
             $product->fuelleArtikel($id, $options, $cgroupID, $languageID);

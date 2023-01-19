@@ -1033,6 +1033,16 @@ class Product
      */
     public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
     {
+        if ($xSelling === null) {
+            return (object)[
+                'kArtikelXSellerKey_arr' => [],
+                'oArtikelArr'            => [],
+                'Standard'               => null,
+                'Kauf'                   => (object)[
+                    'Artikel'    => [],
+                ],
+            ];
+        }
         $xSelling   = (object)$xSelling;
         $options    = Artikel::getDefaultOptions();
         $db         = Shop::Container()->getDB();

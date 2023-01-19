@@ -1052,9 +1052,6 @@ class Product
             $group->Artikel = self::separateByAvailability($group->Artikel);
             unset($group->productIDs);
         }
-        if (!isset($xSelling->Kauf->Artikel) || !\is_array($xSelling->Kauf->Artikel)) {
-            $xSelling->Kauf->Artikel = [];
-        }
         foreach ($xSelling->Kauf->productIDs as $id) {
             $product = new Artikel($db, $cgroup, $currency);
             $product->fuelleArtikel($id, $options, $cgroupID, $languageID);
@@ -1062,7 +1059,7 @@ class Product
                 $xSelling->Kauf->Artikel[] = $product;
             }
         }
-        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
+        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel ?? []);
         unset($xSelling->Kauf->productIDs);
 
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [

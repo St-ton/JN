@@ -686,7 +686,7 @@ class OrderHandler
         $customer->dGeburtstag   = Text::unhtmlentities($sessionCustomer->dGeburtstag);
         $customer->cBundesland   = Text::unhtmlentities($sessionCustomer->cBundesland);
 
-        $_SESSION['Kunde'] = $customer;
+        $this->customer = $_SESSION['Kunde'] = $customer;
 
         $shippingAddress = new Lieferadresse();
         $deliveryAddress = Frontend::getDeliveryAddress();

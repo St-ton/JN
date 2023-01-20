@@ -212,7 +212,7 @@ class Profiler
                 $obj                       = new stdClass();
                 $obj->runtime              = $queryRun->time;
                 $obj->runcount             = $queryRun->count;
-                $obj->statement            = \trim($queryRun->statement);
+                $obj->statement            = \trim($queryRun->statement ?? '');
                 $obj->tablename            = $queryRun->table;
                 $obj->data                 = isset($queryRun->backtrace)
                     ? \serialize(['backtrace' => $queryRun->backtrace])

@@ -11,7 +11,7 @@ namespace JTL\DataObjects;
  *
  * @package JTL\DataObjects
  */
-interface DataTableObjectInterface
+interface DataTableObjectInterface extends DataObjectInterface
 {
     /**
      * Has to provide an array like ['tableColumnName' => 'propertyName']

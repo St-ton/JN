@@ -10,6 +10,8 @@ use stdClass;
 
 /**
  *  Database connection not necessarily has to be injected.
+ * @property $tableName
+ * @property $keyName
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
@@ -21,7 +23,6 @@ abstract class AbstractRepository implements RepositoryInterface
      *     protected string $tableName = '';
      *     protected string $keyName = '';
      */
-
 
     /**
      * @param DbInterface|null $db

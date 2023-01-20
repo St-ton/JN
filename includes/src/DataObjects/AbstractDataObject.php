@@ -17,7 +17,7 @@ abstract class AbstractDataObject implements DataObjectInterface
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return void
      */
     public function __set(string $name, mixed $value): void
@@ -63,6 +63,36 @@ abstract class AbstractDataObject implements DataObjectInterface
     public function __unset(string $name): void
     {
         unset($this->$name);
+    }
+
+    /**
+     * @var array
+     */
+    private array $possibleBoolValues = [
+        'true'  => true,
+        'y'     => true,
+        'yes'   => true,
+        'ja'    => true,
+        '1'     => true,
+        'false' => false,
+        'n'     => false,
+        'no'    => false,
+        'nein'  => false,
+        '0'     => false,
+    ];
+
+    /**
+     * @param bool|int|string $value
+     * @return bool
+     */
+    protected function checkAndReturnBoolValue(bool|int|string $value = 0): bool
+    {
+        $value = \strtolower((string)$value);
+        if (!\array_key_exists($value, $this->possibleBoolValues)) {
+            return false;
+        }
+
+        return $this->possibleBoolValues[$value];
     }
 
     /**

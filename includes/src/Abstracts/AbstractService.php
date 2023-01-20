@@ -2,7 +2,7 @@
 
 namespace JTL\Abstracts;
 
-use JTL\DataObjects\DataObjectInterface;
+use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Interfaces\ServiceInterface;
@@ -29,17 +29,34 @@ abstract class AbstractService implements ServiceInterface
      * @param array $filters
      * @return array
      */
-    abstract public function getList(array $filters): array;
+    public function getList(array $filters): array
+    {
+        return $this->repository->getList($filters);
+    }
 
     /**
-     * @param DataTableObjectInterface|DataObjectInterface $object
+     * @param AbstractDataObject $insertDTO
      * @return int
      */
-    abstract public function insert(DataTableObjectInterface|DataObjectInterface $object): int;
+    public function insert(AbstractDataObject $insertDTO): int
+    {
+        if ($insertDTO instanceof DataTableObjectInterface) {
+            return $this->repository->insert($insertDTO);
+        }
+
+        return 0;
+    }
 
     /**
-     * @param DataTableObjectInterface|DataObjectInterface $object
+     * @param AbstractDataObject $updateDTO
      * @return bool
      */
-    abstract public function update(DataTableObjectInterface|DataObjectInterface $object): bool;
+    public function update(AbstractDataObject $updateDTO): bool
+    {
+        if (($updateDTO instanceof DataTableObjectInterface) && $updateDTO->getID() > 0) {
+            return $this->repository->update($updateDTO);
+        }
+
+        return false;
+    }
 }

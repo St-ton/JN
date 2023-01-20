@@ -2,7 +2,6 @@
 
 namespace JTL\Interfaces;
 
-use JTL\DataObjects\DataObjectInterface;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\DB\DbInterface;
 
@@ -33,14 +32,14 @@ interface RepositoryInterface
     public function getList(array $filters): array;
 
     /**
-     * @param DataTableObjectInterface $object $object
+     * @param DataTableObjectInterface $insertDTO $object
      * @return int
      */
-    public function insert(DataTableObjectInterface $object): int;
+    public function insert(DataTableObjectInterface $insertDTO): int;
 
     /**
-     * @param DataTableObjectInterface $object
+     * @param DataTableObjectInterface $updateDTO
      * @return bool
      */
-    public function update(DataTableObjectInterface $object): bool;
+    public function update(DataTableObjectInterface $updateDTO): bool;
 }

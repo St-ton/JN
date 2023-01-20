@@ -71,7 +71,12 @@ interface DataObjectInterface
     public function __unset(string $name): void;
 
     /**
-     * keep $mapping-array private to prevent it from being shipped with toArray() or extract()
+     * Keep $mapping-array private to prevent it from being shipped with toArray() or extract()
+     * Mapping array gives the possibility to map any input to a specific property
+     * Mapping more than one values to a property might become dangerous.
+     * To map column names against properties you may consider to implement DataTableObjectInterface
+     * and use $columnMapping instead
+     *
      * @return array
      */
     public function getMapping(): array;

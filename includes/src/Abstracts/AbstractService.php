@@ -35,28 +35,26 @@ abstract class AbstractService implements ServiceInterface
     }
 
     /**
-     * @param AbstractDataObject $object
+     * @param AbstractDataObject $insertDTO
      * @return int
      */
-    public function insert(AbstractDataObject $object): int
+    public function insert(AbstractDataObject $insertDTO): int
     {
-        if ($object instanceof DataTableObjectInterface) {
-            return $this->repository->insert($object);
+        if ($insertDTO instanceof DataTableObjectInterface) {
+            return $this->repository->insert($insertDTO);
         }
 
         return 0;
     }
 
     /**
-     * @param AbstractDataObject $object
+     * @param AbstractDataObject $updateDTO
      * @return bool
      */
-    public function update(AbstractDataObject $object): bool
+    public function update(AbstractDataObject $updateDTO): bool
     {
-        if ($object instanceof DataTableObjectInterface) {
-            if ($object->getID() > 0) {
-                return $this->repository->update($object);
-            }
+        if (($updateDTO instanceof DataTableObjectInterface) && $updateDTO->getID() > 0) {
+            return $this->repository->update($updateDTO);
         }
 
         return false;

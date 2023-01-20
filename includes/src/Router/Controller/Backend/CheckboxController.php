@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\CheckBox;
+use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -162,93 +163,47 @@ class CheckboxController extends AbstractBackendController
 
     /**
      * @param array $post - pre-filtered post data
-     * @param LanguageModel[] $languages
+     * @param array $languages
      * @return CheckBox
+     * @throws \Exception
      * @former speicherCheckBox()
      */
     private function save(array $post, array $languages): CheckBox
     {
-        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
-            return $this->updateCheckBox($post, $languages);
-        }
+        $checkBox    = new CheckBox(0, $this->db);
+        $checkBoxDTO = $this->getCheckboxDTO($post);
+        $checkBoxDTO = $this->addTranslationsToDTO($languages, $post, $checkBoxDTO);
 
-        return $this->insertCheckBox($post, $languages);
+        return $checkBox->save($checkBoxDTO);
     }
 
     /**
      * @param array $post
-     * @param array $languages
-     * @return CheckBox
+     * @return CheckboxDataTableObject
      */
-    private function insertCheckBox(array $post, array $languages): CheckBox
+    private function getCheckboxDTO(array $post): CheckboxDataTableObject
     {
-        $checkBox = new CheckBox(0, $this->db);
-        $this->prepareCheckbox($checkBox, $post);
-        [$texts, $descr] = $this->prepareTranslations($languages, $post);
-        $checkBox->insertDB($texts, $descr);
-        $this->cache->flushTags(['checkbox']);
+        $checkBoxDTO = new CheckboxDataTableObject();
+        if (isset($post['kCheckBox'])) {
+            $checkBoxDTO->setCheckboxID((int)$post['kCheckBox']);
+        }
+        $checkBoxDTO->hydrate($post);
+        $checkBoxDTO->setCreated('NOW()');
 
-        return $checkBox;
+        return $checkBoxDTO;
     }
 
     /**
-     * @param array $post
-     * @param array $languages
-     * @return CheckBox
-     * @throws \Exception
+     * @param array                   $languages
+     * @param array                   $post
+     * @param CheckboxDataTableObject $checkboxDTO
+     * @return CheckboxDataTableObject
      */
-    private function updateCheckBox(array $post, array $languages): CheckBox
-    {
-        $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
-        $this->prepareCheckbox($checkBox, $post);
-        [$texts, $descr] = $this->prepareTranslations($languages, $post);
-        $checkBox->updateDB($texts, $descr);
-        $this->cache->flushTags(['checkbox']);
-
-        return $checkBox;
-    }
-
-    /**
-     * @param CheckBox $checkBox
-     * @param array $post
-     * @return void
-     */
-    private function prepareCheckbox(CheckBox $checkBox, array $post): void
-    {
-        $checkBox->kLink = 0;
-        if (isset($post['nLink']) && (int)$post['nLink'] === 1) {
-            $checkBox->kLink = (int)$post['kLink'];
-        }
-        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
-            $checkBox->kCheckBox = (int)$post['kCheckBox'];
-        }
-        $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
-        $checkBox->cName             = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-        $checkBox->cKundengruppe     = Text::createSSK($post['kKundengruppe']);
-        $checkBox->cAnzeigeOrt       = Text::createSSK($post['cAnzeigeOrt']);
-        $checkBox->nAktiv            = 0;
-        if ($post['nAktiv'] === 'Y') {
-            $checkBox->nAktiv = 1;
-        }
-        $checkBox->nPflicht = 0;
-        $checkBox->nLogging = 0;
-        if ($post['nLogging'] === 'Y') {
-            $checkBox->nLogging = 1;
-        }
-        if ($post['nPflicht'] === 'Y') {
-            $checkBox->nPflicht = 1;
-        }
-        $checkBox->nSort     = (int)$post['nSort'];
-        $checkBox->dErstellt = 'NOW()';
-    }
-
-    /**
-     * @param array $languages
-     * @param array $post
-     * @return array[]
-     */
-    private function prepareTranslations(array $languages, array $post): array
-    {
+    private function addTranslationsToDTO(
+        array $languages,
+        array $post,
+        CheckboxDataTableObject $checkboxDTO
+    ): CheckboxDataTableObject {
         $texts = [];
         $descr = [];
         foreach ($languages as $language) {
@@ -261,8 +216,15 @@ class CheckboxController extends AbstractBackendController
             $descr[$code] = isset($post[$descrCode])
                 ? \str_replace('"', '&quot;', $post[$descrCode])
                 : '';
+            $checkboxDTO->addLanguage(
+                $code,
+                language: [
+                    'text' => $texts[$code],
+                    'descr' => $descr[$code]
+                ]
+            );
         }
 
-        return [$texts, $descr];
+        return $checkboxDTO;
     }
 }

@@ -318,7 +318,8 @@ class CheckBox
         bool $lang = false,
         bool $special = false,
         bool $logging = false
-    ): array {
+    ): array
+    {
         if ($customerGroupID === 0) {
             $customerGroupID = Frontend::getCustomer()->getGroupID();
         }
@@ -388,7 +389,8 @@ class CheckBox
         bool  $active,
         array $post,
         array $params = []
-    ): self {
+    ): self
+    {
         $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, true, true);
         foreach ($checkboxes as $checkbox) {
             if (!isset($post[$checkbox->cID])) {
@@ -474,6 +476,7 @@ class CheckBox
     public function getAllCheckBox(string $limitSQL = '', bool $active = false): array
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use JTL\CheckBox\getAll() instead.', \E_USER_DEPRECATED);
+
         return $this->getAll($limitSQL, $active);
     }
 
@@ -501,6 +504,7 @@ class CheckBox
     public function getAllCheckBoxCount(bool $active = false): int
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use JTL\CheckBox\getTotalCount() instead.', \E_USER_DEPRECATED);
+
         return $this->getTotalCount($active);
     }
 
@@ -524,6 +528,7 @@ class CheckBox
     public function aktivateCheckBox(array $checkboxIDs): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use JTL\CheckBox\activate() instead.', \E_USER_DEPRECATED);
+
         return $this->activate($checkboxIDs);
     }
 
@@ -544,6 +549,7 @@ class CheckBox
     public function deaktivateCheckBox(array $checkboxIDs): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use JTL\CheckBox\deactivate() instead.', \E_USER_DEPRECATED);
+
         return $this->deactivate($checkboxIDs);
     }
 
@@ -564,6 +570,7 @@ class CheckBox
     public function deleteCheckBox(array $checkboxIDs): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated. Use JTL\CheckBox\delete() instead.', \E_USER_DEPRECATED);
+
         return $this->delete($checkboxIDs);
     }
 
@@ -604,96 +611,124 @@ class CheckBox
     }
 
     /**
-     * @param array $texts
-     * @param array $descriptions
+     * @param CheckboxDataTableObject $checkboxDTO
      * @return $this
      * @throws Exception
      */
-    public function insertDB(array $texts, array $descriptions): self
+    public function save(CheckboxDataTableObject $checkboxDTO): self
     {
-        if (\count($texts) === 0) {
+        $this->populateSelf($checkboxDTO);
+        if (\count($checkboxDTO->getLanguages()) === 0) {
             return $this;
+        }
+        if ($checkboxDTO->getID() > 0) {
+            $this->updateDB($checkboxDTO);
+        }
+        $this->insertDB(null, null, $checkboxDTO);
+
+        return $this;
+    }
+
+    /**
+     * @param CheckboxDataTableObject $checkboxDTO
+     * @return void
+     */
+    private function populateSelf(CheckboxDataTableObject $checkboxDTO): void
+    {
+        foreach ($checkboxDTO->toArray() as $property => $value) {
+            if (\array_key_exists($property, \get_object_vars($this))) {
+                $this->$property = \is_bool($value) ? (int)$value : $value;
+            }
+        }
+        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
+            $this->oCheckBoxSprache_arr[$iso] = $texts;
+        }
+    }
+
+    /**
+     * @param array|null                   $texts
+     * @param array|null                   $descriptions
+     * @param CheckboxDataTableObject|null $checkboxDTO
+     * @return $this
+     * @throws Exception
+     */
+    public function insertDB(
+        ?array                   $texts = [],
+        ?array                   $descriptions = [],
+        ?CheckboxDataTableObject $checkboxDTO = null
+    ): self {
+        if (!isset($checkboxDTO)) {
+            $checkboxDTO = $this->getCheckBoxDataTableObject();
+            $this->addLanguagesToDTO($texts, $checkboxDTO, $descriptions);
         }
         //Since method used to do the update too
-        if ($this->kCheckBox > 0) {
-            return $this->updateDB($texts, $descriptions);
+        if ($checkboxDTO->getID() > 0) {
+            return $this->updateDB($checkboxDTO);
         }
-        $checkBoxDataObject = $this->getCheckBoxDataObject();
-        $this->kCheckBox    = $this->service->insert($checkBoxDataObject);
-        $this->addLocalization($texts, $descriptions);
+        $checkboxDTO->setCheckboxID($this->service->insert($checkboxDTO));
+        $this->kCheckBox = $checkboxDTO->getCheckboxID();
+        $this->addLocalization($checkboxDTO);
 
         return $this;
     }
 
     /**
-     * @param array $texts
-     * @param array $descriptions
+     * @param CheckboxDataTableObject $checkboxDTO
      * @return $this
-     * @throws Exception
      */
-    public function updateDB(array $texts, array $descriptions): self
+    public function updateDB(CheckboxDataTableObject $checkboxDTO): self
     {
-        if (\count($texts) === 0) {
-            return $this;
-        }
-        $checkBoxDataObject = $this->getCheckboxDataObject();
-        $this->service->update($checkBoxDataObject);
-        $this->updateLocalization($texts, $descriptions, $checkBoxDataObject->getCheckboxID());
+        $this->service->update($checkboxDTO);
+        $this->updateLocalization($checkboxDTO);
 
         return $this;
     }
 
     /**
-     * @param array $texts
-     * @param array $descriptions
+     * @param CheckboxDataTableObject $checkboxDTO
      * @return void
      */
-    private function addLocalization(array $texts, array $descriptions): void
+    private function addLocalization(CheckboxDataTableObject $checkboxDTO): void
     {
-        $this->oCheckBoxSprache_arr = [];
-        foreach ($texts as $iso => $text) {
-            if (\mb_strlen($text) === 0) {
-                continue;
-            }
-            $this->prepareLocalizationObject($iso, $text, $descriptions[$iso]);
-            $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache =
-                $this->languageService->insert($this->oCheckBoxSprache_arr[$iso]);
+        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
+            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
+            $this->languageService->update($checkboxLanguageDTO);
         }
     }
 
     /**
-     * @param array $texts
-     * @param array $descriptions
-     * @param int $CheckBoxId
+     * @param CheckboxDataTableObject $checkboxDTO
      * @return void
      */
-    private function updateLocalization(array $texts, array $descriptions, int $CheckBoxId): void
+    private function updateLocalization(CheckboxDataTableObject $checkboxDTO): void
     {
-        $this->dismissObsoleteLanguages($CheckBoxId);
+        $this->dismissObsoleteLanguages($checkboxDTO->getCheckboxID());
 
-        $this->oCheckBoxSprache_arr = [];
-        foreach ($texts as $iso => $text) {
-            if (\mb_strlen($text) === 0) {
-                continue;
-            }
-            $this->prepareLocalizationObject($iso, $text, $descriptions[$iso]);
-            $this->languageService->update($this->oCheckBoxSprache_arr[$iso]);
+        foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
+            $checkboxLanguageDTO = $this->prepareLocalizationObject($checkboxDTO->getID(), $iso, $texts);
+            $this->languageService->update($checkboxLanguageDTO);
         }
     }
 
     /**
+     * @param int    $checkBoxID
      * @param string $iso
-     * @param mixed $text
-     * @param string $description
-     * @return void
+     * @param array  $texts
+     * @return CheckboxLanguageDataTableObject
      */
-    private function prepareLocalizationObject(string $iso, string $text, string $description = ''): void
+    private function prepareLocalizationObject(
+        int    $checkBoxID,
+        string $iso,
+        array  $texts = []
+    ): CheckboxLanguageDataTableObject
     {
-        $this->oCheckBoxSprache_arr[$iso] = new CheckboxLanguageDataTableObject();
-        $this->oCheckBoxSprache_arr[$iso]->setCheckboxID($this->kCheckBox);
-        $this->oCheckBoxSprache_arr[$iso]->setLanguageID($this->getSprachKeyByISO($iso));
-        $this->oCheckBoxSprache_arr[$iso]->setText($text);
-        $this->oCheckBoxSprache_arr[$iso]->setDescription($description);
+        $checkboxLanguageDTO = new CheckboxLanguageDataTableObject();
+        $checkboxLanguageDTO->setCheckboxID($checkBoxID);
+        $checkboxLanguageDTO->setLanguageID($this->getSprachKeyByISO($iso));
+        $checkboxLanguageDTO->setText($texts['text']);
+        $checkboxLanguageDTO->setDescription($texts['descr']);
+
+        return $checkboxLanguageDTO;
     }
 
     /**
@@ -804,7 +839,7 @@ class CheckBox
     /**
      * @return CheckboxDataTableObject
      */
-    protected function getCheckBoxDataObject(): CheckboxDataTableObject
+    protected function getCheckBoxDataTableObject(): CheckboxDataTableObject
     {
         $dataObject = new CheckboxDataTableObject();
         $dataObject->hydrate(get_object_vars($this));
@@ -823,5 +858,24 @@ class CheckBox
                     WHERE kSprache NOT IN (SELECT kSprache FROM tsprache) AND kCheckBox = :kCheckBox',
             ['kCheckBox' => $kCheckBox]
         );
+    }
+
+    /**
+     * @param array|null              $texts
+     * @param CheckboxDataTableObject $checkboxDTO
+     * @param array|null              $descriptions
+     * @return void
+     */
+    public function addLanguagesToDTO(?array $texts, CheckboxDataTableObject $checkboxDTO, ?array $descriptions): void
+    {
+        foreach ($texts as $iso => $language) {
+            $checkboxDTO->addLanguage(
+                $iso,
+                language: [
+                    'text'  => $language,
+                    'descr' => $descriptions[$iso] ?? ''
+                ]
+            );
+        }
     }
 }

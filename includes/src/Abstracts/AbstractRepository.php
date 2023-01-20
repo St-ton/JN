@@ -99,21 +99,21 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function insert(DataTableObjectInterface $object): int
+    public function insert(DataTableObjectInterface $insertDTO): int
     {
-        return $this->db->insertRow($this->getTableName(), $object->toObject());
+        return $this->db->insertRow($this->getTableName(), $insertDTO->toObject());
     }
 
     /**
      * @inheritdoc
      */
-    public function update(DataTableObjectInterface $object): bool
+    public function update(DataTableObjectInterface $updateDTO): bool
     {
         return ($this->db->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
-            $object->getID(),
-            $object->toObject()
+            $updateDTO->getID(),
+            $updateDTO->toObject()
         ) !== self::UPDATE_OR_UPSERT_FAILED
         );
     }

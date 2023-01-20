@@ -79,6 +79,11 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     private string $created_DE = '';
 
     /**
+     * @var array
+     */
+    private array $languages = [];
+
+    /**
      * @var array|string[]
      */
     private array $mapping = [
@@ -87,6 +92,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'checkboxFunctionID'     => 'checkboxFunctionID',
         'name'                   => 'name',
         'customerGroupsSelected' => 'customerGroupsSelected',
+        'kKundengruppe'          => 'customerGroupsSelected',
         'displayAt'              => 'displayAt',
         'active'                 => 'active',
         'isMandatory'            => 'isMandatory',
@@ -290,7 +296,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      */
     public function setActive(bool|int|string $active): CheckboxDataTableObject
     {
-        $this->active = (bool)$active;
+        $this->active = $this->checkAndReturnBoolValue($active);
 
         return $this;
     }
@@ -309,7 +315,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      */
     public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataTableObject
     {
-        $this->isMandatory = (bool)$isMandatory;
+        $this->isMandatory = $this->checkAndReturnBoolValue($isMandatory);
 
         return $this;
     }
@@ -328,7 +334,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      */
     public function setHasLogging(bool|int|string $hasLogging): CheckboxDataTableObject
     {
-        $this->hasLogging = (bool)$hasLogging;
+        $this->hasLogging = $this->checkAndReturnBoolValue($hasLogging);
 
         return $this;
     }
@@ -386,6 +392,26 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     public function setCreatedDE(string $created_DE): CheckboxDataTableObject
     {
         $this->created_DE = $created_DE;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLanguages(): array
+    {
+        return $this->languages;
+    }
+
+    /**
+     * @param string $code
+     * @param array  $language
+     * @return CheckboxDataTableObject
+     */
+    public function addLanguage(string $code, array $language): CheckboxDataTableObject
+    {
+        $this->languages[$code] = $language;
 
         return $this;
     }

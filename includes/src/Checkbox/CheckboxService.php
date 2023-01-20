@@ -3,8 +3,6 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
-use JTL\DataObjects\AbstractDataObject;
-use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Shop;
 
@@ -29,8 +27,10 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
-        $res = $this->repository->activate($checkboxIDs);
-        Shop::Container()->getCache()->flushTags(['checkbox']);
+        if ($this->repository instanceof CheckboxRepository) {
+            $res = $this->repository->activate($checkboxIDs);
+            Shop::Container()->getCache()->flushTags(['checkbox']);
+        }
 
         return $res;
     }

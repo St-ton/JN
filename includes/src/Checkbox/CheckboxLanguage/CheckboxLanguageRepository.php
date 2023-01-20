@@ -3,7 +3,6 @@
 namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\DataObjects\DataTableObjectInterface;
 
 /**
  * Class CheckboxLanguageRepository
@@ -14,13 +13,4 @@ class CheckboxLanguageRepository extends AbstractRepository
     protected string $tableName = 'tcheckboxsprache';
 
     protected string $keyName = 'kCheckBoxSprache';
-
-    /**
-     * @param DataTableObjectInterface $checkboxLanguage
-     * @return int
-     */
-    public function insert(DataTableObjectInterface $checkboxLanguage): int
-    {
-        return $this->db->insertRow($this->getTableName(), $checkboxLanguage->toObject());
-    }
 }

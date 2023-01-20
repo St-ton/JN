@@ -4,7 +4,6 @@ namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\Abstracts\AbstractService;
 use JTL\DataObjects\AbstractDataObject;
-use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 
 /**
@@ -35,7 +34,7 @@ class CheckboxLanguageService extends AbstractService
      */
     public function update(AbstractDataObject $checkboxLanguage): bool
     {
-        if (!$checkboxLanguage instanceof DataTableObjectInterface) {
+        if (!$checkboxLanguage instanceof CheckboxLanguageDataTableObject) {
             return false;
         }
         //need checkboxLanguageId, not provided by post

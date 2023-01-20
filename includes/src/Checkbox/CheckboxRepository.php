@@ -42,11 +42,11 @@ class CheckboxRepository extends AbstractRepository
         if (\count($checkboxIDs) === 0) {
             return false;
         }
-        $this->db->query(
-            'UPDATE tcheckbox
-                SET nAktiv = 1
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
-        );
+            $this->db->query(
+                'UPDATE '. $this->getTableName()
+                . ' SET nAktiv = 1'
+                . ' WHERE '. $this->getKeyName() . 'IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+            );
 
         return true;
     }
@@ -61,9 +61,9 @@ class CheckboxRepository extends AbstractRepository
             return false;
         }
         $this->db->query(
-            'UPDATE tcheckbox
-                SET nAktiv = 0
-                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+            'UPDATE '. $this->getTableName()
+            . ' SET nAktiv = 0'
+            . ' WHERE '. $this->getKeyName() . 'IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
 
         return true;

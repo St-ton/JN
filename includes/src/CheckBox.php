@@ -318,8 +318,7 @@ class CheckBox
         bool $lang = false,
         bool $special = false,
         bool $logging = false
-    ): array
-    {
+    ): array {
         if ($customerGroupID === 0) {
             $customerGroupID = Frontend::getCustomer()->getGroupID();
         }
@@ -389,8 +388,7 @@ class CheckBox
         bool  $active,
         array $post,
         array $params = []
-    ): self
-    {
+    ): self {
         $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, true, true);
         foreach ($checkboxes as $checkbox) {
             if (!isset($post[$checkbox->cID])) {
@@ -720,8 +718,7 @@ class CheckBox
         int    $checkBoxID,
         string $iso,
         array  $texts = []
-    ): CheckboxLanguageDataTableObject
-    {
+    ): CheckboxLanguageDataTableObject {
         $checkboxLanguageDTO = new CheckboxLanguageDataTableObject();
         $checkboxLanguageDTO->setCheckboxID($checkBoxID);
         $checkboxLanguageDTO->setLanguageID($this->getSprachKeyByISO($iso));

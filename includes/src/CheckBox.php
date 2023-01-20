@@ -639,7 +639,12 @@ class CheckBox
             }
         }
         foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
-            $this->oCheckBoxSprache_arr[$iso] = $texts;
+            $this->oCheckBoxSprache_arr[$iso] = [
+                'kCheckBox'    => $checkboxDTO->getID(),
+                'kSprache'     => $this->getSprachKeyByISO($iso),
+                'cText'        => $texts['text'],
+                'cBeschreibung' => $texts['descr'],
+            ];
         }
     }
 

@@ -3029,6 +3029,7 @@ class Artikel implements RoutableInterface
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
         $lastProduct = 0;
+        $tmpProduct  = null;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = $this->getPrecision();
@@ -3038,9 +3039,8 @@ class Artikel implements RoutableInterface
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx        = $varDetailPrice->kEigenschaftWert;
-            $tmpProduct = null;
-            if ($varDetailPrice->kArtikel !== $lastProduct) {
+            $idx = $varDetailPrice->kEigenschaftWert;
+            if ($varDetailPrice->kArtikel !== $lastProduct || $tmpProduct === null) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);

@@ -3040,7 +3040,7 @@ class Artikel implements RoutableInterface
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx        = $varDetailPrice->kEigenschaftWert;
+            $idx = $varDetailPrice->kEigenschaftWert;
             if ($varDetailPrice->kArtikel !== $lastProduct || $tmpProduct === null) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);

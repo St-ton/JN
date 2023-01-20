@@ -148,7 +148,7 @@ class Preise
     /**
      * @var bool|int
      */
-    public bool $Sonderpreis_aktiv = false;
+    public $Sonderpreis_aktiv = false;
 
     /**
      * @var bool

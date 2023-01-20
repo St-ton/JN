@@ -9,9 +9,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- *  Database connection not necessarily has to be injected.
- * @property $tableName
- * @property $keyName
+ * Database connection not necessarily has to be injected.
+ *
+ * @property string $tableName
+ * @property string $keyName
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
@@ -38,7 +39,7 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getTableName(): string
+    final public function getTableName(): string
     {
         return $this->tableName;
     }
@@ -46,7 +47,7 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    public function getKeyName(): string
+    final public function getKeyName(): string
     {
         return $this->keyName;
     }

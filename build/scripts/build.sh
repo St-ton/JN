@@ -5,7 +5,8 @@ build_create()
     # $1 repository dir
     export REPOSITORY_DIR=$1;
     # $2 target build version
-    if [[ $1 =~ (release)?\/?v?(.*) ]]; then
+    export APPLICATION_VERSION_BASE=$2;
+    if [[ $2 =~ (release)?\/?v?(.*) ]]; then
       export APPLICATION_VERSION=${BASH_REMATCH[2]};
     else
       export APPLICATION_VERSION=$2;
@@ -132,7 +133,7 @@ build_create_deleted_files_csv()
     local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
     local REMOTE_STR="";
 
-    if [[ ${APPLICATION_VERSION} =~ ${BRANCH_REGEX} ]]; then
+    if [[ ${APPLICATION_VERSION_BASE} =~ ${BRANCH_REGEX} ]]; then
         REMOTE_STR="origin/";
     else
         REMOTE_STR="tags/";

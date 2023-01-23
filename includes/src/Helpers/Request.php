@@ -242,8 +242,7 @@ class Request
                         $code = 0;
                     } else {
                         $code = \curl_getinfo($rch, \CURLINFO_HTTP_CODE);
-                        if ($code === 301 || $code === 302) {
-                            \preg_match('/Location:(.*?)\n/', $header, $matches);
+                        if (($code === 301 || $code === 302) && \preg_match('/Location:(.*?)\n/i', $header, $matches)) {
                             $newurl = \trim(\array_pop($matches));
                         } else {
                             $code = 0;

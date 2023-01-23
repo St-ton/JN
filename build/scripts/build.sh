@@ -7,7 +7,7 @@ build_create()
     # $2 target build version
     export APPLICATION_VERSION_BASE=$2;
     if [[ $2 =~ (release)?\/?v?(.*) ]]; then
-      export APPLICATION_VERSION=${BASH_REMATCH[2]};
+      export APPLICATION_VERSION="v${BASH_REMATCH[2]}";
     else
       export APPLICATION_VERSION=$2;
     fi

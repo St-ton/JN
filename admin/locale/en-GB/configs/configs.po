@@ -2208,7 +2208,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Use customer review reminder"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase. Review reminders are only emailed to customers who have consented to receiving newsletters via the double opt-in method. You can set the customer groups for which double opt-in is required in Marketing > Promotions > Newsletter > Settings > \"Double opt-in for the following customers\"."
+msgstr "Specify whether to send an email reminder, encouraging your customers to rate an item after purchase. Per default, customer review reminders are only sent to customers who have agreed to newsletters via the double opt-in option. You can set the customer groups for which double opt-in is required in Marketing > Promotions > Newsletter > Settings > \"Double opt-in for the following customers\". If 'Yes' is selected, all customers receive a reminder."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Allow customer review reminder only for"
@@ -3048,7 +3048,11 @@ msgid "forgot_password_captcha_desc"
 msgstr "Specify whether to enable the spam protection for the fogot password form. For this purpose, you may have to configure the spam protection of JTL-Shop in the global settings first."
 
 msgid "configgroup_1_routing"
-msgstr "Routing"
+msgstr "Routing <br><span class=\"text-danger\">"
+"This feature is currently still in the development stage and is not yet fully technically supported. "
+"It can therefore only be activated via define 'ENABLE_EXPERIMENTAL_ROUTING_SCHEMES' at this point and should only be used when the user has the required technical know-how. "
+"If you want to use this feature, please review the open tickets in the <a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">JTL-Issue Tracker</a>. "
+"The feature will be implemented as a normal setting in a future version."
 
 msgid "routing_scheme_name"
 msgstr "Routing scheme"

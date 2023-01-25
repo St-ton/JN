@@ -33,7 +33,7 @@ abstract class AbstractImage implements IMedia
     /**
      * @var string
      */
-    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,';
+    public const REGEX_ALLOWED_CHARS = 'a-zA-Z0-9 äööüÄÖÜß\@\$\-\_\.\+\!\*\\\'\(\)\,%';
 
     /**
      * @var array
@@ -77,6 +77,7 @@ abstract class AbstractImage implements IMedia
     {
         try {
             $request      = '/' . \ltrim($request, '/');
+            $request      = \urldecode($request);
             $mediaReq     = $this->create($request);
             $allowedNames = $this->getImageNames($mediaReq);
             if (\count($allowedNames) === 0) {

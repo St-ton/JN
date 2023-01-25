@@ -107,10 +107,16 @@ class DefaultController extends AbstractController
                 }
             }
             $scheme = $this->config['global']['routing_default_language'] ?? 'F';
+            if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+                $scheme = 'F';
+            }
             if ($isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
                 return $controller->getResponse($request, $args, $smarty);
             }
             $scheme = $this->config['global']['routing_scheme'] ?? 'F';
+            if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+                $scheme = 'F';
+            }
             if (!$isDefault && ($scheme === 'F' || ($scheme === 'L' && !empty($args['lang'])))) {
                 return $controller->getResponse($request, $args, $smarty);
             }

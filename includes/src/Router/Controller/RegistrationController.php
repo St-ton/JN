@@ -117,10 +117,14 @@ class RegistrationController extends PageController
         $cart->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
             ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
-        $edit       = (int)$post['editRechnungsadresse'];
-        $this->step = 'formular';
-        $form       = new CustomerForm();
-        $this->smarty->assign('cPost_arr', Text::filterXSS($post));
+        $edit         = (int)$post['editRechnungsadresse'];
+        $this->step   = 'formular';
+        $form         = new CustomerForm();
+        $filteredPost = Text::filterXSS($post);
+        /* dependent on different contexts cPost_arr and cPost_var will be used synonymously
+        TODO: Remove duplicate assign in course of template refactoring */
+        $this->smarty->assign('cPost_arr', $filteredPost);
+        $this->smarty->assign('cPost_var', $filteredPost);
         $missingData        = (!$edit)
             ? $form->checkKundenFormular(true)
             : $form->checkKundenFormular(true, false);

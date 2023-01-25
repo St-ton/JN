@@ -127,6 +127,7 @@ class SelectionWizardController extends AbstractBackendController
                 } elseif ($postData['a'] === 'saveSettings') {
                     $step = 'uebersicht';
                     $this->saveAdminSectionSettings(\CONF_AUSWAHLASSISTENT, $postData);
+                    $this->cache->flushTags([\CACHING_GROUP_CORE]);
                 }
             } elseif ($csrfOK && Request::getVar('a') === 'editGrp' && Request::getInt('g') > 0) {
                 $step = 'edit-group';

@@ -581,7 +581,7 @@ class IOMethods
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
                 $error           = $smarty->getTemplateVars('fehler') ?? '';
-                if ($customer->getGroupID() > 0) {
+                if ($customer->getID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
                     $plz             = $customer->cPLZ;

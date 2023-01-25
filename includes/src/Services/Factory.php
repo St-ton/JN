@@ -111,8 +111,10 @@ class Factory
             return new Logger('auth', $handlers, [new PsrLogMessageProcessor()]);
         });
         $container->singleton(LoggerInterface::class, static function (Container $container) {
-            $handler = (new NiceDBHandler($container->getDB(), Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag')))
-                ->setFormatter(new LineFormatter('%message%', null, true, true));
+            $handler = (new NiceDBHandler(
+                $container->getDB(),
+                (int)Shop::getSettingValue(\CONF_GLOBAL, 'systemlog_flag')
+            ))->setFormatter(new LineFormatter('%message%', null, true, true));
 
             return new Logger('jtllog', [$handler], [new PsrLogMessageProcessor()]);
         });

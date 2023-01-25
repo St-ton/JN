@@ -1237,7 +1237,7 @@ class Artikel implements RoutableInterface
             (int)$tmpProduct->kArtikel,
             $customerID,
             (int)$tmpProduct->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1262,7 +1262,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1337,7 +1337,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         if ($assign) {
@@ -3123,7 +3123,7 @@ class Artikel implements RoutableInterface
      */
     private function buildURLs(): self
     {
-        $slugs = $this->db->getObjects(
+        $slugs = $this->getDB()->getObjects(
             'SELECT cSeo, kSprache
                 FROM tseo
                 WHERE cKey = :key

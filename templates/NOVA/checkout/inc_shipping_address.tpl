@@ -90,7 +90,7 @@
                         <div class="new-shipping-address">
                         {block name='checkout-inc-shipping-address-fieldset-new-address'}
                             <label class="btn-block" for="delivery_new" data-toggle="collapse" data-target="#register_shipping_address:not(.show)">
-                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse == -1) required=true aria-required=true}
+                                {radio name="kLieferadresse" value="-1" id="delivery_new" checked=($kLieferadresse <= 0) required=true aria-required=true}
                                     <span class="control-label label-default">{lang key='createNewShippingAdress' section='account data'}</span>
                                 {/radio}
                             </label>

@@ -245,7 +245,7 @@ class Router
             $registrator = new Registrator(new Manager(), $this->db, $this->cache);
             $registrator->register($group);
         }, $this->router);
-        $rapi->setName('restapi');
+        $rapi->setName('restapi_grp');
         $this->routes[] = $rapi;
     }
 

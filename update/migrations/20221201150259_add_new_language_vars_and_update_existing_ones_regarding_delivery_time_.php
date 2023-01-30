@@ -60,7 +60,7 @@ class Migration_20221201150259 extends Migration implements IMigration
             "UPDATE tsprachwerte 
                    SET cWert= REPLACE(cWert, 'DELIVERYDAYS', 'DELIVERYTIME'), 
                        cStandard = REPLACE(cStandard, 'DELIVERYDAYS', 'DELIVERYTIME')
-                   WHERE cName IN ('deliverytimeEstimation','deliverytimeEstimationSimple')");
+                   WHERE cName IN ('deliverytimeEstimation', 'deliverytimeEstimationSimple')");
     }
 
     /**
@@ -68,18 +68,20 @@ class Migration_20221201150259 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute('DELETE FROM `tsprachwerte` 
+        $this->execute("DELETE FROM `tsprachwerte`
                 WHERE `kSprachsektion` = 1 
-                    AND cName IN ("deliverytimeEstimationWeeks",
-                                  "deliverytimeEstimationSimpleWeeks",
-                                 "deliverytimeEstimationSimpleMonths",
-                                 "deliverytimeEstimationMonths")
-                    AND bSystem = 1'
+                    AND cName IN (
+                        'deliverytimeEstimationWeeks',
+                        'deliverytimeEstimationSimpleWeeks',
+                        'deliverytimeEstimationSimpleMonths',
+                        'deliverytimeEstimationMonths'
+                    )
+                    AND bSystem = 1"
         );
         $this->execute(
-            'UPDATE tsprachwerte 
-                   SET cWert= REPLACE(cWert, "DELIVERYTIME", "DELIVERYDAYS" ), 
-                       cStandard = REPLACE(cStandard, "DELIVERYTIME", "DELIVERYDAYS")
-                   WHERE cName IN ("deliverytimeEstimation","deliverytimeEstimationSimple")');
+            "UPDATE tsprachwerte
+                   SET cWert= REPLACE(cWert, 'DELIVERYTIME', 'DELIVERYDAYS'),
+                       cStandard = REPLACE(cStandard, 'DELIVERYTIME', 'DELIVERYDAYS')
+                   WHERE cName IN ('deliverytimeEstimation', 'deliverytimeEstimationSimple')");
     }
 }

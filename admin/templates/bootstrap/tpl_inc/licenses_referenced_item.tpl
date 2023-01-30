@@ -50,7 +50,13 @@
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
             {if $referencedItem->canBeUpdated() === false}
-                <span class="badge badge-danger">{__('Shop version not compatible or subscription expired')}</span>
+                {if $referencedItem->getPhpVersionOK() === -1}
+                    <span class="badge badge-danger">{__('PHP version too low')}</span>
+                {elseif $referencedItem->getPhpVersionOK() === 1}
+                    <span class="badge badge-danger">{__('PHP version too high')}</span>
+                {else}
+                    <span class="badge badge-danger">{__('Shop version not compatible or subscription expired')}</span>
+                {/if}
             {/if}
             {form method="post" class="mt-2{if !$disabled} update-item-form{/if}"}
                 <input type="hidden" name="action" value="update">

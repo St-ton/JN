@@ -1033,6 +1033,16 @@ class Product
      */
     public static function buildXSellersFromIDs($xSelling, int $productID): stdClass
     {
+        if ($xSelling === null) {
+            return (object)[
+                'kArtikelXSellerKey_arr' => [],
+                'oArtikelArr'            => [],
+                'Standard'               => null,
+                'Kauf'                   => (object)[
+                    'Artikel'    => [],
+                ],
+            ];
+        }
         $xSelling   = (object)$xSelling;
         $options    = Artikel::getDefaultOptions();
         $db         = Shop::Container()->getDB();
@@ -1059,7 +1069,7 @@ class Product
                 $xSelling->Kauf->Artikel[] = $product;
             }
         }
-        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel);
+        $xSelling->Kauf->Artikel = self::separateByAvailability($xSelling->Kauf->Artikel ?? []);
         unset($xSelling->Kauf->productIDs);
 
         \executeHook(\HOOK_ARTIKEL_INC_XSELLING, [
@@ -2012,7 +2022,7 @@ class Product
         $config->fGesamtpreis = [
             Tax::getGross(
                 $product->gibPreis($amount, $selectedProperties),
-                Tax::getSalesTax($product->kSteuerklasse)
+                Tax::getSalesTax($product->kSteuerklasse ?? 0)
             ) * $_amount,
             $product->gibPreis($amount, $selectedProperties) * $_amount
         ];

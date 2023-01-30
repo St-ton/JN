@@ -92,7 +92,6 @@ class Category
         if (self::$instance !== null && self::$languageID !== $languageID) {
             // reset cached categories when language or depth was changed
             self::$fullCategories = null;
-            unset($_SESSION['oKategorie_arr_new']);
         }
         self::$cacheID         = 'allctgrs_' . $customerGroupID .
             '_' . $languageID .
@@ -152,9 +151,6 @@ class Category
     {
         $cacheID = self::$cacheID . '_cid_' . $categoryID;
         $item    = Shop::Container()->getCache()->get($cacheID);
-        if ($item === false) {
-            $item = $_SESSION['oKategorie_arr_new_' . $cacheID] ?? null;
-        }
         if (\is_array($item)) {
             self::$limitReached = $item['limitReached'];
             self::$depth        = $item['depth'];
@@ -178,9 +174,7 @@ class Category
             'limitReached' => self::$limitReached,
             'depth'        => self::$depth,
         ];
-        if ($cache->set($cacheID, $item, [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
-            $_SESSION['oKategorie_arr_new_' . $cacheID] = $item;
-        }
+        $cache->set($cacheID, $item, [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']);
     }
 
     /**

@@ -51,9 +51,9 @@ use Symfony\Component\Finder\SplFileInfo;
 class Application extends BaseApplication
 {
     /**
-     * @var ConsoleIO
+     * @var ConsoleIO|null
      */
-    protected $io;
+    protected ?ConsoleIO $io = null;
 
     /**
      * @var bool
@@ -77,6 +77,13 @@ class Application extends BaseApplication
             $cache->setJtlCacheConfig(
                 Shop::Container()->getDB()->selectAll('teinstellungen', 'kEinstellungenSektion', \CONF_CACHING)
             );
+            Shop::setRouter(new Router(
+                Shop::Container()->getDB(),
+                $cache,
+                new State(),
+                Shop::Container()->getAlertService(),
+                Shopsetting::getInstance()->getAll()
+            ));
         }
 
         parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
@@ -95,18 +102,10 @@ class Application extends BaseApplication
         if (Version::parse($version->nVersion ?? '400')->smallerThan(Version::parse('500'))) {
             return;
         }
-        $cache = Shop::Container()->getCache();
-        Shop::setRouter(new Router(
-            $db,
-            $cache,
-            new State(),
-            Shop::Container()->getAlertService(),
-            Shopsetting::getInstance()->getAll()
-        ));
         $parser          = new XMLParser();
         $validator       = new LegacyPluginValidator($db, $parser);
         $modernValidator = new PluginValidator($db, $parser);
-        $listing         = new Listing($db, $cache, $validator, $modernValidator);
+        $listing         = new Listing($db, Shop::Container()->getCache(), $validator, $modernValidator);
         $compatible      = $listing->getAll()->filter(static function (ListingItem $i): bool {
             return $i->isShop5Compatible();
         });

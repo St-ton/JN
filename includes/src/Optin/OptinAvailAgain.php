@@ -113,7 +113,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG, ['Benachrichtigung' => $data]);
 
-        $inquiryID = $this->dbHandler->queryPrepared(
+        $inquiryID = (int)$this->dbHandler->queryPrepared(
             'INSERT INTO tverfuegbarkeitsbenachrichtigung
                 (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus)
                 VALUES

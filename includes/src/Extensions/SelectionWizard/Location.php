@@ -97,9 +97,6 @@ class Location
         $this->cKey                    = $location->cKey;
         switch ($this->cKey) {
             case \AUSWAHLASSISTENT_ORT_KATEGORIE:
-                if ($backend) {
-                    unset($_SESSION['oKategorie_arr_new']);
-                }
                 $langID   = $this->getLanguage($this->kAuswahlAssistentGruppe);
                 $category = new Kategorie($this->kKey, $langID, 0, false, $this->db);
 

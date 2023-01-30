@@ -15,10 +15,10 @@
                     {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                         <span class="selection-wizard-answer">
                             {$characteristicValue = $AWA->getSelectedValue($nQuestion)}
-                            {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
+                            {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['B', 'BT'], true)}
                                 {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                             {/if}
-                            {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
+                            {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['T', 'BT', 'S'], true)}
                                 {$characteristicValue->getValue()}
                             {/if}
                         </span>
@@ -50,10 +50,10 @@
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
                                     {link class="selection-wizard-answer text-decoration-none-util" href="#" data=["value"=>$characteristicValue->getID()]}
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
+                                        {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['B', 'BT'], true)}
                                             {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                                         {/if}
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
+                                        {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['T', 'BT'], true)}
                                             <span class="text-clamp-2">
                                                 {$characteristicValue->getValue()}
                                                 {if $AWA->getConf('auswahlassistent_anzahl_anzeigen') === 'Y'}
@@ -83,10 +83,10 @@
                             {col cols=4 sm=4 md=3 xl=2 class="selection-wizard-question-item"}
                                 {if $characteristicValue->getCount() > 0}
                                     <span class="selection-wizard-answer">
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true}
+                                        {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['B', 'BT'], true)}
                                             {include file='snippets/image.tpl' item=$characteristicValue srcSize='sm'}
                                         {/if}
-                                        {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
+                                        {if in_array($AWA->getConf('auswahlassistent_anzeigeformat'), ['T', 'BT'], true)}
                                             {$characteristicValue->getValue()}
                                         {/if}
                                     </span>

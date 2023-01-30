@@ -223,21 +223,13 @@ class ShippingMethod
         $db        = Shop::Container()->getDB();
         $depending = self::normalerArtikelversand($countryCode) === false ? 'Y' : 'N';
         $methods   = $db->getObjects(
-            "SELECT tversandart.*,
-                GROUP_CONCAT(tversandartsprache.cName) AS nameLocalized,
-                GROUP_CONCAT(tversandartsprache.cLieferdauer) AS durationLocalized,
-                GROUP_CONCAT(tversandartsprache.cHinweistextShop) AS noticeLocalized,
-                GROUP_CONCAT(tversandartsprache.cISOSprache) AS code
-                FROM tversandart
-                JOIN tversandartsprache
-                    ON tversandartsprache.kVersandart = tversandart.kVersandart
+            "SELECT * FROM tversandart
                 WHERE cNurAbhaengigeVersandart = :depOnly
                     AND cLaender LIKE :iso
                     AND (cVersandklassen = '-1'
                     OR cVersandklassen RLIKE :sClasses)
                     AND (cKundengruppen = '-1'
                     OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
-                GROUP BY tversandart.kVersandart
                 ORDER BY nSort",
             [
                 'iso'      => '%' . $countryCode . '%',
@@ -289,21 +281,25 @@ class ShippingMethod
             if ($method->fEndpreis < $minSum && $method->cIgnoreShippingProposal !== 'Y') {
                 $minSum = $method->fEndpreis;
             }
-            $method->code                      = \collect(\explode(',', $method->code));
-            $method->nameLocalized             = \collect(\explode(',', $method->nameLocalized));
-            $method->noticeLocalized           = \collect(\explode(',', $method->noticeLocalized));
-            $method->durationLocalized         = \collect(\explode(',', $method->durationLocalized));
+            $method->angezeigterName           = [];
+            $method->angezeigterHinweistext    = [];
+            $method->cLieferdauer              = [];
             $method->specificShippingcosts_arr = null;
-            $method->angezeigterName           = $method->code->combine($method->nameLocalized)->toArray();
-            $method->angezeigterHinweistext    = $method->code->combine($method->noticeLocalized)->toArray();
-            $method->cLieferdauer              = $method->code->combine($method->durationLocalized)->toArray();
-            unset(
-                $method->nameLocalized,
-                $method->code,
-                $method->durationLocalized,
-                $method->noticeLocalized
-            );
-
+            foreach (Frontend::getLanguages() as $language) {
+                $code      = $language->getCode();
+                $localized = $db->select(
+                    'tversandartsprache',
+                    'kVersandart',
+                    $method->kVersandart,
+                    'cISOSprache',
+                    $code
+                );
+                if (isset($localized, $localized->cName)) {
+                    $method->angezeigterName[$code]        = $localized->cName;
+                    $method->angezeigterHinweistext[$code] = $localized->cHinweistextShop;
+                    $method->cLieferdauer[$code]           = $localized->cLieferdauer;
+                }
+            }
             if ($method->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
                 $method->cPreisLocalized = Shop::Lang()->get('freeshipping');
@@ -364,11 +360,7 @@ class ShippingMethod
     public static function getShippingCosts(string $country, string $zip, string &$errorMsg = ''): bool
     {
         if (\mb_strlen($country) > 0 && \mb_strlen($zip) > 0) {
-            $cgroupID = Frontend::getCustomerGroup()->getID();
-            if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
-                $cgroupID = $_SESSION['Kunde']->kKundengruppe;
-            }
-
+            $cgroupID        = Frontend::getCustomer()->getGroupID();
             $shippingMethods = self::getPossibleShippingMethods(
                 $country,
                 $zip,

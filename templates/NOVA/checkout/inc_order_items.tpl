@@ -320,13 +320,19 @@
                             {/if}
                             {row class="shipping-costs text-right-util"}
                                {col cols=12}
-                                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->country->getName() key='shippingInformationSpecific' section='basket'}</small>
+                                    <small>
+                                        {lang key='shippingInformationSpecific' section='basket' assign=sislv}
+                                        {sprintf($sislv, $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL(), $shippingCosts, $FavourableShipping->country->getName())}
+                                    </small>
                                 {/col}
                             {/row}
                         {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
                             {row class="shipping-costs text-right-util"}
                                 {col cols=12}
-                                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                                    <small>
+                                        {lang key='shippingInformation' section='basket' assign='siblv'}
+                                        {sprintf($siblv, $oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL())}
+                                    </small>
                                 {/col}
                             {/row}
                         {/if}

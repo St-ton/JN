@@ -8,10 +8,10 @@
             name="resetSetting"
             value="{$cnf->getValueName()}"
             class="btn btn-link p-0 {if $cnf->getSetValue() === $cnf->getDefaultValue()}hidden{/if} delete-confirm btn-submit"
-            title="{__('settingReset')|sprintf:$defaultValue}"
+            title="{sprintf(__('settingReset', $defaultValue))}"
             data-toggle="tooltip"
             data-placement="top"
-            data-modal-body="{__('confirmResetLog')|sprintf:__("{$cnf->getValueName()}_name"):$defaultValue}"
+            data-modal-body="{sprintf(__('confirmResetLog'), __("{$cnf->getValueName()}_name"), $defaultValue)}"
             data-modal-title="{__('confirmResetLogTitle')}"
             data-modal-submit="{__('reset')}"
     >

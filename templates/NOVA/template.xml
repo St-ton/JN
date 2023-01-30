@@ -3,8 +3,8 @@
     <Name>NOVA</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <MinShopVersion>5.1.3</MinShopVersion>
-    <Version>1.1.2</Version>
+    <MinShopVersion>5.2.0</MinShopVersion>
+    <Version>1.2.1</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -188,7 +188,7 @@
                 <Option Value="N">Nein</Option>
             </Setting>
         </Section>
-        <Section Name="Variationswertdarstellung" Key="productdetails">
+        <Section Name="Artikeldetailseite" Key="productdetails">
             <Setting Description="Slider für Swatches anzeigen, ab x Elementen" Key="swatch_slider" Type="number" Value="12"/>
             <Setting Description="Position des Konfigurators" Key="config_position" Type="select" Value="details" Editable="false">
                 <Option Value="popup">als Popup anzeigen</Option>
@@ -232,6 +232,7 @@
             <Setting Description="Instagram-Link" Key="instagram" Type="text" Value=""/>
             <Setting Description="Pinterest-Link" Key="pinterest" Type="text" Value=""/>
             <Setting Description="Skype-Link" Key="skype" Type="text" Value=""/>
+            <Setting Description="TikTok-Link" Key="tiktok" Type="text" Value=""/>
         </Section>
     </Settings>
     <Minify>

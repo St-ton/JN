@@ -90,17 +90,17 @@
                             {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{__('aaLinkTaken')}</span>{/if}:
                         </label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            {if $oLink_arr|count > 0}
+                            {if count($oLink_arr) > 0}
                                 <select id="kLink_arr" name="kLink_arr[]"  class="custom-select" multiple>
                                     {foreach $oLink_arr as $oLink}
                                         {assign var=bAOSelect value=false}
-                                        {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|count > 0}
+                                        {if isset($oGruppe->oAuswahlAssistentOrt_arr) && count($oGruppe->oAuswahlAssistentOrt_arr) > 0}
                                             {foreach $oGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
                                                 {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $smarty.const.AUSWAHLASSISTENT_ORT_LINK}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
-                                        {elseif isset($cPost_arr.kLink_arr) && $cPost_arr.kLink_arr|count > 0}
+                                        {elseif isset($cPost_arr.kLink_arr) && count($cPost_arr.kLink_arr) > 0}
                                             {foreach $cPost_arr.kLink_arr as $kLink}
                                                 {if $kLink == $oLink->kLink}
                                                     {assign var=bAOSelect value=true}

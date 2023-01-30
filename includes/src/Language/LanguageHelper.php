@@ -1169,24 +1169,30 @@ class LanguageHelper
                     continue;
                 }
                 if (isset($AktuellerArtikel)) {
+                    $original = $AktuellerArtikel->getURLs();
                     $AktuellerArtikel->createBySlug($AktuellerArtikel->kArtikel, $additional);
                     $url = $AktuellerArtikel->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
+                    $AktuellerArtikel->setURLs($original);
                     continue;
                 }
                 if ($page !== null) {
+                    $original = $page->getURLs();
                     $page->createBySlug($page->getID(), $additional);
                     $url = $page->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
+                    $page->setURLs($original);
                     continue;
                 }
                 if ($specialPage !== null) {
+                    $original = $specialPage->getURLs();
                     $specialPage->createBySlug($specialPage->getID(), $additional);
                     $url = $specialPage->getURL($currentLangID);
                     $currency->setURL($url);
                     $currency->setURLFull($url);
+                    $specialPage->setURLs($original);
                     continue;
                 }
                 $url = $productFilter->getFilterURL()->getURL(null, false, $additional);

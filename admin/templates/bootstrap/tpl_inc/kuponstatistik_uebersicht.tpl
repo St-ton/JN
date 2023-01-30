@@ -65,7 +65,7 @@
             </div>
         </div>
     </div>
-    {if $usedCouponsOrder|count > 0}
+    {if count($usedCouponsOrder) > 0}
     <div class="card">
         <div class="table-responsive card-body">
             <table class="table table-striped">

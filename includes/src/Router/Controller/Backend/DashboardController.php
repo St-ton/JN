@@ -10,6 +10,7 @@ use JTL\Backend\Status;
 use JTL\Exceptions\LoginException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Plugin\Helper;
 use JTL\Plugin\State;
 use JTL\Session\Backend;
@@ -38,6 +39,7 @@ class DashboardController extends AbstractBackendController
                 $this->alertService->addError($e->getMessage(), 'errLogin', ['dismissable' => false]);
             }
         }
+        $uri = Text::filterXSS(Request::verifyGPDataString('uri'));
         $this->smarty->assign('pw_updated', Request::getVar('pw_updated') === 'true')
             ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
             ->assign('alertList', $this->alertService)
@@ -49,7 +51,7 @@ class DashboardController extends AbstractBackendController
             }
             $this->getText->loadAdminLocale('pages/login');
 
-            return $smarty->assign('uri', Request::verifyGPDataString('uri'))
+            return $smarty->assign('uri', $uri)
                 ->assign('alertError', $this->alertService->alertTypeExists(Alert::TYPE_ERROR))
                 ->assign('alertList', $this->alertService)
                 ->getResponse('login.tpl');
@@ -66,7 +68,7 @@ class DashboardController extends AbstractBackendController
                     $_SESSION['AdminAccount']->TwoFA_valid   = true;
                     $_SESSION['loginIsValid']                = true;
 
-                    return $this->redirectLogin($this->account);
+                    return $this->redirectLogin();
                 }
                 $this->alertService->addError(\__('errorTwoFactorFaultyExpired'), 'errorTwoFactorFaultyExpired');
                 $smarty->assign('alertError', true);
@@ -76,13 +78,20 @@ class DashboardController extends AbstractBackendController
             $this->getText->loadAdminLocale('pages/login');
             $this->account->redirectOnUrl();
 
-            return $smarty->assign('uri', Request::verifyGPDataString('uri'))
+            return $smarty->assign('uri', $uri)
                 ->getResponse('login.tpl');
         }
-        if (Request::verifyGPDataString('uri') !== '') {
-            return $this->redirectToURI(Request::verifyGPDataString('uri'));
+        if ($uri !== '') {
+            return $this->redirectToURI($uri);
         }
         $_SESSION['loginIsValid'] = true;
+        if (isset($GLOBALS['plgSafeMode'])) {
+            if ($GLOBALS['plgSafeMode']) {
+                \touch(\SAFE_MODE_LOCK);
+            } elseif (\file_exists(\SAFE_MODE_LOCK)) {
+                \unlink(\SAFE_MODE_LOCK);
+            }
+        }
 
         if ($this->hasPermissions('DASHBOARD_VIEW')) {
             $smarty->assign('bDashboard', true)
@@ -216,14 +225,13 @@ class DashboardController extends AbstractBackendController
     }
 
     /**
-     * @param AdminAccount $account
      * @return ResponseInterface
      * @throws Exception
      */
-    public function redirectLogin(AdminAccount $account): ResponseInterface
+    public function redirectLogin(): ResponseInterface
     {
         unset($_SESSION['frontendUpToDate']);
-        $uri      = Request::verifyGPDataString('uri');
+        $uri      = Text::filterXSS(Request::verifyGPDataString('uri'));
         $safeMode = isset($GLOBALS['plgSafeMode'])
             ? '?safemode=' . ($GLOBALS['plgSafeMode'] ? 'on' : 'off')
             : '';
@@ -278,7 +286,7 @@ class DashboardController extends AbstractBackendController
                 Backend::getInstance()->reHash();
                 $_SESSION['loginIsValid'] = true;
 
-                return $this->redirectLogin($this->account);
+                return $this->redirectLogin();
             default:
                 throw new LoginException(\__('???'));
         }

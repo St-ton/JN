@@ -1,6 +1,6 @@
 <div class="form-group form-row align-items-center {if $cnf->isHighlight() || (isset($cSuche) && $cnf->getID() == $cSuche)} highlight{/if}">
     <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->getValueName()}">
-        {$cnf->getName()}{if $cnf->getValueName()|strpos:'_guthaben' && $cnf->getInputType() !== 'selectbox'} <span id="EinstellungAjax_{$cnf->getValueName()}"></span>{/if}:
+        {$cnf->getName()}{if strpos($cnf->getValueName(), '_guthaben') && $cnf->getInputType() !== 'selectbox'} <span id="EinstellungAjax_{$cnf->getValueName()}"></span>{/if}:
     </label>
     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2 {if $cnf->getInputType() === 'number'}config-type-number{/if}">
         {if $cnf->getInputType() === 'selectbox'}
@@ -8,6 +8,16 @@
                 <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}">
                     {foreach $countries as $country}
                         <option value="{$country->getISO()}" {if $cnf->getSetValue() == $country->getISO()}selected{/if}>{$country->getName()}</option>
+                    {/foreach}
+                </select>
+            {elseif $smarty.const.ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false && (
+                $cnf->getValueName() === 'routing_scheme' || $cnf->getValueName() === 'routing_default_language')
+            }
+                <select class="custom-select" name="{$cnf->getValueName()}" id="{$cnf->getValueName()}" disabled>
+                    {foreach $cnf->getValues() as $value}
+                        {if $value->cWert === 'F'}
+                            <option value="F" selected>{$value->cName}</option>
+                        {/if}
                     {/foreach}
                 </select>
             {else}
@@ -59,7 +69,7 @@
                        id="{$cnf->getValueName()}"
                        value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"
                        tabindex="1"
-                        {if $cnf->getValueName()|strpos:'_guthaben' || $cnf->getValueName()|strpos:'_bestandskundenguthaben' || $cnf->getValueName()|strpos:'_neukundenguthaben'}
+                        {if strpos($cnf->getValueName(), '_guthaben') || strpos($cnf->getValueName(), '_bestandskundenguthaben') || strpos($cnf->getValueName(), '_neukundenguthaben')}
                             onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$cnf->getValueName()}', this);"
                         {/if}
                 />
@@ -74,7 +84,7 @@
                    name="{$cnf->getValueName()}"
                    id="{$cnf->getValueName()}"
                    value="{if $cnf->getSetValue() !== null}{$cnf->getSetValue()}{/if}"
-                   {if $cnf->getValueName()|strpos:'_guthaben' || $cnf->getValueName()|strpos:'_bestandskundenguthaben' || $cnf->getValueName()|strpos:'_neukundenguthaben'}
+                   {if strpos($cnf->getValueName(), '_guthaben') || strpos($cnf->getValueName(), '_bestandskundenguthaben') || strpos($cnf->getValueName(), '_neukundenguthaben')}
                        onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$cnf->getValueName()}', this);"
                    {/if}
                    tabindex="1" />

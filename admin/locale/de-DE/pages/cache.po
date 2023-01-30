@@ -209,6 +209,9 @@ msgstr "Freier Speicher"
 msgid "busySpace"
 msgstr "Belegter Speicher"
 
+msgid "maxmemory"
+msgstr "Maximaler Speicher"
+
 msgid "scriptCountInCache"
 msgstr "Anzahl Skripte im Cache"
 

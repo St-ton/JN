@@ -1,4 +1,4 @@
-{if $mailTemplates|count > 0}
+{if count($mailTemplates) > 0}
     <div class="card">
         <div class="card-header">
             <div class="subheading1">{$heading}</div>

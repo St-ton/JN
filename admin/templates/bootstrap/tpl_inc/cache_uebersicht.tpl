@@ -89,7 +89,7 @@
                                     </td>
                                     <td class="text-center">{$cg.key_count}</td>
                                     <td class="text-center">
-                                        {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
+                                        {if $cache_enabled === false || in_array($cg.value, $disabled_caches)}
                                             <span class="fal fa-times text-danger"></span>
                                         {else}
                                             <span class="fal fa-check text-success"></span>
@@ -143,7 +143,7 @@
                 </form>
             </div>
             <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active show{/if}">
-                {if is_array($stats) && $stats|count > 0}
+                {if is_array($stats) && count($stats) > 0}
                     <div>
                         <div class="subheading1 mb-3">{__('objectcache')}</div>
                         <div>
@@ -154,10 +154,16 @@
                                         <td>{$stats.uptime_h}</td>
                                     </tr>
                                 {/if}
+                                {if isset($stats.max) && $stats.max !== null && $stats.max > 0}
+                                    <tr class="cache-row">
+                                        <td>{__('maxmemory')}:</td>
+                                        <td>{$stats.max} Bytes{if strpos($stats.max, '/') === false} ({($stats.max/1024/1024)|string_format:'%.2f'} MB){/if}</td>
+                                    </tr>
+                                {/if}
                                 {if isset($stats.mem) && $stats.mem !== null}
                                     <tr class="cache-row">
                                         <td>{__('fullSize')}:</td>
-                                        <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
+                                        <td>{$stats.mem} Bytes{if strpos($stats.mem, '/') === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
                                     </tr>
                                 {/if}
                                 {if isset($stats.entries) && $stats.entries !== null}
@@ -170,7 +176,7 @@
                                     <tr class="cache-row">
                                         <td>{__('misses')}:</td>
                                         <td>{$stats.misses}
-                                            {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
+                                            {if isset($stats.mps) && $stats.mps !== null && strpos($stats.mps, '/') === false}
                                                 <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
                                             {/if}
                                         </td>
@@ -180,7 +186,7 @@
                                     <tr class="cache-row">
                                         <td>Hits:</td>
                                         <td>{$stats.hits}
-                                            {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
+                                            {if isset($stats.hps) && $stats.hps !== null && strpos($stats.hps, '/') === false}
                                                 <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
                                             {/if}
                                         </td>
@@ -199,7 +205,7 @@
                         <div>
                             <div class="subheading1 mt-5 mb-3">{__('slowlog')}</div>
                             <div>
-                            {if $stats.slow|count > 0}
+                            {if count($stats.slow) > 0}
                                 <table class="table">
                                     {foreach $stats.slow as $slow}
                                         <tr>
@@ -282,10 +288,10 @@
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
                                     <td class="value">
-                                        {$tplcacheStats->frontend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                        {count($tplcacheStats->frontend)}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
                                     </td>
                                 </tr>
-                                {if $tplcacheStats->frontend|count > 0}
+                                {if count($tplcacheStats->frontend) > 0}
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
                                         <div id="cachefilesFrontendDetail" class=" collapse">
@@ -303,10 +309,10 @@
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('backend')}</td>
                                     <td class="value">
-                                        {$tplcacheStats->backend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                        {count($tplcacheStats->backend)}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
                                     </td>
                                 </tr>
-                                {if $tplcacheStats->backend|count > 0}
+                                {if count($tplcacheStats->backend) > 0}
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
                                         <div id="cachefilesBackendDetail" class=" collapse">
@@ -327,7 +333,7 @@
                 {/if}
             </div>
             <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active show{/if}">
-                {if !empty($all_methods) && $all_methods|count > 0}
+                {if !empty($all_methods) && count($all_methods) > 0}
                     <div class="settings">
                         <div class="subheading1">{__('settings')}</div>
                         <hr class="mb-3">
@@ -391,7 +397,7 @@
                                                 data-size="7"
                                                 data-actions-box="true">
                                             {foreach $all_methods as $method}
-                                                <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
+                                                <option value="{$method}"{if !empty($smarty.post.methods) && in_array($method, $smarty.post.methods)}selected{/if}>{$method}</option>
                                             {/foreach}
                                         </select>
                                     </div>

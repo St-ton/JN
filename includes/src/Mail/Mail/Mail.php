@@ -134,7 +134,7 @@ class Mail implements MailInterface
         $this->setData($data);
         $this->setTemplate($template);
         $this->language        = $language ?? $this->detectLanguage();
-        $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
+        $this->customerGroupID = Frontend::getCustomer()->getGroupID();
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {

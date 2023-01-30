@@ -35,7 +35,7 @@ var pies = [];
         </nav>
         <div class="tab-content">
             <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                {if $pluginProfilerData|count > 0}
+                {if count($pluginProfilerData) > 0}
                     <div class="accordion" id="accordion" role="tablist" aria-multiselectable="true">
                         {foreach $pluginProfilerData as $profile}
                         <div class="card">
@@ -83,7 +83,7 @@ var pies = [];
                 {/if}
             </div>
             <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
-                {if $sqlProfilerData !== null && $sqlProfilerData|count > 0}
+                {if $sqlProfilerData !== null && count($sqlProfilerData) > 0}
                     <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
                         {foreach $sqlProfilerData as $run}
                             <div class="card">
@@ -107,7 +107,7 @@ var pies = [];
                                                         <strong>{__('statement')}:</strong> <code class="sql">{$query->statement}</code><br />
                                                     {/if}
                                                     {if $query->data !== null}
-                                                        {assign var=data value=$query->data|unserialize}
+                                                        {assign var=data value=unserialize($query->data)}
                                                         <strong>{__('backtrace')}:</strong>
                                                         <ol class="backtrace">
                                                             {foreach $data.backtrace as $backtrace}

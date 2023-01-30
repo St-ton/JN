@@ -64,8 +64,9 @@ class IOController extends AbstractController
 
             return $response->withStatus(500);
         }
-
-        \ob_end_clean();
+        if (\ob_get_length() > 0) {
+            \ob_end_clean();
+        }
 
         return new Response\JsonResponse(
             $data ?? (object)[],

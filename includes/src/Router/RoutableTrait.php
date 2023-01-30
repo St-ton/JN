@@ -86,6 +86,9 @@ trait RoutableTrait
      */
     public function initLanguageID(int $languageID = null, string $locale = null): void
     {
+        if ($languageID === 0) {
+            $languageID = null;
+        }
         $this->currentLanguageID = $languageID ?? Shop::getLanguageID();
         if ($this->currentLanguageID === 0) {
             $this->currentLanguageID = (int)($_SESSION['kSprache'] ?? 1);
@@ -131,14 +134,12 @@ trait RoutableTrait
             }
             $route = $router->getPathByType(
                 $this->getRouteType(),
-                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                false
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional)
             );
             $this->setURLPath($route, $langID);
             $url = $router->getURLByType(
                 $this->getRouteType(),
-                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional),
-                false
+                \array_merge(['lang' => $languageModel->getIso639(), 'id' => $fallbackID], $additional)
             );
             if (!$languageModel->isShopDefault() && !\str_contains($url, '?')) {
                 $url .= '?lang=' . $languageModel->getCode();

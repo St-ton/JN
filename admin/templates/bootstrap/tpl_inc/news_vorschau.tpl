@@ -8,7 +8,7 @@
         <div class="card-body">
             {$oNews->getContent()}
 
-        {if $comments|count > 0}
+        {if count($comments) > 0}
             <form method="post" action="{$adminURL}{$route}">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />

@@ -235,9 +235,7 @@ class IOMethods
             Preise::getLocalizedPriceString($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL]))
         ];
 
-        $customerGroupID = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
-            ? $_SESSION['Kunde']->kKundengruppe
-            : Frontend::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomer()->getGroupID();
 
         $smarty->assign('Boxen', $boxesToShow)
             ->assign('WarenkorbWarensumme', $sum)
@@ -583,7 +581,7 @@ class IOMethods
                 $country         = $_SESSION['cLieferlandISO'] ?? '';
                 $plz             = '*';
                 $error           = $smarty->getTemplateVars('fehler') ?? '';
-                if ($customer->getGroupID() > 0) {
+                if ($customer->getID() > 0) {
                     $customerGroupID = $customer->getGroupID();
                     $country         = $customer->cLand;
                     $plz             = $customer->cPLZ;
@@ -838,7 +836,7 @@ class IOMethods
         if ($parentID <= 0) {
             return $ioResponse;
         }
-        $amount   = (float)$values['anzahl'];
+        $amount   = (float)($values['anzahl'] ?? 0);
         $valueIDs = \array_filter((array)$values['eigenschaftwert']);
         $wrapper  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 

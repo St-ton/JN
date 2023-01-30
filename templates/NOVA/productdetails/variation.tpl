@@ -73,7 +73,7 @@
                                                     {include file='productdetails/variation_value.tpl' assign='cVariationsWert'}
                                                 {/block}
                                                 <option value="{$Variationswert->kEigenschaftWert}" class="variation"
-                                                        data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{$cVariationsWert|trim|escape:'html'}
+                                                        data-content="<span data-value='{$Variationswert->kEigenschaftWert}'>{trim($cVariationsWert)|escape:'html'}
                                                     {if $Variationswert->notExists} <span class='badge badge-danger badge-not-available'>{lang key='notAvailableInSelection'}</span>
                                                     {elseif !$Variationswert->inStock}<span class='badge badge-danger badge-not-available'>{lang key='ampelRot'}</span>{/if}</span>"
                                                         data-type="option"
@@ -88,7 +88,7 @@
                                                             data-ref="{$Variationswert->oVariationsKombi->kArtikel}"
                                                         {/if}
                                                         {if $bSelected} selected="selected"{/if}>
-                                                    {$cVariationsWert|trim|escape:'html'}
+                                                    {trim($cVariationsWert)|escape:'html'}
                                                 </option>
                                             {/block}
                                         {/if}
@@ -154,7 +154,7 @@
                                         {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
                                             {assign var=bSelected value=false}
                                             {assign var=hasImage value=!empty($Variationswert->getImage(\JTL\Media\Image::SIZE_XS))
-                                                && $Variationswert->getImage(\JTL\Media\Image::SIZE_XS)|strpos:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN === false}
+                                                && strpos($Variationswert->getImage(\JTL\Media\Image::SIZE_XS), $smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN) === false}
                                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                                 {assign var=bSelected value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                             {/if}

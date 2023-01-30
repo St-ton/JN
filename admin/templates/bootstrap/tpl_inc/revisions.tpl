@@ -5,7 +5,7 @@
         <hr class="mb-n3">
     </div>
     <div class="card-body">
-        {if $revisions|count > 0}
+        {if count($revisions) > 0}
             {if !empty($data)}
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}

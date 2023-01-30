@@ -1,6 +1,6 @@
 <form method="post" action="{$adminURL}{$route}">
     {$jtl_token}
-    {if $packagings|count > 0}
+    {if count($packagings) > 0}
     <div class="card">
         <div class="table-responsive card-body">
             {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -65,7 +65,7 @@
         {/if}
         <div class="card-footer save-wrapper">
             <div class="row">
-                {if $packagings|count > 0}
+                {if count($packagings) > 0}
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="submit" name="action" value="delete" class="btn btn-danger btn-block">
                             <i class="fas fa-trash-alt"></i> {__('delete')}
@@ -77,7 +77,7 @@
                         </button>
                     </div>
                 {/if}
-                <div class="{if $packagings|count === 0}ml-auto{/if} col-sm-6 col-xl-auto">
+                <div class="{if count($packagings) === 0}ml-auto{/if} col-sm-6 col-xl-auto">
                     <a href="{$adminURL}{$route}?kVerpackung=0&token={$smarty.session.jtl_token}"
                        class="btn btn-primary btn-block" title="{__('modify')}">
                         <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}

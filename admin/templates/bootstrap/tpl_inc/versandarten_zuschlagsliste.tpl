@@ -232,7 +232,10 @@
         }
         $('.zip-badge' + surchargeIDText).on('click', function(e){
             e.preventDefault();
-            ioCall('deleteShippingSurchargeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
+            ioCall('deleteShippingSurchargeZIP', [
+                $(this).data('surcharge-id'),
+                String($(this).data('zip'))
+            ], function (data) {
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
                 closeTooltips();
             });

@@ -6,7 +6,7 @@
             {col cols="auto"}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="https://schema.org/BreadcrumbList"}
                     {block name='layout-breadcrumb-sm-back'}
-                        {$parent = $Brotnavi[($Brotnavi|count - 2)|max:0]}
+                        {$parent = $Brotnavi[max(($Brotnavi|count - 2), 0)]}
                         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKEL}
                             {/strip}<script>(function(){
                                 if (window.should_render_backtolist_link) {

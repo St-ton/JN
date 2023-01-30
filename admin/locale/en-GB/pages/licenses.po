@@ -191,6 +191,12 @@ msgstr "Your shop version is not compatible with this plugin version"
 msgid "Shop version not compatible or subscription expired"
 msgstr "Shop version not compatible or subscription expired"
 
+msgid "PHP version too low"
+msgstr "PHP version too low"
+
+msgid "PHP version too high"
+msgstr "PHP version too high"
+
 msgid "Key"
 msgstr "Key"
 

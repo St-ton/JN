@@ -36,6 +36,15 @@ class ReferencedTemplate extends ReferencedItem
                 $this->setMaxInstallableVersion($availableVersion);
                 $this->setHasUpdate(true);
                 $this->setCanBeUpdated(true);
+                $php = Version::parse(\PHP_VERSION);
+                if ($available->getPhpMaxVersion() !== null && $php->greaterThan($available->getPhpMaxVersion())) {
+                    $this->setPhpVersionOK(1);
+                    $this->setCanBeUpdated(false);
+                }
+                if ($available->getPhpMinVersion() !== null && $php->smallerThan($available->getPhpMinVersion())) {
+                    $this->setCanBeUpdated(false);
+                    $this->setPhpVersionOK(-1);
+                }
             } elseif ($latestVersion->greaterThan($availableVersion)
                 && $latestVersion->greaterThan($installedVersion)
             ) {

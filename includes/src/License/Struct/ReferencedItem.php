@@ -41,6 +41,16 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $canBeUpdated = true;
 
     /**
+     * @var int - 0: OK, -1: too low, 1: too high
+     */
+    private int $phpVersionOK = 0;
+
+    /**
+     * @var bool
+     */
+    private bool $shopVersionOK = true;
+
+    /**
      * @var bool
      */
     private bool $active = false;
@@ -150,7 +160,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
      */
     public function canBeUpdated(): bool
     {
-        return $this->canBeUpdated;
+        return $this->canBeUpdated && $this->getPhpVersionOK() === 0;
     }
 
     /**
@@ -239,5 +249,37 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setFilesMissing(bool $filesMissing): void
     {
         $this->filesMissing = $filesMissing;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPhpVersionOK(): int
+    {
+        return $this->phpVersionOK;
+    }
+
+    /**
+     * @param int $phpVersionOK
+     */
+    public function setPhpVersionOK(int $phpVersionOK): void
+    {
+        $this->phpVersionOK = $phpVersionOK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShopVersionOK(): bool
+    {
+        return $this->shopVersionOK;
+    }
+
+    /**
+     * @param bool $shopVersionOK
+     */
+    public function setShopVersionOK(bool $shopVersionOK): void
+    {
+        $this->shopVersionOK = $shopVersionOK;
     }
 }

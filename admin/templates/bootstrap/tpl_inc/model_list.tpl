@@ -169,4 +169,19 @@
     {/if}
 {else}
     <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
+    {if $create === true}
+        <form name="modelform" id="modelform" method="{$method}" action="{$action}">
+            {$jtl_token}
+            <input type="hidden" name="id" id="modelid" />
+            <div class="save-wrapper">
+                <div class="row first-ml-auto">
+                    <div class="col-sm-6 col-xl-auto">
+                        <button name="model-create" type="submit" value="1" class="btn btn-default btn-block">
+                            <i class="fas fa-share"></i> {__('create')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    {/if}
 {/if}

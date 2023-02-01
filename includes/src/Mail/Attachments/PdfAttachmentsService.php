@@ -35,7 +35,6 @@ class PdfAttachmentsService extends AbstractService
         $list           = $this->getRepository()->getListByMailIDs($IDs);
         $associatedList = [];
         foreach ($list as $key => $item) {
-
             $associatedList[$item->mailID][] = (new Attachment())->hydrateWithObject($item);
         }
         return $associatedList;

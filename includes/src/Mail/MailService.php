@@ -185,6 +185,6 @@ class MailService extends AbstractService
 
     public function setError(int $mailID, string $errorMsg): void
     {
-        $this-> getRepository()->setError($mailID, $errorMsg);
+        $this->getRepository()->setError($mailID, $errorMsg);
     }
 }

@@ -11,7 +11,7 @@ use JTL\Mail\SendMailObjects\MailDataTableObject;
 class MailRepository extends AbstractRepository
 {
     protected string $tableName = 'emails';
-    protected string $keyName = 'id';
+    protected string $keyName   = 'id';
 
     public function queueMailDataTableObject(DataTableObjectInterface $mailDataTableObject)
     {

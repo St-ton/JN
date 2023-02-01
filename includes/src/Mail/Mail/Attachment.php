@@ -180,7 +180,6 @@ final class Attachment
             && \method_exists($this, $setMethod)) {
                 $this->$setMethod($object->$attribute);
             }
-
         }
 
 

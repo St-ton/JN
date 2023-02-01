@@ -5,11 +5,15 @@ namespace JTL\Mail\Mail;
 use InvalidArgumentException;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
+use ReflectionProperty;
+use JTL\Template;
 
 /**
  * Class Mail
@@ -117,11 +121,7 @@ class Mail implements MailInterface
      */
     public function createFromTemplateID(string $id, $data = null, TemplateFactory $factory = null): MailInterface
     {
-        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
-        $template = $factory->getTemplate($id);
-        if ($template === null) {
-            throw new InvalidArgumentException('Cannot find template ' . $id);
-        }
+        $template = $this->getTemplateFromID($factory, $id);
 
         return $this->createFromTemplate($template, $data);
     }
@@ -585,5 +585,72 @@ class Mail implements MailInterface
         $this->template = $template;
 
         return $this;
+    }
+
+    /**
+     * @param bool $tableColumns
+     * @return array
+     */
+    public function toArray(bool $tableColumns = true): array
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName            = $property->getName();
+             $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return $toArray;
+    }
+
+    /**
+     * $tableColumns = true will ship an object using table column names as array keys
+     *
+     * @param bool $tableColumns
+     * @return object
+     */
+    public function toObject(bool $tableColumns = true): object
+    {
+        return (object)$this->toArray($tableColumns);
+    }
+
+    /**
+     * Will accept data from an object.
+     * @param object $object
+     * @return $this
+     * @throws \Exception
+     */
+    public function hydrateWithObject(MailDataTableObject $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+            }
+        }
+        $this->setLanguage(Shop::Lang()->getLanguageByID($object->getLanguageId()));
+        $this->template = $this->getTemplateFromID(null, $object->getTemplateId());
+        return $this;
+    }
+
+    /**
+     * @param TemplateFactory|null $factory
+     * @param string               $id
+     * @return TemplateInterface
+     */
+    public function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
+    {
+        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
+        $template = $factory->getTemplate($id);
+        if ($template === null) {
+            throw new InvalidArgumentException('Cannot find template ' . $id);
+        }
+
+        return $template;
     }
 }

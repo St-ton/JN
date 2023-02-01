@@ -93,7 +93,7 @@ class Queue
 
             return -1;
         }
-        $checker->lock();
+//        $checker->lock();
         $this->enqueueCronJobs($checker->check());
         $affected = $this->unStuckQueues();
         if ($affected > 0) {

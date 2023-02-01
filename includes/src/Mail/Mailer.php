@@ -5,13 +5,18 @@ namespace JTL\Mail;
 use JTL\Emailhistory;
 use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Mail\MailInterface;
+use JTL\Mail\Mail\Mail as MailObject;
+use JTL\Mail\SendMailObjects\MailDataAttachementObject;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Validator\ValidatorInterface;
 use JTL\Shop;
 use JTL\Shopsetting;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 use stdClass;
+use JTL\DB\DbInterface;
 
 /**
  * Class Mailer
@@ -19,10 +24,13 @@ use stdClass;
  */
 class Mailer
 {
+    protected ?DbInterface $db = null;
     /**
      * @var array
      */
     private array $config;
+
+    protected MailService $mailService;
 
     /**
      * Mailer constructor.
@@ -102,6 +110,15 @@ class Mailer
     public function setValidator(ValidatorInterface $validator): void
     {
         $this->validator = $validator;
+    }
+
+    protected function getMailService(): MailService
+    {
+        if (empty($this->mailService)) {
+            $this->mailService = new MailService();
+        }
+
+        return $this->mailService;
     }
 
     /**
@@ -289,6 +306,8 @@ class Mailer
         return $sent;
     }
 
+
+
     /**
      * @param MailInterface $mail
      * @return bool
@@ -297,12 +316,54 @@ class Mailer
      */
     public function send(MailInterface $mail): bool
     {
+//        $this->sendQueuedMails();
+//        return true;
+        $mailObject = $this->prepareMail($mail);
+
+        return $this->getMailService()->queueMail($mailObject);
+    }
+
+    public function sendQueuedMails()
+    {
+        $mails = $this->getMailService()->getQueuedMails(2);
+        /** @var MailDataTableObject $mailDataTableobject */
+        foreach ($mails as $mailDataTableobject) {
+            $isSendingNow = 1;
+            $isSent       = 0;
+            $this->getMailService()->setMailStatus($mailDataTableobject->getId(), $isSendingNow, $isSent);
+            $mail = new MailObject();
+            $mail->hydrateWithObject($mailDataTableobject);
+            $this->sendPreparedMail($mail);
+            if ($mail->getError() !== '') {
+                $this->getMailService()->setError($mailDataTableobject->getId(), $mail->getError());
+            } else {
+                $isSendingNow = 0;
+                $isSent       = 1;
+                $this->getMailService()->setMailStatus($mailDataTableobject->getId(), $isSendingNow, $isSent);
+            }
+        }
+        //markiere
+        //sende
+        //lösche
+    }
+
+    public function prepareMail(MailInterface $mail): MailObject
+    {
         \executeHook(\HOOK_MAIL_PRERENDER, [
             'mailer' => $this,
-            'mail'   => $mail,
+            'mail' => $mail,
         ]);
         $this->hydrate($mail);
         $mail = $this->renderTemplate($mail);
+
+        return $mail;
+    }
+
+    public function sendPreparedMail(MailObject $mail)
+    {
+        if (!empty($mail->getTemplate())) {
+            $mail->getTemplate()->load($mail->getLanguage()->getId(), $mail->getCustomerGroupID());
+        }
         if (!$this->validator->validate($mail)) {
             $mail->setError('Mail failed validation');
 
@@ -317,7 +378,7 @@ class Mailer
             'Emailvorlage'  => null,
             'template'      => $mail->getTemplate()
         ]);
-        $sent = $this->sendViaPHPMailer($mail);
+        $sent = $this->mailService->sendViaPHPMailer($mail, $this->getMethod());
         if ($sent) {
             $this->log($mail);
         } else {
@@ -326,5 +387,15 @@ class Mailer
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 
         return $sent;
+    }
+
+
+    private function getDB(): DbInterface
+    {
+        if ($this->db === null || $this->db->isConnected() === false) {
+            $this->db = Shop::Container()->getDB();
+        }
+
+        return $this->db;
     }
 }

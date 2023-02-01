@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\CheckBox;
+use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -130,7 +131,7 @@ class CheckboxController extends AbstractBackendController
         if (!$link) {
             $checks['kLink'] = 1;
         }
-        if (!\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
+        if (!isset($post['cAnzeigeOrt']) || !\is_array($post['cAnzeigeOrt']) || \count($post['cAnzeigeOrt']) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
             foreach ($post['cAnzeigeOrt'] as $cAnzeigeOrt) {
@@ -151,7 +152,9 @@ class CheckboxController extends AbstractBackendController
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
             $checks['nSort'] = 1;
         }
-        if (!\is_array($post['kKundengruppe']) || \count($post['kKundengruppe']) === 0) {
+        if (!isset($post['kKundengruppe'])
+            || !\is_array($post['kKundengruppe'])
+            || \count($post['kKundengruppe']) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 
@@ -160,51 +163,68 @@ class CheckboxController extends AbstractBackendController
 
     /**
      * @param array $post - pre-filtered post data
-     * @param LanguageModel[] $languages
+     * @param array $languages
      * @return CheckBox
+     * @throws \Exception
      * @former speicherCheckBox()
      */
     private function save(array $post, array $languages): CheckBox
     {
-        if (isset($post['kCheckBox']) && (int)$post['kCheckBox'] > 0) {
-            $checkBox = new CheckBox((int)$post['kCheckBox'], $this->db);
-            $checkBox->delete([(int)$post['kCheckBox']]);
-        } else {
-            $checkBox = new CheckBox(0, $this->db);
+        $checkBox    = new CheckBox(0, $this->db);
+        $checkBoxDTO = $this->getCheckboxDTO($post);
+        $checkBoxDTO = $this->addTranslationsToDTO($languages, $post, $checkBoxDTO);
+
+        return $checkBox->save($checkBoxDTO);
+    }
+
+    /**
+     * @param array $post
+     * @return CheckboxDataTableObject
+     */
+    private function getCheckboxDTO(array $post): CheckboxDataTableObject
+    {
+        $checkBoxDTO = new CheckboxDataTableObject();
+        if (isset($post['kCheckBox'])) {
+            $checkBoxDTO->setCheckboxID((int)$post['kCheckBox']);
         }
-        $checkBox->kLink = 0;
-        if ((int)$post['nLink'] === 1) {
-            $checkBox->kLink = (int)$post['kLink'];
-        }
-        $checkBox->kCheckBoxFunktion = (int)$post['kCheckBoxFunktion'];
-        $checkBox->cName             = \htmlspecialchars($post['cName'], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET);
-        $checkBox->cKundengruppe     = Text::createSSK($post['kKundengruppe']);
-        $checkBox->cAnzeigeOrt       = Text::createSSK($post['cAnzeigeOrt']);
-        $checkBox->nAktiv            = 0;
-        if ($post['nAktiv'] === 'Y') {
-            $checkBox->nAktiv = 1;
-        }
-        $checkBox->nPflicht = 0;
-        $checkBox->nLogging = 0;
-        if ($post['nLogging'] === 'Y') {
-            $checkBox->nLogging = 1;
-        }
-        if ($post['nPflicht'] === 'Y') {
-            $checkBox->nPflicht = 1;
-        }
-        $checkBox->nSort     = (int)$post['nSort'];
-        $checkBox->dErstellt = 'NOW()';
-        $texts               = [];
-        $descr               = [];
+        $checkBoxDTO->hydrate($post);
+        $checkBoxDTO->setCreated('NOW()');
+
+        return $checkBoxDTO;
+    }
+
+    /**
+     * @param array                   $languages
+     * @param array                   $post
+     * @param CheckboxDataTableObject $checkboxDTO
+     * @return CheckboxDataTableObject
+     */
+    private function addTranslationsToDTO(
+        array $languages,
+        array $post,
+        CheckboxDataTableObject $checkboxDTO
+    ): CheckboxDataTableObject {
+        $texts = [];
+        $descr = [];
         foreach ($languages as $language) {
             $code         = $language->getIso();
-            $texts[$code] = \str_replace('"', '&quot;', $post['cText_' . $code]);
-            $descr[$code] = \str_replace('"', '&quot;', $post['cBeschreibung_' . $code]);
+            $textCode     = 'cText_' . $code;
+            $descrCode    = 'cBeschreibung_' . $code;
+            $texts[$code] = isset($post[$textCode])
+                ? \str_replace('"', '&quot;', $post[$textCode])
+                : '';
+            $descr[$code] = isset($post[$descrCode])
+                ? \str_replace('"', '&quot;', $post[$descrCode])
+                : '';
+            $checkboxDTO->addLanguage(
+                $code,
+                language: [
+                    'text' => $texts[$code],
+                    'descr' => $descr[$code]
+                ]
+            );
         }
 
-        $checkBox->insertDB($texts, $descr);
-        $this->cache->flushTags(['checkbox']);
-
-        return $checkBox;
+        return $checkboxDTO;
     }
 }

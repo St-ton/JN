@@ -10,6 +10,10 @@ use JTLShop\SemVer\Version;
  */
 abstract class ReferencedItem implements ReferencedItemInterface
 {
+    public const PHP_VERSION_OK = 0;
+    public const PHP_VERSION_LOW = -1;
+    public const PHP_VERSION_HIGH = 1;
+
     /**
      * @var string
      */
@@ -43,7 +47,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     /**
      * @var int - 0: OK, -1: too low, 1: too high
      */
-    private int $phpVersionOK = 0;
+    private int $phpVersionOK = self::PHP_VERSION_OK;
 
     /**
      * @var bool
@@ -160,7 +164,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
      */
     public function canBeUpdated(): bool
     {
-        return $this->canBeUpdated && $this->getPhpVersionOK() === 0;
+        return $this->canBeUpdated && $this->getPhpVersionOK() === self::PHP_VERSION_OK;
     }
 
     /**

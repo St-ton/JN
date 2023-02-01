@@ -50,9 +50,9 @@
                 {__('Update to version %s available', $referencedItem->getMaxInstallableVersion())}
             </span>
             {if $referencedItem->canBeUpdated() === false}
-                {if $referencedItem->getPhpVersionOK() === -1}
+                {if $referencedItem->getPhpVersionOK() === \JTL\License\Struct\ReferencedItem::PHP_VERSION_LOW}
                     <span class="badge badge-danger">{__('PHP version too low')}</span>
-                {elseif $referencedItem->getPhpVersionOK() === 1}
+                {elseif $referencedItem->getPhpVersionOK() === \JTL\License\Struct\ReferencedItem::PHP_VERSION_HIGH}
                     <span class="badge badge-danger">{__('PHP version too high')}</span>
                 {else}
                     <span class="badge badge-danger">{__('Shop version not compatible or subscription expired')}</span>

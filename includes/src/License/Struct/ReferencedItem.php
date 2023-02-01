@@ -11,7 +11,9 @@ use JTLShop\SemVer\Version;
 abstract class ReferencedItem implements ReferencedItemInterface
 {
     public const PHP_VERSION_OK = 0;
+
     public const PHP_VERSION_LOW = -1;
+
     public const PHP_VERSION_HIGH = 1;
 
     /**

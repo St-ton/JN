@@ -44,7 +44,7 @@ class Migration_20230126150145 extends Migration implements IMigration
               `subject` tinytext DEFAULT NULL,
               `bodyHTML` longtext DEFAULT NULL,
               `bodyText` longtext DEFAULT NULL,
-              `hasPdfAttachments` tinyint(1) unsigned DEFAULT 0,
+              `hasAttachments` tinyint(1) unsigned DEFAULT 0,
               `isEmbedImages` tinyint(1) unsigned NOT NULL DEFAULT 0,
               `customHeaders` text DEFAULT NULL,
               `typeReference` varchar(45) DEFAULT NULL,

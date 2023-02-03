@@ -4,7 +4,7 @@ namespace JTL\Mail\Attachments;
 
 use JTL\Abstracts\AbstractRepository;
 
-class PdfAttachmentsRepository extends AbstractRepository
+class AttachmentsRepository extends AbstractRepository
 {
     protected $tableName = 'emailPdfAttachements';
     protected $keyName   = 'id';

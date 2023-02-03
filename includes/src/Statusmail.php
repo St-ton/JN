@@ -851,7 +851,8 @@ class Statusmail
             }
             $sent = $mailer->send($mail);
             foreach ($mail->getAttachments() as $attachment) {
-                \unlink($attachment->getFullPath());
+                //ToDo: Check whether this is still needed
+//                \unlink($attachment->getFullPath());
             }
         }
 

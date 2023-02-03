@@ -7,16 +7,16 @@ use JTL\Interfaces\RepositoryInterface;
 use JTL\Mail\Mail\Attachment;
 use JTL\Mail\SendMailObjects\MailDataAttachementObject;
 
-class PdfAttachmentsService extends AbstractService
+class AttachmentsService extends AbstractService
 {
 
     /**
-     * @return PdfAttachmentsRepository
+     * @return AttachmentsRepository
      */
     public function getRepository(): RepositoryInterface
     {
         if (\is_null($this->repository)) {
-            $this->repository = new PdfAttachmentsRepository();
+            $this->repository = new AttachmentsRepository();
         }
 
         return $this->repository;

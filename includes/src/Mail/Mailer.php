@@ -24,6 +24,8 @@ use JTL\DB\DbInterface;
  */
 class Mailer
 {
+    public const MAILQUEUE_CHUNKSIZE = 4;
+
     protected ?DbInterface $db = null;
     /**
      * @var array
@@ -325,7 +327,7 @@ class Mailer
 
     public function sendQueuedMails()
     {
-        $mails = $this->getMailService()->getQueuedMails(2);
+        $mails = $this->getMailService()->getQueuedMails(self::MAILQUEUE_CHUNKSIZE);
         /** @var MailDataTableObject $mailDataTableobject */
         foreach ($mails as $mailDataTableobject) {
             $isSendingNow = 1;

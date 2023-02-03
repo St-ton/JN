@@ -43,7 +43,8 @@ class MailRepository extends AbstractRepository
     public function setError(int $mailID, string $errorMsg): int
     {
         $stmt = 'UPDATE emails ' .
-            'SET isSendingNow = 0, errorCount = errorCount + 1, lastError = :errorMsg WHERE id = :mailID';
+            'SET isSendingNow = 0, sendCount = sendCount + 1, errorCount = errorCount + 1, lastError = :errorMsg ' .
+            'WHERE id = :mailID';
 
         return $this->getDB()->queryPrepared($stmt, [
             'errorMsg' => $errorMsg,

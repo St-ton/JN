@@ -31,8 +31,8 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     protected string $subject;
     protected string $bodyHTML;
     protected string $bodyText;
-    protected int $hasPdfAttachments  = 0;
-    private array $pdfAttachments     = [];
+    protected int $hasAttachments     = 0;
+    private array $attachments        = [];
     protected int $isEmbedImages      = 0;
     protected string $customHeaders   = '';
     protected string $typeReference   = '';
@@ -67,8 +67,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
         'subject'           => 'subject',
         'bodyHTML'          => 'bodyHTML',
         'bodyText'          => 'bodyText',
-        'hasPdfAttachments' => 'hasPdfAttachments',
-        'pdfAttachments'    => 'pdfAttachments',
+        'hasAttachments'    => 'hasAttachments',
+        'attachments'       => 'attachments',
+        'pdfAttachments'    => 'attachments',
         'isEmbedImages'     => 'isEmbedImages',
         'customHeaders'     => 'customHeaders',
         'typeReference'     => 'typeReference',
@@ -134,7 +135,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $isCancelled
+     * @param string|int $isCancelled
      * @return MailDataTableObject
      */
     public function setIsCancelled(string|int $isCancelled): MailDataTableObject
@@ -489,18 +490,18 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     /**
      * @return int
      */
-    public function getHasPdfAttachments(): int
+    public function getHasAttachments(): int
     {
-        return $this->hasPdfAttachments;
+        return $this->hasAttachments;
     }
 
     /**
-     * @param int $hasPdfAttachments
+     * @param int $hasAttachments
      * @return MailDataTableObject
      */
-    public function setHasPdfAttachments(string|int $hasPdfAttachments): MailDataTableObject
+    public function setHasAttachments(string|int $hasAttachments): MailDataTableObject
     {
-        $this->hasPdfAttachments = (int)$hasPdfAttachments;
+        $this->hasAttachments = (int)$hasAttachments;
 
         return $this;
     }
@@ -509,20 +510,20 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      * @return array
      */
 
-    public function getPdfAttachments(): array
+    public function getAttachments(): array
     {
-        return $this->pdfAttachments;
+        return $this->attachments;
     }
 
     /**
-     * @param array $pdfAttachments
+     * @param array $attachments
      * @return MailDataTableObject
      */
-    public function setPdfAttachments(array $pdfAttachments): MailDataTableObject
+    public function setAttachments(?array $attachments): MailDataTableObject
     {
-        $this->pdfAttachments = $pdfAttachments;
-        if (!empty($pdfAttachments)) {
-            $this->hasPdfAttachments = 1;
+        $this->attachments = $attachments;
+        if (!empty($attachments)) {
+            $this->hasAttachments = 1;
         }
 
         return $this;

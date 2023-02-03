@@ -5,7 +5,7 @@ namespace JTL\Mail;
 use JTL\Abstracts\AbstractService;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Interfaces\ServiceInterface;
-use JTL\Mail\Attachments\PdfAttachmentsService;
+use JTL\Mail\Attachments\AttachmentsService;
 use JTL\Mail\Mail\Mail as MailObject;
 use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\SendMailObjects\MailDataAttachementObject;
@@ -17,7 +17,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class MailService extends AbstractService
 {
-    protected PdfAttachmentsService $pdfAttachmentsService;
+    protected AttachmentsService $attachmentsService;
 
 
     /**
@@ -32,13 +32,13 @@ class MailService extends AbstractService
         return $this->repository;
     }
 
-    protected function getPdfAttachmentsService(): PdfAttachmentsService
+    protected function getAttachmentsService(): AttachmentsService
     {
-        if (empty($this->pdfAttachmentsService)) {
-            $this->pdfAttachmentsService = new PdfAttachmentsService();
+        if (empty($this->attachmentsService)) {
+            $this->attachmentsService = new AttachmentsService();
         }
 
-        return $this->pdfAttachmentsService;
+        return $this->attachmentsService;
     }
 
 
@@ -47,8 +47,8 @@ class MailService extends AbstractService
         $result = true;
         $item   = $this->prepareQueueInsert($mailObject);
         $mailID = $this->getRepository()->queueMailDataTableObject($item);
-        foreach ($item->getPdfAttachments() as $attachment) {
-             $result = $result && ($this->getPdfAttachmentsService()->insertAttachment($attachment, $mailID) > 0);
+        foreach ($item->getAttachments() as $attachment) {
+             $result = $result && ($this->getAttachmentsService()->insertAttachment($attachment, $mailID) > 0);
         }
         return $result;
     }
@@ -65,18 +65,20 @@ class MailService extends AbstractService
 
     public function getQueuedMails($chunkSize = 20)
     {
+        /** @var array $mailsToSend */
         $mailsToSend       = $this->getRepository()->getNextMailsFromQueue($chunkSize);
-        $pdfAttachments    = $this->getPdfAttachmentsService()->getListByMailIDs(\array_column($mailsToSend, 'id'));
+        $attachments       = $this->getAttachmentsService()->getListByMailIDs(\array_column($mailsToSend, 'id'));
         $returnMailObjects = [];
         if (\is_array($mailsToSend)) {
             foreach ($mailsToSend as $mail) {
                 if (! \is_array($mail['copyRecipients'])) {
                     $mail['copyRecipients'] = explode(';', $mail['copyRecipients']);
                 }
+                $attachmentsToAdd    = $mail['hasAttachments'] > 0 ? $attachments[$mail['id']] : [];
                 $returnMailObjects[] = (
                     new MailDataTableObject())
                     ->hydrate($mail)
-                    ->setPdfAttachments($mail['hasPdfAttachments'] > 0 ? $pdfAttachments[$mail['id']] : []);
+                    ->setAttachments(is_null($attachmentsToAdd) ? [] : $attachmentsToAdd);
             }
         }
 

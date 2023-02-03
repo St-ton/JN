@@ -92,7 +92,7 @@ class Queue
             $this->logger->debug('Cron currently locked');
 
             return -1;
-        }
+        }//ToDo: ReEnable and test lock
 //        $checker->lock();
         $this->enqueueCronJobs($checker->check());
         $affected = $this->unStuckQueues();
@@ -123,8 +123,10 @@ class Queue
             $now       = new DateTime();
             $nextStart = new DateTime();
             $nextStart->setTime((int)$st->format('H'), (int)$st->format('i'), (int)$st->format('s'));
-            while ($nextStart <= $now) {
-                $nextStart->modify('+' . $job->getFrequency() . ' hours');
+            if ((int)$job->getFrequency() > 0) {
+                while ($nextStart <= $now) {
+                    $nextStart->modify('+' . $job->getFrequency() . ' hours');
+                }
             }
             $this->db->update(
                 'tcron',

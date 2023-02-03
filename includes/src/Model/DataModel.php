@@ -588,7 +588,8 @@ abstract class DataModel implements DataModelInterface, Iterator
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 try {
                     $this->setKey($pkValue);
-                } catch (Exception) {}
+                } catch (Exception) {
+                }
                 if ($updateChildModels) {
                     $this->updateChildModels();
                 }

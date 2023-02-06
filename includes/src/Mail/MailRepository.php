@@ -22,13 +22,13 @@ class MailRepository extends AbstractRepository
     {
         $stmt = 'SELECT * FROM ' . $this->getTableName() .
             ' WHERE isSent = 0 AND isCancelled = 0 AND isBlocked = 0' .
-            ' AND isSendingNow = 0 AND sendCount < 3' .
+            ' AND isSendingNow = 0 AND sendCount < 3 AND errorCount < 3' .
             ' ORDER BY id LIMIT :chunkSize';
 
         return $this->getDB()->getArrays($stmt, ['chunkSize' => $chunksize]);
     }
 
-    public function setMailStatusSendingNow($mailId, $isSendingNow, $isSent): int
+    public function setMailStatus($mailId, $isSendingNow, $isSent): int
     {
         $stmt = 'UPDATE ' .
             $this->getTableName() . ' SET isSent = :isSent, isSendingnow = :isSendingNow, sendCount = sendCount + 1 ' .

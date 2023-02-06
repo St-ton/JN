@@ -309,17 +309,12 @@ class Mailer
     }
 
 
-
     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws Exception
-     * @throws \SmartyException
      */
     public function send(MailInterface $mail): bool
     {
-//        $this->sendQueuedMails();
-//        return true;
         $mailObject = $this->prepareMail($mail);
 
         return $this->getMailService()->queueMail($mailObject);
@@ -342,11 +337,9 @@ class Mailer
                 $isSendingNow = 0;
                 $isSent       = 1;
                 $this->getMailService()->setMailStatus($mailDataTableobject->getId(), $isSendingNow, $isSent);
+                $this->getMailService()->deleteQueuedMail($mailDataTableobject->getId());
             }
         }
-        //markiere
-        //sende
-        //lösche
     }
 
     public function prepareMail(MailInterface $mail): MailObject

@@ -92,8 +92,8 @@ class Queue
             $this->logger->debug('Cron currently locked');
 
             return -1;
-        }//ToDo: ReEnable and test lock
-//        $checker->lock();
+        }
+        $checker->lock();
         $this->enqueueCronJobs($checker->check());
         $affected = $this->unStuckQueues();
         if ($affected > 0) {

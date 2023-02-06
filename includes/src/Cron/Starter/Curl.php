@@ -34,10 +34,9 @@ class Curl extends AbstractStarter
      */
     public function start(): bool
     {
-        //ToDo: activate following if statement
-//        if (\random_int(1, $this->frequency) !== 1) {
-//            return false;
-//        }
+        if (\random_int(1, $this->frequency) !== 1) {
+            return false;
+        }
         $curl = \curl_init();
         \curl_setopt($curl, \CURLOPT_URL, $this->getURL());
         \curl_setopt($curl, \CURLOPT_POST, true);
@@ -53,8 +52,6 @@ class Curl extends AbstractStarter
         \curl_setopt($curl, \CURLOPT_FRESH_CONNECT, true);
         \curl_setopt($curl, \CURLOPT_SSL_VERIFYPEER, \DEFAULT_CURL_OPT_VERIFYPEER);
         \curl_setopt($curl, \CURLOPT_SSL_VERIFYHOST, \DEFAULT_CURL_OPT_VERIFYHOST);
-//ToDo: remove next line
-        \curl_setopt($curl, \CURLOPT_COOKIE, 'XDEBUG_SESSION=PHPSTORM;');
         \curl_exec($curl);
         \curl_close($curl);
 

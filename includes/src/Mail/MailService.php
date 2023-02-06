@@ -3,6 +3,8 @@
 namespace JTL\Mail;
 
 use JTL\Abstracts\AbstractService;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Interfaces\ServiceInterface;
 use JTL\Mail\Attachments\AttachmentsService;
@@ -42,18 +44,59 @@ class MailService extends AbstractService
     }
 
 
+    /**
+     * @param MailObject $mailObject
+     * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
     public function queueMail(MailObject $mailObject): bool
     {
         $result = true;
         $item   = $this->prepareQueueInsert($mailObject);
         $mailID = $this->getRepository()->queueMailDataTableObject($item);
+        $this->cacheAttachments($item);
         foreach ($item->getAttachments() as $attachment) {
              $result = $result && ($this->getAttachmentsService()->insertAttachment($attachment, $mailID) > 0);
         }
         return $result;
     }
 
-    private function prepareQueueInsert($mailObject) : MailDataTableObject
+    /**
+     * @param MailDataTableObject $item
+     * @return void
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     */
+    private function cacheAttachments(MailDataTableObject $item): void
+    {
+        if (!is_dir(\PFAD_MAILATTACHMENTS)
+            && !mkdir($concurrentDirectory = \PFAD_MAILATTACHMENTS, 0775)
+            && !is_dir($concurrentDirectory)
+        ) {
+             Shop::Container()->getLogService()->error('Error sending mail: Attachment directory could not be created');
+        }
+        foreach ($item->getAttachments() as $attachment) {
+            if ($attachment->getMime() === 'application/pdf' && substr($attachment->getName(), -4) !== '.pdf') {
+                $attachment->setName($attachment->getName() . '.pdf');
+            }
+            $uniqueFilename = uniqid(str_replace(['.',':', ' '], '', $item->getDateQueued()), true);
+            if (!copy($attachment->getDir() . $attachment->getFileName(), \PFAD_MAILATTACHMENTS . $uniqueFilename)) {
+                 Shop::Container()->getLogService()->error('Error sending mail: Attachment could not be cached');
+            }
+            if ($attachment->getDir() !== \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS) {
+                unlink($attachment->getDir());
+            }
+            $attachment->setDir(\PFAD_MAILATTACHMENTS);
+            $attachment->setFileName($uniqueFilename);
+        }
+    }
+
+    /**
+     * @param MailObject $mailObject
+     * @return MailDataTableObject
+     */
+    private function prepareQueueInsert(MailObject $mailObject) : MailDataTableObject
     {
         $insertObj = new MailDataTableObject();
         $insertObj->hydrateWithObject($mailObject->toObject());
@@ -87,7 +130,7 @@ class MailService extends AbstractService
 
     public function setMailStatus(int $mailId, int $isSendingNow, int $isSent)
     {
-        return $this->getRepository()->setMailStatusSendingNow($mailId, $isSendingNow, $isSent);
+        return $this->getRepository()->setMailStatus($mailId, $isSendingNow, $isSent);
     }
 
     public function sendViaPHPMailer(MailInterface $mail, $method): bool
@@ -101,8 +144,10 @@ class MailService extends AbstractService
         $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
         $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());
         $phpmailer->Subject = $mail->getSubject();
-        foreach ($mail->getCopyRecipients() as $recipient) {
-            $phpmailer->addBCC($recipient);
+        if (!empty($mail->getCopyRecipients()[0])) {
+            foreach ($mail->getCopyRecipients() as $recipient) {
+                $phpmailer->addBCC($recipient);
+            }
         }
         $this->initMethod($phpmailer, $method);
         if ($mail->getBodyHTML()) {
@@ -188,5 +233,10 @@ class MailService extends AbstractService
     public function setError(int $mailID, string $errorMsg): void
     {
         $this->getRepository()->setError($mailID, $errorMsg);
+    }
+
+    public function deleteQueuedMail(int $mailID)
+    {
+        $this->getRepository()->delete($mailID);
     }
 }

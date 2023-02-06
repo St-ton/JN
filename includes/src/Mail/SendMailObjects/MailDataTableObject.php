@@ -18,7 +18,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     protected int $sendCount     = 0;
     protected int $errorCount    = 0;
     protected string $lastError  = '';
-    protected string $dateQueued = 'NOW()';
+    protected string $dateQueued = '';
     protected string $dateSent   = '';
     protected int $isHtml        = 0;
     protected string $fromMail;
@@ -245,6 +245,10 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      */
     public function getDateQueued(): string
     {
+        if (empty($this->dateQueued)) {
+            $this->dateQueued = date('Y.m.d H:i:s');
+        }
+
         return $this->dateQueued;
     }
 
@@ -521,8 +525,11 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      */
     public function setAttachments(?array $attachments): MailDataTableObject
     {
-        $this->attachments = $attachments;
-        if (!empty($attachments)) {
+        if (is_array($attachments))
+            foreach($attachments as $attachment) {
+                $this->attachments[] = $attachment;
+            }
+        if (!empty($attachments[0])) {
             $this->hasAttachments = 1;
         }
 

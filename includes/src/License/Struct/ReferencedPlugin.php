@@ -41,11 +41,10 @@ class ReferencedPlugin extends ReferencedItem
             $this->setCanBeUpdated(true);
             $php = Version::parse(\PHP_VERSION);
             if ($available->getPhpMaxVersion() !== null && $php->greaterThan($available->getPhpMaxVersion())) {
-                $this->setPhpVersionOK(ReferencedItem::PHP_VERSION_HIGH);
+                $this->setPhpVersionOK(self::PHP_VERSION_HIGH);
                 $this->setCanBeUpdated(false);
-            }
-            if ($available->getPhpMinVersion() !== null && $php->smallerThan($available->getPhpMinVersion())) {
-                $this->setPhpVersionOK(ReferencedItem::PHP_VERSION_LOW);
+            } elseif ($available->getPhpMinVersion() !== null && $php->smallerThan($available->getPhpMinVersion())) {
+                $this->setPhpVersionOK(self::PHP_VERSION_LOW);
                 $this->setCanBeUpdated(false);
             }
         } elseif ($latestVersion->greaterThan($availableVersion) && $latestVersion->greaterThan($installedVersion)) {
@@ -60,8 +59,7 @@ class ReferencedPlugin extends ReferencedItem
         $this->setInternalID((int)$installed->kPlugin);
         $this->setFilesMissing($filesMissing);
         try {
-            $carbon        = new Carbon($installed->dInstalliert);
-            $dateInstalled = $carbon->toIso8601ZuluString();
+            $dateInstalled = (new Carbon($installed->dInstalliert))->toIso8601ZuluString();
         } catch (Exception) {
             $dateInstalled = null;
         }

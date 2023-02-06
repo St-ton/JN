@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Backend\Settings\Manager;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Jtllog;
@@ -58,13 +59,29 @@ class SystemLogController extends AbstractBackendController
                 }
             }
         }
-
+        $channels    = $this->db->query(
+            'SELECT DISTINCT(tjtllog.cKey) AS value, tplugin.cName AS name
+                FROM tjtllog
+                LEFT JOIN tplugin
+                ON tplugin.cPluginID = cKey
+                WHERE tjtllog.cKey != \'jtllog\'',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
         $filter      = new Filter('syslog');
         $levelSelect = $filter->addSelectfield(\__('systemlogLevel'), 'nLevel');
         $levelSelect->addSelectOption(\__('all'), Operation::CUSTOM);
         $levelSelect->addSelectOption(\__('systemlogDebug'), Logger::DEBUG, Operation::EQUALS);
         $levelSelect->addSelectOption(\__('systemlogNotice'), Logger::INFO, Operation::EQUALS);
         $levelSelect->addSelectOption(\__('systemlogError'), Logger::ERROR, Operation::GREATER_THAN_EQUAL);
+        if (\count($channels) > 0) {
+            $channelSelect = $filter->addSelectfield(\__('Channel'), 'cKey');
+            $channelSelect->addSelectOption(\__('all'), Operation::CUSTOM);
+            foreach ($channels as $channel) {
+                if ($channel->name !== null) {
+                    $channelSelect->addSelectOption($channel->name, $channel->value, Operation::EQUALS);
+                }
+            }
+        }
         $filter->addDaterangefield(\__('Zeitraum'), 'dErstellt');
         $searchfield = $filter->addTextfield(\__('systemlogSearch'), 'cLog', Operation::CONTAINS);
         $filter->assemble();
@@ -109,12 +126,9 @@ class SystemLogController extends AbstractBackendController
 
         return $smarty->assign('oFilter', $filter)
             ->assign('pagination', $pagination)
-            ->assign('oLog_arr', $logData)
+            ->assign('logs', $logData)
             ->assign('minLogLevel', $minLogLevel)
             ->assign('nTotalLogCount', $totalLogCount)
-            ->assign('JTLLOG_LEVEL_ERROR', \JTLLOG_LEVEL_ERROR)
-            ->assign('JTLLOG_LEVEL_NOTICE', \JTLLOG_LEVEL_NOTICE)
-            ->assign('JTLLOG_LEVEL_DEBUG', \JTLLOG_LEVEL_DEBUG)
             ->assign('settingLogs', $settingManager->getAllSettingLogs(
                 $settingLogsFilter->getWhereSQL(),
                 $settingLogsPagination->getLimitSQL()

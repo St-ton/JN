@@ -33,31 +33,31 @@
                     {$jtl_token}
                     {if $nTotalLogCount === 0}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    {elseif count($oLog_arr) === 0}
+                    {elseif count($logs) === 0}
                         <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
                         <div class="listgroup">
-                            {foreach $oLog_arr as $oLog}
+                            {foreach $logs as $log}
                                 <div class="list-group-item border-left-0 border-right-0 {cycle values="bg-light-gray,"}">
                                     <div class="row">
                                         <div class="col-md-3 col-xs-12">
                                             <label class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="selected[]" id="log-id-{$oLog->kLog}" value="{$oLog->kLog}">
-                                                <label class="custom-control-label" for="log-id-{$oLog->kLog}"></label>
-                                                {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
+                                                <input class="custom-control-input" type="checkbox" name="selected[]" id="log-id-{$log->kLog}" value="{$log->kLog}">
+                                                <label class="custom-control-label" for="log-id-{$log->kLog}"></label>
+                                                {if $log->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
                                                     <span class="badge badge-danger">{__('systemlogError')}</span>
-                                                {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
+                                                {elseif $log->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
                                                     <span class="badge badge-warning">{__('systemlogWarning')}</span>
-                                                {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}
+                                                {elseif $log->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}
                                                     <span class="badge badge-success">{__('systemlogNotice')}</span>
                                                 {else}
                                                     <span class="badge badge-info info">{__('systemlogDebug')}</span>
                                                 {/if}
-                                                {$oLog->dErstellt|date_format:'d.m.Y - H:i:s'}
+                                                {$log->dErstellt|date_format:'d.m.Y - H:i:s'}
                                             </label>
                                         </div>
                                         <div class="col-md-9 col-xs-12">
-                                            <pre class="logtext p-1">{$oLog->cLog}</pre>
+                                            <pre class="logtext p-1">{$log->cLog}</pre>
                                         </div>
                                     </div>
                                 </div>
@@ -68,7 +68,7 @@
                         <div class="row">
                             <div class="col-sm-6 col-xl-auto text-left">
                                 <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="select-all-2" name="aaa" value="bbb"
+                                    <input class="custom-control-input" type="checkbox" id="select-all-2" name="select-all" value=""
                                            onchange="selectAllItems(this, $(this).prop('checked'))">
                                     <label class="custom-control-label" for="select-all-2">{__('selectAllShown')}</label>
                                 </div>

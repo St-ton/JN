@@ -38,7 +38,7 @@ class NiceDBHandler extends AbstractProcessingHandler
         $this->db->insert(
             'tjtllog',
             (object)[
-                'cKey'      => $record['channel'],
+                'cKey'      => $record['context']['channel'] ?? $record['channel'],
                 'nLevel'    => $record['level'],
                 'cLog'      => $record['formatted'],
                 'kKey'      => $context,

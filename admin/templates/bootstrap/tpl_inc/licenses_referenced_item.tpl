@@ -54,7 +54,8 @@
                     <span class="badge badge-danger">{__('PHP version too low')}</span>
                 {elseif $referencedItem->getPhpVersionOK() === \JTL\License\Struct\ReferencedItem::PHP_VERSION_HIGH}
                     <span class="badge badge-danger">{__('PHP version too high')}</span>
-                {else}
+                {/if}
+                {if !$referencedItem->isShopVersionOK()}
                     <span class="badge badge-danger">{__('Shop version not compatible or subscription expired')}</span>
                 {/if}
             {/if}

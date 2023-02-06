@@ -525,10 +525,11 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      */
     public function setAttachments(?array $attachments): MailDataTableObject
     {
-        if (is_array($attachments))
-            foreach($attachments as $attachment) {
+        if (\is_array($attachments)) {
+            foreach ($attachments as $attachment) {
                 $this->attachments[] = $attachment;
             }
+        }
         if (!empty($attachments[0])) {
             $this->hasAttachments = 1;
         }

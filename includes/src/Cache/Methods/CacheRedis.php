@@ -353,6 +353,7 @@ class CacheRedis implements ICachingMethod
                 ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
                 : null, // misses per second
             'mem'      => $stats['used_memory'], // used memory in bytes
+            'max'      => $stats['maxmemory'] ?? null,
             'slow'     => $slowLogData // redis slow log
         ];
     }

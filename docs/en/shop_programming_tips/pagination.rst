@@ -5,86 +5,86 @@ Pagination
 
    <br />
 
-Mit der *Pagination* können Sie große Listen von Items (Tabelleneinträge, News-Beiträge, Artikel-Reviews) auf mehrere
-Seiten aufteilen, durch die der Betrachter blättern kann. Dabei können ihm Einstellungen zur Seitengröße und zur
-Sortierung angeboten werden. Alle festgelegten Einstellungen werden in der Browser-*SESSION* festgehalten.
+With *pagination*, you can divide large lists of items (table items, news articles, item reviews) across multiple pages, through
+which the reader can flip through. Settings like page size and sorting options can
+also be offered to the reader. All established settings will be stored in the browser *SESSION*.
 
-Die *Pagination* kann auf zwei verschiedene Arten verwendet werden:
+*Pagination* can be used in two different ways:
 
-    - Sie übergeben der *Pagination* ein fertiges Array als Eingabe. |br|
-      Dieses Array wird sortiert und der momentan anzuzeigende Bereich wird ausgeschnitten.
-    - Sie übergeben der *Pagination* die Gesamtanzahl der Einträge als Eingabe. |br|
-      Das *Paginations*-Objekt liefert dann lediglich anhand der gewählten Optionen eine SQL ``LIMIT``- und
-      eine ``ORDER BY``-Klausel, die Sie in Ihre eigene SQL-Abfrage einbauen können.
+    - You can assign the *pagination* a complete array as input. |br|
+      This array is sorted and the currently displayed area is excluded.
+    - You can assign the *pagination* the total number of items as input. |br|
+      Based on the selected options, a *pagination* object can deliver an SQL ``LIMIT`` and
+      a ``ORDER BY`` clause that you can then implement in your SQL query.
 
-Dateien der *Pagination*
+*Pagination* files
 ------------------------
 
 +------------------------------------------------------+-------------------------------------------------+
-| Datei                                                | Funktion                                        |
+| File                                                | Function                                        |
 +======================================================+=================================================+
-| ``includes/src/Pagination/Pagination.php``           | Paginations-Klasse                              |
+| ``includes/src/Pagination/Pagination.php``           | pagination class                              |
 +------------------------------------------------------+-------------------------------------------------+
-| ``admin/templates/bootstrap/tpl_inc/pagination.tpl`` | Template-Datei für das Backend                  |
+| ``admin/templates/bootstrap/tpl_inc/pagination.tpl`` | template file for the back end                  |
 +------------------------------------------------------+-------------------------------------------------+
 | ``templates/Evo/snippets/pagination.tpl``            | Template-Datei für das Frontend (EVO-Template)  |
 +------------------------------------------------------+-------------------------------------------------+
-| ``templates/NOVA/snippets/pagination.tpl``           | Template-Datei für das Frontend (NOVA-Template) |
+| ``templates/NOVA/snippets/pagination.tpl``           | template file for the front end (NOVA template) |
 +------------------------------------------------------+-------------------------------------------------+
 
-Quick-Start
+Quick start
 -----------
 
-Erzeugen Sie eine Instanz der Pagination. |br|
-Weisen Sie der neuen Pagination einen ID-String zu, mit dem diese Pagination und ihre in der *SESSION* gespeicherten
-Einstellungen von anderen Instanzen unterschieden werden können.
+Create a pagination instance. |br|
+Assign the new pagination a string ID, with which the pagination and its settings saved in the *SESSION* can be differentiated
+from other instances.
 
 .. code-block:: php
 
-   $oPaginationStandard = new Pagination('standard');
+   $oPaginationStandard = new Pagination('default');
 
-Übergeben Sie der *Pagination* ein Array aller Items, durch die geblättert werden soll: |br|
-(Für Daten-Listen, die sich rein aus Datenbankabfragen erzeugen lassen, siehe: :ref:`label_sql_optimized_pagination`.)
+Assign the *pagination* an array of all items that can be flipped through. |br|
+(For lists of data that can be generated from database queries, see: :ref:`label_sql_optimized_pagination`.)
 
 .. code-block:: php
 
-   $oPaginationStandard = (new Pagination('standard'))
+   $oPaginationStandard = (new Pagination('default'))
         ->setItemArray($oKuponStandard_arr)
         ->setSortByOptions([
-            ['cName', 'Name'],
-            ['cCode', 'Code'],
-            ['nVerwendungenBisher', 'Verwendungen'],
-            ['dLastUse', 'Zuletzt verwendet']
+            ['cName', 'name'],
+            ['cCode', 'code'],
+            ['nVerwendungenBisher', 'application'],
+            ['dLastUse', 'last used']
         ]);
 
-Wie hier zu sehen ist, sind alle Methoden der Pagination *chainable*. |br|
-Zum Schluss stellen Sie die Pagination mit ``assemble()`` fertig:
+As you can see here, all pagination methods are *chainable*. |br|
+Lastly, finalise the pagination with ``assemble()``:
 
 .. code-block:: php
    :emphasize-lines: 9
 
-   $oPaginationStandard = (new Pagination('standard'))
+   $oPaginationStandard = (new Pagination('default'))
         ->setItemArray($oKuponStandard_arr)
         ->setSortByOptions([
-            ['cName', 'Name'],
-            ['cCode', 'Code'],
-            ['nVerwendungenBisher', 'Verwendungen'],
-            ['dLastUse', 'Zuletzt verwendet']
+            ['cName', 'name'],
+            ['cCode', 'code'],
+            ['nVerwendungenBisher', 'application'],
+            ['dLastUse', 'last used']
         ])
         ->assemble();
 
 .. important::
 
-    Danach sollten keine *Setter* mehr aufgerufen werden!
+    After finalisation, *setters* should not be called up again!
 
-Übergeben Sie nun das Paginations-Objekt an Smarty.
+Assign the pagination object to Smarty.
 
 .. code-block:: php
 
    $smarty->assign('oPaginationStandard', $oPaginationStandard);
 
-Die Einträge der momentan gewählten Blätter-Seite erhalten Sie durch ``$oPaginationStandard->getPageItems()``. |br|
-Durch diese Liste können Sie dann entsprechend iterieren und die darin enthaltenen Elemente im Frontend ausgeben.
+You can get items from the currently selected pages using ``$oPaginationStandard->getPageItems()``. |br|
+With this list, you can then iterate accordingly and output the elements it contains in the front end.
 
 .. code-block:: smarty
 
@@ -92,13 +92,13 @@ Durch diese Liste können Sie dann entsprechend iterieren und die darin enthalte
         ...
     {/foreach}
 
-Einbindung der Templates
+Template integration
 ------------------------
 
-Die Templates enthalten die Seitennavigation und die Kontrollelemente zum Sortieren und Einstellen der Seitengröße. |br|
-Es gibt zwei getrennte Templates für das Backend und für das Frontend.
+The templates all include page navigation and controls used for sorting and page size settings. |br|
+There are two separate templates, one for the back end and one for the front end.
 
-Backend
+Back end
 """""""
 
 .. code-block:: smarty
@@ -111,17 +111,17 @@ Backend
 **Parameter:**
 
 +---------------------------+------------------------------------------------------------------------------------+
-| Parameter                 | Verwendung                                                                         |
+| Parameter                 | Application|
 +===========================+====================================================================================+
-| ``oPagination``           | das Paginations-Objekt                                                             |
+| ``oPagination``           | the pagination object                                                             |
 +---------------------------+------------------------------------------------------------------------------------+
-| ``cParam_arr`` (optional) | assoziatives Array von GET-Parametern, welche von der Pagination                   |
-|                           | beim Seitenblättern oder Ändern von Optionen mit durchgeschleift werden sollen     |
+| ``cParam_arr`` (optional) | an associative array of GET parameters, which should be looped through from the pagination                   |
+|                           |  when scrolling pages or changing options     |
 +---------------------------+------------------------------------------------------------------------------------+
-| ``cAnchor`` (optional)    | ein zusätzlicher Ziel-Anker, der mit an die URL angehängt wird (Form: ``#foobar``) |
+| ``cAnchor`` (optional)    | an additional destination anchor, which is attached to the URL (Form: ``#foobar``) |
 +---------------------------+------------------------------------------------------------------------------------+
 
-Frontend
+Front end
 """"""""
 
 .. code-block:: smarty
@@ -136,90 +136,90 @@ Frontend
 **Parameter:**
 
 +---------------------------+----------------------------------------------------------------+
-| Parameter                 | Verwendung                                                     |
+| Parameter                 | Application                                                     |
 +===========================+================================================================+
-| ``oPagination``           | das Pagination-Objekt                                          |
+| ``oPagination``           | the pagination object                                          |
 +---------------------------+----------------------------------------------------------------+
-| ``cParam_arr`` (optional) | siehe oben (Backend)                                           |
+| ``cParam_arr`` (optional) | See above (Back end)                                           |
 +---------------------------+----------------------------------------------------------------+
-| ``cThisUrl`` (optional)   | eigener Pfad der einbindenden Seite                            |
+| ``cThisUrl`` (optional)   | Pathway to the integrate pages                            |
 +---------------------------+----------------------------------------------------------------+
-| ``parts`` (optional)      | Mit diesem Parameter kann die Anzeige auf einzelne Komponenten |
-|                           | des Templates eingeschränkt werden. |br|                       |
-|                           | Übergeben Sie hier eine Liste von Komponenten-Bezeichnern:     |
+| ``parts`` (optional)      | This parameter can be used to limit the display |
+|                           | to individual components of the template. |br|                       |
+|                           | Specify a list of component identifiers here:     |
 |                           |                                                                |
-|                           | - ``label`` Label für die Anzahl der Einträge                  |
-|                           | - ``pagi`` Seitennavigation                                    |
-|                           | - ``count`` Selectbox für Einträge pro Seite                   |
-|                           | - ``sort`` Selectbox für die Sortierung                        |
+|                           | - ``label`` Label for the number of items                  |
+|                           | - ``pagi`` Page navigation                                    |
+|                           | - ``count`` Select box for items per page                   |
+|                           | - ``sort`` Select box for sorting                        |
 +---------------------------+----------------------------------------------------------------+
 
-Methoden des *Paginations*-Objekts
+*Pagination* object methods
 ----------------------------------
 
 +------------------------------------------------------+----------------------------------------------------------------+
-| Methode                                              | Funktion                                                       |
+| Methods                                              | Function                                                       |
 +======================================================+================================================================+
-| ``setRange($nRange)``                                | Da bei sehr großen Listen auch große Seitenzahlen              |
-|                                                      | entstehen können, |br|                                         |
-|                                                      | die die Navigation zu lang werden                              |
-|                                                      | lassen, werden Auslassungspunkte (``...``) eingefügt. |br|     |
-|                                                      | Auf der linken und rechten Seite vom gerade aktiven Seitenlink |
-|                                                      | werden dann jeweils |br|                                       |
-|                                                      | maximal ``$nRange`` benachbarte Seitenlinks angezeigt.         |
+| ``setRange($nRange)``                                | Since with long lists, page numbers              |
+|can be quite large,  |br|                                         |
+|                                                      |which would make navigation too long,                              |
+|                                                      | an ellipsis is simply inserted (``...``)...``) eingefügt. |br|     |
+|                                                      | To both the left and the right of the active page link|
+|                                                      | is a maximal ``$nRange`` |br|                                       |
+|                                                      | of neighbouring page links displayed.         |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemsPerPageOptions($nItemsPerPageOption_arr)`` | Legt die Auswahloptionen für "Einträge pro Seite" fest.        |
-|                                                      | Diese werden in einer Selectbox zur Auswahl angeboten.         |
+| ``setItemsPerPageOptions($nItemsPerPageOption_arr)`` | Sets the "items per page" option.        |
+|                                                      | These will then be displayed for selection in a select box.         |
 |                                                      |                                                                |
-|                                                      | **Beispiel:**                                                  |
+|                                                      | **Example:**                                                  |
 |                                                      |                                                                |
 |                                                      | .. code-block:: php                                            |
 |                                                      |                                                                |
 |                                                      |      [5, 10, 20, 50]                                           |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setSortByOptions($cSortByOption_arr)``             | Legt die Auswahloptionen für die Sortierung fest. |br|         |
-|                                                      | Jede Auswahloption ist ein Paar aus der Tabellenspalte         |
-|                                                      | (dem *Property*, nach dem sortiert wird) |br|                  |
-|                                                      | und einer zugehörigen Beschriftung.                            |
-|                                                      | Diese werden in einer Selectbox jeweils für aufsteigende |br|  |
-|                                                      | und absteigende Reihenfolge zur Auswahl angeboten.             |
+| ``setSortByOptions($cSortByOption_arr)``             | Establishes the selection options for sorting. |br|         |
+|                                                      | Every selection option is comprised of a pair of values from the table column          |
+|                                                      | (that of *property*, which is then sorted) |br|                  |
+|                                                      | and a corresponding label.                            |
+|                                                      | These are offered for selection in a select box |br|  |
+|                                                      | for ascending and descending order, respectively.             |
 |                                                      |                                                                |
-|                                                      | **Beispiel:**                                                  |
+|                                                      | **Example:**                                                  |
 |                                                      |                                                                |
 |                                                      | .. code-block:: php                                            |
 |                                                      |                                                                |
 |                                                      |     [                                                          |
-|                                                      |          ['cName', 'Name'],                                    |
-|                                                      |          ['cCode', 'Code'],                                    |
-|                                                      |          ['nVerwendungenBisher', 'Verwendungen'],              |
-|                                                      |          ['dLastUse', 'Zuletzt verwendet']                     |
+|                                                      |          ['cName', 'name'],                                    |
+|                                                      |          ['cCode', 'code'],                                    |
+|                                                      |          ['nPreviousapplications', 'applications'],              |
+|                                                      |          ['dLastused', 'Last used']                     |
 |                                                      |     ]                                                          |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemArray($oItem_arr)``                         | Legt das gesamte Array aller Items fest |br|                   |
-|                                                      | (erste Verwendungsmethode)                                     |
+| ``setItemArray($oItem_arr)``                         | Sets the array of all items |br|                   |
+|                                                      | (first application method)                                     |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemCount($nItemCount)``                        | Legt die gesamte Anzahl der Items fest |br|                    |
-|                                                      | (zweite Verwendungsmethode)                                    |
+| ``setItemCount($nItemCount)``                        | Sets the total item count |br|                    |
+|                                                      | (second application method)                                    |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setDefaultItemsPerPage($n)``                       | Setzt, wie viele Einträge standardmäßig                        |
-|                                                      | pro Seite gezeigt werden                                       |
+| ``setDefaultItemsPerPage($n)``                       | Sets the number of items                        |
+|                                                      | that are to be shown by default per page                                       |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemsPerPage($nItemsPerPage)``                  | Übergeht die gewählte Option für "Einträge pro Seite" und      |
-|                                                      | legt diese auf den Wert ``$nItemsPerPage`` fest. |br|          |
-|                                                      | Dies ist nützlich, wenn Sie keine Auswahlmöglichkeiten         |
-|                                                      | anbieten möchten, |br|                                         |
-|                                                      | sondern einen festen Wert vorgeben wollen.                     |
+| ``setItemsPerPage($nItemsPerPage)``                  | Overrides the selected option for "Entries per page" and      |
+|                                                      | sets this to the value ``$nItemsPerPage``. |br|          |
+|                                                      | This is particularly useful if you don’t want to offer         |
+|                                                      | any selection options, |br|                                         |
+|                                                      | but rather just want to define a fixed value instead.                     |
 +------------------------------------------------------+----------------------------------------------------------------+
 
 
 .. _label_sql_optimized_pagination:
 
-Eigene SQL-Abfrage
+Your own SQL query
 ------------------
 
-Oft müssen größere Datenmengen **direkt aus der Datenbank** dargestellt werden. |br|
-Für diesen Zweck existiert eine weitere Verwendungsmöglichkeit, bei der dem Paginations-Objekt lediglich die
-Gesamtanzahl der anzuzeigenden Elemente übergeben wird (mittels ``setItemCount()``). |br|
+Often, large amounts of data have to be displayed **directly from the database**. |br|
+For this reason, there is another option in which the
+total number of items to be displayed is sent to the pagination object (via ``setItemCount()``. |br|
 
 .. code-block:: php
    :emphasize-lines: 1
@@ -230,15 +230,15 @@ Gesamtanzahl der anzuzeigenden Elemente übergeben wird (mittels ``setItemCount(
           ReturnType::SINGLE_OBJECT
        )->count);
 
-Das Paginations-Objekt ermittelt nun die Position im Listing, an der sich der Benutzer beim Blättern befindet.
-Anschließend liest das Paginations-Object nur noch diesen "*Datenbereich*" aus der Datenbank, was die Mengen an Daten,
-die übertragen werden müssen, erheblich reduziert.
+The pagination object now determines the position in the listing where the user is located when scrolling.
+Then the pagination object reads just the "*data range*" from the data base, which considerably reduces the amount of data that
+needs to be transferred.
 
-Nach der Fertigstellung mit ``assemble()`` können Sie dann die gewünschten SQL-Klauseln für ``LIMIT``, und bei Bedarf
-auch für ``ORDER``, vom Paginations-Objekt abrufen (mittels ``getLimitSQL()`` und ``getOrderSQL()``).
+After finalising with ``assemble()``, you can then call up the desired SQL clause for ``LIMIT`` and, when necessary, the
+clause for ``ORDER`` from the pagination object using ``getLimitSQL()`` and ``getOrderSQL()``.
 
-Diese SQL-Klauseln können Sie nun in einer eigenen SQL-Abfrage verwenden, um explizit nur diese Daten aus der Datenbank
-abholen zu müssen:
+You can now use these SQL clauses in your own SQL query to only retrieve this data from the database
+:
 
 .. code-block:: php
    :emphasize-lines: 4
@@ -251,7 +251,7 @@ abholen zu müssen:
        ],
        ReturnType::ARRAY_OF_OBJECTS);
 
-Abschließend übergeben Sie dann wieder das Paginations-Objekt an Smarty:
+Finally, assign the pagination object to Smarty again.
 
 .. code-block:: php
 

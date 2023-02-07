@@ -572,7 +572,6 @@ abstract class DataModel implements DataModelInterface, Iterator
         try {
             $allKeyNames = $this->getAllKeyNames(true);
             $keyName     = $this->getKeyName(true);
->>>>>>> master
             if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }
@@ -584,14 +583,8 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $members = $this->getMembersToSave($members, $partial);
-//        echo '<br>##### save or update @ ' . get_class($this) . '<br>';
-//        Shop::dbg($noPrimaryKey,false, 'noPrimaray');
-//        Shop::dbg($keyValue, false, 'keyValue:');
-//        Shop::dbg($this->loaded, false, 'loaded:');
         if (!$this->loaded || $noPrimaryKey || $keyValue === null || $keyValue === 0) {
-//            Shop::dbg($members, false, 'INSERTING ' . $this->getTableName());
             $pkValue = $this->db->insert($this->getTableName(), $members);
-//            Shop::dbg($pkValue, false, 'resulting $pkValue:');
             if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 try {
                     $this->setKey($pkValue);
@@ -611,7 +604,6 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
         // hack to allow updating tables like "tkategoriesprache" where no single primary key is present
         if (\count($allKeyNames) > 1) {
-//            Shop::dbg($allKeyNames, false, '$allKeyNames@' . get_class($this));
             $keyValue = [];
             $keyName  = [];
             foreach ($allKeyNames as $name) {
@@ -817,12 +809,6 @@ abstract class DataModel implements DataModelInterface, Iterator
             if (\array_key_exists($attribName, $this->getAttributes())) {
                 return $default;
             }
-            echo '<br><br>#########errrror!<br>';
-            Shop::dbg($this,false,get_class($this));
-            Shop::dbg($attribName,true,'error',99);
-die('error@key' . $attribName);
-            Shop::dbg($this->getAttributes(), false, 'getAttributes@' . __CLASS__);
-            Shop::dbg($this, true);
             throw new Exception(__METHOD__ . ': invalid attribute(' . $attribName . ')', self::ERR_INVALID_PARAM);
         }
 

@@ -64,7 +64,7 @@ class SystemLogController extends AbstractBackendController
                 FROM tjtllog
                 LEFT JOIN tplugin
                 ON tplugin.cPluginID = cKey
-                WHERE tjtllog.cKey != \'jtllog\'',
+                WHERE tjtllog.cKey != \'jtllog\' AND cKey != \'kPlugin\'',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $filter      = new Filter('syslog');

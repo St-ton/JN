@@ -164,6 +164,10 @@ final class Attachment
         return (object)$this->toArray($tableColumns);
     }
 
+    /**
+     * @param object $object
+     * @return $this
+     */
     public function hydrateWithObject(object $object): self
     {
         $attributes = \get_object_vars($this);

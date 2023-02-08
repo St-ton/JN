@@ -9,7 +9,6 @@ use JTL\Mail\SendMailObjects\MailDataAttachementObject;
 
 class AttachmentsService extends AbstractService
 {
-
     /**
      * @return AttachmentsRepository
      */
@@ -22,6 +21,11 @@ class AttachmentsService extends AbstractService
         return $this->repository;
     }
 
+    /**
+     * @param Attachment $attachment
+     * @param int        $mailID
+     * @return int
+     */
     public function insertAttachment(Attachment $attachment, int $mailID): int
     {
         $attachementTableObject = (new MailDataAttachementObject())->hydrateWithObject($attachment->toObject());
@@ -30,11 +34,15 @@ class AttachmentsService extends AbstractService
         return $this->insert($attachementTableObject);
     }
 
+    /**
+     * @param array $IDs
+     * @return array
+     */
     public function getListByMailIDs(array $IDs): array
     {
         $list           = $this->getRepository()->getListByMailIDs($IDs);
         $associatedList = [];
-        foreach ($list as $key => $item) {
+        foreach ($list as $item) {
             $associatedList[$item->mailID][] = (new Attachment())->hydrateWithObject($item);
         }
         return $associatedList;

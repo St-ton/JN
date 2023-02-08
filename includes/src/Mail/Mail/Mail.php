@@ -12,8 +12,6 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
 use ReflectionClass;
-use ReflectionProperty;
-use JTL\Template;
 
 /**
  * Class Mail
@@ -31,42 +29,42 @@ class Mail implements MailInterface
     /**
      * @var LanguageModel
      */
-    private $language;
+    private LanguageModel $language;
+
+    /**
+     * @var string|null
+     */
+    private ?string $fromMail = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $fromName = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $toMail = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $toName = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $replyToMail = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $replyToName = null;
 
     /**
      * @var string
      */
-    private string $fromMail;
-
-    /**
-     * @var string
-     */
-    private string $fromName;
-
-    /**
-     * @var string
-     */
-    private $toMail;
-
-    /**
-     * @var string
-     */
-    private $toName = '';
-
-    /**
-     * @var string
-     */
-    private $replyToMail;
-
-    /**
-     * @var string
-     */
-    private $replyToName;
-
-    /**
-     * @var string
-     */
-    private $subject;
+    private string $subject = '';
 
     /**
      * @var string
@@ -101,12 +99,12 @@ class Mail implements MailInterface
     /**
      * @var TemplateInterface|null
      */
-    private $template;
+    private ?TemplateInterface $template;
 
     /**
      * @var mixed
      */
-    private $data;
+    private mixed $data;
 
     /**
      * Mail constructor.
@@ -588,10 +586,9 @@ class Mail implements MailInterface
     }
 
     /**
-     * @param bool $tableColumns
      * @return array
      */
-    public function toArray(bool $tableColumns = true): array
+    public function toArray(): array
     {
         $reflect    = new ReflectionClass($this);
         $properties = $reflect->getProperties();
@@ -607,17 +604,16 @@ class Mail implements MailInterface
     /**
      * $tableColumns = true will ship an object using table column names as array keys
      *
-     * @param bool $tableColumns
      * @return object
      */
-    public function toObject(bool $tableColumns = true): object
+    public function toObject(): object
     {
-        return (object)$this->toArray($tableColumns);
+        return (object)$this->toArray();
     }
 
     /**
      * Will accept data from an object.
-     * @param object $object
+     * @param MailDataTableObject $object
      * @return $this
      * @throws \Exception
      */
@@ -635,6 +631,7 @@ class Mail implements MailInterface
         }
         $this->setLanguage(Shop::Lang()->getLanguageByID($object->getLanguageId()));
         $this->template = $this->getTemplateFromID(null, $object->getTemplateId());
+
         return $this;
     }
 

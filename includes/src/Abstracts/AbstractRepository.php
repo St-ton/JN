@@ -18,7 +18,7 @@ abstract class AbstractRepository implements RepositoryInterface
 {
     protected const UPDATE_OR_UPSERT_FAILED = -1;
     protected const DELETE_FAILED           = -1;
-    
+
     /**
      * Every Repository has to have these properties set and initialized
      *     protected string $tableName = '';
@@ -123,5 +123,16 @@ abstract class AbstractRepository implements RepositoryInterface
             $updateDTO->toObject()
         ) !== self::UPDATE_OR_UPSERT_FAILED
         );
+    }
+
+    /**
+     * @param array $values
+     * @return array
+     */
+    final public function ensureIntValuesInArray(array $values): array
+    {
+        return array_map(static function ($value) {
+            return (int)$value;
+        }, $values);
     }
 }

@@ -123,7 +123,7 @@ class Queue
             $now       = new DateTime();
             $nextStart = new DateTime();
             $nextStart->setTime((int)$st->format('H'), (int)$st->format('i'), (int)$st->format('s'));
-            if ((int)$job->getFrequency() > 0) {
+            if ($job->getFrequency() > 0) {
                 while ($nextStart <= $now) {
                     $nextStart->modify('+' . $job->getFrequency() . ' hours');
                 }

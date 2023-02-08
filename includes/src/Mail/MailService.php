@@ -6,21 +6,36 @@ use JTL\Abstracts\AbstractService;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Interfaces\RepositoryInterface;
-use JTL\Interfaces\ServiceInterface;
 use JTL\Mail\Attachments\AttachmentsService;
 use JTL\Mail\Mail\Mail as MailObject;
 use JTL\Mail\Mail\MailInterface;
-use JTL\Mail\SendMailObjects\MailDataAttachementObject;
 use JTL\Mail\SendMailObjects\MailDataTableObject;
-use JTL\Mail\Template\TemplateInterface;
-use JTL\Session\Frontend;
 use JTL\Shop;
+use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\PHPMailer;
+use stdClass;
 
 class MailService extends AbstractService
 {
-    protected AttachmentsService $attachmentsService;
+    protected ?AttachmentsService $attachmentsService = null;
 
+    protected array $emailConfig = [];
+
+    /**
+     * Could be injected as dependency as well
+     *
+     * @return array
+     */
+    public function getEmailConfig(): array
+    {
+        if ($this->emailConfig === []) {
+            $this->emailConfig = Shop::getSettingSection(\CONF_EMAILS);
+            //ToDo: Remove when setting is created
+            $this->emailConfig['chunkSize'] = 4;
+        }
+
+        return $this->emailConfig;
+    }
 
     /**
      * @return MailRepository
@@ -34,9 +49,12 @@ class MailService extends AbstractService
         return $this->repository;
     }
 
+    /**
+     * @return AttachmentsService
+     */
     protected function getAttachmentsService(): AttachmentsService
     {
-        if (empty($this->attachmentsService)) {
+        if (\is_null($this->attachmentsService)) {
             $this->attachmentsService = new AttachmentsService();
         }
 
@@ -57,8 +75,9 @@ class MailService extends AbstractService
         $mailID = $this->getRepository()->queueMailDataTableObject($item);
         $this->cacheAttachments($item);
         foreach ($item->getAttachments() as $attachment) {
-             $result = $result && ($this->getAttachmentsService()->insertAttachment($attachment, $mailID) > 0);
+            $result = $result && ($this->getAttachmentsService()->insertAttachment($attachment, $mailID) > 0);
         }
+
         return $result;
     }
 
@@ -70,24 +89,29 @@ class MailService extends AbstractService
      */
     private function cacheAttachments(MailDataTableObject $item): void
     {
-        if (!is_dir(\PFAD_MAILATTACHMENTS)
-            && !mkdir($concurrentDirectory = \PFAD_MAILATTACHMENTS, 0775)
+        if (!is_dir(\PATH_MAILATTACHMENTS)
+            && !mkdir($concurrentDirectory = \PATH_MAILATTACHMENTS, 0775)
             && !is_dir($concurrentDirectory)
         ) {
-             Shop::Container()->getLogService()->error('Error sending mail: Attachment directory could not be created');
+            Shop::Container()->getLogService()->error('Error sending mail: Attachment directory could not be created');
+
+            return;
         }
         foreach ($item->getAttachments() as $attachment) {
-            if ($attachment->getMime() === 'application/pdf' && substr($attachment->getName(), -4) !== '.pdf') {
-                $attachment->setName($attachment->getName() . '.pdf');
+            $fileName = preg_replace('/[^öäüÖÄÜßa-zA-Z\d.\-_]/u', '', $attachment->getName());
+            if ($attachment->getMime() === 'application/pdf' && !str_ends_with($attachment->getName(), '.pdf')) {
+                $attachment->setName($fileName . '.pdf');
             }
-            $uniqueFilename = uniqid(str_replace(['.',':', ' '], '', $item->getDateQueued()), true);
-            if (!copy($attachment->getDir() . $attachment->getFileName(), \PFAD_MAILATTACHMENTS . $uniqueFilename)) {
-                 Shop::Container()->getLogService()->error('Error sending mail: Attachment could not be cached');
+            $uniqueFilename = uniqid(str_replace(['.', ':', ' '], '', $item->getDateQueued()), true);
+            if (!copy($attachment->getDir() . $attachment->getFileName(), \PATH_MAILATTACHMENTS . $uniqueFilename)) {
+                Shop::Container()->getLogService()->error('Error sending mail: Attachment could not be cached');
+
+                return;
             }
             if ($attachment->getDir() !== \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS) {
                 unlink($attachment->getDir());
             }
-            $attachment->setDir(\PFAD_MAILATTACHMENTS);
+            $attachment->setDir(\PATH_MAILATTACHMENTS);
             $attachment->setFileName($uniqueFilename);
         }
     }
@@ -96,44 +120,61 @@ class MailService extends AbstractService
      * @param MailObject $mailObject
      * @return MailDataTableObject
      */
-    private function prepareQueueInsert(MailObject $mailObject) : MailDataTableObject
+    private function prepareQueueInsert(MailObject $mailObject): MailDataTableObject
     {
         $insertObj = new MailDataTableObject();
         $insertObj->hydrateWithObject($mailObject->toObject());
         $insertObj->setLanguageId($mailObject->getLanguage()->getId());
-        $insertObj->setTemplateId($mailObject->getTemplate()->getID());
+        $insertObj->setTemplateId($mailObject->getTemplate()?->getID() ?? '');
 
         return $insertObj;
     }
 
-    public function getQueuedMails($chunkSize = 20)
+    /**
+     * @return array
+     */
+    public function getQueuedMails(): array
     {
         /** @var array $mailsToSend */
-        $mailsToSend       = $this->getRepository()->getNextMailsFromQueue($chunkSize);
+        $mailsToSend  = $this->getRepository()->getNextMailsFromQueue($this->getEmailConfig()['chunkSize']);
+        $isSendingNow = 1;
+        $isSent       = 0;
+        $this->setMailStatus(array_column($mailsToSend, 'id'), $isSendingNow, $isSent);
         $attachments       = $this->getAttachmentsService()->getListByMailIDs(\array_column($mailsToSend, 'id'));
         $returnMailObjects = [];
-        if (\is_array($mailsToSend)) {
-            foreach ($mailsToSend as $mail) {
-                if (! \is_array($mail['copyRecipients'])) {
-                    $mail['copyRecipients'] = explode(';', $mail['copyRecipients']);
-                }
-                $attachmentsToAdd    = $mail['hasAttachments'] > 0 ? $attachments[$mail['id']] : [];
-                $returnMailObjects[] = (
-                    new MailDataTableObject())
-                    ->hydrate($mail)
-                    ->setAttachments(is_null($attachmentsToAdd) ? [] : $attachmentsToAdd);
+        foreach ($mailsToSend as $mail) {
+            if (!\is_array($mail['copyRecipients'])) {
+                $mail['copyRecipients'] = explode(';', $mail['copyRecipients']);
             }
+            $attachmentsToAdd    = $mail['hasAttachments'] > 0 ? $attachments[$mail['id']] : [];
+            $returnMailObjects[] = (
+            new MailDataTableObject())
+                ->hydrate($mail)
+                ->setAttachments(\is_null($attachmentsToAdd) ? [] : $attachmentsToAdd);
         }
 
         return $returnMailObjects;
     }
 
-    public function setMailStatus(int $mailId, int $isSendingNow, int $isSent)
+    /**
+     * @param array $mailIds
+     * @param int   $isSendingNow
+     * @param int   $isSent
+     * @return int
+     */
+    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): int
     {
-        return $this->getRepository()->setMailStatus($mailId, $isSendingNow, $isSent);
+        return $this->getRepository()->setMailStatus($mailIds, $isSendingNow, $isSent);
     }
 
-    public function sendViaPHPMailer(MailInterface $mail, $method): bool
+    /**
+     * @param MailInterface $mail
+     * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     * @throws Exception
+     */
+    public function sendViaPHPMailer(MailInterface $mail): bool
     {
         $phpmailer             = new PHPMailer();
         $phpmailer->AllowEmpty = true;
@@ -149,7 +190,7 @@ class MailService extends AbstractService
                 $phpmailer->addBCC($recipient);
             }
         }
-        $this->initMethod($phpmailer, $method);
+        $this->initMethod($phpmailer);
         if ($mail->getBodyHTML()) {
             $phpmailer->isHTML();
             $phpmailer->Body    = $mail->getBodyHTML();
@@ -164,7 +205,7 @@ class MailService extends AbstractService
             'mail'      => $mail,
             'phpmailer' => $phpmailer
         ]);
-        if (\mb_strlen($phpmailer->Body) === 0) {
+        if ($phpmailer->Body === '') {
             Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
         }
         $sent = $phpmailer->send();
@@ -179,8 +220,32 @@ class MailService extends AbstractService
         return $sent;
     }
 
-    private function initMethod(PHPMailer $phpmailer, $method): self
+    /**
+     * @return stdClass
+     */
+    private function getMethod(): stdClass
     {
+        $method                = new stdClass();
+        $method->methode       = $this->getEmailConfig()['email_methode'];
+        $method->sendmail_pfad = $this->getEmailConfig()['email_sendmail_pfad'];
+        $method->smtp_hostname = $this->getEmailConfig()['email_smtp_hostname'];
+        $method->smtp_port     = $this->getEmailConfig()['email_smtp_port'];
+        $method->smtp_auth     = (int)$this->getEmailConfig()['email_smtp_auth'] === 1;
+        $method->smtp_user     = $this->getEmailConfig()['email_smtp_user'];
+        $method->smtp_pass     = $this->getEmailConfig()['email_smtp_pass'];
+        $method->SMTPSecure    = $this->getEmailConfig()['email_smtp_verschluesselung'];
+        $method->SMTPAutoTLS   = !empty($method->SMTPSecure);
+
+        return $method;
+    }
+
+    /**
+     * @param PHPMailer $phpmailer
+     * @return void
+     */
+    private function initMethod(PHPMailer $phpmailer): void
+    {
+        $method = $this->getMethod();
         switch ($method->methode) {
             case 'mail':
                 $phpmailer->isMail();
@@ -204,11 +269,15 @@ class MailService extends AbstractService
                 $phpmailer->SMTPAutoTLS   = $method->SMTPAutoTLS;
                 break;
         }
-
-        return $this;
     }
 
-    private function addAttachments(PHPMailer $phpmailer, MailInterface $mail): self
+    /**
+     * @param PHPMailer     $phpmailer
+     * @param MailInterface $mail
+     * @return void
+     * @throws Exception
+     */
+    private function addAttachments(PHPMailer $phpmailer, MailInterface $mail): void
     {
         foreach ($mail->getPdfAttachments() as $pdf) {
             $phpmailer->addAttachment(
@@ -226,16 +295,23 @@ class MailService extends AbstractService
                 $attachment->getMime()
             );
         }
-
-        return $this;
     }
 
+    /**
+     * @param int    $mailID
+     * @param string $errorMsg
+     * @return void
+     */
     public function setError(int $mailID, string $errorMsg): void
     {
         $this->getRepository()->setError($mailID, $errorMsg);
     }
 
-    public function deleteQueuedMail(int $mailID)
+    /**
+     * @param int $mailID
+     * @return void
+     */
+    public function deleteQueuedMail(int $mailID): void
     {
         $this->getRepository()->delete($mailID);
     }

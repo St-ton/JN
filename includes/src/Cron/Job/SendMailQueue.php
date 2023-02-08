@@ -9,7 +9,6 @@ use JTL\Mail\Hydrator\DefaultsHydrator;
 use JTL\Mail\Mailer;
 use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Validator\MailValidator;
-use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
 
@@ -22,7 +21,7 @@ final class SendMailQueue extends Job
     /**
      * @inheritdoc
      */
-    public function hydrate($data)
+    public function hydrate($data): SendMailQueue
     {
         parent::hydrate($data);
 
@@ -31,6 +30,7 @@ final class SendMailQueue extends Job
 
     /**
      * @inheritdoc
+     * @throws \SmartyException
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {

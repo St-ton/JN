@@ -6,15 +6,13 @@ use JTL\Abstracts\AbstractRepository;
 
 class AttachmentsRepository extends AbstractRepository
 {
-    protected $tableName = 'emailPdfAttachements';
+    protected $tableName = 'emailAttachments';
     protected $keyName   = 'id';
 
     public function getListByMailIDs(array $IDs): array
     {
         if (\count($IDs) > 0) {
-            $IDs  = array_map(function ($id) {
-                return (int)$id;
-            }, $IDs);
+            $IDs  = $this->ensureIntValuesInArray($IDs);
             $stmt = 'SELECT * FROM ' . $this->getTableName() .
                 ' WHERE mailID IN(' . implode(',', $IDs) . ')';
 

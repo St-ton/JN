@@ -5,42 +5,34 @@ namespace JTL\Mail\SendMailObjects;
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Language\LanguageModel;
-use JTL\Mail\Template\TemplateInterface;
 
 class MailDataTableObject extends AbstractDataObject implements DataTableObjectInterface
 {
     private string $primarykey   = 'id';
     protected int $id            = 0;
     protected int $isSent        = 0;
-    protected int $isCancelled   = 0;
-    protected int $isBlocked     = 0;
     protected int $isSendingNow  = 0;
     protected int $sendCount     = 0;
     protected int $errorCount    = 0;
     protected string $lastError  = '';
     protected string $dateQueued = '';
     protected string $dateSent   = '';
-    protected int $isHtml        = 0;
     protected string $fromMail;
     protected string $fromName = '';
     protected string $toMail;
-    protected string $toName         = '';
-    protected string $replyToMail    = '';
-    protected string $replyToName    = '';
+    protected ?string $toName        = null;
+    protected ?string $replyToMail   = null;
+    protected ?string $replyToName   = null;
     protected string $copyRecipients = '';
     protected string $subject;
     protected string $bodyHTML;
     protected string $bodyText;
-    protected int $hasAttachments     = 0;
-    private array $attachments        = [];
-    protected int $isEmbedImages      = 0;
-    protected string $customHeaders   = '';
-    protected string $typeReference   = '';
-    protected string $deliveryOngoing = '';
-    protected int $languageId         = 0;
-    protected string $templateId      = '';
-    private ?LanguageModel $language  = null;
-    protected int $customerGroupID    = 1;
+    protected int $hasAttachments    = 0;
+    private array $attachments       = [];
+    protected int $languageId        = 0;
+    protected string $templateId     = '';
+    private ?LanguageModel $language = null;
+    protected int $customerGroupID   = 1;
 
     private array $mapping = [];
 
@@ -97,7 +89,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $id
+     * @param string|int $id
      * @return MailDataTableObject
      */
     public function setId(string|int $id): MailDataTableObject
@@ -116,50 +108,12 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $isSent
+     * @param string|int $isSent
      * @return MailDataTableObject
      */
     public function setIsSent(string|int $isSent): MailDataTableObject
     {
         $this->isSent = (int)$isSent;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getIsCancelled(): int
-    {
-        return $this->isCancelled;
-    }
-
-    /**
-     * @param string|int $isCancelled
-     * @return MailDataTableObject
-     */
-    public function setIsCancelled(string|int $isCancelled): MailDataTableObject
-    {
-        $this->isCancelled = (int)$isCancelled;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getIsBlocked(): int
-    {
-        return $this->isBlocked;
-    }
-
-    /**
-     * @param int $isBlocked
-     * @return MailDataTableObject
-     */
-    public function setIsBlocked(string|int $isBlocked): MailDataTableObject
-    {
-        $this->isBlocked = (int)$isBlocked;
 
         return $this;
     }
@@ -173,7 +127,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $isSendingNow
+     * @param string|int $isSendingNow
      * @return MailDataTableObject
      */
     public function setIsSendingNow(string|int $isSendingNow): MailDataTableObject
@@ -192,7 +146,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $sendCount
+     * @param string|int $sendCount
      * @return MailDataTableObject
      */
     public function setSendCount(string|int $sendCount): MailDataTableObject
@@ -211,7 +165,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $errorCount
+     * @param string|int $errorCount
      * @return MailDataTableObject
      */
     public function setErrorCount(string|int $errorCount): MailDataTableObject
@@ -245,7 +199,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      */
     public function getDateQueued(): string
     {
-        if (empty($this->dateQueued)) {
+        if ($this->dateQueued === '') {
             $this->dateQueued = date('Y.m.d H:i:s');
         }
 
@@ -283,25 +237,6 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @return int
-     */
-    public function getIsHtml(): int
-    {
-        return $this->isHtml;
-    }
-
-    /**
-     * @param int $isHtml
-     * @return MailDataTableObject
-     */
-    public function setIsHtml(string|int $isHtml): MailDataTableObject
-    {
-        $this->isHtml = (int)$isHtml;
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getFromMail(): string
@@ -310,7 +245,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param string $fromEmail
+     * @param string $fromMail
      * @return MailDataTableObject
      */
     public function setFromMail(string $fromMail): MailDataTableObject
@@ -367,10 +302,10 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param string $toName
+     * @param string|null $toName
      * @return MailDataTableObject
      */
-    public function setToName(string $toName): MailDataTableObject
+    public function setToName(?string $toName): MailDataTableObject
     {
         $this->toName = $toName;
 
@@ -500,7 +435,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param int $hasAttachments
+     * @param string|int $hasAttachments
      * @return MailDataTableObject
      */
     public function setHasAttachments(string|int $hasAttachments): MailDataTableObject
@@ -520,7 +455,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     }
 
     /**
-     * @param array $attachments
+     * @param array|null $attachments
      * @return MailDataTableObject
      */
     public function setAttachments(?array $attachments): MailDataTableObject
@@ -533,82 +468,6 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
         if (!empty($attachments[0])) {
             $this->hasAttachments = 1;
         }
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getIsEmbedImages(): int
-    {
-        return $this->isEmbedImages;
-    }
-
-    /**
-     * @param int $isEmbedImages
-     * @return MailDataTableObject
-     */
-    public function setIsEmbedImages(string|int $isEmbedImages): MailDataTableObject
-    {
-        $this->isEmbedImages = (int)$isEmbedImages;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCustomHeaders(): string
-    {
-        return $this->customHeaders;
-    }
-
-    /**
-     * @param string $customHeaders
-     * @return MailDataTableObject
-     */
-    public function setCustomHeaders(string $customHeaders): MailDataTableObject
-    {
-        $this->customHeaders = $customHeaders;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTypeReference(): string
-    {
-        return $this->typeReference;
-    }
-
-    /**
-     * @param string $typeReference
-     * @return MailDataTableObject
-     */
-    public function setTypeReference(string $typeReference): MailDataTableObject
-    {
-        $this->typeReference = $typeReference;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDeliveryOngoing(): string
-    {
-        return $this->deliveryOngoing;
-    }
-
-    /**
-     * @param string $deliveryOngoing
-     * @return MailDataTableObject
-     */
-    public function setDeliveryOngoing(string $deliveryOngoing): MailDataTableObject
-    {
-        $this->deliveryOngoing = $deliveryOngoing;
 
         return $this;
     }
@@ -644,7 +503,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
 
     /**
-     * @param int $language
+     * @param string|int $language
      * @return MailDataTableObject
      */
     public function setLanguageId(string|int $language): MailDataTableObject

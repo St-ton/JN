@@ -18,12 +18,12 @@ also be offered to the reader. All established settings will be stored in the br
       a ``ORDER BY`` clause that you can then implement in your SQL query.
 
 *Pagination* files
-------------------------
+------------------
 
 +------------------------------------------------------+-------------------------------------------------+
-| File                                                | Function                                        |
+| File                                                | Function                                         |
 +======================================================+=================================================+
-| ``includes/src/Pagination/Pagination.php``           | pagination class                              |
+| ``includes/src/Pagination/Pagination.php``           | pagination class                                |
 +------------------------------------------------------+-------------------------------------------------+
 | ``admin/templates/bootstrap/tpl_inc/pagination.tpl`` | template file for the back end                  |
 +------------------------------------------------------+-------------------------------------------------+
@@ -93,13 +93,13 @@ With this list, you can then iterate accordingly and output the elements it cont
     {/foreach}
 
 Template integration
-------------------------
+--------------------
 
 The templates all include page navigation and controls used for sorting and page size settings. |br|
 There are two separate templates, one for the back end and one for the front end.
 
 Back end
-"""""""
+""""""""
 
 .. code-block:: smarty
 
@@ -111,18 +111,19 @@ Back end
 **Parameter:**
 
 +---------------------------+------------------------------------------------------------------------------------+
-| Parameter                 | Application|
+| Parameter                 | Application                                                                        |
 +===========================+====================================================================================+
-| ``oPagination``           | the pagination object                                                             |
+| ``oPagination``           | the pagination object                                                              |
 +---------------------------+------------------------------------------------------------------------------------+
-| ``cParam_arr`` (optional) | an associative array of GET parameters, which should be looped through from the pagination                   |
-|                           |  when scrolling pages or changing options     |
+| ``cParam_arr`` (optional) | an associative array of GET parameters, which should be looped through from the    |
+|                           | pagination                                                                         |
+|                           | when scrolling pages or changing options                                           |
 +---------------------------+------------------------------------------------------------------------------------+
 | ``cAnchor`` (optional)    | an additional destination anchor, which is attached to the URL (Form: ``#foobar``) |
 +---------------------------+------------------------------------------------------------------------------------+
 
 Front end
-""""""""
+"""""""""
 
 .. code-block:: smarty
 
@@ -136,79 +137,80 @@ Front end
 **Parameter:**
 
 +---------------------------+----------------------------------------------------------------+
-| Parameter                 | Application                                                     |
+| Parameter                 | Application                                                    |
 +===========================+================================================================+
 | ``oPagination``           | the pagination object                                          |
 +---------------------------+----------------------------------------------------------------+
 | ``cParam_arr`` (optional) | See above (Back end)                                           |
 +---------------------------+----------------------------------------------------------------+
-| ``cThisUrl`` (optional)   | Pathway to the integrate pages                            |
+| ``cThisUrl`` (optional)   | Pathway to the integrate pages                                 |
 +---------------------------+----------------------------------------------------------------+
-| ``parts`` (optional)      | This parameter can be used to limit the display |
-|                           | to individual components of the template. |br|                       |
-|                           | Specify a list of component identifiers here:     |
+| ``parts`` (optional)      | This parameter can be used to limit the display                |
+|                           | to individual components of the template. |br|                 |
+|                           | Specify a list of component identifiers here:                  |
 |                           |                                                                |
-|                           | - ``label`` Label for the number of items                  |
-|                           | - ``pagi`` Page navigation                                    |
-|                           | - ``count`` Select box for items per page                   |
-|                           | - ``sort`` Select box for sorting                        |
+|                           | - ``label`` Label for the number of items                      |
+|                           | - ``pagi`` Page navigation                                     |
+|                           | - ``count`` Select box for items per page                      |
+|                           | - ``sort`` Select box for sorting                              |
 +---------------------------+----------------------------------------------------------------+
 
 *Pagination* object methods
-----------------------------------
+---------------------------
 
 +------------------------------------------------------+----------------------------------------------------------------+
 | Methods                                              | Function                                                       |
 +======================================================+================================================================+
-| ``setRange($nRange)``                                | Since with long lists, page numbers              |
-|can be quite large,  |br|                                         |
-|                                                      |which would make navigation too long,                              |
-|                                                      | an ellipsis is simply inserted (``...``)...``) eingefügt. |br|     |
-|                                                      | To both the left and the right of the active page link|
-|                                                      | is a maximal ``$nRange`` |br|                                       |
-|                                                      | of neighbouring page links displayed.         |
+| ``setRange($nRange)``                                | Since with long lists, page numbers                            |
+| can be quite large,  |br|                            |                                                                |
+|                                                      |which would make navigation too long,                           |
+|                                                      | an ellipsis is simply inserted (``...``)...``) eingefügt. |br| |
+|                                                      | To both the left and the right of the active page link         |
+|                                                      | is a maximal ``$nRange`` |br|                                  |
+|                                                      | of neighbouring page links displayed.                          |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemsPerPageOptions($nItemsPerPageOption_arr)`` | Sets the "items per page" option.        |
-|                                                      | These will then be displayed for selection in a select box.         |
+| ``setItemsPerPageOptions($nItemsPerPageOption_arr)`` | Sets the "items per page" option.                              |
+|                                                      | These will then be displayed for selection in a select box.    |
 |                                                      |                                                                |
-|                                                      | **Example:**                                                  |
+|                                                      | **Example:**                                                   |
 |                                                      |                                                                |
 |                                                      | .. code-block:: php                                            |
 |                                                      |                                                                |
 |                                                      |      [5, 10, 20, 50]                                           |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setSortByOptions($cSortByOption_arr)``             | Establishes the selection options for sorting. |br|         |
-|                                                      | Every selection option is comprised of a pair of values from the table column          |
-|                                                      | (that of *property*, which is then sorted) |br|                  |
-|                                                      | and a corresponding label.                            |
-|                                                      | These are offered for selection in a select box |br|  |
-|                                                      | for ascending and descending order, respectively.             |
+| ``setSortByOptions($cSortByOption_arr)``             | Establishes the selection options for sorting. |br|            |
+|                                                      | Every selection option is comprised of a pair of values from   |
+|                                                      | the table column                                               |
+|                                                      | (that of *property*, which is then sorted) |br|                |
+|                                                      | and a corresponding label.                                     |
+|                                                      | These are offered for selection in a select box |br|           |
+|                                                      | for ascending and descending order, respectively.              |
 |                                                      |                                                                |
-|                                                      | **Example:**                                                  |
+|                                                      | **Example:**                                                   |
 |                                                      |                                                                |
 |                                                      | .. code-block:: php                                            |
 |                                                      |                                                                |
 |                                                      |     [                                                          |
 |                                                      |          ['cName', 'name'],                                    |
 |                                                      |          ['cCode', 'code'],                                    |
-|                                                      |          ['nPreviousapplications', 'applications'],              |
-|                                                      |          ['dLastused', 'Last used']                     |
+|                                                      |          ['nPreviousapplications', 'applications'],            |
+|                                                      |          ['dLastused', 'Last used']                            |
 |                                                      |     ]                                                          |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemArray($oItem_arr)``                         | Sets the array of all items |br|                   |
+| ``setItemArray($oItem_arr)``                         | Sets the array of all items |br|                               |
 |                                                      | (first application method)                                     |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemCount($nItemCount)``                        | Sets the total item count |br|                    |
+| ``setItemCount($nItemCount)``                        | Sets the total item count |br|                                 |
 |                                                      | (second application method)                                    |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setDefaultItemsPerPage($n)``                       | Sets the number of items                        |
-|                                                      | that are to be shown by default per page                                       |
+| ``setDefaultItemsPerPage($n)``                       | Sets the number of items                                       |
+|                                                      | that are to be shown by default per page                       |
 +------------------------------------------------------+----------------------------------------------------------------+
-| ``setItemsPerPage($nItemsPerPage)``                  | Overrides the selected option for "Entries per page" and      |
-|                                                      | sets this to the value ``$nItemsPerPage``. |br|          |
+| ``setItemsPerPage($nItemsPerPage)``                  | Overrides the selected option for "Entries per page" and       |
+|                                                      | sets this to the value ``$nItemsPerPage``. |br|                |
 |                                                      | This is particularly useful if you don’t want to offer         |
-|                                                      | any selection options, |br|                                         |
-|                                                      | but rather just want to define a fixed value instead.                     |
+|                                                      | any selection options, |br|                                    |
+|                                                      | but rather just want to define a fixed value instead.          |
 +------------------------------------------------------+----------------------------------------------------------------+
 
 

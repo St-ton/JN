@@ -5,17 +5,17 @@ Bootstrapping
 
    <br />
 
-Bootstrapping bezeichnet im Kontext von JTL-Shop die Initialisierung eines Plugins zur anschließenden Nutzung
-des *EventDispatchers*.
+Within the context of the JTL-Shop, Bootstrapping refers to the initialisation of a plug-in for subsequent use of
+the *EventDispatcher*.
 
-Struktur
---------
+Structure
+---------
 
-Zentraler Einstiegspunkt des Bootstrappers ist die Datei ``Bootstrap.php`` im Hauptverzeichnis eines Plugins. |br|
-In dieser Datei muss die Klasse ``Bootstrap`` im *namespaces* des Plugins angelegt werden und diese muss
-das Interface ``JTL\Plugin\BootstrapperInterface`` implementieren.
+The central starting point for the bootstrap is the ``Bootstrap.php`` file in the main directory of a plug-in. |br|
+In this file, the ``Bootstrap`` class must be created in the *namespace* of the plug-in and this must implement
+the interface ``JTL\Plugin\BootstrapperInterface``.
 
-Das Interface sieht wie folgt aus:
+The interface looks like this:
 
 .. code-block:: php
 
@@ -108,59 +108,60 @@ Das Interface sieht wie folgt aus:
 
 .. danger::
 
-    Die Methode ``boot()`` der Klasse ``Bootstrap`` sollte ausschließlich dazu dienen, Hooks zu registrierten. |br|
-    Dieser Methode kommt eine zentrale Bedeutung zu: **Sie wird bei jedem Frontend- UND Backend-Aufruf
-    aufgerufen.** Ein Fehler in ``boot()`` kann deshalb dazu führen, dass das komplette Backend (und somit auch die
-    Möglichkeit, das fehlerhafte Plugin zu deinstallieren) versperrt ist.
+    The ``boot()`` method of the ``Bootstrap`` class should only be used for the purpose of registering hooks. |br|
+    This method is of crucial importance: **It will be called up with every front end AND back end
+    call.** Therefore, an error in ``boot()`` can then lead to the back end being completely blocked (and with that, the
+    possibility of uninstalling the problematic plug-in at all.
 
-    Beispiele hierfür wären Programmierfehler wie Endlosschleifen, nicht antwortende Server von Drittanbietern
-    und dergleichen. |br|
-    **Ein "Stopp" der Applikation an dieser Stelle stoppt auch die Administrationsobfläche!**
+    Examples of this are programming errors like infinite loops, unresponsive servers of third party providers
+    and the like. |br|
+    **A "stop" in the application at this point, will also stop the admin interface!**
 
-Implementierbare Methoden
+Implementable methods
 """""""""""""""""""""""""
 
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| Methode                                                                 | Hinweis zur Implementierung                                                       |
-+=========================================================================+===================================================================================+
-| ``installed()``                                                         | Wird unmittelbar nach der Installation eines Plugins aufgerufen. |br|             |
-|                                                                         | Bietet sich daher für Logik an, die einmalig ausgeführt werden muss, |br|         |
-|                                                                         | aber für Migrationen ungeeignet ist.                                              |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``updated($oldVersion, $newVersion)``                                   | Wird nach der Plugin-Aktualisierung über das Backend von JTL-Shop ausgeführt.     |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``enabled()``                                                           | Wird ausgeführt, nachdem ein Plugin aktiviert wurde.                              |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``disabled()``                                                          | Wird ausgeführt, nachdem ein Plugin deaktiviert wurde.                            |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``boot(Dispatcher $dispatcher)``                                        | Wird möglichst früh im Verlauf eines jeden Requests in JTL-Shop aufgerufen |br|   |
-|                                                                         | (sowohl im Kontext des Front- und Backends als auch während eines |br|            |
-|                                                                         | Abgleich mit JTL-Wawi).                                                           |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``uninstalled(bool $deleteData = true)``                                | Wird ausgeführt, nachdem ein Plugin im Backend komplett deinstalliert wurde. |br| |
-|                                                                         | Falls der Parameter TRUE ist, wünscht der Nutzer, dass Plugin-Daten |br|          |
-|                                                                         | permanent gelöscht werden sollen (bspw. Datenbanktabellen).                       |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty)`` | Kann genutzt werden, um HTML-Code für eigene Plugin-Tabs auszugeben, |br|         |
-|                                                                         | beispielsweise via ``$smarty->fetch()``.                                          |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
-| ``prepareFrontend(LinkInterface $link, JTLSmarty $smarty)``             | Kann genutzt werden, um in Smarty eigene Variablen vor der Anzeige von |br|       |
-|                                                                         | *Fontend Links* zu definieren. |br|                                               |
-|                                                                         | Sie sollte in diesem Fall TRUE zurückgeben.                                       |
-+-------------------------------------------------------------------------+-----------------------------------------------------------------------------------+
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| Methods                                                                 | Implementation information                                                             |
++=========================================================================+========================================================================================+
+| ``installed()``                                                         | Will be called up right after the installation of a plug-in. |br|                      |
+|                                                                         | It is therefore suitable for logic that needs to be executed once, |br|                |
+|                                                                         | but not suitable for migrations.                                                       |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``updated($oldVersion, $newVersion)``                                   | Will be executed in the back end of the JTL-Shop after plug-in updates.                |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``enabled()``                                                           | Will be executed after a plug-in is activated.                                         |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``disabled()``                                                          | Will be executed after a plug-in is deactivated.                                       |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``boot(Dispatcher $dispatcher)``                                        | Is called up as early as possible in the process of each request in the JTL-Store |br| |
+|                                                                         | (in both the front end and the back end, as well as during |br|                        |
+|                                                                         | synchronisation with JTL-Wawi).                                                        |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``uninstalled(bool $deleteData = true)``                                | Will be executed after a plug-in is completely uninstalled in the back end. |br|       |
+|                                                                         | In the case that the parameter is TRUE, this indicates that the user wants plug-in     |
+|                                                                         | data |br|                                                                              |
+|                                                                         | to be permanently deleted (data like database tables).                                 |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty)`` | Can be used to render HTML code for plug-in tabs, |br|                                 |
+|                                                                         | for example via ``$smarty->fetch()``.                                                  |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
+| ``prepareFrontend(LinkInterface $link, JTLSmarty $smarty)``             | Can be used to define variables in Smarty |br|                                         |
+|                                                                         | before displaying *front links*. |br|                                                  |
+|                                                                         | In this case, these should return as TRUE.                                             |
++-------------------------------------------------------------------------+----------------------------------------------------------------------------------------+
 
 .. _label_bootstrapping_eventdispatcher:
 
-Der EventDispatcher
+The EventDispatcher
 -------------------
 
-Innerhalb der ``boot()``-Methode können *EventListener* registriert werden, die sich als flexiblere Alternative
-zu Hooks anbieten. |br|
-Im Vergleich zu den via ``info.xml`` registrierten Hooks können *EventListener* dynamisch generiert werden.
+Within the ``boot()`` method, the *EventListener* can be registered, which offers a more flexible alternative
+to hooks. |br|
+Compared to the hooks registered via ``info.xml``, the *EventListener* can be dynamically generated.
 
-Jeder Hook erzeugt automatisch ein Event mit dem Namen ``shop.hook.<HOOK-ID>``. |br|
-Um also beispielsweise den Hook ``HOOK_ARTIKEL_CLASS_FUELLEARTIKEL`` zu nutzen, lässt sich Folgendes
-innerhalb der ``boot()``-Methode schreiben:
+Every hook automatically generates the name ``shop.hook.<HOOK-ID>``. |br|
+For example, to use the hook ``HOOK_ARTIKEL_CLASS_FUELLEARTIKEL``, the following
+can be written within the ``boot()`` method:
 
 .. code-block:: php
 
@@ -168,13 +169,13 @@ innerhalb der ``boot()``-Methode schreiben:
         $args['oArtikel']->cName = 'Neuer Name';
     });
 
-Dies hat den Vorteil, dass der Listener in Abhängigkeit einer Plugin-Option registriert werden kann. Somit wird
-der Hook, anders als bei statischen Hooks, die in der ``info.xml`` registriert wurden, nicht immer ausgeführt.|br|
-Auch muss so der objektorientierte Kontext des Bootstrappers nicht verlassen werden, während Hooks jeweils nur
-PHP-Dateien mit funktionalem Code aufrufen können.
+This offers an advantage in that the listener can be registered as dependent on a plug-in option. Therefore, unlike
+the static hooks that are registered in ``info.xml``, the hook is not always executed.|br|
+The object-oriented context of the bootstrap should not be left
+out, as hooks can only call up PHP files with functional code.
 
-Ab JTL-Shop 5.0.0 kann zudem auch die Priorität, ähnlich dem Hook-Knoten ``<priority>`` der ``info.xml``, als
-dritter Parameter angegeben werden:
+Starting from JTL-Shop 5.0.0, the priority, as is the case with the hook node ``<priority>`` of ``info.xml``, can be specified as
+a third parameter:
 
 .. code-block:: php
    :emphasize-lines: 10
@@ -192,10 +193,10 @@ dritter Parameter angegeben werden:
         );
     }
 
-Siehe auch Abschnitt "Die info.xml", :ref:`label_infoxml_hooks`.
+See also "Die info.xml", in :ref:`label_infoxml_hooks`.
 
-Innerhalb des Bootstrappers besteht via ``$this->getPlugin()`` immer Zugriff auf die Instanz des Plugins, sodass
-die Nutzung des PluginHelpers vermieden werden kann.
-Auch besteht via ``$this->getDB()`` Zugriff auf die Datenbank sowie via ``$this->getCache()`` auf den Objektcache.
-Es ist daher nicht nötig, diese Instanzen über den DI-Container ``Shop::Container()->getDB()`` oder
-``Shop::Container()->getCache()`` zu holen.
+Within the bootstrapper there is always access to the instance of the plug-in via ``$this->getPlugin()`, so that the use of
+the PluginHelper can be avoided.
+The database can also be accessed via ``$this->getDB()`` and object cache can be accessed via ``$this->getCache()``.
+It is, therefore, not necessary to retrieve these instances via the DI container ``Shop::Container()->getDB()`` or
+``Shop::Container()->getCache()``.

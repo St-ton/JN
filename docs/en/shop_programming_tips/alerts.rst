@@ -5,9 +5,9 @@ Alerts
 
    <br />
 
-Alle Alerts (Meldungen wie z. B. Fehler/Hinweise) werden ab JTL-Shop 5.0 mit dem Alert-Service erzeugt.
+All alerts (messages like error messages or warnings) starting from JTL-Shop version 5.0 will be generated via the alert service.
 
-Den *Alert*-Service beziehen Sie über die Shop-Klasse:
+You can obtain the *alert* service via the shop class:
 
 .. code-block:: php
 
@@ -17,12 +17,12 @@ Den *Alert*-Service beziehen Sie über die Shop-Klasse:
 
     $alertHelper = Shop::Container()->getAlertService();
 
-Eine Meldung wird mithilfe der Methode ``addAlert()`` erzeugt. |br|
-Diese Methode kennt die drei Parameter *type*, *message* und *key*. Für den Parameter *type* können Sie die Konstanten
-der *Alert*-Klasse nutzen:
+A message will be generated using the ``addAlert()`` method. |br|
+This method recognises the three parameters *type*, *message*, and *key*. For the *type* parameter, you can use the *alert* class
+constants:
 
 +--------------------+--------------------------------------------+
-| Konstante          | Wert                                       |
+| Constants          | Value                                      |
 +====================+============================================+
 | ``TYPE_PRIMARY``   | *primary*                                  |
 +--------------------+--------------------------------------------+
@@ -40,30 +40,30 @@ der *Alert*-Klasse nutzen:
 +--------------------+--------------------------------------------+
 | ``TYPE_DARK``      | *dark*                                     |
 +--------------------+--------------------------------------------+
-| ``TYPE_ERROR``     | *error* (ehemals für ``$cFehler`` genutzt) |
+| ``TYPE_ERROR``     | *error* (previously used for ``$cFehler``) |
 +--------------------+--------------------------------------------+
-| ``TYPE_NOTE``      | *note* (ehemals für ``$cHinweis`` genutzt) |
+| ``TYPE_NOTE``      | *note* (previously used for ``$cHinweis``) |
 +--------------------+--------------------------------------------+
 
-Die Spalte *Wert* steht für die jeweilige Bootstrap 4 CSS-Klasse.
+The *value* column represents the respective Bootstrap 4 CSS class.
 
 .. code-block:: php
 
     <?php
 
-    $alertHelper->addAlert(Alert::TYPE_INFO, 'Das ist eine Testinfo!', 'testInfo');
+    $alertHelper->addAlert(Alert::TYPE_INFO, 'This is just test info!', 'testInfo');
 
-Der Typ wird als CSS-Klasse ``alert-type`` für das jeweilige *Alert* hinzugefügt, was in diesem Beispiel einer
-Bootstrap 4 *alert-info*-Klasse entspricht. |br|
-Der letzte Parameter *key* stellt einen Schlüssel-String dar, über welchen ein Alert identifiziert und ggf.
-überschrieben werden kann. Dieser *key* wird zudem im HTML ausgegeben (data-Attribut ``data-key``) und ist per
-Javascript/CSS ansprechbar.
+The type is added as a CSS class ``alert-type`` for the respective *alert*, which corresponds to a
+Bootstrap 4 *alert-info* class in this particular example. |br|
+The last *key* parameter represents a key string, through which an alert can be identified and overwritten, if
+necessary. This *key* is also displayed in HTML (data-Attribut ``data-key``) and is addressable via
+Javascript/CSS.
 
-Optionen
---------
+Options
+-------
 
-Des Weiteren können dem *Alert* Optionen übergeben werden. |br|
-Mit der Option *dismissable* kann z. B. erzwungen werden, das *Alert* erst durch Benutzerinteraktion zu schließen.
+Furthermore, options can be assigned to the *alert*. |br|
+The *dismissable* option can be used, for example, to force the *alert* to be closed only through user interaction.
 
 .. code-block:: php
 
@@ -71,48 +71,49 @@ Mit der Option *dismissable* kann z. B. erzwungen werden, das *Alert* erst durch
 
     $alertHelper->addAlert(
         Alert::TYPE_INFO,
-        'Das ist eine Testinfo!',
+        'This is just test info!',
         'testInfo',
         ['dismissable' => true]
     );
 
-Alle möglichen Optionen:
+All possible options:
 
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| Option                      | Typ    | Default | Beschreibung                                                    |
+| Option                      | Type    | Default | Description                                                    |
 +=============================+========+=========+=================================================================+
-| ``dismissable``             | bool   | false   | Alert wegklickbar                                               |
+| ``dismissable``             | bool   | false   | alert can be clicked away                                       |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``fadeOut``                 | int    |  0      | Fadeout Timer (z. B. per Konstante: ``Alert::FADE_SLOW`` =9000, |
-|                             |        |         | was 9 Sekunden entspricht, oder direkt einen Integer eingeben)  |
+| ``fadeOut``                 | int    |  0      | fadeOut (e.g. via the constant: ``Alert::FADE_SLOW`` =9000,     |
+|                             |        |         | which corresponds to 9 seconds. Alternatively, type in any      |
+|                             |        |         | integer)                                                        |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``showInAlertListTemplate`` | bool   | true    | Alert an zentraler Stelle im Header ausgeben                    |
+| ``showInAlertListTemplate`` | bool   | true    | Display alert in the centre of the header                       |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``saveInSession``           | bool   | false   | Alert in der *SESSION* speichern (z. B. für Redirects)          |
+| ``saveInSession``           | bool   | false   | save alert in the *SESSION* (e.g. for redirects)                |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``linkHref``                | string |         | Ganzes Alert als Link                                           |
+| ``linkHref``                | string |         | entire alert as a link                                          |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``linkText``                | string |         | Wenn ``linkHref`` und ``linkText`` gesetzt sind, wird           |
-|                             |        |         | an die Message der Text als Link angehängt                      |
+| ``linkText``                | string |         | If ``linkHref`` and ``linkText`` set, then                      |
+|                             |        |         | text in the message will be attached as a link                  |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``icon``                    | string |         | *Fontawesome*-Icon                                              |
+| ``icon``                    | string |         | *Font Awesome* icon                                             |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
-| ``id``                      | string |         | Fügt dem HTML den Wert der ``id`` hinzu                         |
+| ``id``                      | string |         | attaches the value of the ``id`` to the HTML                    |
 +-----------------------------+--------+---------+-----------------------------------------------------------------+
 
-Anzeige im Frontend
--------------------
+Display in the front end
+------------------------
 
-Die Alerts werden in der Smarty-Variable ``alertList`` als Collection gespeichert. Alle Alerts, bei denen
+Alerts will be saved as a collection in the Smarty variable ``alertList``. All alerts for which
 ``showInAlertListTemplate === true`` gesetzt ist, werden zentral im Header ausgegeben.
 
 .. code-block:: html+smarty
 
     {include file='snippets/alert_list.tpl'}
 
-Falls Sie ein Alert statt im Header an einer speziellen Stelle in einem Template ausgeben lassen wollen,
-dann setzen Sie die Option ``showInAlertListTemplate`` auf ``false``. Geben Sie dann das *Alert* an gewünschter Stelle
-wie folgt aus:
+In the event that you wish to display the alert in a certain place within the template, as opposed to the header,
+simply set the option ``showInAlertListTemplate`` to ``false``. Then, display *alert* wherever desired as
+follows:
 
 .. code-block:: html+smarty
 

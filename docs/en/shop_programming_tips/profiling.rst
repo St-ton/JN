@@ -8,36 +8,36 @@ Profiling
 MySQL
 -----
 
-Analog zum :doc:`Plugin-Profiling </shop_plugins/profiling>` erlaubt der Schalter ``PROFILE_QUERIES``, wenn er in der
-config-Datei des Onlineshops auf ``true`` gesetzt ist, das Mitschneiden von MySQL-Abfragen und der Dauer deren
-Ausführung.
+As is the case with :doc:`Plugin-Profiling </shop_plugins/profiling>`, the ``PROFILE_QUERIES`` switch allows for
+the recording of MySQL queries and their running time, if it is set to ``true`` in the configuration file of the
+online shop.
 
-Auch diese Daten werden im Profiler-Bereich des Backends im Tab SQL dargestellt. |br|
-Je nach konfiguriertem ``DEBUG_LEVEL`` (Integer-Wert von 0-4) werden mehr oder weniger detaillierte Statistiken zu
-abgsetzten SQL-Abfragen über die *NiceDB*-Klasse protokolliert. |br|
-Dabei werden die Abfragen des aktuellen Seitenaufrufs gezählt, die Gesamtanzahl ausgegeben oder die betroffenen
-Tabellen genannt. Bei einem *Debug-Level > 3* erfolgt außerdem ein Backtrace, der die aufrufende Funktion und Datei
-ausgibt.
+This data will also be shown in the profiler area of the back end, in the SQL tab. |br|
+Depending on the configured ``DEBUG_LEVEL`` (integer value of 0-4), more or less detailed statistics on run
+SQL queries are recorded via the *NiceDB* class. |br|
+Here, the queries of the current page call will then be counted, the total number will be output, or the affected tables will be
+named. However, during a *Debug-Level > 3*, a backtrace also takes place, which outputs the calling function and
+file.
 
 .. note::
 
-    Beachten Sie bitte, dass bei *Joins* einzelne Abfragen mehrfach unter den einzelnen Tabellennamen erscheinen.
+    Please note that with *join clauses*, individual queries will appear multiple times under individual table names.
 
 XHProf
 ------
 
-Der Schalter ``PROFILE_SHOP`` aktiviert *XHProf*, wenn auf ``true`` gesetzt.
+The ``PROFILE_SHOP`` switch activates *XHProf*, if set to ``true``.
 
-Dazu muss *XHProf* installiert und konfiguriert sein. Zudem müssen die Ordner ``xhprof_html/`` und ``xhprof_lib/`` in
-den Root-Ordner des Onlineshops kopiert bzw. verlinkt werden. |br|
-Ein Link zum jeweiligen Profil wird anschließend an das Ende des DOMs (via eines einfachen ECHOs) geschrieben. Das ist
-zwar nicht konform mit dem HTML-Standard, funktioniert für diesen Zweck jedoch sehr gut. Der etwas elegantere Weg wäre
-die Installation von *xhgui*, was aber die Installation eines *MongoDB*-Servers erfordert. *Xhgui* kann anschließend
-auf diese Daten ebenfalls zugreifen und bietet eine etwas hübschere Oberfläche.
+Therefore, *XHProf* must be already installed and configured. Additionally, the ``xhprof_html/`` and ``xhprof_lib/`` directories
+must be linked and copied to the root directory of the online shop. |br|
+A link to the relevant profile is then added to the end of the DOM, via a simple echo command. This is not
+compliant with HTML standards. However, it does function quite nicely for this purpose in particular. A more elegant way of doing this could be done
+by installing *xhgui*, which first requires the installation of a *MongoDB* server. *Xhgui* can then access this data
+as well, while providing a nicer interface.
 
-Plugin-Profiling
-----------------
+Plug-in profiling
+-----------------
 
-Auch für die Ausführungszeitmessung von Plugins steht eine JTL-Shop-interne Möglichkeit bereit. |br|
+Even for plug-in runtime measurement, there is an internal JTL-Shop option for this. |br|
 
-Weiter Informationen entnehmen Sie bitte dem Abschnitt :doc:`"Plugin-Profiling" </shop_plugins/profiling>`.
+For further information, please see: doc:`"Plugin-Profiling" </shop_plugins/profiling>`.

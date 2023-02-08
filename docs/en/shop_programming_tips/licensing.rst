@@ -1,45 +1,45 @@
-Lizenzierung
-============
+Licencing
+=========
 
 .. |br| raw:: html
 
    <br />
 
-Plugin- und Template-Lizensierung (ab Shop 5.0.0)
--------------------------------------------------
+Plug-in and template licensing (Shop 5.0.0 and later versions)
+--------------------------------------------------------------
 
-**Voraussetzung:**
+**Prerequisites:**
 
-Als Erstes müssen Sie Ihr neues Plugin/Template im JTL-Kundencenter anlegen und eine ``EsxID`` für dieses
-Plugin/Template generieren.
+First things first, you have to create your new template/plug-in in the JTL-Customer Centre and generate a
+new ``EsxID`` for this template/plug-in.
 
-Loggen Sie sich hierzu in Ihr Kundencenter in den
-Bereich `Erweiterungen verwalten <https://kundencenter.jtl-software.de/sellerprogramm/erweiterungen-verwalten>`_ ein
-und legen Sie dort eine neue Erweiterung des gewünschten Typs (JTL-Shop 5 Plugin oder JTL-Shop 5 Template) an. (Bitte
-Beachten Sie, dass Sie das Onboarding für Seller durchlaufen haben müssen, um Ihre Plugins und Templates im
-JTL-Extension Store anbieten zu können)
+To do this, log in to your customer centre in the
+area `Manage extensions <https://kundencenter.jtl-software.de/sellerprogramm/erweiterungen-verwalten>`_ and
+create a new extension of your choice, either the JTL-Shop 5 plug-in or template. (Please
+note that you need to have gone through seller onboarding to be able to offer your plug-ins and templates in
+the JTL Extension Store).
 
 .. image:: /_images/lic_cust_centre_login.png
 
-Mit Erstellung der neuen Erweiterung wird auch sofort eine dazugehörige ExsID generiert.
+Upon creating the new extension, a corresponding ExsID will also be automatically generated.
 
 .. image:: /_images/lic_exs_id.png
 
 ExsID
 """""
 
-Die ``ExsID`` tragen Sie in der ``info.xml`` Ihres Plugins, bzw. in der ``template.xml`` Ihres Templates, ein.
+Enter the ``ExsID`` in the ``info.xml`` of your plug-in or in the ``template.xml`` of your template.
 
-**Beispiel für ein Plugin:**
+**Plug-in example:**
 
 .. code-block:: xml
    :emphasize-lines: 12
 
     <?xml version="1.0" encoding="UTF-8"?>
     <jtlshopplugin>
-        <Name>Mein Beispielplugin</Name>
-        <Description>Tut überhaupt rein gar nichts</Description>
-        <Author>Max Mustermann</Author>
+        <Name>My Hypothetical Plug-in</Name>
+        <Description>Does not do anything, because it is just an example</Description>
+        <Author>John Smith</Author>
         <URL>https://www.example.com</URL>
         <XMLVersion>100</XMLVersion>
         <ShopVersion>5.0.0</ShopVersion>
@@ -53,16 +53,16 @@ Die ``ExsID`` tragen Sie in der ``info.xml`` Ihres Plugins, bzw. in der ``templa
     </jtlshopplugin>
 
 
-**Beispiel für ein Template:**
+**Template example:**
 
 .. code-block:: xml
    :emphasize-lines: 11
 
     <?xml version="1.0" encoding="utf-8" standalone="yes"?>
     <Template isFullResponsive="true">
-        <Name>MeinTemplate</Name>
-        <Description>Beispiel</Description>
-        <Author>Max Mustermann</Author>
+        <Name>MyTemplate</Name>
+        <Description>Example</Description>
+        <Author>John Smith</Author>
         <URL>https://www.example.com</URL>
         <MinShopVersion>5.0.0</MinShopVersion>
         <Version>1.0.0</Version>
@@ -77,45 +77,45 @@ Die ``ExsID`` tragen Sie in der ``info.xml`` Ihres Plugins, bzw. in der ``templa
         </Boxes>
     </Template>
 
-Falls Sie Ihr Plugin oder Template kostenlos zur Verfügung stellen wollen, sind ab hier keine weiteren Schritte
-erforderlich. |br|
-Das Plugin ist nun über das Backend von JTL-Shop installierbar und updatebar.
+If you want to offer your plug-in or template free of charge, then you do not need to take any additional
+steps. |br|
+The plug-in can now be updated and installed via the JTL-Shop back end.
 
-Falls Sie Testlizenzen ausgestellt haben, werden Plugins mit abgelaufenen Testlizenzen automatisch deaktiviert.
+If you have issued trial licenses, plug-ins with expired trial licences will be automatically deactivated.
 
-Die PluginID beim Updaten
--------------------------
+Plug-in ID when updating
+------------------------
 
-Mit der korrekten Pflege der Plugin ID können Sie sicherstellen, dass Ihr Plugin korrekt geupdatet wird. Eine
-versionsübergreifend identische Benennung der ``PluginID`` und des dazugehörigen Installationsordners gewährleisten,
-dass Plugins sich aktualisieren können.
+With proper use of the plug-in ID, you can be sure that your plug-in is correctly updated. Identical
+naming of the ``PluginID`` and its installation folder across versions ensures that plug-ins can
+update themselves.
 
-Wenn die Benennungen der PluginID und des dazugehörigen Installationsordners zwischen 2 Versionen Unterschiede
-aufweisen, wird JTL-Shop keine Aktualisierung des bestehenden Plugins vornehmen, sondern eine separate Neuinstallation
-vornehmen, so dass am Ende 2 unterschiedliche Versionen desselben Plugins installiert sind.
+If the names of the PluginID and its installation folder have disparities between 2 versions, JTL-Shop will not update
+the existing plug-in, but rather perform a separate reinstallation, so that in the end 2 different versions of the same plug-in are
+installed.
 
-Stellen Sie daher sicher, dass über alle Versionen Ihres Plugins hinweg Die ``PluginID`` in der ``info.xml``, der
-Installationsorder des Plugins sowie das Feld ``PluginID`` bei der Pflege der Erweiterung im Kundencenter immer exakt
-identisch benannt sind, um derartige Fehler zu vermeiden.
+Therefore, ensure that across all versions of your plug-ins, the ``PluginID`` in the ``info.xml`` file, the plug-in’s installation
+folder, as well as the field ``PluginID`` are named exactly the same when maintaining the extension in the Customer Centre , in
+order to avoid any related errors.
 
-Lizenzprüfung
+Licence check
 -------------
 
-Für den Fall dass die Lizenz/Subscription manuell geprüft werden soll, bietet der Shop einige Möglichkeiten.
+In the case that the licence or subscription must be checked manually, the shop provides some solutions for this.
 
 Bootstrapping
 """""""""""""
 
-In der ``Bootstrap.php`` des Plugins oder Templates kann die Methode
-``BootstrapperInterface::licenseExpired(ExsLicense $license): void`` implementiert werden. Diese Methode wird immer
-dann aufgerufen, wenn JTL-Shop auf abgelaufene Extensions prüft. |br|
-Dies findet via Cronjob alle 4 Stunden statt, sowie bei jeder Aktualisierung der Lizenzübersicht im Backend.
+The method ``BootstrapperInterface::licenseExpired(ExsLicense $license): void``can
+be implemented in the ``Bootstrap.php`` plug-in or template. This method is called up when
+JTL-Shop checks for expired extensions. |br|
+This is conducted every 4 hours by Cronjob and each time the licence overview is updated in the back end.
 
 
-Getter für Plugins
-""""""""""""""""""
+Getter for plug-ins
+"""""""""""""""""""
 
-Am License-Objekt von Plugin-Instanzen gibt es stets einen Getter für die zugehörige Lizenz.
+For the licence object of a plug-in instance, there is always a getter for the associated licence.
 
 .. code-block:: php
 
@@ -123,10 +123,10 @@ Am License-Objekt von Plugin-Instanzen gibt es stets einen Getter für die zugeh
     $subscription = $plugin->getLicense()->getExsLicense()->getLicense()->getSubscription();
 
 
-Getter für Templates
+Getter for templates
 """"""""""""""""""""
 
-Auch an Templatemodel-Instanzen gibt es einen entsprechenden Getter.
+Even for template model instances, there is a getter.
 
 .. code-block:: php
 
@@ -134,11 +134,11 @@ Auch an Templatemodel-Instanzen gibt es einen entsprechenden Getter.
     $subscription = $template->getExsLicense()->getLicense()->getSubscription()
 
 
-License-Manager
+License manager
 """""""""""""""
 
-Um an beliebigen Stellen die Lizenz für eine beliebige Extension zu erhalten (insbesondere hilfreich bei "*InApp
-Purchases*") existiert der License-Manager.
+The license manager is used to get the licence for any extension (especially useful for "*InApp
+Purchases*").
 
 .. code-block:: php
 
@@ -146,10 +146,10 @@ Purchases*") existiert der License-Manager.
     $subscription = $manager->getLicenseByExsID('some_exs_id');
 
 
-Komplexe Beispiele
-------------------
+Complex examples
+----------------
 
-Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Templates zeigt das folgende Codebeispiel.
+The different possibilities in the ``Bootstrap.php`` of a (child) template are shown in the following code example.
 
 .. code-block:: php
 
@@ -174,18 +174,18 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
         {
             $license = $this->getTemplate()->getExsLicense();
             if ($license === null) {
-                die('Nanu? Keine Lizenz.');
+                die('Oops! No licence.');
             }
             if ($license->getLicense()->getSubscription()->getDaysRemaining() < 14) {
-                echo 'Achtung! Subscription läuft bald aus!';
+                echo 'Warning! Subscription expires soon!';
             } elseif ($license->getLicense()->getDaysRemaining() < 14) {
-                echo 'Achtung! Lizenz läuft bald aus!';
+                echo 'Warning! Licence expires soon!';
             } elseif ($license->getLicense()->isExpired()) {
                 // FALLBACK to default template
                 Shop::Container()->getTemplateService()->setActiveTemplate('NOVA');
-                die('Bitte erwerben Sie eine neue Lizenz!');
+                die('Please obtain a new licence!');
             } elseif ($license->getLicense()->getSubscription()->isExpired()) {
-                die('Bitte erwerben Sie eine neue Subscription!');
+                die('Please obtain a new subscription!');
             }
         }
 
@@ -204,16 +204,16 @@ Die verschiedenen Möglichkeiten in der ``Bootstrap.php`` eines (Child-)Template
 
         public function licenseExpired(ExsLicense $license): void
         {
-            echo 'Argh! Meine Lizenz ist abgelaufen!';
+            echo 'Aah! The licence is expired!';
             // FALLBACK to default template
             Shop::Container()->getTemplateService()->setActiveTemplate('NOVA');
         }
     }
 
 
-Analog dazu funktionieren die Methoden aus der ``Bootstrap.php`` eines Plugins. |br|
-Hier besteht zusätzlich die Möglichkeit, auch Plugins über den Aufruf von ``JTL\Plugin\Plugin::selfDescruct()`` hart
-zu deaktivieren.
+Similarly, the methods from the ``Bootstrap.php`` of a plug-in will work. |br|
+Here, you also have the option to forcefully disable plug-ins by calling up ``JTL\Plugin\Plugin::selfDescruct()``
+.
 
 
 .. code-block:: php

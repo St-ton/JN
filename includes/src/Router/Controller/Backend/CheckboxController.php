@@ -6,6 +6,7 @@ use JTL\Backend\Permissions;
 use JTL\CheckBox;
 use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Customer\CustomerGroup;
+use JTL\Exceptions\PermissionException;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -24,6 +25,7 @@ class CheckboxController extends AbstractBackendController
 {
     /**
      * @inheritdoc
+     * @throws PermissionException
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
@@ -34,7 +36,7 @@ class CheckboxController extends AbstractBackendController
         $step     = 'uebersicht';
         $checkbox = new CheckBox(0, $this->db);
         $tab      = $step;
-        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
+        if (Request::verifyGPDataString('tab') !== '') {
             $tab = Request::verifyGPDataString('tab');
         }
         if (isset($_POST['erstellenShowButton'])) {
@@ -111,13 +113,13 @@ class CheckboxController extends AbstractBackendController
 
             return $checks;
         }
-        if (!isset($post['cName']) || \mb_strlen($post['cName']) === 0) {
+        if (!isset($post['cName']) || $post['cName'] === '') {
             $checks['cName'] = 1;
         }
         $text = false;
         $link = true;
         foreach ($languages as $language) {
-            if (\mb_strlen($post['cText_' . $language->getIso()]) > 0) {
+            if ($post['cText_' . $language->getIso()] !== '') {
                 $text = true;
                 break;
             }
@@ -140,13 +142,13 @@ class CheckboxController extends AbstractBackendController
                 }
             }
         }
-        if (!isset($post['nPflicht']) || \mb_strlen($post['nPflicht']) === 0) {
+        if (!isset($post['nPflicht']) || $post['nPflicht'] === '') {
             $checks['nPflicht'] = 1;
         }
-        if (!isset($post['nAktiv']) || \mb_strlen($post['nAktiv']) === 0) {
+        if (!isset($post['nAktiv']) || $post['nAktiv'] === '') {
             $checks['nAktiv'] = 1;
         }
-        if (!isset($post['nLogging']) || \mb_strlen($post['nLogging']) === 0) {
+        if (!isset($post['nLogging']) || $post['nLogging'] === '') {
             $checks['nLogging'] = 1;
         }
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
@@ -165,7 +167,6 @@ class CheckboxController extends AbstractBackendController
      * @param array $post - pre-filtered post data
      * @param array $languages
      * @return CheckBox
-     * @throws \Exception
      * @former speicherCheckBox()
      */
     private function save(array $post, array $languages): CheckBox

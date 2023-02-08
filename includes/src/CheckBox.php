@@ -22,6 +22,9 @@ use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
 use JTL\Session\Frontend;
+use Monolog\Logger;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use stdClass;
 
 /**
@@ -165,6 +168,10 @@ class CheckBox
      */
     protected CheckboxLanguageService $languageService;
 
+    protected Logger $logService;
+
+    protected bool $loggerAvailable = true;
+
     /**
      * @param int              $id
      * @param DbInterface|null $db
@@ -184,6 +191,11 @@ class CheckBox
     {
         $this->service         = new CheckboxService(new CheckBoxRepository());
         $this->languageService = new CheckboxLanguageService(new CheckboxLanguageRepository());
+        try {
+            $this->logService = Shop::Container()->getLogService();
+        } catch (Exception) {
+            $this->loggerAvailable = false;
+        }
     }
 
     /**
@@ -295,7 +307,9 @@ class CheckBox
             try {
                 $this->oLink->load($this->kLink);
             } catch (InvalidArgumentException) {
-                Shop::Container()->getLogService()->error('Checkbox cannot link to link ID ' . $this->kLink);
+                if ($this->loggerAvailable) {
+                    $this->logService->error('Checkbox cannot link to link ID ' . $this->kLink);
+                }
             }
         } else {
             $this->cLink = 'kein interner Link';
@@ -381,6 +395,10 @@ class CheckBox
      * @param array $post
      * @param array $params
      * @return $this
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \SmartyException
      */
     public function triggerSpecialFunction(
         int   $location,
@@ -611,7 +629,6 @@ class CheckBox
     /**
      * @param CheckboxDataTableObject $checkboxDTO
      * @return $this
-     * @throws Exception
      */
     public function save(CheckboxDataTableObject $checkboxDTO): self
     {
@@ -640,9 +657,9 @@ class CheckBox
         }
         foreach ($checkboxDTO->getLanguages() as $iso => $texts) {
             $this->oCheckBoxSprache_arr[$iso] = [
-                'kCheckBox'    => $checkboxDTO->getID(),
-                'kSprache'     => $this->getSprachKeyByISO($iso),
-                'cText'        => $texts['text'],
+                'kCheckBox'     => $checkboxDTO->getID(),
+                'kSprache'      => $this->getSprachKeyByISO($iso),
+                'cText'         => $texts['text'],
                 'cBeschreibung' => $texts['descr'],
             ];
         }
@@ -653,7 +670,6 @@ class CheckBox
      * @param array|null                   $descriptions
      * @param CheckboxDataTableObject|null $checkboxDTO
      * @return $this
-     * @throws Exception
      */
     public function insertDB(
         ?array                   $texts = [],
@@ -746,8 +762,6 @@ class CheckBox
      * @param object $customer
      * @param int    $location
      * @return bool
-     * @throws Exceptions\CircularReferenceException
-     * @throws Exceptions\ServiceNotFoundException
      */
     private function sfCheckBoxNewsletter($customer, int $location): bool
     {
@@ -766,8 +780,10 @@ class CheckBox
                 ->getOptinInstance()
                 ->createOptin($refData, $location)
                 ->sendActivationMail();
-        } catch (Exception $e) {
-            Shop::Container()->getLogService()->error($e->getMessage());
+        } catch (Exception) {
+            if ($this->loggerAvailable) {
+                $this->logService->error('Checkbox cannot link to link ID ' . $this->kLink);
+            }
         }
 
         return true;
@@ -778,6 +794,10 @@ class CheckBox
      * @param object $checkBox
      * @param int    $location
      * @return bool
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws \SmartyException
      */
     public function sfCheckBoxMailToAdmin($customer, $checkBox, int $location): bool
     {

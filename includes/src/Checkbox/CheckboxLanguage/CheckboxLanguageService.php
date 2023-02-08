@@ -29,26 +29,26 @@ class CheckboxLanguageService extends AbstractService
     }
 
     /**
-     * @param AbstractDataObject $checkboxLanguage
+     * @param AbstractDataObject $updateDTO
      * @return bool
      */
-    public function update(AbstractDataObject $checkboxLanguage): bool
+    public function update(AbstractDataObject $updateDTO): bool
     {
-        if (!$checkboxLanguage instanceof CheckboxLanguageDataTableObject) {
+        if (!$updateDTO instanceof CheckboxLanguageDataTableObject) {
             return false;
         }
         //need checkboxLanguageId, not provided by post
         $languageList = $this->getList([
-            'kCheckBox' => $checkboxLanguage->getCheckboxID(),
-            'kSprache'  => $checkboxLanguage->getLanguageID()
+            'kCheckBox' => $updateDTO->getCheckboxID(),
+            'kSprache'  => $updateDTO->getLanguageID()
         ]);
         $language     = $languageList[0] ?? null;
         if (\is_null($language)) {
-            return $this->insert($checkboxLanguage) > 0;
+            return $this->insert($updateDTO) > 0;
         }
-        $checkboxLanguage->setCheckboxLanguageID($language->getCheckboxLanguageID());
+        $updateDTO->setCheckboxLanguageID($language->getCheckboxLanguageID());
 
-        return $this->repository->update($checkboxLanguage);
+        return $this->repository->update($updateDTO);
     }
 
     /**

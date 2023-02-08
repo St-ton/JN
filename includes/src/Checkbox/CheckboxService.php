@@ -27,6 +27,7 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
+        $res = false;
         if ($this->repository instanceof CheckboxRepository) {
             $res = $this->repository->activate($checkboxIDs);
             Shop::Container()->getCache()->flushTags(['checkbox']);
@@ -41,9 +42,11 @@ class CheckboxService extends AbstractService
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        $res = $this->repository->deactivate($checkboxIDs);
-        Shop::Container()->getCache()->flushTags(['checkbox']);
-
+        $res = false;
+        if ($this->repository instanceof CheckboxRepository) {
+            $res = $this->repository->deactivate($checkboxIDs);
+            Shop::Container()->getCache()->flushTags(['checkbox']);
+        }
         return $res;
     }
 

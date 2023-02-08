@@ -5,7 +5,6 @@ JTL-Shop Entwickler-Dokumentation
 
    <br />
 
-Englisch:
 Diese Dokumentation richtet sich vorwiegend an Entwickler von *Plugins* und *Templates* für JTL-Shop |br|
 und ambitionierte Programmierer, die sich an der Weiterentwicklung von JTL-Shop beteiligen möchten.
 

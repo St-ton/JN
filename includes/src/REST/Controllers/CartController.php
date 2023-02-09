@@ -48,7 +48,8 @@ class CartController extends AbstractController
      * @OA\Get(
      *   path="/cart",
      *   tags={"cart"},
-     *   summary="list carts",
+     *   summary="List carts",
+     *   description="List all carts",
      *   @OA\Response(
      *     response=200,
      *     description="A list with products"
@@ -57,6 +58,90 @@ class CartController extends AbstractController
      *     response="default",
      *     description="an ""unexpected"" error"
      *   )
+     * )
+     * @OA\Delete(
+     *     path="/cart/{cartId}",
+     *     description="Deletes a single cart based on the ID supplied",
+     *     summary="Delete a single cart",
+     *     operationId="deleteCart",
+     *     tags={"cart"},
+     *     @OA\Parameter(
+     *         description="ID of cart to delete",
+     *         in="path",
+     *         name="cartId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Cart deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Categoty not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/cart/{cartId}",
+     *     tags={"cart"},
+     *     operationId="updateCart",
+     *     summary="Update an existing cart",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Cart object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Cart not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/cart",
+     *     tags={"cart"},
+     *     operationId="createCart",
+     *     summary="Create a new cart",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Cart object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="An array of validation errors",
+     *         @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                  property="invalid_fields",
+     *                  type="object",
+     *                  @OA\Property(property="name",type="string",example="The Name is required"),
+     *                  @OA\Property(property="description",type="string",example="The Description maximum is 255")
+     *              )
+     *          ),
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Create cart object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *     )
      * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void

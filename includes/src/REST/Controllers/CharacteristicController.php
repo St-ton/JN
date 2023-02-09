@@ -28,6 +28,109 @@ class CharacteristicController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/characteristic",
+     *   tags={"characteristic"},
+     *   summary="List characteristics",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with characteristics"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Characteristics not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/characteristic/{characteristicId}",
+     *     tags={"characteristic"},
+     *     description="Get a characteristic by ID",
+     *     summary="Get a characteristic by ID",
+     *     operationId="getCharacteristicById",
+     *     @OA\Parameter(
+     *         name="characteristicId",
+     *         in="path",
+     *         description="ID of characteristic that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CharacteristicModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Characteristic not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/characteristic/{characteristicId}",
+     *     description="Deletes a single characteristic based on the ID supplied",
+     *     summary="Delete a single characteristic",
+     *     operationId="deleteCharacteristic",
+     *     tags={"characteristic"},
+     *     @OA\Parameter(
+     *         description="ID of characteristic to delete",
+     *         in="path",
+     *         name="characteristicId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Characteristic deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Characteristic not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/characteristic/{characteristicId}",
+     *     tags={"characteristic"},
+     *     operationId="updateCharacteristic",
+     *     summary="Update an existing characteristic",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Characteristic object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CharacteristicModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Characteristic not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/characteristic",
+     *     tags={"characteristic"},
+     *     operationId="createCharacteristic",
+     *     summary="Create a new characteristic",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Characteristic object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CharacteristicModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

@@ -37,7 +37,7 @@ class ProductController extends AbstractController
      * @OA\Get(
      *   path="/product",
      *   tags={"product"},
-     *   summary="list products",
+     *   summary="List products",
      *   @OA\Response(
      *     response=200,
      *     description="A list with products"
@@ -51,6 +51,7 @@ class ProductController extends AbstractController
      *     path="/product/{productId}",
      *     tags={"product"},
      *     description="Get a product by ID",
+     *     summary="Get a product by ID",
      *     operationId="getProductById",
      *     @OA\Parameter(
      *         name="productId",
@@ -69,6 +70,46 @@ class ProductController extends AbstractController
      *     @OA\Response(
      *         response=404,
      *         description="Product not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/product/{productId}",
+     *     tags={"product"},
+     *     operationId="updateProduct",
+     *     summary="Update an existing product",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Product object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Product not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/product",
+     *     tags={"product"},
+     *     operationId="createProduct",
+     *     summary="Create a new product",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Product object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
      *     )
      * )
      */

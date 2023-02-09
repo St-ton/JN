@@ -26,6 +26,109 @@ class CategoryAttributeController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/categoryattribute",
+     *   tags={"categoryattribute"},
+     *   summary="List category attributes",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with category attributes"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Category attributes not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/categoryattribute/{categoryattributeId}",
+     *     tags={"categoryattribute"},
+     *     description="Get a category attribute by ID",
+     *     summary="Get a category attribute by ID",
+     *     operationId="getCategoryattributeById",
+     *     @OA\Parameter(
+     *         name="categoryattributeId",
+     *         in="path",
+     *         description="ID of category attribute that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryAttributeModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category attribute not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/categoryattribute/{categoryattributeId}",
+     *     description="Deletes a single category attribute based on the ID supplied",
+     *     summary="Delete a single category attribute",
+     *     operationId="deleteCategoryAttribute",
+     *     tags={"categoryattribute"},
+     *     @OA\Parameter(
+     *         description="ID of category attribute to delete",
+     *         in="path",
+     *         name="categoryattributeId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Category attribute deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category attribute not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/categoryattribute/{categoryattributeId}",
+     *     tags={"categoryattribute"},
+     *     operationId="updateCategoryAttribute",
+     *     summary="Update an existing category attribute",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="CategoryAttribute object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryAttributeModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category attribute not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/categoryattribute",
+     *     tags={"categoryattribute"},
+     *     operationId="createCategoryAttribute",
+     *     summary="Create a new category attribute",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="CategoryAttribute object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryAttributeModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

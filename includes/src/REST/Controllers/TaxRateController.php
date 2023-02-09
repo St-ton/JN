@@ -26,6 +26,109 @@ class TaxRateController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/taxrate",
+     *   tags={"taxrate"},
+     *   summary="List tax rates",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with tax rates"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Tax rates not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/taxrate/{taxrateId}",
+     *     tags={"taxrate"},
+     *     description="Get a tax rate by ID",
+     *     summary="Get a tax rate by ID",
+     *     operationId="getTaxrateById",
+     *     @OA\Parameter(
+     *         name="taxrateId",
+     *         in="path",
+     *         description="ID of tax rate that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/TaxRateModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tax rate not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/taxrate/{taxrateId}",
+     *     description="Deletes a single tax rate based on the ID supplied",
+     *     summary="Delete a single tax rate",
+     *     operationId="deleteTaxRate",
+     *     tags={"taxrate"},
+     *     @OA\Parameter(
+     *         description="ID of tax rate to delete",
+     *         in="path",
+     *         name="taxrateId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Tax rate deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tax rate not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/taxrate/{taxRateId}",
+     *     tags={"taxrate"},
+     *     operationId="updateTaxRate",
+     *     summary="Update an existing tax rate",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="TaxRate object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/TaxRateModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Tax Rate not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/taxrate",
+     *     tags={"taxrate"},
+     *     operationId="createTaxRate",
+     *     summary="Create a new tax rate",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="TaxRate object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/TaxRateModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
@@ -43,7 +146,7 @@ class TaxRateController extends AbstractController
     {
         return [
             'id'         => 'required|integer',
-            'zoneID'     => 'required|integer',
+            'RateID'     => 'required|integer',
             'taxClassID' => 'required|integer',
             'rate'       => 'required|numeric',
             'priority'   => 'integer'

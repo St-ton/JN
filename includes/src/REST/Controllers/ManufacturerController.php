@@ -31,6 +31,109 @@ class ManufacturerController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/manufacturer",
+     *   tags={"manufacturer"},
+     *   summary="List manufacturers",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with manufacturers"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Manufacturers not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/manufacturer/{manufacturerId}",
+     *     tags={"manufacturer"},
+     *     description="Get a manufacturer by ID",
+     *     summary="Get a manufacturer by ID",
+     *     operationId="getManufacturerById",
+     *     @OA\Parameter(
+     *         name="manufacturerId",
+     *         in="path",
+     *         description="ID of manufacturer that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/ManufacturerModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Manufacturer not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/manufacturer/{manufacturerId}",
+     *     description="Deletes a single manufacturer based on the ID supplied",
+     *     summary="Delete a single manufacturer",
+     *     operationId="deleteManufacturer",
+     *     tags={"manufacturer"},
+     *     @OA\Parameter(
+     *         description="ID of manufacturer to delete",
+     *         in="path",
+     *         name="manufacturerId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Manufacturer deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Manufacturer not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/manufacturer/{manufacturerId}",
+     *     tags={"manufacturer"},
+     *     operationId="updateManufacturer",
+     *     summary="Update an existing manufacturer",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Manufacturer object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/ManufacturerModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Manufacturer not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/manufacturer",
+     *     tags={"manufacturer"},
+     *     operationId="createManufacturer",
+     *     summary="Create a new manufacturer",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Manufacturer object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/ManufacturerModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

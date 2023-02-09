@@ -28,6 +28,118 @@ class OrderController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *     path="/order/{orderId}",
+     *     tags={"order"},
+     *     description="Get a single order",
+     *     summary="Get a single order",
+     *     @OA\Parameter(
+     *         description="ID of order to delete",
+     *         in="path",
+     *         name="orderId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/OrderModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/order",
+     *     tags={"order"},
+     *     description="Get a list of categories",
+     *     summary="Get a list of categories",
+     *     @OA\Response(
+     *         response=200,
+     *         description="A list of categories"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No categories found"
+     *     )
+     * )
+     * @OA\Delete(
+     *     path="/order/{orderId}",
+     *     description="Deletes a single order based on the ID supplied",
+     *     summary="Delete a single order",
+     *     operationId="deleteOrder",
+     *     tags={"order"},
+     *     @OA\Parameter(
+     *         description="ID of order to delete",
+     *         in="path",
+     *         name="orderId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Order deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Categoty not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/order/{orderId}",
+     *     tags={"order"},
+     *     operationId="updateOrder",
+     *     summary="Update an existing order",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Order object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/OrderModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Order not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/order",
+     *     tags={"order"},
+     *     operationId="createOrder",
+     *     summary="Create a new order",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Order object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/OrderModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

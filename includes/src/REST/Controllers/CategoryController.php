@@ -21,87 +21,6 @@ use stdClass;
  * Class CategoryController
  * @package JTL\REST\Controllers
  */
-
-/**
- * @OA\Get(
- *     path="/category/{categoryId}",
- *     tags={"category"},
- *     description="Get a single category",
- *     summary="Get a single category",
- *     @OA\Parameter(
- *         description="ID of category to delete",
- *         in="path",
- *         name="categoryId",
- *         required=true,
- *         @OA\Schema(
- *             format="int64",
- *             type="integer"
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="successful operation",
- *         @OA\JsonContent(ref="#/components/schemas/CategoryModel"),
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid ID supplied"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Category not found"
- *     )
- * )
- */
-
-/**
- * @OA\Get(
- *     path="/category",
- *     tags={"category"},
- *     description="A list of categories",
- *     summary="Get a list of categories",
- *     @OA\Response(
- *         response=200,
- *         description="A list of categories"
- *     ),
- *     @OA\Response(
- *         response=400,
- *         description="Invalid ID supplied"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="No categories found"
- *     )
- * )
- */
-
-/**
- * @OA\Delete(
- *     path="/category/{categoryId}",
- *     description="deletes a single category based on the ID supplied",
- *     summary="Delete a single category",
- *     operationId="deleteCategory",
- *     tags={"category"},
- *     @OA\Parameter(
- *         description="ID of category to delete",
- *         in="path",
- *         name="categoryId",
- *         required=true,
- *         @OA\Schema(
- *             format="int64",
- *             type="integer"
- *         )
- *     ),
- *     @OA\Response(
- *         response=204,
- *         description="Category deleted"
- *     ),
- *     @OA\Response(
- *         response=404,
- *         description="Categoty not found"
- *     )
- * )
- */
 class CategoryController extends AbstractController
 {
     /**
@@ -114,25 +33,113 @@ class CategoryController extends AbstractController
 
     /**
      * @inheritdoc
-     */
-    public function registerRoutes(RouteGroup $routeGroup): void
-    {
-        $routeGroup->get('/category', [$this, 'index']);
-        $routeGroup->get('/category/{id}', [$this, 'show']);
-        $routeGroup->put('/category/{id}', [$this, 'update']);
-        $routeGroup->post('/category', [$this, 'create']);
-        $routeGroup->delete('/category/{id}', [$this, 'delete']);
-    }
-
-    /**
-     * @inheritdoc
+     * @OA\Get(
+     *     path="/category/{categoryId}",
+     *     tags={"category"},
+     *     description="Get a single category",
+     *     summary="Get a single category",
+     *     @OA\Parameter(
+     *         description="ID of category to delete",
+     *         in="path",
+     *         name="categoryId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/category",
+     *     tags={"category"},
+     *     description="Get a list of categories",
+     *     summary="Get a list of categories",
+     *     @OA\Response(
+     *         response=200,
+     *         description="A list of categories"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No categories found"
+     *     )
+     * )
+     * @OA\Delete(
+     *     path="/category/{categoryId}",
+     *     description="Deletes a single category based on the ID supplied",
+     *     summary="Delete a single category",
+     *     operationId="deleteCategory",
+     *     tags={"category"},
+     *     @OA\Parameter(
+     *         description="ID of category to delete",
+     *         in="path",
+     *         name="categoryId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Category deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Categoty not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/category/{categoryId}",
+     *     tags={"category"},
+     *     operationId="updateCategory",
+     *     summary="Update an existing category",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Category object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      * @OA\Post(
      *     path="/category",
      *     tags={"category"},
-     *     summary="Create category",
+     *     operationId="createCategory",
+     *     summary="Create a new category",
      *     description="",
-     *     summary="Create a category",
-     *     operationId="createUser",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Category object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryModel")
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -157,6 +164,18 @@ class CategoryController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/CategoryModel")
      *     )
      * )
+     */
+    public function registerRoutes(RouteGroup $routeGroup): void
+    {
+        $routeGroup->get('/category', [$this, 'index']);
+        $routeGroup->get('/category/{id}', [$this, 'show']);
+        $routeGroup->put('/category/{id}', [$this, 'update']);
+        $routeGroup->post('/category', [$this, 'create']);
+        $routeGroup->delete('/category/{id}', [$this, 'delete']);
+    }
+
+    /**
+     * @inheritdoc
      */
     protected function createItem(ServerRequestInterface $request): DataModelInterface
     {

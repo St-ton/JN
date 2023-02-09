@@ -26,6 +26,109 @@ class LanguageController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/language",
+     *   tags={"language"},
+     *   summary="List languages",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with languages"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Languages not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/language/{languageId}",
+     *     tags={"language"},
+     *     description="Get a language by ID",
+     *     summary="Get a language by ID",
+     *     operationId="getLanguageById",
+     *     @OA\Parameter(
+     *         name="languageId",
+     *         in="path",
+     *         description="ID of language that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/LanguageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Language not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/language/{languageId}",
+     *     description="Deletes a single language based on the ID supplied",
+     *     summary="Delete a single language",
+     *     operationId="deleteLanguage",
+     *     tags={"language"},
+     *     @OA\Parameter(
+     *         description="ID of language to delete",
+     *         in="path",
+     *         name="languageId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Language deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Language not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/language/{languageId}",
+     *     tags={"language"},
+     *     operationId="updateLanguage",
+     *     summary="Update an existing language",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Language object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/LanguageModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Language not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/language",
+     *     tags={"language"},
+     *     operationId="createLanguage",
+     *     summary="Create a new language",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Language object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/LanguageModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

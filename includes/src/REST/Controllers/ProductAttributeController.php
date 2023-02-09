@@ -26,6 +26,118 @@ class ProductAttributeController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *     path="/productattribute/{productattributeId}",
+     *     tags={"productattribute"},
+     *     description="Get a single product attribute",
+     *     summary="Get a single product attribute",
+     *     @OA\Parameter(
+     *         description="ID of product attribute to delete",
+     *         in="path",
+     *         name="productattributeId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductAttributeModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="ProductAttribute not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/productattribute",
+     *     tags={"productattribute"},
+     *     description="Get a list of categories",
+     *     summary="Get a list of categories",
+     *     @OA\Response(
+     *         response=200,
+     *         description="A list of categories"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="No categories found"
+     *     )
+     * )
+     * @OA\Delete(
+     *     path="/productattribute/{productattributeId}",
+     *     description="Deletes a single product attribute based on the ID supplied",
+     *     summary="Delete a single product attribute",
+     *     operationId="deleteProductAttribute",
+     *     tags={"productattribute"},
+     *     @OA\Parameter(
+     *         description="ID of product attribute to delete",
+     *         in="path",
+     *         name="productattributeId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="ProductAttribute deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Categoty not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/productattribute/{productattributeId}",
+     *     tags={"productattribute"},
+     *     operationId="updateProductAttribute",
+     *     summary="Update an existing product attribute",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="ProductAttribute object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductAttributeModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="ProductAttribute not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/productattribute",
+     *     tags={"productattribute"},
+     *     operationId="createProductAttribute",
+     *     summary="Create a new product attribute",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="ProductAttribute object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductAttributeModel")
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

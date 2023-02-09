@@ -28,6 +28,128 @@ class CustomerGroupController extends AbstractController
 
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/customerGroup",
+     *   tags={"customergroup"},
+     *   summary="List customer groups",
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with customer groups"
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Customer groups not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/customerGroup/{customerGroupId}",
+     *     tags={"customergroup"},
+     *     description="Get a customer group by ID",
+     *     summary="Get a customer group by ID",
+     *     operationId="getCustomerGroupById",
+     *     @OA\Parameter(
+     *         name="customerGroupId",
+     *         in="path",
+     *         description="ID of customer group that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CustomerGroupModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer group not found"
+     *     )
+     * )
+     *  @OA\Delete(
+     *     path="/customerGroup/{customerGroupId}",
+     *     description="Deletes a single customer group based on the ID supplied",
+     *     summary="Delete a single customer group",
+     *     operationId="deleteCustomerGroup",
+     *     tags={"customergroup"},
+     *     @OA\Parameter(
+     *         description="ID of customer group to delete",
+     *         in="path",
+     *         name="customerGroupId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=204,
+     *         description="Customer group deleted"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer group not found"
+     *     )
+     * )
+     * @OA\Put(
+     *     path="/customergroup/{customergroupId}",
+     *     tags={"customergroup"},
+     *     operationId="updateCustomerGroup",
+     *     summary="Update an existing customergroup",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Customer group object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CustomerGroupModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Invalid ID supplied",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Customer group not found",
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/customergroup",
+     *     tags={"customergroup"},
+     *     operationId="createCustomerGroup",
+     *     summary="Create a new customergroup",
+     *     description="",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Customer group object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CustomerGroupModel")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CustomerGroupModel")
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="An array of validation errors",
+     *         @OA\JsonContent(
+     *              type="object",
+     *              @OA\Property(
+     *                  property="invalid_fields",
+     *                  type="object",
+     *                  @OA\Property(property="name",type="string",example="The Name is required"),
+     *                  @OA\Property(property="description",type="string",example="The Description maximum is 255")
+     *              )
+     *          ),
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Create customergroup object",
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/CustomerGroupModel")
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

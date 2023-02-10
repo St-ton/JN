@@ -780,7 +780,7 @@
             $.evo.io().call(
                 'updateWishlistItem',
                 [
-                    $('#' + formID + ' input[name="kWunschliste"]').val(),
+                    parseInt($('#' + formID + ' input[name="kWunschliste"]').val()),
                     $.evo.io().getFormValues(formID)
                 ],
                 $(this) , function(error, data) {

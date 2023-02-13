@@ -2003,3 +2003,10 @@ const HOOK_ROUTER_PRE_DISPATCH = 400;
  * @param stdClass              oZahlungseingang
  */
 const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
+
+/**
+ * @since 5.2.0
+ * at construct of the class
+ * @file class.core.Shop.php
+ */
+const HOOK_SHOP_CONSTRUCT = 402;

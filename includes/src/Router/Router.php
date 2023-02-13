@@ -628,7 +628,7 @@ class Router
             \parse_str(\file_get_contents('php://input'), $body);
         }
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
-        if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
+        if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0 || Shop::$forceHost[0]['host'] != "" && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
                 if ($host['host'] === $requestedHost) {
@@ -704,44 +704,71 @@ class Router
     {
         $hosts   = [];
         $locales = [];
-        foreach (LanguageHelper::getAllLanguages() as $language) {
-            $default   = $language->isShopDefault();
-            $code      = $language->getCode();
-            $locales[] = $language->getIso639();
+        
+		//ForceHost Support
+		$forceHost = false;
+		if(Shop::$forceHost[0]['host'] != ""){
+			foreach(Shop::$forceHost as $hostData){
+				if($hostData['host'] == $_SERVER['HTTP_HOST']){
+					$url = 'https://'.$_SERVER['HTTP_HOST'];
+					$host    = \parse_url($url);
+					$hosts[] = [
+						'host'      => $hostData['host'],
+						'scheme'    => $hostData['scheme'],
+						'locale'    => $hostData['locale'],
+						'iso'       => $hostData['iso'],
+						'id'        => $hostData['id'],
+						'default'   => true,
+						'prefix'    => '/',
+						'currency'  => false,
+						'localized' => false
+					];
+					$this->defaultLocale = $hostData['locale'];
+					$forceHost=true;
+				}
+			}
+		}
 
-            $this->languages[$language->getIso639()] = $code;
-            if (\EXPERIMENTAL_MULTILANG_SHOP === false && $default) {
-                $url     = \URL_SHOP;
-                $host    = \parse_url($url);
-                $hosts[] = [
-                    'host'      => $host['host'],
-                    'scheme'    => $host['scheme'],
-                    'locale'    => $language->getIso639(),
-                    'iso'       => $code,
-                    'id'        => $language->getId(),
-                    'default'   => true,
-                    'prefix'    => '/',
-                    'currency'  => false,
-                    'localized' => false
-                ];
-            } elseif (\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
-                $this->isMultiDomain = true;
-                $url                 = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
-                $host                = \parse_url($url);
-                $hosts[]             = [
-                    'host'      => $host['host'],
-                    'scheme'    => $host['scheme'],
-                    'locale'    => $language->getIso639(),
-                    'iso'       => $code,
-                    'id'        => $language->getId(),
-                    'default'   => $default,
-                    'prefix'    => '/',
-                    'currency'  => false,
-                    'localized' => false
-                ];
-            }
-            if ($default) {
-                $this->defaultLocale = $language->getIso639();
+        if(!$forceHost){
+            foreach (LanguageHelper::getAllLanguages() as $language) {
+                $default   = $language->isShopDefault();
+                $code      = $language->getCode();
+                $locales[] = $language->getIso639();
+
+                $this->languages[$language->getIso639()] = $code;
+                if (\EXPERIMENTAL_MULTILANG_SHOP === false && $default) {
+                    $url     = \URL_SHOP;
+                    $host    = \parse_url($url);
+                    $hosts[] = [
+                        'host'      => $host['host'],
+                        'scheme'    => $host['scheme'],
+                        'locale'    => $language->getIso639(),
+                        'iso'       => $code,
+                        'id'        => $language->getId(),
+                        'default'   => true,
+                        'prefix'    => '/',
+                        'currency'  => false,
+                        'localized' => false
+                    ];
+                } elseif (\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
+                    $this->isMultiDomain = true;
+                    $url                 = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
+                    $host                = \parse_url($url);
+                    $hosts[]             = [
+                        'host'      => $host['host'],
+                        'scheme'    => $host['scheme'],
+                        'locale'    => $language->getIso639(),
+                        'iso'       => $code,
+                        'id'        => $language->getId(),
+                        'default'   => $default,
+                        'prefix'    => '/',
+                        'currency'  => false,
+                        'localized' => false
+                    ];
+                }
+                if ($default) {
+                    $this->defaultLocale = $language->getIso639();
+                }
             }
         }
         $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';

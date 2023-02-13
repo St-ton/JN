@@ -1005,6 +1005,11 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
+        //ForceHost Support
+		if(Shop::$forceHost[0]['id'] > 0){
+			return false;
+		}
+        
         $languageID = $languageID ?? Shop::getLanguageID();
         if ($languageID <= 0) {
             return true;

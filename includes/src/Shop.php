@@ -133,12 +133,29 @@ final class Shop extends ShopBC
     ];
 
     /**
+	 * ForceHost Support
+     * @var array
+     */
+    public static array $forceHost = [
+        'host'      => '',
+		'scheme'    => '',
+		'locale'    => '',
+		'iso'       => '',
+		'id'        => 0,
+		'default'   => 'N',
+		'prefix'    => '/',
+		'currency'  => false,
+		'localized' => false
+    ];
+
+    /**
      *
      */
     private function __construct()
     {
         self::$state    = new RoutingState();
         self::$instance = $this;
+        \executeHook(\HOOK_SHOP_CONSTRUCT);
     }
 
     /**

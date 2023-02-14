@@ -57,7 +57,7 @@ class Manager
         }
 
         //do not write any password to the log
-        if (str_ends_with($setting, '_pass')) {
+        if (\str_ends_with($setting, '_pass')) {
             $oldValue = '***';
             $newValue = '***';
         }

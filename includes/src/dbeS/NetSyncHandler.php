@@ -199,7 +199,7 @@ class NetSyncHandler
                     $pathinfo['filename'],
                     $pathinfo['dirname'],
                     $pathinfo['extension'] ?? '',
-                    \filemtime($pathName),
+                    \filemtime($pathName) ?: 0,
                     \filesize($pathName)
                 );
             }

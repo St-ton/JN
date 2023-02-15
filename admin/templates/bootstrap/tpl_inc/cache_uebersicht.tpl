@@ -154,6 +154,12 @@
                                         <td>{$stats.uptime_h}</td>
                                     </tr>
                                 {/if}
+                                {if isset($stats.max) && $stats.max !== null && $stats.max > 0}
+                                    <tr class="cache-row">
+                                        <td>{__('maxmemory')}:</td>
+                                        <td>{$stats.max} Bytes{if strpos($stats.max, '/') === false} ({($stats.max/1024/1024)|string_format:'%.2f'} MB){/if}</td>
+                                    </tr>
+                                {/if}
                                 {if isset($stats.mem) && $stats.mem !== null}
                                     <tr class="cache-row">
                                         <td>{__('fullSize')}:</td>

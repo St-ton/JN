@@ -1242,7 +1242,7 @@ class Artikel implements RoutableInterface
             (int)$tmpProduct->kArtikel,
             $customerID,
             (int)$tmpProduct->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1267,7 +1267,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1342,7 +1342,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         if ($assign) {
@@ -1780,29 +1780,28 @@ class Artikel implements RoutableInterface
 
         $main = $this->getDB()->getSingleObject(
             'SELECT tartikel.kArtikel, tartikel.kStueckliste
-                FROM
-                (
-                    SELECT kStueckliste
-                        FROM tstueckliste
-                        WHERE kArtikel = :kArtikel
-                ) AS sub
-                JOIN tartikel 
-                    ON tartikel.kStueckliste = sub.kStueckliste',
-            ['kArtikel' => $this->kArtikel]
+                FROM tstueckliste
+                INNER JOIN tartikel ON tartikel.kStueckliste = tstueckliste.kStueckliste
+                LEFT JOIN tartikelsichtbarkeit t on tartikel.kArtikel = t.kArtikel
+                    AND t.kKundengruppe = :customerGroupId
+                WHERE tstueckliste.kArtikel = :kArtikel
+                    AND t.kArtikel IS NULL',
+            [
+                'kArtikel' => $this->kArtikel,
+                'customerGroupId' => $this->getCustomerGroupID()
+            ]
         );
         if ($main !== null && $main->kArtikel > 0 && $main->kStueckliste > 0) {
-            $opt                             = self::getDefaultOptions();
-            $opt->nKeineSichtbarkeitBeachten = 1;
-            $opt->nStueckliste               = 1;
+            $opt               = self::getDefaultOptions();
+            $opt->nStueckliste = 1;
             $this->oProduktBundleMain->fuelleArtikel((int)$main->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
 
-            $bundles                         = $this->getDB()->selectAll(
+            $bundles = $this->getDB()->selectAll(
                 'tstueckliste',
                 'kStueckliste',
                 $main->kStueckliste,
                 'kArtikel, fAnzahl'
             );
-            $opt->nKeineSichtbarkeitBeachten = 0;
             foreach ($bundles as $bundle) {
                 $product = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $product->fuelleArtikel((int)$bundle->kArtikel, $opt, $this->kKundengruppe, $this->kSprache);
@@ -3035,6 +3034,7 @@ class Artikel implements RoutableInterface
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
         $lastProduct = 0;
+        $tmpProduct  = null;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = $this->getPrecision();
@@ -3044,9 +3044,8 @@ class Artikel implements RoutableInterface
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx        = $varDetailPrice->kEigenschaftWert;
-            $tmpProduct = null;
-            if ($varDetailPrice->kArtikel !== $lastProduct) {
+            $idx = $varDetailPrice->kEigenschaftWert;
+            if ($varDetailPrice->kArtikel !== $lastProduct || $tmpProduct === null) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
@@ -3128,7 +3127,7 @@ class Artikel implements RoutableInterface
      */
     private function buildURLs(): self
     {
-        $slugs = $this->db->getObjects(
+        $slugs = $this->getDB()->getObjects(
             'SELECT cSeo, kSprache
                 FROM tseo
                 WHERE cKey = :key

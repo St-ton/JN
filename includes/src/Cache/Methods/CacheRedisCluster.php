@@ -214,7 +214,7 @@ class CacheRedisCluster implements ICachingMethod
         $tagged = \array_unique($this->getKeysByTag($tags));
         $tags   = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
 
         return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
@@ -238,7 +238,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map('self::_keyFromTagName', $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);

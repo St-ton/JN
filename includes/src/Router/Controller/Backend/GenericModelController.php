@@ -37,7 +37,7 @@ abstract class GenericModelController extends AbstractBackendController
     /**
      * @var DataModelInterface|null
      */
-    protected ? DataModelInterface $item = null;
+    protected ?DataModelInterface $item = null;
 
     /**
      * @var string

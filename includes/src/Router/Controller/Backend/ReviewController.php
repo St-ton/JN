@@ -524,9 +524,9 @@ class ReviewController extends AbstractBackendController
             } catch (Exception) {
                 continue;
             }
-            $this->manager->updateAverage($model->getProductID(), $this->config['bewertung']['bewertung_freischalten']);
             $this->deleteReviewReward($model);
             $model->delete();
+            $this->manager->updateAverage($model->getProductID(), $this->config['bewertung']['bewertung_freischalten']);
             $cacheTags[] = $model->getProductID();
         }
         $this->cache->flushTags(map($cacheTags, static function ($e) {

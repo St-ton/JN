@@ -2208,7 +2208,7 @@ msgid "bewertungserinnerung_nutzen_name"
 msgstr "Bewertungserinnerung nutzen"
 
 msgid "bewertungserinnerung_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Bewertungserinnerungen werden nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen."
+msgstr "Hier legen Sie fest, ob Ihre Kunden nach dem Kauf eines Artikels per E-Mail erinnert werden sollen, den Artikel zu bewerten. Standardmäßig werden Bewertungserinnerungen nur an Kunden geschickt, die dem Erhalt des Newsletters per Double-Opt-In zugestimmt haben. Welche Kundengruppen dem Newsletter über Double-Opt-In zustimmen müssen, können Sie unter Marketing > Aktionen > Newsletter > Einstellungen „Double-Opt-In für folgende Kunden“ einstellen. Bei „Ja“ erhalten alle Kunden eine Erinnerung."
 
 msgid "bewertungserinnerung_kundengruppen_name"
 msgstr "Bewertungserinnerung nur zulassen für"
@@ -3048,7 +3048,12 @@ msgid "forgot_password_captcha_desc"
 msgstr "Hier legen Sie fest, ob für das Passwort-Vergessen-Formular der Spamschutz aktiviert werden soll. Dazu müssen Sie ggf. zuerst den Spamschutz von JTL-Shop in den globalen Einstellungen konfigurieren."
 
 msgid "configgroup_1_routing"
-msgstr "Routing"
+msgstr "Routing <br><span class=\"text-danger\">"
+"Dieses Feature befindet sich aktuell noch in der Entwicklung und ist noch nicht vollumfänglich ausgereift. "
+"Es ist darum derzeit nur via define 'ENABLE_EXPERIMENTAL_ROUTING_SCHEMES' aktivierbar und sollte nur mit entsprechenden Fachkenntnissen genutzt werden. "
+"Wenn Sie dieses Feature nutzen wollen, beachten Sie bitte die offenen Tickets im <a href=\"https://issues.jtl-software.de/issues?project=shop&component=15512\" target=\"_blank\">JTL-Issue Tracker</a>. "
+"Das Feature wird in einer zukünftigen Version als normale Einstellung implementiert."
+"</span>"
 
 msgid "routing_scheme_name"
 msgstr "Routing-Schema"

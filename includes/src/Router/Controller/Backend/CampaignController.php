@@ -1396,7 +1396,7 @@ class CampaignController extends AbstractBackendController
             if ($data !== null) {
                 $campaign->cName      = $data->cName;
                 $campaign->cWert      = $data->cWert;
-                $campaign->nDynamisch = $data->nDynamisch;
+                $campaign->nDynamisch = (int)$data->nDynamisch;
             }
         }
         if (\mb_strlen($campaign->cName) === 0) {

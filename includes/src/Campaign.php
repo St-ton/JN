@@ -297,6 +297,14 @@ class Campaign
     {
         if ($id > 0 && $kKey > 0 && $fWert > 0 && isset($_SESSION['Kampagnenbesucher'])) {
             $events = [];
+            if (!\is_array($_SESSION['Kampagnenbesucher'])) {
+                $tmpCampaign = $_SESSION['Kampagnenbesucher'];
+                unset($_SESSION['Kampagnenbesucher']);
+                $_SESSION['Kampagnenbesucher'] = $tmpCampaign instanceof self
+                    ? [$tmpCampaign->kKampagne => $tmpCampaign]
+                    : [];
+            }
+
             foreach ($_SESSION['Kampagnenbesucher'] as $campaign) {
                 $event               = new stdClass();
                 $event->kKampagne    = $campaign->kKampagne;

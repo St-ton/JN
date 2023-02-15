@@ -9,6 +9,7 @@ use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
+use JTL\Services\JTL\CryptoService;
 use JTL\Smarty\JTLSmarty;
 use JTL\Shop;
 use stdClass;
@@ -103,6 +104,7 @@ class Base implements SectionInterface
      */
     protected bool $loaded = false;
 
+    protected CryptoService $cryptoService;
     /**
      * @var string[]
      */
@@ -119,9 +121,10 @@ class Base implements SectionInterface
      */
     public function __construct(protected Manager $manager, protected int $id)
     {
-        $this->db      = $manager->getDB();
-        $this->smarty  = $manager->getSmarty();
-        $this->getText = $manager->getGetText();
+        $this->db            = $manager->getDB();
+        $this->smarty        = $manager->getSmarty();
+        $this->getText       = $manager->getGetText();
+        $this->cryptoService = Shop::Container()->getCryptoService();
         $this->initBaseData();
     }
 
@@ -196,6 +199,8 @@ class Base implements SectionInterface
                     [$config->getConfigSectionID(), $config->getValueName()]
                 );
                 $config->setSetValue($setValue);
+            } elseif ($config->getInputType() === 'pass') {
+                $config->setSetValue('');
             } else {
                 $setValue = $this->db->select(
                     'teinstellungen',
@@ -279,8 +284,8 @@ class Base implements SectionInterface
     {
         return match ($conf->getValueName()) {
             'bilder_jpg_quali' => $this->validateNumberRange(0, 100, $conf, $confValue),
-            'cron_freq'        => $this->validateNumberRange(10, 999999, $conf, $confValue),
-            default            => true,
+            'cron_freq' => $this->validateNumberRange(10, 999999, $conf, $confValue),
+            default => true,
         };
     }
 
@@ -303,10 +308,18 @@ class Base implements SectionInterface
             if (!isset($data[$id])) {
                 continue;
             }
-            $value->cWert                 = $data[$id];
+
             $value->cName                 = $id;
             $value->kEinstellungenSektion = $item->getConfigSectionID();
             $this->setConfigValue($value, $item->getInputType(), $data, $unfiltered);
+            if ($item->getInputType() === 'pass') {
+                if (!empty($data[$id])) {
+                    $data[$id] = $this->cryptoService->encryptXTEA($data[$id]);
+                } else {
+                    $data[$id] = $item->getCurrentValue();
+                }
+            }
+            $value->cWert = $data[$id];
             if (!$this->validate($item, $data[$id])) {
                 $this->updateErrors++;
                 continue;
@@ -332,7 +345,9 @@ class Base implements SectionInterface
                     $data[$id]
                 );
             }
-            $updated[] = ['id' => $id, 'value' => $data[$id]];
+            if ($id !== 'email_smtp_pass') {
+                $updated[] = ['id' => $id, 'value' => $data[$id]];
+            }
         }
         Shop::Container()->getCache()->flushTags($tags);
 

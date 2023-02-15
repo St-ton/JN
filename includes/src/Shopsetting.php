@@ -392,6 +392,9 @@ final class Shopsetting implements ArrayAccess
                         $result[$sectionName][$setting['cName']][] = $setting['cWert'];
                     } elseif ($setting['type'] === 'number') {
                         $result[$sectionName][$setting['cName']] = (int)$setting['cWert'];
+                    } elseif ($setting['type'] === 'pass') {
+                        $result[$sectionName][$setting['cName']] =
+                            \rtrim(Shop::Container()->getCryptoService()->decryptXTEA($setting['cWert']));
                     } else {
                         $result[$sectionName][$setting['cName']] = $setting['cWert'];
                     }

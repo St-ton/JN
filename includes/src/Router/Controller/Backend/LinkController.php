@@ -338,7 +338,6 @@ class LinkController extends AbstractBackendController
         $ins->linkID      = $linkID;
         $ins->linkGroupID = $targetLinkGroupID;
         $this->db->insert('tlinkgroupassociations', $ins);
-        $this->copyChildLinksToLinkGroup($link, $targetLinkGroupID);
 
         return $link;
     }

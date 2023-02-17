@@ -193,6 +193,7 @@ class LanguageController extends AbstractBackendController
         if (\count($errors) > 0) {
             $this->alertService->addError(\implode('<br>', $errors), 'newVar');
             $this->step = 'newvar';
+            $this->smarty->assign('oVariable', $variable);
 
             return;
         }

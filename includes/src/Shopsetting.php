@@ -4,6 +4,7 @@ namespace JTL;
 
 use ArrayAccess;
 use JTL\DB\DbInterface;
+use JTL\Settings\SettingsService;
 use function Functional\reindex;
 
 /**
@@ -367,45 +368,10 @@ final class Shopsetting implements ArrayAccess
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
-        $db       = Shop::Container()->getDB();
-        $result   = [];
-        $settings = $db->getArrays(
-            'SELECT teinstellungen.kEinstellungenSektion, teinstellungen.cName, teinstellungen.cWert,
-                teinstellungenconf.cInputTyp AS type
-                FROM teinstellungen
-                LEFT JOIN teinstellungenconf
-                    ON teinstellungenconf.cWertName = teinstellungen.cName
-                    AND teinstellungenconf.kEinstellungenSektion = teinstellungen.kEinstellungenSektion
-                ORDER BY kEinstellungenSektion'
-        );
-        foreach (self::$mapping as $mappingID => $sectionName) {
-            foreach ($settings as $setting) {
-                $sectionID = (int)$setting['kEinstellungenSektion'];
-                if ($sectionID === $mappingID) {
-                    if (!isset($result[$sectionName])) {
-                        $result[$sectionName] = [];
-                    }
-                    if ($setting['type'] === 'listbox') {
-                        if (!isset($result[$sectionName][$setting['cName']])) {
-                            $result[$sectionName][$setting['cName']] = [];
-                        }
-                        $result[$sectionName][$setting['cName']][] = $setting['cWert'];
-                    } elseif ($setting['type'] === 'number') {
-                        $result[$sectionName][$setting['cName']] = (int)$setting['cWert'];
-                    } elseif ($setting['type'] === 'pass') {
-                        $result[$sectionName][$setting['cName']] =
-                            \rtrim(Shop::Container()->getCryptoService()->decryptXTEA($setting['cWert']));
-                    } else {
-                        $result[$sectionName][$setting['cName']] = $setting['cWert'];
-                    }
-                }
-            }
-        }
-        $result['template'] = $this->getTemplateConfig($db);
-        $result['branding'] = $this->getBrandingConfig($db);
-        $this->allSettings  = $result;
 
-        return $result;
+        $this->allSettings = (new SettingsService())->getAll(true);
+
+        return $this->allSettings;
     }
 
     /**

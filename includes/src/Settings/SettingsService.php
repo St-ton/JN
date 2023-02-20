@@ -85,8 +85,12 @@ class SettingsService
             if (isset($mappedSettings[$sectionName])) {
                 $result[$sectionName] = [];
                 foreach ($mappedSettings[$sectionName] as $setting) {
-                    if ($setting['type'] === 'listbox') {
-                        $result[$sectionName][$setting['cName']][] = $this->getCompleteParsedSettings($setting);
+                    if ($setting['type'] !== 'pass') {
+                        if ($setting['type'] === 'listbox') {
+                            $result[$sectionName][$setting['cName']][] = $this->getCompleteParsedSettings($setting);
+                        } else {
+                            $result[$sectionName][$setting['cName']] = $this->getCompleteParsedSettings($setting);
+                        }
                     }
                 }
             }
@@ -107,8 +111,6 @@ class SettingsService
         foreach ($settings as $setting) {
             if (isset($this->mapping[(int)$setting['kEinstellungenSektion']])) {
                 $mappedSettings[$this->mapping[$setting['kEinstellungenSektion']]][] = $setting;
-            } else {
-                print_r('Setting not found: '. $setting['kEinstellungenSektion'], false);
             }
         }
 

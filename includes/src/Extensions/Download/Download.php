@@ -299,7 +299,7 @@ class Download
                 ->setErstellt('NOW()')
                 ->save();
 
-            \executeHook(HOOK_ORDER_DOWNLOAD_FILE, [
+            \executeHook(\HOOK_ORDER_DOWNLOAD_FILE, [
                 'download'   => $download,
                 'customerID' => $customerID,
                 'orderID'    => $orderID

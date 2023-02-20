@@ -81,7 +81,7 @@ class SettingsService
         $result         = [];
         $settings       = $this->getRepository()->getAllSettings();
         $mappedSettings = $this->getMappedSettings($settings);
-        foreach ($this->mapping as $mappingID => $sectionName) {
+        foreach ($this->mapping as $sectionName) {
             if (isset($mappedSettings[$sectionName])) {
                 $result[$sectionName] = [];
                 foreach ($mappedSettings[$sectionName] as $setting) {

@@ -139,7 +139,7 @@ abstract class AbstractController
             /** @var $class DataModelInterface */
             $result = $instance->init(['id' => $id], DataModelInterface::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
-            die($e->getMessage());
+//            die($e->getMessage());
             return $this->sendNotFoundResponse();
         }
         return $this->respondWithModel($result);

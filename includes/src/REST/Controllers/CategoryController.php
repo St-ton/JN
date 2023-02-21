@@ -191,7 +191,7 @@ class CategoryController extends AbstractController
         /** @var UploadedFile $file */
         $modelHasImages = $item->getAttribValue('images')->count() > 0;
         foreach ($uploads['image'] as $file) {
-            $file->moveTo(\PFAD_ROOT . STORAGE_CATEGORIES . $file->getClientFilename());
+            $file->moveTo(\PFAD_ROOT . \STORAGE_CATEGORIES . $file->getClientFilename());
             if (!$modelHasImages) {
                 $model = new CategoryImageModel($this->db);
                 $data  = (object)[

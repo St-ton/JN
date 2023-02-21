@@ -10,6 +10,7 @@ use JTL\Exceptions\PermissionException;
 use JTL\L10n\GetText;
 use JTL\Router\Controller\Backend\ActivationController;
 use JTL\Router\Controller\Backend\AdminAccountController;
+use JTL\Router\Controller\Backend\ApiKeyController;
 use JTL\Router\Controller\Backend\BannerController;
 use JTL\Router\Controller\Backend\BoxController;
 use JTL\Router\Controller\Backend\BrandingController;
@@ -236,6 +237,7 @@ class BackendRouter
             Route::ELFINDER              => ElfinderController::class,
             Route::CODE                  => CodeController::class,
             Route::LOCALIZATION_CHECK    => LocalizationController::class,
+            Route::API_KEY               => ApiKeyController::class,
         ];
         foreach ($controllers as $route => $controller) {
             $container->add($controller, function () use (

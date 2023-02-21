@@ -1,4 +1,4 @@
-{$select = $select|default:true}
+    {$select = $select|default:true}
 {$create = $create|default:false}
 {$edit = $edit|default:true}
 {$delete = $delete|default:false}
@@ -84,12 +84,14 @@
                             {if $attr->getInputConfig()->isHidden() === false && (strpos($type, "\\") === false || !class_exists($type))}
                                 <td>
                                     {$value = $item->getAttribValue($attr->getName())}
-                                    {if $attr->getDataType() === 'tinyint' && count($attr->getInputConfig()->getAllowedValues()) === 2 && in_array($value, [0, 1], true)}
+                                    {if $type === 'tinyint' && count($attr->getInputConfig()->getAllowedValues()) === 2 && in_array($value, [0, 1], true)}
                                         {if $value === 0}
                                             <i class="far fa-times"></i>
                                         {else}
                                             <i class="far fa-check"></i>
                                         {/if}
+                                    {elseif $type === 'datetime'}
+                                        {$value|date_format:'d.m.Y H:i:s'}
                                     {else}
                                         {$value}
                                     {/if}

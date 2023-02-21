@@ -46,6 +46,12 @@ out more about this at
  *     name="product",
  *     description="All the products"
  * )
+ * @OA\SecurityScheme(
+ *     securityScheme="api_key",
+ *     type="apiKey",
+ *     in="header",
+ *     name="X-API-KEY"
+ * )
  */
 
 /**

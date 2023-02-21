@@ -14,9 +14,14 @@
     {/if}
     {$type = $attr->getDataType()}
     {$inputConfig = $attr->getInputConfig()}
+    {$value = $item->getAttribValue($name)}
+    {$inputType = $inputConfig->getInputType()}
+    {if $inputType === 'date'}
+        {$value = $value|date_format:'d.m.Y H:i:s'}
+    {/if}
 
     {if $inputConfig->isHidden() === true}
-        {input type='hidden' value=$item->getAttribValue($name) name=$inputName id=$name|cat:$postfix}
+        {input type='hidden' value=$value name=$inputName id=$name|cat:$postfix}
         {continue}
     {/if}
     {if strpos($type, "\\") !== false && class_exists($type)}
@@ -51,8 +56,6 @@
         {continue}
     {/if}
 
-    {$inputType = $inputConfig->getInputType()}
-
     <div class="form-group form-row align-items-center">
         {if $inputType === JTL\Plugin\Admin\InputType::SELECT}
             <label class="col col-sm-4 col-form-label text-sm-right" for="{$name}{$postfix}">{__($name)}:</label>
@@ -80,7 +83,7 @@
                 {/if}:
             </label>
             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                {input readonly=!$inputConfig->isModifyable() type=$inputType value=$item->getAttribValue($name) name=$inputName id=$name|cat:$postfix}
+                {input readonly=!$inputConfig->isModifyable() type=$inputType value=$value name=$inputName id=$name|cat:$postfix}
             </div>
         {/if}
     </div>

@@ -26,6 +26,7 @@ use JTL\Router\Controller\RootController;
 use JTL\Router\Controller\SearchController;
 use JTL\Router\Controller\SearchQueryController;
 use JTL\Router\Controller\SearchSpecialController;
+use JTL\Router\Middleware\ApiKeyMiddleware;
 use JTL\Router\Middleware\CartcheckMiddleware;
 use JTL\Router\Middleware\CurrencyCheckMiddleware;
 use JTL\Router\Middleware\LocaleCheckMiddleware;
@@ -246,6 +247,7 @@ class Router
             $registrator->register($group);
         }, $this->router);
         $rapi->setName('restapi_grp');
+        $rapi->middleware(new ApiKeyMiddleware($this->db));
         $this->routes[] = $rapi;
     }
 

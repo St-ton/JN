@@ -131,6 +131,12 @@
                 </p>
             {/if}
         {/block}
+        {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list" slide=true}
+        {input type="hidden" name="bhjn" value="1"}
+        {input type="hidden" name="a" value=$Artikel->kArtikel}
+        {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
+        {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
+
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
             $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0
         }
@@ -144,44 +150,32 @@
                         {/cardheader}
                     {/block}
                     {block name='productdetails-reviews-most-helpful'}
-                        {form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" slide=true}
-                            {input type="hidden" name="bhjn" value="1"}
-                            {input type="hidden" name="a" value=$Artikel->kArtikel}
-                            {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
-                            {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
-
-                            {block name='productdetails-reviews-most-helpful-body'}
-                                {cardbody class="review"}
-                                    {foreach $Artikel->HilfreichsteBewertung->oBewertung_arr as $oBewertung}
-                                        {block name='productdetails-reviews-form-most-useful-include-review-item'}
-                                            {include file='productdetails/review_item.tpl' oBewertung=$oBewertung bMostUseful=true}
-                                        {/block}
-                                    {/foreach}
-                                {/cardbody}
-                            {/block}
-                        {/form}
+                        {block name='productdetails-reviews-most-helpful-body'}
+                            {cardbody class="review"}
+                                {foreach $Artikel->HilfreichsteBewertung->oBewertung_arr as $oBewertung}
+                                    {block name='productdetails-reviews-form-most-useful-include-review-item'}
+                                        {include file='productdetails/review_item.tpl' oBewertung=$oBewertung bMostUseful=true}
+                                    {/block}
+                                {/foreach}
+                            {/cardbody}
+                        {/block}
                     {/block}
                 {/card}
             {/block}
-        {/if}
+            {/if}
 
-        {if $ratingPagination->getPageItemCount() > 0}
-            {block name='productdetails-reviews-verified-purchase-notice'}
-                {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{{lang key='verifiedPurchaseNotice' section='product rating'}|escape:"html"}"]}
-                    {lang key='reviewsHowTo' section='product rating'}
-                {/button}
-            {/block}
-            {block name='productdetails-reviews-include-pagination-bottom'}
-                {if empty($smarty.get.quickView)}
-                {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes'}
-                {/if}
-            {/block}
-            {block name='productdetails-reviews-form'}
-                {form id="reviews-list" method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list" slide=true}
-                    {input type="hidden" name="bhjn" value="1"}
-                    {input type="hidden" name="a" value=$Artikel->kArtikel}
-                    {input type="hidden" name="btgsterne" value=$BlaetterNavi->nSterne}
-                    {input type="hidden" name="btgseite" value=$BlaetterNavi->nAktuelleSeite}
+            {if $ratingPagination->getPageItemCount() > 0}
+                {block name='productdetails-reviews-verified-purchase-notice'}
+                    {button type="link" variant="outline-secondary" block="true" class="verified-purchase-notice" data=["toggle"=>"popover","content"=>"{{lang key='verifiedPurchaseNotice' section='product rating'}|escape:"html"}"]}
+                        {lang key='reviewsHowTo' section='product rating'}
+                    {/button}
+                {/block}
+                {block name='productdetails-reviews-include-pagination-bottom'}
+                    {if empty($smarty.get.quickView)}
+                    {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes'}
+                    {/if}
+                {/block}
+                {block name='productdetails-reviews-form'}
                     {foreach $ratingPagination->getPageItems() as $oBewertung}
                         {block name='productdetails-reviews-form-include-review-item'}
                             {card class="review {if $oBewertung@last}last{/if}"}
@@ -189,13 +183,13 @@
                             {/card}
                         {/block}
                     {/foreach}
-                {/form}
-            {/block}
-            {block name='productdetails-reviews-include-pagination-bottom'}
-                {if empty($smarty.get.quickView)}
-                {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes' showFilter=false}
-                {/if}
-            {/block}
-        {/if}
+                {/block}
+                {block name='productdetails-reviews-include-pagination-bottom'}
+                    {if empty($smarty.get.quickView)}
+                    {include file='snippets/pagination.tpl' oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cParam_arr=['btgsterne'=>$bewertungSterneSelected] cAnchor='tab-votes' showFilter=false}
+                    {/if}
+                {/block}
+            {/if}
+        {/form}
     </div>
 {/block}

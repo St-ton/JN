@@ -39,9 +39,11 @@ class ProductFilterURL
     public function getURL($extraFilter = null, bool $canonical = false, array $additional = []): string
     {
         $isSearchQuery      = false;
-        $languageID         = $this->productFilter->getFilterConfig()->getLanguageID();
+        $productFilter      = $this->productFilter;
+        $filterConfig       = $productFilter->getFilterConfig();
+        $languageID         = $filterConfig->getLanguageID();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
-        $base               = $this->productFilter->getBaseState();
+        $base               = $productFilter->getBaseState();
         $nonSeoFilterParams = [];
         $seoFilterParams    = [];
         $urlParams          = [
@@ -75,15 +77,14 @@ class ProductFilterURL
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
+        $baseUrl = $filterConfig->getBaseURL();
         if ($canonical === true) {
-            return $this->productFilter->getFilterConfig()->getBaseURL()
-                . $this->buildURLString(
-                    $seoFilterParams,
-                    $nonSeoFilterParams
-                );
+            return $baseUrl . $this->buildURLString(
+                $seoFilterParams,
+                $nonSeoFilterParams
+            );
         }
-        $url    = $this->productFilter->getFilterConfig()->getBaseURL();
-        $active = $this->productFilter->getActiveFilters();
+        $active = $productFilter->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($extraFilter !== null && !$extraFilter->getDoUnset()) {
             $active[] = $extraFilter;
@@ -103,7 +104,7 @@ class ProductFilterURL
                 unset($active[$i]);
                 foreach ($filterValue as $singleValue) {
                     $class    = $filter->getClassName();
-                    $instance = new $class($this->productFilter);
+                    $instance = new $class($productFilter);
                     /** @var FilterInterface $instance */
                     $instance->init($singleValue);
                     $active[] = $instance;
@@ -221,7 +222,7 @@ class ProductFilterURL
             }
         }
 
-        return $url . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
+        return $baseUrl . $this->buildURLString($seoFilterParams, $this->collapse($nonSeoFilterParams));
     }
 
     /**

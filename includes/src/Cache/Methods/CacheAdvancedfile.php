@@ -164,6 +164,7 @@ class CacheAdvancedfile implements ICachingMethod
                 \rmdir($value->getPathname());
             }
         }
+        $this->flush($this->getJournalID());
 
         return true;
     }

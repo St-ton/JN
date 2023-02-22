@@ -1160,7 +1160,11 @@ class Bestellung
                 'orderId' => $this->kBestellung,
             ]
         )->map(static function ($item) use ($html) {
-            $item->paymentLocalization = Preise::getLocalizedPriceString($item->fBetrag, $item->cISO, $html)
+            $item->paymentLocalization = Preise::getLocalizedPriceWithoutFactor(
+                $item->fBetrag,
+                Currency::fromISO($item->cISO),
+                $html
+            )
                 . ' (' . Shop::Lang()->getTranslation('payedOn', 'login') . ' '
                 . (new DateTime($item->dZeit))->format('d.m.Y') . ')';
 

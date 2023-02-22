@@ -1487,6 +1487,9 @@ class NiceDB implements DbInterface
      */
     public function __unserialize(array $data): void
     {
+        foreach (\get_object_vars(Shop::Container()->getDB()) as $k => $v) {
+            $this->$k = $v;
+        }
     }
 
     /**

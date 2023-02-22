@@ -168,10 +168,10 @@ class DBManagerController extends AbstractBackendController
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = 'SELECT * FROM ' . $table;
         // query parts
         $queryParams = [];
-        $queryParts  = ['select' => $baseQuery];
+        $queryParts  = ['table' => ' FROM ' . $table . ' '];
+
         // where
         if (isset($filter['where']['col'])) {
             $whereParts  = [];
@@ -185,24 +185,28 @@ class DBManagerController extends AbstractBackendController
                         $op  = 'LIKE';
                         $val = \sprintf('%%%s%%', \trim($val, '%'));
                     }
-                    $whereParts[]                  = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
-                    $queryParams["where_{$i}_val"] = $val;
+                    $whereParts[] = \sprintf('`%s` %s :where_%d_val', $col, $op, $i);
+                    /** @var string[] $queryParams */
+                    $queryParams['where_' . $i . '_val'] = $val;
                 }
             }
             if (\count($whereParts) > 0) {
                 $queryParts['where'] = 'WHERE ' . \implode(' AND ', $whereParts);
             }
         }
+        $fromWhere = \implode(' ', $queryParts);
         // count without limit
-        $query = \implode(' ', $queryParts);
-        $count = $this->db->getAffectedRows($query, $queryParams);
+        $count = $this->db->getSingleArray(
+            'SELECT COUNT(*) as allRowsFound' . $fromWhere,
+            $queryParams
+        )['allRowsFound'];
         $pages = (int)\ceil($count / $filter['limit']);
         // limit
         $queryParams['limit_count']  = $filter['limit'];
         $queryParams['limit_offset'] = $filter['offset'];
-        $queryParts['limit']         = 'LIMIT :limit_offset, :limit_count';
+        $offsetLimit                 = ' LIMIT :limit_offset, :limit_count';
 
-        $query = \implode(' ', $queryParts);
+        $query = 'SELECT * ' . $fromWhere . $offsetLimit;
         $info  = null;
         $data  = $this->db->queryPrepared(
             $query,

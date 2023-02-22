@@ -134,6 +134,7 @@ class PaymentMethods extends AbstractItem
             }
             $names        = ['Anzahl Bestellungen nötig', 'Mindestbestellwert', 'Maximaler Bestellwert'];
             $valueNames   = ['min_bestellungen', 'min', 'max'];
+            $valueTypes   = ['zahl', 'kommazahl', 'kommazahl'];
             $descriptions = [
                 'Nur Kunden, die min. soviele Bestellungen bereits durchgeführt haben, ' .
                 'können diese Zahlungsart nutzen.',
@@ -153,7 +154,7 @@ class PaymentMethods extends AbstractItem
                 $plgnConf->cName            = $names[$z];
                 $plgnConf->cBeschreibung    = $descriptions[$z];
                 $plgnConf->cWertName        = $moduleID . '_' . $valueNames[$z];
-                $plgnConf->cInputTyp        = 'zahl';
+                $plgnConf->cInputTyp        = $valueTypes[$z];
                 $plgnConf->nSort            = $sorting[$z];
                 $plgnConf->cConf            = 'Y';
 

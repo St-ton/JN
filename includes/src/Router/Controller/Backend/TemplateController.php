@@ -336,16 +336,18 @@ class TemplateController extends AbstractBackendController
         $service      = Shop::Container()->getTemplateService();
         $current      = $service->loadFull(['cTemplate' => $this->currentTemplateDir]);
         $parentFolder = null;
-        $this->getGetText()->loadTemplateLocale('base', $current);
+        $getText      = $this->getGetText();
         if (!empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
+            $getText->loadLocaleFile($getText->getMoPath(\PFAD_ROOT . \PFAD_TEMPLATES . $parentFolder . '/', 'base'));
         }
+        $getText->loadTemplateLocale('base', $current);
         $templateConfig = $this->config->getConfigXML($reader, $parentFolder);
         $preview        = $this->getPreview($templateConfig);
 
         return $this->smarty->assign('template', $current)
             ->assign('themePreviews', (\count($preview) > 0) ? $preview : null)
-            ->assign('themePreviewsJSON', \json_encode($preview))
+            ->assign('themePreviewsJSON', \json_encode($preview, \JSON_THROW_ON_ERROR))
             ->assign('templateConfig', $templateConfig)
             ->getResponse('shoptemplate.tpl');
     }

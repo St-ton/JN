@@ -117,14 +117,14 @@ class FormatExporter extends AbstractExporter
         if ($this->model->getPluginID() > 0
             && \str_contains($this->model->getContent(), \PLUGIN_EXPORTFORMAT_CONTENTFILE)
         ) {
-            $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
+            $started = $this->startPluginExport($isCron, $isAsync, $queueEntry, $max);
             if ($queueEntry->jobQueueID > 0 && empty($queueEntry->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueEntry->jobQueueID);
             }
             $this->quit();
             $this->logger->notice('Finished export');
 
-            return true;
+            return !$started;
         }
         $cacheHits    = 0;
         $cacheMisses  = 0;
@@ -415,6 +415,7 @@ class FormatExporter extends AbstractExporter
         $exportformat->tkampagne_cWert      = $this->model->getCampaignValue();
         // needed for plugin exports
         $ExportEinstellungen = $this->getConfig();
+        global $started;
         include $oPlugin->getPaths()->getExportPath()
             . \str_replace(\PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->model->getContent());
         if ($isAsync) {
@@ -422,6 +423,8 @@ class FormatExporter extends AbstractExporter
             $this->model->save(['dateLastCreated']);
             exit;
         }
+
+        return $started ?? false;
     }
 
     /**

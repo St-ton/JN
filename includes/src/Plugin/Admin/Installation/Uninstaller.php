@@ -75,7 +75,6 @@ final class Uninstaller
             try {
                 $this->executeMigrations($plugin, $deleteData);
             } catch (Exception) {
-
             }
             $uninstaller = $plugin->getPaths()->getUninstaller();
             if ($uninstaller !== null && \file_exists($uninstaller)) {

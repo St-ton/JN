@@ -373,4 +373,6 @@ class InstallCode extends Enum
     public const INVALID_LINK_IDENTIFIER = 420;
 
     public const CANCELED = 421;
+
+    public const INVALID_MIGRATION = 422;
 }

@@ -51,6 +51,16 @@ class Release
     private string $checksum;
 
     /**
+     * @var Version|null
+     */
+    private ?Version $phpMinVersion = null;
+
+    /**
+     * @var Version|null
+     */
+    private ?Version $phpMaxVersion = null;
+
+    /**
      * @var bool
      */
     private bool $includesSecurityFixes = false;
@@ -78,6 +88,12 @@ class Release
         $this->setDownloadURL($json->download_url);
         $this->setChecksum($json->checksum ?? '');
         $this->setIncludesSecurityFixes($json->includes_security_fixes ?? false);
+        if (isset($json->min_php_version)) {
+            $this->setPhpMinVersion(Version::parse($json->min_php_version));
+        }
+        if (isset($json->max_php_version)) {
+            $this->setPhpMaxVersion(Version::parse($json->max_php_version));
+        }
     }
 
     /**
@@ -195,5 +211,37 @@ class Release
     public function setIncludesSecurityFixes(bool $includesSecurityFixes): void
     {
         $this->includesSecurityFixes = $includesSecurityFixes;
+    }
+
+    /**
+     * @return Version|null
+     */
+    public function getPhpMinVersion(): ?Version
+    {
+        return $this->phpMinVersion;
+    }
+
+    /**
+     * @param Version|null $phpMinVersion
+     */
+    public function setPhpMinVersion(?Version $phpMinVersion): void
+    {
+        $this->phpMinVersion = $phpMinVersion;
+    }
+
+    /**
+     * @return Version|null
+     */
+    public function getPhpMaxVersion(): ?Version
+    {
+        return $this->phpMaxVersion;
+    }
+
+    /**
+     * @param Version|null $phpMaxVersion
+     */
+    public function setPhpMaxVersion(?Version $phpMaxVersion): void
+    {
+        $this->phpMaxVersion = $phpMaxVersion;
     }
 }

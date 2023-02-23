@@ -82,6 +82,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $filesMissing = false;
 
     /**
+     * @var bool
+     */
+    private bool $releaseAvailable = false;
+
+    /**
      * @inheritDoc
      */
     public function getID(): string
@@ -287,5 +292,34 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setShopVersionOK(bool $shopVersionOK): void
     {
         $this->shopVersionOK = $shopVersionOK;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getCurrentPhpVersion(): Version
+    {
+        $php     = Version::parse(\PHP_VERSION);
+        $version = new Version();
+        $version->setMajor($php->getMajor());
+        $version->setMinor($php->getMinor());
+
+        return $version;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReleaseAvailable(): bool
+    {
+        return $this->releaseAvailable;
+    }
+
+    /**
+     * @param bool $releaseAvailable
+     */
+    public function setReleaseAvailable(bool $releaseAvailable): void
+    {
+        $this->releaseAvailable = $releaseAvailable;
     }
 }

@@ -226,7 +226,6 @@ class Frontend extends AbstractSession
      */
     private function updateGlobals(): void
     {
-
         unset($_SESSION['oKategorie_arr_new']);
         $_SESSION['ks']       = [];
         $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
@@ -542,10 +541,6 @@ class Frontend extends AbstractSession
     public static function checkReset(string $langISO = ''): void
     {
         if ($langISO !== '') {
-            if ($langISO !== Shop::getLanguageCode()) {
-                $_SESSION['oKategorie_arr']     = [];
-                $_SESSION['oKategorie_arr_new'] = [];
-            }
             $lang = first(LanguageHelper::getAllLanguages(), static function (LanguageModel $l) use ($langISO): bool {
                 return $l->getCode() === $langISO;
             });

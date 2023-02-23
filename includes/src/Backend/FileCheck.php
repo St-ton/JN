@@ -56,7 +56,7 @@ class FileCheck
                     $mtime    = \filemtime($prefix . $shopFile);
                     $result[] = (object)[
                         'name'         => $shopFile,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }
@@ -71,7 +71,7 @@ class FileCheck
                     $mtime    = \file_exists($path) ? \filemtime($path) : 0;
                     $result[] = (object)[
                         'name'         => $file,
-                        'lastModified' => \date('d.m.Y H:i:s', $mtime)
+                        'lastModified' => \date('d.m.Y H:i:s', $mtime ?: null)
                     ];
                     $errors++;
                 }

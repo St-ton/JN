@@ -191,8 +191,14 @@ msgstr "Zum JTL-Extension Store"
 msgid "Your shop version is not compatible with this plugin version"
 msgstr "Ihre Shop-Version ist für die neue Version zu niedrig"
 
-msgid "Shop version not compatible or subscription expired"
-msgstr "Shopversion zu niedrig oder Subscription abgelaufen"
+msgid "Shop version not compatible"
+msgstr "Inkompatible Shopversion"
+
+msgid "PHP version too low"
+msgstr "PHP-Version ist zu niedrig"
+
+msgid "PHP version too high"
+msgstr "PHP-Version ist zu hoch"
 
 msgid "Key"
 msgstr "Key"

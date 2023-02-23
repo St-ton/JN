@@ -85,7 +85,7 @@ function sendRequestFile(string $file): void
     if (file_exists($absoluteFile)) {
         header('Content-Type: ' . $contentType);
         header('Content-Length: ' . filesize($absoluteFile));
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($absoluteFile)) . ' GMT');
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($absoluteFile) ?: null) . ' GMT');
 
         if ($contentType === 'application/octet-stream') {
             header('Content-Description: File Transfer');

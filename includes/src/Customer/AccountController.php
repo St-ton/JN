@@ -439,8 +439,7 @@ class AccountController
             $_SESSION['ks'],
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
-            $_SESSION['Kupon'],
-            $_SESSION['oKategorie_arr_new']
+            $_SESSION['Kupon']
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
             Campaign::setCampaignAction(\KAMPAGNE_DEF_LOGIN, $customerID, 1.0); // Login
@@ -833,7 +832,7 @@ class AccountController
         $languageID   = Shop::getLanguageID();
         $languageCode = Shop::getLanguageCode();
         $currency     = Frontend::getCurrency();
-        unset($_SESSION['oKategorie_arr_new'], $_SESSION['Warenkorb']);
+        unset($_SESSION['Warenkorb']);
 
         $params = \session_get_cookie_params();
         \setcookie(
@@ -1163,7 +1162,11 @@ class AccountController
         }
 
         if (isset($postData['backToCheckout'])) {
-            $_SESSION['shippingAddressPresetID'] = $template->kLieferadresse;
+            if ($template->kLieferadresse === 0) {
+                unset($_SESSION['shippingAddressPresetID']);
+            } else {
+                $_SESSION['shippingAddressPresetID'] = $template->kLieferadresse;
+            }
             \header('Location: '
                 . Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php')
                 . '?editRechnungsadresse=1');

@@ -133,19 +133,20 @@ final class Shop extends ShopBC
     ];
 
     /**
-	 * ForceHost Support
      * @var array
      */
     public static array $forceHost = [
-        'host'      => '',
-		'scheme'    => '',
-		'locale'    => '',
-		'iso'       => '',
-		'id'        => 0,
-		'default'   => 'N',
-		'prefix'    => '/',
-		'currency'  => false,
-		'localized' => false
+        [
+            'host'      => '',
+            'scheme'    => '',
+            'locale'    => '',
+            'iso'       => '',
+            'id'        => 0,
+            'default'   => 'N',
+            'prefix'    => '/',
+            'currency'  => false,
+            'localized' => false
+        ]
     ];
 
     /**

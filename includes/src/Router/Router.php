@@ -628,9 +628,7 @@ class Router
             \parse_str(\file_get_contents('php://input'), $body);
         }
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
-        if ((\EXPERIMENTAL_MULTILANG_SHOP === true || (Shop::$forceHost[0]['host'] ?? '') !== '')
-            && \count($this->hosts) > 0
-        ) {
+        if ((\EXPERIMENTAL_MULTILANG_SHOP === true || Shop::$forceHost[0]['host'] !== '') && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
                 if ($host['host'] === $requestedHost) {
@@ -707,7 +705,7 @@ class Router
         $hosts     = [];
         $locales   = [];
         $forceHost = false;
-        if ((Shop::$forceHost[0]['host'] ?? '') !== '') {
+        if (Shop::$forceHost[0]['host'] !== '') {
             foreach (Shop::$forceHost as $hostData) {
                 if ($hostData['host'] === $_SERVER['HTTP_HOST']) {
                     $hosts[]             = [

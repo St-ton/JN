@@ -2005,6 +2005,8 @@ const HOOK_ROUTER_PRE_DISPATCH = 400;
 const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
 
 /**
- * @since 5.2.3
+ * @param JTL\Extensions\Download\Download download
+ * @param int                              customerID
+ * @param int                              orderID
  */
-const HOOK_SHOP_CONSTRUCT = 402;
+const HOOK_ORDER_DOWNLOAD_FILE = 402;

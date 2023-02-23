@@ -42,6 +42,7 @@ class ProductFilterURL
         $productFilter      = $this->productFilter;
         $filterConfig       = $productFilter->getFilterConfig();
         $languageID         = $filterConfig->getLanguageID();
+        $baseUrl            = $filterConfig->getBaseURL();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $productFilter->getBaseState();
         $nonSeoFilterParams = [];
@@ -77,12 +78,8 @@ class ProductFilterURL
                 $nonSeoFilterParams[$base->getUrlParam()] = $filterValue;
             }
         }
-        $baseUrl = $filterConfig->getBaseURL();
         if ($canonical === true) {
-            return $baseUrl . $this->buildURLString(
-                $seoFilterParams,
-                $nonSeoFilterParams
-            );
+            return $baseUrl . $this->buildURLString($seoFilterParams, $nonSeoFilterParams);
         }
         $active = $productFilter->getActiveFilters();
         // we need the base state + all active filters + optionally the additional filter to generate the correct url

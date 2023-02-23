@@ -156,7 +156,6 @@ final class Shop extends ShopBC
     {
         self::$state    = new RoutingState();
         self::$instance = $this;
-        \executeHook(\HOOK_SHOP_CONSTRUCT);
     }
 
     /**

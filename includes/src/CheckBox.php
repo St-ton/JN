@@ -178,10 +178,10 @@ class CheckBox
      */
     public function __construct(int $id = 0, DbInterface $db = null)
     {
-        $this->db    = $db ?? Shop::Container()->getDB();
+        $this->db = $db ?? Shop::Container()->getDB();
+        $this->dependencies();
         $this->oLink = new Link($this->db);
         $this->loadFromDB($id);
-        $this->dependencies();
     }
 
     /**

@@ -13,4 +13,6 @@ class CheckboxLanguageRepository extends AbstractRepository
     protected string $tableName = 'tcheckboxsprache';
 
     protected string $keyName = 'kCheckBoxSprache';
+
+    //@todo
 }

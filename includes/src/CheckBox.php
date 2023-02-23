@@ -554,7 +554,10 @@ class CheckBox
      */
     public function activate(array $checkboxIDs): bool
     {
-        return $this->service->activate($checkboxIDs);
+        $res = $this->service->activate($checkboxIDs);
+        Shop::Container()->getCache()->flushTags(['checkbox']);
+
+        return $res;
     }
 
     /**
@@ -575,7 +578,10 @@ class CheckBox
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        return $this->service->deactivate($checkboxIDs);
+        $res = $this->service->deactivate($checkboxIDs);
+        Shop::Container()->getCache()->flushTags(['checkbox']);
+
+        return $res;
     }
 
     /**

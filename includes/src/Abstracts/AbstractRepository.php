@@ -9,10 +9,8 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Database connection not necessarily has to be injected.
- *
- * @property string $tableName
- * @property string $keyName
+ * Class AbstractRepository
+ * @package JTL\Abstracts
  */
 abstract class AbstractRepository implements RepositoryInterface
 {
@@ -20,22 +18,16 @@ abstract class AbstractRepository implements RepositoryInterface
     protected const DELETE_FAILED           = -1;
 
     /**
-     * Every Repository has to have these properties set and initialized
-     *     protected string $tableName = '';
-     *     protected string $keyName = '';
-     */
-
-    /**
      * @param DbInterface|null $db
      */
-    public function __construct(
-        protected ?DbInterface $db = null,
-    ) {
-        if (\is_null($db)) {
-            $this->db = Shop::Container()->getDB();
-        }
+    public function __construct(protected ?DbInterface $db = null)
+    {
+        $this->db = $db ?? Shop::Container()->getDB();
     }
 
+    /**
+     * @return DbInterface
+     */
     protected function getDB(): DbInterface
     {
         return $this->db;
@@ -44,18 +36,12 @@ abstract class AbstractRepository implements RepositoryInterface
     /**
      * @inheritdoc
      */
-    final public function getTableName(): string
-    {
-        return $this->tableName;
-    }
+    abstract public function getTableName(): string;
 
     /**
      * @inheritdoc
      */
-    final public function getKeyName(): string
-    {
-        return $this->keyName;
-    }
+    abstract public function getKeyName(): string;
 
     /**
      * @param int $id
@@ -63,12 +49,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function get(int $id): ?stdClass
     {
-        return $this->db->getSingleObject(
-            'SELECT *'
-            . ' FROM ' . $this->getTableName()
-            . ' WHERE ' . $this->getKeyName() . ' = :id',
-            ['id' => $id]
-        );
+        return $this->db->select($this->getTableName(), $this->getKeyName(), $id);
     }
 
     /**
@@ -131,7 +112,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     final protected function ensureIntValuesInArray(array $values): array
     {
-        return array_map(static function ($value) {
+        return \array_map(static function ($value) {
             return (int)$value;
         }, $values);
     }

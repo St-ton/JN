@@ -9,9 +9,7 @@ use JTL\DB\DbInterface;
  * Should be the only place to store SQL Statements and/or to access the database
  * It is recommended to use the corresponding service to access this class
  *
- * No DELETE Requirement because there may be reasons to not provide a delete-method
- *
- * @property DbInterface $db
+ * No DELETE Requirement because there may be reasons to not provide a delete method
  */
 interface RepositoryInterface
 {

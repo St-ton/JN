@@ -44,18 +44,16 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     /**
      * @var string
      */
-
     protected string $displayAt = '';
 
     /**
      * @var bool
      */
-
     protected bool $active = true;
+
     /**
      * @var bool
      */
-
     protected bool $isMandatory = false;
 
     /**
@@ -84,7 +82,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     private array $languages = [];
 
     /**
-     * @var array|string[]
+     * @var string[]
      */
     private array $mapping = [
         'checkboxID'             => 'checkboxID',
@@ -102,9 +100,8 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'created_DE'             => 'created_DE',
     ];
 
-
     /**
-     * @var array|string[]
+     * @var string[]
      */
     private array $columnMapping = [
         'kCheckBox'         => 'checkboxID',
@@ -128,7 +125,6 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     {
         return $this->primaryKey;
     }
-
 
     /**
      * @return array

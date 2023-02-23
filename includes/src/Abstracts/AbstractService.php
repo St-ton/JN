@@ -7,21 +7,26 @@ use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Interfaces\ServiceInterface;
 
+/**
+ * Class AbstractService
+ * @package JTL\Abstracts
+ */
 abstract class AbstractService implements ServiceInterface
 {
     /**
-     * @param RepositoryInterface|null $repository
+     * @param RepositoryInterface $repository
      */
-    public function __construct(
-        protected ?RepositoryInterface $repository = null
-    ) {
-        if (\is_null($this->repository)) {
+    public function __construct(protected RepositoryInterface $repository)
+    {
+        if ($this->repository === null) {
+            //@todo
             $this->getRepository();
         }
     }
 
     /**
      * @inheritdoc
+     * @todo
      */
     abstract public function getRepository(): RepositoryInterface;
 

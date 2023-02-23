@@ -42,7 +42,7 @@ class CheckboxLanguageDataTableObject extends AbstractDataObject implements Data
     protected string $description = '';
 
     /**
-     * @var array|string[]
+     * @var string[]
      */
     private array $mapping = [
         'checkboxLanguageID' => 'checkboxLanguageID',
@@ -53,7 +53,7 @@ class CheckboxLanguageDataTableObject extends AbstractDataObject implements Data
     ];
 
     /**
-     * @var array|string[]
+     * @var string[]
      */
     private array $columnMapping = [
         'kCheckBoxSprache' => 'checkboxLanguageID',

@@ -11,10 +11,6 @@ use stdClass;
  */
 class CheckboxRepository extends AbstractRepository
 {
-    protected string $tableName = 'tcheckbox';
-
-    protected string $keyName = 'kCheckBox';
-
     /**
      * @param int $id
      * @return stdClass|null
@@ -29,9 +25,15 @@ class CheckboxRepository extends AbstractRepository
         );
     }
 
-    /**
-     * From Checkbox.php
-     */
+    public function getTableName(): string
+    {
+        return 'tcheckbox';
+    }
+
+    public function getKeyName(): string
+    {
+        return 'kCheckBox';
+    }
 
     /**
      * @param int[] $checkboxIDs
@@ -42,11 +44,11 @@ class CheckboxRepository extends AbstractRepository
         if (\count($checkboxIDs) === 0) {
             return false;
         }
-            $this->db->query(
-                'UPDATE '. $this->getTableName()
-                . ' SET nAktiv = 1'
-                . ' WHERE '. $this->getKeyName() . ' IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
-            );
+        $this->db->query(
+            'UPDATE '. $this->getTableName()
+            . ' SET nAktiv = 1'
+            . ' WHERE '. $this->getKeyName() . ' IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+        );
 
         return true;
     }

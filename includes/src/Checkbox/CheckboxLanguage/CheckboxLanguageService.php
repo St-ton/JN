@@ -43,7 +43,7 @@ class CheckboxLanguageService extends AbstractService
             'kSprache'  => $updateDTO->getLanguageID()
         ]);
         $language     = $languageList[0] ?? null;
-        if (\is_null($language)) {
+        if ($language === null) {
             return $this->insert($updateDTO) > 0;
         }
         $updateDTO->setCheckboxLanguageID($language->getCheckboxLanguageID());
@@ -56,6 +56,7 @@ class CheckboxLanguageService extends AbstractService
      */
     public function getRepository(): RepositoryInterface
     {
+        //@todo
         if (\is_null($this->repository)) {
             $this->repository = new CheckboxLanguageRepository();
         }

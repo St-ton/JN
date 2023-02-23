@@ -628,7 +628,9 @@ class Router
             \parse_str(\file_get_contents('php://input'), $body);
         }
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
-        if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0 || Shop::$forceHost[0]['host'] != "" && \count($this->hosts) > 0) {
+        if ((\EXPERIMENTAL_MULTILANG_SHOP === true || (Shop::$forceHost[0]['host'] ?? '') !== '')
+            && \count($this->hosts) > 0
+        ) {
             $requestedHost = $request->getUri()->getHost();
             foreach ($this->hosts as $host) {
                 if ($host['host'] === $requestedHost) {
@@ -702,34 +704,29 @@ class Router
      */
     private function collectHosts(): array
     {
-        $hosts   = [];
-        $locales = [];
-        
-		//ForceHost Support
-		$forceHost = false;
-		if(Shop::$forceHost[0]['host'] != ""){
-			foreach(Shop::$forceHost as $hostData){
-				if($hostData['host'] == $_SERVER['HTTP_HOST']){
-					$url = 'https://'.$_SERVER['HTTP_HOST'];
-					$host    = \parse_url($url);
-					$hosts[] = [
-						'host'      => $hostData['host'],
-						'scheme'    => $hostData['scheme'],
-						'locale'    => $hostData['locale'],
-						'iso'       => $hostData['iso'],
-						'id'        => $hostData['id'],
-						'default'   => true,
-						'prefix'    => '/',
-						'currency'  => false,
-						'localized' => false
-					];
-					$this->defaultLocale = $hostData['locale'];
-					$forceHost=true;
-				}
-			}
-		}
-
-        if(!$forceHost){
+        $hosts     = [];
+        $locales   = [];
+        $forceHost = false;
+        if ((Shop::$forceHost[0]['host'] ?? '') !== '') {
+            foreach (Shop::$forceHost as $hostData) {
+                if ($hostData['host'] === $_SERVER['HTTP_HOST']) {
+                    $hosts[]             = [
+                        'host'      => $hostData['host'],
+                        'scheme'    => $hostData['scheme'],
+                        'locale'    => $hostData['locale'],
+                        'iso'       => $hostData['iso'],
+                        'id'        => $hostData['id'],
+                        'default'   => true,
+                        'prefix'    => '/',
+                        'currency'  => false,
+                        'localized' => false
+                    ];
+                    $this->defaultLocale = $hostData['locale'];
+                    $forceHost           = true;
+                }
+            }
+        }
+        if (!$forceHost) {
             foreach (LanguageHelper::getAllLanguages() as $language) {
                 $default   = $language->isShopDefault();
                 $code      = $language->getCode();

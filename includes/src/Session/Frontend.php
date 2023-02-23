@@ -281,17 +281,16 @@ class Frontend extends AbstractSession
             }
         }
         // EXPERIMENTAL_MULTILANG_SHOP
-        //ForceHost Support
-		if(Shop::$forceHost[0]['host'] == $_SERVER['HTTP_HOST']){
-			foreach ($_SESSION['Sprachen'] as $lang) {
-                if (Shop::$forceHost[0]['id'] == $lang->kSprache) {
-                    $_SESSION['kSprache']    = $lang->kSprache;
-                    $_SESSION['cISOSprache'] = \trim($lang->cISO);
+        if (Shop::$forceHost[0]['host'] === $_SERVER['HTTP_HOST']) {
+            foreach ($_SESSION['Sprachen'] as $lang) {
+                if (Shop::$forceHost[0]['id'] === $lang->getId()) {
+                    $_SESSION['kSprache']    = $lang->getId();
+                    $_SESSION['cISOSprache'] = \trim($lang->getCode());
                     Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
                     break;
                 }
-			}
-		}else{
+            }
+        } else {
             foreach ($_SESSION['Sprachen'] as $lang) {
                 if (isset($_SERVER['HTTP_HOST']) && \defined('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER))) {
                     $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($lang->cISO, \MB_CASE_UPPER));

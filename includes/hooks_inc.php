@@ -2005,8 +2005,6 @@ const HOOK_ROUTER_PRE_DISPATCH = 400;
 const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
 
 /**
- * @since 5.2.0
- * at construct of the class
- * @file class.core.Shop.php
+ * @since 5.2.3
  */
 const HOOK_SHOP_CONSTRUCT = 402;

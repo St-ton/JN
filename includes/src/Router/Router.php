@@ -225,9 +225,11 @@ class Router
             $this->routes[] = $group;
         }
         if ($this->isMultiDomain === false) {
-            $path = \parse_url(\URL_SHOP, \PHP_URL_PATH);
-            if ($path !== null && $path !== '/') {
+            if (($path = \parse_url(\URL_SHOP, \PHP_URL_PATH)) !== null && $path !== '/') {
                 $this->path = $path;
+            }
+            if (($port = \parse_url(\URL_SHOP, \PHP_URL_PORT)) !== null) {
+                $this->router->setPort($port);
             }
         }
         $this->collectGroupRoutes();
@@ -351,7 +353,7 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
             $scheme = 'F';
         }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
@@ -420,7 +422,7 @@ class Router
         $scheme = $isDefaultLocale
             ? ($this->config['global']['routing_default_language'] ?? 'F')
             : ($this->config['global']['routing_scheme'] ?? 'F');
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
             $scheme = 'F';
         }
         if ($scheme !== 'F' && $byName === true && empty($replacements['name'])) {
@@ -461,12 +463,18 @@ class Router
      */
     private function getPrefix(?string $routeHost): string
     {
-        if ($routeHost !== null) {
-            foreach ($this->hosts as $host) {
-                if ($host['host'] === $routeHost) {
-                    return $host['scheme'] . '://' . $routeHost;
-                }
+        if ($routeHost === null) {
+            return Shop::getURL();
+        }
+        foreach ($this->hosts as $host) {
+            if ($host['host'] !== $routeHost) {
+                continue;
             }
+            $port = $host['port'] > 0
+                ? ':' . $host['port']
+                : '';
+
+            return $host['scheme'] . '://' . $routeHost . $port;
         }
 
         return Shop::getURL();
@@ -522,7 +530,7 @@ class Router
             $isDefaultLocale = ($replacements['lang'] ?? '') === $this->defaultLocale;
             $defaultScheme   = $this->config['global']['routing_default_language'] ?? 'F';
             $scheme          = $this->config['global']['routing_scheme'] ?? 'F';
-            if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+            if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
                 $scheme = 'F';
             }
             if (!$isDefaultLocale && ($scheme === 'LP' || $scheme === 'L')) {
@@ -711,6 +719,7 @@ class Router
                     $hosts[]             = [
                         'host'      => $hostData['host'],
                         'scheme'    => $hostData['scheme'],
+                        'port'      => $hostData['port'] ?? null,
                         'locale'    => $hostData['locale'],
                         'iso'       => $hostData['iso'],
                         'id'        => $hostData['id'],
@@ -737,6 +746,7 @@ class Router
                     $hosts[] = [
                         'host'      => $host['host'],
                         'scheme'    => $host['scheme'],
+                        'port'      => $host['port'] ?? null,
                         'locale'    => $language->getIso639(),
                         'iso'       => $code,
                         'id'        => $language->getId(),
@@ -752,6 +762,7 @@ class Router
                     $hosts[]             = [
                         'host'      => $host['host'],
                         'scheme'    => $host['scheme'],
+                        'port'      => $host['port'] ?? null,
                         'locale'    => $language->getIso639(),
                         'iso'       => $code,
                         'id'        => $language->getId(),
@@ -768,7 +779,7 @@ class Router
         }
         $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
         $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
-        if (ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
+        if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
             $defaultScheme = 'xF';
             $otherSchemes  = 'xF';
         }

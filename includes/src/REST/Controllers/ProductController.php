@@ -145,7 +145,7 @@ class ProductController extends AbstractController
         /** @var UploadedFile $file */
         $modelHasImages = $item->getAttribValue('images')->count() > 0;
         foreach ($uploads['image'] as $i => $file) {
-            $file->moveTo(\PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $file->getClientFilename());
+            $file->moveTo(\PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $file->getClientFilename());
             if (!$modelHasImages) {
                 $model = new ProductImageModel($this->db);
                 $data  = (object)[

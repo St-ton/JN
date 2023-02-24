@@ -10,6 +10,7 @@ use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\States\BaseSearchQuery;
+use JTL\Helpers\URL;
 use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -42,12 +43,12 @@ class ProductFilterURL
         $productFilter      = $this->productFilter;
         $filterConfig       = $productFilter->getFilterConfig();
         $languageID         = $filterConfig->getLanguageID();
-        $baseUrl            = $filterConfig->getBaseURL();
         $extraFilter        = $this->convertExtraFilter($extraFilter);
         $base               = $productFilter->getBaseState();
         $nonSeoFilterParams = [];
         $seoFilterParams    = [];
-        $urlParams          = [
+
+        $urlParams = [
             'kf'     => [],
             'hf'     => [],
             'mm'     => [],
@@ -58,6 +59,11 @@ class ProductFilterURL
             'custom' => [],
             'misc'   => []
         ];
+
+        $baseUrl = new URL($filterConfig->getBaseURL());
+        $baseUrl->setPath('');
+        $baseUrl = $baseUrl->normalize() . '/';
+
         if ($base->isInitialized()) {
             $filterSeoUrl = \count($additional) > 0
                 ? $base->getRoute($additional)

@@ -3,7 +3,6 @@
 namespace JTL\Interfaces;
 
 use JTL\DataObjects\DataTableObjectInterface;
-use JTL\DB\DbInterface;
 
 /**
  * Should be the only place to store SQL Statements and/or to access the database
@@ -40,4 +39,10 @@ interface RepositoryInterface
      * @return bool
      */
     public function update(DataTableObjectInterface $updateDTO): bool;
+
+    /**
+     * @param array $values
+     * @return int|bool
+     */
+    public function delete(array $values): int|bool;
 }

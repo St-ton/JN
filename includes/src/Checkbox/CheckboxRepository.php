@@ -17,7 +17,7 @@ class CheckboxRepository extends AbstractRepository
      */
     public function get(int $id): ?stdClass
     {
-        return $this->db->getSingleObject(
+        return $this->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE"
                 . ' FROM ' . $this->getTableName()
                 . ' WHERE ' . $this->getKeyName() . ' = :cbid',
@@ -25,11 +25,17 @@ class CheckboxRepository extends AbstractRepository
         );
     }
 
+    /**
+     * @return string
+     */
     public function getTableName(): string
     {
         return 'tcheckbox';
     }
 
+    /**
+     * @return string
+     */
     public function getKeyName(): string
     {
         return 'kCheckBox';
@@ -44,10 +50,11 @@ class CheckboxRepository extends AbstractRepository
         if (\count($checkboxIDs) === 0) {
             return false;
         }
-        $this->db->query(
+        $this->getDB()->query(
             'UPDATE '. $this->getTableName()
             . ' SET nAktiv = 1'
-            . ' WHERE '. $this->getKeyName() . ' IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+            . ' WHERE '. $this->getKeyName() . ' IN ('
+            . \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 
         return true;
@@ -62,10 +69,11 @@ class CheckboxRepository extends AbstractRepository
         if (\count($checkboxIDs) === 0) {
             return false;
         }
-        $this->db->query(
+        $this->getDB()->query(
             'UPDATE '. $this->getTableName()
             . ' SET nAktiv = 0'
-            . ' WHERE '. $this->getKeyName() . ' IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+            . ' WHERE '. $this->getKeyName() . ' IN (' .
+            \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 
         return true;

@@ -10,9 +10,19 @@ use JTL\Abstracts\AbstractRepository;
  */
 class CheckboxLanguageRepository extends AbstractRepository
 {
-    protected string $tableName = 'tcheckboxsprache';
+    /**
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        return 'tcheckboxsprache';
+    }
 
-    protected string $keyName = 'kCheckBoxSprache';
-
-    //@todo
+    /**
+     * @return string
+     */
+    public function getKeyName(): string
+    {
+        return 'kCheckBoxSprache';
+    }
 }

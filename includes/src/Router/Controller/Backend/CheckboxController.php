@@ -36,7 +36,7 @@ class CheckboxController extends AbstractBackendController
         $step     = 'uebersicht';
         $checkbox = new CheckBox(0, $this->db);
         $tab      = $step;
-        if (Request::verifyGPDataString('tab') !== '') {
+        if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $tab = Request::verifyGPDataString('tab');
         }
         if (isset($_POST['erstellenShowButton'])) {
@@ -113,13 +113,13 @@ class CheckboxController extends AbstractBackendController
 
             return $checks;
         }
-        if (!isset($post['cName']) || $post['cName'] === '') {
+        if (!isset($post['cName']) || \mb_strlen($post['cName']) === 0) {
             $checks['cName'] = 1;
         }
         $text = false;
         $link = true;
         foreach ($languages as $language) {
-            if ($post['cText_' . $language->getIso()] !== '') {
+            if (\mb_strlen($post['cText_' . $language->getIso()]) > 0) {
                 $text = true;
                 break;
             }
@@ -142,13 +142,13 @@ class CheckboxController extends AbstractBackendController
                 }
             }
         }
-        if (!isset($post['nPflicht']) || $post['nPflicht'] === '') {
+        if (!isset($post['nPflicht']) || \mb_strlen($post['nPflicht']) === 0) {
             $checks['nPflicht'] = 1;
         }
-        if (!isset($post['nAktiv']) || $post['nAktiv'] === '') {
+        if (!isset($post['nAktiv']) || \mb_strlen($post['nAktiv']) === 0) {
             $checks['nAktiv'] = 1;
         }
-        if (!isset($post['nLogging']) || $post['nLogging'] === '') {
+        if (!isset($post['nLogging']) || \mb_strlen($post['nLogging']) === 0) {
             $checks['nLogging'] = 1;
         }
         if (!isset($post['nSort']) || (int)$post['nSort'] === 0) {
@@ -187,6 +187,9 @@ class CheckboxController extends AbstractBackendController
         $checkBoxDTO = new CheckboxDataTableObject();
         if (isset($post['kCheckBox'])) {
             $checkBoxDTO->setCheckboxID((int)$post['kCheckBox']);
+        }
+        if (isset($post['nLink']) && (int)$post['nLink'] === -1) {
+            $post['kLink'] = 0;
         }
         $checkBoxDTO->hydrate($post);
         $checkBoxDTO->setCreated('NOW()');

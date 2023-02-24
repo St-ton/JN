@@ -46,13 +46,16 @@ class CheckboxService extends AbstractService
         return false;
     }
 
+    protected function setRepository(): void
+    {
+        $this->repository = new CheckboxRepository();
+    }
+
     /**
      * @return RepositoryInterface
      */
     public function getRepository(): RepositoryInterface
     {
-        $this->repository = $this->repository ?? new CheckboxRepository();
-
         return $this->repository;
     }
 }

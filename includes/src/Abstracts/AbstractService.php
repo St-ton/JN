@@ -13,22 +13,22 @@ use JTL\Interfaces\ServiceInterface;
  */
 abstract class AbstractService implements ServiceInterface
 {
-    /**
-     * @param RepositoryInterface $repository
-     */
-    public function __construct(protected RepositoryInterface $repository)
+    protected RepositoryInterface $repository;
+
+    public function __construct()
     {
-        if ($this->repository === null) {
-            //@todo
-            $this->getRepository();
-        }
+        $this->setRepository();
     }
 
     /**
      * @inheritdoc
-     * @todo
      */
     abstract public function getRepository(): RepositoryInterface;
+
+    /**
+     * @return void
+     */
+    abstract protected function setRepository(): void;
 
     /**
      * @param array $filters

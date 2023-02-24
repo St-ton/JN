@@ -4,11 +4,10 @@ namespace JTL;
 
 use Exception;
 use InvalidArgumentException;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Checkbox\CheckboxDataTableObject;
-use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageRepository;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
-use JTL\Checkbox\CheckboxRepository;
 use JTL\Checkbox\CheckboxService;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
@@ -168,6 +167,8 @@ class CheckBox
      */
     protected CheckboxLanguageService $languageService;
 
+    protected JTLCacheInterface $cache;
+
     protected Logger $logService;
 
     protected bool $loggerAvailable = true;
@@ -189,10 +190,11 @@ class CheckBox
      */
     private function dependencies(): void
     {
-        $this->service         = new CheckboxService(new CheckBoxRepository());
-        $this->languageService = new CheckboxLanguageService(new CheckboxLanguageRepository());
+        $this->service         = new CheckboxService();
+        $this->languageService = new CheckboxLanguageService();
         try {
             $this->logService = Shop::Container()->getLogService();
+            $this->cache      = Shop::Container()->getCache();
         } catch (Exception) {
             $this->loggerAvailable = false;
         }
@@ -208,7 +210,7 @@ class CheckBox
             return $this;
         }
         $cacheID = 'chkbx_' . $id;
-        if (($checkbox = Shop::Container()->getCache()->get($cacheID)) !== false) {
+        if (($checkbox = $this->cache->get($cacheID)) !== false) {
             foreach (\array_keys(\get_object_vars($checkbox)) as $member) {
                 if ($member === 'db') {
                     continue;
@@ -289,12 +291,12 @@ class CheckBox
     {
         $item = new stdClass();
         foreach (\get_object_vars($this) as $name => $value) {
-            if ($name === 'db' || $name === 'oLink') {
+            if (\is_object($this->$name)) {
                 continue;
             }
             $item->$name = $value;
         }
-        Shop::Container()->getCache()->set($cacheID, $item, [\CACHING_GROUP_CORE, 'checkbox']);
+        $this->cache->set($cacheID, $item, [\CACHING_GROUP_CORE, 'checkbox']);
     }
 
     /**
@@ -555,7 +557,7 @@ class CheckBox
     public function activate(array $checkboxIDs): bool
     {
         $res = $this->service->activate($checkboxIDs);
-        Shop::Container()->getCache()->flushTags(['checkbox']);
+        $this->cache->flushTags(['checkbox']);
 
         return $res;
     }
@@ -579,7 +581,7 @@ class CheckBox
     public function deactivate(array $checkboxIDs): bool
     {
         $res = $this->service->deactivate($checkboxIDs);
-        Shop::Container()->getCache()->flushTags(['checkbox']);
+        $this->cache->flushTags(['checkbox']);
 
         return $res;
     }
@@ -612,7 +614,7 @@ class CheckBox
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
                 WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
         );
-        Shop::Container()->getCache()->flushTags(['checkbox']);
+        $this->cache->flushTags(['checkbox']);
 
         return true;
     }

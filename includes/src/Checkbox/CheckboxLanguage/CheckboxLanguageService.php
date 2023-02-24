@@ -51,16 +51,16 @@ class CheckboxLanguageService extends AbstractService
         return $this->repository->update($updateDTO);
     }
 
+    protected function setRepository(): void
+    {
+        $this->repository = new CheckboxLanguageRepository();
+    }
+
     /**
      * @return RepositoryInterface
      */
     public function getRepository(): RepositoryInterface
     {
-        //@todo
-        if (\is_null($this->repository)) {
-            $this->repository = new CheckboxLanguageRepository();
-        }
-
         return $this->repository;
     }
 }

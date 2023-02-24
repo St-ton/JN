@@ -17,12 +17,14 @@ abstract class AbstractRepository implements RepositoryInterface
     protected const UPDATE_OR_UPSERT_FAILED = -1;
     protected const DELETE_FAILED           = -1;
 
+    protected DbInterface $db;
+
     /**
      * @param DbInterface|null $db
      */
-    public function __construct(protected ?DbInterface $db = null)
+    public function __construct()
     {
-        $this->db = $db ?? Shop::Container()->getDB();
+        $this->db = Shop::Container()->getDB();
     }
 
     /**
@@ -63,7 +65,7 @@ abstract class AbstractRepository implements RepositoryInterface
             return [];
         }
 
-        return $this->db->selectAll(
+        return $this->getDB()->selectAll(
             $this->getTableName(),
             $keys,
             $keyValues
@@ -71,15 +73,15 @@ abstract class AbstractRepository implements RepositoryInterface
     }
 
     /**
-     * @param int $id
+     * @param array $values
      * @return bool
      */
-    public function delete(int $id): bool
+    public function delete(array $values): bool
     {
-        return ($this->db->deleteRow(
+        return ($this->getDB()->deleteRow(
             $this->getTableName(),
             $this->getKeyName(),
-            $id
+            $values
         ) !== self::DELETE_FAILED
         );
     }
@@ -89,7 +91,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function insert(DataTableObjectInterface $insertDTO): int
     {
-        return $this->db->insertRow($this->getTableName(), $insertDTO->toObject());
+        return $this->getDB()->insertRow($this->getTableName(), $insertDTO->toObject());
     }
 
     /**
@@ -97,7 +99,7 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     public function update(DataTableObjectInterface $updateDTO): bool
     {
-        return ($this->db->updateRow(
+        return ($this->getDB()->updateRow(
             $this->getTableName(),
             $this->getKeyName(),
             $updateDTO->getID(),
@@ -112,8 +114,6 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     final protected function ensureIntValuesInArray(array $values): array
     {
-        return \array_map(static function ($value) {
-            return (int)$value;
-        }, $values);
+        return array_map('\intval', $values);
     }
 }

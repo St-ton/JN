@@ -150,25 +150,11 @@ class Router
         protected DbInterface $db,
         protected JTLCacheInterface $cache,
         protected State $state,
-        AlertServiceInterface $alert,
+        protected AlertServiceInterface $alert,
         private array $config
     ) {
-        $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
-        $registeredDefault       = false;
-        $middlewares             = [
-            new MaintenanceModeMiddleware($this->config['global']),
-            new SSLRedirectMiddleware($this->config['global']),
-            new WishlistCheckMiddleware(),
-            new CartcheckMiddleware(),
-            new LocaleCheckMiddleware(),
-            new CurrencyCheckMiddleware(),
-            new OptinMiddleware(),
-        ];
 
-        $root              = new RootController($db, $cache, $state, $this->config, $alert);
-        $consent           = new ConsentController();
-        $io                = new IOController($db, $cache, $state, $this->config, $alert);
         $this->controllers = [
             ProductController::class             => new ProductController($db, $cache, $state, $this->config, $alert),
             CharacteristicValueController::class =>
@@ -185,6 +171,28 @@ class Router
             PageController::class                => new PageController($db, $cache, $state, $this->config, $alert),
             MediaImageController::class          => new MediaImageController($db, $cache, $state, $this->config, $alert)
         ];
+
+        $this->prepare();
+    }
+
+    public function prepare(): void
+    {
+        $this->router = new BaseRouter();
+        $this->routes = [];
+
+        $registeredDefault = false;
+        $middlewares       = [
+            new MaintenanceModeMiddleware($this->config['global']),
+            new SSLRedirectMiddleware($this->config['global']),
+            new WishlistCheckMiddleware(),
+            new CartcheckMiddleware(),
+            new LocaleCheckMiddleware(),
+            new CurrencyCheckMiddleware(),
+            new OptinMiddleware(),
+        ];
+        $root              = new RootController($this->db, $this->cache, $this->state, $this->config, $this->alert);
+        $consent           = new ConsentController();
+        $io                = new IOController($this->db, $this->cache, $this->state, $this->config, $this->alert);
         foreach ($this->collectHosts() as $data) {
             $host         = $data['host'];
             $locale       = $data['locale'];
@@ -714,20 +722,21 @@ class Router
         $locales   = [];
         $forceHost = false;
         if (Shop::$forceHost[0]['host'] !== '') {
+            $this->isMultiDomain = true;
             foreach (Shop::$forceHost as $hostData) {
+                $hosts[] = [
+                    'host'      => $hostData['host'],
+                    'scheme'    => $hostData['scheme'],
+                    'port'      => $hostData['port'] ?? null,
+                    'locale'    => $hostData['locale'],
+                    'iso'       => $hostData['iso'],
+                    'id'        => $hostData['id'],
+                    'default'   => true,
+                    'prefix'    => '/',
+                    'currency'  => false,
+                    'localized' => false
+                ];
                 if ($hostData['host'] === $_SERVER['HTTP_HOST']) {
-                    $hosts[]             = [
-                        'host'      => $hostData['host'],
-                        'scheme'    => $hostData['scheme'],
-                        'port'      => $hostData['port'] ?? null,
-                        'locale'    => $hostData['locale'],
-                        'iso'       => $hostData['iso'],
-                        'id'        => $hostData['id'],
-                        'default'   => true,
-                        'prefix'    => '/',
-                        'currency'  => false,
-                        'localized' => false
-                    ];
                     $this->defaultLocale = $hostData['locale'];
                     $forceHost           = true;
                 }

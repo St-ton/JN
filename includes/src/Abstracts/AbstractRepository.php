@@ -19,9 +19,6 @@ abstract class AbstractRepository implements RepositoryInterface
 
     protected DbInterface $db;
 
-    /**
-     * @param DbInterface|null $db
-     */
     public function __construct()
     {
         $this->db = Shop::Container()->getDB();
@@ -114,6 +111,6 @@ abstract class AbstractRepository implements RepositoryInterface
      */
     final protected function ensureIntValuesInArray(array $values): array
     {
-        return array_map('\intval', $values);
+        return \array_map('\intval', $values);
     }
 }

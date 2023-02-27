@@ -89,7 +89,7 @@ class TableCleaner
      */
     public function getMethodCount(): int
     {
-        return count($this->methods);
+        return \count($this->methods);
     }
 
     /**
@@ -131,7 +131,7 @@ class TableCleaner
     public function executeByStep(int $taskIdx, int $taskRepetitions, int $lastProductID): void
     {
         $this->lastProductID = $lastProductID;
-        if ($taskIdx < 0 || $taskIdx > count($this->methods)) {
+        if ($taskIdx < 0 || $taskIdx > \count($this->methods)) {
             ($this->logger === null) ?: $this->logger->log(
                 \JTLLOG_LEVEL_NOTICE,
                 'GeneralDataProtection: No Task-ID given.'

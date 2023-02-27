@@ -278,14 +278,13 @@ class CategoryController extends AbstractController
     protected function deleteSubItems(int $parentId): void
     {
         $subItems = CategoryModel::loadAll($this->db, 'kOberKategorie', $parentId);
-
-        if (count($subItems) === 0) {
+        if (\count($subItems) === 0) {
             return;
         }
         foreach ($subItems as $subItem) {
             $this->deleteSubItems($subItem->getId());
             $productCategories = ProductCategoriesModel::loadAll($this->db, 'kKategorie', $subItem->getId());
-            if (count($productCategories) > 0) {
+            if (\count($productCategories) > 0) {
                 foreach ($productCategories as $productCategory) {
                     $productCategory->delete();
                 }

@@ -17721,6 +17721,9 @@ a.badge-outline-gray-darker:focus, a.badge-outline-gray-darker.focus {
   max-height: 50vh;
   overflow-y: auto;
 }
+.modal-backdrop.zindex-dropdown {
+  z-index: 1020;
+}
 .slick-slide .square, .slick-slide .productbox-image-wrapper {
   display: flex !important;
 }

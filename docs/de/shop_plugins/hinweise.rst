@@ -8,12 +8,12 @@ Hinweise, Tipps & Tricks
 .. role:: strike
    :class: strike
 
-Seit JTL-Shop 4.0 gibt es einige Möglichkeiten, um die Entwicklung von Plugins für den JTL-Shop zu vereinfachen.
+Es gibt einige Möglichkeiten, um die Entwicklung von Plugins für den JTL-Shop zu vereinfachen.
 
 Konstanten
 ----------
 
-Im ersten Schritt können in der ``[Shop-Root]/includes/config.JTL-Shop.ini.php`` einige Konstanten definiert werden:
+Im ersten Schritt können in der ``[Shop-Root]/includes/config.JTL-Shop.ini.php`` eigene Konstanten definiert werden:
 
 .. code-block:: php
 
@@ -60,7 +60,7 @@ Darüber hinaus können eventuelle Performance-Probleme mit Plugins anhand des P
 
     define('PROFILE_PLUGINS', true);
 
-Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "Fehlerbehebung -> Plugin-Profiler" (ab JTL-Shop 5.x) im Tab "*Plugins*" eine genauere Analyse der ausgeführten
+Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "Fehlerbehebung -> Plugin-Profiler" im Tab "*Plugins*" eine genauere Analyse der ausgeführten
 Plugins und deren Hooks.
 
 XHProf / Tideways
@@ -84,7 +84,7 @@ Sämtliche über die NiceDB-Klasse ausgeführten SQL-Queries können via
     define('PROFILE_QUERIES', true);
 
 im Profiler gespeichert werden. |br|
-Unter "Plugin-Profiler" (ab JTL-Shop 5.x) sind sie anschließend
+Unter "Plugin-Profiler" sind sie anschließend
 im Tab "*SQL*" zu sehen.
 
 Alternativ lassen sie sich via
@@ -132,26 +132,13 @@ Der Kunde wird dann zurück zum Warenkorb geleitet.
     sorgen, die Prüfsumme nach den eigenen Änderungen zu aktualisieren, damit die Bestellung nicht in einer Schleife
     endet.
 
-Die Aktualisierung erfolgt durch den statischen Aufruf der Methode ``refreshChecksum()`` der Klasse ``Warenkorb``
+Die Aktualisierung erfolgt durch den statischen Aufruf der Methode ``refreshChecksum()`` der Klasse ``\JTL\Cart\Cart``
 mit dem aktuellen Warenkorb als Parameter.
 
 .. code-block:: php
 
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 
-Kompatibilität
---------------
-
-Soll ein Plugin sowohl für JTL-Shop 3.x als auch 4.x genutzt werden können, bietet es sich an, die aktuelle Version
-z. B. via
-
-.. code-block:: php
-
-    $isShopFour = version_compare(APPLICATION_VERSION, 400, '>=');
-
-zu überprüfen.
-
-Dabei ist zu bedenken, dass nur wenn diese Variable *TRUE* ist, die Klasse ``Shop`` zur Verfügung steht.
 
 Registry
 --------
@@ -180,7 +167,7 @@ Es wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete(
 ``NiceDB::update()`` anstelle von ``NiceDB::executeQuery()`` zu nutzen. |br|
 Nur diese Varianten nutzen *Prepared Statements*!
 
-Ab JTL-Shop Version 5.x, und besonders im Object-Kontext, wird auf diese Methoden nicht mehr direkt und statisch
+Im Object-Kontext, wird auf diese Methoden nicht mehr direkt und statisch
 zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Sie hier:
 
 .. code-block:: php
@@ -220,12 +207,12 @@ Das obige "Negativ-Beispiel" ließe sich damit wie folgt umschreiben:
 
 .. code-block:: php
 
-    $result = Shop::DB()->select('my_table', 'id', (int)$_POST['id']);
+    $result = Shop::Container()->getDB()->select('my_table', 'id', (int)$_POST['id']);
 
 .. hint::
 
-    ``Shop::DB()->query()`` ist analog zu ``$GLOBALS['NiceDB']->executeQuery($sql, 1)`` |br|
-    bzw. ``Shop::DB()->query($sql, 1)`` mit zweitem Parameter auf "1" gesetzt, was für "single fetched object" steht.
+    ``Shop::Container()->getDB()->query()`` ist analog zu
+    ``Shop::Container()->getDB()->query($sql, 1)`` mit zweitem Parameter auf "1" gesetzt, was für "single fetched object" steht.
 
     Hierbei sind allerdings nur einfache *WHERE*-Bedingungen mit *AND*-Verknüpfungen möglich.
 
@@ -238,7 +225,7 @@ Analog zum Selektieren ein Beispiel mit einem *Insert*:
 
 .. code-block:: php
 
-    $i = Shop::DB()->executeQuery("
+    $i = Shop::Container()->getDB()->executeQuery("
         INSERT INTO my_table
             ('id', 'text', 'foo')
             VALUES (" . $_POST['id'] . ", '" . $_POST['text'] . "', '" . $_POST['foo'] . "')", 3
@@ -252,7 +239,7 @@ Analog zum Selektieren ein Beispiel mit einem *Insert*:
     $obj->id   = (int) $_POST['id'];
     $obj->text = $_POST['text'];
     $obj->foo  = $_POST['foo'];
-    $i = Shop::DB()->insert('my_table', $obj);
+    $i = Shop::Container()->getDB()->insert('my_table', $obj);
 
 Löschen von Zeilen
 """"""""""""""""""
@@ -261,7 +248,7 @@ Löschen von Zeilen
 
 .. code-block:: php
 
-    Shop::DB()->executeQuery("
+    Shop::Container()->getDB()->executeQuery("
         DELETE FROM my_table
             WHERE id = " . $_POST['id'], 3
     );
@@ -270,14 +257,14 @@ Löschen von Zeilen
 
 .. code-block:: php
 
-    Shop::DB()->delete('my_table', 'id', (int) $_POST['id']);
+    Shop::Container()->getDB()->delete('my_table', 'id', (int) $_POST['id']);
 
 Bei erweiterten WHERE-Klauseln mit *AND*-Bedingung können zwei Arrays mit jeweils allen Keys und allen Values
 übergeben werden:
 
 .. code-block:: php
 
-    Shop::DB()->delete('my_table', array('id', 'foo'), array(1, 'bar'));
+    Shop::Container()->getDB()->delete('my_table', array('id', 'foo'), array(1, 'bar'));
     // --> DELETE FROM my_table WHERE id = 1 AND 'foo' = 'bar'
 
 Aktualisieren von Zeilen
@@ -287,7 +274,7 @@ Aktualisieren von Zeilen
 
 .. code-block:: php
 
-    Shop::DB()->executeQuery("
+    Shop::Container()->getDB()->executeQuery("
         UPDATE my_table
             SET id = " . $_POST['new_id'] . ",
                 foo = '" . $_POST['foo'] . "',
@@ -303,12 +290,12 @@ Aktualisieren von Zeilen
     $obj->id  = (int) $_POST['new_id'];
     $obj->foo = $_POST['foo'];
     $obj->bar = 'test';
-    Shop::DB()->update('my_table', 'id', (int) $_POST['id'], $obj);
+    Shop::Container()->getDB()->update('my_table', 'id', (int) $_POST['id'], $obj);
 
 .. important::
 
     Sollte es nicht möglich sein, die beschriebenen Methoden zu nutzen, so sollten sämtliche potentiell
-    gefährlichen Werte über ``Shop::DB()->escape()`` zuvor maskiert, bzw. im Fall von Numeralen konvertiert, werden.
+    gefährlichen Werte über ``Shop::Container()->getDB()->escape()`` zuvor maskiert, bzw. im Fall von Numeralen konvertiert, werden.
 
 Tipps
 -----
@@ -325,9 +312,9 @@ Tipps
 
 .. code-block:: php
 
-    Shop::Cache()->flushAll(); //Objektcache leeren
+    Shop::Container()->getCache()->flushAll(); //Objektcache leeren
 
-    $arr = Shop::DB()->query($sql, 2); //Alias für $GLOBALS['DB']->executeQuery()
+    $arr = Shop::Container()->getDB()->query($sql, 2); //Alias für $GLOBALS['DB']->executeQuery()
 
     $translated = Shop::Lang()->get('newscommentAdd', 'messages'); //Alias für $GLOBALS['Sprache']->gibWert()
 

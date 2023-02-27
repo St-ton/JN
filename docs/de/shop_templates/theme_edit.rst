@@ -8,8 +8,7 @@ Themes editieren
 Um Farben und Abstände im Template zu ändern, passen Sie Ihr *Theme* Ihren Wünschen entsprechend an. |br|
 Hierfür gibt es je nach Shop-Version und verwendetem Template verschiedene Werkzeuge rund um den Shop.
 
-Für Shop-Versionen ab 5.0 wird das Plugin "*JTL Theme-Editor*" verwendet. Er kann für die Templates EVO und NOVA
-eingesetzt werden.
+Für Shop-Versionen ab 5.0 wird das Plugin "*JTL Theme-Editor*" verwendet.
 
 Das Plugin "JTL Theme-Editor"
 -----------------------------

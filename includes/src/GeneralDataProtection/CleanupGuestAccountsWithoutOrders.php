@@ -59,7 +59,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
                 'lastid'    => $this->lastProductID
             ]
         );
-        $workCount           = count($guestAccounts);
+        $workCount           = \count($guestAccounts);
         $this->lastProductID = $workCount > 0 ? (int)$guestAccounts[$workCount - 1]->kKunde : 0;
         foreach ($guestAccounts as $guestAccount) {
             $customer = new Customer((int)$guestAccount->kKunde);

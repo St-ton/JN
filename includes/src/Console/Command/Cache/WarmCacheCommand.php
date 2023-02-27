@@ -28,42 +28,42 @@ class WarmCacheCommand extends Command
     /**
      * @var bool
      */
-    private $details = true;
+    private bool $details = true;
 
     /**
      * @var bool
      */
-    private $list = true;
+    private bool $list = true;
 
     /**
      * @var bool
      */
-    private $categories = false;
+    private bool $categories = false;
 
     /**
      * @var bool
      */
-    private $links = false;
+    private bool $links = false;
 
     /**
      * @var bool
      */
-    private $manufacturers = false;
+    private bool $manufacturers = false;
 
     /**
      * @var bool
      */
-    private $preFlush = false;
+    private bool $preFlush = false;
 
     /**
      * @var bool
      */
-    private $childProducts = false;
+    private bool $childProducts = false;
 
     /**
-     * @var DbInterface
+     * @var DbInterface|null
      */
-    private $db;
+    private ?DbInterface $db = null;
 
     /**
      * @inheritDoc

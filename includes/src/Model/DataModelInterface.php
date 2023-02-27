@@ -101,9 +101,10 @@ interface DataModelInterface
      * Save the model to database and return true if successful - false otherwise
      *
      * @param array|null $partial - if specified, save only this partiell attributes
+     * @param bool       $updateChildModels
      * @return bool
      */
-    public function save(array $partial = null): bool;
+    public function save(array $partial = null, bool $updateChildModels = true): bool;
 
     /**
      * Delete the model from database and return true if successful deleted or no model where found - false otherwise

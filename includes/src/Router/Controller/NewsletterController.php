@@ -45,7 +45,7 @@ class NewsletterController extends PageController
         $controller         = new Controller($this->db, $this->config);
         $option             = 'eintragen';
         $customer           = Frontend::getCustomer();
-        $this->canonicalURL = $this->currentLink->getURL();
+        $this->canonicalURL = $this->currentLink?->getURL() ?? '';
         if ($valid && Request::verifyGPCDataInt('abonnieren') > 0) {
             $post = Text::filterXSS($_POST);
             if ($customer->getID() > 0) {

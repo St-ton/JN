@@ -112,6 +112,7 @@ class CacheSession implements ICachingMethod
                 unset($_SESSION[$_sessionKey]);
             }
         }
+        $this->flush($this->getJournalID());
 
         return true;
     }

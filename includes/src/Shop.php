@@ -629,6 +629,9 @@ final class Shop extends ShopBC
             $customer->setLanguageID($languageID);
             $customer->updateInDB();
         }
+        if ($languageID !== self::$kSprache) {
+            self::Container()->getLinkService()->updateDefaultLanguageData($languageID, $iso);
+        }
         self::setLanguage($languageID, $iso);
     }
 

@@ -199,7 +199,8 @@ class SyntaxChecker
                     LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 WHERE kVaterArtikel = 0 AND (kKundengruppe IS NULL OR kKundengruppe != :groupID
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            'kArtikel', ['groupID' => $_SESSION['Kundengruppe']->getID()]
+            'kArtikel',
+            ['groupID' => $_SESSION['Kundengruppe']->getID()]
         );
         if ($productID > 0) {
             $confData = $this->db->selectAll(

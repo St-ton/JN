@@ -228,7 +228,7 @@ Kategorieattribute abfragen
 Kategorieattribute definieren. Diese werden beim Synchronisieren zum Onlineshop übertragen und können dort
 Steuerungsaufgaben übernehmen können.
 
-Beginnend mit Shop-Version 4.0 werden Kategorie-Funktionsattribute und Kategorieattribute unterschieden. |br|
+Es werden Kategorie-Funktionsattribute und Kategorieattribute unterschieden. |br|
 Kategorie-Funktionsattribute (``categoryFunctionAttributes``) sind key/value-Paare die zur Aufnahme der
 Funktionsattribute dienen, während Kategorieattribute in Form von "*array of objects*" lokalisierte Kategorieattribute
 aufnehmen. |br|

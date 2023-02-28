@@ -1026,7 +1026,7 @@ Falls der Typ der Einstellung ``type=radio`` ist, geben Sie das Kindelement ``<R
 
 (*)Pflichtfelder
 
-Anstelle von oder zusätzlich zu *RadioOptions* bzw. *SelectboxOptions* können Sie seit JTL-Shop 4.05 das
+Anstelle von oder zusätzlich zu *RadioOptions* bzw. *SelectboxOptions* können Sie  das
 Element ``<OptionsSource>`` hinzufügen. Sobald es vorhanden ist, wird das RadioOptions- bzw. SelectboxOptions-Element
 ignoriert.
 

@@ -311,7 +311,7 @@ deutlich beschleunigt werden.
 Dateien(erweitert)-Cache
 """"""""""""""""""""""""
 
-Die seit JTL-Shop 4.05 enthaltene Methode *Dateien (erweitert)* versucht, diese Nachteile durch
+Die Methode *Dateien (erweitert)* versucht, diese Nachteile durch
 `Symlinks <https://de.wikipedia.org/wiki/Symbolische_Verkn%C3%BCpfung>`_ zu umgehen. |br|
 Hierbei werden im Ordner ``templates_c/filecache/`` für jeden Tag Unterordner angelegt, die Symlinks zu den
 einzelnen Cache-Einträgen enthalten. Hierdurch kann eine bessere Parallelität beim Schreiben von neuen Einträgen

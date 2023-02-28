@@ -1083,7 +1083,7 @@ class CampaignController extends AbstractBackendController
                         $item->fVKNetto = Preise::getLocalizedPriceString($item->fVKNetto, $currency);
                     }
                     if (isset($item->fMwSt) && $item->fMwSt > 0) {
-                        $item->fMwSt = \number_format($item->fMwSt, 2) . '%';
+                        $item->fMwSt = \number_format((float)$item->fMwSt, 2) . '%';
                     }
                 }
 
@@ -1687,7 +1687,7 @@ class CampaignController extends AbstractBackendController
         $chart->setActive(true);
         $data = [];
         foreach ($stats as $date => $dates) {
-            if (\str_contains($date, 'Gesamt')) {
+            if (\is_string($date) && \str_contains($date, 'Gesamt')) {
                 continue;
             }
             $x = '';
@@ -1698,7 +1698,6 @@ class CampaignController extends AbstractBackendController
                 if ($key === $type) {
                     $obj    = new stdClass();
                     $obj->y = (float)$stat;
-
                     $chart->addAxis((string)$x);
                     $data[] = $obj;
                 }

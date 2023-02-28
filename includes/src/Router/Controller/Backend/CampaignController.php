@@ -609,7 +609,7 @@ class CampaignController extends AbstractBackendController
                     $text = $stats[0]->cStampText;
                     break;
                 case 2:    // Monat
-                    $textParts = \explode('.', $stats[0]->cStampText);
+                    $textParts = \explode('.', $stats[0]->cStampText ?? '');
                     $month     = $textParts [0] ?? '';
                     $year      = $textParts [1] ?? '';
                     $text      = $this->getMonthName($month) . ' ' . $year;
@@ -656,9 +656,9 @@ class CampaignController extends AbstractBackendController
                     break;
                 }
                 foreach ($data as $item) {
-                    $customDataParts       = \explode(';', $item->cCustomData);
-                    $item->cEinstiegsseite = Text::filterXSS($customDataParts [0] ?? '');
-                    $item->cReferer        = Text::filterXSS($customDataParts [1] ?? '');
+                    $customDataParts       = \explode(';', $item->cCustomData ?? '');
+                    $item->cEinstiegsseite = Text::filterXSS($customDataParts[0] ?? '');
+                    $item->cReferer        = Text::filterXSS($customDataParts[1] ?? '');
                 }
                 $members = [
                     'cIP'                 => \__('detailHeadIP'),
@@ -1552,7 +1552,7 @@ class CampaignController extends AbstractBackendController
             return $stamp;
         }
         $span      = \base64_decode(Request::verifyGPDataString('cZeitParam'));
-        $spanParts = \explode(' - ', $span);
+        $spanParts = \explode(' - ', $span ?: '');
         $dateStart = $spanParts[0] ?? '';
         $dateEnd   = $spanParts[1] ?? '';
 

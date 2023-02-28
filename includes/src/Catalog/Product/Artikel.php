@@ -2442,6 +2442,9 @@ class Artikel implements RoutableInterface
                 ['cgid' => $customerGroupID, 'pid' => $this->kVaterArtikel]
             )->cnt;
         foreach ($variations as $i => $tmpVariation) {
+            if ($tmpVariation->cTyp === null) {
+                continue;
+            }
             if ($lastID !== $tmpVariation->kEigenschaft) {
                 ++$counter;
                 $lastID    = $tmpVariation->kEigenschaft;

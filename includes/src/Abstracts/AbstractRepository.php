@@ -17,6 +17,9 @@ abstract class AbstractRepository implements RepositoryInterface
     protected const UPDATE_OR_UPSERT_FAILED = -1;
     protected const DELETE_FAILED           = -1;
 
+    /**
+     * @var DbInterface
+     */
     protected DbInterface $db;
 
     public function __construct()

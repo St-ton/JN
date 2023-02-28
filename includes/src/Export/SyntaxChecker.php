@@ -194,11 +194,12 @@ class SyntaxChecker
         $this->initSmarty();
         $product   = null;
         $productID = $this->db->getSingleInt(
-            "SELECT kArtikel 
-                FROM tartikel 
-                WHERE kVaterArtikel = 0 
+            "SELECT tartikel.kArtikel
+                FROM tartikel
+                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                WHERE kVaterArtikel = 0 AND (kKundengruppe IS NULL OR kKundengruppe != :groupID
                 AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            'kArtikel'
+            'kArtikel', ['groupID' => $_SESSION['Kundengruppe']->getID()]
         );
         if ($productID > 0) {
             $confData = $this->db->selectAll(

@@ -141,7 +141,7 @@ class ReviewController extends AbstractBackendController
         $res    = $export->export(
             'activereviews',
             'reviews.csv',
-            [$this, 'getAllReviews'],
+            $this->getAllReviews(...),
         );
         if ($res === false) {
             $this->alertService->addInfo(\__('No items exported.'), 'noExportInfo');
@@ -154,7 +154,7 @@ class ReviewController extends AbstractBackendController
     private function import(int $type): void
     {
         $import = new Import($this->db);
-        $import->import('importRatings', [$this, 'insertImportItem'], [], null, $type);
+        $import->import('importRatings', $this->insertImportItem(...), [], null, $type);
         $imported = $import->getImportCount();
         foreach ($import->getErrors() as $i => $error) {
             $this->alertService->addError($error, 'importErr' . $i);
@@ -383,7 +383,7 @@ class ReviewController extends AbstractBackendController
             'SELECT *
                 FROM tbewertung
                 ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC',
-        )->each([$this, 'sanitize'])->toArray();
+        )->each($this->sanitize(...))->toArray();
     }
 
     /**
@@ -406,7 +406,7 @@ class ReviewController extends AbstractBackendController
                     AND tbewertung.nAktiv = 0
                 ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $limit,
             ['lid' => $this->currentLanguageID]
-        )->each([$this, 'sanitize'])->toArray();
+        )->each($this->sanitize(...))->toArray();
     }
 
     /**
@@ -429,7 +429,7 @@ class ReviewController extends AbstractBackendController
                     AND tbewertung.nAktiv = 1
                 ORDER BY tbewertung.dDatum DESC" . $limit,
             ['lid' => $this->currentLanguageID]
-        )->each([$this, 'sanitize'])->toArray();
+        )->each($this->sanitize(...))->toArray();
     }
 
     /**

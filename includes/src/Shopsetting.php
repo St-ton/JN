@@ -69,10 +69,16 @@ final class Shopsetting implements ArrayAccess
     ];
 
     /**
+     * @var SettingsService
+     */
+    private SettingsService $service;
+
+    /**
      * Shopsetting constructor.
      */
     private function __construct()
     {
+        $this->initDependencies();
         self::$instance = $this;
     }
 
@@ -89,6 +95,11 @@ final class Shopsetting implements ArrayAccess
     public static function getInstance(): self
     {
         return self::$instance ?? new self();
+    }
+
+    private function initDependencies(): void
+    {
+        $this->service = new SettingsService();
     }
 
     /**
@@ -181,7 +192,7 @@ final class Shopsetting implements ArrayAccess
             return Shop::Container()->getCache()->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags): bool {
-                    $content = $this->getBrandingConfig(Shop::Container()->getDB());
+                    $content = $this->service->getBrandingConfig();
                     $tags    = [\CACHING_GROUP_OPTION];
 
                     return true;
@@ -316,32 +327,6 @@ final class Shopsetting implements ArrayAccess
      * @param DbInterface $db
      * @return array
      */
-    private function getBrandingConfig(DbInterface $db): array
-    {
-        $data = $db->getObjects(
-            'SELECT tbranding.kBranding AS id, tbranding.cBildKategorie AS type, 
-            tbrandingeinstellung.cPosition AS position, tbrandingeinstellung.cBrandingBild AS path,
-            tbrandingeinstellung.dTransparenz AS transparency, tbrandingeinstellung.dGroesse AS size
-                FROM tbrandingeinstellung
-                INNER JOIN tbranding 
-                    ON tbrandingeinstellung.kBranding = tbranding.kBranding
-                WHERE tbrandingeinstellung.nAktiv = 1'
-        );
-        foreach ($data as $item) {
-            $item->size         = (int)$item->size;
-            $item->transparency = (int)$item->transparency;
-            $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
-        }
-
-        return reindex($data, static function ($e) {
-            return $e->type;
-        });
-    }
-
-    /**
-     * @param DbInterface $db
-     * @return array
-     */
     private function getTemplateConfig(DbInterface $db): array
     {
         $data     = $db->getObjects(
@@ -369,7 +354,7 @@ final class Shopsetting implements ArrayAccess
             return $this->allSettings;
         }
 
-        $this->allSettings = (new SettingsService())->getAll(true);
+        $this->allSettings = (new SettingsService())->getAll(self::$mapping);
 
         return $this->allSettings;
     }

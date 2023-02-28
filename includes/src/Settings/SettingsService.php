@@ -2,86 +2,29 @@
 
 namespace JTL\Settings;
 
+use JTL\Abstracts\AbstractService;
 use JTL\DB\DbInterface;
+use JTL\Interfaces\RepositoryInterface;
 use JTL\Shop;
 use function Functional\reindex;
 
-class SettingsService
+class SettingsService extends AbstractService
 {
-
-    //ToDo: Service vom Abstract Service extenden sobald verfügbar
-    /**
-     * @var array
-     */
-    private array $mapping = [
-        \CONF_GLOBAL              => 'global',
-        \CONF_STARTSEITE          => 'startseite',
-        \CONF_EMAILS              => 'emails',
-        \CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
-        \CONF_ARTIKELDETAILS      => 'artikeldetails',
-        \CONF_KUNDEN              => 'kunden',
-        \CONF_LOGO                => 'logo',
-        \CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
-        \CONF_BOXEN               => 'boxen',
-        \CONF_BILDER              => 'bilder',
-        \CONF_SONSTIGES           => 'sonstiges',
-        \CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
-        \CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
-        \CONF_KONTAKTFORMULAR     => 'kontakt',
-        \CONF_SHOPINFO            => 'shopinfo',
-        \CONF_RSS                 => 'rss',
-        \CONF_VERGLEICHSLISTE     => 'vergleichsliste',
-        \CONF_PREISVERLAUF        => 'preisverlauf',
-        \CONF_BEWERTUNG           => 'bewertung',
-        \CONF_NEWSLETTER          => 'newsletter',
-        \CONF_KUNDENFELD          => 'kundenfeld',
-        \CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
-        \CONF_EMAILBLACKLIST      => 'emailblacklist',
-        \CONF_METAANGABEN         => 'metaangaben',
-        \CONF_NEWS                => 'news',
-        \CONF_SITEMAP             => 'sitemap',
-        \CONF_SUCHSPECIAL         => 'suchspecials',
-        \CONF_TEMPLATE            => 'template',
-        \CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
-        \CONF_CRON                => 'cron',
-        \CONF_FS                  => 'fs',
-        \CONF_CACHING             => 'caching',
-        \CONF_CONSENTMANAGER      => 'consentmanager',
-        \CONF_BRANDING            => 'branding'
-    ];
-
-    /**
-     * @param SettingsRepository|null $repository
-     */
-    public function __construct(
-        protected ?SettingsRepository $repository = null
-    ) {
-        if (\is_null($this->repository)) {
-            $this->getRepository();
-        }
-    }
-
-    /**
-     * @return SettingsRepository
-     */
-    public function getRepository(): SettingsRepository
+    public function initRepository(): void
     {
-        if (\is_null($this->repository)) {
-            $this->repository = new SettingsRepository();
-        }
-
-        return $this->repository;
+        $this->repository = new SettingsRepository();
     }
 
     /**
+     * @param array $mappings
      * @return array
      */
-    public function getAll(): array
+    public function getAll(array $mappings): array
     {
         $result         = [];
         $settings       = $this->getRepository()->getAllSettings();
-        $mappedSettings = $this->getMappedSettings($settings);
-        foreach ($this->mapping as $sectionName) {
+        $mappedSettings = $this->getMappedSettings($settings, $mappings);
+        foreach ($mappings as $sectionName) {
             if (isset($mappedSettings[$sectionName])) {
                 $result[$sectionName] = [];
                 foreach ($mappedSettings[$sectionName] as $setting) {
@@ -103,14 +46,15 @@ class SettingsService
 
     /**
      * @param array $settings
+     * @param array $mappings
      * @return array
      */
-    private function getMappedSettings(array $settings): array
+    private function getMappedSettings(array $settings, array $mappings): array
     {
         $mappedSettings = [];
         foreach ($settings as $setting) {
-            if (isset($this->mapping[(int)$setting['kEinstellungenSektion']])) {
-                $mappedSettings[$this->mapping[$setting['kEinstellungenSektion']]][] = $setting;
+            if (isset($mappings[(int)$setting['kEinstellungenSektion']])) {
+                $mappedSettings[$mappings[$setting['kEinstellungenSektion']]][] = $setting;
             }
         }
 
@@ -150,7 +94,7 @@ class SettingsService
     /**
      * @return array
      */
-    private function getBrandingConfig(): array
+    public function getBrandingConfig(): array
     {
         $data = $this->getRepository()->getBrandingConfig();
         foreach ($data as $item) {
@@ -162,5 +106,14 @@ class SettingsService
         return reindex($data, static function ($e) {
             return $e->type;
         });
+    }
+
+    public function getRepository(): RepositoryInterface
+    {
+        if (!isset($this->repository)) {
+            $this->initRepository();
+        }
+
+        return $this->repository;
     }
 }

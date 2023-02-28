@@ -2,6 +2,7 @@
 
 namespace JTL\Settings;
 
+use JTL\Abstracts\AbstractRepository;
 use JTL\DB\DbInterface;
 use JTL\Shop;
 
@@ -14,18 +15,16 @@ use JTL\Shop;
  * to these classes.
  */
 
-class SettingsRepository
+class SettingsRepository extends AbstractRepository
 {
-    //ToDo: Service vom Abstract Repository extenden sobald verfügbar
-    /**
-     * @param DbInterface|null $db
-     */
-    public function __construct(
-        protected ?DbInterface $db = null,
-    ) {
-        if (\is_null($db)) {
-            $this->db = Shop::Container()->getDB();
-        }
+    public function getTableName(): string
+    {
+        return 'teinstellungenconf';
+    }
+
+    public function getKeyName(): string
+    {
+        return 'kEinstellungenConf';
     }
 
     /**
@@ -55,7 +54,6 @@ class SettingsRepository
                 WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
         );
     }
-
     /**
      * @return array
      */

@@ -3,9 +3,10 @@
 namespace JTL;
 
 use ArrayAccess;
-use JTL\DB\DbInterface;
+use JTL\Cache\JTLCacheInterface;
+use JTL\Settings\Branding\BrandingSettingsService;
 use JTL\Settings\SettingsService;
-use function Functional\reindex;
+use JTL\Settings\Template\TemplateSettingsService;
 
 /**
  * Class Shopsetting
@@ -71,7 +72,22 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var SettingsService
      */
-    private SettingsService $service;
+    protected SettingsService $settingsService;
+
+    /**
+     * @var BrandingSettingsService
+     */
+    protected BrandingSettingsService $brandingSettingsService;
+
+    /**
+     * @var TemplateSettingsService
+     */
+    protected TemplateSettingsService $templateSettingsService;
+
+    /**
+     * @var JTLCacheInterface
+     */
+    protected Cache\JTLCacheInterface $cache;
 
     /**
      * Shopsetting constructor.
@@ -99,7 +115,10 @@ final class Shopsetting implements ArrayAccess
 
     private function initDependencies(): void
     {
-        $this->service = new SettingsService();
+        $this->settingsService         = new SettingsService();
+        $this->brandingSettingsService = new BrandingSettingsService();
+        $this->templateSettingsService = new TemplateSettingsService();
+        $this->cache                   = Shop::Container()->getCache();
     }
 
     /**
@@ -146,8 +165,8 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param int    $sectionID
-     * @param array  $value
+     * @param int   $sectionID
+     * @param array $value
      */
     public function overrideSection(int $sectionID, array $value): void
     {
@@ -177,7 +196,7 @@ final class Shopsetting implements ArrayAccess
             $settings = Shop::Container()->getCache()->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags): bool {
-                    $content = $this->getTemplateConfig(Shop::Container()->getDB());
+                    $content = $this->getTemplateSettingsService()->getTemplateConfig();
                     $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION];
 
                     return true;
@@ -192,7 +211,7 @@ final class Shopsetting implements ArrayAccess
             return Shop::Container()->getCache()->get(
                 $cacheID,
                 function ($cache, $id, &$content, &$tags): bool {
-                    $content = $this->service->getBrandingConfig();
+                    $content = $this->getBrandingSettingsService()->getBrandingConfig();
                     $tags    = [\CACHING_GROUP_OPTION];
 
                     return true;
@@ -304,7 +323,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param null|int $section
+     * @param null|int    $section
      * @param null|string $name
      * @return mixed|null
      */
@@ -324,28 +343,6 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param DbInterface $db
-     * @return array
-     */
-    private function getTemplateConfig(DbInterface $db): array
-    {
-        $data     = $db->getObjects(
-            "SELECT cSektion AS sec, cWert AS val, cName AS name 
-                FROM ttemplateeinstellungen 
-                WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
-        );
-        $settings = [];
-        foreach ($data as $setting) {
-            if (!isset($settings[$setting->sec])) {
-                $settings[$setting->sec] = [];
-            }
-            $settings[$setting->sec][$setting->name] = $setting->val;
-        }
-
-        return $settings;
-    }
-
-    /**
      * @return array
      */
     public function getAll(): array
@@ -354,7 +351,7 @@ final class Shopsetting implements ArrayAccess
             return $this->allSettings;
         }
 
-        $this->allSettings = (new SettingsService())->getAll(self::$mapping);
+        $this->allSettings = $this->getSettingsService()->getAll(self::$mapping);
 
         return $this->allSettings;
     }
@@ -381,5 +378,53 @@ final class Shopsetting implements ArrayAccess
         $this->allSettings = $result;
 
         return $result;
+    }
+
+    /**
+     * @return SettingsService
+     */
+    public function getSettingsService(): SettingsService
+    {
+        if (!isset($this->settingsService)) {
+            $this->initDependencies();
+        }
+
+        return $this->settingsService;
+    }
+
+    /**
+     * @return BrandingSettingsService
+     */
+    public function getBrandingSettingsService(): BrandingSettingsService
+    {
+        if (!isset($this->brandingSettingsService)) {
+            $this->initDependencies();
+        }
+
+        return $this->brandingSettingsService;
+    }
+
+    /**
+     * @return TemplateSettingsService
+     */
+    public function getTemplateSettingsService(): TemplateSettingsService
+    {
+        if (!isset($this->templateSettingsService)) {
+            $this->initDependencies();
+        }
+
+        return $this->templateSettingsService;
+    }
+
+    /**
+     * @return JTLCacheInterface
+     */
+    public function getCache(): JTLCacheInterface
+    {
+        if (!isset($this->cache)) {
+            $this->initDependencies();
+        }
+
+        return $this->cache;
     }
 }

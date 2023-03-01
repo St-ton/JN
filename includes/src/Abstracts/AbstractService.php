@@ -17,7 +17,7 @@ abstract class AbstractService implements ServiceInterface
 
     public function __construct()
     {
-        $this->initRepository();
+        $this->initDependencies();
     }
 
     /**
@@ -28,7 +28,7 @@ abstract class AbstractService implements ServiceInterface
     /**
      * @return void
      */
-    abstract protected function initRepository(): void;
+    abstract protected function initDependencies(): void;
 
     /**
      * @param array $filters

@@ -1,18 +1,45 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Settings;
 
 use JTL\Abstracts\AbstractService;
-use JTL\DB\DbInterface;
 use JTL\Interfaces\RepositoryInterface;
+use JTL\Services\JTL\CryptoServiceInterface;
+use JTL\Settings\Branding\BrandingSettingsService;
+use JTL\Settings\Template\TemplateSettingsService;
 use JTL\Shop;
-use function Functional\reindex;
 
+/**
+ * Class SettingsService
+ * @package JTL\Settings
+ */
 class SettingsService extends AbstractService
 {
-    public function initRepository(): void
+    /**
+     * @var BrandingSettingsService
+     */
+    protected BrandingSettingsService $brandingSettingsService;
+
+    /**
+     * @var TemplateSettingsService
+     */
+    protected TemplateSettingsService $templateSettingsService;
+
+    /**
+     * @var CryptoServiceInterface
+     */
+    protected CryptoServiceInterface $cryptoService;
+
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
     {
-        $this->repository = new SettingsRepository();
+        $this->brandingSettingsService = new BrandingSettingsService();
+        $this->templateSettingsService = new TemplateSettingsService();
+        $this->cryptoService           = Shop::Container()->getCryptoService();
+        $this->repository              = new SettingsRepository();
     }
 
     /**
@@ -38,8 +65,8 @@ class SettingsService extends AbstractService
                 }
             }
         }
-        $result['template'] = $this->getTemplateConfig();
-        $result['branding'] = $this->getBrandingConfig();
+        $result['template'] = $this->getTemplateSettingsService()->getTemplateConfig();
+        $result['branding'] = $this->getBrandingSettingsService()->getBrandingConfig();
 
         return $result;
     }
@@ -69,51 +96,55 @@ class SettingsService extends AbstractService
     {
         return match ($setting['type']) {
             'number' => (int)$setting['cWert'],
-            'pass' => \rtrim(Shop::Container()->getCryptoService()->decryptXTEA($setting['cWert'])),
+            'pass' => \rtrim($this->getCryptoService()->decryptXTEA($setting['cWert'])),
             default => $setting['cWert'],
         };
     }
 
     /**
-     * @return array
+     * @return RepositoryInterface
      */
-    private function getTemplateConfig(): array
-    {
-        $data     = $this->getRepository()->getTemplateConfig();
-        $settings = [];
-        foreach ($data as $setting) {
-            if (!isset($settings[$setting->sec])) {
-                $settings[$setting->sec] = [];
-            }
-            $settings[$setting->sec][$setting->name] = $setting->val;
-        }
-
-        return $settings;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBrandingConfig(): array
-    {
-        $data = $this->getRepository()->getBrandingConfig();
-        foreach ($data as $item) {
-            $item->size         = (int)$item->size;
-            $item->transparency = (int)$item->transparency;
-            $item->path         = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $item->path;
-        }
-
-        return reindex($data, static function ($e) {
-            return $e->type;
-        });
-    }
-
     public function getRepository(): RepositoryInterface
     {
         if (!isset($this->repository)) {
-            $this->initRepository();
+            $this->initDependencies();
         }
 
         return $this->repository;
+    }
+
+    /**
+     * @return BrandingSettingsService
+     */
+    public function getBrandingSettingsService(): BrandingSettingsService
+    {
+        if (!isset($this->brandingSettingsService)) {
+            $this->initDependencies();
+        }
+
+        return $this->brandingSettingsService;
+    }
+
+    /**
+     * @return TemplateSettingsService
+     */
+    public function getTemplateSettingsService(): TemplateSettingsService
+    {
+        if (!isset($this->templateSettingsService)) {
+            $this->initDependencies();
+        }
+
+        return $this->templateSettingsService;
+    }
+
+    /**
+     * @return CryptoServiceInterface
+     */
+    public function getCryptoService(): CryptoServiceInterface
+    {
+        if (!isset($this->cryptoService)) {
+            $this->initDependencies();
+        }
+        return $this->cryptoService;
     }
 }

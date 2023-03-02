@@ -84,7 +84,7 @@ class IpAnonymizer
     {
         try {
             $this->logger = Shop::Container()->getLogService();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->logger = null;
         }
 
@@ -127,7 +127,7 @@ class IpAnonymizer
             $this->rawIp = @\inet_pton($this->rmLeadingZero($this->ip));
         }
         if ($this->rawIp === false) {
-            $this->logger?->warning('Wrong IP: ' . $this->ip);
+            $this->logger?->warning('Wrong IP: {ip}', ['ip' => $this->ip]);
             $this->rawIp = '';
         }
         $this->placeholderIP = '0.0.0.0';

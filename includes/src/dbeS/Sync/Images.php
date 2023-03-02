@@ -381,7 +381,8 @@ final class Images extends AbstractSync
         );
         if ($propValue === null) {
             $this->logger->warning(
-                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . $image->kEigenschaftWert
+                'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert {id}',
+                ['id' => $image->kEigenschaftWert]
             );
             return $image->cPfad;
         }

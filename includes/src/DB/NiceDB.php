@@ -1477,7 +1477,10 @@ class NiceDB implements DbInterface
             $errorMessage = $e === null
                 ? $this->getErrorCode() . ': ' . $this->getErrorMessage()
                 : $e->getMessage();
-            Shop::Container()->getLogService()->error('Error executing query: ' . $stmt . "\n" . $errorMessage);
+            Shop::Container()->getLogService()->error(
+                "Error executing query {qry}\n{msg}",
+                ['qry' => $stmt, 'msg' => $errorMessage]
+            );
         }
     }
 

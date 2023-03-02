@@ -1502,7 +1502,7 @@ class CheckoutController extends RegistrationController
             if (!\is_array($paymentMethods) || \count($paymentMethods) === 0) {
                 Shop::Container()->getLogService()->error(
                     'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: {name},'
-                    . ' Kundengruppe: {cgid}' ,
+                    . ' Kundengruppe: {cgid}',
                     ['name' => $shippingMethod, 'cgid' => $this->customerGroupID]
                 );
                 $paymentMethod  = null;

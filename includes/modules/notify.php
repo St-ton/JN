@@ -69,7 +69,7 @@ if (strlen($cSh) > 0) {
         die();
     }
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-        Shop::Container()->getLogService()->debug(
+        $logger->debug(
             'Session Hash {hash} ergab tzahlungsession {msg}',
             ['hash' => $cSh, 'msg' => print_r($paymentSession, true)]
         );
@@ -186,7 +186,7 @@ if (strlen($cPh) > 0) {
     );
 
     if ($paymentId === null) {
-        $logger->error('Payment Hash {hash}} ergab keine Bestellung aus tzahlungsid.', ['hash' => $cPh]);
+        $logger->error('Payment Hash {hash} ergab keine Bestellung aus tzahlungsid.', ['hash' => $cPh]);
         die(); // Payment Hash does not exist
     }
     // Load Order
@@ -207,7 +207,7 @@ if ($moduleId !== null) {
     if ($paymentMethod !== null) {
         if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
             $logger->debug(
-                'Payment Hash {hash} ergab Zahlungsart',
+                'Payment Hash {hash} ergab Zahlungsart {pmm}',
                 ['hash' => $cPh, 'pmm' => print_r($paymentMethod, true)]
             );
         }

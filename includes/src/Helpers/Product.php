@@ -12,6 +12,8 @@ use JTL\CheckBox;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\SqlObject;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
@@ -1432,11 +1434,11 @@ class Product
         }
 
         return Shop::Container()->getDB()->getSingleInt(
-            'SELECT kVerfuegbarkeitsbenachrichtigung
-                FROM tverfuegbarkeitsbenachrichtigung
+            'SELECT kOptin
+                FROM toptin
                 WHERE cIP = :ip
-                AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
-            'kVerfuegbarkeitsbenachrichtigung',
+                AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dCreated',
+            'kOptin',
             ['ip' => Request::getRealIP(), 'min' => $min]
         ) > 0;
     }
@@ -1445,6 +1447,8 @@ class Product
      * @param int $productID
      * @param int $categoryID
      * @return stdClass
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      * @former gibNaviBlaettern()
      * @since 5.0.0
      */

@@ -70,6 +70,26 @@ class ProductController extends AbstractController
     }
 
     /**
+     * @param array $messages
+     * @return array
+     */
+    public function checkAndSendAvailabilityMessage(array $messages): array
+    {
+        if (Frontend::get('lastAvailabilityMessage') === null ||
+            (int)\date_diff(\date_create(), Frontend::get('lastAvailabilityMessage'))->format('%i') >
+            $this->config['artikeldetails']['benachrichtigung_sperre_minuten']) {
+            $messages = ProductHelper::checkAvailabilityMessage($messages, $this->config['artikeldetails']);
+            Frontend::set('lastAvailabilityMessage', \date_create());
+
+            return $messages;
+        }
+
+        $messages[] = Shop::Lang()->get('notificationNotPossible', 'messages');
+
+        return $messages;
+    }
+
+    /**
      * @inheritdoc
      */
     protected function handleSeoError(int $id, int $languageID): State
@@ -222,7 +242,7 @@ class ProductController extends AbstractController
                 $this->currentProduct
             );
         } elseif ($valid && Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
-            $messages = ProductHelper::checkAvailabilityMessage($messages, $this->config['artikeldetails']);
+            $messages = $this->checkAndSendAvailabilityMessage($messages);
         }
         foreach ($messages as $productNoticeKey => $productNotice) {
             $this->alertService->addDanger($productNotice, 'productNotice' . $productNoticeKey);

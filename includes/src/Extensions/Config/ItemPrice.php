@@ -80,7 +80,7 @@ class ItemPrice
             $this->kKundengruppe = (int)$item->kKundengruppe;
             $this->kSteuerklasse = (int)$item->kSteuerklasse;
             $this->nTyp          = (int)$item->nTyp;
-            $this->fPreis        = $item->fPreis;
+            $this->fPreis        = (float)$item->fPreis;
         }
     }
 

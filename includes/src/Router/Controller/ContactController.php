@@ -46,7 +46,8 @@ class ContactController extends AbstractController
             $this->assignForms();
         } else {
             Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter '
-                . 'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.');
+                . 'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzufügen.'
+            );
             $this->alertService->addNotice(Shop::Lang()->get('noSubjectAvailable', 'contact'), 'noSubjectAvailable');
             $this->smarty->assign('Spezialcontent', new stdClass());
         }

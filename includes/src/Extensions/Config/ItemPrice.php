@@ -32,9 +32,9 @@ class ItemPrice
     protected int $kSteuerklasse = 0;
 
     /**
-     * @var float
+     * @var float|null
      */
-    protected $fPreis;
+    protected ?float $fPreis = null;
 
     /**
      * @var int|null

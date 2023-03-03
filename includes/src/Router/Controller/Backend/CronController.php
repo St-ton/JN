@@ -199,7 +199,7 @@ class CronController extends AbstractBackendController
                 /** @var JobInterface $job */
                 $jobs[] = $job->hydrate($cron);
             } catch (\InvalidArgumentException) {
-                $this->logger->info('Invalid cron job found: ' . $cron->jobType);
+                $this->logger->info('Invalid cron job found: {type}', ['type' => $cron->jobType]);
             }
         }
 

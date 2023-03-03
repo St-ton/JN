@@ -103,7 +103,7 @@ class CacheRedisCluster implements ICachingMethod
 
             return $this->redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -124,7 +124,7 @@ class CacheRedisCluster implements ICachingMethod
 
             return $res;
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -138,7 +138,7 @@ class CacheRedisCluster implements ICachingMethod
         try {
             return $this->redis->get($cacheID);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -288,7 +288,7 @@ class CacheRedisCluster implements ICachingMethod
                     : [];
             }
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return [];
         }

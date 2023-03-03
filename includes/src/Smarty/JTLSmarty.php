@@ -105,7 +105,7 @@ class JTLSmarty extends BC
             $this->assign('tplDir', $paths->getParentDir())
                 ->assign('parent_template_path', $paths->getParentDir())
                 ->assign('parentTemplateDir', $paths->getParentRelDir())
-                ->addTemplateDir($paths->getParentRelDir(), $parent);
+                ->addTemplateDir($paths->getParentDir(), $parent);
         }
         $this->addTemplateDir($paths->getBaseDir(), $this->context);
         foreach (Helper::getTemplatePaths() as $moduleId => $path) {

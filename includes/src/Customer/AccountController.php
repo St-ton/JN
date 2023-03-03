@@ -307,7 +307,7 @@ class AccountController
         $customer = new Customer();
         if (Form::validateToken() === false) {
             $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
+            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: {name}', ['name' => $_POST['login']]);
 
             return $customer;
         }
@@ -1065,7 +1065,10 @@ class AccountController
             exit;
         }
         $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-        Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
+        Shop::Container()->getLogService()->error(
+            'CSRF-Warnung für Accountlöschung und kKunde {id}',
+            ['id' => $customerID]
+        );
     }
 
     /**

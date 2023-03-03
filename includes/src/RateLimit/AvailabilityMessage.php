@@ -3,7 +3,7 @@
 namespace JTL\RateLimit;
 
 /**
- * class ForgotPassword
+ * class AvailabilityMessage
  * @package JTL\RateLimit
  */
 class AvailabilityMessage extends AbstractRateLimiter
@@ -12,7 +12,11 @@ class AvailabilityMessage extends AbstractRateLimiter
      * @var string
      */
     protected string $type = 'availabilityMessage';
-    protected int $timeLimit;
+
+    /**
+     * @var int
+     */
+    protected int $timeLimit = 2;
 
     /**
      * @inheritdoc
@@ -42,6 +46,7 @@ class AvailabilityMessage extends AbstractRateLimiter
     {
         return $this->timeLimit;
     }
+
     /**
      * @inheritDoc
      */

@@ -44,17 +44,17 @@ class MediaImageController extends AbstractController
         $ext   = '{ext:jpg|jpeg|png|gif|webp}';
         $route->get(
             \sprintf('/media/image/%s/%s/%s/%s~%s.%s', $types, $id, $size, $name, $no, $ext),
-            [$this, 'getResponse']
+            $this->getResponse(...)
         )
             ->setName('mediaImageNumbered' . $dynName);
         $route->get(
             \sprintf('/media/image/%s/%s/%s/%s.%s', $types, $id, $size, $name, $ext),
-            [$this, 'getResponse']
+            $this->getResponse(...)
         )
             ->setName('mediaImage' . $dynName);
         $route->get(
             \sprintf('/media/image/{type:opc}/%s/%s.%s', $size, $name, $ext),
-            [$this, 'getResponse']
+            $this->getResponse(...)
         )
             ->setName('mediaImageOPC' . $dynName);
     }

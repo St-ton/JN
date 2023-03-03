@@ -133,7 +133,6 @@ abstract class OptinBase extends OptinFactory
         $newRow->kOptinCode  = $this->optCode;
         $newRow->kOptinClass = static::class;
         $newRow->cMail       = $this->refData->getEmail();
-        $newRow->cIP         = $this->refData->getRealIP();
         $newRow->cRefData    = \serialize($this->refData);
         $newRow->dCreated    = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptin', $newRow);

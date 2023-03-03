@@ -23,6 +23,7 @@ use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinAvailAgain;
 use JTL\Optin\OptinRefData;
+use JTL\RateLimit\AvailabilityMessage as Limiter;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
@@ -960,11 +961,11 @@ class Product
      * @param array       $conf
      */
     private static function getXSellingPurchases(
-        stdClass $xSelling,
+        stdClass    $xSelling,
         DbInterface $db,
-        int $productID,
-        bool $isParent,
-        array $conf
+        int         $productID,
+        bool        $isParent,
+        array       $conf
     ): void {
         if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y') {
             return;
@@ -1326,7 +1327,7 @@ class Product
 
         \executeHook(\HOOK_ARTIKEL_INC_BENACHRICHTIGUNG_PLAUSI);
         if ($resultCode) {
-            if (!self::checkAvailibityFormFloodProtection($conf['benachrichtigung_sperre_minuten'])) {
+            if (!self::checkAvailibityFormRateLimit($conf['benachrichtigung_sperre_minuten'])) {
                 $dbHandler = Shop::Container()->getDB();
                 $refData   = (new OptinRefData())
                     ->setSalutation('')
@@ -1425,6 +1426,7 @@ class Product
      * @param int $min
      * @return bool
      * @former floodSchutzBenachrichtigung()
+     * @deprecated
      * @since 5.0.0
      */
     public static function checkAvailibityFormFloodProtection(int $min): bool
@@ -1434,13 +1436,38 @@ class Product
         }
 
         return Shop::Container()->getDB()->getSingleInt(
-            'SELECT kOptin
-                FROM toptin
+            'SELECT kVerfuegbarkeitsbenachrichtigung
+                FROM tverfuegbarkeitsbenachrichtigung
                 WHERE cIP = :ip
-                AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dCreated',
-            'kOptin',
+                AND DATE_SUB(NOW(), INTERVAL :min MINUTE) < dErstellt',
+            'kVerfuegbarkeitsbenachrichtigung',
             ['ip' => Request::getRealIP(), 'min' => $min]
         ) > 0;
+    }
+
+    /**
+     * checkAvailibityFormFloodProtection is public and therefore cannot be dismissed
+     * This method uses RateLimiter to check for multiple requests from the specified IP
+     * @param int $min
+     * @return bool
+     * @former floodSchutzBenachrichtigung()
+     * @since 5.2.3
+     */
+    public static function checkAvailibityFormRateLimit(int $min): bool
+    {
+        if (!$min) {
+            return false;
+        }
+        $limiter = new Limiter(Shop::Container()->getDB());
+        $limiter->init(Request::getRealIP());
+        $limiter->setCleanupMinutes($min);
+        if ($limiter->check() !== true) {
+            return true;
+        }
+        $limiter->persist();
+        $limiter->cleanup();
+
+        return false;
     }
 
     /**

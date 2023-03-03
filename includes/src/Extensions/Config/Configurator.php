@@ -139,8 +139,8 @@ class Configurator
             }
             if ($deleted) {
                 Shop::Container()->getLogService()->error(
-                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: '
-                    . $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
+                    'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: {name} ({id})',
+                    ['name' => $item->cName[$_SESSION['cISOSprache']], 'id' => $item->kArtikel]
                 );
             }
         }

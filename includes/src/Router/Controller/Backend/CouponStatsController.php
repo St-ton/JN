@@ -116,7 +116,7 @@ class CouponStatsController extends AbstractBackendController
             );
             foreach ($usedCouponsOrder[$key]['cOrderPos_arr'] as $posKey => $value) {
                 $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nAnzahl']      =
-                    \str_replace('.', ',', \number_format($value['nAnzahl'], 2));
+                    \str_replace('.', ',', \number_format((float)$value['nAnzahl'], 2));
                 $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nPreis']       =
                     Preise::getLocalizedPriceWithoutFactor($value['nPreis']);
                 $usedCouponsOrder[$key]['cOrderPos_arr'][$posKey]['nGesamtPreis'] =

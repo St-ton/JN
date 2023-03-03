@@ -143,7 +143,7 @@ class AnonymizeIps extends Method implements MethodInterface
                     $row->cIP = $anonymizer->setIp($row->cIP)->anonymize();
                     $this->workSum++;
                 } catch (\Exception $e) {
-                    ($this->logger === null) ?: $this->logger->log(\JTLLOG_LEVEL_WARNING, $e->getMessage());
+                    ($this->logger === null) ?: $this->logger->warning($e->getMessage());
                 }
                 $szKeyColName = $colData['ColKey'];
                 $this->db->update(

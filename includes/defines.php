@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-// Charset
 use JTL\Plugin\HookManager;
 
+// Charset
 ifndef('JTL_CHARSET', 'utf-8');
 ifndef('DB_CHARSET', 'utf8');
 ifndef('DB_COLLATE', 'utf8_unicode_ci');

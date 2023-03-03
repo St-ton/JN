@@ -140,7 +140,8 @@ class OrderCompleteController extends CheckoutController
                     ->assign('plugin', $plugin);
             } catch (InvalidArgumentException) {
                 Shop::Container()->getLogService()->error(
-                    'Associated plugin for payment method ' . $order->Zahlungsart->cModulId . ' not found'
+                    'Associated plugin for payment method {mid} not found',
+                    ['mid' => $order->Zahlungsart->cModulId]
                 );
             }
         }

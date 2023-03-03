@@ -82,14 +82,14 @@ class BackendSmarty extends JTLSmarty
             )
             ->registerPlugin(self::PLUGIN_FUNCTION, 'getCurrentPage', $plugins->getCurrentPage(...))
             ->registerPlugin(self::PLUGIN_FUNCTION, 'SmartyConvertDate', $plugins->convertDate(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'getHelpDesc', $plugin->getHelpDesc(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'getExtensionCategory', $plugin->getExtensionCategory(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'formatVersion', $plugin->formatVersion(...))
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'getHelpDesc', $plugins->getHelpDesc(...))
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'getExtensionCategory', $plugins->getExtensionCategory(...))
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'formatVersion', $plugins->formatVersion(...))
             ->registerPlugin(self::PLUGIN_MODIFIER, 'formatByteSize', Text::formatSize(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'getAvatar', $plugin->getAvatar(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'getRevisions', $plugin->getRevisions(...))
-            ->registerPlugin(self::PLUGIN_FUNCTION, 'captchaMarkup', $plugin->captchaMarkup(...))
-            ->registerPlugin(self::PLUGIN_MODIFIER, 'permission', $plugin->permission(...));
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'getAvatar', $plugins->getAvatar(...))
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'getRevisions', $plugins->getRevisions(...))
+            ->registerPlugin(self::PLUGIN_FUNCTION, 'captchaMarkup', $plugins->captchaMarkup(...))
+            ->registerPlugin(self::PLUGIN_MODIFIER, 'permission', $plugins->permission(...));
 
         $template           = AdminTemplate::getInstance();
         $shopURL            = Shop::getURL();

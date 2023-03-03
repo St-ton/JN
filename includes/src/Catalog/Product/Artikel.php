@@ -3356,9 +3356,7 @@ class Artikel implements RoutableInterface
         }
         $this->sanitizeProductData($tmpProduct);
         $this->addManufacturerData();
-        if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
-            && $this->getOption('bSimilar', false) === true
-        ) {
+        if ($this->getOption('bSimilar', false) === true) {
             $this->similarProducts = $this->getSimilarProducts();
         }
         // Datumsrelevante Abhängigkeiten beachten

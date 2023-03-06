@@ -19,7 +19,7 @@ class Migration_20191127104800 extends Migration implements IMigration
     protected $description = 'Add lang shipping info';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -40,7 +40,7 @@ class Migration_20191127104800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

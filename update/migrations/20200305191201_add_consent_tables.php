@@ -17,7 +17,7 @@ class Migration_20200305191201 extends Migration implements IMigration
     protected $description = 'Add consent tables';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -48,7 +48,7 @@ class Migration_20200305191201 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

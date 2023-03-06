@@ -18,7 +18,7 @@ class Migration_20200319162500 extends Migration implements IMigration
     protected $description = 'Remove cron type tpl';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -47,7 +47,7 @@ class Migration_20200319162500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

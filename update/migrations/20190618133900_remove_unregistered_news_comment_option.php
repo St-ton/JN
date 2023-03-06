@@ -16,7 +16,7 @@ class Migration_20190618133900 extends Migration implements IMigration
     protected $description = 'Remove option to allow news comments for unregistered users';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20190618133900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

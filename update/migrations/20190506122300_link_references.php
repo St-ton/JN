@@ -18,7 +18,7 @@ class Migration_20190506122300 extends Migration implements IMigration
     protected $description = 'Link references';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20190506122300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

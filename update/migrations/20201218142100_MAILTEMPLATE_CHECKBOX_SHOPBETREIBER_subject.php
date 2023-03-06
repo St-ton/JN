@@ -13,7 +13,7 @@ class Migration_20201218142100 extends Migration implements IMigration
     protected $description = 'Add subject for MAILTEMPLATE_CHECKBOX_SHOPBETREIBER';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -40,7 +40,7 @@ class Migration_20201218142100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

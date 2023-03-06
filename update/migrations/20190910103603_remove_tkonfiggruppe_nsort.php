@@ -18,7 +18,7 @@ class Migration_20190910103603 extends Migration implements IMigration
     protected $description = 'Remove tkonfiggruppe.nSort';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190910103603 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

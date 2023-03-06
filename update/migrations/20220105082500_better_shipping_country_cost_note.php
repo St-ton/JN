@@ -12,7 +12,7 @@ class Migration_20220105082500 extends Migration implements IMigration
     protected $description = 'Better shipping country cost note';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -21,7 +21,7 @@ class Migration_20220105082500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

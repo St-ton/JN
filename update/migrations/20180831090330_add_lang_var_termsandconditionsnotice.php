@@ -18,7 +18,7 @@ class Migration_20180831090330 extends Migration implements IMigration
     protected $description = 'Add lang var termsAndConditionsNotice';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20180831090330 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

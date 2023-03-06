@@ -17,7 +17,7 @@ class Migration_20160705123816 extends Migration implements IMigration
     protected $author = 'fp';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20160705123816 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

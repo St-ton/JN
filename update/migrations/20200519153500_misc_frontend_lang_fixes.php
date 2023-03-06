@@ -17,7 +17,7 @@ class Migration_20200519153500 extends Migration implements IMigration
     protected $description = 'Misc frontend lang fixes';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200519153500 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

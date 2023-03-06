@@ -18,7 +18,7 @@ class Migration_20190605111857 extends Migration implements IMigration
     protected $description = 'Remove table tnewsletterqueue';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190605111857 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

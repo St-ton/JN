@@ -16,7 +16,7 @@ class Migration_20181113122900 extends Migration implements IMigration
     protected $description = 'Changes for new extensions';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20181113122900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

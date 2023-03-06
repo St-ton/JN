@@ -18,7 +18,7 @@ class Migration_20210219133407 extends Migration implements IMigration
     protected $description = 'Change default country config to selectbox';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20210219133407 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

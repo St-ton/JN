@@ -18,7 +18,7 @@ class Migration_20221014132527 extends Migration implements IMigration
     protected $description = 'Create index for newsletter';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20221014132527 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

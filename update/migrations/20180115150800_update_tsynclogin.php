@@ -18,7 +18,7 @@ class Migration_20180115150800 extends Migration implements IMigration
     protected $description = 'Update tsynclogin table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -48,7 +48,7 @@ class Migration_20180115150800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

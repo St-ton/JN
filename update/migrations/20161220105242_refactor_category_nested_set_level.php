@@ -18,7 +18,7 @@ class Migration_20161220105242 extends Migration implements IMigration
     protected $description = 'Refactor category nested set level';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -41,7 +41,7 @@ class Migration_20161220105242 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

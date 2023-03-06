@@ -12,7 +12,7 @@ class Migration_20200508095000 extends Migration implements IMigration
     protected $description = 'Update data protection lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -25,7 +25,7 @@ class Migration_20200508095000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

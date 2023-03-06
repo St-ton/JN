@@ -18,7 +18,7 @@ class Migration_20160921103217 extends Migration implements IMigration
     protected $description = 'Add option to switch sitemap ping to Google and Bing on or off';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -42,7 +42,7 @@ class Migration_20160921103217 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

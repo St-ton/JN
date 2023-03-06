@@ -14,4 +14,4 @@ $yaml        = $src->toYaml(
 );
 $openApiFile = __DIR__ . '/../../openapi.yaml';
 file_put_contents($openApiFile, $yaml);
-echo "Wrote OAS file to {$openApiFile}\n";
+echo sprintf("Wrote OpenAPI specification file to %s\n", realpath($openApiFile));

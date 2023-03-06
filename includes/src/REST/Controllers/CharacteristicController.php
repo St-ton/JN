@@ -134,11 +134,11 @@ class CharacteristicController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/characteristic', [$this, 'index']);
-        $routeGroup->get('/characteristic/{id}', [$this, 'show']);
-        $routeGroup->put('/characteristic/{id}', [$this, 'update']);
-        $routeGroup->post('/characteristic', [$this, 'create']);
-        $routeGroup->delete('/characteristic/{id}', [$this, 'delete']);
+        $routeGroup->get('/characteristic', $this->index(...));
+        $routeGroup->get('/characteristic/{id}', $this->show(...));
+        $routeGroup->put('/characteristic/{id}', $this->update(...));
+        $routeGroup->post('/characteristic', $this->create(...));
+        $routeGroup->delete('/characteristic/{id}', $this->delete(...));
     }
 
     /**

@@ -29,11 +29,11 @@ class AttributeController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/attribute', [$this, 'index']);
-        $routeGroup->get('/attribute/{id}', [$this, 'show']);
-        $routeGroup->put('/attribute/{id}', [$this, 'update']);
-        $routeGroup->post('/attribute', [$this, 'create']);
-        $routeGroup->delete('/attribute/{id}', [$this, 'delete']);
+        $routeGroup->get('/attribute', $this->index(...));
+        $routeGroup->get('/attribute/{id}', $this->show(...));
+        $routeGroup->put('/attribute/{id}', $this->update(...));
+        $routeGroup->post('/attribute', $this->create(...));
+        $routeGroup->delete('/attribute/{id}', $this->delete(...));
     }
 
     /**

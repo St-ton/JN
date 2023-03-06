@@ -141,11 +141,11 @@ class ProductAttributeController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/productattribute', [$this, 'index']);
-        $routeGroup->get('/productattribute/{id}', [$this, 'show']);
-        $routeGroup->put('/productattribute/{id}', [$this, 'update']);
-        $routeGroup->post('/productattribute', [$this, 'create']);
-        $routeGroup->delete('/productattribute/{id}', [$this, 'delete']);
+        $routeGroup->get('/productattribute', $this->index(...));
+        $routeGroup->get('/productattribute/{id}', $this->show(...));
+        $routeGroup->put('/productattribute/{id}', $this->update(...));
+        $routeGroup->post('/productattribute', $this->create(...));
+        $routeGroup->delete('/productattribute/{id}', $this->delete(...));
     }
 
     /**

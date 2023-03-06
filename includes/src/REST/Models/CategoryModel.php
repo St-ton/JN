@@ -39,6 +39,7 @@ use JTL\Model\ModelHelper;
  * @property Collection|CategoryImageModel[]        $images
  * @property Collection|CategoryAttributeModel[]    $attributes
  * @property Collection|CategoryVisibilityModel[]   $visibility
+ * @method Collection|CategoryLocalizationModel[]   getLocalization()
  */
 final class CategoryModel extends DataModel
 {

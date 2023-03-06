@@ -146,11 +146,11 @@ class CartController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/cart', [$this, 'index']);
-        $routeGroup->get('/cart/{id}', [$this, 'show']);
-        $routeGroup->put('/cart/{id}', [$this, 'update']);
-        $routeGroup->post('/cart', [$this, 'create']);
-        $routeGroup->delete('/cart/{id}', [$this, 'delete']);
+        $routeGroup->get('/cart', $this->index(...));
+        $routeGroup->get('/cart/{id}', $this->show(...));
+        $routeGroup->put('/cart/{id}', $this->update(...));
+        $routeGroup->post('/cart', $this->create(...));
+        $routeGroup->delete('/cart/{id}', $this->delete(...));
     }
 
     /**

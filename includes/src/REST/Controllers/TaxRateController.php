@@ -132,11 +132,11 @@ class TaxRateController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/taxrate', [$this, 'index']);
-        $routeGroup->get('/taxrate/{id}', [$this, 'show']);
-        $routeGroup->put('/taxrate/{id}', [$this, 'update']);
-        $routeGroup->post('/taxrate', [$this, 'create']);
-        $routeGroup->delete('/taxrate/{id}', [$this, 'delete']);
+        $routeGroup->get('/taxrate', $this->index(...));
+        $routeGroup->get('/taxrate/{id}', $this->show(...));
+        $routeGroup->put('/taxrate/{id}', $this->update(...));
+        $routeGroup->post('/taxrate', $this->create(...));
+        $routeGroup->delete('/taxrate/{id}', $this->delete(...));
     }
 
     /**

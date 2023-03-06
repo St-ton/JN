@@ -167,11 +167,11 @@ class CategoryController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/category', [$this, 'index']);
-        $routeGroup->get('/category/{id}', [$this, 'show']);
-        $routeGroup->put('/category/{id}', [$this, 'update']);
-        $routeGroup->post('/category', [$this, 'create']);
-        $routeGroup->delete('/category/{id}', [$this, 'delete']);
+        $routeGroup->get('/category', $this->index(...));
+        $routeGroup->get('/category/{id}', $this->show(...));
+        $routeGroup->put('/category/{id}', $this->update(...));
+        $routeGroup->post('/category', $this->create(...));
+        $routeGroup->delete('/category/{id}', $this->delete(...));
     }
 
     /**
@@ -263,11 +263,12 @@ class CategoryController extends AbstractController
      */
     protected function deletedItem(DataModelInterface $item): void
     {
-        $this->deleteSubItems($item->getId());
-        $this->db->queryPrepared(
-            'DELETE FROM tseo WHERE cKey = :keyname AND kKey = :keyid',
-            ['keyname' => 'kKategorie', 'keyid' => $item->getId()],
-        );
+        $id = $item->getId();
+        $this->deleteSubItems($id);
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);
+        $this->db->delete('tkategoriekundengruppe', 'kKategorie', $id);
+        $this->db->delete('tkategorieartikel', 'kKategorie', $id);
+        $this->db->delete('tartikelkategorierabatt', 'kKategorie', $id);
         parent::deletedItem($item);
     }
 

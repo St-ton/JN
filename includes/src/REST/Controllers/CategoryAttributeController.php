@@ -132,11 +132,11 @@ class CategoryAttributeController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('categoryattribute', [$this, 'index']);
-        $routeGroup->get('categoryattribute/{id}', [$this, 'show']);
-        $routeGroup->put('categoryattribute/{id}', [$this, 'update']);
-        $routeGroup->post('categoryattribute', [$this, 'create']);
-        $routeGroup->delete('categoryattribute/{id}', [$this, 'delete']);
+        $routeGroup->get('categoryattribute', $this->index(...));
+        $routeGroup->get('categoryattribute/{id}', $this->show(...));
+        $routeGroup->put('categoryattribute/{id}', $this->update(...));
+        $routeGroup->post('categoryattribute', $this->create(...));
+        $routeGroup->delete('categoryattribute/{id}', $this->delete(...));
     }
 
     /**

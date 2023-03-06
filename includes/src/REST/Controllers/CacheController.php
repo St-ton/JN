@@ -29,9 +29,9 @@ class CacheController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->delete('cache/all', [$this, 'deleteAll']);
-        $routeGroup->delete('cache/{id}', [$this, 'delete']);
-        $routeGroup->delete('cache', [$this, 'deleteTag']);
+        $routeGroup->delete('cache/all', $this->deleteAll(...));
+        $routeGroup->delete('cache/{id}', $this->delete(...));
+        $routeGroup->delete('cache', $this->deleteTag(...));
     }
 
     /**

@@ -137,11 +137,11 @@ class ManufacturerController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/manufacturer', [$this, 'index']);
-        $routeGroup->get('/manufacturer/{id}', [$this, 'show']);
-        $routeGroup->put('/manufacturer/{id}', [$this, 'update']);
-        $routeGroup->post('/manufacturer', [$this, 'create']);
-        $routeGroup->delete('/manufacturer/{id}', [$this, 'delete']);
+        $routeGroup->get('/manufacturer', $this->index(...));
+        $routeGroup->get('/manufacturer/{id}', $this->show(...));
+        $routeGroup->put('/manufacturer/{id}', $this->update(...));
+        $routeGroup->post('/manufacturer', $this->create(...));
+        $routeGroup->delete('/manufacturer/{id}', $this->delete(...));
     }
 
     /**

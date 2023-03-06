@@ -132,11 +132,11 @@ class LanguageController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/language', [$this, 'index']);
-        $routeGroup->get('/language/{id}', [$this, 'show']);
-        $routeGroup->put('/language/{id}', [$this, 'update']);
-        $routeGroup->post('/language', [$this, 'create']);
-        $routeGroup->delete('/language/{id}', [$this, 'delete']);
+        $routeGroup->get('/language', $this->index(...));
+        $routeGroup->get('/language/{id}', $this->show(...));
+        $routeGroup->put('/language/{id}', $this->update(...));
+        $routeGroup->post('/language', $this->create(...));
+        $routeGroup->delete('/language/{id}', $this->delete(...));
     }
 
     /**

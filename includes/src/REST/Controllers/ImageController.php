@@ -55,11 +55,11 @@ class ImageController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/image/{type}/{id}', [$this, 'show']);
-        $routeGroup->get('/image/{type}', [$this, 'index']);
-        $routeGroup->post('/image/{type}/{id}', [$this, 'update']);
-        $routeGroup->post('/image/{type}', [$this, 'create']);
-        $routeGroup->delete('/image/{type}/{id}[/{withfiles}]', [$this, 'delete']);
+        $routeGroup->get('/image/{type}/{id}', $this->show(...));
+        $routeGroup->get('/image/{type}', $this->index(...));
+        $routeGroup->post('/image/{type}/{id}', $this->update(...));
+        $routeGroup->post('/image/{type}', $this->create(...));
+        $routeGroup->delete('/image/{type}/{id}[/{withfiles}]', $this->delete(...));
     }
 
     /**

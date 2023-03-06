@@ -66,7 +66,10 @@ final class MediaFiles extends AbstractPush
             } elseif ($filesOnly && \is_file($dir . '/' . $file)) {
                 $time = \filemtime($dir . '/' . $file) ?: null;
                 if ($time === null) {
-                    $this->logger->warning('Could not get filemtime for file ' . $dir . '/' . $file);
+                    $this->logger->warning(
+                        'Could not get filemtime for file {dir}/{file}',
+                        ['dir' => $dir, 'file' => $file]
+                    );
                 }
                 $xml .= '<file cName="' . $file . '" nSize="' . \filesize($dir . '/' . $file) . '" dTime="'
                     . \date('Y-m-d H:i:s', $time) . '"/>' . "\n";

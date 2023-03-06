@@ -77,7 +77,6 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
-        "phpunit/php-token-stream": "^3.0",
         "mschop/pathogen": "^0.6",
         "nikic/php-parser": "^4.10",
         "phpmd/phpmd": "@stable",

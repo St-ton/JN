@@ -562,6 +562,9 @@ class Plugins
      */
     public function getImageSize($image)
     {
+        if ($image === null) {
+            return null;
+        }
         $path = \str_starts_with($image, \PFAD_BILDER)
             ? PFAD_ROOT . $image
             : $image;

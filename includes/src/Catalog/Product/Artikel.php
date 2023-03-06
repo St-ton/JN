@@ -3334,7 +3334,8 @@ class Artikel implements RoutableInterface
             }
             if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
                 Shop::Container()->getLogService()->warning(
-                    'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
+                    'Product {pid} has invalid parent.',
+                    ['pid' => (int)$tmpProduct->kArtikel]
                 );
             }
             return null;
@@ -3355,9 +3356,7 @@ class Artikel implements RoutableInterface
         }
         $this->sanitizeProductData($tmpProduct);
         $this->addManufacturerData();
-        if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
-            && $this->getOption('bSimilar', false) === true
-        ) {
+        if ($this->getOption('bSimilar', false) === true) {
             $this->similarProducts = $this->getSimilarProducts();
         }
         // Datumsrelevante Abhängigkeiten beachten
@@ -3425,8 +3424,8 @@ class Artikel implements RoutableInterface
                 $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
             } else {
                 Shop::Container()->getLogService()->error(
-                    'Konfigurator für Artikel (Art.Nr.: ' .
-                    $this->cArtNr . ') konnte nicht geladen werden.'
+                    'Konfigurator für Artikel (Art.Nr.: {artno}) konnte nicht geladen werden.',
+                    ['artno' => $this->cArtNr]
                 );
             }
         }

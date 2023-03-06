@@ -392,8 +392,13 @@ class Newsletter
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(
-                    'Newsletter Cron konnte den Artikel ' . $id . ' für Kundengruppe ' .
-                    $customerGroupID . ' und Sprache ' . $langID . ' nicht laden (Sichtbarkeit?)'
+                    'Newsletter Cron konnte den Artikel {pid} für Kundengruppe {cgid}'
+                    . ' und Sprache {lid} nicht laden (Sichtbarkeit?)',
+                    [
+                        'pid'  => $id,
+                        'cgid' => $customerGroupID,
+                        'lid'  => $langID
+                    ]
                 );
                 continue;
             }

@@ -39,6 +39,16 @@ use JTL\Model\ModelHelper;
  * @property Collection|CategoryImageModel[]        $images
  * @property Collection|CategoryAttributeModel[]    $attributes
  * @property Collection|CategoryVisibilityModel[]   $visibility
+ * @method Collection|CategoryLocalizationModel[]   getLocalization()
+ * @method string getSlug()
+ * @method int getId()
+ * @method int getParentID()
+ * @method int getSort()
+ * @method int getLft()
+ * @method int getRght()
+ * @method int getLevel()
+ * @method string getName()
+ * @method string getDescription()
  */
 final class CategoryModel extends DataModel
 {
@@ -329,6 +339,22 @@ final class CategoryModel extends DataModel
         $attributes['visibility']   = DataAttribute::create(
             'visibility',
             CategoryVisibilityModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['discount']   = DataAttribute::create(
+            'discount',
+            ProductCategoryDiscountModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['categories']   = DataAttribute::create(
+            'categories',
+            ProductCategoriesModel::class,
             null,
             true,
             false,

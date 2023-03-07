@@ -2,9 +2,11 @@
 
 namespace JTL\REST\Controllers;
 
+use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Model\DataModelInterface;
 use JTL\REST\Models\CategoryImageModel;
 use JTL\REST\Models\CategoryModel;
@@ -16,6 +18,7 @@ use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class CategoryController
@@ -23,6 +26,11 @@ use stdClass;
  */
 class CategoryController extends AbstractController
 {
+    /**
+     * @var int[]
+     */
+    private array $affected = [];
+
     /**
      * @inheritdoc
      */
@@ -167,11 +175,11 @@ class CategoryController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/category', [$this, 'index']);
-        $routeGroup->get('/category/{id}', [$this, 'show']);
-        $routeGroup->put('/category/{id}', [$this, 'update']);
-        $routeGroup->post('/category', [$this, 'create']);
-        $routeGroup->delete('/category/{id}', [$this, 'delete']);
+        $routeGroup->get('/category', $this->index(...));
+        $routeGroup->get('/category/{id}', $this->show(...));
+        $routeGroup->put('/category/{id}', $this->update(...));
+        $routeGroup->post('/category', $this->create(...));
+        $routeGroup->delete('/category/{id}', $this->delete(...));
     }
 
     /**
@@ -196,7 +204,7 @@ class CategoryController extends AbstractController
                 $model = new CategoryImageModel($this->db);
                 $data  = (object)[
                     'id'         => $model->getNewID(),
-                    'categoryID' => $item->id,
+                    'categoryID' => $item->getId(),
                     'type'       => '',
                     'path'       => $file->getClientFilename()
                 ];
@@ -235,16 +243,7 @@ class CategoryController extends AbstractController
      */
     protected function createdItem(DataModelInterface $item): void
     {
-        /** @var CategoryModel $item */
-        $model = new SeoModel($this->db);
-        foreach ($item->getLocalization() as $localization) {
-            $seo           = new stdClass();
-            $seo->cSeo     = Seo::checkSeo($localization->getSlug());
-            $seo->cKey     = 'kKategorie';
-            $seo->kKey     = $item->getId();
-            $seo->kSprache = $localization->getLanguageID();
-            $model::create($seo, $this->db);
-        }
+        $this->updateSlug($item);
         $this->rebuildCategoryTree(0, 1);
         parent::createdItem($item);
     }
@@ -255,6 +254,7 @@ class CategoryController extends AbstractController
     protected function updatedItem(DataModelInterface $item): void
     {
         $this->rebuildCategoryTree(0, 1);
+        $this->cache->flushTags(\CACHING_GROUP_CATEGORY . '_' . $item->getId());
         parent::updatedItem($item);
     }
 
@@ -263,33 +263,71 @@ class CategoryController extends AbstractController
      */
     protected function deletedItem(DataModelInterface $item): void
     {
-        $this->deleteSubItems($item->getId());
-        $this->db->queryPrepared(
-            'DELETE FROM tseo WHERE cKey = :keyname AND kKey = :keyid',
-            ['keyname' => 'kKategorie', 'keyid' => $item->getId()],
-        );
+        $id               = $item->getId();
+        $this->affected[] = $id;
+        $this->deleteSubItems($id);
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);
+        $this->db->delete('tkategoriekundengruppe', 'kKategorie', $id);
+        $this->rebuildCategoryTree(0, 1);
+        $this->cache->flushTags(map($this->affected, static function (int $categoryID) {
+            return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
+        }));
         parent::deletedItem($item);
     }
 
     /**
-     * @param int $parentId
+     * @param int $parentID
      * @throws \Exception
      */
-    protected function deleteSubItems(int $parentId): void
+    protected function deleteSubItems(int $parentID): void
     {
-        $subItems = CategoryModel::loadAll($this->db, 'kOberKategorie', $parentId);
-        if (\count($subItems) === 0) {
-            return;
+        foreach (CategoryModel::loadAll($this->db, 'kOberKategorie', $parentID) as $item) {
+            $this->affected[] = $item->getId();
+            $this->deleteSubItems($item->getId());
+            $item->delete();
         }
-        foreach ($subItems as $subItem) {
-            $this->deleteSubItems($subItem->getId());
-            $productCategories = ProductCategoriesModel::loadAll($this->db, 'kKategorie', $subItem->getId());
-            if (\count($productCategories) > 0) {
-                foreach ($productCategories as $productCategory) {
-                    $productCategory->delete();
-                }
+    }
+
+    /**
+     * @param DataModelInterface $item
+     * @return void
+     * @throws Exception
+     */
+    private function updateSlug(DataModelInterface $item): void
+    {
+        /** @var CategoryModel $item */
+        $model = new SeoModel($this->db);
+        // default language is not contained in localizations...
+        foreach ([$item, ...$item->getLocalization()] as $localization) {
+            $languageID = \array_key_exists('languageID', $localization->getAttributes())
+                ? $localization->getLanguageID()
+                : LanguageHelper::getDefaultLanguage()->getId();
+            try {
+                $old = $model::load(
+                    [
+                        'cKey'     => 'kKategorie',
+                        'kKey'     => $item->getId(),
+                        'kSprache' => $languageID
+                    ],
+                    $this->db,
+                    SeoModel::ON_NOTEXISTS_FAIL
+                );
+            } catch (Exception) {
+                $old = null;
             }
-            $subItem->delete();
+            $oldSlug = $old?->getSlug();
+            if ($oldSlug !== null) {
+                if ($oldSlug === $localization->getSlug()) {
+                    continue;
+                }
+                $old->delete();
+            }
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo($localization->getSlug());
+            $seo->cKey     = 'kKategorie';
+            $seo->kKey     = $item->getId();
+            $seo->kSprache = $languageID;
+            $model::create($seo, $this->db);
         }
     }
 

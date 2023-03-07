@@ -33,11 +33,11 @@ class SeoController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/seo', [$this, 'index']);
-        $routeGroup->get('/seo/{id}', [$this, 'show']);
-        $routeGroup->put('/seo/{id}', [$this, 'update']);
-        $routeGroup->post('/seo', [$this, 'create']);
-        $routeGroup->delete('/seo/{id}', [$this, 'delete']);
+        $routeGroup->get('/seo', $this->index(...));
+        $routeGroup->get('/seo/{id}', $this->show(...));
+        $routeGroup->put('/seo/{id}', $this->update(...));
+        $routeGroup->post('/seo', $this->create(...));
+        $routeGroup->delete('/seo/{id}', $this->delete(...));
     }
 
     /**

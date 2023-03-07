@@ -143,11 +143,11 @@ class OrderController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/order', [$this, 'index']);
-        $routeGroup->get('/order/{id}', [$this, 'show']);
-        $routeGroup->put('/order/{id}', [$this, 'update']);
-        $routeGroup->post('/order', [$this, 'create']);
-        $routeGroup->delete('/order/{id}', [$this, 'delete']);
+        $routeGroup->get('/order', $this->index(...));
+        $routeGroup->get('/order/{id}', $this->show(...));
+        $routeGroup->put('/order/{id}', $this->update(...));
+        $routeGroup->post('/order', $this->create(...));
+        $routeGroup->delete('/order/{id}', $this->delete(...));
     }
 
     /**

@@ -34,15 +34,15 @@ class StockController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/stock/product/{productID}/warehouse/{warehouseID}', [$this, 'show']);
-        $routeGroup->get('/stock/product/{productID}', [$this, 'show']);
-        $routeGroup->get('/stock/warehouse/{warehouseID}', [$this, 'show']);
-        $routeGroup->get('/stock', [$this, 'index']);
-        $routeGroup->put('/stock/{id}', [$this, 'update']);
-        $routeGroup->post('/stock', [$this, 'create']);
-        $routeGroup->delete('/stock/product/{productID}', [$this, 'delete']);
-        $routeGroup->delete('/stock/warehouse/{warehouseID}', [$this, 'delete']);
-        $routeGroup->delete('/stock/product/{productID}/warehouse/{warehouseID}', [$this, 'delete']);
+        $routeGroup->get('/stock/product/{productID}/warehouse/{warehouseID}', $this->show(...));
+        $routeGroup->get('/stock/product/{productID}', $this->show(...));
+        $routeGroup->get('/stock/warehouse/{warehouseID}', $this->show(...));
+        $routeGroup->get('/stock', $this->index(...));
+        $routeGroup->put('/stock/{id}', $this->update(...));
+        $routeGroup->post('/stock', $this->create(...));
+        $routeGroup->delete('/stock/product/{productID}', $this->delete(...));
+        $routeGroup->delete('/stock/warehouse/{warehouseID}', $this->delete(...));
+        $routeGroup->delete('/stock/product/{productID}/warehouse/{warehouseID}', $this->delete(...));
     }
 
     /**

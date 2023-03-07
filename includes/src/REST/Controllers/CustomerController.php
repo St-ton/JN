@@ -151,11 +151,11 @@ class CustomerController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/customer', [$this, 'index']);
-        $routeGroup->get('/customer/{id}', [$this, 'show']);
-        $routeGroup->put('/customer/{id}', [$this, 'update']);
-        $routeGroup->post('/customer', [$this, 'create']);
-        $routeGroup->delete('/customer/{id}', [$this, 'delete']);
+        $routeGroup->get('/customer', $this->index(...));
+        $routeGroup->get('/customer/{id}', $this->show(...));
+        $routeGroup->put('/customer/{id}', $this->update(...));
+        $routeGroup->post('/customer', $this->create(...));
+        $routeGroup->delete('/customer/{id}', $this->delete(...));
     }
 
     /**

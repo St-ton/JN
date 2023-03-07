@@ -115,11 +115,11 @@ class ProductController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/product', [$this, 'index']);
-        $routeGroup->get('/product/{id}[/{full:full}]', [$this, 'show']);
-        $routeGroup->put('/product/{id}', [$this, 'update']);
-        $routeGroup->post('/product', [$this, 'create']);
-        $routeGroup->delete('/product/{id}', [$this, 'delete']);
+        $routeGroup->get('/product', $this->index(...));
+        $routeGroup->get('/product/{id}[/{full:full}]', $this->show(...));
+        $routeGroup->put('/product/{id}', $this->update(...));
+        $routeGroup->post('/product', $this->create(...));
+        $routeGroup->delete('/product/{id}', $this->delete(...));
     }
 
     /**

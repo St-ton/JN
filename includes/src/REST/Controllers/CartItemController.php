@@ -29,11 +29,11 @@ class CartItemController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/cartitem', [$this, 'index']);
-        $routeGroup->get('/cartitem/{id}', [$this, 'show']);
-        $routeGroup->put('/cartitem/{id}', [$this, 'update']);
-        $routeGroup->post('/cartitem', [$this, 'create']);
-        $routeGroup->delete('/cartitem/{id}', [$this, 'delete']);
+        $routeGroup->get('/cartitem', $this->index(...));
+        $routeGroup->get('/cartitem/{id}', $this->show(...));
+        $routeGroup->put('/cartitem/{id}', $this->update(...));
+        $routeGroup->post('/cartitem', $this->create(...));
+        $routeGroup->delete('/cartitem/{id}', $this->delete(...));
     }
 
     /**

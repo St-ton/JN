@@ -131,11 +131,11 @@ class TaxZoneController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/taxzone', [$this, 'index']);
-        $routeGroup->get('/taxzone/{id}', [$this, 'show']);
-        $routeGroup->put('/taxzone/{id}', [$this, 'update']);
-        $routeGroup->post('/taxzone', [$this, 'create']);
-        $routeGroup->delete('/taxzone/{id}', [$this, 'delete']);
+        $routeGroup->get('/taxzone', $this->index(...));
+        $routeGroup->get('/taxzone/{id}', $this->show(...));
+        $routeGroup->put('/taxzone/{id}', $this->update(...));
+        $routeGroup->post('/taxzone', $this->create(...));
+        $routeGroup->delete('/taxzone/{id}', $this->delete(...));
     }
 
     /**

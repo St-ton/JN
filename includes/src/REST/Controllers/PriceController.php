@@ -29,11 +29,11 @@ class PriceController extends AbstractController
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/price', [$this, 'index']);
-        $routeGroup->get('/price/{id}', [$this, 'show']);
-        $routeGroup->put('/price/{id}', [$this, 'update']);
-        $routeGroup->post('/price', [$this, 'create']);
-        $routeGroup->delete('/price/{id}', [$this, 'delete']);
+        $routeGroup->get('/price', $this->index(...));
+        $routeGroup->get('/price/{id}', $this->show(...));
+        $routeGroup->put('/price/{id}', $this->update(...));
+        $routeGroup->post('/price', $this->create(...));
+        $routeGroup->delete('/price/{id}', $this->delete(...));
     }
 
     /**

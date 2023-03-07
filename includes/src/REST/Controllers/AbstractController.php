@@ -160,7 +160,7 @@ abstract class AbstractController
         try {
             $class = $this->modelClass;
             /** @var $class DataModelInterface */
-            $result = $class::load(['id' => $id], $this->db);
+            $result = $class::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             /** @var $result DataModelInterface */
         } catch (Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $id . ' does not exist');

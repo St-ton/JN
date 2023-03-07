@@ -26,7 +26,7 @@
                         {foreach $oKampagneStat_arr as $oKampagneStat}
                             <tr>
                                 {foreach $cMember_arr as $cMember => $cMemberAnzeige}
-                                    <td>{$oKampagneStat->$cMember|wordwrap:40:'<br />':true}</td>
+                                    <td>{($oKampagneStat->$cMember|default:'-')|wordwrap:40:'<br />':true}</td>
                                 {/foreach}
                             </tr>
                         {/foreach}

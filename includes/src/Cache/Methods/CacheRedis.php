@@ -260,9 +260,6 @@ class CacheRedis implements ICachingMethod
      */
     public function getKeysByTag($tags = []): array
     {
-
-
-
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
             : \array_map([self::class, '_keyFromTagName'], $tags);

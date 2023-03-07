@@ -2041,6 +2041,12 @@ msgstr "Further use of the extension may constitute a licence violation!"
 msgid "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 msgstr "Please purchase a licence in the JTL-Extension Store or contact the manufacturer of the extension for information on rights of use."
 
+msgid "btnExploreExtensionStore"
+msgstr "Explore JTL-Extension Store"
+
+msgid "btnAdditionalExtensionStore"
+msgstr "Explore available extensions"
+
 msgid "Licensing problem detected"
 msgstr "Licensing problem detected"
 

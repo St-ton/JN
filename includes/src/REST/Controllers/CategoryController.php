@@ -277,7 +277,7 @@ class CategoryController extends AbstractController
 
     /**
      * @param int $parentID
-     * @throws \Exception
+     * @throws Exception
      */
     protected function deleteSubItems(int $parentID): void
     {

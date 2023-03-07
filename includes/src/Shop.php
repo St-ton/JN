@@ -159,7 +159,7 @@ final class Shop extends ShopBC
     public function __call(string $method, mixed $arguments)
     {
         return ($mapping = self::map($method)) !== null
-            ? \call_user_func_array([$this, $mapping], $arguments)
+            ? $this->$mapping(...$arguments)
             : null;
     }
 

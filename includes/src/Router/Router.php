@@ -649,7 +649,7 @@ class Router
     {
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $body = $_POST;
+        $body   = $_POST;
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
         if ($method === 'PUT' || ($method === 'POST' && $_SERVER['HTTP_CONTENT_TYPE'] === 'application/json')) {
             \parse_str(\file_get_contents('php://input'), $body);

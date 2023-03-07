@@ -344,7 +344,7 @@ final class CategoryModel extends DataModel
             false,
             'kKategorie'
         );
-        $attributes['discount']   = DataAttribute::create(
+        $attributes['discount']     = DataAttribute::create(
             'discount',
             ProductCategoryDiscountModel::class,
             null,

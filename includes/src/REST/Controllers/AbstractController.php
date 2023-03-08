@@ -188,13 +188,23 @@ abstract class AbstractController
      * @param DataModelInterface     $model
      * @param ServerRequestInterface $request
      * @return DataModelInterface
+     * @throws JsonException
      */
     protected function updateFromRequest(DataModelInterface $model, ServerRequestInterface $request): DataModelInterface
     {
+        $contentType     = $request->getHeader('content-type');
         $modelAttributes = $model->getAttributes();
-        $src             = $this->getRequestData($request);
-
-        $this->hydrateModel($src['body'], $modelAttributes, $model);
+        if (\strtolower($contentType[0] ?? '') === 'application/json') {
+            $json = \json_decode((string)$request->getBody(), null, 512, \JSON_THROW_ON_ERROR);
+            $src  = (array)$json;
+        } else {
+            $src = $request->getQueryParams();
+        }
+        foreach ($src as $attr => $value) {
+            if (\array_key_exists($attr, $modelAttributes)) {
+                $model->$attr = $value;
+            }
+        }
 
         return $model;
     }
@@ -231,10 +241,19 @@ abstract class AbstractController
         /** @var DataModelInterface $model */
         $model           = new $this->modelClass($this->db);
         $data            = new stdClass();
+        $contentType     = $request->getHeader('content-type');
         $modelAttributes = $model->getAttributes();
-        $src             = $this->getRequestData($request);
-
-        $this->hydrateModel($src['body'], $modelAttributes, $data);
+        if (\strtolower($contentType[0] ?? '') === 'application/json') {
+            $json = \json_decode((string)$request->getBody(), null, 512, \JSON_THROW_ON_ERROR);
+            $src  = (array)$json;
+        } else {
+            $src = $request->getQueryParams();
+        }
+        foreach ($src as $attr => $value) {
+            if (\array_key_exists($attr, $modelAttributes)) {
+                $data->$attr = $value;
+            }
+        }
 
         return $model::create($this->getCreateBaseData($request, $model, $data), $this->db);
     }
@@ -295,7 +314,7 @@ abstract class AbstractController
      */
     protected function validateRequest(ServerRequestInterface $request, array $rules): bool|array
     {
-        $validation = $this->validator->validate($this->getRequestData($request)['body'], $rules);
+        $validation = $this->validator->validate($request->getQueryParams(), $rules);
         if ($validation->passes()) {
             return true;
         }
@@ -363,37 +382,5 @@ abstract class AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [];
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return array
-     */
-    protected function getRequestData(ServerRequestInterface $request): array
-    {
-        $params = match ($request->getMethod()) {
-            'POST' => ['body' => $request->getParsedBody()],
-            'GET' => ['queryParams' => $request->getQueryParams(), 'id' => $request->getAttribute('id')],
-            'DELETE' => $request->getAttribute('id'),
-            'PUT' => ['body' => $request->getParsedBody(), 'id' => $request->getAttribute('id')],
-            default => [],
-        };
-
-        return $params;
-    }
-
-    /**
-     * @param array              $body
-     * @param array              $modelAttributes
-     * @param DataModelInterface $data
-     * @return void
-     */
-    protected function hydrateModel(array $body, array $modelAttributes, DataModelInterface|stdClass $data): void
-    {
-        foreach ($body as $attr => $value) {
-            if (\array_key_exists($attr, $modelAttributes)) {
-                $data->$attr = $value;
-            }
-        }
     }
 }

@@ -649,7 +649,11 @@ class Router
     {
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $body    = $this->getPostBodyJsonData();
+        $body   = $_POST;
+        $method = $_SERVER['REQUEST_METHOD'] ?? '';
+        if ($method === 'PUT' || ($method === 'POST' && $_SERVER['HTTP_CONTENT_TYPE'] === 'application/json')) {
+            \parse_str(\file_get_contents('php://input'), $body);
+        }
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
         if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
@@ -902,52 +906,5 @@ class Router
     public function setState(State $state): void
     {
         $this->state = $state;
-    }
-
-    /**
-     * @param array $body
-     * @return array
-     */
-    private function dismissStdClasses(array $body): array
-    {
-        foreach ($body as $identifier => $value) {
-            if (\is_object($value)) {
-                $body[$identifier] = (array)$value;
-            } elseif (\is_array($value)) {
-                $body[$identifier] = $this->dismissStdClasses($value);
-            }
-        }
-
-        return $body;
-    }
-
-    /**
-     * @return array
-     * @throws \JsonException
-     */
-    private function getPostBodyJsonData(): array
-    {
-        $body   = $_POST;
-        $method = $_SERVER['REQUEST_METHOD'] ?? '';
-        if (($method === 'PUT' || $method === 'POST')
-            && ((isset($_SERVER['HTTP_CONTENT_TYPE'])
-                    && (\strtolower($_SERVER['HTTP_CONTENT_TYPE']) === 'application/json'))
-                || ((isset($_SERVER['CONTENT_TYPE']) && \strtolower($_SERVER['CONTENT_TYPE']) === 'application/json')))
-        ) {
-            $tmp = \file_get_contents('php://input');
-            if ($tmp !== '') {
-                $body = (array)\json_decode(
-                    $tmp,
-                    null,
-                    512,
-                    \JSON_THROW_ON_ERROR
-                );
-                $body = $this->dismissStdClasses($body);
-            } else {
-                $body = [];
-            }
-        }
-
-        return $body;
     }
 }

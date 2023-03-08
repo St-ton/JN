@@ -218,7 +218,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
 
         if (!empty($pkValue)) {
-            if (!method_exists($this, 'getKeyName')) {
+            if (!empty($this->getKeyName())) {
                 $key = $this->getKey();
                 if (empty($key)) {
                     $this->setKey($pkValue);

@@ -327,7 +327,11 @@ class CategoryController extends AbstractController
             $seo->cKey     = 'kKategorie';
             $seo->kKey     = $item->getId();
             $seo->kSprache = $languageID;
-            $model::create($seo, $this->db);
+            try {
+                $model::create($seo, $this->db);
+            } catch (Exception $e) {
+                // @todo
+            }
         }
     }
 

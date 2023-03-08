@@ -188,6 +188,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }
@@ -222,6 +223,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->attributes ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }
@@ -266,6 +268,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->images ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }

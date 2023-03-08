@@ -121,6 +121,7 @@ final class ProductPropertyModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['propertyID'])) {
                     $data['propertyID'] = $model->id;
                 }

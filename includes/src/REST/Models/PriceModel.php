@@ -112,6 +112,7 @@ final class PriceModel extends DataModel
                 return $this->updateSingleDetailItem($res, $value, $model);
             }
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['kPreis'])) {
                     $data['kPreis'] = $model->kPreis;
                 }
@@ -130,6 +131,7 @@ final class PriceModel extends DataModel
             }
             $res = $model->detail ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['priceID'])) {
                     $data['priceID'] = $model->id;
                 }

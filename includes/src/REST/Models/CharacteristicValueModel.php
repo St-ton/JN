@@ -92,6 +92,7 @@ final class CharacteristicValueModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['characteristicValueID'])) {
                     $data['characteristicValueID'] = $model->id;
                 }
@@ -131,6 +132,7 @@ final class CharacteristicValueModel extends DataModel
             }
             $res = $model->image ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['characteristicValueID'])) {
                     $data['characteristicValueID'] = $model->id;
                 }

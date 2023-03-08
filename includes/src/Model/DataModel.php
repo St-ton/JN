@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use stdClass;
 use function Functional\select;
 
@@ -572,6 +571,7 @@ abstract class DataModel implements DataModelInterface, Iterator
         try {
             $allKeyNames = $this->getAllKeyNames(true);
             $keyName     = $this->getKeyName(true);
+            $keyValue    = $this->getKey();
             if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }

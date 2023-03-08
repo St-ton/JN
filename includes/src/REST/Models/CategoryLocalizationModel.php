@@ -28,6 +28,8 @@ use JTL\Model\DataModel;
  * @property string $metaKeywords
  * @property string $cTitleTag
  * @property string $metaTitle
+ * @method int getId()
+ * @method int getLanguageID()
  */
 final class CategoryLocalizationModel extends DataModel
 {

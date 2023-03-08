@@ -192,7 +192,7 @@ class LanguageHelper
     public function __call($method, $arguments)
     {
         return ($mapping = self::map($method)) !== null
-            ? \call_user_func_array([$this, $mapping], $arguments)
+            ? $this->$mapping(...$arguments)
             : null;
     }
 

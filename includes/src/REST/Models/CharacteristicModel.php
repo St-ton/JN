@@ -115,6 +115,7 @@ final class CharacteristicModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['characteristicID'])) {
                     $data['characteristicID'] = $model->id;
                 }

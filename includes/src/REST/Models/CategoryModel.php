@@ -40,6 +40,18 @@ use JTL\Model\ModelHelper;
  * @property Collection|CategoryAttributeModel[]    $attributes
  * @property Collection|CategoryVisibilityModel[]   $visibility
  * @method Collection|CategoryLocalizationModel[]   getLocalization()
+<<<<<<< HEAD
+=======
+ * @method string getSlug()
+ * @method int getId()
+ * @method int getParentID()
+ * @method int getSort()
+ * @method int getLft()
+ * @method int getRght()
+ * @method int getLevel()
+ * @method string getName()
+ * @method string getDescription()
+>>>>>>> a9913dee1048d4a2595a7a1bb1886021e4a657bd
  */
 final class CategoryModel extends DataModel
 {
@@ -179,6 +191,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }
@@ -213,6 +226,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->attributes ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }
@@ -257,6 +271,7 @@ final class CategoryModel extends DataModel
             }
             $res = $model->images ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['categoryID'])) {
                     $data['categoryID'] = $model->id;
                 }
@@ -330,6 +345,22 @@ final class CategoryModel extends DataModel
         $attributes['visibility']   = DataAttribute::create(
             'visibility',
             CategoryVisibilityModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['discount']     = DataAttribute::create(
+            'discount',
+            ProductCategoryDiscountModel::class,
+            null,
+            true,
+            false,
+            'kKategorie'
+        );
+        $attributes['categories']   = DataAttribute::create(
+            'categories',
+            ProductCategoriesModel::class,
             null,
             true,
             false,

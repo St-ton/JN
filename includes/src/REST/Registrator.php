@@ -110,6 +110,5 @@ final class Registrator
         foreach (self::$classes as $class) {
             (new $class($this->manager, $this->db, $this->cache))->registerRoutes($routeGroup);
         }
-        $routeGroup->middleware(new AuthMiddleware());
     }
 }

@@ -20,6 +20,10 @@ use JTL\Model\DataModel;
  * @property int    $id
  * @property int    $kSprache
  * @property int    $languageID
+ * @method string getSlug()
+ * @method string getType()
+ * @method int    getId()
+ * @method int    getLanguageId()
  */
 final class SeoModel extends DataModel
 {
@@ -86,11 +90,6 @@ final class SeoModel extends DataModel
     public function setKeyName($keyName): void
     {
         throw new Exception(__METHOD__ . ': setting of keyname is not supported', self::ERR_DATABASE);
-    }
-
-    public function getKeyName(bool $realName = false): string
-    {
-        return '';
     }
 
     /**

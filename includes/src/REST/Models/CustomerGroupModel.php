@@ -118,6 +118,7 @@ final class CustomerGroupModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['customerGroupID'])) {
                     $data['customerGroupID'] = $model->id;
                 }

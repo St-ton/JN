@@ -568,6 +568,9 @@ final class ProductModel extends DataModel
             }
             $res = $model->characteristics ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                if (\is_object($data)) {
+                    $data = (array)$data;
+                }
                 if (!\is_array($data)) {
                     // support adding product characteristics by a simple array of characteristic value IDs
                     $id = (int)$data;
@@ -625,6 +628,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->localization ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -663,6 +667,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->categories ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -711,6 +716,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->functionalAttributes ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -759,6 +765,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->attributes ?? new Collection();
             foreach (\array_filter($value) as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -810,6 +817,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->images ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -845,6 +853,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->prices ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -882,6 +891,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->minimumOrderQuantities ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }
@@ -921,6 +931,7 @@ final class ProductModel extends DataModel
             }
             $res = $model->categoryDiscounts ?? new Collection();
             foreach ($value as $data) {
+                $data = (array)$data;
                 if (!isset($data['productID'])) {
                     $data['productID'] = $model->id;
                 }

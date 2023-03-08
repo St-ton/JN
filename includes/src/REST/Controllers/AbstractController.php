@@ -160,7 +160,7 @@ abstract class AbstractController
         try {
             $class = $this->modelClass;
             /** @var $class DataModelInterface */
-            $result = $class::load(['id' => $id], $this->db);
+            $result = $class::load(['id' => $id], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
             /** @var $result DataModelInterface */
         } catch (Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $id . ' does not exist');
@@ -238,16 +238,24 @@ abstract class AbstractController
      */
     protected function createItem(ServerRequestInterface $request): DataModelInterface
     {
-        /** @var DataModelInterface $result */
-        $result      = new $this->modelClass($this->db);
-        $data        = new stdClass();
-        $queryParams = $request->getQueryParams();
-        foreach (\array_keys($result->getAttributes()) as $attr) {
-            if (isset($queryParams[$attr])) {
-                $data->$attr = $queryParams[$attr];
+        /** @var DataModelInterface $model */
+        $model           = new $this->modelClass($this->db);
+        $data            = new stdClass();
+        $contentType     = $request->getHeader('content-type');
+        $modelAttributes = $model->getAttributes();
+        if (\strtolower($contentType[0] ?? '') === 'application/json') {
+            $json = \json_decode((string)$request->getBody(), null, 512, \JSON_THROW_ON_ERROR);
+            $src  = (array)$json;
+        } else {
+            $src = $request->getQueryParams();
+        }
+        foreach ($src as $attr => $value) {
+            if (\array_key_exists($attr, $modelAttributes)) {
+                $data->$attr = $value;
             }
         }
-        return $result::create($this->getCreateBaseData($request, $result, $data), $this->db);
+
+        return $model::create($this->getCreateBaseData($request, $model, $data), $this->db);
     }
 
     /**

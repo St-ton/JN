@@ -89,7 +89,7 @@ class AbstractRateLimiter implements RateLimiterInterface
                 FROM tfloodprotect
                 WHERE cIP = :ip
                     AND reference = :rid
-                    AND cType = :tpe
+                    AND cTyp = :tpe
                     AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
             [
                 'ip'  => $this->ip,

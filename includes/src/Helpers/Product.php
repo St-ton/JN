@@ -1460,7 +1460,9 @@ class Product
         }
         $limiter = new Limiter(Shop::Container()->getDB());
         $limiter->init(Request::getRealIP());
-        $limiter->setCleanupMinutes($min);
+        $limiter->setLimit(1);
+        $limiter->setFloodMinutes($min);
+        $limiter->setCleanupMinutes($min + 5);
         if ($limiter->check() !== true) {
             return true;
         }

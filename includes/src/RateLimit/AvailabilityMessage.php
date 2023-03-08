@@ -16,35 +16,24 @@ class AvailabilityMessage extends AbstractRateLimiter
     /**
      * @var int
      */
-    protected int $timeLimit = 2;
+    protected int $floodMinutes = 2;
 
     /**
-     * @inheritdoc
+     * @var int
      */
-    public function check(?array $args = null): bool
-    {
-        $items = $this->db->getSingleObject(
-            'SELECT COUNT(*) AS cnt
-                FROM tfloodprotect
-                WHERE cIP = :ip
-                    AND cTyp = :tpe
-                    AND TIMESTAMPDIFF(MINUTE, dErstellt, NOW()) < :td',
-            [
-                'ip'  => $this->ip,
-                'tpe' => $this->type,
-                'td'  => $this->getCleanupMinutes(),
-            ]
-        );
-
-        return ($items->cnt ?? 0) < 1;
-    }
+    protected int $cleanupMinutes = 3;
 
     /**
+     * @var int
+     */
+    protected int $entryLimit = 1;
+
+     /**
      * @inheritDoc
      */
     public function getCleanupMinutes(): int
     {
-        return $this->timeLimit;
+        return $this->cleanupMinutes;
     }
 
     /**
@@ -52,6 +41,39 @@ class AvailabilityMessage extends AbstractRateLimiter
      */
     public function setCleanupMinutes(int $minutes): void
     {
-        $this->timeLimit = $minutes;
+        $this->cleanupMinutes = $minutes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFloodMinutes(): int
+    {
+        return $this->floodMinutes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setFloodMinutes(int $minutes): void
+    {
+        $this->floodMinutes = $minutes;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->entryLimit;
+    }
+
+    /**
+     * @param int $limit
+     * @return void
+     */
+    public function setLimit(int $limit): void
+    {
+        $this->entryLimit = $limit;
     }
 }

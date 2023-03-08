@@ -196,9 +196,12 @@ class SyntaxChecker
         $productID = $this->db->getSingleInt(
             "SELECT tartikel.kArtikel
                 FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                WHERE kVaterArtikel = 0 AND (kKundengruppe IS NULL OR kKundengruppe != :groupID
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
+                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe != :groupID
+                WHERE tartikel.kVaterArtikel = 0
+                    AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)
+                    AND tartikelsichtbarkeit.kArtikel IS NULL
+                    LIMIT 1",
             'kArtikel',
             ['groupID' => $_SESSION['Kundengruppe']->getID()]
         );

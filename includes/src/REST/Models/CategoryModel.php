@@ -40,8 +40,6 @@ use JTL\Model\ModelHelper;
  * @property Collection|CategoryAttributeModel[]    $attributes
  * @property Collection|CategoryVisibilityModel[]   $visibility
  * @method Collection|CategoryLocalizationModel[]   getLocalization()
-<<<<<<< HEAD
-=======
  * @method string getSlug()
  * @method int getId()
  * @method int getParentID()
@@ -51,7 +49,6 @@ use JTL\Model\ModelHelper;
  * @method int getLevel()
  * @method string getName()
  * @method string getDescription()
->>>>>>> a9913dee1048d4a2595a7a1bb1886021e4a657bd
  */
 final class CategoryModel extends DataModel
 {

@@ -263,14 +263,6 @@ class CategoryController extends AbstractController
      */
     protected function deletedItem(DataModelInterface $item): void
     {
-<<<<<<< HEAD
-        $id = $item->getId();
-        $this->deleteSubItems($id);
-        $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);
-        $this->db->delete('tkategoriekundengruppe', 'kKategorie', $id);
-        $this->db->delete('tkategorieartikel', 'kKategorie', $id);
-        $this->db->delete('tartikelkategorierabatt', 'kKategorie', $id);
-=======
         $id               = $item->getId();
         $this->affected[] = $id;
         $this->deleteSubItems($id);
@@ -280,7 +272,6 @@ class CategoryController extends AbstractController
         $this->cache->flushTags(map($this->affected, static function (int $categoryID) {
             return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
         }));
->>>>>>> a9913dee1048d4a2595a7a1bb1886021e4a657bd
         parent::deletedItem($item);
     }
 

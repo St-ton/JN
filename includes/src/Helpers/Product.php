@@ -964,7 +964,7 @@ class Product
         bool $isParent,
         array $conf
     ): void {
-        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y') {
+        if ($conf['artikeldetails_xselling_kauf_anzeigen'] !== 'Y' || (int)$conf['artikeldetails_xselling_kauf_anzahl'] === 0) {
             return;
         }
         $limit = (int)$conf['artikeldetails_xselling_kauf_anzahl'];

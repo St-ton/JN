@@ -904,9 +904,14 @@ function gibStepVersand(): void
         pruefeVersandartWahl($shippingMethods[0]->kVersandart);
     } elseif (!is_array($shippingMethods) || count($shippingMethods) === 0) {
         Shop::Container()->getLogService()->error(
-            'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $deliveryCountry .
-            ', PLZ: ' . $poCode . ', Versandklasse: ' . ShippingMethod::getShippingClasses(Frontend::getCart()) .
-            ', Kundengruppe: ' . $customerGroupID
+            'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: {cntry},'
+            . 'PLZ: {plz}, Versandklasse: {sclass}, Kundengruppe: {cgroup}',
+            [
+                'cntry'  => $deliveryCountry,
+                'plz'    => $poCode,
+                'sclass' => ShippingMethod::getShippingClasses(Frontend::getCart()),
+                'cgroup' => $customerGroupID
+            ]
         );
     }
     Shop::Smarty()->assign('Kunde', Frontend::getCustomer())

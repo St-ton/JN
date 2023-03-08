@@ -1,5 +1,5 @@
 {block name='productdetails-price'}
-    {if $smarty.session.Kundengruppe->mayViewPrices()}
+    {if $Artikel->Preise !== null && $smarty.session.Kundengruppe->mayViewPrices()}
         <div class="price_wrapper">
             {block name='productdetails-price-wrapper'}
             {if $Artikel->getOption('nShowOnlyOnSEORequest', 0) === 1}

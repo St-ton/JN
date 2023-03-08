@@ -9,6 +9,8 @@ use JTL\Catalog\Currency;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher as CoreDispatcher;
 use JTL\Events\Event;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Language\LanguageHelper;
 use JTL\REST\Registrator;
 use JTL\Router\Controller\CategoryController;
@@ -155,8 +157,7 @@ class Router
         protected State             $state,
         AlertServiceInterface       $alert,
         private array               $config
-    )
-    {
+    ) {
         $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
         $registeredDefault       = false;
@@ -278,8 +279,7 @@ class Router
         ?string              $name = null,
         array                $methods = ['GET'],
         ?MiddlewareInterface $middleware = null
-    ): array
-    {
+    ): array {
         if (!\str_starts_with($slug, '/')) {
             $slug = '/' . $slug;
         }
@@ -420,8 +420,7 @@ class Router
         ?array $replacements = null,
         bool   $byName = true,
         bool   $forceDynamic = false
-    ): string
-    {
+    ): string {
         if (isset($replacements['name']) && $replacements['name'] === '') {
             unset($replacements['name']);
         }
@@ -647,6 +646,9 @@ class Router
     /**
      * @param JTLSmarty $smarty
      * @return void
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
+     * @throws \JsonException
      */
     public function dispatch(JTLSmarty $smarty): void
     {

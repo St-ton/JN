@@ -150,12 +150,13 @@ class Router
      * @param array                 $config
      */
     public function __construct(
-        protected DbInterface $db,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache,
-        protected State $state,
-        AlertServiceInterface $alert,
-        private array $config
-    ) {
+        protected State             $state,
+        AlertServiceInterface       $alert,
+        private array               $config
+    )
+    {
         $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
         $registeredDefault       = false;
@@ -272,12 +273,13 @@ class Router
      * @return Route[]
      */
     public function addRoute(
-        string $slug,
-        callable $cb,
-        ?string $name = null,
-        array $methods = ['GET'],
+        string               $slug,
+        callable             $cb,
+        ?string              $name = null,
+        array                $methods = ['GET'],
         ?MiddlewareInterface $middleware = null
-    ): array {
+    ): array
+    {
         if (!\str_starts_with($slug, '/')) {
             $slug = '/' . $slug;
         }
@@ -416,9 +418,10 @@ class Router
     public function getURLByType(
         string $type,
         ?array $replacements = null,
-        bool $byName = true,
-        bool $forceDynamic = false
-    ): string {
+        bool   $byName = true,
+        bool   $forceDynamic = false
+    ): string
+    {
         if (isset($replacements['name']) && $replacements['name'] === '') {
             unset($replacements['name']);
         }
@@ -649,11 +652,7 @@ class Router
     {
         $strategy = new SmartyStrategy(new ResponseFactory(), $smarty, $this->state);
         $this->router->setStrategy($strategy);
-        $body   = $_POST;
-        $method = $_SERVER['REQUEST_METHOD'] ?? '';
-        if ($method === 'PUT' || ($method === 'POST' && $_SERVER['HTTP_CONTENT_TYPE'] === 'application/json')) {
-            \parse_str(\file_get_contents('php://input'), $body);
-        }
+        $body    = $this->getPostBodyJsonData();
         $request = ServerRequestFactory::fromGlobals($_SERVER, $_GET, $body, $_COOKIE, $_FILES);
         if (\EXPERIMENTAL_MULTILANG_SHOP === true && \count($this->hosts) > 0) {
             $requestedHost = $request->getUri()->getHost();
@@ -906,5 +905,65 @@ class Router
     public function setState(State $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @param array $body
+     * @return array
+     */
+    private function dismissStdClasses(array $body): array
+    {
+        foreach ($body as $identifier => $value) {
+            if (\is_object($value)) {
+                $body[$identifier] = (array)$value;
+            } elseif (\is_array($value)) {
+                $body[$identifier] = $this->dismissStdClasses($value);
+            }
+        }
+
+        return $body;
+    }
+
+    /**
+     * @return array
+     * @throws \JsonException
+     */
+    private function getPostBodyJsonData(): array
+    {
+        $body   = $_POST;
+        $method = $_SERVER['REQUEST_METHOD'] ?? '';
+        if (($method === 'PUT' || $method === 'POST') && $this->checkContentType('application/json') === true
+        ) {
+            $tmp = \file_get_contents('php://input');
+            if ($tmp !== '') {
+                $body = (array)\json_decode(
+                    $tmp,
+                    null,
+                    512,
+                    \JSON_THROW_ON_ERROR
+                );
+                $body = $this->dismissStdClasses($body);
+            } else {
+                $body = [];
+            }
+        }
+
+        return $body;
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    private function checkContentType(string $type): bool
+    {
+        $identifiers = ['HTTP_CONTENT_TYPE', 'CONTENT_TYPE'];
+        foreach ($identifiers as $identifier) {
+            if (isset($_SERVER[$identifier])) {
+                return $_SERVER[$identifier] === $type;
+            }
+        }
+
+        return false;
     }
 }

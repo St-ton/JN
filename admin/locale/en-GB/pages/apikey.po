@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "pageTitle"
+msgstr "API keys"
+
+msgid "pageDesc"
+msgstr "Here you can manage API keys for the REST API."
+
+msgid "modelHeader"
+msgstr "API keys"

@@ -26,6 +26,7 @@ class ConsentController extends GenericModelController
 
         $this->modelClass    = ConsentModel::class;
         $this->adminBaseFile = \ltrim($this->route, '/');
+        $smarty->assign('settings', $this->getAdminSectionSettings(\CONF_CONSENTMANAGER));
 
         return $this->handle('consent.tpl');
     }

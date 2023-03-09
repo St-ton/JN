@@ -584,8 +584,9 @@ class PluginManagerController extends AbstractBackendController
 
     private function massAction(): void
     {
-        $deleteData  = Request::postInt('delete-data', 1) === 1;
-        $deleteFiles = Request::postInt('delete-files', 1) === 1;
+        $uninstallErroneous = Request::postInt('uninstall') === 1;
+        $deleteData         = Request::postInt('delete-data', 1) === 1;
+        $deleteFiles        = Request::postInt('delete-files', 1) === 1;
         foreach (\array_map('\intval', $_POST['kPlugin'] ?? []) as $pluginID) {
             if (isset($_POST['aktivieren'])) {
                 if (\SAFE_MODE) {
@@ -636,9 +637,10 @@ class PluginManagerController extends AbstractBackendController
                         $this->errorMessage = \__('errorPluginNotFound');
                         break;
                 }
-            } elseif (isset($_POST['deinstallieren'])) {
+            } elseif (isset($_POST['deinstallieren']) || $uninstallErroneous) {
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
                 if ($plugin !== null && $plugin->kPlugin > 0) {
+                    $ok = false;
                     switch ($this->uninstaller->uninstall($pluginID, false, null, $deleteData, $deleteFiles)) {
                         case InstallCode::WRONG_PARAM:
                             $this->errorMessage = \__('errorAtLeastOnePlugin');
@@ -651,10 +653,14 @@ class PluginManagerController extends AbstractBackendController
                             break;
                         case InstallCode::OK:
                         default:
+                            $ok = true;
                             $this->notice = \__('successPluginDelete');
                             $this->reload = true;
                             $this->minify->flushCache();
                             break;
+                    }
+                    if ($ok === false && $uninstallErroneous === true && $deleteFiles === true) {
+                        $this->delete();
                     }
                 } else {
                     $this->errorMessage = \__('errorPluginNotFoundMultiple');

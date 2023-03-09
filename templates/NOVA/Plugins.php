@@ -814,7 +814,8 @@ class Plugins
     {
         $currSep = Frontend::getCurrency()->getDecimalSeparator();
         $currTho = Frontend::getCurrency()->getThousandsSeparator();
+        preg_match('/\d+(?:[.,]\d{3})*(?:[.,]\d+)/', $price, $extractedPrice);
 
-        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
+        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($extractedPrice[0]))));
     }
 }

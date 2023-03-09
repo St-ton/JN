@@ -26,7 +26,7 @@ class Migration_20230306160250 extends Migration implements IMigration
             "SELECT `TABLE_NAME`, `DATA_TYPE`
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = '" . DB_NAME . "'
-                    AND `TABLE_NAME` IN ('teinstellungen', 'teinstellungenconf')
+                    AND `TABLE_NAME` IN ('teinstellungen', 'teinstellungenconf', 'teinstellungensektion')
                     AND `COLUMN_NAME` = 'kEinstellungenSektion'"
         ) as $colDef) {
             if (\strtoupper($colDef->DATA_TYPE) === 'INT') {

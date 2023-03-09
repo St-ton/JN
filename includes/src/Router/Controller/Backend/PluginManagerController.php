@@ -639,8 +639,8 @@ class PluginManagerController extends AbstractBackendController
                 }
             } elseif (isset($_POST['deinstallieren']) || $uninstallErroneous) {
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);
+                $ok     = false;
                 if ($plugin !== null && $plugin->kPlugin > 0) {
-                    $ok = false;
                     switch ($this->uninstaller->uninstall($pluginID, false, null, $deleteData, $deleteFiles)) {
                         case InstallCode::WRONG_PARAM:
                             $this->errorMessage = \__('errorAtLeastOnePlugin');
@@ -659,11 +659,11 @@ class PluginManagerController extends AbstractBackendController
                             $this->minify->flushCache();
                             break;
                     }
-                    if ($ok === false && $uninstallErroneous === true && $deleteFiles === true) {
-                        $this->delete();
-                    }
                 } else {
                     $this->errorMessage = \__('errorPluginNotFoundMultiple');
+                }
+                if ($ok === false && $uninstallErroneous === true && $deleteFiles === true) {
+                    $this->delete();
                 }
             } elseif (isset($_POST['reload'])) { // Reload
                 $plugin = $this->db->select('tplugin', 'kPlugin', $pluginID);

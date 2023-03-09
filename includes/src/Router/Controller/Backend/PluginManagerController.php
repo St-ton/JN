@@ -653,7 +653,7 @@ class PluginManagerController extends AbstractBackendController
                             break;
                         case InstallCode::OK:
                         default:
-                            $ok = true;
+                            $ok           = true;
                             $this->notice = \__('successPluginDelete');
                             $this->reload = true;
                             $this->minify->flushCache();

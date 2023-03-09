@@ -123,6 +123,11 @@ class Artikel implements RoutableInterface
     public string|null|float $fLagerbestand = null;
 
     /**
+     * @var int|null
+     */
+    public null|int $nNichtLieferbar = 0;
+
+    /**
      * @var float|string|null
      */
     public string|null|float $fMindestbestellmenge = null;

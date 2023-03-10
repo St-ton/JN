@@ -15,7 +15,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
-use JTL\Router\RequestParser;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -60,11 +59,6 @@ abstract class AbstractBackendController implements ControllerInterface
      * @var string
      */
     protected string $currentLanguageCode;
-
-    /**
-     * @var RequestParser|null
-     */
-    protected ?RequestParser $parser = null;
 
     /**
      * @param DbInterface           $db

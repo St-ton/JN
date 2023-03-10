@@ -117,7 +117,7 @@ class Group implements JsonSerializable
     {
         $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
         if (!isset($data->kKonfiggruppe) || $data->kKonfiggruppe <= 0) {
-            Shop::Container()->getLogService()->error('Cannot load config group with id ' . $id);
+            Shop::Container()->getLogService()->error('Cannot load config group with id {id}', ['id' => $id]);
 
             return $this;
         }

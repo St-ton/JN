@@ -10,6 +10,12 @@ use JTLShop\SemVer\Version;
  */
 abstract class ReferencedItem implements ReferencedItemInterface
 {
+    public const PHP_VERSION_OK = 0;
+
+    public const PHP_VERSION_LOW = -1;
+
+    public const PHP_VERSION_HIGH = 1;
+
     /**
      * @var string
      */
@@ -41,6 +47,16 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $canBeUpdated = true;
 
     /**
+     * @var int - 0: OK, -1: too low, 1: too high
+     */
+    private int $phpVersionOK = self::PHP_VERSION_OK;
+
+    /**
+     * @var bool
+     */
+    private bool $shopVersionOK = true;
+
+    /**
      * @var bool
      */
     private bool $active = false;
@@ -64,6 +80,11 @@ abstract class ReferencedItem implements ReferencedItemInterface
      * @var bool
      */
     private bool $filesMissing = false;
+
+    /**
+     * @var bool
+     */
+    private bool $releaseAvailable = false;
 
     /**
      * @inheritDoc
@@ -150,7 +171,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
      */
     public function canBeUpdated(): bool
     {
-        return $this->canBeUpdated;
+        return $this->canBeUpdated && $this->getPhpVersionOK() === self::PHP_VERSION_OK;
     }
 
     /**
@@ -239,5 +260,66 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setFilesMissing(bool $filesMissing): void
     {
         $this->filesMissing = $filesMissing;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPhpVersionOK(): int
+    {
+        return $this->phpVersionOK;
+    }
+
+    /**
+     * @param int $phpVersionOK
+     */
+    public function setPhpVersionOK(int $phpVersionOK): void
+    {
+        $this->phpVersionOK = $phpVersionOK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShopVersionOK(): bool
+    {
+        return $this->shopVersionOK;
+    }
+
+    /**
+     * @param bool $shopVersionOK
+     */
+    public function setShopVersionOK(bool $shopVersionOK): void
+    {
+        $this->shopVersionOK = $shopVersionOK;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getCurrentPhpVersion(): Version
+    {
+        $php     = Version::parse(\PHP_VERSION);
+        $version = new Version();
+        $version->setMajor($php->getMajor());
+        $version->setMinor($php->getMinor());
+
+        return $version;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReleaseAvailable(): bool
+    {
+        return $this->releaseAvailable;
+    }
+
+    /**
+     * @param bool $releaseAvailable
+     */
+    public function setReleaseAvailable(bool $releaseAvailable): void
+    {
+        $this->releaseAvailable = $releaseAvailable;
     }
 }

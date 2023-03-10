@@ -233,7 +233,7 @@ class Preise
                 $this->noDiscount = true;
             }
             $this->fUst        = Tax::getSalesTax($taxClassID);
-            $defaultTax        = (int)$taxData->fMwSt;
+            $defaultTax        = (float)$taxData->fMwSt;
             $currentTax        = $this->fUst;
             $specialPriceValue = null;
             $prices            = $this->getPriceDetails((int)$price->kPreis);

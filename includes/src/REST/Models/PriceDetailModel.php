@@ -40,7 +40,8 @@ final class PriceDetailModel extends DataModel
      * )
      * @OA\Property(
      *   property="netPrice",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=1.2345,
      *   description="The net price"
      * )

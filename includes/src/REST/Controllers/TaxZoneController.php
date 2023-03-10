@@ -50,6 +50,7 @@ class TaxZoneController extends AbstractController
      *         description="ID of tax zone that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
+     *             format="int64",
      *             type="integer"
      *         )
      *     ),
@@ -94,6 +95,16 @@ class TaxZoneController extends AbstractController
      *     operationId="updateTaxZone",
      *     summary="Update an existing tax zone",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of tax zone to modify",
+     *         in="path",
+     *         name="taxzoneId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Tax zone object that needs to be modified",

@@ -174,13 +174,15 @@ final class OrderModel extends DataModel
      * )
      * @OA\Property(
      *   property="balance",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=0,
      *   description="???"
      * )
      * @OA\Property(
      *   property="total",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=123.45,
      *   description="Total order sum"
      * )
@@ -302,7 +304,8 @@ final class OrderModel extends DataModel
      * )
      * @OA\Property(
      *   property="currencyConversionFactor",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="1",
      *   description="Currency conversion factor"
      * )

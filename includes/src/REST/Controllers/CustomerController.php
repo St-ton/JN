@@ -95,6 +95,16 @@ class CustomerController extends AbstractController
      *     operationId="updateCustomer",
      *     summary="Update an existing customer",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of customer to modify",
+     *         in="path",
+     *         name="customerId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Customer object that needs to be modified",

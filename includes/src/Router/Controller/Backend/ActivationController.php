@@ -11,6 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
+use JTL\Router\RequestParser;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,6 +28,7 @@ class ActivationController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->parser = new RequestParser($request);
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::UNLOCK_CENTRAL_VIEW);
         $this->setLanguage();
@@ -158,14 +160,14 @@ class ActivationController extends AbstractBackendController
             return;
         }
         if (Request::verifyGPCDataInt('bewertungen') === 1) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateReviews(Request::postVar('kBewertung', []))) {
+            if ($this->parser->postVar('freischaltensubmit') !== null) {
+                if ($this->activateReviews($this->parser->postVar('kBewertung', []))) {
                     $this->alertService->addSuccess(\__('successRatingUnlock'), 'successRatingUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneRating'), 'errorAtLeastOneRating');
-            } elseif (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteReviews(Request::postVar('kBewertung', []))) {
+            } elseif ($this->parser->postVar('freischaltenleoschen') !== null) {
+                if ($this->deleteReviews($this->parser->postVar('kBewertung', []))) {
                     $this->alertService->addSuccess(\__('successRatingDelete'), 'successRatingDelete');
                     return;
                 }
@@ -175,7 +177,7 @@ class ActivationController extends AbstractBackendController
         }
         if (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
             // Mappen
-            if (isset($_POST['submitMapping'])) {
+            if ($this->parser->postVar('submitMapping') !== null) {
                 $mapping = Request::verifyGPDataString('cMapping');
                 if (\mb_strlen($mapping) === 0) {
                     $this->alertService->addError(\__('errorMapNameMissing'), 'errorMapNameMissing');
@@ -188,7 +190,7 @@ class ActivationController extends AbstractBackendController
                     );
                     return;
                 }
-                $res = $this->mapLiveSearch($_POST['kSuchanfrage'], $mapping);
+                $res = $this->mapLiveSearch($this->parser->postVar('kSuchanfrage', []), $mapping);
                 if ($res !== 1) {
                     $searchError = match ($res) {
                         2       => \__('errorMapUnknown'),
@@ -215,16 +217,16 @@ class ActivationController extends AbstractBackendController
                 return;
             }
 
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateSearchQueries(Request::postVar('kSuchanfrage', []))) {
+            if ($this->parser->postVar('freischaltensubmit') !== null) {
+                if ($this->activateSearchQueries($this->parser->postVar('kSuchanfrage', []))) {
                     $this->alertService->addSuccess(\__('successSearchUnlock'), 'successSearchUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteSearchQueries(Request::postVar('kSuchanfrage', []))) {
+            if ($this->parser->postVar('freischaltenleoschen') !== null) {
+                if ($this->deleteSearchQueries($this->parser->postVar('kSuchanfrage', []))) {
                     $this->alertService->addSuccess(\__('successSearchDelete'), 'successSearchDelete');
                     return;
                 }
@@ -233,16 +235,16 @@ class ActivationController extends AbstractBackendController
             return;
         }
         if (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateNewsComments(Request::postVar('kNewsKommentar', []))) {
+            if ($this->parser->postVar('freischaltensubmit') !== null) {
+                if ($this->activateNewsComments($this->parser->postVar('kNewsKommentar', []))) {
                     $this->alertService->addSuccess(\__('successNewsCommentUnlock'), 'successNewsCommentUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneNewsComment'), 'errorAtLeastOneNewsComment');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
-                if ($this->deleteNewsComments(Request::postVar('kNewsKommentar', []))) {
+            if ($this->parser->postVar('freischaltenleoschen') !== null) {
+                if ($this->deleteNewsComments($this->parser->postVar('kNewsKommentar', []))) {
                     $this->alertService->addSuccess(\__('successNewsCommentDelete'), 'successNewsCommentDelete');
                     return;
                 }
@@ -251,15 +253,15 @@ class ActivationController extends AbstractBackendController
             return;
         }
         if (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
-            if (isset($_POST['freischaltensubmit'])) {
-                if ($this->activateNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
+            if ($this->parser->postVar('freischaltensubmit') !== null) {
+                if ($this->activateNewsletterRecipients($this->parser->postVar('kNewsletterEmpfaenger', []))) {
                     $this->alertService->addSuccess(\__('successNewsletterUnlock'), 'successNewsletterUnlock');
                     return;
                 }
                 $this->alertService->addError(\__('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
                 return;
             }
-            if (isset($_POST['freischaltenleoschen'])) {
+            if ($this->parser->postVar('freischaltenleoschen') !== null) {
                 if ($this->deleteNewsletterRecipients(Request::postVar('kNewsletterEmpfaenger', []))) {
                     $this->alertService->addSuccess(\__('successNewsletterDelete'), 'successNewsletterDelete');
                     return;

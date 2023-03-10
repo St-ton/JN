@@ -48,13 +48,15 @@ final class StockModel extends DataModel
      * )
      * @OA\Property(
      *   property="stock",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="123.00",
      *   description="The current stock"
      * )
      * @OA\Property(
      *   property="procured",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="123.00",
      *   description="The procured stock"
      * )

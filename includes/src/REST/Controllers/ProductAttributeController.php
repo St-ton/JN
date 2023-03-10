@@ -104,6 +104,16 @@ class ProductAttributeController extends AbstractController
      *     operationId="updateProductAttribute",
      *     summary="Update an existing product attribute",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of product attribute to modify",
+     *         in="path",
+     *         name="productattributeId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="ProductAttribute object that needs to be modified",

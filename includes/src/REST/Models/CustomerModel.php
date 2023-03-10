@@ -279,7 +279,8 @@ final class CustomerModel extends DataModel
      * )
      * @OA\Property(
      *   property="balance",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="0",
      *   description="Account balance"
      * )

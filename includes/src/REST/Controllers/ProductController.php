@@ -78,6 +78,16 @@ class ProductController extends AbstractController
      *     operationId="updateProduct",
      *     summary="Update an existing product",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of product to modify",
+     *         in="path",
+     *         name="productId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Product object that needs to be modified",

@@ -42,14 +42,14 @@ class CategoryController extends AbstractController
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/category/{id}",
+     *     path="/category/{categoryId}",
      *     tags={"category"},
      *     description="Get a single category",
      *     summary="Get a single category",
      *     @OA\Parameter(
-     *         description="ID of category to delete",
+     *         description="ID of category that needs to be fetched",
      *         in="path",
-     *         name="id",
+     *         name="categoryId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -89,7 +89,7 @@ class CategoryController extends AbstractController
      *     )
      * )
      * @OA\Delete(
-     *     path="/category/{id}",
+     *     path="/category/{categoryId}",
      *     description="Deletes a single category based on the ID supplied",
      *     summary="Delete a single category",
      *     operationId="deleteCategory",
@@ -97,7 +97,7 @@ class CategoryController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of category to delete",
      *         in="path",
-     *         name="id",
+     *         name="categoryId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -114,11 +114,21 @@ class CategoryController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/category/{id}",
+     *     path="/category/{categoryId}",
      *     tags={"category"},
      *     operationId="updateCategory",
      *     summary="Update an existing category",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of category to modify",
+     *         in="path",
+     *         name="categoryId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Category object that needs to be modified",

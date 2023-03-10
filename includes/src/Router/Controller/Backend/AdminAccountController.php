@@ -12,6 +12,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
+use JTL\Router\RequestParser;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -99,7 +100,7 @@ class AdminAccountController extends AbstractBackendController
                     }
 
                     $permMainTMP[] = (object)[
-                        'name'       => $secondName,
+                        'name'        => $secondName,
                         'permissions' => [$perms[$secondEntry->permissions]]
                     ];
                     unset($perms[$secondEntry->permissions]);
@@ -118,7 +119,7 @@ class AdminAccountController extends AbstractBackendController
                         unset($perms[$thirdEntry->permissions]);
                     }
                     $permMainTMP[] = (object)[
-                        'name'       => $secondName,
+                        'name'        => $secondName,
                         'permissions' => $permSecondTMP
                     ];
                 }
@@ -132,7 +133,7 @@ class AdminAccountController extends AbstractBackendController
             $permissionsOrdered[] = (object)[
                 'name'     => \__('noMenuItem'),
                 'children' => [(object)[
-                    'name'       => '',
+                    'name'        => '',
                     'permissions' => $perms
                 ]]
             ];
@@ -410,7 +411,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionAccountUnLock(): string
     {
-        $adminID = Request::postInt('id');
+        $adminID = $this->parser->postInt('id');
         $account = $this->db->select('tadminlogin', 'kAdminlogin', $adminID);
         if (\is_object($account)) {
             $result = true;
@@ -440,10 +441,10 @@ class AdminAccountController extends AbstractBackendController
     {
         $_SESSION['AdminAccount']->TwoFA_valid = true;
 
-        $adminID     = Request::postInt('id', null);
+        $adminID     = $this->parser->postInt('id');
         $qrCode      = '';
         $knownSecret = '';
-        if ($adminID !== null) {
+        if ($adminID > 0) {
             $twoFA = new TwoFA($this->db);
             $twoFA->setUserByID($adminID);
             if ($twoFA->is2FAauthSecretExist() === true) {
@@ -454,27 +455,27 @@ class AdminAccountController extends AbstractBackendController
         $this->smarty->assign('QRcodeString', $qrCode)
             ->assign('cKnownSecret', $knownSecret);
 
-        if (isset($_POST['save'])) {
+        if ($this->parser->postVar('save') !== null) {
             $errors              = [];
-            $language            = Text::filterXSS($_POST['language']);
+            $language            = Text::filterXSS($this->parser->postVar('language'));
             $tmpAcc              = new stdClass();
-            $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
-            $tmpAcc->cName       = Text::filterXSS(\trim($_POST['cName']));
-            $tmpAcc->cMail       = Text::filterXSS(\trim($_POST['cMail']));
+            $tmpAcc->kAdminlogin = $this->parser->postInt('kAdminlogin');
+            $tmpAcc->cName       = Text::filterXSS(\trim($this->parser->postVar('cName', '')));
+            $tmpAcc->cMail       = Text::filterXSS(\trim($this->parser->postVar('cMail', '')));
             $tmpAcc->language    = \array_key_exists($language, $this->getText->getAdminLanguages())
                 ? $language
                 : 'de-DE';
-            $tmpAcc->cLogin      = Text::filterXSS(\trim($_POST['cLogin']));
-            $tmpAcc->cPass       = \trim($_POST['cPass']);
-            $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
-            $tmpAttribs          = $_POST['extAttribs'] ?? [];
-            if (0 < \mb_strlen($_POST['c2FAsecret'])) {
-                $tmpAcc->c2FAauthSecret = \trim($_POST['c2FAsecret']);
+            $tmpAcc->cLogin      = Text::filterXSS(\trim($this->parser->postVar('cLogin', '')));
+            $tmpAcc->cPass       = \trim($this->parser->postVar('cPass', ''));
+            $tmpAcc->b2FAauth    = $this->parser->postInt('b2FAauth');
+            $tmpAttribs          = $this->parser->postVar('extAttribs', []);
+            if (0 < \mb_strlen($this->parser->postVar('c2FAsecret', ''))) {
+                $tmpAcc->c2FAauthSecret = \trim($this->parser->postVar('c2FAsecret'));
             }
-            $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
+            $validUntil = $this->parser->postInt('dGueltigBisAktiv') === 1;
             if ($validUntil) {
                 try {
-                    $tmpAcc->dGueltigBis = new DateTime($_POST['dGueltigBis']);
+                    $tmpAcc->dGueltigBis = new DateTime($this->parser->postVar('dGueltigBis'));
                 } catch (Exception) {
                     $tmpAcc->dGueltigBis = false;
                 }
@@ -482,7 +483,7 @@ class AdminAccountController extends AbstractBackendController
                     $tmpAcc->dGueltigBis = $tmpAcc->dGueltigBis->format('Y-m-d H:i:s');
                 }
             }
-            $tmpAcc->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
+            $tmpAcc->kAdminlogingruppe = $this->parser->postInt('kAdminlogingruppe');
             if ((bool)$tmpAcc->b2FAauth && !isset($tmpAcc->c2FAauthSecret)) {
                 $errors['c2FAsecret'] = 1;
             }
@@ -650,7 +651,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionAccountDelete(): string
     {
-        $adminID    = Request::postInt('id');
+        $adminID    = $this->parser->postInt('id');
         $groupCount = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
@@ -690,15 +691,15 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionGroupEdit(): string
     {
-        $debug   = isset($_POST['debug']);
-        $groupID = Request::postInt('id', null);
-        if (isset($_POST['save'])) {
+        $debug   = $this->parser->postVar('debug') !== null;
+        $groupID = $this->parser->postInt('id');
+        if ($this->parser->postVar('save') !== null) {
             $errors                        = [];
             $adminGroup                    = new stdClass();
-            $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
-            $adminGroup->cGruppe           = Text::filterXSS(\trim($_POST['cGruppe']));
-            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($_POST['cBeschreibung']));
-            $groupPermissions              = Text::filterXSS($_POST['perm'] ?? []);
+            $adminGroup->kAdminlogingruppe = $this->parser->postInt('kAdminlogingruppe');
+            $adminGroup->cGruppe           = Text::filterXSS(\trim($this->parser->postVar('cGruppe', '')));
+            $adminGroup->cBeschreibung     = Text::filterXSS(\trim($this->parser->postVar('cBeschreibung', '')));
+            $groupPermissions              = Text::filterXSS($this->parser->postVar('perm', []));
             if (\mb_strlen($adminGroup->cGruppe) === 0) {
                 $errors['cGruppe'] = 1;
             }
@@ -771,7 +772,7 @@ class AdminAccountController extends AbstractBackendController
      */
     public function actionGroupDelete(): string
     {
-        $groupID = Request::postInt('id');
+        $groupID = $this->parser->postInt('id');
         $count   = (int)$this->db->getSingleObject(
             'SELECT COUNT(*) AS cnt
                 FROM tadminlogin
@@ -889,7 +890,7 @@ class AdminAccountController extends AbstractBackendController
         }
         switch ($step) {
             case 'account_edit':
-                if (Request::postInt('id') > 0) {
+                if ($this->parser->postInt('id') > 0) {
                     $this->alertService->addWarning(\__('warningPasswordResetAuth'), 'warningPasswordResetAuth');
                 }
                 $this->smarty->assign('oAdminGroup_arr', $this->getAdminGroups())
@@ -957,9 +958,10 @@ class AdminAccountController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->parser = new RequestParser($request);
         $this->url    = $this->baseURL . $this->route;
         $this->smarty = $smarty;
-        if (Request::getVar('action') === 'quick_change_language') {
+        if ($this->parser->getVar('action') === 'quick_change_language') {
             $this->actionQuickChangeLanguage();
         }
         $this->checkPermissions(Permissions::ACCOUNT_VIEW);

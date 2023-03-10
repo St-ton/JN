@@ -40,17 +40,18 @@ class CategoryAttributeController extends AbstractController
      *   )
      * )
      * @OA\Get(
-     *     path="/categoryattribute/{id}",
+     *     path="/categoryattribute/{categoryattributeId}",
      *     tags={"categoryattribute"},
      *     description="Get a category attribute by ID",
      *     summary="Get a category attribute by ID",
      *     operationId="getCategoryattributeById",
      *     @OA\Parameter(
-     *         name="id",
+     *         name="categoryattributeId",
      *         in="path",
      *         description="ID of category attribute that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
+     *             format="int64",
      *             type="integer"
      *         )
      *     ),
@@ -65,7 +66,7 @@ class CategoryAttributeController extends AbstractController
      *     )
      * )
      *  @OA\Delete(
-     *     path="/categoryattribute/{id}",
+     *     path="/categoryattribute/{categoryattributeId}",
      *     description="Deletes a single category attribute based on the ID supplied",
      *     summary="Delete a single category attribute",
      *     operationId="deleteCategoryAttribute",
@@ -73,7 +74,7 @@ class CategoryAttributeController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of category attribute to delete",
      *         in="path",
-     *         name="id",
+     *         name="categoryattributeId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -90,11 +91,21 @@ class CategoryAttributeController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/categoryattribute/{id}",
+     *     path="/categoryattribute/{categoryattributeId}",
      *     tags={"categoryattribute"},
      *     operationId="updateCategoryAttribute",
      *     summary="Update an existing category attribute",
      *     description="",
+     *     @OA\Parameter(
+     *         name="categoryattributeId",
+     *         in="path",
+     *         description="ID of category attribute that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="CategoryAttribute object that needs to be modified",

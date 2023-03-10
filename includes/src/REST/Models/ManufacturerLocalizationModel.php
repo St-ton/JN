@@ -12,57 +12,66 @@ use JTL\Model\DataModel;
  *     title="Manufacturer localization model",
  *     description="Manufacturer localization model"
  * )
- * @OA\Property(
- *   property="id",
- *   type="integer",
- *   example=33,
- *   description="The manufcaturer ID"
- * )
  * @property int    $manufacturerID
  * @property int    $kHersteller
- * @OA\Property(
- *   property="languageID",
- *   type="integer",
- *   example=1,
- *   description="The language ID"
- * )
  * @property int    $languageID
  * @property int    $kSprache
- * @OA\Property(
- *   property="metaTitle",
- *   type="string",
- *   example="Example title for example manufacturer",
- *   description="The meta description"
- * )
  * @property string $metaTitle
  * @property string $cMetaTitle
- * @OA\Property(
- *   property="metaKeywords",
- *   type="string",
- *   example="example,keywords,for,this,manufacturer",
- *   description="The meta keywords"
- * )
  * @property string $metaKeywords
  * @property string $cMetaKeywords
- * @OA\Property(
- *   property="metaDescription",
- *   type="string",
- *   example="Example manufacturer meta description",
- *   description="The meta description"
- * )
  * @property string $metaDescription
  * @property string $cMetaDescription
- * @OA\Property(
- *   property="description",
- *   type="string",
- *   example="Example manufacturer description",
- *   description="The description"
- * )
  * @property string $description
  * @property string $cBeschreibung
  */
 final class ManufacturerLocalizationModel extends DataModel
 {
+    /**
+     * @OA\Property(
+     *   property="id",
+     *   title="id",
+     *   type="integer",
+     *   example=33,
+     *   description="The manufcaturer ID"
+     * )
+     * @OA\Property(
+     *   property="languageID",
+     *   title="languageID",
+     *   type="integer",
+     *   example=1,
+     *   description="The language ID"
+     * )
+     * @OA\Property(
+     *   property="metaTitle",
+     *   title="metaTitle",
+     *   type="string",
+     *   example="Example title for example manufacturer",
+     *   description="The meta description"
+     * )
+     * @OA\Property(
+     *   property="metaKeywords",
+     *   title="metaKeywords",
+     *   type="string",
+     *   example="example,keywords,for,this,manufacturer",
+     *   description="The meta keywords"
+     * )
+     * @OA\Property(
+     *   property="metaDescription",
+     *   title="metaDescription",
+     *   type="string",
+     *   example="Example manufacturer meta description",
+     *   description="The meta description"
+     * )
+     * @OA\Property(
+     *   property="description",
+     *   title="description",
+     *   type="string",
+     *   example="Example manufacturer description",
+     *   description="The description"
+     * )
+     */
+
     /**
      * @inheritdoc
      */

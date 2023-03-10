@@ -88,7 +88,8 @@ final class CartItemAttributeModel extends DataModel
      * )
      * @OA\Property(
      *   property="surcharge",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="0",
      *   description="Surcharge"
      * )

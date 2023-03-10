@@ -106,6 +106,16 @@ class OrderController extends AbstractController
      *     operationId="updateOrder",
      *     summary="Update an existing order",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of order to modify",
+     *         in="path",
+     *         name="orderId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Order object that needs to be modified",

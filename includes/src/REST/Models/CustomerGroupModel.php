@@ -50,7 +50,8 @@ final class CustomerGroupModel extends DataModel
      * )
      * @OA\Property(
      *   property="discount",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=0,
      *   description="The customer group discount"
      * )

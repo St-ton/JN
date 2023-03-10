@@ -133,25 +133,29 @@ final class CartItemModel extends DataModel
      * )
      * @OA\Property(
      *   property="netSinglePrice",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="1.2345",
      *   description="Net single price"
      * )
      * @OA\Property(
      *   property="price",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="1.2345",
      *   description="Price"
      * )
      * @OA\Property(
      *   property="taxPercent",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="19.00",
      *   description="Tax rate in percent"
      * )
      * @OA\Property(
      *   property="qty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="10.00",
      *   description="Quantity"
      * )
@@ -187,7 +191,8 @@ final class CartItemModel extends DataModel
      * )
      * @OA\Property(
      *   property="stockBefore",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=12.00,
      *   description="Stock before purchase"
      * )

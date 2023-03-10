@@ -51,7 +51,8 @@ final class ProductCategoryDiscountModel extends DataModel
      * )
      * @OA\Property(
      *   property="discount",
-     *   type="flaot",
+     *   type="number",
+     *   format="float",
      *   example="3.50",
      *   description="The discount"
      * )

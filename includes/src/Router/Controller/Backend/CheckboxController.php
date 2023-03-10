@@ -13,6 +13,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Pagination\Pagination;
+use JTL\Router\RequestParser;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -29,6 +30,7 @@ class CheckboxController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->parser = new RequestParser($request);
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::CHECKBOXES_VIEW);
         $this->getText->loadAdminLocale('pages/checkbox');
@@ -39,17 +41,17 @@ class CheckboxController extends AbstractBackendController
         if (\mb_strlen(Request::verifyGPDataString('tab')) > 0) {
             $tab = Request::verifyGPDataString('tab');
         }
-        if (isset($_POST['erstellenShowButton'])) {
+        if ($this->parser->postVar('erstellenShowButton') !== null) {
             $tab = 'erstellen';
         } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
             $checkboxIDs = Request::verifyGPDataIntegerArray('kCheckBox');
-            if (isset($_POST['checkboxAktivierenSubmit'])) {
+            if ($this->parser->postVar('checkboxAktivierenSubmit') !== null) {
                 $checkbox->activate($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxActivate'), 'successCheckboxActivate');
-            } elseif (isset($_POST['checkboxDeaktivierenSubmit'])) {
+            } elseif ($this->parser->postVar('checkboxDeaktivierenSubmit') !== null) {
                 $checkbox->deactivate($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxDeactivate'), 'successCheckboxDeactivate');
-            } elseif (isset($_POST['checkboxLoeschenSubmit'])) {
+            } elseif ($this->parser->postVar('checkboxLoeschenSubmit') !== null) {
                 $checkbox->delete($checkboxIDs);
                 $this->alertService->addSuccess(\__('successCheckboxDelete'), 'successCheckboxDelete');
             }

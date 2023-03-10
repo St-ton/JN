@@ -100,6 +100,16 @@ class ManufacturerController extends AbstractController
      *     operationId="updateManufacturer",
      *     summary="Update an existing manufacturer",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of manufacturer to modify",
+     *         in="path",
+     *         name="manufacturerId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Manufacturer object that needs to be modified",

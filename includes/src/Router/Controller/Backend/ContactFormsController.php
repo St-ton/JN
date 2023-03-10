@@ -4,9 +4,9 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Helpers\Form;
-use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Router\RequestParser;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,29 +25,32 @@ class ContactFormsController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
+        $this->parser = new RequestParser($request);
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kontaktformular');
         $this->checkPermissions(Permissions::SETTINGS_CONTACTFORM_VIEW);
 
         $this->step = 'uebersicht';
         $tab        = 'config';
-        if (Request::getInt('del') > 0 && Form::validateToken()) {
-            $this->actionDeleteItem(Request::getInt('del'));
+        if ($this->parser->getInt('del') > 0 && Form::validateToken()) {
+            $this->actionDeleteItem($this->parser->getInt('del'));
         }
-        if (Request::postInt('content') === 1 && Form::validateToken()) {
+        if ($this->parser->postInt('content') === 1 && Form::validateToken()) {
             $this->actionCreateItem();
             $tab = 'content';
         }
-        if (Request::postInt('betreff') === 1 && Form::validateToken()) {
+        if ($this->parser->postInt('betreff') === 1 && Form::validateToken()) {
             $postData = Text::filterXSS($_POST);
             $this->actionCreateSubject($postData);
             $tab = 'subjects';
         }
-        if (Request::postInt('einstellungen') === 1) {
+        if ($this->parser->postInt('einstellungen') === 1) {
             $this->saveAdminSectionSettings(\CONF_KONTAKTFORMULAR, $_POST);
             $tab = 'config';
         }
-        if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && Form::validateToken()) {
+        if (($this->parser->getInt('kKontaktBetreff') > 0 || $this->parser->getInt('neu') === 1)
+            && Form::validateToken()
+        ) {
             $this->step = 'betreff';
         }
         if ($this->step === 'uebersicht') {
@@ -125,10 +128,10 @@ class ContactFormsController extends AbstractBackendController
             $spezialContent1->cTyp            = 'oben';
             $spezialContent2->cTyp            = 'unten';
             $spezialContent3->cTyp            = 'titel';
-            $spezialContent1->cContent        = $_POST['cContentTop_' . $code];
-            $spezialContent2->cContent        = $_POST['cContentBottom_' . $code];
+            $spezialContent1->cContent        = $this->parser->postVar('cContentTop_' . $code, '');
+            $spezialContent2->cContent        = $this->parser->postVar('cContentBottom_' . $code, '');
             $spezialContent3->cContent        = \htmlspecialchars(
-                $_POST['cTitle_' . $code],
+                $this->parser->postVar('cTitle_' . $code, ''),
                 \ENT_COMPAT | \ENT_HTML401,
                 \JTL_CHARSET
             );
@@ -163,12 +166,12 @@ class ContactFormsController extends AbstractBackendController
                 $subject->cKundengruppen = 0;
             }
         }
-        $subject->nSort = Request::postInt('nSort');
-        if (Request::postInt('kKontaktBetreff') === 0) {
+        $subject->nSort = $this->parser->postInt('nSort');
+        if ($this->parser->postInt('kKontaktBetreff') === 0) {
             $subjectID = $this->db->insert('tkontaktbetreff', $subject);
             $this->alertService->addSuccess(\__('successSubjectCreate'), 'successSubjectCreate');
         } else {
-            $subjectID = Request::postInt('kKontaktBetreff');
+            $subjectID = $this->parser->postInt('kKontaktBetreff');
             $this->db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $subject);
             $this->alertService->addSuccess(
                 \sprintf(\__('successSubjectSave'), $subject->cName),
@@ -200,11 +203,11 @@ class ContactFormsController extends AbstractBackendController
     private function assignCreateSubject(): void
     {
         $subject = null;
-        if (Request::getInt('kKontaktBetreff') > 0) {
+        if ($this->parser->getInt('kKontaktBetreff') > 0) {
             $subject = $this->db->select(
                 'tkontaktbetreff',
                 'kKontaktBetreff',
-                Request::getInt('kKontaktBetreff')
+                $this->parser->getInt('kKontaktBetreff')
             );
         }
 

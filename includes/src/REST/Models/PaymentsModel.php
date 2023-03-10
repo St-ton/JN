@@ -72,13 +72,15 @@ final class PaymentsModel extends DataModel
      * )
      * @OA\Property(
      *   property="sum",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=123.45,
      *   description="The total payment sum"
      * )
      * @OA\Property(
      *   property="fee",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=123.45,
      *   description="The total payment sum"
      * )

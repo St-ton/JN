@@ -40,17 +40,18 @@ class TaxRateController extends AbstractController
      *   )
      * )
      * @OA\Get(
-     *     path="/taxrate/{id}",
+     *     path="/taxrate/{taxrateId}",
      *     tags={"taxrate"},
      *     description="Get a tax rate by ID",
      *     summary="Get a tax rate by ID",
      *     operationId="getTaxrateById",
      *     @OA\Parameter(
-     *         name="id",
+     *         name="taxrateId",
      *         in="path",
      *         description="ID of tax rate that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
+     *             format="int64",
      *             type="integer"
      *         )
      *     ),
@@ -65,7 +66,7 @@ class TaxRateController extends AbstractController
      *     )
      * )
      *  @OA\Delete(
-     *     path="/taxrate/{id}",
+     *     path="/taxrate/{taxrateId}",
      *     description="Deletes a single tax rate based on the ID supplied",
      *     summary="Delete a single tax rate",
      *     operationId="deleteTaxRate",
@@ -73,7 +74,7 @@ class TaxRateController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of tax rate to delete",
      *         in="path",
-     *         name="id",
+     *         name="taxrateId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -90,11 +91,21 @@ class TaxRateController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/taxrate/{id}",
+     *     path="/taxrate/{taxrateId}",
      *     tags={"taxrate"},
      *     operationId="updateTaxRate",
      *     summary="Update an existing tax rate",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of tax rate to modify",
+     *         in="path",
+     *         name="taxrateId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="TaxRate object that needs to be modified",

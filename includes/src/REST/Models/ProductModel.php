@@ -197,32 +197,38 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="stockQty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="standardPriceNet",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="taxRate",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="minOrderQty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="supplierStocks",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="deliveryTime",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
@@ -237,37 +243,44 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="weight",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="productWeight",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="measurementAmount",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="basePriceAmount",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="width",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="height",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="length",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
@@ -282,7 +295,8 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="msrp",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
@@ -307,17 +321,20 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="packagingUnit",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="permissibleOrderQty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
      *   property="awaitedDelivery",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(
@@ -327,7 +344,8 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="packagingUnitAmount",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   description=""
      * )
      * @OA\Property(

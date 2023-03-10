@@ -46,7 +46,8 @@ final class TaxRateModel extends DataModel
      * )
      * @OA\Property(
      *   property="rate",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=7.0,
      *   description="The tax rate in percent"
      * )

@@ -136,8 +136,8 @@ class ReviewController extends PageController
         if ($customerID <= 0 || $this->config['bewertung']['bewertung_anzeigen'] !== 'Y') {
             return $url . 'bewertung_anzeigen=1&cFehler=f04';
         }
-        $title = Text::htmlentities(Text::filterXSS($title));
-        $text  = Text::htmlentities(Text::filterXSS($text));
+        $title = Text::htmlentities(Text::xssClean($title));
+        $text  = Text::htmlentities(Text::xssClean($text));
 
         if ($productID <= 0 || $langID <= 0 || $title === '' || $text === '') {
             return $url . 'bewertung_anzeigen=1&cFehler=f01';
@@ -145,7 +145,8 @@ class ReviewController extends PageController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $review = ReviewModel::loadByAttributes(
+        $customer = Frontend::getCustomer();
+        $review   = ReviewModel::loadByAttributes(
             ['productID' => $productID, 'customerID' => $customerID],
             $this->db,
             ReviewHelpfulModel::ON_NOTEXISTS_NEW
@@ -154,7 +155,7 @@ class ReviewController extends PageController
         $review->productID  = $productID;
         $review->customerID = $customerID;
         $review->languageID = $langID;
-        $review->name       = $_SESSION['Kunde']->cVorname . ' ' . \mb_substr($_SESSION['Kunde']->cNachname, 0, 1);
+        $review->name       = $customer->cVorname . ' ' . \mb_substr($customer->cNachname, 0, 1);
         $review->title      = $title;
         $review->content    = \strip_tags($text);
         $review->helpful    = 0;

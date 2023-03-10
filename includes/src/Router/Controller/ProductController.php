@@ -76,7 +76,7 @@ class ProductController extends AbstractController
     public function checkAndSendAvailabilityMessage(array $messages): array
     {
         if (Frontend::get('lastAvailabilityMessage') === null ||
-            (int)\date_diff(\date_create(), Frontend::get('lastAvailabilityMessage'))->format('%i') >
+            (int)\date_diff(\date_create(), Frontend::get('lastAvailabilityMessage'))->format('%i') >=
             $this->config['artikeldetails']['benachrichtigung_sperre_minuten']) {
             $messages = ProductHelper::checkAvailabilityMessage($messages, $this->config['artikeldetails']);
             Frontend::set('lastAvailabilityMessage', \date_create());

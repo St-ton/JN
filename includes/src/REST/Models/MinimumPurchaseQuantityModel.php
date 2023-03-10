@@ -31,13 +31,13 @@ final class MinimumPurchaseQuantityModel extends DataModel
     /**
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product ID"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The customer group ID"
      * )

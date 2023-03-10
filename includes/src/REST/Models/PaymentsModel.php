@@ -54,13 +54,13 @@ final class PaymentsModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The incoming payment ID"
      * )
      * @OA\Property(
      *   property="orderID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )

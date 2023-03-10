@@ -29,7 +29,7 @@ final class WarehouseModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=55,
      *   description="The warehouse ID"
      * )
@@ -83,13 +83,13 @@ final class WarehouseModel extends DataModel
      * )
      * @OA\Property(
      *   property="fullfillment",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Is this a fullfillment warehouse?"
      * )
      * @OA\Property(
      *   property="active",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="Is this active?"
      * )

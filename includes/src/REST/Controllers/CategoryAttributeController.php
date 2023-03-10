@@ -40,13 +40,13 @@ class CategoryAttributeController extends AbstractController
      *   )
      * )
      * @OA\Get(
-     *     path="/categoryattribute/{categoryattributeId}",
+     *     path="/categoryattribute/{id}",
      *     tags={"categoryattribute"},
      *     description="Get a category attribute by ID",
      *     summary="Get a category attribute by ID",
      *     operationId="getCategoryattributeById",
      *     @OA\Parameter(
-     *         name="categoryattributeId",
+     *         name="id",
      *         in="path",
      *         description="ID of category attribute that needs to be fetched",
      *         required=true,
@@ -65,7 +65,7 @@ class CategoryAttributeController extends AbstractController
      *     )
      * )
      *  @OA\Delete(
-     *     path="/categoryattribute/{categoryattributeId}",
+     *     path="/categoryattribute/{id}",
      *     description="Deletes a single category attribute based on the ID supplied",
      *     summary="Delete a single category attribute",
      *     operationId="deleteCategoryAttribute",
@@ -73,7 +73,7 @@ class CategoryAttributeController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of category attribute to delete",
      *         in="path",
-     *         name="categoryattributeId",
+     *         name="id",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -90,7 +90,7 @@ class CategoryAttributeController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/categoryattribute/{categoryattributeId}",
+     *     path="/categoryattribute/{id}",
      *     tags={"categoryattribute"},
      *     operationId="updateCategoryAttribute",
      *     summary="Update an existing category attribute",

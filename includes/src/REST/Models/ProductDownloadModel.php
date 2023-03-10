@@ -22,13 +22,13 @@ final class ProductDownloadModel extends DataModel
     /**
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product's ID"
      * )
      * @OA\Property(
      *   property="downloadID",
-     *   type="int",
+     *   type="integer",
      *   example=2,
      *   description="The download's ID"
      * )

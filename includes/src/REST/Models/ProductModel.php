@@ -342,7 +342,7 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   description=""
      * )
      * @OA\Property(
@@ -445,24 +445,24 @@ final class ProductModel extends DataModel
      * )
      * @OA\Property(
      *   property="isParent",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Is parent product?"
      * )
      * @OA\Property(
      *   property="deliveryDaysWhenSoldOut",
-     *   type="int",
+     *   type="integer",
      *   example=3,
      *   description=""
      * )
      * @OA\Property(
      *   property="autoDeliveryCalculation",
-     *   type="int",
+     *   type="integer",
      *   description=""
      * )
      * @OA\Property(
      *   property="handlingTime",
-     *   type="int",
+     *   type="integer",
      *   example="3",
      *   description="The product's handling time in days"
      * )

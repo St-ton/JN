@@ -32,13 +32,13 @@ final class CategoryAttributeModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="categoryID",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="The category ID"
      * )
@@ -56,13 +56,13 @@ final class CategoryAttributeModel extends DataModel
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort number"
      * )
      * @OA\Property(
      *   property="function",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Is functional attribute?"
      * )

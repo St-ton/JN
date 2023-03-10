@@ -28,7 +28,7 @@ class CartController extends AbstractController
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/cart/{cardId}",
+     *     path="/cart/{id}",
      *     tags={"cart"},
      *     summary="Get cart by ID",
      *     @OA\Response(

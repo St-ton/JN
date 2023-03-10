@@ -30,13 +30,13 @@ final class OrderIDModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="Primary key"
      * )
      * @OA\Property(
      *   property="orderID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )

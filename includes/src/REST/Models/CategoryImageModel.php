@@ -26,13 +26,13 @@ final class CategoryImageModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="categoryID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The category ID"
      * )

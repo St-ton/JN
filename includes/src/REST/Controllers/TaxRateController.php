@@ -40,13 +40,13 @@ class TaxRateController extends AbstractController
      *   )
      * )
      * @OA\Get(
-     *     path="/taxrate/{taxrateId}",
+     *     path="/taxrate/{id}",
      *     tags={"taxrate"},
      *     description="Get a tax rate by ID",
      *     summary="Get a tax rate by ID",
      *     operationId="getTaxrateById",
      *     @OA\Parameter(
-     *         name="taxrateId",
+     *         name="id",
      *         in="path",
      *         description="ID of tax rate that needs to be fetched",
      *         required=true,
@@ -65,7 +65,7 @@ class TaxRateController extends AbstractController
      *     )
      * )
      *  @OA\Delete(
-     *     path="/taxrate/{taxrateId}",
+     *     path="/taxrate/{id}",
      *     description="Deletes a single tax rate based on the ID supplied",
      *     summary="Delete a single tax rate",
      *     operationId="deleteTaxRate",
@@ -73,7 +73,7 @@ class TaxRateController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of tax rate to delete",
      *         in="path",
-     *         name="taxrateId",
+     *         name="id",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -90,7 +90,7 @@ class TaxRateController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/taxrate/{taxRateId}",
+     *     path="/taxrate/{id}",
      *     tags={"taxrate"},
      *     operationId="updateTaxRate",
      *     summary="Update an existing tax rate",

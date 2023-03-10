@@ -24,19 +24,19 @@ final class ProductCharacteristicModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=7,
      *   description="The characteristic ID"
      * )
      * @OA\Property(
      *   property="valueID",
-     *   type="int",
+     *   type="integer",
      *   example=25,
      *   description="The characteristic value ID"
      * )
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product ID"
      * )

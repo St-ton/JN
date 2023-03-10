@@ -33,7 +33,7 @@ final class OrderStateModel extends DataModel
     /**
      * @OA\Property(
      *   property="orderID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )
@@ -59,7 +59,7 @@ final class OrderStateModel extends DataModel
      * )
      * @OA\Property(
      *   property="failedAttempts",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description=""
      * )

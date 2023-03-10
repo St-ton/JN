@@ -42,14 +42,14 @@ class CategoryController extends AbstractController
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/category/{categoryId}",
+     *     path="/category/{id}",
      *     tags={"category"},
      *     description="Get a single category",
      *     summary="Get a single category",
      *     @OA\Parameter(
      *         description="ID of category to delete",
      *         in="path",
-     *         name="categoryId",
+     *         name="id",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -89,7 +89,7 @@ class CategoryController extends AbstractController
      *     )
      * )
      * @OA\Delete(
-     *     path="/category/{categoryId}",
+     *     path="/category/{id}",
      *     description="Deletes a single category based on the ID supplied",
      *     summary="Delete a single category",
      *     operationId="deleteCategory",
@@ -97,7 +97,7 @@ class CategoryController extends AbstractController
      *     @OA\Parameter(
      *         description="ID of category to delete",
      *         in="path",
-     *         name="categoryId",
+     *         name="id",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -114,7 +114,7 @@ class CategoryController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/category/{categoryId}",
+     *     path="/category/{id}",
      *     tags={"category"},
      *     operationId="updateCategory",
      *     summary="Update an existing category",

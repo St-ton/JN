@@ -129,19 +129,19 @@ final class CustomerModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group id"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language id"
      * )
@@ -335,7 +335,7 @@ final class CustomerModel extends DataModel
      * )
      * @OA\Property(
      *   property="loginAttempts",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Failed login attempts"
      * )

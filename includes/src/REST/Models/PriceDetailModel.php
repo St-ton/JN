@@ -22,19 +22,19 @@ final class PriceDetailModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="priceID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The price ID"
      * )
      * @OA\Property(
      *   property="amountFrom",
-     *   type="int",
+     *   type="integer",
      *   example=20,
      *   description="Quantity scle price start"
      * )

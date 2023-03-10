@@ -28,13 +28,13 @@ final class CustomerGroupLocalizationModel extends DataModel
     /**
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )

@@ -31,13 +31,13 @@ final class CustomerGroupAttributeModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )

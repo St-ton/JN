@@ -23,7 +23,7 @@ final class TaxZoneModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The zone ID"
      * )

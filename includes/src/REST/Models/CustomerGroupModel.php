@@ -38,7 +38,7 @@ final class CustomerGroupModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )
@@ -68,7 +68,7 @@ final class CustomerGroupModel extends DataModel
      * )
      * @OA\Property(
      *   property="net",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Show net prices?"
      * )

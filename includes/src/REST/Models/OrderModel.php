@@ -114,61 +114,61 @@ final class OrderModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )
      * @OA\Property(
      *   property="cartID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The cart ID"
      * )
      * @OA\Property(
      *   property="customerID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer ID"
      * )
      * @OA\Property(
      *   property="deliveryAddressID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The delivery address ID"
      * )
      * @OA\Property(
      *   property="billingAddressID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The billing address ID"
      * )
      * @OA\Property(
      *   property="paymentMethodID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The payment method ID"
      * )
      * @OA\Property(
      *   property="shippingMethodID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The shipping method ID"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )
      * @OA\Property(
      *   property="currencyID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The currency ID"
      * )
      * @OA\Property(
      *   property="paymentType",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="???"
      * )
@@ -216,13 +216,13 @@ final class OrderModel extends DataModel
      * )
      * @OA\Property(
      *   property="longestMinDelivery",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description=""
      * )
      * @OA\Property(
      *   property="longestMaxDelivery",
-     *   type="int",
+     *   type="integer",
      *   example=4,
      *   description=""
      * )

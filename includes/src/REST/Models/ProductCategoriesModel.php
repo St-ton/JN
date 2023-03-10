@@ -25,19 +25,19 @@ final class ProductCategoriesModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example="123",
      *   description="The product ID"
      * )
      * @OA\Property(
      *   property="categoryID",
-     *   type="int",
+     *   type="integer",
      *   example="3",
      *   description="The category ID"
      * )

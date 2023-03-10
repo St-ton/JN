@@ -22,13 +22,13 @@ final class ProductVisibilityModel extends DataModel
     /**
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product's ID"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )

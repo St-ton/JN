@@ -27,19 +27,19 @@ final class CharacteristicValueModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=25,
      *   description="The characteristic value ID"
      * )
      * @OA\Property(
      *   property="characteristicID",
-     *   type="int",
+     *   type="integer",
      *   example=7,
      *   description="The characteristic ID"
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort number"
      * )

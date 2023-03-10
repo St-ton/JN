@@ -30,25 +30,25 @@ final class ProductImageModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="mainImageID",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The main image ID"
      * )
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product's ID"
      * )
      * @OA\Property(
      *   property="imageID",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The image ID"
      * )
@@ -60,7 +60,7 @@ final class ProductImageModel extends DataModel
      * )
      * @OA\Property(
      *   property="imageNo",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The image number"
      * )

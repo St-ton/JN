@@ -36,13 +36,13 @@ final class StockModel extends DataModel
     /**
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The product ID"
      * )
      * @OA\Property(
      *   property="warehouseID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The warehouse ID"
      * )

@@ -28,31 +28,31 @@ final class PriceModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The price ID"
      * )
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The product ID"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )
      * @OA\Property(
      *   property="customerID",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The customer ID"
      * )
      * @OA\Property(
      *   property="priority",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The priority"
      * )

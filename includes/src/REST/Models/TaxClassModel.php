@@ -24,7 +24,7 @@ final class TaxClassModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The tax class ID"
      * )

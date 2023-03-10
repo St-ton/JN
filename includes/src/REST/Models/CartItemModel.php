@@ -157,7 +157,7 @@ final class CartItemModel extends DataModel
      * )
      * @OA\Property(
      *   property="posType",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="Type"
      * )
@@ -175,13 +175,13 @@ final class CartItemModel extends DataModel
      * )
      * @OA\Property(
      *   property="configItemID",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Config item id"
      * )
      * @OA\Property(
      *   property="orderItemID",
-     *   type="int",
+     *   type="integer",
      *   example=123,
      *   description="Order item id"
      * )
@@ -193,13 +193,13 @@ final class CartItemModel extends DataModel
      * )
      * @OA\Property(
      *   property="longestMinDelivery",
-     *   type="int",
+     *   type="integer",
      *   example=3,
      *   description="Minimum days for delivery"
      * )
      * @OA\Property(
      *   property="longestMaxDelivery",
-     *   type="int",
+     *   type="integer",
      *   example=3,
      *   description="Maximum days for delivery"
      * )

@@ -26,7 +26,6 @@ use JTL\Mail\Mailer;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
-use JTL\Router\RequestParser;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -44,7 +43,6 @@ class CouponsController extends AbstractBackendController
      */
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
-        $this->parser = new RequestParser($request);
         $this->smarty = $smarty;
         $this->getText->loadAdminLocale('pages/kupons');
         $this->checkPermissions(Permissions::ORDER_COUPON_VIEW);
@@ -137,13 +135,13 @@ class CouponsController extends AbstractBackendController
                     $this->alertService->addSuccess(\__('successImportCSV'), 'successImportCSV');
                 }
             }
-            if ($this->parser->postVar('action') !== null) {
-                if ($this->parser->postVar('action') === 'speichern') {
+            if (isset($_POST['action'])) {
+                if ($_POST['action'] === 'speichern') {
                     $action = 'speichern';
-                } elseif ($this->parser->postVar('action') === 'loeschen') {
+                } elseif ($_POST['action'] === 'loeschen') {
                     $action = 'loeschen';
                 }
-            } elseif ($this->parser->getInt('kKupon', -1) >= 0) {
+            } elseif (Request::getInt('kKupon', -1) >= 0) {
                 $action = 'bearbeiten';
             }
         }
@@ -167,7 +165,8 @@ class CouponsController extends AbstractBackendController
             } elseif (($couponId = $this->saveCoupon($coupon, $languages)) !== 0) {
                 // Validierung erfolgreich => Kupon speichern
                 // erfolgreich gespeichert => evtl. Emails versenden
-                if ($this->parser->postVar('informieren') === 'Y'
+                if (isset($_POST['informieren'])
+                    && $_POST['informieren'] === 'Y'
                     && ($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_SHIPPING)
                     && $coupon->cAktiv === 'Y'
                 ) {
@@ -755,11 +754,8 @@ class CouponsController extends AbstractBackendController
                     foreach ($languages as $language) {
                         $code          = $language->getIso();
                         $postVarName   = 'cName_' . $code;
-                        $localizedName = $this->parser->postVar($postVarName, '') !== ''
-                            ? \htmlspecialchars(
-                                $this->parser->postVar($postVarName, ''),
-                                \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET
-                            )
+                        $localizedName = Request::postVar($postVarName, '') !== ''
+                            ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
                             : $coupon->cName;
 
                         $localized              = new stdClass();
@@ -774,11 +770,8 @@ class CouponsController extends AbstractBackendController
                 foreach ($languages as $language) {
                     $code          = $language->getIso();
                     $postVarName   = 'cName_' . $code;
-                    $localizedName = $this->parser->postVar($postVarName, '') !== ''
-                        ? \htmlspecialchars(
-                            $this->parser->postVar($postVarName),
-                            \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET
-                        )
+                    $localizedName = Request::postVar($postVarName, '') !== ''
+                        ? \htmlspecialchars($_POST[$postVarName], \ENT_COMPAT | \ENT_HTML401, \JTL_CHARSET)
                         : $coupon->cName;
 
                     $localized              = new stdClass();

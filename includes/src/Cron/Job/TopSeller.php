@@ -23,40 +23,34 @@ final class TopSeller extends Job
         $maxDays  = Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_tage') ?? 90;
         $minCount = Shop::getSettingValue(\CONF_GLOBAL, 'global_bestseller_minanzahl') ?? 10;
         $params   = [];
-        $where    = '';
-        $having   = '';
         if ($maxDays > 0) {
             $params['maxDays'] = $maxDays;
-            $where             = 'AND tbestellung.dErstellt > SUBDATE(CURDATE(), :maxDays)';
         }
         if ($minCount > 0) {
             $params['minCount'] = $minCount;
-            $having             = 'HAVING SUM(m.nAnzahl) >= :minCount';
         }
 
         $this->db->query('TRUNCATE tbestseller');
         $this->db->queryPrepared(
-            'INSERT INTO tbestseller (kArtikel, fAnzahl)
-                SELECT m.kArtikel, SUM(m.nAnzahl) AS anz
+            'INSERT INTO tbestseller (kArtikel, fAnzahl, isBestseller)
+                SELECT m.kArtikel, SUM(m.nAnzahl) AS anz,
+                       SUM(m.nAnzahl) >= :minCount AND m.dErstellt > SUBDATE(CURDATE(), :maxDays)
                     FROM (
-                        SELECT twarenkorbpos.kArtikel, twarenkorbpos.nAnzahl
+                        SELECT twarenkorbpos.kArtikel, twarenkorbpos.nAnzahl, tbestellung.dErstellt
                         FROM tbestellung
                         INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                         WHERE tbestellung.cStatus > 1
                           AND twarenkorbpos.kArtikel > 0
-                          ' . $where . '
                         UNION ALL
-                        SELECT tartikel.kVaterArtikel, twarenkorbpos.nAnzahl
+                        SELECT tartikel.kVaterArtikel, twarenkorbpos.nAnzahl, tbestellung.dErstellt
                         FROM tbestellung
                         INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                         INNER JOIN tartikel ON twarenkorbpos.kArtikel = tartikel.kArtikel
                         WHERE tbestellung.cStatus > 1
                           AND twarenkorbpos.kArtikel > 0
                           AND tartikel.kVaterArtikel > 0
-                          ' . $where . '
                     ) AS m
-                    GROUP BY m.kArtikel
-                    ' . $having,
+                    GROUP BY m.kArtikel',
             $params
         );
         $this->setFinished(true);

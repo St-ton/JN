@@ -144,7 +144,7 @@ class Checker
             if ($ref === null || $ref->getInternalID() === 0 || $ref->isActive() === false) {
                 continue;
             }
-            $this->logger->warning(\sprintf('Plugin %s disabled due to expired test license.', $license->getID()));
+            $this->logger->warning('Plugin {id} disabled due to expired test license.', ['id' => $license->getID()]);
             $stateChanger->deactivate($ref->getInternalID(), State::LICENSE_KEY_INVALID);
         }
     }

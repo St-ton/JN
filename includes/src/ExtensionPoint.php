@@ -57,7 +57,7 @@ class ExtensionPoint
                 $instance = new $class($db);
                 $instance->init((int)$extension->kInitial);
             } else {
-                Shop::Container()->getLogService()->error(\sprintf('Extension "%s" not found', $class));
+                Shop::Container()->getLogService()->error('Extension {ext} not found', ['ext' => $class]);
             }
         }
 

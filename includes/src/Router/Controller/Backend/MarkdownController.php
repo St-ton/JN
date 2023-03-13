@@ -31,10 +31,7 @@ class MarkdownController extends AbstractBackendController
                 $extension = \pathinfo($path, \PATHINFO_EXTENSION);
                 if (\mb_convert_case($extension, \MB_CASE_LOWER) === 'md') {
                     $parseDown      = new Parsedown();
-                    $licenseContent = \mb_convert_encoding(
-                        $parseDown->text(Text::convertUTF8(\file_get_contents($path))),
-                        'HTML-ENTITIES'
-                    );
+                    $licenseContent = $parseDown->text(Text::convertUTF8(\file_get_contents($path)));
                     $response       = (new Response())->withStatus(200)->withAddedHeader('content-type', 'text/html');
                     $response->getBody()->write('<div class="markdown">' . $licenseContent . '</div>');
 

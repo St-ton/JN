@@ -123,6 +123,11 @@ class Artikel implements RoutableInterface
     public string|null|float $fLagerbestand = null;
 
     /**
+     * @var int|null
+     */
+    public null|int $nNichtLieferbar = 0;
+
+    /**
      * @var float|string|null
      */
     public string|null|float $fMindestbestellmenge = null;
@@ -1237,7 +1242,7 @@ class Artikel implements RoutableInterface
             (int)$tmpProduct->kArtikel,
             $customerID,
             (int)$tmpProduct->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1262,7 +1267,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !$this->customerGroup->mayViewPrices()) {
             $this->Preise->setPricesToZero();
@@ -1337,7 +1342,7 @@ class Artikel implements RoutableInterface
             $this->kArtikel,
             $customerID,
             $this->kSteuerklasse,
-            $this->db
+            $this->getDB()
         );
         $prices->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         if ($assign) {
@@ -2442,6 +2447,9 @@ class Artikel implements RoutableInterface
                 ['cgid' => $customerGroupID, 'pid' => $this->kVaterArtikel]
             )->cnt;
         foreach ($variations as $i => $tmpVariation) {
+            if ($tmpVariation->cTyp === null) {
+                continue;
+            }
             if ($lastID !== $tmpVariation->kEigenschaft) {
                 ++$counter;
                 $lastID    = $tmpVariation->kEigenschaft;
@@ -2505,7 +2513,8 @@ class Artikel implements RoutableInterface
                     }
                     $this->oVariationenNurKind_arr[$i]->Werte = [];
                 }
-                foreach ($this->VariationenOhneFreifeld[$i]->Werte as $j => $oVariationsWert) {
+                /** @var VariationValue $oVariationsWert */
+                foreach ($this->VariationenOhneFreifeld[$i]->Werte as $oVariationsWert) {
                     // Variationskombi
                     if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
                         foreach ($this->oVariationKombi_arr as $oVariationKombi) {
@@ -2520,7 +2529,7 @@ class Artikel implements RoutableInterface
                             && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
                             && $matrixConf === true
                         ) {
-                            $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
+                            $oVariationsWert->nNichtLieferbar = 1;
                         }
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
@@ -2529,7 +2538,7 @@ class Artikel implements RoutableInterface
                         && $oVariationsWert->fLagerbestand <= 0
                         && $matrixConf === true
                     ) {
-                        $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
+                        $oVariationsWert->nNichtLieferbar = 1;
                     }
                 }
             }
@@ -2539,12 +2548,13 @@ class Artikel implements RoutableInterface
         $this->nVariationOhneFreifeldAnzahl = \count($this->VariationenOhneFreifeld);
         // Ausverkauft aus Varkombis mit mehr als 1 Variation entfernen
         if (($this->kVaterArtikel > 0 || $this->nIstVater === 1) && \count($this->VariationenOhneFreifeld) > 1) {
-            foreach ($this->VariationenOhneFreifeld as $i => $oVariationenOhneFreifeld) {
-                foreach ($oVariationenOhneFreifeld->Werte as $j => $oVariationsWert) {
-                    $oVariationenOhneFreifeld->Werte[$j]->cName = \str_replace(
+            foreach ($this->VariationenOhneFreifeld as $oVariationenOhneFreifeld) {
+                /** @var VariationValue $oVariationsWert */
+                foreach ($oVariationenOhneFreifeld->Werte as $oVariationsWert) {
+                    $oVariationsWert->cName = \str_replace(
                         $outOfStock,
                         '',
-                        $oVariationenOhneFreifeld->Werte[$j]->cName
+                        $oVariationsWert->cName
                     );
                 }
             }
@@ -3029,6 +3039,7 @@ class Artikel implements RoutableInterface
             $this->cVaterVKLocalized = $this->Preise->cVKLocalized;
         }
         $lastProduct = 0;
+        $tmpProduct  = null;
         $per         = ' ' . Shop::Lang()->get('vpePer') . ' ';
         $taxRate     = $_SESSION['Steuersatz'][$this->kSteuerklasse];
         $precision   = $this->getPrecision();
@@ -3038,9 +3049,8 @@ class Artikel implements RoutableInterface
             $varDetailPrice->kEigenschaft     = (int)$varDetailPrice->kEigenschaft;
             $varDetailPrice->kEigenschaftWert = (int)$varDetailPrice->kEigenschaftWert;
 
-            $idx        = $varDetailPrice->kEigenschaftWert;
-            $tmpProduct = null;
-            if ($varDetailPrice->kArtikel !== $lastProduct) {
+            $idx = $varDetailPrice->kEigenschaftWert;
+            if ($varDetailPrice->kArtikel !== $lastProduct || $tmpProduct === null) {
                 $lastProduct = $varDetailPrice->kArtikel;
                 $tmpProduct  = new self($this->getDB(), $this->customerGroup, $this->currency);
                 $tmpProduct->getPriceData($varDetailPrice->kArtikel, $customerGroupID, $customerID);
@@ -3122,7 +3132,7 @@ class Artikel implements RoutableInterface
      */
     private function buildURLs(): self
     {
-        $slugs = $this->db->getObjects(
+        $slugs = $this->getDB()->getObjects(
             'SELECT cSeo, kSprache
                 FROM tseo
                 WHERE cKey = :key
@@ -3331,7 +3341,8 @@ class Artikel implements RoutableInterface
             }
             if ($tmpProduct !== null && $tmpProduct->kArtikel === $tmpProduct->kVaterArtikel) {
                 Shop::Container()->getLogService()->warning(
-                    'Product ' . (int)$tmpProduct->kArtikel . ' has invalid parent.'
+                    'Product {pid} has invalid parent.',
+                    ['pid' => (int)$tmpProduct->kArtikel]
                 );
             }
             return null;
@@ -3352,9 +3363,7 @@ class Artikel implements RoutableInterface
         }
         $this->sanitizeProductData($tmpProduct);
         $this->addManufacturerData();
-        if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
-            && $this->getOption('bSimilar', false) === true
-        ) {
+        if ($this->getOption('bSimilar', false) === true) {
             $this->similarProducts = $this->getSimilarProducts();
         }
         // Datumsrelevante Abhängigkeiten beachten
@@ -3422,8 +3431,8 @@ class Artikel implements RoutableInterface
                 $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
             } else {
                 Shop::Container()->getLogService()->error(
-                    'Konfigurator für Artikel (Art.Nr.: ' .
-                    $this->cArtNr . ') konnte nicht geladen werden.'
+                    'Konfigurator für Artikel (Art.Nr.: {artno}) konnte nicht geladen werden.',
+                    ['artno' => $this->cArtNr]
                 );
             }
         }

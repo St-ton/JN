@@ -35,7 +35,7 @@ class RSS
         }
         $this->logger->debug('RSS wird erstellt');
         if (!\is_writable(\PFAD_ROOT . \FILE_RSS_FEED)) {
-            $this->logger->error('RSS Verzeichnis ' . \PFAD_ROOT . \FILE_RSS_FEED . 'nicht beschreibbar!');
+            $this->logger->error('RSS Verzeichnis {dir} nicht beschreibbar!', ['dir' => \PFAD_ROOT . \FILE_RSS_FEED]);
 
             return false;
         }
@@ -43,8 +43,8 @@ class RSS
 
         $language                = $this->db->select('tsprache', 'cShopStandard', 'Y');
         $stdKundengruppe         = $this->db->select('tkundengruppe', 'cStandard', 'Y');
-        $_SESSION['kSprache']    = (int)$language->kSprache;
-        $_SESSION['cISOSprache'] = $language->cISO;
+        $_SESSION['kSprache']    = (int)($language->kSprache ?? 0);
+        $_SESSION['cISOSprache'] = $language->cISO ?? 'ger';
         // ISO-8859-1
         $xml = '<?xml version="1.0" encoding="' . \JTL_CHARSET . '"?>
                 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

@@ -32,25 +32,22 @@ final class BestsellingProducts extends AbstractBox
             $db             = Shop::Container()->getDB();
             if (($productIDs = $cache->get($cacheID)) === false) {
                 $cached   = false;
-                $minCount = (int)$this->config['global']['global_bestseller_minanzahl'] > 0
-                    ? (int)$this->config['global']['global_bestseller_minanzahl']
-                    : 100;
                 $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
                     ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
                     : 10;
 
                 $productIDs = $db->getInts(
                     'SELECT tartikel.kArtikel
-                        FROM tbestseller, tartikel
+                        FROM tbestseller
+                            JOIN tartikel ON tbestseller.kArtikel = tartikel.kArtikel
                         LEFT JOIN tartikelsichtbarkeit 
                             ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :cgid
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            AND tbestseller.kArtikel = tartikel.kArtikel
-                            AND ROUND(tbestseller.fAnzahl) >= :ms ' . $parentSQL . $stockFilterSQL . '
+                            AND tbestseller.isBestseller = 1 ' . $parentSQL . $stockFilterSQL . '
                         ORDER BY fAnzahl DESC LIMIT :lmt ',
                     'kArtikel',
-                    ['cgid' => $customerGroupID, 'ms' => $minCount, 'lmt' => $limit]
+                    ['cgid' => $customerGroupID, 'lmt' => $limit]
                 );
                 $cache->set($cacheID, $productIDs, $cacheTags);
             }

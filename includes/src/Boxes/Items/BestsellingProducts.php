@@ -31,8 +31,8 @@ final class BestsellingProducts extends AbstractBox
             $cache          = Shop::Container()->getCache();
             $db             = Shop::Container()->getDB();
             if (($productIDs = $cache->get($cacheID)) === false) {
-                $cached   = false;
-                $limit    = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
+                $cached = false;
+                $limit  = (int)$this->config['boxen']['box_bestseller_anzahl_basis'] > 0
                     ? (int)$this->config['boxen']['box_bestseller_anzahl_basis']
                     : 10;
 

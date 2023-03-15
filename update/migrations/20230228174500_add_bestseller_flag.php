@@ -25,6 +25,6 @@ class Migration_20230228174500 extends Migration implements IMigration
      */
     public function down()
     {
-        $this->execute("ALTER TABLE tbestseller DROP COLUMN isBestseller");
+        $this->execute('ALTER TABLE tbestseller DROP COLUMN isBestseller');
     }
 }

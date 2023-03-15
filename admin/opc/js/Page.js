@@ -1,16 +1,21 @@
-import {sleep} from "./utils.js";
 import moment from "../../../includes/node_modules/moment/dist/moment.js";
+import {sleep} from "./utils.js";
+import {showError} from "./gui.js";
 
 const localDateFormat = 'DD.MM.YYYY - HH:mm';
 const internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 
 export class Page
 {
-    constructor(io, {shopUrl, pageKey})
+    constructor(io, {shopUrl, pageKey, pageUrl, messages})
     {
-        this.io = io;
-        this.shopUrl = shopUrl;
-        this.key = pageKey;
+        this.io       = io;
+        this.shopUrl  = shopUrl;
+        this.key      = pageKey;
+        this.url      = pageUrl;
+        this.messages = messages;
+        this.unlocked = false;
+        this.fullUrl  = this.shopUrl + this.url;
     }
 
     async lock(delayed = false)
@@ -19,17 +24,28 @@ export class Page
             await sleep(1000 * 60);
         }
 
+        if(this.unlocked) {
+            return;
+        }
+
         let state = await this.io.lockDraft(this.key);
 
         if (state === 0) {
             this.lock(true);
         } else {
+            if (state === 1) {
+                showError(this.messages.opcPageLocked);
+            } else if (state === 2) {
+                showError(this.messages.dbUpdateNeeded.replace(/%s/, this.shopUrl));
+            }
+
             throw state;
         }
     }
 
     async unlock()
     {
+        this.unlocked = true;
         await this.io.unlockDraft(this.key);
     }
 
@@ -42,13 +58,13 @@ export class Page
     {
         let pageData = await this.io.getDraft(this.key);
 
-        this.id = pageData.id;
-        this.name = pageData.name;
-        this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
-        this.publishTo = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
-        this.url = pageData.url;
+        this.id           = pageData.id;
+        this.name         = pageData.name;
+        this.publishFrom  = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
+        this.publishTo    = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
+        this.url          = pageData.url;
         this.lastModified = pageData.lastModified;
-        this.fullUrl = this.shopUrl + this.url;
+        this.fullUrl      = this.shopUrl + this.url;
     }
 
     async getPreview()

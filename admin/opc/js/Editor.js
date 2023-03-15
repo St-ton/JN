@@ -1,11 +1,9 @@
-import './gui.js';
 import {IO} from "./IO.js";
 import {Page} from "./Page.js";
 import {EditorFrame} from "./EditorFrame.js";
 import {Emitter} from "./utils.js";
-import {showError} from "./gui.js";
 
-class Editor extends Emitter
+export class Editor extends Emitter
 {
     constructor(config)
     {
@@ -22,22 +20,14 @@ class Editor extends Emitter
     async init()
     {
         await this.io.init();
-
-        try {
-            await this.page.lock();
-        } catch (e) {
-            if (e === 1) {
-                showError(this.messages.opcPageLocked);
-            } else if (e === 2) {
-                showError(this.messages.dbUpdateNeeded.replace(/%s/, this.shopUrl));
-            }
-
-            return;
-        }
-
+        await this.page.lock();
         await this.page.loadMetaData();
         await this.iframe.init();
     }
-}
 
-window.opc = new Editor(JSON.parse(window.editorConfig.innerText));
+    async close()
+    {
+        await this.page.unlock();
+        window.location = this.page.fullUrl;
+    }
+}

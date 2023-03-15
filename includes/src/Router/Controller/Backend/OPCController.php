@@ -60,7 +60,7 @@ class OPCController extends AbstractBackendController
                 'heading' => \__('dbUpdate') . ' ' . \__('required'),
                 'desc'    => \sprintf(\__('dbUpdateNeeded'), $this->baseURL),
             ])
-                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
+                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/index.tpl');
         }
         if ($action === 'edit') {
             // Enter OPC to edit a page
@@ -75,7 +75,7 @@ class OPCController extends AbstractBackendController
 
             return $smarty->assign('error', $error)
                 ->assign('page', $page)
-                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/editor.tpl');
+                ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/index.tpl');
         }
         if ($action !== '' && Form::validateToken() === false) {
             // OPC action while XSRF validation failed

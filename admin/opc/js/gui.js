@@ -1,6 +1,8 @@
 import {sleep} from "./utils.js";
 
-$('#publishButton').on('click', () => showModal(window.publishModal));
+$('#publishButton').on('click', () => {
+    showModal(window.publishModal);
+});
 
 $('#navScrollRight').on('click', () => {
     window.navtabs.scrollLeft += 64;

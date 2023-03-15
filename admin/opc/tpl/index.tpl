@@ -8,22 +8,20 @@
         <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
         <script src="{$shopUrl}/includes/node_modules/jquery/dist/jquery.min.js"></script>
         <script src="{$shopUrl}/includes/node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
-        <script type="module" src="{$shopUrl}/admin/opc/js/editor.js"></script>
+        <script type="module" src="{$shopUrl}/admin/opc/js/index.js"></script>
         <script type="application/json" id="editorConfig">
             {
                 "jtlToken": "{$smarty.session.jtl_token}",
                 "shopUrl":  "{$shopUrl}",
                 "pageKey":  {$pageKey},
+                "pageUrl":  "{$page->getUrl()}",
                 "error":    {json_encode($error)},
                 "messages": {json_encode($opc->getEditorMessages())}
             }
         </script>
     </head>
     <body class="opc">
-        {$pageName = 'No Page'}
-        {if isset($page)}
-            {$pageName = $page->getName()}
-        {/if}
+        {$pageName = $page->getName()}
         <div id="editor">
             <div id="sidebar">
                 <div id="header">

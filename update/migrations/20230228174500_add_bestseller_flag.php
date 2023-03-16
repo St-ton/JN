@@ -16,7 +16,7 @@ class Migration_20230228174500 extends Migration implements IMigration
      */
     public function up()
     {
-        $this->execute("ALTER TABLE tbestseller ADD COLUMN isBestseller TINYINT(1) NOT NULL DEFAULT 0");
+        $this->execute('ALTER TABLE tbestseller ADD COLUMN isBestseller TINYINT NOT NULL DEFAULT 0');
     }
 
     /**

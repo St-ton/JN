@@ -23,7 +23,6 @@ Plugins
     profiling
     sicherheit
     payment_plugins
-    short_checkout
     hinweise
 
 .. include:: /shop_plugins/map.rst.inc

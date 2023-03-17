@@ -340,7 +340,8 @@ class ArtikelListe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL' . $excludes . '
                         AND tartikel.kArtikel = tkategorieartikel.kArtikel
                         AND tartikel.kArtikel = tbestseller.kArtikel
-                        AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . ')) ' .
+                        AND (tkategorieartikel.kKategorie IN (' . \implode(', ', $categoryIDs) . '))
+                        AND tbestseller.isBestseller = 1 ' .
                         $stockFilterSQL . '
                     ORDER BY tbestseller.fAnzahl DESC ' . $limitSQL,
                 ['cgid' => $customerGroupID]

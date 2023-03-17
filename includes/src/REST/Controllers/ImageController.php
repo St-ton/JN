@@ -50,8 +50,146 @@ class ImageController extends AbstractController
         };
     }
 
+
+
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/image/product/{productId}",
+     *   tags={"product"},
+     *   description="List product images",
+     *   summary="List product images",
+     *   @OA\Parameter(
+     *       name="productId",
+     *       in="path",
+     *       description="ID of product that needs to be fetched",
+     *       required=true,
+     *       @OA\Schema(
+     *           type="integer"
+     *       )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with product images",
+     *     @OA\JsonContent(ref="#/components/schemas/ProductImageModel"),
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Product images not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/image/category/{categoryId}",
+     *     tags={"category"},
+     *     description="List category images",
+     *     summary="List category images",
+     *     @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         description="ID of product that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category images not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/image/variation/{variationId}",
+     *     tags={"category"},
+     *     description="List variation images",
+     *     summary="List variation images",
+     *     @OA\Parameter(
+     *         name="variationId",
+     *         in="path",
+     *         description="ID of variation that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductPropertyValueImage"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Variation images not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/image/characteristicvalue/{characteristicvalueId}",
+     *     tags={"characteristicvalue"},
+     *     description="List characteristic value images",
+     *     summary="List characteristic value images",
+     *     @OA\Parameter(
+     *         name="characteristicvalueId",
+     *         in="path",
+     *         description="ID of characteristic value that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CharacteristicValueImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Characteristic value images not found"
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/images/product/{productId}",
+     *     tags={"product"},
+     *     operationId="createProductImage",
+     *     summary="Create a new product image",
+     *     description="Create a new product image",
+     *     @OA\Parameter(
+     *         name="productId",
+     *         in="path",
+     *         description="ID of product that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Image to upload",
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="image",
+     *                     description="Image",
+     *                     type="string",
+     *                     format="binary"
+     *                )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *       response=200,
+     *       description="A list with product images",
+     *       @OA\JsonContent(ref="#/components/schemas/ProductImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {

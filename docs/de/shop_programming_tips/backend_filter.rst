@@ -7,8 +7,7 @@ Backend-Filter
 
 Filter ermöglichen es, mit einer konfigurierbaren Menge von Textfeldern, Selectboxen oder Date-Range-Pickern Einträge
 einer Tabellenübersicht im Backend einzugrenzen. Einsatzbeispiele finden Sie unter anderem unter
-*Aktionen -> Coupons* (in JTL-Shop 4.x unter *Kaufabwicklung -> Kupons*) oder unter *SEO -> Weiterleitungen* (in
-JTL-Shop 4.x unter *Globale Einstellungen -> Weiterleitungen*).
+*Aktionen -> Coupons* oder unter *SEO -> Weiterleitungen*.
 
 Ein Filter besteht aus einer Sammlung von Filterfeldern unterschiedlichen Typs (Freitext, Auswahl, Date-Range). |br|
 Diese Filterfelder werden mit dem Template auf der gewünschten Seite zum Suchen und Filtern angeboten.

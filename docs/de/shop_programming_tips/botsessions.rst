@@ -5,7 +5,7 @@ Bot-Sessions
 
    <br />
 
-Mit JTL-Shop 4.x wurde das Session-Handling in Bezug auf Web-Crawler erneuert.
+Das Session-Handling in Bezug auf Web-Crawler wurde erneuert.
 
 So kann an Bots und Crawler stets dieselbe Session ausgeliefert werden. Dies verhindert, dass eine große Anzahl
 Sessions gestartet wird, für die sich Bots und Crawler gar nicht interessieren, da sie keine Cookies akzeptieren.

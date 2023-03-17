@@ -17,9 +17,15 @@ use JTL\Model\DataModel;
  * @property int    $kKategorie
  * @property int    $categoryID
  * @property string $cPfad
- * @property string $file
+ * @property string $path
  * @property string $cType
  * @property string $type
+ * @method string getPath()
+ * @method void setPath(string $path)
+ * @method int getId()
+ * @method void setId(int $id)
+ * @method int getCategoryID()
+ * @method void setCategoryID(int $categoryID)
  */
 final class CategoryImageModel extends DataModel
 {
@@ -37,7 +43,7 @@ final class CategoryImageModel extends DataModel
      *   description="The category ID"
      * )
      * @OA\Property(
-     *   property="file",
+     *   property="path",
      *   type="string",
      *   example="testimage.jpg",
      *   description="The file name"

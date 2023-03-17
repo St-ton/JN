@@ -24,6 +24,12 @@ use JTL\Model\DataModel;
  * @property string $path
  * @property int    $nNr
  * @property int    $imageNo
+ * @method string getPath()
+ * @method void setPath(string $path)
+ * @method int getProductID()
+ * @method void setProductID(int $productID)
+ * @method int getId()
+ * @method void setId(int $id)
  */
 final class ProductImageModel extends DataModel
 {

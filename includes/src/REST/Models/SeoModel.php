@@ -101,7 +101,7 @@ final class SeoModel extends DataModel
 
         if ($attributes === null) {
             $attributes               = [];
-            $attributes['slug']       = DataAttribute::create('cSeo', 'varchar', null, false);
+            $attributes['slug']       = DataAttribute::create('cSeo', 'varchar', null, false, true);
             $attributes['type']       = DataAttribute::create('cKey', 'varchar', null, false);
             $attributes['id']         = DataAttribute::create('kKey', 'int', null, false);
             $attributes['languageID'] = DataAttribute::create('kSprache', 'tinyint');

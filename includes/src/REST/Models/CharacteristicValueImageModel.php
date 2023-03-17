@@ -14,11 +14,11 @@ use JTL\Model\DataModel;
  * )
  * @package JTL\REST\Models
  * @property int    $kMerkmalWert
- * @method int getKMerkmalWert()
- * @method void setKMerkmalWert(int $value)
  * @property string $cBildpfad
- * @method string getCBildpfad()
- * @method void setCBildpfad(string $value)
+ * @method string getPath()
+ * @method void setPath(string $path)
+ * @method int getId()
+ * @method void setId(int $id)
  */
 final class CharacteristicValueImageModel extends DataModel
 {

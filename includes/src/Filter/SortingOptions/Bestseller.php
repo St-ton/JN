@@ -18,7 +18,7 @@ class Bestseller extends AbstractSortingOption
     public function __construct(ProductFilter $productFilter)
     {
         parent::__construct($productFilter);
-        $this->setOrderBy('tbestseller.fAnzahl DESC, tartikel.cName');
+        $this->setOrderBy('tbestseller.isBestseller DESC, tbestseller.fAnzahl DESC, tartikel.cName');
         $this->join->setComment('join from SORT by bestseller')
                    ->setType('LEFT JOIN')
                    ->setTable('tbestseller')

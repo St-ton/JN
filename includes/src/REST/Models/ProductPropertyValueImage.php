@@ -16,17 +16,21 @@ use JTL\Model\ModelHelper;
  * )
  * @package JTL\REST\Models
  * @property int    $kEigenschaftWertPict
- * @method int getKEigenschaftWertPict()
- * @method void setKEigenschaftWertPict(int $value)
+ * @property int    $id
  * @property int    $kEigenschaftWert
- * @method int getKEigenschaftWert()
- * @method void setKEigenschaftWert(int $value)
+ * @property int    $propertyValueID
  * @property string $cPfad
- * @method string getCPfad()
- * @method void setCPfad(string $value)
+ * @property string $path
  * @property string $cType
- * @method string getCType()
- * @method void setCType(string $value)
+ * @property string $type
+ * @method string getType()
+ * @method void setType(string $value)
+ * @method string getPath()
+ * @method void setPath(string $path)
+ * @method int getPropertyValueID()
+ * @method void setPropertyValueID(int $id)
+ * @method int getId()
+ * @method void setId(int $id)
  */
 final class ProductPropertyValueImage extends DataModel
 {

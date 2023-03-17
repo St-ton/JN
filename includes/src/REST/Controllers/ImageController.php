@@ -3,6 +3,7 @@
 namespace JTL\REST\Controllers;
 
 use Exception;
+use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Media\Image;
@@ -19,6 +20,7 @@ use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use UnhandledMatchError;
 
 /**
  * Class ImageController
@@ -26,8 +28,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ImageController extends AbstractController
 {
-    public const IMG_TYPE_PROPERTY_VALUE = 'propertyvalue';
-
     /**
      * @inheritdoc
      */
@@ -50,15 +50,154 @@ class ImageController extends AbstractController
         };
     }
 
+
+
     /**
      * @inheritdoc
+     * @OA\Get(
+     *   path="/image/product/{productId}",
+     *   tags={"product"},
+     *   description="List product images",
+     *   summary="List product images",
+     *   @OA\Parameter(
+     *       name="productId",
+     *       in="path",
+     *       description="ID of product that needs to be fetched",
+     *       required=true,
+     *       @OA\Schema(
+     *           type="integer"
+     *       )
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="A list with product images",
+     *     @OA\JsonContent(ref="#/components/schemas/ProductImageModel"),
+     *   ),
+     *   @OA\Response(
+     *     response=404,
+     *     description="Product images not found"
+     *   )
+     * )
+     * @OA\Get(
+     *     path="/image/category/{categoryId}",
+     *     tags={"category"},
+     *     description="List category images",
+     *     summary="List category images",
+     *     @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         description="ID of product that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CategoryImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Category images not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/image/variation/{variationId}",
+     *     tags={"category"},
+     *     description="List variation images",
+     *     summary="List variation images",
+     *     @OA\Parameter(
+     *         name="variationId",
+     *         in="path",
+     *         description="ID of variation that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/ProductPropertyValueImage"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Variation images not found"
+     *     )
+     * )
+     * @OA\Get(
+     *     path="/image/characteristicvalue/{characteristicvalueId}",
+     *     tags={"characteristicvalue"},
+     *     description="List characteristic value images",
+     *     summary="List characteristic value images",
+     *     @OA\Parameter(
+     *         name="characteristicvalueId",
+     *         in="path",
+     *         description="ID of characteristic value that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/CharacteristicValueImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Characteristic value images not found"
+     *     )
+     * )
+     * @OA\Post(
+     *     path="/images/product/{productId}",
+     *     tags={"product"},
+     *     operationId="createProductImage",
+     *     summary="Create a new product image",
+     *     description="Create a new product image",
+     *     @OA\Parameter(
+     *         name="productId",
+     *         in="path",
+     *         description="ID of product that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Image to upload",
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="image",
+     *                     description="Image",
+     *                     type="string",
+     *                     format="binary"
+     *                )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *       response=200,
+     *       description="A list with product images",
+     *       @OA\JsonContent(ref="#/components/schemas/ProductImageModel"),
+     *     ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Validation exception",
+     *     )
+     * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
         $routeGroup->get('/image/{type}/{id}', $this->show(...));
         $routeGroup->get('/image/{type}', $this->index(...));
-        $routeGroup->post('/image/{type}/{id}', $this->update(...));
+        $routeGroup->put('/image/{type}/{id}', $this->update(...));
         $routeGroup->post('/image/{type}', $this->create(...));
+        $routeGroup->post('/image/{type}/{refid:\d+}', $this->create(...));
         $routeGroup->delete('/image/{type}/{id}[/{withfiles}]', $this->delete(...));
     }
 
@@ -67,9 +206,38 @@ class ImageController extends AbstractController
      */
     public function index(ServerRequestInterface $request, array $params): ResponseInterface
     {
-        $this->modelClass = $this->getModelClass($params['type']);
+        try {
+            $this->modelClass = $this->getModelClass($params['type']);
+        } catch (UnhandledMatchError) {
+            return $this->sendCustomResponse(500, 'Error occurred listing items - unknown type');
+        }
 
         return parent::index($request, $params);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param array                  $params
+     * @return ResponseInterface
+     */
+    public function create(ServerRequestInterface $request, array $params): ResponseInterface
+    {
+        $validatorResponse = $this->validateRequest($request, $this->createRequestValidationRules($request));
+        if ($validatorResponse !== true) {
+            return $this->sendInvalidFieldResponse($validatorResponse);
+        }
+        try {
+            $this->modelClass = $this->getModelClass($params['type']);
+            $result           = $this->createItem($request->withAttribute('ref', $params['refid'] ?? 0));
+            $this->createdItem($result);
+        } catch (UnhandledMatchError) {
+            return $this->sendCustomResponse(500, 'Error occurred creating item - unknown type');
+        } catch (Exception $e) {
+            Shop::dbg($e->getMessage(), true, 'EX:');
+            return $this->sendCustomResponse(500, 'Error occurred creating item - duplicate ID? ' . $e->getMessage());
+        }
+
+        return $this->setStatusCode(201)->respondWithModel($result);
     }
 
     /**
@@ -77,34 +245,109 @@ class ImageController extends AbstractController
      */
     protected function createItem(ServerRequestInterface $request): DataModelInterface
     {
-        $item    = parent::createItem($request);
         $uploads = $request->getUploadedFiles();
-        /** @var CategoryModel $item */
         if (!isset($uploads['image']) || (\is_array($uploads['image']) && \count($uploads['image']) === 0)) {
-            return $item;
+            throw new InvalidArgumentException('Error occurred creating image - no data given');
         }
-        if (!\is_array($uploads['image'])) {
-            $uploads['image'] = [$uploads['image']];
+        if (\count($uploads['image']) > 1) {
+            throw new InvalidArgumentException('Only one image at a time please');
         }
         /** @var UploadedFile $file */
-        $modelHasImages = $item->getAttribValue('images')->count() > 0;
-        foreach ($uploads['image'] as $file) {
-            $file->moveTo(\PFAD_ROOT . STORAGE_CATEGORIES . $file->getClientFilename());
-            if (!$modelHasImages) {
-                $model = new CategoryImageModel($this->db);
-                $data  = (object)[
-                    'id'         => $model->getNewID(),
-                    'categoryID' => $item->id,
-                    'type'       => '',
-                    'file'       => $file->getClientFilename()
-                ];
-                $model::create($data, $this->db);
-                $item->images = [(array)$data];
-            }
-        }
-        $this->cacheID = \CACHING_GROUP_CATEGORY . '_' . $item->getId();
+//        $modelHasImages = $item->getAttribValue('images')->count() > 0;
+        return match ($this->modelClass) {
+            ProductImageModel::class             => $this->createProductImage($request),
+            ProductPropertyValueImage::class     => $this->createProductPropertyValueImage($request),
+            CharacteristicValueImageModel::class => $this->createCharacteristicImage($request),
+            CategoryImageModel::class            => $this->createCategoryImage($request)
+        };
+    }
 
-        return $item;
+    private function createProductPropertyValueImage(ServerRequestInterface $request): DataModelInterface
+    {
+        $reference = (int)($request->getAttribute('ref') ?? 0);
+        /** @var ProductPropertyValueImage $model */
+        $model    = new $this->modelClass($this->db);
+        $basePath = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE;
+        foreach ($request->getUploadedFiles()['image'] as $file) {
+            $fileName = \str_replace(' ', '_', $file->getClientFilename());
+            $file->moveTo($basePath . $fileName);
+            $model->setPath($fileName);
+        }
+        if ($reference > 0) {
+            $model->setPropertyValueID($reference);
+            $model->save();
+        }
+
+        return $model;
+    }
+
+    private function createCharacteristicImage(ServerRequestInterface $request): DataModelInterface
+    {
+        $reference = (int)($request->getAttribute('ref') ?? 0);
+        /** @var CharacteristicValueImageModel $model */
+        $model    = new $this->modelClass($this->db);
+        $basePath = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE;
+        foreach ($request->getUploadedFiles()['image'] as $file) {
+            $fileName = \str_replace(' ', '_', $file->getClientFilename());
+            $file->moveTo($basePath . $fileName);
+            $model->setPath($fileName);
+        }
+        if ($reference > 0) {
+            $model->setId($reference);
+            $model->save();
+        }
+
+        return $model;
+    }
+
+    private function createProductImage(ServerRequestInterface $request): DataModelInterface
+    {
+        $reference = (int)($request->getAttribute('ref') ?? 0);
+        /** @var ProductImageModel $model */
+        $model    = new $this->modelClass($this->db);
+        $basePath = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE;
+        foreach ($request->getUploadedFiles()['image'] as $file) {
+            $fileName = \str_replace(' ', '_', $file->getClientFilename());
+            $file->moveTo($basePath . $fileName);
+            $model->setPath($fileName);
+        }
+        if ($reference > 0) {
+            $model->setProductID($reference);
+            $model->save();
+        }
+
+        return $model;
+    }
+
+    private function createCategoryImage(ServerRequestInterface $request): DataModelInterface
+    {
+        $reference = (int)($request->getAttribute('ref') ?? 0);
+        /** @var CategoryImageModel $model */
+        $model       = new $this->modelClass($this->db);
+        $model->type = '';
+        $basePath    = \PFAD_ROOT . \STORAGE_CATEGORIES;
+        foreach ($request->getUploadedFiles()['image'] as $file) {
+            $fileName = \str_replace(' ', '_', $file->getClientFilename());
+            $file->moveTo($basePath . $fileName);
+//            if (!$modelHasImages) {
+//                $model = new $this->modelClass($this->db);
+//                $data  = (object)[
+//                    'id'         => $model->getNewID(),
+//                    'categoryID' => $item->id,
+//                    'type'       => '',
+//                    'file'       => $file->getClientFilename()
+//                ];
+//                $model::create($data, $this->db);
+//                $item->images = [(array)$data];
+//            }
+            $model->setPath($fileName);
+        }
+        if ($reference > 0) {
+            $model->setCategoryID($reference);
+            $model->save();
+        }
+
+        return $model;
     }
 
     /**
@@ -112,7 +355,11 @@ class ImageController extends AbstractController
      */
     public function show(ServerRequestInterface $request, array $params): ResponseInterface
     {
-        $class = $this->getModelClass($params['type']);
+        try {
+            $class = $this->getModelClass($params['type']);
+        } catch (UnhandledMatchError) {
+            return $this->sendCustomResponse(500, 'Error occurred showing item - unknown type');
+        }
 
         return $this->getImage($class, $params['id']);
     }
@@ -128,15 +375,15 @@ class ImageController extends AbstractController
             $class = $this->getModelClass($params['type']);
             /** @var DataModelInterface $result */
             $result = $class::load(['id' => $params['id']], $this->db, DataModelInterface::ON_NOTEXISTS_FAIL);
-        } catch (Exception) {
+        } catch (UnhandledMatchError | Exception) {
             return $this->sendNotFoundResponse('Item with id ' . $params['id'] . ' does not exist');
         }
         try {
-//            $result->delete();
-            $this->deletedItem($result);
             if ($params['withfiles'] ?? '' === 'withfiles') {
                 $this->deleteFiles($params['type'], $result);
             }
+            $result->delete();
+            $this->deletedItem($result);
         } catch (Exception $e) {
             return $this->sendCustomResponse(500, 'Error occurred deleting item: ' . $e->getMessage());
         }
@@ -151,22 +398,13 @@ class ImageController extends AbstractController
      */
     protected function deleteFiles(string $type, DataModelInterface $item): void
     {
-        switch ($type) {
-            case Image::TYPE_PRODUCT:
-                $path = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $item->path;
-                break;
-            case Image::TYPE_VARIATION:
-                $path = \PFAD_ROOT . STORAGE_VARIATIONS . $item->path;
-                break;
-            case Image::TYPE_CHARACTERISTIC_VALUE:
-                $path = \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES . $item->path;
-                break;
-            case Image::TYPE_CATEGORY:
-                $path = \PFAD_ROOT . \STORAGE_CATEGORIES . $item->path;
-                break;
-            default:
-                return;
-        }
+        $path = match ($type) {
+            Image::TYPE_PRODUCT              => \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE,
+            Image::TYPE_CATEGORY             => \PFAD_ROOT . \STORAGE_CATEGORIES,
+            Image::TYPE_VARIATION            => \PFAD_ROOT . \STORAGE_VARIATIONS,
+            Image::TYPE_CHARACTERISTIC_VALUE => \PFAD_ROOT . \STORAGE_CHARACTERISTIC_VALUES
+        } . $item->getPath();
+
         $real = \realpath($path);
         if ($path !== false && \str_starts_with($real, \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE) && \file_exists($real)) {
             \unlink($real);

@@ -22,13 +22,13 @@ final class CategoryVisibilityModel extends DataModel
     /**
      * @OA\Property(
      *   property="categoryID",
-     *   type="int",
+     *   type="integer",
      *   example=3,
      *   description="The category ID"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The customer group ID"
      * )

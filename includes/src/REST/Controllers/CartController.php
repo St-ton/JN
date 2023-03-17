@@ -28,9 +28,19 @@ class CartController extends AbstractController
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/cart/{cardId}",
+     *     path="/cart/{cartId}",
      *     tags={"cart"},
      *     summary="Get cart by ID",
+     *     @OA\Parameter(
+     *         description="ID of cart that needs to be fetched",
+     *         in="path",
+     *         name="cartId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
@@ -90,6 +100,16 @@ class CartController extends AbstractController
      *     operationId="updateCart",
      *     summary="Update an existing cart",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of cart to update",
+     *         in="path",
+     *         name="cartId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Cart object that needs to be modified",

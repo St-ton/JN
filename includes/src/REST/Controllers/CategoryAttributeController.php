@@ -51,6 +51,7 @@ class CategoryAttributeController extends AbstractController
      *         description="ID of category attribute that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
+     *             format="int64",
      *             type="integer"
      *         )
      *     ),
@@ -95,6 +96,16 @@ class CategoryAttributeController extends AbstractController
      *     operationId="updateCategoryAttribute",
      *     summary="Update an existing category attribute",
      *     description="",
+     *     @OA\Parameter(
+     *         name="categoryattributeId",
+     *         in="path",
+     *         description="ID of category attribute that needs to be fetched",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="CategoryAttribute object that needs to be modified",

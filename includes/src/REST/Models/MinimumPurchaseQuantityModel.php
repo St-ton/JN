@@ -31,25 +31,27 @@ final class MinimumPurchaseQuantityModel extends DataModel
     /**
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product ID"
      * )
      * @OA\Property(
      *   property="customerGroupID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The customer group ID"
      * )
      * @OA\Property(
      *   property="minimumOrderQty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=10,
      *   description="The minimum order quantity"
      * )
      * @OA\Property(
      *   property="permissibleOrderQty",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=5,
      *   description="The permissible order quantity"
      * )

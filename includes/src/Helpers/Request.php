@@ -41,6 +41,7 @@ class Request
     {
         return isset($_GET[$var]) ? (int)$_GET[$var] : $default;
     }
+
     /**
      * @param string $var
      * @param mixed  $default

@@ -25,7 +25,7 @@ final class CharacteristicValueImageModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=25,
      *   description="The characteristic value ID"
      * )

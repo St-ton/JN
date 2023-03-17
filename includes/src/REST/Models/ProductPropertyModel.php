@@ -40,13 +40,13 @@ final class ProductPropertyModel extends DataModel
     /**
      * @OA\Property(
      *   property="propertyID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="productID",
-     *   type="int",
+     *   type="integer",
      *   example=99,
      *   description="The product ID"
      * )
@@ -70,7 +70,7 @@ final class ProductPropertyModel extends DataModel
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort number"
      * )

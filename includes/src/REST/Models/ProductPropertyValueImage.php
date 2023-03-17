@@ -33,13 +33,13 @@ final class ProductPropertyValueImage extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="propertyValueID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description=""
      * )

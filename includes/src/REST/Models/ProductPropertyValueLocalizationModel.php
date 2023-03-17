@@ -30,13 +30,13 @@ final class ProductPropertyValueLocalizationModel extends DataModel
     /**
      * @OA\Property(
      *   property="propertyValueID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The property value ID"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )

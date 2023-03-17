@@ -79,13 +79,13 @@ final class CategoryModel extends DataModel
      * )
      * @OA\Property(
      *   property="parentID",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The category's parent ID (0 if none)"
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort index"
      * )
@@ -99,19 +99,19 @@ final class CategoryModel extends DataModel
      * )
      * @OA\Property(
      *   property="lft",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Nested set model left value"
      * )
      * @OA\Property(
      *   property="rght",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Nested set model right value"
      * )
      * @OA\Property(
      *   property="level",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="Nested set model level"
      * )

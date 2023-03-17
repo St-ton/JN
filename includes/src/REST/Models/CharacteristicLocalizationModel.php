@@ -25,13 +25,13 @@ final class CharacteristicLocalizationModel extends DataModel
     /**
      * @OA\Property(
      *   property="characteristicID",
-     *   type="int",
+     *   type="integer",
      *   example=7,
      *   description="The characteristic ID"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )

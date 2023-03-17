@@ -97,6 +97,16 @@ class CharacteristicController extends AbstractController
      *     operationId="updateCharacteristic",
      *     summary="Update an existing characteristic",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of characteristic to modify",
+     *         in="path",
+     *         name="characteristicId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Characteristic object that needs to be modified",

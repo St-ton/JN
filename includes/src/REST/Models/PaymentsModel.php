@@ -54,13 +54,13 @@ final class PaymentsModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The incoming payment ID"
      * )
      * @OA\Property(
      *   property="orderID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )
@@ -72,13 +72,15 @@ final class PaymentsModel extends DataModel
      * )
      * @OA\Property(
      *   property="sum",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=123.45,
      *   description="The total payment sum"
      * )
      * @OA\Property(
      *   property="fee",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=123.45,
      *   description="The total payment sum"
      * )

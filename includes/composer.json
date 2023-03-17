@@ -65,6 +65,7 @@
         "nesbot/carbon": "^2.57",
         "gettext/translator": "^1.1",
         "mrclay/minify": "^3.0",
+        "mrclay/props-dic": "^2.2",
         "wikimedia/less.php": "~3.0.0",
         "scssphp/scssphp": "^1.5.2",
         "league/route": "^5.1",

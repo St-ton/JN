@@ -95,6 +95,16 @@ class LanguageController extends AbstractController
      *     operationId="updateLanguage",
      *     summary="Update an existing language",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of language to modify",
+     *         in="path",
+     *         name="languageId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Language object that needs to be modified",

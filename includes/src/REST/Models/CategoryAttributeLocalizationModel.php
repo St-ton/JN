@@ -26,13 +26,13 @@ final class CategoryAttributeLocalizationModel extends DataModel
     /**
      * @OA\Property(
      *   property="attributeID",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example="1",
      *   description="The language ID"
      * )

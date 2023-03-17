@@ -33,13 +33,13 @@ final class CharacteristicModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=7,
      *   description="The characteristic ID"
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort number"
      * )
@@ -63,7 +63,7 @@ final class CharacteristicModel extends DataModel
      * )
      * @OA\Property(
      *   property="isMulti",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="Set to 1 if multiple selections should be allowed"
      * )

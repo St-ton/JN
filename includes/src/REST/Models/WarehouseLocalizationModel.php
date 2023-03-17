@@ -21,13 +21,13 @@ final class WarehouseLocalizationModel extends DataModel
     /**
      * @OA\Property(
      *   property="warehouseID",
-     *   type="int",
+     *   type="integer",
      *   example=55,
      *   description="The warehouse ID"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The languageID"
      * )

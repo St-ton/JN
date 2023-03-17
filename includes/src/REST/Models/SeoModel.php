@@ -64,13 +64,13 @@ final class SeoModel extends DataModel
      * )
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The items primary key value"
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )

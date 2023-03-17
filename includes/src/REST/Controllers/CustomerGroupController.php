@@ -97,6 +97,16 @@ class CustomerGroupController extends AbstractController
      *     operationId="updateCustomerGroup",
      *     summary="Update an existing customergroup",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of customer group to modify",
+     *         in="path",
+     *         name="customergroupId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Customer group object that needs to be modified",

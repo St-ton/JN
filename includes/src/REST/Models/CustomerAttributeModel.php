@@ -34,19 +34,19 @@ final class CustomerAttributeModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=75,
      *   description="The primary key"
      * )
      * @OA\Property(
      *   property="customerID",
-     *   type="int",
+     *   type="integer",
      *   example=33,
      *   description="The customer ID"
      * )
      * @OA\Property(
      *   property="customerFieldID",
-     *   type="int",
+     *   type="integer",
      *   example=45,
      *   description="The customer field ID"
      * )

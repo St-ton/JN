@@ -31,13 +31,13 @@ final class OrderAttributeModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order attribute ID"
      * )
      * @OA\Property(
      *   property="orderID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The order ID"
      * )

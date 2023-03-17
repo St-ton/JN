@@ -36,7 +36,7 @@ final class ProductLocalizationModel extends DataModel
      * )
      * @OA\Property(
      *   property="languageID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The language ID"
      * )

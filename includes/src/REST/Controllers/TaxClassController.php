@@ -95,6 +95,16 @@ class TaxClassController extends AbstractController
      *     operationId="updateTaxClass",
      *     summary="Update an existing tax class",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of tax class to modify",
+     *         in="path",
+     *         name="taxclassId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="TaxClass object that needs to be modified",

@@ -48,13 +48,13 @@ final class ProductPropertyValueModel extends DataModel
     /**
      * @OA\Property(
      *   property="propertyValueID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The property value ID"
      * )
      * @OA\Property(
      *   property="propertyID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The property ID"
      * )
@@ -66,13 +66,15 @@ final class ProductPropertyValueModel extends DataModel
      * )
      * @OA\Property(
      *   property="surchargeNet",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="1.234",
      *   description="The surcharge"
      * )
      * @OA\Property(
      *   property="weightDiff",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="-1.234",
      *   description="The weight difference"
      * )
@@ -84,19 +86,21 @@ final class ProductPropertyValueModel extends DataModel
      * )
      * @OA\Property(
      *   property="sort",
-     *   type="int",
+     *   type="integer",
      *   example=0,
      *   description="The sort number"
      * )
      * @OA\Property(
      *   property="stock",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="0",
      *   description="The current stock"
      * )
      * @OA\Property(
      *   property="packagingUnit",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example="0",
      *   description="The packaging unit"
      * )

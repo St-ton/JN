@@ -28,31 +28,32 @@ final class TaxRateModel extends DataModel
     /**
      * @OA\Property(
      *   property="id",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The rate ID"
      * )
      * @OA\Property(
      *   property="zoneID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The zone ID"
      * )
      * @OA\Property(
      *   property="taxClassID",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The tax class ID"
      * )
      * @OA\Property(
      *   property="rate",
-     *   type="float",
+     *   type="number",
+     *   format="float",
      *   example=7.0,
      *   description="The tax rate in percent"
      * )
      * @OA\Property(
      *   property="priority",
-     *   type="int",
+     *   type="integer",
      *   example=1,
      *   description="The priority"
      * )

@@ -51,6 +51,7 @@ class TaxRateController extends AbstractController
      *         description="ID of tax rate that needs to be fetched",
      *         required=true,
      *         @OA\Schema(
+     *             format="int64",
      *             type="integer"
      *         )
      *     ),
@@ -90,11 +91,21 @@ class TaxRateController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/taxrate/{taxRateId}",
+     *     path="/taxrate/{taxrateId}",
      *     tags={"taxrate"},
      *     operationId="updateTaxRate",
      *     summary="Update an existing tax rate",
      *     description="",
+     *     @OA\Parameter(
+     *         description="ID of tax rate to modify",
+     *         in="path",
+     *         name="taxrateId",
+     *         required=true,
+     *         @OA\Schema(
+     *             format="int64",
+     *             type="integer"
+     *         )
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="TaxRate object that needs to be modified",

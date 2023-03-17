@@ -43,9 +43,6 @@
 :doc:`/shop_plugins/payment_plugins`
     Oder: "Wie man ein Payment-Plugin schreibt"
 
-:doc:`/shop_plugins/short_checkout`
-    Änderungen im Zusammenhang mit dem "*verkürzten Checkout*" ab Version 4.06
-
 :doc:`/shop_plugins/hinweise`
     Allgemeine Hinweise |br|
     Tipps und Tricks zur Entwicklung von Plugins

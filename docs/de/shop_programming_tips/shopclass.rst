@@ -5,38 +5,12 @@ Die Shop-Klasse
 
    <br />
 
-Ab JTL-Shop Version 4.x kommt der Klasse ``Shop`` eine zentrale Bedeutung zu. |br|
+Der Klasse ``Shop`` kommt eine zentrale Bedeutung zu. |br|
 Sie dient in erster Linie als zentrale Registry für ehemals ausschließlich globale Variablen wie die *NiceDB* oder
 *Smarty*, dient aber auch der Erzeugung und Ausgabe von Instanzen für den neuen Objektcache.
 
-Vor JTL-Shop 4.x waren Konstrukte wie das Folgende nötig, um SQL-Abfragen auszuführen:
-
-.. code-block:: php
-
-    // veraltet!
-    //
-    $Article = $GLOBALS['DB']->executeQuery('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
-
-
-Templates wurden wie folgt gerendert: |br|
-
-.. code-block:: php
-
-    // veraltet!
-    //
-    global $smarty;
-    $smarty->assign('myvar', 123);
-    $smarty->assign('myothervar', 'foobar');
-    $smarty->display('mytemplate.tpl');
-
 In JTL-Shop 5.x können und sollten nun Klasseninstanzen von *NiceDB* und *Smarty* über die ``Shop``-Klasse bezogen
 werden.
-
-Für JTL-Shop 4.x gilt folgende Vorgehensweise als bevorzugt:
-
-.. code-block:: php
-
-    $product = Shop::DB()->query('SELECT * FROM tartikel WHERE kArtikel = 2344', 1);
 
 Ab JTL-Shop 5.0 wird folgende Vorgehensweise bevorzugt:
 
@@ -48,7 +22,7 @@ Ab JTL-Shop 5.0 wird folgende Vorgehensweise bevorzugt:
        ReturnType::SINGLE_OBJECT
    );
 
-Für Smarty wird sowohl in JTL-Shop 4.x als auch JTL-Shop 5.0 diese Vorgehensweise bevorzugt:
+Für Smarty wird in JTL-Shop 5.0 diese Vorgehensweise bevorzugt:
 
 .. code-block:: php
 
@@ -57,23 +31,13 @@ Für Smarty wird sowohl in JTL-Shop 4.x als auch JTL-Shop 5.0 diese Vorgehenswei
         ->assign('myothervar', 'foobar')
         ->display('mytemplate.tpl');
 
-Die Methode ``JTLSmarty::assign(string $tpl_var, mixed $value)`` wurde ab JTL-Shop 4.x nun "*chainable*" gemacht, um
+Die Methode ``JTLSmarty::assign(string $tpl_var, mixed $value)`` wurde "*chainable*" gemacht, um
 die Übersichtlichkeit im Code zu erhöhen.  |br|
-Zudem wurden die Funktionsnamen der *NiceDB*-Klasse etwas vereinfacht und über ein Mapping auch *statisch* verfügbar
-gemacht (vgl. Funktion ``NiceDB::map(string $method)``).
 
 Sprachfunktionen
 ----------------
 
 Auch *Sprachfunktionen* sollten nun über die *Shop*-Klasse genutzt werden.
-
-In Versionen vor JTL-Shop 4.x war diese Vorgehensweise üblich:
-
-.. code-block:: php
-
-    $GLOBALS['Sprache']->gibWert('basketAllAdded', 'messages');  // veraltet! (üblich in Shop 3.x)
-
-Durch die Möglichkeiten der *Shop*-Klasse wird daraus:
 
 .. code-block:: php
 

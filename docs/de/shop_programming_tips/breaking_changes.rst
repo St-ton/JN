@@ -21,7 +21,6 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 
     Mit JTL-Shop 5.x erfolgte für das Javascript-Framework *jQuery* ein Update von Version 1.12 auf
     Version 3.0. |br|
-    Weitere Informationen hierzu finden Sie im Abschnitt ":doc:`/shop_templates/jquery_update`".
 
 - **Bootstrap-Version auf 4.1 angehoben**
 

@@ -79,7 +79,7 @@ class Checker
                     AND tcron.startDate < NOW()
                     AND tjobqueue.jobQueueID IS NULL'
         );
-        $this->logger->debug(\sprintf('Found %d new cron jobs.', \count($jobs)));
+        $this->logger->debug('Found {cnt} new cron jobs.', ['cnt' => \count($jobs)]);
 
         return $jobs;
     }

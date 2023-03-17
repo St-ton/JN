@@ -138,9 +138,9 @@ class ExtensionInstaller
                 if ($license === null) {
                     continue;
                 }
-                $itemID    = $license->getID();
-                $installer = $this->helper->getInstaller($itemID);
+                $itemID = $license->getID();
                 try {
+                    $installer   = $this->helper->getInstaller($itemID);
                     $download    = $this->helper->getDownload($itemID);
                     $installCode = $installer->install($itemID, $download, $ajaxResponse);
                     if ($installCode === InstallCode::DUPLICATE_PLUGIN_ID) {

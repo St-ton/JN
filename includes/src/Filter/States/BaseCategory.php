@@ -101,9 +101,8 @@ class BaseCategory extends AbstractFilter
                 $this->slugs[$id] = $seo->getSlug($id);
             }
         }
-        foreach ($seoData as $item) {
-            $this->setName($item->getName($currentLanguageID));
-            break;
+        if (\count($seoData) > 0) {
+            $this->setName($seoData[0]->getName($currentLanguageID));
         }
 
         return $this;

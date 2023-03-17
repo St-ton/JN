@@ -670,7 +670,7 @@ class Router
         } catch (NotFoundException) {
             $response = $this->defaultController->getResponse($request, [], $smarty);
         } catch (Exception $e) {
-            Shop::Container()->getLogService()->error('Routing error: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('Routing error: {err}', ['err' => $e->getMessage()]);
             $response = $this->defaultController->getResponse($request, [], $smarty);
         }
         CoreDispatcher::getInstance()->fire(Event::EMIT);

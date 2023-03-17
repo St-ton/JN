@@ -486,7 +486,7 @@ class PriceRange
      */
     public function rangeWidth(): float|int
     {
-        return (int)$this->minNettoPrice !== 0
+        return $this->minNettoPrice > 0
             ? 100 / $this->minNettoPrice * $this->maxNettoPrice - 100
             : 0;
     }

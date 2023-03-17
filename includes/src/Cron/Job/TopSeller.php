@@ -54,7 +54,7 @@ final class TopSeller extends Job
                       AND twarenkorbpos.kArtikel > 0
                       AND tartikel.kVaterArtikel > 0
                 ) AS m
-                GROUP BY m.kArtikel'
+                GROUP BY m.kArtikel',
             $params
         );
         $this->setFinished(true);

@@ -3714,7 +3714,7 @@ class Artikel implements RoutableInterface
                 tartikelsonderpreis.dEnde AS dEnde_en,
                 DATE_FORMAT(tartikelsonderpreis.dEnde, \'%d.%m.%Y\') AS dEnde_de,
                 tversandklasse.cName AS cVersandklasse,
-                round(tbestseller.fAnzahl) >= :bsms AS bIsBestseller,
+                tbestseller.isBestseller AS bIsBestseller,
                 round(tartikelext.fDurchschnittsBewertung) >= :trmr AS bIsTopBewertet
                 FROM tartikel
                 LEFT JOIN tartikelabnahme
@@ -4210,13 +4210,13 @@ class Artikel implements RoutableInterface
             return false;
         }
         $bestseller = $this->getDB()->getSingleObject(
-            'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
+            'SELECT isBestseller
                 FROM tbestseller
                 WHERE kArtikel = :pid',
-            ['threshold' => (float)$this->conf['global']['global_bestseller_minanzahl'], 'pid' => $this->kArtikel]
+            ['pid' => $this->kArtikel]
         );
 
-        return (bool)($bestseller->bIsBestseller ?? false);
+        return (bool)($bestseller->isBestseller ?? false);
     }
 
     /**

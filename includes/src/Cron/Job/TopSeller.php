@@ -34,31 +34,27 @@ final class TopSeller extends Job
         $this->db->queryPrepared(
             'INSERT INTO tbestseller (kArtikel, fAnzahl, isBestseller)
                 SELECT
-                    p.kArtikel,
-                    IF(countInTime >= :minCount, countInTime, countTotal) as fAnzahl,
-                    countInTime >= :minCount as isBestseller
+                    m.kArtikel,
+                    IF(SUM(m.inTime) >= :minCount, SUM(m.inTime), SUM(m.nAnzahl)) AS fAnzahl,
+                    IF(SUM(m.inTime) >= :minCount, 1, 0) AS isBestseller
                 FROM (
-                    SELECT
-                        m.kArtikel,
-                        SUM(IF(m.dErstellt > SUBDATE(CURDATE(), :maxDays), m.nAnzahl, 0)) AS countInTime,
-                        SUM(m.nAnzahl) AS countTotal
-                    FROM (
-                        SELECT twarenkorbpos.kArtikel, twarenkorbpos.nAnzahl, tbestellung.dErstellt
-                        FROM tbestellung
-                            INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                        WHERE tbestellung.cStatus > 1
-                            AND twarenkorbpos.kArtikel > 0
-                        UNION ALL
-                        SELECT tartikel.kVaterArtikel, twarenkorbpos.nAnzahl, tbestellung.dErstellt
-                        FROM tbestellung
-                            INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-                            INNER JOIN tartikel ON twarenkorbpos.kArtikel = tartikel.kArtikel
-                        WHERE tbestellung.cStatus > 1
-                            AND twarenkorbpos.kArtikel > 0
-                            AND tartikel.kVaterArtikel > 0
-                    ) AS m
-                    GROUP BY m.kArtikel
-                ) AS p',
+                    SELECT twarenkorbpos.kArtikel, twarenkorbpos.nAnzahl,
+                           IF(tbestellung.dErstellt > SUBDATE(CURDATE(), :maxDays), twarenkorbpos.nAnzahl, 0) AS inTime
+                    FROM tbestellung
+                    INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                    WHERE tbestellung.cStatus > 1
+                      AND twarenkorbpos.kArtikel > 0
+                    UNION ALL
+                    SELECT tartikel.kVaterArtikel, twarenkorbpos.nAnzahl,
+                           IF(tbestellung.dErstellt > SUBDATE(CURDATE(), :maxDays), twarenkorbpos.nAnzahl, 0) AS inTime
+                    FROM tbestellung
+                    INNER JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
+                    INNER JOIN tartikel ON twarenkorbpos.kArtikel = tartikel.kArtikel
+                    WHERE tbestellung.cStatus > 1
+                      AND twarenkorbpos.kArtikel > 0
+                      AND tartikel.kVaterArtikel > 0
+                ) AS m
+                GROUP BY m.kArtikel'
             $params
         );
         $this->setFinished(true);

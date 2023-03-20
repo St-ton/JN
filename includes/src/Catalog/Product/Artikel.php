@@ -123,6 +123,11 @@ class Artikel implements RoutableInterface
     public string|null|float $fLagerbestand = null;
 
     /**
+     * @var int|null
+     */
+    public null|int $nNichtLieferbar = 0;
+
+    /**
      * @var float|string|null
      */
     public string|null|float $fMindestbestellmenge = null;
@@ -2513,7 +2518,8 @@ class Artikel implements RoutableInterface
                     }
                     $this->oVariationenNurKind_arr[$i]->Werte = [];
                 }
-                foreach ($this->VariationenOhneFreifeld[$i]->Werte as $j => $oVariationsWert) {
+                /** @var VariationValue $oVariationsWert */
+                foreach ($this->VariationenOhneFreifeld[$i]->Werte as $oVariationsWert) {
                     // Variationskombi
                     if ($this->kVaterArtikel > 0 || $this->nIstVater === 1) {
                         foreach ($this->oVariationKombi_arr as $oVariationKombi) {
@@ -2528,7 +2534,7 @@ class Artikel implements RoutableInterface
                             && $oVariationsWert->oVariationsKombi->tartikel_fLagerbestand <= 0
                             && $matrixConf === true
                         ) {
-                            $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
+                            $oVariationsWert->nNichtLieferbar = 1;
                         }
                     } elseif ($this->cLagerVariation === 'Y'
                         && $this->cLagerBeachten === 'Y'
@@ -2537,7 +2543,7 @@ class Artikel implements RoutableInterface
                         && $oVariationsWert->fLagerbestand <= 0
                         && $matrixConf === true
                     ) {
-                        $this->VariationenOhneFreifeld[$i]->Werte[$j]->nNichtLieferbar = 1;
+                        $oVariationsWert->nNichtLieferbar = 1;
                     }
                 }
             }
@@ -2547,12 +2553,13 @@ class Artikel implements RoutableInterface
         $this->nVariationOhneFreifeldAnzahl = \count($this->VariationenOhneFreifeld);
         // Ausverkauft aus Varkombis mit mehr als 1 Variation entfernen
         if (($this->kVaterArtikel > 0 || $this->nIstVater === 1) && \count($this->VariationenOhneFreifeld) > 1) {
-            foreach ($this->VariationenOhneFreifeld as $i => $oVariationenOhneFreifeld) {
-                foreach ($oVariationenOhneFreifeld->Werte as $j => $oVariationsWert) {
-                    $oVariationenOhneFreifeld->Werte[$j]->cName = \str_replace(
+            foreach ($this->VariationenOhneFreifeld as $oVariationenOhneFreifeld) {
+                /** @var VariationValue $oVariationsWert */
+                foreach ($oVariationenOhneFreifeld->Werte as $oVariationsWert) {
+                    $oVariationsWert->cName = \str_replace(
                         $outOfStock,
                         '',
-                        $oVariationenOhneFreifeld->Werte[$j]->cName
+                        $oVariationsWert->cName
                     );
                 }
             }
@@ -3712,7 +3719,7 @@ class Artikel implements RoutableInterface
                 tartikelsonderpreis.dEnde AS dEnde_en,
                 DATE_FORMAT(tartikelsonderpreis.dEnde, \'%d.%m.%Y\') AS dEnde_de,
                 tversandklasse.cName AS cVersandklasse,
-                round(tbestseller.fAnzahl) >= :bsms AS bIsBestseller,
+                tbestseller.isBestseller AS bIsBestseller,
                 round(tartikelext.fDurchschnittsBewertung) >= :trmr AS bIsTopBewertet
                 FROM tartikel
                 LEFT JOIN tartikelabnahme
@@ -4208,13 +4215,13 @@ class Artikel implements RoutableInterface
             return false;
         }
         $bestseller = $this->getDB()->getSingleObject(
-            'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
+            'SELECT isBestseller
                 FROM tbestseller
                 WHERE kArtikel = :pid',
-            ['threshold' => (float)$this->conf['global']['global_bestseller_minanzahl'], 'pid' => $this->kArtikel]
+            ['pid' => $this->kArtikel]
         );
 
-        return (bool)($bestseller->bIsBestseller ?? false);
+        return (bool)($bestseller->isBestseller ?? false);
     }
 
     /**

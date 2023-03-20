@@ -83,6 +83,11 @@ class VariationValue
     public $cAufpreisLocalized;
 
     /**
+     * @var int
+     */
+    public $nNichtLieferbar;
+
+    /**
      * @var array
      */
     public $cPreisVPEWertAufpreis = [];

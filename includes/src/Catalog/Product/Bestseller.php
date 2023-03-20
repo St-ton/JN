@@ -157,7 +157,7 @@ class Bestseller
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 JOIN tbestseller
-                    ON tbestseller.kArtikel = tartikel.kArtikel
+                    ON tbestseller.kArtikel = tartikel.kArtikel AND tbestseller.isBestseller = 1
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :cgid

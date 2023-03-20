@@ -308,10 +308,10 @@ class Updater
      * @return IMigration|Version
      * @throws Exception
      */
-    public function update()
+    public function update(bool $force = false)
     {
         return $this->hasPendingUpdates()
-            ? $this->updateToNextVersion()
+            ? $this->updateToNextVersion($force)
             : Version::parse(\APPLICATION_VERSION);
     }
 
@@ -328,7 +328,7 @@ class Updater
      * @return IMigration|Version
      * @throws Exception
      */
-    protected function updateToNextVersion()
+    protected function updateToNextVersion(bool $force = false)
     {
         $currentVersion = $this->getCurrentDatabaseVersion();
         $targetVersion  = $this->getTargetVersion($currentVersion);
@@ -339,7 +339,7 @@ class Updater
                 : $this->updateBySqlFile($currentVersion, $targetVersion);
         }
 
-        return $this->updateByMigration($targetVersion);
+        return $this->updateByMigration($targetVersion, $force);
     }
 
     /**
@@ -403,10 +403,10 @@ class Updater
      * @return IMigration|Version
      * @throws Exception
      */
-    protected function updateByMigration(Version $targetVersion)
+    protected function updateByMigration(Version $targetVersion, bool $force = false)
     {
         $manager           = new MigrationManager($this->db);
-        $pendingMigrations = $manager->getPendingMigrations();
+        $pendingMigrations = $manager->getPendingMigrations($force);
         if (\count($pendingMigrations) === 0) {
             $this->setVersion($targetVersion);
 

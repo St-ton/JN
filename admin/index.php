@@ -3,6 +3,10 @@
 use JTL\Router\BackendRouter;
 use JTL\Shop;
 
+if (isset($_SERVER['HTTP_TESTDB']) === true) {
+    define('TESTDB', true);
+}
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $router = new BackendRouter(

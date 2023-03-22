@@ -24,6 +24,11 @@ class MigrationHelper
     /**
      * @var string
      */
+    public const DATE_FORMAT_READABLE = 'Y-m-d H:i:s';
+
+    /**
+     * @var string
+     */
     public const MIGRATION_CLASS_NAME_PATTERN = '/^Migration_(\d+)$/i';
 
     /**

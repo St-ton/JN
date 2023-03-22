@@ -13,6 +13,7 @@ use JTL\Router\Route;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\TestEnvironment\ProvideTestData;
 use JTLShop\SemVer\Version;
 use SmartyException;
 

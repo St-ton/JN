@@ -10,6 +10,7 @@ use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Shopsetting;
+use JTL\Update\MigrationHelper;
 use JTL\Update\UpdateIO;
 use JTL\Update\UpdateTestDB;
 use stdClass;
@@ -41,6 +42,7 @@ class TestDBInstaller
      * @var array
      */
     private array $payload = [];
+    private $cli           = null;
 
     /**
      * Installer constructor.
@@ -49,8 +51,16 @@ class TestDBInstaller
      * @param array|null $post
      * @param bool       $cli
      */
-    public function __construct(private string $task, private ?array $post = null, private bool $cli = false)
+    public function __construct(private ?array $post = null, private array $log = [])
     {
+    }
+
+    /**
+     * @return array
+     */
+    public function getLog(): array
+    {
+        return $this->log;
     }
 
     /**
@@ -58,30 +68,7 @@ class TestDBInstaller
      */
     public function run(): ?array
     {
-        switch ($this->task) {
-            case 'installedcheck':
-                $this->getIsInstalled();
-                break;
-            case 'systemcheck':
-                $this->getSystemCheck();
-                break;
-            case 'dircheck':
-                $this->getDirectoryCheck();
-                break;
-            case 'credentialscheck':
-                $this->getDBCredentialsCheck();
-                break;
-            case 'doinstall':
-                $this->doInstall();
-                break;
-            case 'installdemodata':
-                $this->installDemoData();
-                break;
-            default:
-                break;
-        }
-
-        return $this->output();
+        return $this->doInstall();
     }
 
     /**
@@ -112,7 +99,6 @@ class TestDBInstaller
             'payload' => $this->payload,
             'msg'     => \implode('<br>', $this->responseMessage)
         ], \JSON_THROW_ON_ERROR);
-        exit(0);
     }
 
     /**
@@ -153,10 +139,11 @@ class TestDBInstaller
      * @throws InvalidEntityNameException
      * @throws \JsonException
      */
-    private function doInstall(): self
+    private function doInstall(): array
     {
-
+        $this->log[] = 'Test started: ' . date(MigrationHelper::DATE_FORMAT_READABLE, time());
         if ($this->initNiceDB($this->post['db'])) {
+            $this->log[] = 'NiceDB instantiated with: ' . implode(', ', $this->db->getConfig());
             //init router for migrations might need it
             $cache = Shop::Container()->getCache()->setJtlCacheConfig(
                 $this->db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING)
@@ -191,7 +178,7 @@ class TestDBInstaller
                 do {
                     $migrations = (new UpdateTestDB($this->db, Shop::Container()->getGetText()))->update();
                     if (is_array($migrations) === true) {
-                        echo $migrations['updatedVersion'] . ' // ' . $migrations['result'] . "\n";
+                        $this->log[] = $migrations['updatedVersion'] . ' // ' . $migrations['result'];
                         if ($lastMigration === $migrations['result']) {
                             break;
                         }
@@ -201,9 +188,9 @@ class TestDBInstaller
                     }
                 } while (isset($migrations['availableUpdate']) === true && $migrations['availableUpdate'] === true);
                 if (isset($migrations['availableUpdate']) === false) {
-                    echo "Something went terribly wrong. \n\n" .
-                    'Last migration executed: ' . $lastMigration . "\n" .
-                    'Errormessage is        : ' . $migrations['message'] . "\n\n";
+                    $this->log[] = "Something went terribly wrong. \n\n" .
+                        'Last migration executed: ' . $lastMigration . "\n" .
+                        'Errormessage is        : ' . $migrations['message'] . "\n\n";
                 }
             }
         }
@@ -213,11 +200,9 @@ class TestDBInstaller
             $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
                 ? 'executeSuccess'
                 : $this->responseMessage;
-        } else {
-            $this->sendResponse();
         }
 
-        return $this;
+        return $this->log;
     }
 
 

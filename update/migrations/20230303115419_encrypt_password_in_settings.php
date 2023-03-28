@@ -16,7 +16,7 @@ use JTL\Update\Migration;
  */
 class Migration_20230303115419 extends Migration implements IMigration
 {
-    protected $author = 'sl';
+    protected $author      = 'sl';
     protected $description = 'Encrypt password in settings';
 
     /**
@@ -36,11 +36,17 @@ class Migration_20230303115419 extends Migration implements IMigration
         $settingsOfTypePass = $this->getDB()->getObjects($settingsOfTypePassSQL);
         foreach ($settingsOfTypePass as $settingOfTypePass) {
             $settingOfTypePass->cWert = Shop::Container()->getCryptoService()->encryptXTEA($settingOfTypePass->cWert);
-            $stmt                     = "UPDATE teinstellungen SET cWert = :cWert WHERE kEinstellungenSektion = :section AND cName = :settingName";
-            $this->getDB()->queryPrepared($stmt, [
-                'cWert'       => $settingOfTypePass->cWert,
-                'section'     => $settingOfTypePass->kEinstellungenSektion,
-                'settingName' => $settingOfTypePass->cName]);
+            $this->getDB()->queryPrepared(
+                'UPDATE teinstellungen 
+                         SET cWert = :cWert 
+                         WHERE kEinstellungenSektion = :section 
+                           AND cName = :settingName',
+                [
+                    'cWert'       => $settingOfTypePass->cWert,
+                    'section'     => $settingOfTypePass->kEinstellungenSektion,
+                    'settingName' => $settingOfTypePass->cName
+                ]
+            );
         }
     }
 
@@ -61,11 +67,17 @@ class Migration_20230303115419 extends Migration implements IMigration
         $settingsOfTypePass = $this->getDB()->getObjects($settingsOfTypePassSQL);
         foreach ($settingsOfTypePass as $settingOfTypePass) {
             $settingOfTypePass->cWert = Shop::Container()->getCryptoService()->decryptXTEA($settingOfTypePass->cWert);
-            $stmt                     = "UPDATE teinstellungen SET cWert = :cWert WHERE kEinstellungenSektion = :section AND cName = :settingName";
-            $this->getDB()->queryPrepared($stmt, [
-                'cWert'       => $settingOfTypePass->cWert,
-                'section'     => $settingOfTypePass->kEinstellungenSektion,
-                'settingName' => $settingOfTypePass->cName]);
+            $this->getDB()->queryPrepared(
+                'UPDATE teinstellungen 
+                         SET cWert = :cWert 
+                         WHERE kEinstellungenSektion = :section
+                           AND cName = :settingName',
+                [
+                    'cWert'       => $settingOfTypePass->cWert,
+                    'section'     => $settingOfTypePass->kEinstellungenSektion,
+                    'settingName' => $settingOfTypePass->cName
+                ]
+            );
         }
     }
 }

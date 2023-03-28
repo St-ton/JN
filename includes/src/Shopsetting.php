@@ -113,6 +113,9 @@ final class Shopsetting implements ArrayAccess
         return self::$instance ?? new self();
     }
 
+    /**
+     * @return void
+     */
     private function initDependencies(): void
     {
         $this->settingsService         = new SettingsService();
@@ -385,10 +388,6 @@ final class Shopsetting implements ArrayAccess
      */
     public function getSettingsService(): SettingsService
     {
-        if (!isset($this->settingsService)) {
-            $this->initDependencies();
-        }
-
         return $this->settingsService;
     }
 
@@ -397,10 +396,6 @@ final class Shopsetting implements ArrayAccess
      */
     public function getBrandingSettingsService(): BrandingSettingsService
     {
-        if (!isset($this->brandingSettingsService)) {
-            $this->initDependencies();
-        }
-
         return $this->brandingSettingsService;
     }
 
@@ -409,10 +404,6 @@ final class Shopsetting implements ArrayAccess
      */
     public function getTemplateSettingsService(): TemplateSettingsService
     {
-        if (!isset($this->templateSettingsService)) {
-            $this->initDependencies();
-        }
-
         return $this->templateSettingsService;
     }
 
@@ -421,10 +412,6 @@ final class Shopsetting implements ArrayAccess
      */
     public function getCache(): JTLCacheInterface
     {
-        if (!isset($this->cache)) {
-            $this->initDependencies();
-        }
-
         return $this->cache;
     }
 }

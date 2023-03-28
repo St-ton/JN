@@ -25,7 +25,7 @@ class BrandingSettingsService extends AbstractService
      */
     public function getBrandingConfig(): array
     {
-        $data = $this->getRepository()->getBrandingConfig();
+        $data = $this->getRepository()->getConfig();
         foreach ($data as $item) {
             $item->size         = (int)$item->size;
             $item->transparency = (int)$item->transparency;
@@ -42,10 +42,6 @@ class BrandingSettingsService extends AbstractService
      */
     public function getRepository(): RepositoryInterface
     {
-        if (!isset($this->repository)) {
-            $this->initDependencies();
-        }
-
         return $this->repository;
     }
 }

@@ -30,7 +30,6 @@ class SettingsService extends AbstractService
      */
     protected CryptoServiceInterface $cryptoService;
 
-
     /**
      * @return void
      */
@@ -49,7 +48,7 @@ class SettingsService extends AbstractService
     public function getAll(array $mappings): array
     {
         $result         = [];
-        $settings       = $this->getRepository()->getAllSettings();
+        $settings       = $this->getRepository()->getConfig();
         $mappedSettings = $this->getMappedSettings($settings, $mappings);
         foreach ($mappings as $sectionName) {
             if (isset($mappedSettings[$sectionName])) {
@@ -106,10 +105,6 @@ class SettingsService extends AbstractService
      */
     public function getRepository(): RepositoryInterface
     {
-        if (!isset($this->repository)) {
-            $this->initDependencies();
-        }
-
         return $this->repository;
     }
 
@@ -118,10 +113,6 @@ class SettingsService extends AbstractService
      */
     public function getBrandingSettingsService(): BrandingSettingsService
     {
-        if (!isset($this->brandingSettingsService)) {
-            $this->initDependencies();
-        }
-
         return $this->brandingSettingsService;
     }
 
@@ -130,10 +121,6 @@ class SettingsService extends AbstractService
      */
     public function getTemplateSettingsService(): TemplateSettingsService
     {
-        if (!isset($this->templateSettingsService)) {
-            $this->initDependencies();
-        }
-
         return $this->templateSettingsService;
     }
 
@@ -142,9 +129,6 @@ class SettingsService extends AbstractService
      */
     public function getCryptoService(): CryptoServiceInterface
     {
-        if (!isset($this->cryptoService)) {
-            $this->initDependencies();
-        }
         return $this->cryptoService;
     }
 }

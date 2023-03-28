@@ -239,8 +239,14 @@ abstract class AbstractBackendController implements ControllerInterface
                     [(int)$config->kEinstellungenSektion, $config->cWertName]
                 );
                 $this->db->insert('teinstellungen', $val);
+                $newValueToLog     = $post[$config->cWertName];
+                $currentValueToLog = $config->currentValue;
+                if ($config->cInputTyp === 'pass') {
+                    $newValueToLog     = '***';
+                    $currentValueToLog = '***';
+                }
 
-                $manager->addLog($config->cWertName, $config->currentValue, $post[$config->cWertName]);
+                $manager->addLog($config->cWertName, $currentValueToLog, $newValueToLog);
             }
         }
         $this->cache->flushTags($tags);

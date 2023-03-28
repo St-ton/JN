@@ -3,12 +3,13 @@
 namespace JTL\Settings\Branding;
 
 use JTL\Abstracts\AbstractRepository;
+use JTL\Interfaces\SettingsRepositoryInterface;
 
 /**
  * Class BrandingSettingsRepository
  * @package JTL\Settings
  */
-class BrandingSettingsRepository extends AbstractRepository
+class BrandingSettingsRepository extends AbstractRepository implements SettingsRepositoryInterface
 {
     /**
      * @return string
@@ -29,7 +30,7 @@ class BrandingSettingsRepository extends AbstractRepository
     /**
      * @return array
      */
-    public function getBrandingConfig(): array
+    public function getConfig(): array
     {
         return $this->db->getObjects(
             'SELECT tbranding.kBranding AS id, tbranding.cBildKategorie AS type, 

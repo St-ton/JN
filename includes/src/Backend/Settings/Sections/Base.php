@@ -10,6 +10,7 @@ use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
 use JTL\Services\JTL\CryptoService;
+use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Smarty\JTLSmarty;
 use JTL\Shop;
 use stdClass;
@@ -104,6 +105,9 @@ class Base implements SectionInterface
      */
     protected bool $loaded = false;
 
+    /**
+     * @var CryptoService|CryptoServiceInterface
+     */
     protected CryptoService $cryptoService;
     /**
      * @var string[]
@@ -339,15 +343,20 @@ class Base implements SectionInterface
                 }
             } else {
                 $this->db->insert('teinstellungen', $value);
+                $newValueToLog     = $data[$id];
+                $currentValueToLog = $item->getCurrentValue();
+                if ($item->getInputType() === 'pass') {
+                    $newValueToLog     = '***';
+                    $currentValueToLog = '***';
+                }
+
                 $this->manager->addLog(
                     $id,
-                    $item->getCurrentValue(),
-                    $data[$id]
+                    $currentValueToLog,
+                    $newValueToLog
                 );
             }
-            if ($id !== 'email_smtp_pass') {
-                $updated[] = ['id' => $id, 'value' => $data[$id]];
-            }
+            $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
         Shop::Container()->getCache()->flushTags($tags);
 

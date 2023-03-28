@@ -24,7 +24,7 @@ class TemplateSettingsService extends AbstractService
      */
     public function getTemplateConfig(): array
     {
-        $data     = $this->getRepository()->getTemplateConfig();
+        $data     = $this->getRepository()->getConfig();
         $settings = [];
         foreach ($data as $setting) {
             if (!isset($settings[$setting->sec])) {
@@ -41,10 +41,6 @@ class TemplateSettingsService extends AbstractService
      */
     public function getRepository(): RepositoryInterface
     {
-        if (!isset($this->repository)) {
-            $this->initDependencies();
-        }
-
         return $this->repository;
     }
 }

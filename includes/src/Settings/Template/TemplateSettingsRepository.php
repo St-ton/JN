@@ -3,15 +3,14 @@
 namespace JTL\Settings\Template;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\DB\DbInterface;
-use JTL\Shop;
+use JTL\Interfaces\SettingsRepositoryInterface;
 
 /**
  * Class TemplateSettingsRepository
  * @package JTL\Settings
  */
 
-class TemplateSettingsRepository extends AbstractRepository
+class TemplateSettingsRepository extends AbstractRepository implements SettingsRepositoryInterface
 {
     /**
      * @return string
@@ -32,10 +31,10 @@ class TemplateSettingsRepository extends AbstractRepository
     /**
      * @return array
      */
-    public function getTemplateConfig(): array
+    public function getConfig(): array
     {
         return $this->db->getObjects(
-            "SELECT cSektion AS sec, cWert AS val, cName AS name FROM " . $this->getTableName() .
+            'SELECT cSektion AS sec, cWert AS val, cName AS name FROM `' . $this->getTableName() . '`' .
             " WHERE cTemplate = (SELECT cTemplate FROM ttemplate WHERE eTyp = 'standard')"
         );
     }

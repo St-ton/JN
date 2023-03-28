@@ -157,11 +157,7 @@ class SearchSpecial extends AbstractFilter
         foreach ($values as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $minSales = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
-                        ? $min
-                        : 100;
-
-                    $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $minSales;
+                    $conditions[] = 'tbestseller.isBestseller = 1';
                     break;
 
                 case \SEARCHSPECIALS_SPECIALOFFERS:

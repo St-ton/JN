@@ -40,7 +40,7 @@ class Method
     /**
      * is this task finished
      *
-     * @var boolean
+     * @var bool
      */
     protected $isFinished = false;
 
@@ -92,17 +92,14 @@ class Method
                 new DateInterval('P' . $this->interval . 'D')
             )->format('Y-m-d H:i:s');
         } catch (Exception) {
-            ($this->logger === null) ?: $this->logger->log(
-                \JTLLOG_LEVEL_WARNING,
-                'Wrong Interval given: ' . $this->interval
-            );
+            $this->logger?->warning('Wrong interval given: {interval}', ['interval' => $this->interval]);
         }
     }
 
     /**
      * deliver the state of a method
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsFinished(): bool
     {
@@ -112,7 +109,7 @@ class Method
     /**
      * deliver the summery of processed entities in method
      *
-     * @return integer
+     * @return int
      */
     public function getWorkSum(): int
     {
@@ -122,7 +119,7 @@ class Method
     /**
      * deliver the max alowed repetition of one task
      *
-     * @return integer
+     * @return int
      */
     public function getTaskRepetitions(): int
     {
@@ -132,7 +129,7 @@ class Method
     /**
      * deliver the last ID in table (CleanupGuestAccountsWithoutOrders)
      *
-     * @return integer
+     * @return int
      */
     public function getLastProductID(): int
     {

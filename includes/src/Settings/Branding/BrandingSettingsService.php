@@ -2,15 +2,15 @@
 
 namespace JTL\Settings\Branding;
 
-use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
+use JTL\Abstracts\AbstractSettingsService;
+use JTL\Interfaces\SettingsRepositoryInterface;
 use function Functional\reindex;
 
 /**
  * Class BrandingSettingsService
  * @package JTL\Settings
  */
-class BrandingSettingsService extends AbstractService
+class BrandingSettingsService extends AbstractSettingsService
 {
     /**
      * @return void
@@ -38,9 +38,9 @@ class BrandingSettingsService extends AbstractService
     }
 
     /**
-     * @return RepositoryInterface
+     * @return SettingsRepositoryInterface
      */
-    public function getRepository(): RepositoryInterface
+    public function getRepository(): SettingsRepositoryInterface
     {
         return $this->repository;
     }

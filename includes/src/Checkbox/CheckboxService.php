@@ -46,6 +46,9 @@ class CheckboxService extends AbstractService
         return false;
     }
 
+    /**
+     * @return void
+     */
     protected function initDependencies(): void
     {
         $this->repository = new CheckboxRepository();

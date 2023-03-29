@@ -9,7 +9,6 @@ use JTL\DB\SqlObject;
 use JTL\Helpers\Text;
 use JTL\L10n\GetText;
 use JTL\MagicCompatibilityTrait;
-use JTL\Services\JTL\CryptoService;
 use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Smarty\JTLSmarty;
 use JTL\Shop;
@@ -106,9 +105,9 @@ class Base implements SectionInterface
     protected bool $loaded = false;
 
     /**
-     * @var CryptoService|CryptoServiceInterface
+     * @var CryptoServiceInterface
      */
-    protected CryptoService $cryptoService;
+    protected CryptoServiceInterface $cryptoService;
     /**
      * @var string[]
      */

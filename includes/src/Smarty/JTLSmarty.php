@@ -68,8 +68,7 @@ class JTLSmarty extends BC
             ->setDebugging(\SMARTY_DEBUG_CONSOLE)
             ->setUseSubDirs(\SMARTY_USE_SUB_DIRS);
         $this->config = Shopsetting::getInstance()->getAll();
-
-        $parent = $this->initTemplate();
+        $parent       = $this->initTemplate();
         if ($fast === false) {
             $this->init($parent);
         }

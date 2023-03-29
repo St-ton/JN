@@ -4,19 +4,19 @@ namespace JTL\Abstracts;
 
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
-use JTL\Interfaces\RepositoryInterface;
 use JTL\Interfaces\ServiceInterface;
+use JTL\Interfaces\SettingsRepositoryInterface;
 
 /**
  * Class AbstractService
  * @package JTL\Abstracts
  */
-abstract class AbstractService implements ServiceInterface
+abstract class AbstractSettingsService implements ServiceInterface
 {
     /**
-     * @var RepositoryInterface
+     * @var SettingsRepositoryInterface
      */
-    protected RepositoryInterface $repository;
+    protected SettingsRepositoryInterface $repository;
 
     public function __construct()
     {
@@ -26,7 +26,7 @@ abstract class AbstractService implements ServiceInterface
     /**
      * @inheritdoc
      */
-    abstract public function getRepository(): RepositoryInterface;
+    abstract public function getRepository(): SettingsRepositoryInterface;
 
     /**
      * @return void

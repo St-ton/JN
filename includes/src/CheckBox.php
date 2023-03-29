@@ -310,7 +310,7 @@ class CheckBox
                 $this->oLink->load($this->kLink);
             } catch (InvalidArgumentException) {
                 if ($this->loggerAvailable) {
-                    $this->logService->error('Checkbox cannot link to link ID ' . $this->kLink);
+                    $this->logService->error('Checkbox cannot link to link ID {id}', ['id' => $this->kLink]);
                 }
             }
         } else {
@@ -790,7 +790,7 @@ class CheckBox
                 ->sendActivationMail();
         } catch (Exception) {
             if ($this->loggerAvailable) {
-                $this->logService->error('Checkbox cannot link to link ID ' . $this->kLink);
+                $this->logService->error('Checkbox cannot link to link ID {id}', ['id' => $this->kLink]);
             }
         }
 
@@ -872,7 +872,7 @@ class CheckBox
     protected function getCheckBoxDataTableObject(): CheckboxDataTableObject
     {
         $dataObject = new CheckboxDataTableObject();
-        $dataObject->hydrate(get_object_vars($this));
+        $dataObject->hydrate(\get_object_vars($this));
 
         return $dataObject;
     }

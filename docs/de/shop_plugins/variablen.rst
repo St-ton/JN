@@ -214,16 +214,6 @@ angesprochen werden können.
 
 **Beispiel:**
 
-JTL-Shop 4
-
-.. code-block:: php
-
-    if ($oPlugin->oPluginEinstellungAssoc_arr['mein_cName'] === 'Y') {
-        //...
-    }
-
-**Beispiel:**
-
 JTL-Shop 5
 
 .. code-block:: php

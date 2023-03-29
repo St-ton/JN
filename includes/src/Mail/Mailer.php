@@ -275,7 +275,7 @@ class Mailer
             'phpmailer' => $phpmailer
         ]);
         if (\mb_strlen($phpmailer->Body) === 0) {
-            Shop::Container()->getLogService()->warning('Empty body for mail ' . $phpmailer->Subject);
+            Shop::Container()->getLogService()->warning('Empty body for mail {sub}', ['sub' => $phpmailer->Subject]);
         }
         $sent = $phpmailer->send();
         $mail->setError($phpmailer->ErrorInfo);
@@ -321,7 +321,7 @@ class Mailer
         if ($sent) {
             $this->log($mail);
         } else {
-            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
+            Shop::Container()->getLogService()->error('Error sending mail: {err}', ['err' => $mail->getError()]);
         }
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 

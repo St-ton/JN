@@ -108,6 +108,6 @@ class DB extends JTLDefault
     {
         return $this->db->getAffectedRows(
             'DELETE FROM ' . $this->tableName . ' WHERE nSessionExpires < ' . \time()
-        ) > 0;
+        );
     }
 }

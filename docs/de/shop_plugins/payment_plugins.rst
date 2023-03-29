@@ -17,39 +17,19 @@ Grundlegendes
 Jede Zahlungsmethode wird durch eine Payment-Klasse repräsentiert. Der Klassenname und die zugehörige Klassendatei
 werden in der ``info.xml`` mit den Knoten ``<ClassName>`` und ``<ClassFile>`` festgelegt. Die Klassendatei muss sich
 für eine erfolgreiche Validierung der Zahlungsmethode im Unterverzeichnis ``paymentmethod`` innerhalb des
-Plugin-Verzeichnisses befinden. Bis einschließlich Version 4.x können die Bezeichner für Klassenname und Klassendatei
-frei gewählt werden, während diese ab Version 5.0 der PSR-4-Spezifikation folgen müssen. |br|
+Plugin-Verzeichnisses befinden. Bezeichner für Klassenname und Klassendatei müssen der PSR-4-Spezifikation folgen. |br|
 Jede Payment-Klasse muss ab Version 5.0 das Interface ``JTL\Plugin\Payment\MethodInterface`` implementieren oder von
-``JTL\Plugin\Payment\Method`` abgeerbt werden. Bis einschließlich Version 4.x müssen alle Payment-Klassen Unterklassen
-von ``PaymentMethod`` (``/includes/modules/PaymentMethod.class.php``) sein. |br|
+``JTL\Plugin\Payment\Method`` abgeerbt werden.|br|
 Über die Methoden der Payment-Klasse wird standardmäßig der komplette Zahlungsvorgang abgedeckt. Die Registrierung
 weiterer Hooks für den Zahlungsprozess ist normalerweise nur notwendig, wenn durch die Zahlungsmethode weitergehende
 Eingriffe in den Ablauf des Zahlungsvorganges oder des gesamten Bestellprozesses notwendig sind.
-
-Implementation einer Payment-Klasse bis einschl. JTL-Shop Version 4.x
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-.. code-block:: php
-   :emphasize-lines: 2
-
-    <?php
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-
-    /**
-     * Class SimplePayment.
-     */
-    class SimplePayment extends PaymentMethod
-    {
-        // ...
-    }
 
 Implementation einer Payment-Klasse ab JTL-Shop Version 5.0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. hint::
 
-    Im Weiteren wird von einer **Implementation für JTL-Shop Version 5.x** ausgegangen und nur soweit dies nicht auch
-    sinngemäß für JTL-Shop Version 4.x gilt, explizit auf die Unterschiede eingegangen.
+    Im Weiteren wird von einer **Implementation für JTL-Shop Version 5.x** ausgegangen.
 
 .. code-block:: php
    :emphasize-lines: 4
@@ -200,7 +180,7 @@ public function init()
 Wird bei jedem Instanziieren der Zahlungsmethode aufgerufen. In der Payment-Basisklasse werden die Properties
 ``caption`` und ``duringCheckout`` initialisiert. Als Rückgabewert wird die Klasseninstanz selbst erwartet. |br|
 Diese Methode sollte überschrieben werden, wenn eigene Initialisierungen vorgenommen werden müssen. Z. B. können hier
-die ab JTL-Shop Version 5.0 notwendigen Sprachdateien des Plugins geladen werden, um eine saubere Trennung von Code und
+die notwendigen Sprachdateien des Plugins geladen werden, um eine saubere Trennung von Code und
 Sprache zu ermöglichen.
 
 .. code-block:: php

@@ -110,7 +110,7 @@ class CategoryController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Categoty not found"
+     *         description="Category not found"
      *     )
      * )
      * @OA\Put(

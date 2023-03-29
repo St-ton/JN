@@ -97,7 +97,7 @@ class OrderController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Categoty not found"
+     *         description="Order not found"
      *     )
      * )
      * @OA\Put(

@@ -95,7 +95,7 @@ class ProductAttributeController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Categoty not found"
+     *         description="ProductAttribute not found"
      *     )
      * )
      * @OA\Put(

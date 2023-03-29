@@ -91,7 +91,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Categoty not found"
+     *         description="Cart not found"
      *     )
      * )
      * @OA\Put(

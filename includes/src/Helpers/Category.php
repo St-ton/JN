@@ -47,9 +47,14 @@ class Category
     private static array $config;
 
     /**
-     * @var array|null
+     * @var array
      */
-    private static ?array $fullCategories = null;
+    private static array $fullCategories = [];
+
+    /**
+     * @var int|null
+     */
+    private static ?int $catCount = null;
 
     /**
      * @var int[]|null|bool
@@ -89,10 +94,7 @@ class Category
         $languageID      = $languageID ?: Shop::getLanguageID();
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE, \CONF_NAVIGATIONSFILTER]);
-        if (self::$instance !== null && self::$languageID !== $languageID) {
-            // reset cached categories when language or depth was changed
-            self::$fullCategories = null;
-        }
+
         self::$cacheID         = 'allctgrs_' . $customerGroupID .
             '_' . $languageID .
             '_' . $config['global']['kategorien_anzeigefilter'];
@@ -184,8 +186,8 @@ class Category
      */
     public function combinedGetAll(int $startCat = 0, int $startLevel = 0): array
     {
-        if ($startCat === 0 && self::$fullCategories !== null) {
-            return self::$fullCategories;
+        if ($startCat === 0 && (self::$fullCategories[self::$languageID] ?? null) !== null) {
+            return self::$fullCategories[self::$languageID];
         }
 
         if (($fullCats = $this->getCacheTree($startCat)) === null) {
@@ -248,14 +250,17 @@ class Category
         $showCategoryImages = self::$config['template']['megamenu']['show_category_images'] ?? 'N';
         $extended           = !empty($stockFilter);
         $isDefaultLang      = LanguageHelper::isDefaultLanguageActive(false, self::$languageID);
-        $categoryCount      = (int)self::$db->getSingleObject('SELECT COUNT(*) AS cnt FROM tkategorie')->cnt;
-        self::$limitReached = $categoryCount >= \CATEGORY_FULL_LOAD_LIMIT;
+        self::$catCount     = self::$catCount ?? self::$db->getSingleInt(
+            'SELECT COUNT(kKategorie) AS cnt FROM tkategorie WHERE kKategorie > 0',
+            'cnt'
+        );
+        self::$limitReached = self::$catCount >= \CATEGORY_FULL_LOAD_LIMIT;
         self::$depth        = self::$limitReached ? \CATEGORY_FULL_LOAD_MAX_LEVEL : -1;
         $descriptionSelect  = ", '' AS cBeschreibung";
         $depthWhere         = self::$limitReached === true
             ? ' AND node.nLevel <= (:startLvl + ' . \CATEGORY_FULL_LOAD_MAX_LEVEL . ')'
             : '';
-        $getDescription     = ($categoryCount < \CATEGORY_FULL_LOAD_LIMIT
+        $getDescription     = (self::$catCount < \CATEGORY_FULL_LOAD_LIMIT
             || // always get description if there aren't that many categories
             !(isset(self::$config['template']['megamenu']['show_maincategory_info'])
                 // otherwise check template config
@@ -268,10 +273,10 @@ class Category
                 ? ', node.cBeschreibung' // no description needed if we don't show category info in mega menu
                 : ', node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
         }
-        $imageSelect = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
+        $imageSelect = (self::$catCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? ", '' AS cPfad" // select empty path if we don't need category images for the mega menu
             : ', tkategoriepict.cPfad, atr.cWert As customImgName';
-        $imageJoin   = ($categoryCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
+        $imageJoin   = (self::$catCount >= \CATEGORY_FULL_LOAD_LIMIT && $showCategoryImages === 'N')
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = node.kKategorie
@@ -637,10 +642,10 @@ class Category
      */
     public function getCategoryById(int $id, int $lft = -1, int $rght = -1): ?MenuItem
     {
-        if (self::$fullCategories === null) {
-            self::$fullCategories = $this->combinedGetAll();
+        if ((self::$fullCategories[self::$languageID] ?? null) === null) {
+            self::$fullCategories[self::$languageID] = $this->combinedGetAll();
         }
-        $current = $this->findCategoryInList($id, self::$fullCategories, $lft, $rght);
+        $current = $this->findCategoryInList($id, self::$fullCategories[self::$languageID], $lft, $rght);
         if ($current === null && (self::$limitReached || self::isLostCategory($id))) {
             // we have an incomplete category tree (because of high category count)
             // or did not find the desired category (because it is a lost category)
@@ -655,7 +660,7 @@ class Category
                 // get real parent category from full categories tree for further use
                 $curParent = $this->findCategoryInList(
                     $parent->getID(),
-                    self::$fullCategories,
+                    self::$fullCategories[self::$languageID],
                     $parent->getLeft(),
                     $parent->getRight()
                 );
@@ -701,8 +706,8 @@ class Category
      */
     public function getFlatTree(int $id, bool $noChildren = true): array
     {
-        if (self::$fullCategories === null) {
-            self::$fullCategories = $this->combinedGetAll();
+        if ((self::$fullCategories[self::$languageID] ?? null) === null) {
+            self::$fullCategories[self::$languageID] = $this->combinedGetAll();
         }
         $tree = [];
         $next = $this->getCategoryById($id);

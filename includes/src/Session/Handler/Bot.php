@@ -79,6 +79,6 @@ class Bot extends JTLDefault
      */
     public function gc($max_lifetime): int|false
     {
-        return true;
+        return 0;
     }
 }

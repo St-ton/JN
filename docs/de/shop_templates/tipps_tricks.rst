@@ -12,7 +12,6 @@ Dies stellt unter anderem sicher, dass das entsprechende (Parent-)Template weite
 .. note::
 
     Die JTL-Templates des Shops basieren auf leicht unterschiedlichen Technologien zur Seitendarstellung: |br|
-    Das **EVO-Template** nutzt als CSS-Spracherweiterung **LESS**, |br|
     Das **NOVA-Template** nutzt hierfür **Sass** (SCSS).
 
 Beide Technologien sind Erweiterungen der herkömmlichen CSS-Syntax und schaffen hauptsächlich die Möglichkeit, CSS
@@ -107,7 +106,7 @@ auch vor der `Smarty`-Variable beendet und nach ihr wieder begonnen werden.
     </script>
     {/literal}
 
-In diesem Fall hätten Sie zwei getrennte ``literal``-Blöcke, die `Samrty` nicht interpretiert. |br|
+In diesem Fall hätten Sie zwei getrennte ``literal``-Blöcke, die `Smarty` nicht interpretiert. |br|
 Die Variable in der Mitte wird dann wie gewohnt von `Smarty` ersetzt.
 
 Theme-Variablen
@@ -115,7 +114,6 @@ Theme-Variablen
 
 Diese Variablen sind, soweit möglich, in einigen wenigen Dateien zusammengefasst.
 
-Im *EVO-Template* liegen sie im Ordner ``<Shop-Root>/templates/Evo/themes/bootstrap/less/variables.less``. |br|
 Im *NOVA-Template* liegen sie im Ordner ``<Shop-Root>templates/NOVA/themes/clear/sass/_variables.scss``.
 
 .. hint::
@@ -132,19 +130,6 @@ Merkmale werden in `JTL-Wawi <https://guide.jtl-software.de/jtl-wawi/artikel/mer
 Sprache, definiert.
 
 **Template-Code** |br|
-im EVO-Template: ``templates/Evo/productdetails/attributes.tpl`` :
-
-.. code-block:: smarty
-
-    {block name='productdetails-attributes-shop-attributes'}
-        {foreach $Artikel->Attribute as $Attribut}
-            <div class="list-group-item attr-custom">
-                <div class="list-group-item-heading">{$Attribut->cName}: </div>
-                <div class="list-group-item-text attr-value">{$Attribut->cWert}</div>
-            </div>
-        {/foreach}
-    {/block}
-
 im NOVA-Template: ``templates/NOVA/productdetails/attributes.tpl`` :
 
 .. code-block:: smarty
@@ -243,7 +228,7 @@ Kategorieattribute abfragen
 Kategorieattribute definieren. Diese werden beim Synchronisieren zum Onlineshop übertragen und können dort
 Steuerungsaufgaben übernehmen können.
 
-Beginnend mit Shop-Version 4.0 werden Kategorie-Funktionsattribute und Kategorieattribute unterschieden. |br|
+Es werden Kategorie-Funktionsattribute und Kategorieattribute unterschieden. |br|
 Kategorie-Funktionsattribute (``categoryFunctionAttributes``) sind key/value-Paare die zur Aufnahme der
 Funktionsattribute dienen, während Kategorieattribute in Form von "*array of objects*" lokalisierte Kategorieattribute
 aufnehmen. |br|
@@ -348,35 +333,7 @@ Template-Code:
 Erstellen eigener Smarty-Funktionen
 -----------------------------------
 
-Um eigene Smarty-Funktionen zu registrieren, gibt es template-abhängig zwei Wege.
-
-Evo-Template
-++++++++++++
-
-Wenn Sie ein Child-Template des Evo-Templates verwenden, legen Sie im Wurzelverzeichnis Ihres Child-Templates
-einen Ordner ``php/`` an. Erzeugen Sie dort eine Datei namens ``functions.php``.
-
-Um die Update-Fähigkeiten Ihres Parent-Templates weiterhin zu gewährleisten, fügen Sie folgenden Inhalt ein:
-
-.. code-block:: php
-    :emphasize-lines: 6
-
-    <?php
-    /**
-     * @global JTLSmarty $smarty
-     */
-
-    include realpath(__DIR__ . '/../../Evo/php/functions.php');
-
-
-.. attention::
-
-    Die so erstellte ``functions.php`` ersetzt das Original aus dem Vatertemplate vollständig!
-
-Theoretisch könnten Sie einfach eine komplette Kopie der Datei aus dem Parent-Template erstellen und dort Ihre
-Änderungen vornehmen. Das ist jedoch nicht sehr sinnvoll, da dann bei jedem Update von JTL-Shop alle Änderungen
-nachgezogen werden müssten. |br|
-Besser ist es, das Original einfach per ``include`` in das eigene Script einzubinden (siehe Beispiel oben).
+Um eigene Smarty-Funktionen zu registrieren, gibt es template-abhängig diesen Weg.
 
 NOVA-Template
 +++++++++++++
@@ -405,32 +362,6 @@ eine PHP-Klasse namens ``Bootstrap.php`` mit folgendem Inhalt:
     Die PHP-Datei, wie auch die PHP-Klasse, wird beim Start automatisch geladen und ermöglicht das Registrieren
     von Smarty-Plugins. |br|
     Danach können Sie Ihre eigenen Smarty-Funktionen implementieren und in Smarty registrieren.
-
-Funktionen im Evo-Child registrieren
-++++++++++++++++++++++++++++++++++++
-
-Im nachfolgenden Beispiel wird eine Funktion zur Berechnung der Kreiszahl PI in die PHP-Datei ``functions.php``
-eingebunden und in Smarty registriert:
-
-.. code-block:: php
-
-    $smarty->registerPlugin('function', 'getPI', 'getPI');
-
-    function getPI($precision)
-    {
-        $iterator = 1;
-        $factor   = -1;
-        $nenner   = 3;
-
-        for ($i = 0; $i < $precision; $i++) {
-            $iterator = $iterator + $factor / $nenner;
-            $factor  *= -1;
-            $nenner  += 2;
-        }
-
-        return $iterator * 4;
-    }
-
 
 Funktionen im NOVA-Child registrieren
 +++++++++++++++++++++++++++++++++++++
@@ -489,40 +420,6 @@ Die Funktion ``getPI()``  kann dann im Template z. B. mit ``{getPI precision=12}
 ------------------------------------
 
 Das Überschreiben von Funktionalitäten ist ebenfalls möglich.
-
-Funktionen im Evo-Child überschreiben
-+++++++++++++++++++++++++++++++++++++
-
-In Ihrem Evo-Child muss lediglich die Registrierung der originalen Funktion zuerst mit ``$smarty->unregisterPlugin``
-aufgehoben werden. |br|
-Danach kann die neue Funktion registriert werden.
-
-Im nachfolgenden Beispiel wird die Funktion ``trans`` des EVO-Templates dahingehend erweitert, dass bei
-nicht vorhandener Übersetzung der Text "*-no translation-*" ausgegeben wird.
-
-.. code-block:: php
-
-    $smarty->unregisterPlugin('modifier', 'trans')
-           ->registerPlugin('modifier', 'trans', 'get_MyTranslation');
-
-    /**
-     * Input: ['ger' => 'Titel', 'eng' => 'Title']
-     *
-     * @param string|array $mixed
-     * @param string|null $to - locale
-     * @return null|string
-     */
-    function get_MyTranslation($mixed, $to = null)
-    {
-        // Aufruf der "geerbten" Funktion aus dem Original
-        $trans = get_translation($mixed, $to);
-
-        if (!isset($trans)) {
-            $trans = '-no translation-';
-        }
-
-        return $trans;
-    }
 
 Funktionen im NOVA-Child überschreiben
 ++++++++++++++++++++++++++++++++++++++

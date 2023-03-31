@@ -60,10 +60,12 @@
                                                             {/block}
                                                         </dd>
                                                     {/if}
-                                                    {if isset($pushedArtikel->dMHD) && isset($pushedArtikel->dMHD_de)}
-                                                        <dt class="col-6">{lang key='productMHDTool'}:</dt>
-                                                        <dd class="col-6">{$pushedArtikel->dMHD_de}</dd>
-                                                    {/if}
+                                                    {block name='productdetails-pushed-success-mhd'}
+                                                        {if isset($pushedArtikel->dMHD) && isset($pushedArtikel->dMHD_de)}
+                                                            <dt class="col-6">{lang key='productMHDTool'}:</dt>
+                                                            <dd class="col-6">{$pushedArtikel->dMHD_de}</dd>
+                                                        {/if}
+                                                    {/block}
                                                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && isset($pushedArtikel->cGewicht) && $pushedArtikel->fGewicht > 0}
                                                         <dt class="col-6">{lang key='shippingWeight'}:</dt>
                                                         <dd class="col-6">{$pushedArtikel->cGewicht} {lang key='weightUnit'}</dd>

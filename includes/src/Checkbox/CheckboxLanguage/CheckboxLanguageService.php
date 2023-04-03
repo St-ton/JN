@@ -4,7 +4,6 @@ namespace JTL\Checkbox\CheckboxLanguage;
 
 use JTL\Abstracts\AbstractService;
 use JTL\DataObjects\AbstractDataObject;
-use JTL\Interfaces\RepositoryInterface;
 
 /**
  * Class CheckboxLanguageService
@@ -12,6 +11,11 @@ use JTL\Interfaces\RepositoryInterface;
  */
 class CheckboxLanguageService extends AbstractService
 {
+    /**
+     * @var CheckboxLanguageRepository
+     */
+    private CheckboxLanguageRepository $repository;
+
     /**
      * @param array $filters
      * @return array
@@ -60,9 +64,9 @@ class CheckboxLanguageService extends AbstractService
     }
 
     /**
-     * @return RepositoryInterface
+     * @return CheckboxLanguageRepository
      */
-    public function getRepository(): RepositoryInterface
+    public function getRepository(): CheckboxLanguageRepository
     {
         return $this->repository;
     }

@@ -13,11 +13,6 @@ use JTL\Interfaces\ServiceInterface;
  */
 abstract class AbstractService implements ServiceInterface
 {
-    /**
-     * @var RepositoryInterface
-     */
-    protected RepositoryInterface $repository;
-
     public function __construct()
     {
         $this->initDependencies();
@@ -39,7 +34,7 @@ abstract class AbstractService implements ServiceInterface
      */
     public function getList(array $filters): array
     {
-        return $this->repository->getList($filters);
+        return $this->getRepository()->getList($filters);
     }
 
     /**
@@ -49,7 +44,7 @@ abstract class AbstractService implements ServiceInterface
     public function insert(AbstractDataObject $insertDTO): int
     {
         if ($insertDTO instanceof DataTableObjectInterface) {
-            return $this->repository->insert($insertDTO);
+            return $this->getRepository()->insert($insertDTO);
         }
 
         return 0;
@@ -62,7 +57,7 @@ abstract class AbstractService implements ServiceInterface
     public function update(AbstractDataObject $updateDTO): bool
     {
         if (($updateDTO instanceof DataTableObjectInterface) && $updateDTO->getID() > 0) {
-            return $this->repository->update($updateDTO);
+            return $this->getRepository()->update($updateDTO);
         }
 
         return false;

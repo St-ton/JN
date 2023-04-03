@@ -3,7 +3,6 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
 
 /**
  * Class CheckboxService
@@ -11,6 +10,11 @@ use JTL\Interfaces\RepositoryInterface;
  */
 class CheckboxService extends AbstractService
 {
+    /**
+     * @var CheckboxRepository
+     */
+    private CheckboxRepository $repository;
+
     /**
      * @param int $id
      * @return CheckboxDataTableObject
@@ -26,11 +30,7 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->activate($checkboxIDs);
-        }
-
-        return false;
+        return $this->repository->activate($checkboxIDs);
     }
 
     /**
@@ -39,11 +39,7 @@ class CheckboxService extends AbstractService
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->deactivate($checkboxIDs);
-        }
-
-        return false;
+        return $this->repository->deactivate($checkboxIDs);
     }
 
     /**
@@ -55,9 +51,9 @@ class CheckboxService extends AbstractService
     }
 
     /**
-     * @return RepositoryInterface
+     * @return CheckboxRepository
      */
-    public function getRepository(): RepositoryInterface
+    public function getRepository(): CheckboxRepository
     {
         return $this->repository;
     }

@@ -3,13 +3,12 @@
 namespace JTL\Settings\Branding;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\Interfaces\SettingsRepositoryInterface;
 
 /**
  * Class BrandingSettingsRepository
  * @package JTL\Settings
  */
-class BrandingSettingsRepository extends AbstractRepository implements SettingsRepositoryInterface
+class BrandingSettingsRepository extends AbstractRepository
 {
     /**
      * @return string

@@ -3,13 +3,12 @@
 namespace JTL\Settings;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\Interfaces\SettingsRepositoryInterface;
 
 /**
  * Class SettingsRepository
  * @package JTL\Settings
  */
-class SettingsRepository extends AbstractRepository implements SettingsRepositoryInterface
+class SettingsRepository extends AbstractRepository
 {
     /**
      * @return string

@@ -2,15 +2,19 @@
 
 namespace JTL\Settings\Template;
 
-use JTL\Abstracts\AbstractSettingsService;
-use JTL\Interfaces\SettingsRepositoryInterface;
+use JTL\Abstracts\AbstractService;
 
 /**
  * Class TemplateSettingsService
  * @package JTL\Settings
  */
-class TemplateSettingsService extends AbstractSettingsService
+class TemplateSettingsService extends AbstractService
 {
+    /**
+     * @var TemplateSettingsRepository
+     */
+    private TemplateSettingsRepository $repository;
+
     /**
      * @return void
      */
@@ -37,9 +41,9 @@ class TemplateSettingsService extends AbstractSettingsService
     }
 
     /**
-     * @return SettingsRepositoryInterface
+     * @return TemplateSettingsRepository
      */
-    public function getRepository(): SettingsRepositoryInterface
+    public function getRepository(): TemplateSettingsRepository
     {
         return $this->repository;
     }

@@ -2,8 +2,7 @@
 
 namespace JTL\Settings;
 
-use JTL\Abstracts\AbstractSettingsService;
-use JTL\Interfaces\SettingsRepositoryInterface;
+use JTL\Abstracts\AbstractService;
 use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Settings\Branding\BrandingSettingsService;
 use JTL\Settings\Template\TemplateSettingsService;
@@ -13,8 +12,13 @@ use JTL\Shop;
  * Class SettingsService
  * @package JTL\Settings
  */
-class SettingsService extends AbstractSettingsService
+class SettingsService extends AbstractService
 {
+    /**
+     * @var SettingsRepository
+     */
+    private SettingsRepository $repository;
+
     /**
      * @var BrandingSettingsService
      */
@@ -101,9 +105,9 @@ class SettingsService extends AbstractSettingsService
     }
 
     /**
-     * @return SettingsRepositoryInterface
+     * @return SettingsRepository
      */
-    public function getRepository(): SettingsRepositoryInterface
+    public function getRepository(): SettingsRepository
     {
         return $this->repository;
     }

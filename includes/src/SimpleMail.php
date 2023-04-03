@@ -131,7 +131,7 @@ class SimpleMail
             $this->cSMTPPort      = $config['email_smtp_port'];
             $this->cSMTPAuth      = $config['email_smtp_auth'];
             $this->cSMTPUser      = $config['email_smtp_user'];
-            $this->cSMTPPass      = $config['email_smtp_pass'];
+            $this->cSMTPPass      = Shopsetting::getInstance()->getPasswordByName('emails', 'email_smtp_pass');
             $this->cVerfasserName = $config['email_master_absender_name'];
             $this->cVerfasserMail = $config['email_master_absender'];
         } elseif (!empty($mailConfig)) {

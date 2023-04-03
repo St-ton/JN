@@ -4,6 +4,7 @@ namespace JTL\Cache\Methods;
 
 use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
+use JTL\Shopsetting;
 use Redis;
 use RedisException;
 
@@ -30,6 +31,7 @@ class CacheRedis implements ICachingMethod
     {
         $res = false;
         $this->setJournalID('redis_journal');
+        $options['redis_pass'] = Shopsetting::getInstance()->getPasswordByName('caching', 'caching_redis_pass');
         $this->setOptions($options);
         if ($this->isAvailable()) {
             $res = $this->setRedis(

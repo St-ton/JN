@@ -2,6 +2,7 @@
 
 namespace JTL\Filesystem;
 
+use JTL\Shopsetting;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Ftp\FtpAdapter;
 use League\Flysystem\Ftp\FtpConnectionOptions;
@@ -22,6 +23,8 @@ class AdapterFactory
      */
     public function __construct(private array $config)
     {
+        $this->config['ftp_pass']  = Shopsetting::getInstance()->getPasswordByName('fs', 'ftp_pass');
+        $this->config['sftp_pass'] = Shopsetting::getInstance()->getPasswordByName('fs', 'sftp_pass');
     }
 
     /**

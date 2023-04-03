@@ -90,6 +90,11 @@ final class Shopsetting implements ArrayAccess
     protected Cache\JTLCacheInterface $cache;
 
     /**
+     * @var array
+     */
+    protected array $passwords;
+
+    /**
      * Shopsetting constructor.
      */
     private function __construct()
@@ -354,7 +359,7 @@ final class Shopsetting implements ArrayAccess
             return $this->allSettings;
         }
 
-        $this->allSettings = $this->getSettingsService()->getAll(self::$mapping);
+        [$this->allSettings, $this->passwords] = $this->getSettingsService()->getAll(self::$mapping);
 
         return $this->allSettings;
     }
@@ -413,5 +418,19 @@ final class Shopsetting implements ArrayAccess
     public function getCache(): JTLCacheInterface
     {
         return $this->cache;
+    }
+
+    /**
+     * @param string $section
+     * @param string $identifier
+     * @return ?string
+     */
+    public function getPasswordByName(string $section, string $identifier): ?string
+    {
+        if ($this->allSettings === null) {
+            $this->getAll();
+        }
+
+        return $this->passwords[$section][$identifier] ?? null;
     }
 }

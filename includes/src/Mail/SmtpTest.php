@@ -2,6 +2,7 @@
 
 namespace JTL\Mail;
 
+use JTL\Shopsetting;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
@@ -40,7 +41,10 @@ class SmtpTest
                 throw new Exception('TLS not supported');
             }
             if (\is_array($e) && \array_key_exists('AUTH', $e)) {
-                if ($smtp->authenticate($config['email_smtp_user'], $config['email_smtp_pass'])) {
+                if ($smtp->authenticate(
+                    $config['email_smtp_user'],
+                    Shopsetting::getInstance()->getPasswordByName('emails', 'email_smtp_pass')
+                )) {
                     echo 'Connected ok!';
                 } else {
                     throw new Exception('Authentication failed: ' . $smtp->getError()['error']);

@@ -15,6 +15,7 @@ use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use JTL\Shopsetting;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
@@ -38,6 +39,8 @@ class Newsletter
      */
     public function __construct(private DbInterface $db, private array $config)
     {
+        $this->config['newsletter']['newsletter_smtp_pass'] =
+            Shopsetting::getInstance()->getPasswordByName('newsletter', 'newsletter_smtp_pass');
     }
 
     /**

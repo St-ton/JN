@@ -52,6 +52,7 @@ class SettingsService extends AbstractService
     public function getAll(array $mappings): array
     {
         $result         = [];
+        $passwords      = [];
         $settings       = $this->getRepository()->getConfig();
         $mappedSettings = $this->getMappedSettings($settings, $mappings);
         foreach ($mappings as $sectionName) {
@@ -64,6 +65,8 @@ class SettingsService extends AbstractService
                         } else {
                             $result[$sectionName][$setting['cName']] = $this->getCompleteParsedSettings($setting);
                         }
+                    } else {
+                        $passwords[$sectionName][$setting['cName']] = $this->getCompleteParsedSettings($setting);
                     }
                 }
             }
@@ -71,7 +74,7 @@ class SettingsService extends AbstractService
         $result['template'] = $this->getTemplateSettingsService()->getTemplateConfig();
         $result['branding'] = $this->getBrandingSettingsService()->getBrandingConfig();
 
-        return $result;
+        return [$result, $passwords];
     }
 
     /**

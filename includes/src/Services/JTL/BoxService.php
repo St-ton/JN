@@ -431,13 +431,12 @@ class BoxService implements BoxServiceInterface
     }
 
     /**
-     * @param $box
+     * @param BoxInterface $box
      * @return bool
      */
-    private function loadPluginBox($box): bool
+    private function loadPluginBox(BoxInterface $box): bool
     {
         $class = \get_class($box);
-
         if ($class === Extension::class) {
             $loader = new PluginLoader($this->db, $this->cache);
             try {
@@ -448,6 +447,8 @@ class BoxService implements BoxServiceInterface
             $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
             $box->setExtension($plugin);
             $box->setPlugin($plugin);
+
+            return true;
         }
 
         if ($class === Plugin::class) {

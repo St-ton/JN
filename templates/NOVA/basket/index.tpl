@@ -26,6 +26,11 @@
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
                                         {form id="cart-form" method="post" action=$cartURL class="jtl-validate" slide=true}
+                                            {button name="fake"
+                                                variant="hidden"
+                                                type="submit"
+                                                class="btn-hidden-default"
+                                            }{/button}
                                             {input type="hidden" name="wka" value="1"}
                                             <div class="basket-items">
                                                 {block name='basket-index-include-order-items'}

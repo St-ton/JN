@@ -86,7 +86,7 @@ if (!defined('CLI_BATCHRUN')) {
     $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
     $lang = LanguageHelper::getInstance($db, $cache);
     if (!JTL_INCLUDE_ONLY_DB) {
-        $config   = Shopsetting::getInstance()->getAll();
+        $config   = Shopsetting::getInstance()->getAllSettingsSeparated();
         $debugbar = Shop::Container()->getDebugBar();
         require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
         Shop::setRouter(new Router($db, $cache, new State(), Shop::Container()->getAlertService(), $config));

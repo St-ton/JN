@@ -20,7 +20,7 @@ $logger              = Shop::Container()->getLogService();
 $moduleId            = null;
 $order               = null;
 $Sprache             = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-$conf                = Shopsetting::getInstance()->getAll();
+$conf                = Shopsetting::getInstance()->getAllSettingsSeparated();
 $cEditZahlungHinweis = '';
 //Session Hash
 $cPh = Request::verifyGPDataString('ph');

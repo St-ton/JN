@@ -205,7 +205,7 @@ class ControllerFactory
             $this->db,
             $this->cache,
             $this->state,
-            Shopsetting::getInstance()->getAll(),
+            Shopsetting::getInstance()->getAllSettingsSeparated(),
             Shop::Container()->getAlertService(),
             $this->smarty
         );

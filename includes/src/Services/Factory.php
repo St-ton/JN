@@ -93,7 +93,7 @@ class Factory
         $container->singleton(PasswordServiceInterface::class, PasswordService::class);
         $container->singleton(CountryServiceInterface::class, CountryService::class);
         $container->singleton(JTLDebugBar::class, static function (Container $container) {
-            return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAll());
+            return new JTLDebugBar($container->getDB()->getPDO(), Shopsetting::getInstance()->getAllSettingsSeparated());
         });
         $container->singleton('BackendAuthLogger', static function (Container $container) {
             $loggingConf = Shop::getSettingValue(\CONF_GLOBAL, 'admin_login_logger_mode');
@@ -137,13 +137,13 @@ class Factory
         $container->singleton(PageDB::class);
         $container->singleton(Locker::class);
         $container->bind(BoxFactoryInterface::class, static function () {
-            return new BoxFactory(Shopsetting::getInstance()->getAll());
+            return new BoxFactory(Shopsetting::getInstance()->getAllSettingsSeparated());
         });
         $container->singleton(BoxServiceInterface::class, static function (Container $container) {
             $smarty = Shop::Smarty();
 
             return new BoxService(
-                Shopsetting::getInstance()->getAll(),
+                Shopsetting::getInstance()->getAllSettingsSeparated(),
                 $container->getBoxFactory(),
                 $container->getDB(),
                 $container->getCache(),
@@ -185,7 +185,7 @@ class Factory
             $settings  = Shopsetting::getInstance();
             $smarty    = new SmartyRenderer(new MailSmarty($db));
             $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $db, $settings);
-            $validator = new MailValidator($db, $settings->getAll());
+            $validator = new MailValidator($db, $settings->getAllSettingsSeparated());
 
             return new Mailer($hydrator, $smarty, $settings, $validator);
         });

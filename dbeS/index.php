@@ -99,7 +99,7 @@ Shop::setRouter(new Router(
     $cache,
     new State(),
     Shop::Container()->getAlertService(),
-    Shopsetting::getInstance()->getAll()
+    Shopsetting::getInstance()->getAllSettingsSeparated()
 ));
 Shop::bootstrap(true, $db, $cache);
 ob_start('handleError');

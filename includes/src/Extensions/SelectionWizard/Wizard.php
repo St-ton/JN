@@ -252,7 +252,7 @@ class Wizard
     public function fetchForm($smarty): string
     {
         return $smarty->assign('AWA', $this)
-            ->assign('Einstellungen', Shopsetting::getInstance()->getAll())
+            ->assign('Einstellungen', Shopsetting::getInstance()->getAllSettingsSeparated())
             ->fetch('selectionwizard/form.tpl');
     }
 

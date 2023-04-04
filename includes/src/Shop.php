@@ -470,7 +470,7 @@ final class Shop extends ShopBC
         $conf->setLanguageID(self::getLanguageID());
         $conf->setLanguages(LanguageHelper::getAllLanguages());
         $conf->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
-        $conf->setConfig(Shopsetting::getInstance()->getAll());
+        $conf->setConfig(Shopsetting::getInstance()->getAllSettingsSeparated());
         $conf->setBaseURL(self::getURL() . '/');
         self::setImageBaseURL(\defined('IMAGE_BASE_URL') ? \IMAGE_BASE_URL : self::getURL());
         self::Container()->get(ManagerInterface::class)->initActiveItems(self::getLanguageID());

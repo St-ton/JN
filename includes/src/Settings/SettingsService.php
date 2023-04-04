@@ -49,7 +49,7 @@ class SettingsService extends AbstractService
      * @param array $mappings
      * @return array
      */
-    public function getAll(array $mappings): array
+    public function getAll(array $mappings, bool $includePasswords = false): array
     {
         $result         = [];
         $passwords      = [];
@@ -59,7 +59,7 @@ class SettingsService extends AbstractService
             if (isset($mappedSettings[$sectionName])) {
                 $result[$sectionName] = [];
                 foreach ($mappedSettings[$sectionName] as $setting) {
-                    if ($setting['type'] !== 'pass') {
+                    if ($setting['type'] !== 'pass' || $includePasswords === true) {
                         if ($setting['type'] === 'listbox') {
                             $result[$sectionName][$setting['cName']][] = $this->getCompleteParsedSettings($setting);
                         } else {
@@ -101,9 +101,10 @@ class SettingsService extends AbstractService
     protected function getCompleteParsedSettings(array $setting): mixed
     {
         return match ($setting['type']) {
-            'number' => (int)$setting['cWert'],
-            'pass' => \rtrim($this->getCryptoService()->decryptXTEA($setting['cWert'])),
-            default => $setting['cWert'],
+            'kommazahl' => (float)$setting['cWert'],
+            'number'    => (int)$setting['cWert'],
+            'pass'      => \rtrim($this->getCryptoService()->decryptXTEA($setting['cWert'])),
+            default     => $setting['cWert'],
         };
     }
 

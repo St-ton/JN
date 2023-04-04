@@ -92,7 +92,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var array
      */
-    protected array $passwords;
+    protected array $passwords = [];
 
     /**
      * Shopsetting constructor.
@@ -353,13 +353,28 @@ final class Shopsetting implements ArrayAccess
     /**
      * @return array
      */
-    public function getAll(): array
+    public function getAllSettingsSeparated(): array
     {
         if ($this->allSettings !== null) {
             return $this->allSettings;
         }
 
         [$this->allSettings, $this->passwords] = $this->getSettingsService()->getAll(self::$mapping);
+
+        return $this->allSettings;
+    }
+
+    /**
+     * @return array
+     * @deprecated from 5.2.3
+     */
+    public function getAll(): array
+    {
+        if ($this->allSettings !== null) {
+            return $this->allSettings;
+        }
+
+        [$this->allSettings, $this->passwords] = $this->getSettingsService()->getAll(self::$mapping, true);
 
         return $this->allSettings;
     }
@@ -376,7 +391,7 @@ final class Shopsetting implements ArrayAccess
         $result            = Shop::Container()->getCache()->get(
             $cacheID,
             function ($cache, $id, &$content, &$tags): bool {
-                $content = $this->getAll();
+                $content = $this->getAllSettingsSeparated();
                 $tags    = [\CACHING_GROUP_TEMPLATE, \CACHING_GROUP_OPTION, \CACHING_GROUP_CORE];
 
                 return true;
@@ -427,8 +442,8 @@ final class Shopsetting implements ArrayAccess
      */
     public function getPasswordByName(string $section, string $identifier): ?string
     {
-        if ($this->allSettings === null) {
-            $this->getAll();
+        if ($this->allSettings === null || $this->passwords === []) {
+            $this->getAllSettingsSeparated();
         }
 
         return $this->passwords[$section][$identifier] ?? null;

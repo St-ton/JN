@@ -83,7 +83,7 @@ class Application extends BaseApplication
                 $cache,
                 new State(),
                 Shop::Container()->getAlertService(),
-                Shopsetting::getInstance()->getAll()
+                Shopsetting::getInstance()->getAllSettingsSeparated()
             ));
         }
 

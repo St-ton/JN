@@ -65,7 +65,7 @@ class AccountController
         private LinkServiceInterface  $linkService,
         private JTLSmarty             $smarty
     ) {
-        $this->config = Shopsetting::getInstance()->getAll();
+        $this->config = Shopsetting::getInstance()->getAllSettingsSeparated();
     }
 
     /**

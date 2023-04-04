@@ -1260,7 +1260,7 @@ final class Link extends AbstractLink implements RoutableInterface
         if (!$isActive) {
             return false;
         }
-        $conf = Shopsetting::getInstance()->getAll();
+        $conf = Shopsetting::getInstance()->getAllSettingsSeparated();
 
         return match ($this->getLinkType()) {
             \LINKTYP_NEWSLETTER, \LINKTYP_NEWSLETTERARCHIV => $conf['newsletter']['newsletter_active'] === 'Y',

@@ -37,7 +37,7 @@ class Mailer
         Shopsetting $settings,
         private ValidatorInterface $validator
     ) {
-        $this->config                              = $settings->getAll();
+        $this->config                              = $settings->getAllSettingsSeparated();
         $this->config['emails']['email_smtp_pass'] =
             $settings->getPasswordByName('emails', 'email_smtp_pass');
     }

@@ -164,7 +164,7 @@ class IOMethods
     public function pushToBasket(int $productID, $amount, $properties = ''): IOResponse
     {
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'sprachfunktionen.php';
-        $config     = Shopsetting::getInstance()->getAll();
+        $config     = Shopsetting::getInstance()->getAllSettingsSeparated();
         $smarty     = Shop::Smarty();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
@@ -291,7 +291,7 @@ class IOMethods
      */
     public function pushToComparelist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance()->getAllSettingsSeparated();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -349,7 +349,7 @@ class IOMethods
      */
     public function removeFromComparelist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance()->getAllSettingsSeparated();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -423,7 +423,7 @@ class IOMethods
     public function pushToWishlist(int $productID, $qty, array $data): IOResponse
     {
         $_POST      = $data;
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance()->getAllSettingsSeparated();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $qty        = empty($qty) ? 1 : $qty;
@@ -514,7 +514,7 @@ class IOMethods
      */
     public function removeFromWishlist(int $productID): IOResponse
     {
-        $conf       = Shopsetting::getInstance()->getAll();
+        $conf       = Shopsetting::getInstance()->getAllSettingsSeparated();
         $response   = new stdClass();
         $ioResponse = new IOResponse();
         $smarty     = Shop::Smarty();
@@ -1446,7 +1446,7 @@ class IOMethods
             $this->db,
             Shop::Container()->getCache(),
             new State(),
-            Shopsetting::getInstance()->getAll(),
+            Shopsetting::getInstance()->getAllSettingsSeparated(),
             Shop::Container()->getAlertService()
         );
         if (Form::validateToken()) {

@@ -75,7 +75,7 @@ class ManufacturerController extends AbstractController
             $this->db,
             $this->cache,
             $this->state,
-            Shopsetting::getInstance()->getAll(),
+            Shopsetting::getInstance()->getAllSettingsSeparated(),
             Shop::Container()->getAlertService()
         );
         if (!$controller->init()) {

@@ -257,7 +257,7 @@ function getFrontendSmarty(): JTLSmarty
             ->assign('ShopURL', Shop::getURL())
             ->assign('Suchergebnisse', new SearchResults())
             ->assign('NaviFilter', Shop::getProductFilter())
-            ->assign('Einstellungen', Shopsetting::getInstance()->getAll());
+            ->assign('Einstellungen', Shopsetting::getInstance()->getAllSettingsSeparated());
     }
 
     return $frontendSmarty;

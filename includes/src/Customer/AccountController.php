@@ -176,6 +176,13 @@ class AccountController
             \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
             exit();
         }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($customerID, false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
+            \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
+            exit();
+        }
         if ($valid && Request::verifyGPCDataInt('wllo') > 0) {
             $step = 'mein Konto';
             $this->alertService->addNotice(Wishlist::delete(Request::verifyGPCDataInt('wllo')), 'wllo');

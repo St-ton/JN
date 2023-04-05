@@ -400,6 +400,7 @@ class BoxService implements BoxServiceInterface
             if ($first->kContainer > 0) {
                 $box = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
                 $box->map($boxes);
+                $this->loadPluginBox($box);
                 if (!isset($children[$first->kContainer])) {
                     $children[$first->kContainer] = [];
                 }
@@ -411,31 +412,10 @@ class BoxService implements BoxServiceInterface
             $first = first($boxes);
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
-            $class = \get_class($box);
-            if ($class === Plugin::class) {
-                $loader = new LegacyPluginLoader($this->db, $this->cache);
-                try {
-                    $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException) {
-                    continue;
-                }
-                $box->setTemplateFile(
-                    $plugin->getPaths()->getFrontendPath()
-                    . \PFAD_PLUGIN_BOXEN
-                    . $box->getTemplateFile()
-                );
-                $box->setPlugin($plugin);
-            } elseif ($class === Extension::class) {
-                $loader = new PluginLoader($this->db, $this->cache);
-                try {
-                    $plugin = $loader->init($box->getCustomID());
-                } catch (InvalidArgumentException) {
-                    continue;
-                }
-                $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
-                $box->setExtension($plugin);
-                $box->setPlugin($plugin);
-            } elseif ($box->getType() === Type::CONTAINER) {
+            if ($this->loadPluginBox($box) === false) {
+                continue;
+            }
+            if ($box->getType() === Type::CONTAINER) {
                 $box->setChildren($children);
             }
             $result[] = $box;
@@ -448,5 +428,44 @@ class BoxService implements BoxServiceInterface
         });
 
         return $this->boxes;
+    }
+
+    /**
+     * @param BoxInterface $box
+     * @return bool
+     */
+    private function loadPluginBox(BoxInterface $box): bool
+    {
+        $class = \get_class($box);
+        if ($class === Extension::class) {
+            $loader = new PluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile($plugin->getPaths()->getFrontendPath() . $box->getTemplateFile());
+            $box->setExtension($plugin);
+            $box->setPlugin($plugin);
+
+            return true;
+        }
+
+        if ($class === Plugin::class) {
+            $loader = new LegacyPluginLoader($this->db, $this->cache);
+            try {
+                $plugin = $loader->init($box->getCustomID());
+            } catch (InvalidArgumentException) {
+                return false;
+            }
+            $box->setTemplateFile(
+                $plugin->getPaths()->getFrontendPath()
+                . \PFAD_PLUGIN_BOXEN
+                . $box->getTemplateFile()
+            );
+            $box->setPlugin($plugin);
+        }
+
+        return true;
     }
 }

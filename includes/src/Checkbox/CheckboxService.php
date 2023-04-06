@@ -46,6 +46,18 @@ class CheckboxService extends AbstractService
         return false;
     }
 
+    /**
+     * @param array $checkboxIDs
+     * @return bool
+     */
+    public function delete(array $checkboxIDs): bool
+    {
+        return $this->getRepository()->delete($checkboxIDs);
+    }
+
+    /**
+     * @return void
+     */
     protected function initRepository(): void
     {
         $this->repository = new CheckboxRepository();

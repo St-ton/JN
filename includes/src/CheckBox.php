@@ -128,6 +128,9 @@ class CheckBox
      */
     public ?Link $oLink = null;
 
+    /**
+     * @var string
+     */
     public string $identifier;
 
     /**
@@ -170,12 +173,24 @@ class CheckBox
      */
     protected CheckboxLanguageService $languageService;
 
+    /**
+     * @var JTLCacheInterface
+     */
     protected JTLCacheInterface $cache;
 
+    /**
+     * @var Logger
+     */
     protected Logger $logService;
 
+    /**
+     * @var bool
+     */
     protected bool $loggerAvailable = true;
 
+    /**
+     * @var int
+     */
     public int  $nInternal = 0;
 
     /**
@@ -614,20 +629,10 @@ class CheckBox
      */
     public function delete(array $checkboxIDs): bool
     {
-        if (\count($checkboxIDs) === 0) {
-            return false;
-        }
-        $this->db->query(
-            'DELETE tcheckbox, tcheckboxsprache
-                FROM tcheckbox
-                LEFT JOIN tcheckboxsprache
-                    ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')' .
-                    ' AND nInternal = 0'
-        );
+        $res = $this->service->delete($checkboxIDs);
         $this->cache->flushTags(['checkbox']);
 
-        return true;
+        return $res;
     }
 
     /**

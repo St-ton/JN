@@ -78,4 +78,25 @@ class CheckboxRepository extends AbstractRepository
 
         return true;
     }
+
+    /**
+     * @param array $checkboxIDs
+     * @return bool
+     */
+    public function delete(array $checkboxIDs) :bool
+    {
+        if (\count($checkboxIDs) === 0) {
+            return false;
+        }
+        $this->db->query(
+            'DELETE tcheckbox, tcheckboxsprache
+                FROM tcheckbox
+                LEFT JOIN tcheckboxsprache
+                    ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')' .
+            ' AND nInternal = 0'
+        );
+
+        return true;
+    }
 }

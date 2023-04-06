@@ -126,7 +126,10 @@ class CheckoutController extends RegistrationController
         if (!Upload::pruefeWarenkorbUploads($this->cart)) {
             Upload::redirectWarenkorb(\UPLOAD_ERROR_NEED_UPLOAD);
         }
+        // SHOP-4236 Checkbox zum Widerrufsrecht bei Downloadartikeln im Checkout
+        $hasDownloads = false;
         if (Download::hasDownloads($this->cart)) {
+            $hasDownloads = true;
             // Nur registrierte Benutzer
             $this->config['kaufabwicklung']['bestellvorgang_unregistriert'] = 'N';
         }
@@ -330,6 +333,7 @@ class CheckoutController extends RegistrationController
             ->assign('Steuerpositionen', $this->cart->gibSteuerpositionen())
             ->assign('bestellschritt', $this->getNextOrderStep($this->step))
             ->assign('unregForm', Request::verifyGPCDataInt('unreg_form'))
+            ->assign('hasDownloads', $hasDownloads)
             ->assignDeprecated('C_WARENKORBPOS_TYP_ARTIKEL', \C_WARENKORBPOS_TYP_ARTIKEL, '5.0.0')
             ->assignDeprecated('C_WARENKORBPOS_TYP_GRATISGESCHENK', \C_WARENKORBPOS_TYP_GRATISGESCHENK, '5.0.0');
 
@@ -1851,7 +1855,7 @@ class CheckoutController extends RegistrationController
                     $localizedNames,
                     1,
                     $fBrutto,
-                    (int)$packagings->kSteuerklasse,
+                    $packagings->kSteuerklasse,
                     \C_WARENKORBPOS_TYP_VERPACKUNG,
                     false
                 );

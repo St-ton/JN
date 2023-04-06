@@ -81,6 +81,8 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      */
     private array $languages = [];
 
+    private bool $nLink = false;
+
     /**
      * @var string[]
      */
@@ -98,6 +100,8 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'sort'                   => 'sort',
         'created'                => 'created',
         'created_DE'             => 'created_DE',
+        'nlink' => 'hasLink',
+        'nFunction' => 'hasFunction',
     ];
 
     /**
@@ -411,4 +415,25 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function getHasLink(): bool
+    {
+        return $this->nLink;
+    }
+
+    /**
+     * @param bool $nLink
+     * @return CheckboxDataTableObject
+     */
+    public function setHasLink(bool $nLink): CheckboxDataTableObject
+    {
+        $this->nLink = $this->checkAndReturnBoolValue($nLink);
+
+        return $this;
+    }
+
+
 }

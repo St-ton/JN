@@ -9,6 +9,7 @@ use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
 use JTL\Checkbox\CheckboxService;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -127,6 +128,8 @@ class CheckBox
      */
     public ?Link $oLink = null;
 
+    public string $identifier;
+
     /**
      * @var DbInterface
      */
@@ -172,6 +175,8 @@ class CheckBox
     protected Logger $logService;
 
     protected bool $loggerAvailable = true;
+
+    public int  $nInternal = 0;
 
     /**
      * @param int              $id
@@ -245,6 +250,7 @@ class CheckBox
         $this->dErstellt_DE      = $checkbox->dErstellt_DE;
         $this->kKundengruppe_arr = Text::parseSSKint($checkbox->cKundengruppe);
         $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->cAnzeigeOrt);
+        $this->nInternal         = (int)$checkbox->nInternal;
         // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt
         if ($this->kCheckBoxFunktion > 0) {
@@ -335,8 +341,12 @@ class CheckBox
         bool $special = false,
         bool $logging = false
     ): array {
-        if ($customerGroupID === 0) {
-            $customerGroupID = Frontend::getCustomer()->getGroupID();
+        if (!$customerGroupID) {
+            if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
+                $customerGroupID = Frontend::getCustomerGroup()->getID();
+            } else {
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
+            }
         }
         $sql = '';
         if ($active) {
@@ -612,7 +622,8 @@ class CheckBox
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
-                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')'
+                WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')' .
+                    ' AND nInternal = 0'
         );
         $this->cache->flushTags(['checkbox']);
 

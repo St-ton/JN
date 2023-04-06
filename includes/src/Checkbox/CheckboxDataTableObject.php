@@ -434,6 +434,4 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
 
         return $this;
     }
-
-
 }

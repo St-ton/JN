@@ -100,8 +100,8 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
         'sort'                   => 'sort',
         'created'                => 'created',
         'created_DE'             => 'created_DE',
-        'nlink' => 'hasLink',
-        'nFunction' => 'hasFunction',
+        'nlink'                  => 'hasLink',
+        'nFunction'              => 'hasFunction',
     ];
 
     /**
@@ -193,7 +193,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      * @param int|string $linkID
      * @return CheckboxDataTableObject
      */
-    public function setLinkID(int|string  $linkID): CheckboxDataTableObject
+    public function setLinkID(int|string $linkID): CheckboxDataTableObject
     {
         $this->linkID = (int)$linkID;
 
@@ -209,10 +209,10 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param int|string  $checkboxFunctionID
+     * @param int|string $checkboxFunctionID
      * @return CheckboxDataTableObject
      */
-    public function setCheckboxFunctionID(int|string  $checkboxFunctionID): CheckboxDataTableObject
+    public function setCheckboxFunctionID(int|string $checkboxFunctionID): CheckboxDataTableObject
     {
         $this->checkboxFunctionID = (int)$checkboxFunctionID;
 
@@ -310,7 +310,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param  bool|int|string $isMandatory
+     * @param bool|int|string $isMandatory
      * @return CheckboxDataTableObject
      */
     public function setIsMandatory(bool|int|string $isMandatory): CheckboxDataTableObject
@@ -329,7 +329,7 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
     }
 
     /**
-     * @param  bool|int|string $hasLogging
+     * @param bool|int|string $hasLogging
      * @return CheckboxDataTableObject
      */
     public function setHasLogging(bool|int|string $hasLogging): CheckboxDataTableObject

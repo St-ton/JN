@@ -23,8 +23,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class CheckboxController extends AbstractBackendController
 {
-
-    private $internalBoxDefaults = [
+    /**
+     * @var array|array[]
+     */
+    private array $internalBoxDefaults = [
         'RightOfWithdrawalOfDownloadItems' => [
             'nInternal'         => true,
             'cAnzeigeOrt'       => ';2;',
@@ -35,6 +37,7 @@ class CheckboxController extends AbstractBackendController
             'kCheckBoxFunktion' => 0,
         ],
     ];
+
     /**
      * @inheritdoc
      * @throws PermissionException
@@ -78,7 +81,7 @@ class CheckboxController extends AbstractBackendController
             $checkboxDTO = $this->getCheckboxDTO($post, $languages);
             $checks      = $this->validate($checkboxDTO, $languages);
             if (\count($checks) === 0) {
-                $checkbox = $this->save($checkboxDTO, $languages);
+                $checkbox = $this->save($checkboxDTO);
                 $step     = 'uebersicht';
                 $this->alertService->addSuccess(\__('successCheckboxCreate'), 'successCheckboxCreate');
             } else {
@@ -146,12 +149,12 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
-     * @param array           $checkbox
-     * @param LanguageModel[] $languages
+     * @param CheckboxDataTableObject $checkboxDTO
+     * @param array                   $languages
      * @return array
      * @former plausiCheckBox()
      */
-    private function validate(CheckboxDataTableObject $checkbox, array $languages): array
+    private function validate(CheckboxDataTableObject $checkboxDTO, array $languages): array
     {
         $checks = [];
         if (\count($languages) === 0) {
@@ -159,13 +162,13 @@ class CheckboxController extends AbstractBackendController
 
             return $checks;
         }
-        if (\mb_strlen($checkbox->getName()) === 0) {
+        if (\mb_strlen($checkboxDTO->getName()) === 0) {
             $checks['cName'] = 1;
         }
         $text = false;
         $link = true;
         foreach ($languages as $language) {
-            if (\mb_strlen($checkbox->getLanguages()[$language->getIso()]['text']) > 0) {
+            if (\mb_strlen($checkboxDTO->getLanguages()[$language->getIso()]['text']) > 0) {
                 $text = true;
                 break;
             }
@@ -173,25 +176,25 @@ class CheckboxController extends AbstractBackendController
         if (!$text) {
             $checks['cText'] = 1;
         }
-        if ((int)$checkbox->getHasLink() === true) {
-            $link = $checkbox->getLinkID() > 0;
+        if ($checkboxDTO->getHasLink() === true) {
+            $link = $checkboxDTO->getLinkID() > 0;
         }
         if ($link === false) {
             $checks['kLink'] = 1;
         }
-        if (\mb_strlen($checkbox->getDisplayAt()) === 0) {
+        if (\mb_strlen($checkboxDTO->getDisplayAt()) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
-            foreach (explode(';', $checkbox->getDisplayAt()) as $cAnzeigeOrt) {
-                if ((int)$cAnzeigeOrt === 3 && (int)$checkbox->getCheckboxFunctionID() === 1) {
+            foreach (explode(';', $checkboxDTO->getDisplayAt()) as $cAnzeigeOrt) {
+                if ((int)$cAnzeigeOrt === 3 && $checkboxDTO->getCheckboxFunctionID() === 1) {
                     $checks['cAnzeigeOrt'] = 2;
                 }
             }
         }
-        if ((int)$checkbox->getSort() === 0) {
+        if ($checkboxDTO->getSort() === 0) {
             $checks['nSort'] = 1;
         }
-        if (\mb_strlen($checkbox->getCustomerGroupsSelected()) === 0) {
+        if (\mb_strlen($checkboxDTO->getCustomerGroupsSelected()) === 0) {
             $checks['kKundengruppe'] = 1;
         }
 
@@ -199,18 +202,18 @@ class CheckboxController extends AbstractBackendController
     }
 
     /**
-     * @param array $post - pre-filtered post data
-     * @param array $languages
+     * @param CheckboxDataTableObject $checkboxDTO
      * @return CheckBox
      * @former speicherCheckBox()
      */
-    private function save(CheckboxDataTableObject $checkboxDTO, array $languages): CheckBox
+    private function save(CheckboxDataTableObject $checkboxDTO): CheckBox
     {
         return (new CheckBox(0, $this->db))->save($checkboxDTO);
     }
 
     /**
      * @param array $post
+     * @param array $languages
      * @return CheckboxDataTableObject
      */
     private function getCheckboxDTO(array $post, array $languages): CheckboxDataTableObject
@@ -231,7 +234,6 @@ class CheckboxController extends AbstractBackendController
             )
         );
         $checkBoxDTO->setCreated('NOW()');
-
 
         return $this->addTranslationsToDTO($languages, $post, $checkBoxDTO);
     }

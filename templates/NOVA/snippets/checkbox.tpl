@@ -12,7 +12,7 @@
             {foreach $checkboxes as $cb}
                 {formgroup class="snippets-checkbox-wrapper exclude-from-label-slide" label-for=" " description="{if !empty($cb->cBeschreibung)}{$cb->cBeschreibung}{/if}"}
                     {block name='snippets-checkbox-checkbox'}
-                        {if $cb->identifier!=='RightOfRevocationOfDownloadArticles' || ($cb->identifier==='RightOfRevocationOfDownloadArticles' && (isset($hasDownloads) && $hasDownloads === true))}
+                        {if $cb->identifier!=='RightOfWithdrawalOfDownloadItems' || ($cb->identifier==='RightOfWithdrawalOfDownloadItems' && (isset($hasDownloads) && $hasDownloads === true))}
                             {checkbox
                                 id="{if isset($cIDPrefix)}{$cIDPrefix}_{/if}{$cb->cID}"
                                 name={$cb->cID}

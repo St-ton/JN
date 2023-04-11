@@ -17,9 +17,9 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public const PHP_VERSION_HIGH = 1;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $id;
+    private ?string $id = null;
 
     /**
      * @var bool

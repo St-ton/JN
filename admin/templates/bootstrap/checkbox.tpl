@@ -82,8 +82,10 @@
                                                 <tr>
                                                     <td>
                                                         <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
-                                                            <label class="custom-control-label" for="cb-check-{$oCheckBoxUebersicht@index}"></label>
+                                                            {if $oCheckBoxUebersicht->nInternal === 0}
+                                                                <input class="custom-control-input" name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                                <label class="custom-control-label" for="cb-check-{$oCheckBoxUebersicht@index}"></label>
+                                                            {/if}
                                                         </div>
                                                     </td>
                                                     <td><label for="cb-check-{$oCheckBoxUebersicht@index}">{$oCheckBoxUebersicht->cName}</label></td>
@@ -255,7 +257,7 @@
                                             multiple="multiple"
                                             onClick="checkFunctionDependency();"
                                             data-selected-text-format="count > 2"
-                                            data-size="7" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1} readonly{/if} required>
+                                            data-size="7" {if isset($oCheckBox->nInternal) &&  $oCheckBox->nInternal == 1} disabled{/if} required>
                                         {foreach $cAnzeigeOrt_arr as $key => $cAnzeigeOrt}
                                             {assign var=bAOSelect value=false}
                                             {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $smarty.const.CHECKBOX_ORT_REGISTRIERUNG}

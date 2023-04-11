@@ -20,8 +20,8 @@ class CheckboxRepository extends AbstractRepository
         return $this->getDB()->getSingleObject(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE"
                 . ' FROM ' . $this->getTableName()
-                . ' WHERE ' . $this->getKeyName() . ' = :cbid',
-            ['cbid' => $id]
+                . ' WHERE ' . $this->getKeyName() . ' = :cbID',
+            ['cbID' => $id]
         );
     }
 

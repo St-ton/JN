@@ -23,7 +23,7 @@ class CheckboxLanguageService extends AbstractService
     public function getList(array $filters): array
     {
         $languageList      = [];
-        $checkboxLanguages = $this->repository->getList($filters);
+        $checkboxLanguages = $this->getRepository()->getList($filters);
         foreach ($checkboxLanguages as $checkboxLanguage) {
             $language       = new CheckboxLanguageDataTableObject();
             $languageList[] = $language->hydrateWithObject($checkboxLanguage);
@@ -52,7 +52,7 @@ class CheckboxLanguageService extends AbstractService
         }
         $updateDTO->setCheckboxLanguageID($language->getCheckboxLanguageID());
 
-        return $this->repository->update($updateDTO);
+        return $this->getRepository()->update($updateDTO);
     }
 
     /**

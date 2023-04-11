@@ -30,7 +30,7 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
-        return $this->repository->activate($checkboxIDs);
+        return $this->getRepository()->activate($checkboxIDs);
     }
 
     /**
@@ -39,7 +39,7 @@ class CheckboxService extends AbstractService
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        return $this->repository->deactivate($checkboxIDs);
+        return $this->getRepository()->deactivate($checkboxIDs);
     }
 
     /**

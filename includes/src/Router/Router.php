@@ -395,11 +395,11 @@ class Router
                     $named = ($replacements['name'] ?? $replacements['id']);
                 }
 
-                return '/' . $named
+                return $this->path . '/' . $named
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
             if ($scheme === 'L') {
-                return '/' . $replacements['lang'] . '/'
+                return $this->path . '/' . $replacements['lang'] . '/'
                     . ($replacements['name'] ?? $replacements['id'] ?? '')
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }

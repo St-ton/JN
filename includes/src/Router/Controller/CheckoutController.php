@@ -110,6 +110,12 @@ class CheckoutController extends RegistrationController
 
             return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
         }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($this->customer->getID(), false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
+            return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
+        }
         if ($this->cart->istBestellungMoeglich() !== 10) {
             return new RedirectResponse(
                 $linkService->getStaticRoute('warenkorb.php')

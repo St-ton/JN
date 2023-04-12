@@ -278,7 +278,7 @@ final class CategoryModel extends DataModel
                     continue;
                 }
                 $existing = $res->first(static function ($e) use ($img) {
-                    return $e->categoryID === $img->categoryID && $e->languageID === $img->languageID;
+                    return $e->categoryID === $img->categoryID;
                 });
                 if ($existing === null) {
                     $res->push($img);

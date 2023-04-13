@@ -351,15 +351,24 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
+     * @param bool $includePasswords
      * @return array
      */
-    public function getAllSettingsSeparated(): array
+    public function getAllSettingsSeparated(bool $includePasswords = false): array
     {
-        if ($this->allSettings !== null) {
+        if ($this->allSettings !== null && $includePasswords === false) {
             return $this->allSettings;
         }
 
+        if ($this->allSettings !== null && $includePasswords === true) {
+            return \array_merge_recursive($this->allSettings, $this->passwords);
+        }
+
         [$this->allSettings, $this->passwords] = $this->getSettingsService()->getAll(self::$mapping);
+
+        if ($this->allSettings !== null && $includePasswords === true) {
+            return \array_merge_recursive($this->allSettings, $this->passwords);
+        }
 
         return $this->allSettings;
     }
@@ -370,13 +379,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function getAll(): array
     {
-        if ($this->allSettings !== null) {
-            return $this->allSettings;
-        }
-
-        [$this->allSettings, $this->passwords] = $this->getSettingsService()->getAll(self::$mapping, true);
-
-        return $this->allSettings;
+        return $this->getAllSettingsSeparated(true);
     }
 
     /**

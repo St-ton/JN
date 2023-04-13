@@ -330,6 +330,9 @@ final class JTLCache implements JTLCacheInterface
             } else {
                 $value = $_conf->cWert;
             }
+            if ($_conf->cName === 'caching_redis_pass') {
+                $value = Shop::Container()->getCryptoService()->decryptXTEA($_conf->cWert);
+            }
             // naming convention is 'caching_'<var-name> for options saved in database
             $cacheInit[\str_replace('caching_', '', $_conf->cName)] = $value;
         }

@@ -26,6 +26,7 @@ class LocalizationController extends AbstractBackendController
         $this->smarty = $smarty;
         $this->checkPermissions(Permissions::DIAGNOSTIC_VIEW);
         $this->getText->loadAdminLocale('pages/localizationcheck');
+        $this->getText->loadAdminLocale('pages/categorycheck');
 
         $type      = Request::postVar('type');
         $languages = \collect(LanguageHelper::getAllLanguages(0, true, true));
@@ -39,6 +40,7 @@ class LocalizationController extends AbstractBackendController
         }
 
         return $smarty->assign('passed', false)
+            ->assign('safe_mode', \SAFE_MODE === true)
             ->assign('checkResults', Status::getInstance($this->db, $this->cache)->getLocalizationProblems(false))
             ->assign('languagesById', $languages->keyBy('id')->toArray())
             ->getResponse('localizationcheck.tpl');

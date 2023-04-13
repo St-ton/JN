@@ -338,9 +338,7 @@ class Base implements SectionInterface
                     $data[$id]
                 );
             }
-            if ($id !== 'email_smtp_pass') {
-                $updated[] = ['id' => $id, 'value' => $data[$id]];
-            }
+            $updated[] = ['id' => $id, 'value' => $data[$id]];
         }
         Shop::Container()->getCache()->flushTags($tags);
 

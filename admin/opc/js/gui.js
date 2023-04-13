@@ -14,7 +14,7 @@ $('#navScrollLeft').on('click', () => {
 
 // tabs
 
-$('[data-tab]').each((i, tab) => {
+for(const tab of $('[data-tab]')) {
     let $tab = $(tab);
     let tabPane = $('#' + tab.dataset.tab)[0];
     let allTabs = $tab.closest('.tabs').find('[data-tab]');
@@ -30,11 +30,11 @@ $('[data-tab]').each((i, tab) => {
         tab.scrollIntoView();
         tabPane.classList.add('active');
     });
-});
+}
 
 // collapses
 
-document.querySelectorAll('[data-collapse]').forEach(collapseBtn => {
+for(const collapseBtn of $('[data-collapse]')) {
     let collapse = document.querySelector('#' + collapseBtn.dataset.collapse);
 
     collapse.addEventListener('transitionend', () => {
@@ -59,34 +59,13 @@ document.querySelectorAll('[data-collapse]').forEach(collapseBtn => {
 
         collapseBtn.classList.toggle('collapsed');
     });
-});
+}
 
 // tooltips
 
-document.querySelectorAll('[data-tooltip]').forEach(elm => {
-    let title = elm.title;
-    let tooltip = document.createElement('div');
-    let arrow = document.createElement('div');
-
-    arrow.classList.add('tooltip-arrow');
-    arrow.setAttribute('data-popper-arrow', true);
-    tooltip.classList.add('tooltip');
-    tooltip.innerText = title;
-    tooltip.append(arrow);
-    document.body.append(tooltip);
-    elm.title = '';
-
-    let popper = Popper.createPopper(elm, tooltip, {modifiers: [{name: 'offset', options: {offset: [0, 8]}}]});
-
-    elm.addEventListener('mouseenter', () => {
-        tooltip.classList.add('shown');
-        popper.update();
-    });
-
-    elm.addEventListener('mouseleave', () => {
-        tooltip.classList.remove('shown');
-    });
-})
+for(const elm of $('[data-tooltip]')) {
+    enableTooltip(elm);
+}
 
 // dropdowns
 
@@ -199,4 +178,30 @@ export async function showError(msg, title)
 
     $(errorAlert).html(msg);
     await showModal(window.errorModal);
+}
+
+export function enableTooltip(elm)
+{
+    let title   = elm.title;
+    let tooltip = document.createElement('div');
+    let arrow   = document.createElement('div');
+
+    arrow.classList.add('tooltip-arrow');
+    arrow.setAttribute('data-popper-arrow', true);
+    tooltip.classList.add('tooltip');
+    tooltip.innerText = title;
+    tooltip.append(arrow);
+    document.body.append(tooltip);
+    elm.title = '';
+
+    let popper = Popper.createPopper(elm, tooltip, {modifiers: [{name: 'offset', options: {offset: [0, 8]}}]});
+
+    elm.addEventListener('mouseenter', () => {
+        tooltip.classList.add('shown');
+        popper.update();
+    });
+
+    elm.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('shown');
+    });
 }

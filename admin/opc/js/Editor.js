@@ -8,20 +8,19 @@ export class Editor extends Emitter
     constructor(config)
     {
         super();
-        this.config = config;
-        this.shopUrl = config.shopUrl;
+
+        this.config   = config;
+        this.shopUrl  = config.shopUrl;
         this.messages = config.messages;
-        this.io = new IO(config);
-        this.page = new Page(this.io, config);
-        this.iframe = new EditorFrame(this.io, this.page, config)
-        this.init();
+        this.io       = new IO(config);
+        this.page     = new Page(this.io, config);
+        this.iframe   = new EditorFrame(this.io, this.page, config);
     }
 
     async init()
     {
         await this.io.init();
-        await this.page.lock();
-        await this.page.loadMetaData();
+        await this.page.init();
         await this.iframe.init();
     }
 

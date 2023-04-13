@@ -1,71 +1,89 @@
+import {enableTooltip} from "./gui.js";
+
 export class EditorFrame
 {
     constructor(io, page, {shopUrl})
     {
-        this.io = io;
-        this.page = page;
-        this.shopUrl = shopUrl;
-        this.loadedStylesheets  = [];
+        this.io                = io;
+        this.page              = page;
+        this.shopUrl           = shopUrl;
+        this.loadedStylesheets = new Set();
+        this.rootAreas         = [];
     }
 
     async init()
     {
+        let url = new URL(this.page.fullUrl);
+        url.searchParams.set('opcEditMode', 'yes');
+        url.searchParams.set('opcEditedPageKey', this.page.key);
+        let iframeUrl = url.href;
+
         await new Promise(res => {
-            $(window.iframe)
-                .on('load', res)
-                .attr('src', this.getIframePageUrl());
+            $(window.iframe).one('load', res).attr('src', iframeUrl);
         });
 
-        this.ctx = window.iframe.contentWindow;
-        this.ctx.opc = opc;
-        this.jq = this.ctx.$;
-        this.head = this.jq('head');
-        this.body = this.jq('body');
+        this.ctx       = window.iframe.contentWindow;
+        this.ctx.opc   = window.opc;
+        this.jq        = this.ctx.$;
+        this.head      = this.jq('head');
+        this.body      = this.jq('body');
         this.rootAreas = this.jq('.opc-rootarea');
 
-        this.jq('[data-opc-portlet-css-link=true]').each((e, elm) => {
-            this.loadedStylesheets.push(elm.href);
-        });
+        for(const cssLink of this.jq('[data-opc-portlet-css-link=true]')) {
+            this.loadedStylesheets.add(cssLink.href);
+        }
 
         this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
         this.loadStylesheet(this.shopUrl + '/includes/node_modules/@fortawesome/fontawesome-free/css/all.min.css');
-
         this.disableLinks();
-
-        let preview = await this.page.getPreview();
-        this.processPreview(preview);
+        this.renderPreview(await this.page.getPreview());
     }
 
-    processPreview(preview)
+    renderPreview(preview)
     {
-        this.clear();
+        const usedAreaIds = [];
 
-        this.rootAreas.each((i, area) => {
-            area = this.jq(area);
+        for (const area of this.rootAreas) {
+            const areaId = area.dataset.areaId;
 
-            if (area.data('area-foreign')) {
-                return;
+            if (typeof areaId === 'string') {
+                const areaContent = preview[areaId];
+
+                if (typeof areaContent === 'string') {
+                    area.innerHTML = areaContent;
+                    usedAreaIds.push(areaId);
+                }
             }
+        }
 
-            let areaId = area.data('area-id');
-            area.html(preview[areaId]);
-            delete preview[areaId];
-        });
+        const previewAreaIds   = Object.keys(preview);
+        const offscreenAreaIds = previewAreaIds.filter(id => usedAreaIds.includes(id) === false);
 
-        let offscreenAreas = this.jq([]);
-
-        Object.entries(preview).forEach(([areaId, areaContent]) => {
-            let area = $('<div class="opc-area opc-rootarea" data-area-id="' + areaId + '">')
-                .html(areaContent);
-            offscreenAreas = this.offscreenAreas.add(area);
-        });
-
-        // TODO something with offscreenAreas
+        // TODO offscreenAreaIds
     }
 
-    clear()
+    updateDropTargets()
     {
-        this.rootAreas.not('[data-area-foreign]').empty();
+        this.stripDropTargets();
+
+        for(const area of this.getAreas()) {
+            let droptarget = $(window.dropTargetBlueprint).clone().attr('id', '').show();
+
+            droptarget
+                .find('.opc-droptarget-info')
+                .attr('title', area.data('title') || area.data('area-id'));
+
+            this.jq(area)
+                .append(droptarget.clone())
+                .children('[data-portlet]').before(droptarget.clone());
+        }
+
+        enableTooltip(this.areas().find('.opc-droptarget-info'));
+    }
+
+    stripDropTargets()
+    {
+        this.getDropTargets().remove();
     }
 
     disableLinks()
@@ -79,35 +97,31 @@ export class EditorFrame
             .off('change');
     }
 
-    loadStylesheet(url)
+    async loadStylesheet(url)
     {
-        return new Promise(res => {
-            if (!this.loadedStylesheets.includes(url)) {
-                this.loadedStylesheets.push(url);
-                this
-                    .jq('<link rel="stylesheet" href="' + url + '">')
-                    .on('load', res)
+        if (!this.loadedStylesheets.has(url)) {
+            this.loadedStylesheets.add(url);
+
+            await new Promise(res => {
+                this.jq(`<link rel="stylesheet" href="${url}">`)
+                    .one('load', res)
                     .appendTo(this.head);
-            } else {
-                res();
-            }
-        })
+            })
+        }
     }
 
-    getIframePageUrl()
+    getAreas()
     {
-        let pageUrlLink = document.createElement('a');
+        return this.jq('.opc-area');
+    }
 
-        pageUrlLink.href = this.page.fullUrl;
+    getPortlets()
+    {
+        return this.jq('[data-portlet]');
+    }
 
-        if(pageUrlLink.search !== '') {
-            pageUrlLink.search += '&opcEditMode=yes';
-        } else {
-            pageUrlLink.search = '?opcEditMode=yes';
-        }
-
-        pageUrlLink.search += '&opcEditedPageKey=' + this.page.key;
-
-        return pageUrlLink.href.toString();
+    getDropTargets()
+    {
+        return this.jq('.opc-droptarget');
     }
 }

@@ -1,4 +1,8 @@
 import "./gui.js";
 import {Editor} from "./Editor.js";
 
-window.opc = new Editor(JSON.parse(window.editorConfig.innerText));
+const editorConfig = JSON.parse(window.editorConfig.innerText);
+
+window.opc = new Editor(editorConfig);
+
+window.opc.init();

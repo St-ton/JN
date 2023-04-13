@@ -5,24 +5,21 @@ export class IO
     constructor({jtlToken, shopUrl})
     {
         this.jtlToken = jtlToken;
-        this.ioUrl = shopUrl + '/admin/io';
+        this.ioUrl    = shopUrl + '/admin/io';
     }
 
     async init()
     {
-        let names = [].concat(...(await Promise.all([
-            this.ioCall('opcGetIOFunctionNames'),
-            this.ioCall('opcGetPageIOFunctionNames'),
-        ])));
-
-        this.generateIoFunctions(names);
+        this.generateIoFunctions(['getIOFunctionNames', 'getPageIOFunctionNames']);
+        this.generateIoFunctions(await this.getIOFunctionNames());
+        this.generateIoFunctions(await this.getPageIOFunctionNames());
     }
 
     generateIoFunctions(names)
     {
-        names.forEach(name => {
+        for(const name of names) {
             this[name] = this.generateIoFunction('opc' + capitalize(name));
-        });
+        }
     }
 
     generateIoFunction(publicName)

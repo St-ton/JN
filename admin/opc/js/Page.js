@@ -4,35 +4,40 @@ import {showError} from "./gui.js";
 
 const localDateFormat = 'DD.MM.YYYY - HH:mm';
 const internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
+const lockIntervalSeconds = 60;
 
 export class Page
 {
     constructor(io, {shopUrl, pageKey, pageUrl, messages})
     {
-        this.io       = io;
-        this.shopUrl  = shopUrl;
-        this.key      = pageKey;
-        this.url      = pageUrl;
-        this.messages = messages;
-        this.unlocked = false;
-        this.fullUrl  = this.shopUrl + this.url;
+        this.io            = io;
+        this.shopUrl       = shopUrl;
+        this.key           = pageKey;
+        this.url           = pageUrl;
+        this.messages      = messages;
+        this.keepLockAlive = true;
+        this.fullUrl       = this.shopUrl + this.url;
+    }
+
+    async init()
+    {
+        await this.lock();
+        await this.loadMetaData();
     }
 
     async lock(delayed = false)
     {
         if (delayed) {
-            await sleep(1000 * 60);
+            await sleep(1000 * lockIntervalSeconds);
         }
 
-        if(this.unlocked) {
+        if (this.keepLockAlive === false) {
             return;
         }
 
         let state = await this.io.lockDraft(this.key);
 
-        if (state === 0) {
-            this.lock(true);
-        } else {
+        if (state !== 0) {
             if (state === 1) {
                 showError(this.messages.opcPageLocked);
             } else if (state === 2) {
@@ -41,11 +46,13 @@ export class Page
 
             throw state;
         }
+
+        this.lock(true);
     }
 
     async unlock()
     {
-        this.unlocked = true;
+        this.keepLockAlive = false;
         await this.io.unlockDraft(this.key);
     }
 

@@ -303,6 +303,12 @@ class Base implements SectionInterface
             if (!isset($data[$id])) {
                 continue;
             }
+            if ($item->getInputType() === 'pass') {
+                if (empty($data[$id])) {
+                    $data[$id]       = $item->getCurrentValue();
+                    $unfiltered[$id] = $item->getCurrentValue();
+                }
+            }
             $value->cWert                 = $data[$id];
             $value->cName                 = $id;
             $value->kEinstellungenSektion = $item->getConfigSectionID();
@@ -332,7 +338,9 @@ class Base implements SectionInterface
                     $data[$id]
                 );
             }
-            $updated[] = ['id' => $id, 'value' => $data[$id]];
+            if ($id !== 'email_smtp_pass') {
+                $updated[] = ['id' => $id, 'value' => $data[$id]];
+            }
         }
         Shop::Container()->getCache()->flushTags($tags);
 

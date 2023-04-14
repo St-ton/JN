@@ -25,7 +25,7 @@ class Migration_20230414111419 extends Migration implements IMigration
         $settingConf = new stdClass();
         $settingConf->cConf = 'Y';
 
-        $this->getDB()->updateRow('teinstellungenconf','kEinstellungenConf',1566, $settingConf);
+        $this->getDB()->updateRow('teinstellungenconf','cWertName','redirect_save_404', $settingConf);
     }
 
     /**
@@ -36,6 +36,6 @@ class Migration_20230414111419 extends Migration implements IMigration
         $settingConf = new stdClass();
         $settingConf->cConf = 'N';
 
-        $this->getDB()->updateRow('teinstellungenconf','kEinstellungenConf',1566, $settingConf);
+        $this->getDB()->updateRow('teinstellungenconf','cWertName','redirect_save_404', $settingConf);
     }
 }

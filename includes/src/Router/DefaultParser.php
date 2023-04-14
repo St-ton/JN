@@ -85,10 +85,12 @@ class DefaultParser
     }
 
     /**
-     * @param string $slug
+     * @param string      $slug
+     * @param array|null  $replacements
+     * @param string|null $type
      * @return string
      */
-    public function parse(string $slug): string
+    public function parse(string $slug, ?array $replacements = null, ?string $type = null): string
     {
         $page = 0;
         $slug = $this->checkCustomFilters($slug);
@@ -102,8 +104,13 @@ class DefaultParser
             $slug = \mb_substr($slug, 0, $matches[1][1]);
         }
         if ($page === 1 && \mb_strlen($slug) > 0) {
+            $slug = '/' . $slug;
+            if ($type !== null && isset($replacements['name'])) {
+                $replacements['name'] = \mb_substr($replacements['name'], 0, $matches[1][1]);
+                $slug                 = Shop::getRouter()->getPathByType($type, $replacements);
+            }
             \http_response_code(301);
-            \header('Location: ' . Shop::getURL() . '/' . $slug);
+            \header('Location: ' . Shop::getURL() . $slug);
             exit();
         }
         if ($page > 0) {

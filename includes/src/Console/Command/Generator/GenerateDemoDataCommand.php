@@ -19,27 +19,32 @@ class GenerateDemoDataCommand extends Command
     /**
      * @var int
      */
-    private $manufacturers;
+    private int $manufacturers = 0;
 
     /**
      * @var int
      */
-    private $categories;
+    private int $categories = 0;
 
     /**
      * @var int
      */
-    private $products;
+    private int $products = 0;
 
     /**
      * @var int
      */
-    private $customers;
+    private int $customers = 0;
 
     /**
-     * @var ProgressBar
+     * @var int
      */
-    private $bar;
+    private int $links = 0;
+
+    /**
+     * @var ProgressBar|null
+     */
+    private ?ProgressBar $bar = null;
 
     /**
      * @inheritDoc
@@ -49,6 +54,7 @@ class GenerateDemoDataCommand extends Command
         $this->setName('generate:demodata')
             ->setDescription('Generate Demo-Data')
             ->addOption('manufacturers', 'm', InputOption::VALUE_OPTIONAL, 'Amount of manufacturers', 0)
+            ->addOption('links', 'l', InputOption::VALUE_OPTIONAL, 'Amount of links', 0)
             ->addOption('categories', 'c', InputOption::VALUE_OPTIONAL, 'Amount of categories', 0)
             ->addOption('customers', 'u', InputOption::VALUE_OPTIONAL, 'Amount of customers', 0)
             ->addOption('products', 'p', InputOption::VALUE_OPTIONAL, 'Amount of products', 0);
@@ -63,6 +69,7 @@ class GenerateDemoDataCommand extends Command
         $this->categories    = (int)$this->getOption('categories');
         $this->products      = (int)$this->getOption('products');
         $this->customers     = (int)$this->getOption('customers');
+        $this->links         = (int)$this->getOption('links');
 
         $this->generate();
 
@@ -80,7 +87,8 @@ class GenerateDemoDataCommand extends Command
                 'manufacturers' => $this->manufacturers,
                 'categories'    => $this->categories,
                 'articles'      => $this->products,
-                'customers'     => $this->customers
+                'customers'     => $this->customers,
+                'links'         => $this->links
             ]
         );
         ProgressBar::setFormatDefinition(
@@ -90,26 +98,32 @@ class GenerateDemoDataCommand extends Command
 
         if ($this->manufacturers > 0) {
             $this->barStart($this->manufacturers, 'manufacturer');
-            $generator->createManufacturers([$this, 'callBack']);
+            $generator->createManufacturers($this->callBack(...));
             $this->barEnd();
         }
 
         if ($this->categories > 0) {
             $this->barStart($this->categories, 'categories');
-            $generator->createCategories([$this, 'callBack']);
+            $generator->createCategories($this->callBack(...));
             $this->barEnd();
         }
 
         if ($this->products > 0) {
             $this->barStart($this->products, 'products');
-            $generator->createProducts([$this, 'callBack']);
+            $generator->createProducts($this->callBack(...));
             $this->barEnd();
             $generator->updateRatingsAvg();
         }
 
         if ($this->customers > 0) {
             $this->barStart($this->customers, 'customers');
-            $generator->createCustomers([$this, 'callBack']);
+            $generator->createCustomers($this->callBack(...));
+            $this->barEnd();
+        }
+
+        if ($this->links > 0) {
+            $this->barStart($this->links, 'links');
+            $generator->createLinks($this->callBack(...));
             $this->barEnd();
         }
 
@@ -117,6 +131,7 @@ class GenerateDemoDataCommand extends Command
         $this->getIO()->writeln('Generated categories: ' . $this->categories);
         $this->getIO()->writeln('Generated products: ' . $this->products);
         $this->getIO()->writeln('Generated customers: ' . $this->customers);
+        $this->getIO()->writeln('Generated links: ' . $this->links);
     }
 
     /**

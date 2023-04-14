@@ -8,6 +8,9 @@ use Faker\Generator;
 use JTL\DB\DbInterface;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
+use JTL\Language\LanguageHelper;
+use JTL\Link\Admin\LinkAdmin;
+use JTL\Shop;
 use JTL\xtea\XTEA;
 use OverflowException;
 use stdClass;
@@ -39,6 +42,11 @@ class DemoDataInstaller
     public const NUM_CUSTOMERS = 100;
 
     /**
+     * number of links to create.
+     */
+    public const NUM_LINKS = 0;
+
+    /**
      * @var array
      */
     protected array $config;
@@ -61,6 +69,7 @@ class DemoDataInstaller
         'categories'    => self::NUM_CATEGORIES,
         'articles'      => self::NUM_ARTICLES,
         'customers'     => self::NUM_CUSTOMERS,
+        'links'         => self::NUM_LINKS,
     ];
 
     /**
@@ -710,6 +719,56 @@ class DemoDataInstaller
 
             $res = $pdo->insert('tkunde', $customer);
             $this->callback($callback, $i, $limit, $res > 0, $firstName . ' ' . $lastName);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param null $callback
+     * @return $this
+     */
+    public function createLinks($callback = null): self
+    {
+        $limit = $this->config['links'];
+        if ($limit < 1) {
+            return $this;
+        }
+        $fake      = $this->faker;
+        $hiddenLg  = $this->db->select('tlinkgruppe', 'cTemplatename', 'hidden');
+        $lgID      = (int)($hiddenLg->kLinkgruppe ?? 1);
+        $linkadmin = new LinkAdmin($this->db, Shop::Container()->getCache());
+        $data      = [
+            'kLink'              => 0,
+            'kPlugin'            => 0,
+            'cName'              => '',
+            'nLinkart'           => \LINKTYP_EIGENER_CONTENT,
+            'nSort'              => 0,
+            'bSSL'               => 0,
+            'bIsActive'          => 1,
+            'bIsFluid'           => 0,
+            'cSichtbarNachLogin' => 'N',
+            'cNoFollow'          => 'N',
+            'cIdentifier'        => '',
+            'target'             => '_self',
+            'cKundengruppen'     => '_DBNULL_',
+            'kLinkgruppe'        => $lgID
+        ];
+        $content   = $fake->text();
+        $codes     = [];
+        foreach (LanguageHelper::getAllLanguages(0, true) as $language) {
+            $codes[] = $language->getIso();
+        }
+        for ($i = 1; $i <= $limit; ++$i) {
+            $data['cName'] = $fake->slug;
+            foreach ($codes as $code) {
+                $data['cName_' . $code]    = $data['cName'] . '_' . $code;
+                $data['cSeo_' . $code]     = $data['cName'] . '_' . $code;
+                $data['cTitle_' . $code]   = $data['cName'] . '_' . $code;
+                $data['cContent_' . $code] = $content;
+            }
+            $linkadmin->createOrUpdateLink($data);
+            $this->callback($callback, $i, $limit, true, $data['cName']);
         }
 
         return $this;

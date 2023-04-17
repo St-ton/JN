@@ -104,13 +104,13 @@ class DefaultParser
             $slug = \mb_substr($slug, 0, $matches[1][1]);
         }
         if ($page === 1 && \mb_strlen($slug) > 0) {
-            $slug = '/' . $slug;
+            $url = Shop::getURL() . '/' . $slug;
             if ($type !== null && isset($replacements['name'])) {
                 $replacements['name'] = \mb_substr($replacements['name'], 0, $matches[1][1]);
-                $slug                 = Shop::getRouter()->getPathByType($type, $replacements);
+                $url                  = Shop::getRouter()->getURLByType($type, $replacements);
             }
             \http_response_code(301);
-            \header('Location: ' . Shop::getURL() . $slug);
+            \header('Location: ' . $url);
             exit();
         }
         if ($page > 0) {

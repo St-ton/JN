@@ -406,24 +406,20 @@ class Separator
             foreach ($languages as $language) {
                 foreach ($units as $unit) {
                     $sep = new self();
+                    $dec = 2;
                     if ($unit === \JTL_SEPARATOR_WEIGHT) {
-                        $dec = isset($conf['artikeldetails_gewicht_stellenanzahl'])
-                        && \mb_strlen($conf['artikeldetails_gewicht_stellenanzahl']) > 0
-                            ? $conf['artikeldetails_gewicht_stellenanzahl']
+                        $dec = ($conf['artikeldetails_gewicht_stellenanzahl'] ?? '') !== ''
+                            ? (int)$conf['artikeldetails_gewicht_stellenanzahl']
                             : 2;
-                        $sep->setDezimalstellen($dec);
-                    } else {
-                        $sep->setDezimalstellen(2);
                     }
-                    $sep10   = isset($conf['artikeldetails_zeichen_nachkommatrenner'])
-                    && \mb_strlen($conf['artikeldetails_zeichen_nachkommatrenner']) > 0
+                    $sep10   = ($conf['artikeldetails_zeichen_nachkommatrenner'] ?? '') !== ''
                         ? $conf['artikeldetails_zeichen_nachkommatrenner']
                         : ',';
-                    $sep1000 = isset($conf['artikeldetails_zeichen_tausendertrenner'])
-                    && \mb_strlen($conf['artikeldetails_zeichen_tausendertrenner']) > 0
+                    $sep1000 = ($conf['artikeldetails_zeichen_tausendertrenner'] ?? '') !== ''
                         ? $conf['artikeldetails_zeichen_tausendertrenner']
                         : '.';
-                    $sep->setDezimalZeichen($sep10)
+                    $sep->setDezimalstellen($dec)
+                        ->setDezimalZeichen($sep10)
                         ->setTausenderZeichen($sep1000)
                         ->setSprache($language->kSprache)
                         ->setEinheit($unit)

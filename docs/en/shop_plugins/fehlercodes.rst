@@ -1,298 +1,298 @@
-Fehlercodes
+Error codes
 ===========
 
-Die folgende Tabelle bietet einen Überblick über die, bei der Plugin-Installation möglichen, Fehlercodes.
+The following table provides an overview of error codes that may appear during installation of a plug-in.
 
 +------------+---------------------------------------------------------------------------------------------+
-| Fehlercode | Beschreibung                                                                                |
+| Error code | Description                                                                                 |
 +============+=============================================================================================+
-| 1          | Alles O.K.                                                                                  |
+| 1          | All good                                                                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 2          | ``$cVerzeichnis`` wurde nicht übergeben                                                     |
+| 2          | ``$cVerzeichnis`` was not assigned                                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 3          | ``info.xml`` existiert nicht                                                                |
+| 3          | ``info.xml`` does not exist                                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 4          | Plugin wurde schon installiert                                                              |
+| 4          | Plug-in already installed                                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 5          | Kein Plugin in der DB, anhand von ``kPlugin``, gefunden                                     |
+| 5          | No plug-in found in the database  using ``kPlugin``                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 6          | Der Pluginname entspricht nicht den Konventionen                                            |
+| 6          | Plug-in name does not comply with conventions                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 7          | Die PluginID entspricht nicht den Konventionen                                              |
+| 7          | Plug-in ID does not comply with conventions                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 8          | Der Installationsknoten ist nicht vorhanden                                                 |
+| 8          | Installation node not available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 9          | Erste Versionsnummer entspricht nicht den Konventionen                                      |
+| 9          | First version number does not comply with conventions                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 10         | Die Versionsnummer entspricht nicht den Konventionen                                        |
+| 10         | Version number does not comply with conventions                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 11         | Das Versionsdatum entspricht nicht den Konventionen                                         |
+| 11         | Version date does not comply with conventions                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 12         | SQL Version für die aktuelle Version existiert nicht                                        |
+| 12         | SQL version for the current version does not exist.                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 13         | Keine Hooks vorhanden                                                                       |
+| 13         | No hooks available                                                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 14         | Die Hook Werte entsprechen nicht den Konventionen                                           |
+| 14         | Hook values do not comply with conventions                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 15         | *CustomLink* Name entspricht nicht den Konventionen                                         |
+| 15         | *CustomLink* name does not comply with conventions                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 16         | *CustomLink* Dateiname entspricht nicht den Konventionen                                    |
+| 16         | *CustomLink* file name does not comply with conventions                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 17         | *CustomLink* Datei existiert nicht                                                          |
+| 17         | *CustomLink* file does not exist                                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 18         | *EinstellungsLink* Name entspricht nicht den Konventionen                                   |
+| 18         | *SettingsLink* name does not comply with conventions                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 19         | Einstellungen fehlen                                                                        |
+| 19         | Settings missing                                                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 20         | Einstellungen ``type`` entspricht nicht den Konventionen                                    |
+| 20         | ``type`` settings do not comply with conventions                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 21         | Einstellungen ``initialValue`` entspricht nicht der Konventionen                            |
+| 21         | ``initialValue`` settings do not comply with conventions                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 22         | Einstellungen ``sort`` entspricht nicht den Konventionen                                    |
+| 22         | ``sort`` settings do not comply with conventions                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 23         | Einstellungen ``Name`` entspricht nicht den Konventionen                                    |
+| 23         | ``Name`` settings do not comply with conventions                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 24         | Keine SelectboxOptionen vorhanden                                                           |
+| 24         | No select box options available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 25         | Keine Sprachvariablen vorhanden                                                             |
+| 25         | No language variables available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 26         | Keine Sprachvariablen vorhanden                                                             |
+| 26         | No language variables available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 27         | Variable ``Name`` entspricht nicht den Konventionen                                         |
+| 27         | ``Name`` variable does not comply with conventions                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 28         | Keine lokalisierte Sprachvariable vorhanden                                                 |
+| 28         | No localised language variable available                                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 29         | Die ISO der lokalisierten Sprachvariable entspricht nicht den Konventionen                  |
+| 29         | ISO of the localised language variable does not comply with conventions                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 30         | Der Name der lokalisierten Sprachvariable entspricht nicht den Konventionen                 |
+| 30         | The name of the localised language variable does not comply with conventions                |
 +------------+---------------------------------------------------------------------------------------------+
-| 31         | Die Hook Datei ist nicht vorhanden                                                          |
+| 31         | Hook file is not available                                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 32         | Version existiert nicht im Versionsordner                                                   |
+| 32         | The version does not exist in the version folder                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 33         | Einstellungen ``conf`` entspricht nicht den Konventionen                                    |
+| 33         | ``conf`` settings do not comply with conventions                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 34         | Einstellungen ``ValueName`` entspricht nicht den Konventionen                               |
+| 34         | ``ValueName`` settings do not comply with conventions                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 35         | XML Version entspricht nicht den Konventionen                                               |
+| 35         | XML version does not comply with conventions                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 36         | Shop Version entspricht nicht den Konventionen                                              |
+| 36         | Shop version does not comply with conventions                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 37         | Shop Version ist zu niedrig                                                                 |
+| 37         | Shop version is too low                                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 38         | Keine *Frontendlinks* vorhanden, obwohl der Node angelegt wurde                             |
+| 38         | No *front end links* available, even though node was created                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 39         | Link Filename entspricht nicht den Konventionen                                             |
+| 39         | Link file name does not comply with conventions                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 40         | ``LinkName`` entspricht nicht den Konventionen                                              |
+| 40         | ``LinkName`` does not comply with conventions                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 41         | Angabe ob "erst Sichtbar nach Login" entspricht nicht den Konventionen                      |
+| 41         | Input regarding "display after login" setting does not comply with conventions              |
 +------------+---------------------------------------------------------------------------------------------+
-| 42         | Angabe ob ein "Druckbutton gezeigt" werden soll entspricht nicht den Konventionen           |
+| 42         | Input regarding if a "push button" should be displayed, does not comply with conventions    |
 +------------+---------------------------------------------------------------------------------------------+
-| 43         | Die ISO der Linksprache entspricht nicht den Konventionen                                   |
+| 43         | ISO of the link language does not comply with conventions                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 44         | Der SEO Name entspricht nicht den Konventionen                                              |
+| 44         | SEO name does not comply with conventions                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 45         | Der Name entspricht nicht den Konventionen                                                  |
+| 45         | Name does not comply with conventions                                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 46         | Der Titel entspricht nicht den Konventionen                                                 |
+| 46         | Title does not comply with conventions                                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 47         | Der MetaTitle entspricht nicht den Konventionen                                             |
+| 47         | MetaTitle does not comply with conventions                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 48         | Die MetaKeywords entsprechen nicht den Konvention                                           |
+| 48         | MetaKeywords do not comply with convention                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 49         | Die MetaDescription entspricht nicht den Konventionen                                       |
+| 49         | MetaDescription does not comply with conventions                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 50         | Der Name in den Zahlungsmethoden entspricht nicht den Konventionen                          |
+| 50         | Name in payment methods does not comply with conventions                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 51         | Mail Adresse in den Zahlungsmethoden entspricht nicht den Konventionen                      |
+| 51         | Email address in payment method does not comply with conventions                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 52         | ``TSCode`` in den Zahlungsmethoden entspricht nicht den Konventionen                        |
+| 52         | ``TSCode`` in payment method does not comply with conventions                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 53         | ``PreOrder`` in den Zahlungsmethoden entspricht nicht den Konventionen                      |
+| 53         | ``PreOrder`` in payment method does not comply with conventions                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 54         | ``ClassFile`` in den Zahlungsmethoden entspricht nicht den Konventionen                     |
+| 54         | ``ClassFile`` in payment method does not comply with conventions                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 55         | Die Datei für die Klasse Zahlungsmethode existiert nicht                                    |
+| 55         | File for payment method class does not exist                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 56         | ``TemplateFile`` in den Zahlungsmethoden entspricht nicht den Konventionen                  |
+| 56         | ``TemplateFile`` in payment method does not comply with conventions                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 57         | Die Datei für das Template der Zahlungsmethode existiert nicht                              |
+| 57         | File for payment method does not exist                                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 58         | Keine Sprachen in den Zahlungsmethoden hinterlegt                                           |
+| 58         | No languages stored in payment methods                                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 59         | Die ISO der Sprache in der Zahlungsmethode entspricht nicht den Konventionen                |
+| 59         | ISO of language of payment method does not comply with conventions                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 60         | Der Name der Sprache in den Zahlungsmethoden entspricht nicht den Konventionen              |
+| 60         | Name in payment methods does not comply with conventions                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 61         | Der ``ChargeName`` in den Zahlungsmethoden Sprache entspricht nicht den Konventionen        |
+| 61         | ``ChargeName`` in language of payment method does not comply with conventions               |
 +------------+---------------------------------------------------------------------------------------------+
-| 62         | Die Sprache der ``InfoText`` in den Zahlungsmethoden entspricht nicht den Konventionen      |
+| 62         | Language of ``InfoText`` in payment methods does not comply with conventions                |
 +------------+---------------------------------------------------------------------------------------------+
-| 63         | Die Einstellungen ``type`` der Zahlungsmethode entspricht nicht den Konventionen            |
+| 63         | ``type`` settings of the payment methods do not comply with conventions                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 64         | Die Einstellungen ``initalValue`` der Zahlungsmethode entspricht nicht den Konventionen     |
+| 64         | ``initalValue`` settings of the payment methods do not comply with conventions              |
 +------------+---------------------------------------------------------------------------------------------+
-| 65         | Die Einstellungen ``sort`` der Zahlungsmethode entspricht nicht den Konventionen            |
+| 65         | ``sort`` settings of the payment methods do not comply with conventions                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 66         | Die Einstellungen ``conf`` der Zahlungsmethode entspricht nicht den Konventionen            |
+| 66         | ``conf`` settings of the payment methods do not comply with conventions                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 67         | Die Einstellungen ``Name`` der Zahlungsmethode entspricht nicht den Konventionen            |
+| 67         | ``Name`` settings of the payment methods do not comply with conventions                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 68         | Die Einstellungen ``ValueName`` der Zahlungsmethode entspricht nicht den Konventionen       |
+| 68         | ``ValueName`` settings of the payment methods do not comply with conventions                |
 +------------+---------------------------------------------------------------------------------------------+
-| 69         | Keine Selectbox Optionen vorhanden                                                          |
+| 69         | No select box options available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 70         | Die Option entspricht nicht den Konventionen                                                |
+| 70         | Option does not comply with conventions                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 71         | Die Sortierung in den Zahlungsmethoden entspricht nicht den Konventionen                    |
+| 71         | Sorting of payment methods does not comply with conventions                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 72         | *Soap* in den Zahlungsmethoden entspricht nicht den Konventionen                            |
+| 72         | *Soap* in the payment methods does not comply with conventions                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 73         | *Curl* in den Zahlungsmethoden entspricht nicht den Konventionen                            |
+| 73         | *Curl* in the payment methods does not comply with conventions                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 74         | *Sockets* in den Zahlungsmethoden entspricht nicht den Konventionen                         |
+| 74         | *Sockets* in the payment methods does not comply with conventions                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 75         | ``ClassName`` in den Zahlungsmethoden entspricht nicht den Konventionen                     |
+| 75         | ``ClassName`` in the payment methods does not comply with conventions                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 76         | Der Templatename entspricht nicht den Konventionen                                          |
+| 76         | Template name does comply with conventions                                                  |
 +------------+---------------------------------------------------------------------------------------------+
-| 77         | Die Templatedatei für den Frontend Link existiert nicht                                     |
+| 77         | The template file for the front end link does not exist                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 78         | Es darf nur ein Templatename oder ein Fullscreen Templatename existieren                    |
+| 78         | Only one template or one full screen template name can exist                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 79         | Der Fullscreen Template name entspricht nicht den Konventionen                              |
+| 79         | Full screen template name does comply with conventions                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 80         | Die Fullscreen Templatedatei für den Frontend Link existiert nicht                          |
+| 80         | The full screen template file for the front end link does not exist                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 81         | Für einen Frontend Link muss ein Templatename oder Fullscreen Templatename angegeben werden |
+| 81         | A template or full screen template name must be assigned for a front end link               |
 +------------+---------------------------------------------------------------------------------------------+
-| 82         | Keine Box vorhanden                                                                         |
+| 82         | No box available                                                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 83         | Box Name entspricht nicht der Konvention                                                    |
+| 83         | Box name does not comply with conventions                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 84         | Box Templatedatei entspricht nicht der Konvention                                           |
+| 84         | Box template file does not comply with conventions                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 85         | Box Templatedatei existiert nicht                                                           |
+| 85         | Box template file does not exist                                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 86         | Lizenzklasse existiert nicht                                                                |
+| 86         | Licence class does not exist                                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 87         | Name der Lizenzklasse entspricht nicht der Konvention                                       |
+| 87         | Name of licence class does not comply with conventions                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 88         | Lizenklasse ist nicht definiert                                                             |
+| 88         | Licence class not defined                                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 89         | Methode ``checkLicence`` in der Lizenzklasse ist nicht definiert                            |
+| 89         | ``checkLicence`` method not defined in the licence class                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 90         | *PluginID* bereits in der Datenbank vorhanden                                               |
+| 90         | *PluginID* already exists in the database                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 91         | Keine Emailtemplates vorhanden, obwohl der Node angelegt wurde                              |
+| 91         | No email templates available even though node was created                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 92         | Template ``Name`` entspricht nicht der Konvention                                           |
+| 92         | ``Name`` template does not comply with convention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 93         | Template ``Type`` entspricht nicht der Konvention                                           |
+| 93         | ``Type`` template does not comply with convention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 94         | Template ``ModulId`` entspricht nicht der Konvention                                        |
+| 94         | ``ModulId`` template does not comply with convention                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 95         | Template ``Active`` entspricht nicht der Konvention                                         |
+| 95         | ``Active`` template does not comply with convention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 96         | Template ``AKZ`` entspricht nicht der Konvention                                            |
+| 96         | ``AKZ`` template does not comply with convention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 97         | Template ``AGB`` entspricht nicht der Konvention                                            |
+| 97         | ``AGB`` template does not comply with convention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 98         | Template ``WRB`` entspricht nicht der Konvention                                            |
+| 98         | ``WRB`` template does not comply with convention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 99         | Die ISO der Emailtemplate Sprache entspricht nicht der Konvention                           |
+| 99         | ISO of the email template language does not comply with convention                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 100        | Der Subject Name entspricht nicht der Konvention                                            |
+| 100        | Subject name does not comply with convention                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 101        | Keine Templatesprachen vorhanden                                                            |
+| 101        | No template languages available                                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 102        | *CheckBoxFunction* Name entspricht nicht der Konvention                                     |
+| 102        | *CheckBoxFunction* name does not comply with convention                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 103        | *CheckBoxFunction* ID entspricht nicht der Konvention                                       |
+| 103        | *CheckBoxFunction* ID does not comply with convention                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 104        | Frontend Link Attribut ``NoFollow`` entspricht nicht der Konvention                         |
+| 104        | Front end link attribute ``NoFollow`` does not comply with conventions                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 105        | Keine Widgets vorhanden                                                                     |
+| 105        | No widgets available                                                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 106        | Widget ``Title`` entspricht nicht der Konvention                                            |
+| 106        | Widget ``Title`` does not comply with convention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 107        | Widget ``Class`` entspricht nicht der Konvention                                            |
+| 107        | Widget ``Class`` does not comply with convention                                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 108        | Die Datei für die Klasse des AdminWidgets existiert nicht                                   |
+| 108        | File for the AdminWidgets class does not exist                                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 109        | Container im Widget entspricht nicht der Konvention                                         |
+| 109        | Container in widget does not comply with convention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 110        | ``Pos`` im Widget entspricht nicht der Konvention                                           |
+| 110        | ``Pos`` in widget does not comply with convention                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 111        | ``Expanded`` im Widget entspricht nicht der Konvention                                      |
+| 111        | ``Expanded`` in widget does not comply with convention                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 112        | ``Active`` im Widget entspricht nicht der Konvention                                        |
+| 112        | ``Active`` in widget does not comply with convention                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 113        | ``AdditionalTemplateFile`` in den Zahlungsmethoden entspricht nicht der Konvention          |
+| 113        | ``AdditionalTemplateFile`` in the payment method does not comply with convention            |
 +------------+---------------------------------------------------------------------------------------------+
-| 114        | Die Datei für das Zusatzschritt-Template der Zahlungsmethode existiert nicht                |
+| 114         | File for additional template of the payment method does not exist                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 115        | Keine Formate vorhanden                                                                     |
+| 115        | No formats available                                                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 116        | Format ``Name`` entspricht nicht der Konvention                                             |
+| 116        | ``Name`` format does not comply with convention                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 117        | Format ``Filename`` entspricht nicht der Konvention                                         |
+| 117        | ``Filename`` format does not comply with convention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 118        | Format ``Content`` entspricht nicht der Konvention                                          |
+| 118        | ``Content`` format does not comply with convention                                          |
 +------------+---------------------------------------------------------------------------------------------+
-| 119        | Format ``Encoding`` entspricht nicht der Konvention                                         |
+| 119        | ``Encoding`` format does not comply with convention                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 120        | Format ``ShippingCostsDeliveryCountry`` entspricht nicht der Konvention                     |
+| 120        | ``ShippingCostsDeliveryCountry`` format does not comply with convention                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 121        | Format ``ContentFile`` entspricht nicht der Konvention                                      |
+| 121        | ``ContentFile`` format does not comply with convention                                      |
 +------------+---------------------------------------------------------------------------------------------+
-| 122        | Kein Template vorhanden                                                                     |
+| 122        | No template available                                                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 123        | Template-Datei entspricht nicht der Konvention                                              |
+| 123        | Template file does not comply with convention                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 124        | Template-Datei existiert nicht                                                              |
+| 124        | Template file does not exist                                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 125        | Uninstall-Datei existiert nicht                                                             |
+| 125        | Uninstall file does not exist                                                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 127        | Plugin benötigt *Ioncube*-Extension, diese ist aber nicht installiert                       |
+| 127        | Plug-in requires an *Ioncube* extension that has not been installed                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 128        | *OptionsSource*-Datei wurde nicht angegeben                                                 |
+| 128        | *OptionsSource*not specified                                                                |
 +------------+---------------------------------------------------------------------------------------------+
-| 129        | *OptionsSource*-Datei existiert nicht                                                       |
+| 129        | *OptionsSource* file does not exist                                                         |
 +------------+---------------------------------------------------------------------------------------------+
-| 152        | Main Plugindaten nicht korrekt                                                              |
+| 152        | Main plug-in data incorrect                                                                 |
 +------------+---------------------------------------------------------------------------------------------+
-| 153        | Ein Hook konnte nicht in die Datenbank gespeichert werden                                   |
+| 153        | A hook could not be saved in the database                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 154        | Ein Adminmenü *Customlink* konnte nicht in die Datenbank gespeichert werden                 |
+| 154        | An admin menu *custom link* could not be saved in the database                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 155        | Ein Adminmenü *Settingslink* konnte nicht in die Datenbank gespeichert werden               |
+| 155        | An admin menu *settings link* could not be saved in the database                            |
 +------------+---------------------------------------------------------------------------------------------+
-| 156        | Eine Einstellung konnte nicht in die Datenbank geschrieben werden                           |
+| 156        | A setting could not be written to the database                                              |
 +------------+---------------------------------------------------------------------------------------------+
-| 157        | Eine Sprachvariable konnte nicht in die Datenbank geschrieben werden                        |
+| 157        | A language variable could not be written to the database                                    |
 +------------+---------------------------------------------------------------------------------------------+
-| 158        | Ein Link konnte nicht in die Datenbank gespeichert werden                                   |
+| 158        | A link could not be saved in the database                                                   |
 +------------+---------------------------------------------------------------------------------------------+
-| 159        | Eine Zahlungsmethode konnte nicht in die Datenbank geschrieben werden                       |
+| 159        | A payment method could not be written to the database                                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 160        | Eine Sprache in den Zahlungsmethoden konnte nicht in die Datenbank geschrieben werden       |
+| 160        | A language in the payment method could not be written to the database                       |
 +------------+---------------------------------------------------------------------------------------------+
-| 161        | Eine Einstellung der Zahlungsmethode konnte nicht in die Datenbank geschrieben werden       |
+| 161        | A payment method setting could not be written to the database                               |
 +------------+---------------------------------------------------------------------------------------------+
-| 202        | Plugindaten fehlen                                                                          |
+| 202        | Plug-in data missing                                                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 203        | SQL hat einen Fehler verursacht                                                             |
+| 203        | SQL has caused an error                                                                     |
 +------------+---------------------------------------------------------------------------------------------+
-| 204        | Versuch eine nicht Plugintabelle zu löschen                                                 |
+| 204        | Try to delete a non-plug-in table                                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 205        | Versuch eine nicht Plugintabelle anzulegen                                                  |
+| 205        | Try to create a non-plug-in table                                                           |
 +------------+---------------------------------------------------------------------------------------------+
-| 206        | SQL Datei ist leer oder konnte nicht geparsed werden                                        |
+| 206        | SQL file is either empty or could not be parsed                                             |
 +------------+---------------------------------------------------------------------------------------------+
-| 207        | Sync Übergabeparameter nicht korrekt                                                        |
+| 207        | Synchronisation parameters incorrect                                                        |
 +------------+---------------------------------------------------------------------------------------------+
-| 208        | Update konnte nicht gesynct werden                                                          |
+| 208        | Update could not be synced                                                                  |
 +------------+---------------------------------------------------------------------------------------------+

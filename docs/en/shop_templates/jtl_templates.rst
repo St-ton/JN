@@ -1,4 +1,4 @@
-JTL-Shop-Templates
+JTL-Shop templates
 ==================
 
 .. |br| raw:: html
@@ -8,12 +8,12 @@ JTL-Shop-Templates
 NOVA
 ----
 
-**NOVA** ist das aktuelle Standardtemplate in JTL-Shop 5.0.
+**NOVA** is the current default template in JTL-Shop 5.0.
 
-Das neue, offene Design lockert die Ansicht Ihres Shops spürbar auf und setzt damit einen Meilenstein für moderne
-Darstellung im Shop-Frontend. |br|
-Es ist ebenso responsive wie vielfältig erweiterbar und setzt auf neuere Technologien, wie zum Beispiel
-*Bootstrap 4.0* und als Styling-Sprache *SCSS* (eine Variante von `Sass <https://sass-lang.com/>`_).
+Our new, open design noticeably relaxes your shop’s look, setting a precedent for modern
+shop front end display.|br|
+It is as responsive as it is versatile and extensible, relying on the latest technology like*Bootstrap 4.0*
+and *SCSS* styling language (a variant of `Sass <https://sass-lang.com/>`_).
 
 .. image:: /_images/NOVA_footprint.png
 
@@ -21,13 +21,13 @@ Es ist ebenso responsive wie vielfältig erweiterbar und setzt auf neuere Techno
 EVO
 ---
 
-**EVO** ist das erste responsive Standardtemplate für JTL-Shop.
+**EVO** is the first responsive default template for JTL-Shop.
 
-Verantwortlich für die responsive Darstellung der Storefront ist das bekannte Framework **Bootstrap** in der Version 3.
-Die Stylesheets (CSS-Dateien) werden dank des EVO-Editors aus verschiedenen LESS-Dateien kompiliert. LESS bietet, im
+The well-known framework**Bootstrap** version 3 is used for the responsive storefront display.
+With the help of the EVO editor, style sheets (CSS files) are compiled from various LESS files. LESS bietet, im
 Gegensatz zu reinem CSS, viele Vorteile für Entwickler.  Mehr über die Vorteile der LESS-Technologie erfahren Sie
 unter http://lesscss.org.
 
 .. image:: /_images/shop_release_showcase.png
 
-Weitere Informationen zur Struktur des EVO-Templates finden Sie unter :doc:`/shop_templates/structure`.
+You can find more information about the structure of the EVO template in the :doc:`/shop_templates/structure` section.

@@ -56,6 +56,12 @@ class Manager
             return;
         }
 
+        //do not write any password to the log
+        if (str_ends_with($setting, '_pass')) {
+            $oldValue = '***';
+            $newValue = '***';
+        }
+
         $this->db->queryPrepared(
             'INSERT INTO teinstellungenlog (kAdminlogin, cAdminname, cIP, cEinstellungenName, cEinstellungenWertAlt,
                                cEinstellungenWertNeu, dDatum)

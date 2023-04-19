@@ -1,5 +1,5 @@
-Hinweise, Tipps & Tricks
-========================
+Additional info, tips, and tricks
+=================================
 
 .. |br| raw:: html
 
@@ -8,137 +8,137 @@ Hinweise, Tipps & Tricks
 .. role:: strike
    :class: strike
 
-Seit JTL-Shop 4.0 gibt es einige Möglichkeiten, um die Entwicklung von Plugins für den JTL-Shop zu vereinfachen.
+Since earlier versions of JTL-Shop, there are some ways to simplify the development of plug-ins for the JTL shop.
 
-Konstanten
-----------
+Constants
+---------
 
-Im ersten Schritt können in der ``[Shop-Root]/includes/config.JTL-Shop.ini.php`` einige Konstanten definiert werden:
+As a first step, some constants can be defined in ``[Shop-Root]/includes/config.JTL-Shop.ini.php``.
 
 .. code-block:: php
 
-    //backtrace bei SQL-Exceptions auslösen
+    //trigger backtrace with SQL exceptions
     define('NICEDB_EXCEPTION_BACKTRACE', true);
 
-    //Backtrace ggf. via echo im Frontend ausgeben
+    //if necessary, output backtrace via echo in the front end
     define('NICEDB_EXCEPTION_ECHO', true);
 
-    //alle durch PHP verursachten Fehler, Warnungen und Hinweise im Frontend anzeigen
+    //show all errors, warnings, and notices caused by PHP in the frontend
     define('SHOP_LOG_LEVEL', E_ALL);
 
-    //alle Fehler, Warnungen und Hinweise bei Wawi-Abgleich anzeigen
+    //show all errors, warnings, and notices during Wawi synchronisation
     define('SYNC_LOG_LEVEL', E_ALL);
 
-    //alle Fehler, Warnungen und Hinweise im Backend anzeigen
+    //show all errors, warnings, and notices in the back end
     define('ADMIN_LOG_LEVEL', E_ALL);
 
-    //alle Fehler, Warnungen und Hinweise in Templates anzeigen
+    //show all errors, warnings, and notices in templates
     define('SMARTY_LOG_LEVEL', E_ALL);
 
-    //Smarty-Templates bei jedem Seitenaufruf neu kompilieren (Work-around für Smarty 3.1.27 bei aktiviertem OpCache)
+    //recompile Smarty templates on every page request (work-around for Smarty 3.1.27 with OpCache enabled)
     define('SMARTY_FORCE_COMPILE', true);
 
-    //Fallbacks für alte Templates deaktivieren
+    //deactivate fallbacks for old templates
     define('TEMPLATE_COMPATIBILITY', false);
 
-Abgleich mit JTL-Wawi
-"""""""""""""""""""""
+Synchronisation with JTL-Wawi
+"""""""""""""""""""""""""""""
 
-Falls zu Debug-Zwecken der Abgeich mit JTL-Wawi näher untersucht werden soll, lässt sich das Löschen der übertragenen
-XML-Dateien folgendermaßen verhindern:
+If the comparison with JTL-Wawi is to be examined more closely for debugging purposes, the deletion of the transferred
+XML files can be prevented as follows:
 
 .. code-block:: php
 
     define('KEEP_SYNC_FILES', true);
 
-Plugin-Profiler
-"""""""""""""""
+Plug-in profiler
+""""""""""""""""
 
-Darüber hinaus können eventuelle Performance-Probleme mit Plugins anhand des Plugin-Profilers untersucht werden.
+In addition, any performance issues with plug-ins can be investigated using the plug-in profiler.
 
 .. code-block:: php
 
     define('PROFILE_PLUGINS', true);
 
-Sobald eine Seite im Frontend aufgerufen wird, findet sich im Backend unter "System -> Profiler" (bis JTL-Shop 4.x)
-bzw. "Fehlerbehebung -> Plugin-Profiler" (ab JTL-Shop 5.x) im Tab "*Plugins*" eine genauere Analyse der ausgeführten
-Plugins und deren Hooks.
+As soon as a page is called in the front end, a more detailed analysis of the executed
+plug-ins and their hooks can be found in the back end under "Troubleshooting -> Plug-in profiler" (as of JTL-Shop 5.x),
+in the "*Plug-ins*" tab.
 
 XHProf / Tideways
 """""""""""""""""
 
-Falls *XHProf* oder *Tideways* auf dem Server installiert sind, kann über die Konstante
+If *XHProf* or *Tideways* is installed on the server, then by using the following constant
 
 .. code-block:: php
 
     define('PROFILE_SHOP', true);
 
-auch der gesamte Code des Onlineshops analysiert werden.
+the entire code of the online shop can be analysed.
 
-SQL-Queries
+SQL queries
 """""""""""
 
-Sämtliche über die NiceDB-Klasse ausgeführten SQL-Queries können via
+All SQL queries executed using the NiceDB class can be stored in the profiler via
 
 .. code-block:: php
 
     define('PROFILE_QUERIES', true);
 
-im Profiler gespeichert werden. |br|
-Unter "System -> Profiler" (bis JTL-Shop 4.x), bzw. "Plugin-Profiler" (ab JTL-Shop 5.x) sind sie anschließend
-im Tab "*SQL*" zu sehen.
+. |br|
+As of JTL-Shop 5.x, they can be found under "Plug-in profiler", in
+the "*SQL*" tab.
 
-Alternativ lassen sie sich via
+Alternatively, they can be displayed in the front end directly via
 
 .. code-block:: php
 
     define('PROFILE_QUERIES_ECHO', true);
 
-auch direkt im Frontend anzeigen.
+.
 
-In beiden Fällen kann der Informationsgehalt über
+In both cases, informational content can be managed via
 
 .. code-block:: php
 
     //verbosity level. 0-3
     define('DEBUG_LEVEL', 0);
 
-gesteuert werden. Je höher der Wert, desto mehr Informationen werden gespeichert bzw. ausgegeben.
+. The higher the value, the more information is stored and output.
 
 
 .. _label_hinweise_wkchecksum:
 
-Checksumme für den Warenkorb
-----------------------------
+Basket checksum
+---------------
 
-Mit der Version 4.05 von JTL-Shop wurde im Warenkorb eine Checksumme zur Prüfung auf Konsistenz eingeführt
+In an earlier version of JTL-Shop, checksum was introduced to the basket to ensure consistency
 ("Breaking Change"). |br|
-Mit dieser Prüfung soll verhindert werden, dass während der Anzeige der Bestellzusammenfassung für den Kunden im
-Hintergrund Änderungen an den gekauften Artikeln durchgeführt werden, die dem Kunden nicht angezeigt werden. Solche
-Änderungen könnten z. B. Preisänderungen durch einen Abgleich mit JTL-Wawi oder parallele Abverkäufe sein. |br|
+The purpose of running this check, is to prevent changes being made to the purchased items in the
+background, which the customer does not see, while the order summary is being displayed to the customer. Such
+changes could be, for example, price changes that occur during synchronisation with JTL-Wawi, or sales that take place in parallel. |br|
 
-Eine solche Änderung wird durch den Vergleich der Prüfsumme direkt vor dem Speichern der Bestellung
-mit der Meldung quittiert:
+This kind of change is done by comparing the checksum right before saving the order, and then confirmed
+with the following message:
 
 .. code-block:: console
 
-    Ihr Warenkorb wurde aufgrund von Preis- oder Lagerbestandsänderungen aktualisiert.
-    Bitte prüfen Sie die Warenkorbpositionen.
+    Your basket has been updated, due to a change in price or inventory.
+    Please review items in the basket.
 
-Der Kunde wird dann zurück zum Warenkorb geleitet.
+The customer will then be redirected to the basket overview.
 
 .. important::
 
-    Ein Plugin, das direkt den Warenkorb manipuliert (um z. B. einen speziellen Rabatt einzufügen), muss selbst dafür
-    sorgen, die Prüfsumme nach den eigenen Änderungen zu aktualisieren, damit die Bestellung nicht in einer Schleife
-    endet.
+    A plug-in that directly modifies the basket (to add a special discount, for example), must ensure
+    that the checksum is updated after its own changes, so that the order does not end in a
+    loop.
 
-Die Aktualisierung erfolgt durch den statischen Aufruf der Methode ``refreshChecksum()`` der Klasse ``Warenkorb``
-mit dem aktuellen Warenkorb als Parameter.
+The update is done by statically calling the ``refreshChecksum()`` method of the ``basket``
+class with the current basket as a parameter.
 
 .. code-block:: php
 
-    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
+    Warenkorb::refreshChecksum($_SESSION['Basket']);
 
 Kompatibilität
 --------------
@@ -157,19 +157,19 @@ Dabei ist zu bedenken, dass nur wenn diese Variable *TRUE* ist, die Klasse ``Sho
 Registry
 --------
 
-Eine simple *Registry* zum Speichern von beliebigen Werten innerhalb eines Requests kann über die Shop-Klasse erreicht
-werden. |br|
-Hierfür sind die Funktionen ``Shop Shop::get(string $key)`` zum Auslesen, ``bool Shop::has(string $key)`` zum
-Prüfen sowie ``mixed Shop::set(string $key, mixed $value)`` zum Setzen vorhanden.
+A simple *Registry* for saving arbitrary values within a request can be accessed via the
+shop class. |br|
+For this purpose, the following functions are available: ``Shop Shop::get(string $key)`` to select, ``bool Shop::has(string $key)`` to verify,
+and ``mixed Shop::set(string $key, mixed $value)`` to set.
 
-Beispiel:
+Example:
 
 .. code-block:: php
 
     //file1.php
     Shop::set('my-plugin-var01', ['foo' => 'bar']);
 
-    //file2.php, später aufgerufen
+    //file2.php, call up later
     $test  = Shop::has('my-plugin-var01'); //TRUE
     $data  = Shop::get('my-plugin-var01'); //array('foo' => 'bar')
     $test2 = Shop::has('NOT-my-plugin-var01'); //FALSE
@@ -177,9 +177,9 @@ Beispiel:
 SQL
 ---
 
-JTL-Shop 4 vereinfacht einige häufige Aufrufe der NiceDB-Klasse, sodass nicht mehr auf das globale NiceDB-Objekt
-zugegriffen werden muss und die Methoden-Namen leichter zu merken sind. Die Parameter sind dabei unverändert geblieben.
-Eine Übersicht findet sich in der folgenden Tabelle.
+Earlier versions of JTL-Shop simplify some common calls to the NiceDB class, so that it is no longer necessary to access the global NiceDB object,
+and the method names are easier to remember. The parameters remain unchanged.
+An overview can be found in the following table.
 
 +-------------------------------------------+--------------------------+
 | Shop 3                                    | Shop 4                   |
@@ -195,12 +195,12 @@ Eine Übersicht findet sich in der folgenden Tabelle.
 | ``$GLOBALS['NiceDB']->updateRow()``       | ``Shop::DB()->update()`` |
 +-------------------------------------------+--------------------------+
 
-Inbesondere ab Version 4.0 wird dringend geraten, die Funktionen ``NiceDB::insert()``, ``NiceDB::delete()`` und
-``NiceDB::update()`` anstelle von ``NiceDB::executeQuery()`` zu nutzen. |br|
-Nur diese Varianten nutzen *Prepared Statements*!
+In particular, it is strongly advised to use the functions ``NiceDB::insert()``, ``NiceDB::delete()``, and
+``NiceDB::update()`` instead of ``NiceDB::executeQuery()``. |br|
+Only these variants use *prepared statements*!
 
-Ab JTL-Shop Version 5.x, und besonders im Object-Kontext, wird auf diese Methoden nicht mehr direkt und statisch
-zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Sie hier:
+As of JTL-Shop version 5.x, and especially in an object context, these methods are no longer accessed directly and statically
+, but rather via the *Dependency Injection Container*. You can see an example of this here:
 
 .. code-block:: php
    :emphasize-lines: 7
@@ -216,26 +216,26 @@ zugegriffen, sondern via *Dependency Injection Container*. Ein Beispiel sehen Si
        }
    }
 
-Selektieren einzelner Zeilen
-""""""""""""""""""""""""""""
+Selecting individual rows
+"""""""""""""""""""""""""
 
-Insbesondere bei der Behandlung von Nutzereingaben ist es fahrlässig, unbehandelte POST- oder GET-Parameter direkt
-in SQL-Queries zu integrieren!
+Especially when dealing with user input, it is negligent to integrate raw POST or GET parameters directly
+in SQL queries!
 
-**Negativ-Beispiel:**
+**Bad example:**
 
 .. code-block:: php
 
     $row = $GLOBALS['NiceDB']->executeQuery("SELECT * FROM my_table WHERE id = " . $_POST['id'], 1);
 
-Falls es sich bei der Spalte ``id`` um einen numerischen Datentyp handelt, sollte zumindest ein Datentyp-Casting
-vorgenommen werden, z. B. mittels ``(int)$_POST['id']``.
+If the column ``id`` is a numeric data type, casting
+should at least be carried out, like via ``(int)$_POST['id']``.
 
-Der präferierte Weg wäre jedoch die Nutzung der Methode ``NiceDB::selectSingleRow()``.
+However, the preferred way would be to use the ``NiceDB::selectSingleRow()`` method.
 
-Das obige "Negativ-Beispiel" ließe sich damit wie folgt umschreiben:
+The above "negative example" could thus be rewritten as follows:
 
-**Positiv-Beispiel:**
+**Good example:**
 
 .. code-block:: php
 
@@ -243,17 +243,17 @@ Das obige "Negativ-Beispiel" ließe sich damit wie folgt umschreiben:
 
 .. hint::
 
-    ``Shop::DB()->query()`` ist analog zu ``$GLOBALS['NiceDB']->executeQuery($sql, 1)`` |br|
-    bzw. ``Shop::DB()->query($sql, 1)`` mit zweitem Parameter auf "1" gesetzt, was für "single fetched object" steht.
+    ``Shop::DB()->query()`` is similar to ``$GLOBALS['NiceDB']->executeQuery($sql, 1)`` |br|
+    or ``Shop::DB()->query($sql, 1)`` with the second parameter set to "1", stands for a "single fetched object".
 
-    Hierbei sind allerdings nur einfache *WHERE*-Bedingungen mit *AND*-Verknüpfungen möglich.
+    However, only simple *WHERE* conditions with *AND* join conditions are possible here.
 
-Einfügen von Zeilen
-"""""""""""""""""""
+Inserting rows
+""""""""""""""
 
-Analog zum Selektieren ein Beispiel mit einem *Insert*:
+Similar to the selecting procedure, here is an example for *inserting*:
 
-**Unsichere Variante:**
+**Insecure variant:**
 
 .. code-block:: php
 
@@ -263,7 +263,7 @@ Analog zum Selektieren ein Beispiel mit einem *Insert*:
             VALUES (" . $_POST['id'] . ", '" . $_POST['text'] . "', '" . $_POST['foo'] . "')", 3
     );
 
-**Bessere Variante:**
+**Improved variant:**
 
 .. code-block:: php
 
@@ -273,10 +273,10 @@ Analog zum Selektieren ein Beispiel mit einem *Insert*:
     $obj->foo  = $_POST['foo'];
     $i = Shop::DB()->insert('my_table', $obj);
 
-Löschen von Zeilen
-""""""""""""""""""
+Deleting rows
+"""""""""""""
 
-**Unsichere Variante:**
+**Insecure variant:**
 
 .. code-block:: php
 
@@ -285,24 +285,24 @@ Löschen von Zeilen
             WHERE id = " . $_POST['id'], 3
     );
 
-**Bessere Variante:**
+**Improved variant:**
 
 .. code-block:: php
 
     Shop::DB()->delete('my_table', 'id', (int) $_POST['id']);
 
-Bei erweiterten WHERE-Klauseln mit *AND*-Bedingung können zwei Arrays mit jeweils allen Keys und allen Values
-übergeben werden:
+In the case of extended WHERE clauses with *AND* condition, two arrays with all keys and all values
+each can be submitted:
 
 .. code-block:: php
 
     Shop::DB()->delete('my_table', array('id', 'foo'), array(1, 'bar'));
     // --> DELETE FROM my_table WHERE id = 1 AND 'foo' = 'bar'
 
-Aktualisieren von Zeilen
-""""""""""""""""""""""""
+Updating rows
+"""""""""""""
 
-**Unsichere Variante:**
+**Insecure variant:**
 
 .. code-block:: php
 
@@ -314,7 +314,7 @@ Aktualisieren von Zeilen
             WHERE id = " . $_POST['id'], 3
     );
 
-**Bessere Variante:**
+**Improved variant:**
 
 .. code-block:: php
 
@@ -326,15 +326,15 @@ Aktualisieren von Zeilen
 
 .. important::
 
-    Sollte es nicht möglich sein, die beschriebenen Methoden zu nutzen, so sollten sämtliche potentiell
-    gefährlichen Werte über ``Shop::DB()->escape()`` zuvor maskiert, bzw. im Fall von Numeralen konvertiert, werden.
+    If it is not possible to use the described methods, all potentially dangerous values should be hidden beforehand
+    via ``Shop::DB()->escape()``, or converted in the case of numerals.
 
-Änderungen von JTL-Shop 3.x zu JTL-Shop 4.x
--------------------------------------------
+Changes as of JTL-Shop 3.x
+--------------------------
 
-Eine kurze Übersicht von Änderungen in JTL-Shop 4:
+A quick overview of the changes:
 
-* ``smarty->assign()`` kann nun *gechaint* werden:
+* ``smarty->assign()`` can now be *chained*:
 
 .. code-block:: php
 
@@ -342,26 +342,26 @@ Eine kurze Übersicht von Änderungen in JTL-Shop 4:
            ->assign('var_2', 27)
            ->assign('var_3', 'foo');
 
-* Die Klasse ``Shop`` bildet einen zentralen Einstiegspunkt für häufig verwendete Funktionalitäten:
+* The ``shop`` class forms a central entry point for frequently used functions:
 
 .. code-block:: php
 
-    Shop::Cache()->flushAll(); //Objektcache leeren
+    Shop::Cache()->flushAll(); //Flush object cache
 
-    $arr = Shop::DB()->query($sql, 2); //Alias für $GLOBALS['DB']->executeQuery()
+    $arr = Shop::DB()->query($sql, 2); //Alias for $GLOBALS['DB']->executeQuery()
 
-    $translated = Shop::Lang()->get('newscommentAdd', 'messages'); //Alias für $GLOBALS['Sprache']->gibWert()
+    $translated = Shop::Lang()->get('newscommentAdd', 'messages'); //Alias for $GLOBALS['Language']->gibWert()
 
-    $shopURL = Shop::getURL(); //statt URL_SHOP, prüft auf SSL
+    $shopURL = Shop::getURL(); //Instead of URL_SHOP, checks SSL
 
-    $conf = Shop::getSettings(array(CONF_GLOBAL, CONF_NEWS)); //Alias für $GLOBALS['Einstellungen']...
+    $conf = Shop::getSettings(array(CONF_GLOBAL, CONF_NEWS)); //Alias for $GLOBALS['Settings']...
 
-    Shop::dbg($someVariable, false, 'Inhalt der Variablen:'); //Schnelles Debugging
+    Shop::dbg($someVariable, false, 'Inhalt der Variablen:'); //Quick debugging
 
-    $smarty = Shop::Smarty(); //Alias für globales Smarty-Objekt
+    $smarty = Shop::Smarty(); //Alias for global Smarty object
 
-    Shop::set('my_key', 42); //Registry-Setter
+    Shop::set('my_key', 42); //Registry setter
 
-    $value = Shop::get('my_key'); //Registry-Getter - 42
+    $value = Shop::get('my_key'); //Registry getter - 42
 
-    $hasValue = Shop::has('some_other_key'); //Registry-Prüfung - false
+    $hasValue = Shop::has('some_other_key'); //Registry check - false

@@ -1,45 +1,45 @@
-Die ``info.xml``
-================
+The ``info.xml`` file
+=====================
 
 .. |br| raw:: html
 
    <br />
 
-Im Root-Verzeichnis jedes Plugins liegt die XML-Datei ``info.xml``. |br|
-In dieser Datei sind alle Informationen zum Plugin hinterlegt.
+In the root directory of a plug-in is the xml file ``info.xml``. |br|
+All plug-in information is stored in this file.
 
-Die Datei beinhaltet neben dem Namen des Plugins, der Beschreibung und dem Autor auch **alle** technischen
-Informationen. Darunter fallen z. B. Pfade zu Ressourcen, verwendete Hooks, Sprachvariablen, Einstellungselemente
-und mehr. |br|
+The file contains, apart from the plug-in name, a description, and the
+author’s name, also **all** technical information. This consists of paths to resources, used hooks, language variables, settings elements,
+and more. |br|
 
 .. hint::
 
-    Diese Datei ist das wichtigste Element eines Plugins, da sie für die Installation sowie für Updates zuständig ist.
+    This file is the most important element of a plug-in, as it is responsible for both installation and updates.
 
-Ein Plugin kann in folgende Hauptbestandteile aufgeteilt werden, die durch die ``info.xml`` definiert werden:
+A plug-in can be divided into the following main components that are defined via ``info.xml``:
 
-* Globale Plugin-Informationen
-* Versionen
-* Adminmenü mit *Custom-Links* und *Setting-Links*
-* Zahlungsmethoden
-* Frontend-Links
-* Sprachvariablen
-* E-Mail-Templates
-* Plugin-Boxen
-* Plugin-Lizenzierung
-* statische Ressourcen
+* General plug-in information
+* Versions
+* Admin menu with *custom* and *setting links*
+* Payment methods
+* Front end links
+* Language variables
+* Email templates
+* Plug-in boxes
+* Plug-in licencing
+* Static resources
 
-Falls Bereiche im Plugin nicht gebraucht werden, sollten Sie den kompletten Block weggelassen. |br|
-Die globalen Informationen können dabei nicht weggelassen werden.
+If areas in the plug-in are not needed, you should omit the entire block. |br|
+Any global information cannot be omitted.
 
-Der Rumpf
----------
+The body
+--------
 
-Das Hauptelement stellt den Rumpf der XML-Datei dar. Es heißt
-sowohl **für JTL-Shop 3 als auch JTL-Shop 4** ``<jtlshop3plugin>``. |br|
-**Ab JTL-Shop 5.x** heißt es ``<jtlshopplugin>``.
+The main element constitutes the body of the XML file. **For both JTL-Shop 3 and JTL-Shop 4** it
+is called ``<jtlshop3plugin>``. |br|
+**As of JTL-Shop 5.x** it is called ``<jtlshopplugin>``.
 
-**Bis JTL-Shop 4.x:**
+**JTL-Shop 4.x and earlier:**
 
 .. code-block:: xml
 
@@ -47,7 +47,7 @@ sowohl **für JTL-Shop 3 als auch JTL-Shop 4** ``<jtlshop3plugin>``. |br|
     ...
   </jtlshop3plugin>
 
-**Ab JTL-Shop 5.x:**
+**As of JTL-Shop 5.x:**
 
 .. code-block:: xml
 
@@ -55,10 +55,10 @@ sowohl **für JTL-Shop 3 als auch JTL-Shop 4** ``<jtlshop3plugin>``. |br|
     ...
   </jtlshopplugin>
 
-Globale Plugin-Informationen
-----------------------------
+General plug-in information
+---------------------------
 
-Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemente angehängt werden.
+After the body of the XML file, comes all general information that are suffixed as child elements.
 
 .. code-block:: xml
 
@@ -74,93 +74,93 @@ Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemen
 
 
 +----------------------+-----------------------------------------------------+
-| Elementname          | Funktion                                            |
+| Element name         | Function                                            |
 +======================+=====================================================+
-| ``<Name>`` *         | Name des Plugins (``[a-zA-Z0-9_]``)                 |
+| ``<Name>`` *         | plug-in name (``[a-zA-Z0-9_]``)                     |
 +----------------------+-----------------------------------------------------+
-| ``<Description>``    | Plugin-Beschreibung                                 |
+| ``<Description>``    | plug-in description                                 |
 +----------------------+-----------------------------------------------------+
-| ``<Author>``         | Herausgeber eines Plugins                           |
+| ``<Author>``         | plug-in author                                      |
 +----------------------+-----------------------------------------------------+
-| ``<URL>``            | Link zum Pluginherausgeber                          |
+| ``<URL>``            | link to plug-in author                              |
 +----------------------+-----------------------------------------------------+
-| ``<XMLVersion>`` *   | Version der ``info.xml`` (``[0-9]{3}``)             |
+| ``<XMLVersion>`` *   | ``info.xml`` version (``[0-9]{3}``)                 |
 +----------------------+-----------------------------------------------------+
-| ``<ShopVersion>``    | Mindestversion von JTL-Shop |br|                    |
-|                      | (>= 300, < 400, >= 500 oder auch *5.0.0-beta.3*)    |
+| ``<ShopVersion>``    | minimum JTL-Shop version |br|                       |
+|                      | (>= 300, < 400, >= 500 or even *5.0.0-beta.3*)      |
 +----------------------+-----------------------------------------------------+
-| ``<MinShopVersion>`` | ab 5.0.0 - Mindestversion von JTL-Shop 5            |
+| ``<MinShopVersion>`` | as of 5.0.0 - minimum version of JTL-Shop 5         |
 +----------------------+-----------------------------------------------------+
-| ``<MaxShopVersion>`` | ab 5.0.0 - Maximalversion von JTL-Shop 5            |
+| ``<MaxShopVersion>`` | as of 5.0.0 - maximum version of JTL-Shop 5         |
 +----------------------+-----------------------------------------------------+
 | ``<Shop4Version>``   | Mindestversion von JTL-Shop 4 (>= 400)              |
 +----------------------+-----------------------------------------------------+
-| ``<PluginID>`` *     | Plugin-Identifikator (``[a-zA-Z0-9_]``)             |
+| ``<PluginID>`` *     | plug-in identifier (``[a-zA-Z0-9_]``)               |
 +----------------------+-----------------------------------------------------+
-| ``<Icon>``           | Dateiname zu einem Icon                             |
+| ``<Icon>``           | icon file name                                      |
 +----------------------+-----------------------------------------------------+
-| ``<Version>``        | ab JTL-Shop 5.0.0 - die Plugin-Version (``[0-9]+``) |
+| ``<Version>``        | as of JTL-Shop 5.0.0 - plug-in version (``[0-9]+``) |
 +----------------------+-----------------------------------------------------+
-| ``<CreateDate>``     | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)            |
+| ``<CreateDate>``     | as of 5.0.0 - date created (YYYY-MM-DD)             |
 +----------------------+-----------------------------------------------------+
-| ``<ExsID>``          | ab 5.0.0 - ExtensionStore-ID                        |
+| ``<ExsID>``          | as of 5.0.0 - ExtensionStore ID                     |
 +----------------------+-----------------------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
 Name
 """"
 
-Der Name des Plugins wird in der Plugin-Verwaltung und den automatisch generierten Menüs im Backend dargestellt. Er
-dient der Identifizierung des Plugins.
+The plug-in name is displayed in the plug-in manager and in the automatically generated menus in the back end. This is
+used to identify the plug-in.
 
 Description
 """""""""""
 
-Die Beschreibung wird in der Plugin-Verwaltung im Tab "Verfügbar" unterhalb des Plugin-Namens dargestellt. Sie enthält
-eine kurze Funktionsbeschreibung des Plugins.
+The description is displayed in the plug-in manager under the "Available" tab located below the plug-in name. It contains
+a short description of the plug-in’s function.
 
 Author
 """"""
 
-Der Autor wird im Admin-Menü des Plugins dargestellt. Hier kann sowohl eine Firma als auch eine Privatperson
-eingetragen werden.
+The author’s name will be displayed in the admin menu of the plug-in. This can either be the name of a business or a
+private person.
 
 URL
 """
 
-Die URL sollte einen Link zum Hersteller oder einer dedizierten Plugin-Seite enthalten, sodass der Kunde schnell
-und einfach weitere Informationen oder Support erhalten kann.
+The URL should include a link to the developer or a dedicated plug-in page so that the customer can quickly
+and easily access further information or support.
 
 XMLVersion
 """"""""""
 
-Da sich mit der Zeit auch die Anforderungen an das Plugin-System ändern können, kann sich auch die
-XML-Installationsdatei ändern. Daher ist die Angabe der XML-Version sehr wichtig, um auch die richtigen Parameter
-für das eigene Plugin zur Verfügung zu haben.
+Since the requirements for the plug-in system can change over time, the XML installation file itself
+can also change. Therefore, indicating the XML version is very important, in order to have the right parameters
+available for your own plug-in.
 
 ShopVersion
 """""""""""
 
-*ShopVersion* gibt die Version von JTL-Shop an, die mindestens benötigt wird. Ist sie höher als die aktuell
-installierte Version des Onlineshops, wird eine Fehlermeldung im Backend angezeigt und das Plugin kann nicht
-installiert werden. Falls nur dieser Wert, nicht aber ``Shop4Version``, konfiguriert wurde, erscheint in JTL-Shop 4.00+
+*ShopVersion* indicates the minimum JTL-Shop version required. In the case that it is higher than
+the current installed version of the online shop, an error message will pop up in the back end and the
+plug-in will not be able to be installed. Falls nur dieser Wert, nicht aber ``Shop4Version``, konfiguriert wurde, erscheint in JTL-Shop 4.00+
 der Hinweis, dass das Plugin möglicherweise in dieser Version nicht funktioniert. Es kann jedoch trotzdem installiert
 werden. |br|
-Das explizite Angeben einer einzelnen Versionsnummer ist ebenfalls möglich, ergibt allerdings nur temporär zu
-Entwicklerzwecken Sinn (siehe z. B.: *5.0.0-beta.3*)
-**Ab JTL-Shop 5.0.0 sollte dieser Tag durch <MinShopVersion> ersetzt werden**
+The explicit specification of a single version number is possible, but only makes sense temporarily for
+developer purposes (see e.g.: *5.0.0-beta.3*)
+**As of JTL-Shop 5.0.0 this tag will be replaced with <MinShopVersion> **
 
 MinShopVersion
 """"""""""""""
 
-*MinShopVersion* entspricht ab Shop 5.0.0 dem alten Tag *ShopVersion*.
+As of Shop 5.0.0 *MinShopVersion* corresponds to the old *ShopVersion* tag.
 
 MaxShopVersion
 """"""""""""""
 
-*MaxShopVersion* gibt die Version von JTL-Shop an, die höchstens unterstützt wird. Ist die tatsächlich installierte
-Version von JTL-Shop höher, wird im Backend eine Warnung angezeigt.
+*MaxShopVersion* indicates the maximum JTL-Shop version that is supported. If the current version
+is higher than this, a warning will pop up in the back end.
 
 Shop4Version
 """"""""""""
@@ -169,51 +169,51 @@ Shop4Version
 ist eine Installation nur in JTL-Shop 4.x möglich. |br|
 **Ab JTL-Shop 5.0.0 wird dieser Tag nicht mehr unterstützt!**
 
-Plugin-ID
+Plug-in ID
 """""""""
 
-Die Plugin-ID identifiziert ein Plugin im Onlineshop eindeutig.  |br|
-Vergeben Sie unbedingt eine sinnvolle und einmalige ID für das eigene Plugin, damit
-gleichnamige Plugins unterschiedlicher Hersteller nicht kollidieren.
+The plug-in ID gives a plug-in in the online shop a unique identity.  |br|
+Be sure to give a meaningful and unique ID for your own plug-ins,
+so that similar-sounding plug-ins of other developers do not clash.
 
-Beispiel-ID für ein Plugin: "*SoftwareFirma_PluginName*"
+Sample ID for a plug-in: "*SoftwareCompany_PluginName*"
 
-**Namenskonvention:**
-Es sind nur die Zeichen ``a-z`` bzw. ``A-Z``, ``0-9`` und der Unterstrich erlaubt. |br|
-Punkt und Bindestrich sind nicht erlaubt.
+**Naming convention:**
+Only characters ``a-z`` or ``A-Z`` and ``0-9``, as well as underscores, are permitted. |br|
+Periods and hyphens are not permitted.
 
-Ab JTL-Shop 5.0.0 entspricht die Plugin-ID außerdem dem automatisch zugewiesenen PSR-4 Namespace
-(angeführt vom Präfix ``Plugin\``) für das gesamte Plugin. |br|
-Achten Sie deshalb darauf, dass der Ordnername des Plugins der Plugin-ID entspricht. Ein Plugin mit der
-Plugin-ID "*mycompany_someplugin*" erhält so den Namespace ``Plugin\mycompany_someplugin``.
+As of JTL-Shop 5.0.0, the plug-in ID also corresponds to the automatically assigned PSR-4 namespace (led by the prefix ``Plugin\``) for the entire plug-in.
+ |br|
+Make sure that the plug-in folder name matches the plug-in ID. A plug-in with the plug-in ID "*mycompany_someplugin*" therefore gets the namespace
+``plugin\mycompany_someplugin``.
 
 Icon
 """"
 
-Aktuell noch nicht implementiert, perspektivisch zur besseren Übersicht geplant.
+Not yet implemented, but planned in the future to provide a better overview.
 
 Version
 """""""
 
-Ab JTL-Shop 5.x ist dies eine Pflichtangabe zur Definition der Pluginversion.
+As of JTL-Shop 5.x, this will be a requirement to define the plug-in version.
 
 CreateDate
 """"""""""
 
-Ab JTL-Shop 5.x ist dies eine Pflichtangabe zur Definition des Erstellungsdatums der jeweiligen Pluginversion. |br|
-Das Datum muss im Format ``YYYY-MM-DD`` angegeben werden, beispielsweise "*2019-03-21*" für den 21. März 2019.
+As of JTL-Shop 5.x, this will be a requirement to define the date of creation of the respective plug-in version. |br|
+The date must be indicated in ``YYYY-MM-DD`` format, as in "*2019-03-21*” for March 21st, 2019.
 
 ExsID
 """""
 
-Die ``ExsID`` muss für alle Plugins ab JTL-Shop 5.0.0 angegeben werden, wenn das Plugin im JTL-Store vertrieben werden
-soll. |br|
-Sie finden die ``ExsID`` im Kundencenter, nachdem Sie dort eine Extension für den Marktplatz angelegt haben.
+As of JTL-Shop 5.0.0, the ``ExsID`` must be indicated for all plug-ins that are to be distributed via JTL-Store.
+ |br|
+You can find the ``ExsID`` in the customer centre after you have created an extension for the marketplace there.
 
 Install-Block
 """""""""""""
 
-Nach den globalen Plugininformationen folgt der Installationsblock. Dieser sieht wie folgt aus:
+After the general plug-in information, the installation block follows. This looks as follows:
 
 .. code-block:: xml
 
@@ -221,16 +221,16 @@ Nach den globalen Plugininformationen folgt der Installationsblock. Dieser sieht
 
     </Install>
 
-Alle Informationen zum Plugin werden in diesem Block als Kindelemente aufgeführt.
+All information related to the plug-in is introduced in this block as a child element.
 
 
 .. _label_infoxml_versionierung:
 
-Versionierung
--------------
+Versioning
+----------
 
-Wie die zur Definition passende Verzeichnisstruktur aussieht, finden Sie unter "Aufbau"
-im Abschnitt ":ref:`label_aufbau_versionierung`".
+You can find out what the directory structure looks like, according to the definition,
+in the "Structure" section under, ":ref:`label_aufbau_versionierung`".
 
 Bis JTL-Shop 4.x
 """"""""""""""""
@@ -264,7 +264,7 @@ ausgeführt wird. Hierbei gilt es, die Pluginverzeichnisstruktur für SQL-Dateie
 | CreateDate  | Erstellungsdatum der Version (``YYYY-MM-DD``) |
 +-------------+-----------------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
 Lesen Sie hierzu unter Aufbau auch den Abschnitt ":ref:`label_infoxml_sql`".
 
@@ -279,12 +279,12 @@ Falls weitere Versionen zu einem Plugin existieren, werden diese untereinander a
         <CreateDate>2015-04-15</CreateDate>
     </Version>
 
-Ab JTL-Shop 5.x
-"""""""""""""""
+As of JTL-Shop 5.x
+""""""""""""""""""
 
-**Ab JTL-Shop 5.0.0 entfällt dieser Block!**
+**As of JTL-Shop 5.0.0, this block is no longer necessary!**
 
-Es befindet sich in der ``info.xml`` lediglich die wesentlich vereinfachtere Struktur:
+In the ``info.xml`` files, now only the following considerably simplified structure exists:
 
 .. code-block:: xml
 
@@ -298,16 +298,16 @@ Es befindet sich in der ``info.xml`` lediglich die wesentlich vereinfachtere Str
 
 .. _label_infoxml_hooks:
 
-Plugin-Hooks
-------------
+Plug-in hooks
+-------------
 
-Nach der Versionierung folgt das ``<Hooks>``-Element. In diesem Element werden jene Stellen im Onlineshop definiert,
-an denen das Plugin Code ausführen soll.
+After the versioning comes the ``<Hooks>`` element. This element defines the places in the online shop where the plug-in
+has to execute code.
 
-Der *Frontend-Link* und die *Zahlungsmethoden* benötigen keine expliziten Hookangaben, da diese an einem bestimmten
-Hook vom System aus eingebunden werden.
+The *front end link* and the *payment methods* do not require explicit hook data
+as they are linked to a specific hook by the system.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: xml
 
@@ -316,50 +316,50 @@ Hook vom System aus eingebunden werden.
         <Hook id="130">managemenet.php</Hook>
     </Hooks>
 
-Die *ID* identifiziert hierbei eindeutig eine bestimmte Stelle im Code von JTL-Shop. Die angegebene PHP-Datei wird dann
-am Hook der *ID* ausgeführt. |br|
-Möchten Sie z. B. nach dem Erstellen eines Artikelobjektes am Objekt noch einige Member verändern, so
-können Sie den entsprechenden Hook benutzen, um dies zu erledigen.
+The *ID* uniquely identifies a specific location in the code of JTL-Shop. The specified PHP file will then be executed
+in the *ID* hook. |br|
+If, for example, you wish to change some members after the creation of an item object in the object,
+you can then use the corresponding hook to do this.
 
 +----------------+----------------------------------------------------------------------------+
-| Elementname    | Funktion                                                                   |
+| Element name    | Function                                                                  |
 +================+============================================================================+
-| ``<id>`` *     | Eindeutige Hook-ID (``[0-9]+``)                                            |
+| ``<id>`` *     | unambiguous hook ID (``[0-9]+``)                                           |
 +----------------+----------------------------------------------------------------------------+
-| ``<priority>`` | Priorität (ab JTL-Shop 4.05, niedriger => frühere Ausführung) (``[0-9]+``) |
+| ``<priority>`` | priority (``[0-9]+``)                                                      |
 +----------------+----------------------------------------------------------------------------+
-| ``<Hook>``     | PHP-Datei im Ordner ``frontend/``, die an ID ausgeführt wird               |
+| ``<Hook>``     | PHP file in the ``frontend/`` folder, that is executed at ID               |
 +----------------+----------------------------------------------------------------------------+
 
-(*) Pflichtfelder
+(*) Mandatory field
 
-Werden keine Hooks vom Plugin benötigt, können Sie den gesamten Hook-Container weglassen.
+If no hooks are needed in the plug-in, you can omit the entire hook container.
 
-Eine Liste der Hook-IDs finden Sie in der ":doc:`Hook-Liste </shop_plugins/hook_list>`". |br|
-Weitere Informationen zum Hook-System des Onlineshops finden Sie im Kapitel ":doc:`/shop_plugins/hooks`".
+You can find a list of the hook IDs here: “:doc:`Hook List </shop_plugins/hook_list>`". |br|
+You can find further information on the hook system of the online shop at ":doc:`/shop_plugins/hooks`".
 
-Ab JTL-Shop 5.x existiert eine neue Alternative zu den bekannten Hooks in JTL-Shop - der *EventDispatcher*. |br|
-Wie Sie Gebrauch von diesem neuen Feature machen, finden Sie im Kapitel "Bootstrapping"
-unter ":ref:`label_bootstrapping_eventdispatcher`".
+As of JTL-Shop 5.x, there is a new alternative to the familiar hooks in JTL-Shop - the *EventDispatcher*. |br|
+For more information on how to make use of this new feature, see
+the "Bootstrapping" section under ":ref:`label_bootstrapping_eventdispatcher`".
 
 .. _label_infoxml_license:
 
-Lizenzierung
-------------
+Licencing
+---------
 
-Bei der Erstellung kommerzieller Plugins für JTL-Shop stellt sich die Frage, wie das eigene Plugin gegen unautorisierte
-Weitergabe und Nutzung abgesichert werden kann.
+When creating commercial plug-ins for JTL-Shop, another issue that arises is how to secure one's own plug-in against unauthorized sharing and use.
 
-Ein Plugin kann dem Onlineshop via ``info.xml`` mitteilen, dass es unter einer bestimmten Lizenz steht und diese
-abgefragt werden muss. |br|
-Für diesen Zweck stellt der Onlineshop eine Interface-Klasse zur Verfügung, die das Plugin nutzen kann, um eine
-bestimmte Lizenzmethode zu überschreiben. Diese Methode wird dann beim Aufruf des Plugins stets überprüft.
 
-Wie und mit welchen Mitteln das Plugin seine Lizenz überprüft, muss selbst implementiert werden. |br|
-Am Ende der Methode muss dem System nur mitgeteilt werden, ob die Prüfung erfolgreich war oder fehlschlug.
+A plug-in can tell the online shop via ``info.xml`` that it is under a certain licence and that this
+must be checked. |br|
+The online shop provides an interface class for this purpose, that can use the plug-in to overwrite a
+certain licence method. This method is then always checked when the plug-in is called up.
 
-Um dem Onlineshop mitzuteilen, dass eine Lizenzprüfung benötigt wird, fügen Sie folgende Elemente in die ``info.xml``
-ein:
+You must implement how and by what means the plug-in checks its licence. |br|
+At the end of the method, the system must be informed of whether the check was successful or not.
+
+To tell the online shop that a licence check is required, add the following elements to
+the ``info.xml``:
 
 .. code-block:: xml
 
@@ -367,21 +367,21 @@ ein:
     <LicenceClassFile>PluginLicence.php</LicenceClassFile>
 
 +------------------------+------------------------------------------------------------------------------------------------------+
-| Elementname            | Beschreibung                                                                                         |
+| Element name           | Description                                                                                          |
 +========================+======================================================================================================+
-| ``<LicenceClass>``     | Lizenzprüfungsklasse des Plugins, die von der Interface-Klasse ``PluginLizenz`` des Onlineshops erbt |
+| ``<LicenceClass>``     | plug-in’s licence-checking class, which comes from the shop’s ``PluginLizenz`` interface class       |
 +------------------------+------------------------------------------------------------------------------------------------------+
-| ``<LicenceClassFile>`` | Dateinamen der Lizenzprüfungsklasse des Plugins                                                      |
+| ``<LicenceClassFile>`` | file name of the plug-in’s licence-checking class                                                    |
 +------------------------+------------------------------------------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Wo Sie die benötigten Dateien ablegen können, erfahren Sie im Kapitel "Aufbau"
-im Abschnitt ":ref:`label_aufbau_license`".
+For information on where to store the necessary files, see the "Structure" section,
+under “:ref:`label_aufbau_license`”.
 
-**Bis JTL-Shop 4.x**
+**Up to JTL-Shop 4.x**
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: xml
    :emphasize-lines: 9,10
@@ -408,7 +408,7 @@ befindet, beispielsweise: ``[pluginname]/version/100/licence/``.
 In unserem Beispiel heißt die Lizenzprüfungsklasse des Plugins ``jtl_license_examplePluginLicence`` und befindet sich
 in der Datei ``class.PluginLicence.php``.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -432,12 +432,12 @@ Methode ``checkLicence()`` vor. |br|
 In unserem Beispiel fragt diese Methode den Parameter ``$cLicence`` ab. Die Methode muss den boolschen Wert
 *true* zurückgeben, damit das System dieses Plugin ausführt.
 
-**Ab JTL-Shop 5.x**
+**As of JTL-Shop 5.x**
 
-In JTL-Shops der Versionen 5.x ist die Methodik der Interface-Vorschrift verglichen mit den Vorgängerversionen
-gleich geblieben. Allerdings ist hier die Unterstützung von *namespaces* hinzugekommen. |br|
+In JTL-Shop version 5.x, the methodology of interface preset has remained the same compared to
+previous versions. However, support for *namespaces* has been added. |br|
 
-**Beispiel**:
+**Example**:
 
 .. code-block:: xml
    :emphasize-lines: 11,12
@@ -445,7 +445,7 @@ gleich geblieben. Allerdings ist hier die Unterstützung von *namespaces* hinzug
     <?xml version='1.0' encoding="UTF-8"?>
     <jtlshopplugin>
         <Name>SimpleExample</Name>
-        <Description>Ein einfaches Bespiel</Description>
+        <Description>A simple example</Description>
         <Author>JTL-Software-GmbH</Author>
         <URL>https://www.jtl-software.de</URL>
         <XMLVersion>102</XMLVersion>
@@ -460,7 +460,7 @@ gleich geblieben. Allerdings ist hier die Unterstützung von *namespaces* hinzug
         </Install>
     </jtlshopplugin>
 
-Die entsprechende Lizenzprüfungsklasse mit *namespace* würde dann so aussehen:
+The corresponding licence-checking class with *namespace* will look as follows:
 
 .. code-block:: php
    :emphasize-lines: 3
@@ -484,23 +484,23 @@ Die entsprechende Lizenzprüfungsklasse mit *namespace* würde dann so aussehen:
         }
     }
 
-Weiterhin bietet es sich an, die Pluginlizenzklasse mit Hilfe von "*ionCube*" zu verschlüsseln, um Manipulationen
-vorzubeugen.
+It is still possible to encode the plug-in licence class with "*ionCube*" to prevent
+manipulation.
 
 .. important::
-    JTL-Shop selbst benötigt seit Version 4.00 kein *Ioncube* mehr. |br|
-    Es ist also nicht garantiert, dass potentielle Käufer tatsächlich bereits *Ioncube* auf ihrem Server installiert haben.
+    Since version 4.00, JTL-Shop no longer requires *Ioncube*. |br|
+    Subsequently, you cannot guarantee that potential customers have *Ioncube* installed on their servers.
 
 
 .. _label_infoxml_frontend_res:
 
-Frontend-Ressourcen
+Front end resources
 -------------------
 
-Pluginentwickler haben über die XML-Tags ``<CSS>`` und ``<JS>`` die Möglichkeit, eigene Ressourcen
-im Plugin mitzuliefern, die im Frontend auf allen Seiten eingebunden werden. |br|
-Dies hat den Vorteil, dass sie nicht einzeln über das Template bzw. via ``pq()`` ("phpQuery") eingebunden werden
-müssen. Darüber hinaus können sie auch direkt minifiziert werden.
+By using the XML tags ``<CSS>`` and ``<JS>``, plug-in developers have the option to include their own resources
+in the plug-in, which are integrated into all pages on the front end. |br|
+This has the advantage that they do not have to be individually integrated via the template
+or ``pq()`` (“phpQuery”). Furthermore, they can be directly minified.
 
 .. code-block:: xml
    :emphasize-lines: 3,5,13,15
@@ -529,56 +529,56 @@ müssen. Darüber hinaus können sie auch direkt minifiziert werden.
         </JS>
     </Install>
 
-*CSS*-Datei:
+*CSS* file:
 
 +----------------+-----------------------------------------------------------------------------------------------+
-| Elementname    | Beschreibung                                                                                  |
+| Element name   | Description                                                                                   |
 +================+===============================================================================================+
-| ``<name>`` *   | Der Dateiname im Unterordner ``css/`` (siehe auch: :ref:`Aufbau <label_aufbau_frontend_res>`) |
+| ``<name>`` *   | file name in ``css/`` subfolder (see also: :ref:`Structure <label_aufbau_frontend_res>`)      |
 +----------------+-----------------------------------------------------------------------------------------------+
-| ``<priority>`` | Die Priorität von 0\-10, je höher, desto später wird die Datei eingebunden                    |
+| ``<priority>`` | priority from 0\-10, meaning the higher the number, the later the file will be integrated     |
 +----------------+-----------------------------------------------------------------------------------------------+
 
-*JS*-Datei:
+*JS* file:
 
 +----------------+----------------------------------------------------------------------------------------------+
-| Elementname    | Beschreibung                                                                                 |
+| Element name   | Description                                                                                  |
 +================+==============================================================================================+
-| ``<name>`` *   | Der Dateiname im Unterordner ``js/`` (siehe auch: :ref:`Aufbau <label_aufbau_frontend_res>`) |
+| ``<name>`` *   | file name in the subfolder ``js/`` (see also: :ref:`Structure <label_aufbau_frontend_res>`)  |
 +----------------+----------------------------------------------------------------------------------------------+
-| ``<priority>`` | Die Priorität von 0\-10, je höher, desto später wird die Datei eingebunden                   |
+| ``<priority>`` | priority from 0\-10, meaning the higher the number, the later the file will be integrated    |
 +----------------+----------------------------------------------------------------------------------------------+
-| ``<position>`` | Die Position im DOM, an der die Datei eingebunden wird, "body" oder "head"                   |
+| ``<position>`` | the position in the DOM to which the file is integrated, "body" or "head”                    |
 +----------------+----------------------------------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Alle hier angegebenen Dateien müssen im Unterordner ``frontend/css/`` bzw. ``frontend/js/`` liegen.
-Eine Beispieldarstellung finden Sie im Abschnitt "Aufbau" unter ":ref:`label_aufbau_frontend_res`". |br|
-JavaScript-Dateien lassen sich dabei über das Attribut "*position*" wahlweise in den Header oder Body einfügen.
-Sie können über "*priority*" (0 = höchste, 5 = Standard) in der Reihenfolge modifiziert werden.
+All files specified here must be located in the ``frontend/css/`` or ``frontend/js/`` subfolder.
+You can find an example of this in the "Structure" section, under ":ref:`label_aufbau_frontend_res`". |br|
+JavaScript files can be inserted optionally into the header or body via the "*position*" attribute.
+They can be modified in the sequence via "*priority*" (0 = highest, 5 = default).
 
-Falls zu einer über diese Methode eingebundenen CSS-Datei ein ``_custom.css``-Pendant im selben Ordner existiert,
-wird dieses **zusätzlich** nach der eigentlichen CSS-Datei eingebunden. |br|
-Dem obigen Beispiel folgend wären dies ``foo_custom.css`` bzw. ``bar_custom.css``. |br|
+If there is a ``_custom.css`` counterpart to a CSS file included using this method in the same folder,
+this will be included **additionally** after the actual CSS file. |br|
+Following the example above, this would be ``foo_custom.css`` or ``bar_custom.css``. |br|
 
 .. attention::
 
-    Für JavaScript-Dateien wird dieses Vorgehen nicht unterstützt.
+    This procedure is not supported for JavaScript files.
 
 Minify
 """"""
 
-Diese Dateien werden, bei entsprechend aktivierter Theme-Funktion, auch minifiziert. |br|
-Im Theme müssen dazu die Smarty-Variablen ``$cPluginJsHeadd_arr``, ``$cPluginCss_arr`` und ``$cPluginJsBody_arr``
-geprüft bzw. ausgegeben werden.
+These files are also minified if the theme function is activated accordingly. |br|
+In the theme, the Smarty variables ``$cPluginJsHeadd_arr``, ``$cPluginCss_arr`` and ``$cPluginJsBody_arr``
+must be checked or issued for this purpose.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: html+smarty
 
     {*
-        mit aktiviertem minify, header.tpl
+        with activated minify, header.tpl
     *}
     {if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0}
         <link type="text/css" href="{$PFAD_MINIFY}/g=plugin_css" rel="stylesheet" media="screen" />
@@ -596,7 +596,7 @@ geprüft bzw. ausgegeben werden.
 
 
     {*
-        ohne minify, header.tpl
+        without minify, header.tpl
     *}
     {foreach from=$cJS_arr item="cJS"}
         <script type="text/javascript" src="{$cJS}"></script>
@@ -616,34 +616,34 @@ geprüft bzw. ausgegeben werden.
         {/foreach}
     {/if}
 
-Objektcache
------------
+Object cache
+------------
 
-Sollen bei der Installation des Plugins bestimmte Inhalte des Objektcaches gelöscht werden, weil das Plugin
-beispielsweise Artikeldaten modifizieren soll, so kann im Element ``<FlushTags>`` eine Liste von *Tags* angegeben
-werden, welche die einzelnen Zwischenspeicher repräsentieren, die zum Zeitpunkt der Installation zurückgesetzt werden
-sollen.
+In the event that certain contents of the object cache are to be deleted during installation (for example, if the plug-in is
+supposed to modify item data), a list of *tags* that
+represent the individual caches which are to be reset after installation, can be specified in the
+element ``<FlushTags>``.
 
 .. code-block:: xml
 
     <FlushTags>CACHING_GROUP_CATEGORY, CACHING_GROUP_ARTICLE</FlushTags>
 
-Weitere Informationen zum Caching und den vorhandenen *Tags* finden Sie im Kapitel ":doc:`Cache </shop_plugins/cache>`".
+You can find further information on caching and the available *tags* in section ":doc:`Cache </shop_plugins/cache>`".
 
 .. _label_infoxml_boxen:
 
-Boxen
+Boxes
 -----
 
-Mit der *Boxenverwaltung* von JTL-Shop kann der Onlineshopbetreiber einfach und schnell Boxen im Onlineshop
-verschieben, anlegen oder löschen.
+With the JTL *box manager*, shop operators can simply and quickly add,
+delete, or move boxes in the online shop.
 
-Ein Plugin ist ebenfalls in der Lage, einen neuen Boxentyp anzulegen. Wo die Templates für diese Boxen im Plugin
-zu platzieren sind, finden Sie unter "Aufbau", im Abschnitt ":ref:`label_aufbau_boxen`". |br|
-Diese neue Box kann in der Boxenverwaltung ausgewählt und einer Stelle in JTL-Shop zugewiesen werden. Der Inhalt dieser
-Box wird durch ein Template, das der Box zugewiesen ist, gesteuert. Dort können beliebige Inhalte angezeigt werden.
+A plug-in is also capable of creating a new box type. Where the templates for these boxes in the plug-ins are to be placed,
+you can find in the "Structure" section, under ":ref:`label_aufbau_boxen`". |br|
+This new box can be selected in the box manager and be assigned to a location in the JTL-Shop. The content of the box will be controlled
+via the template that is assigned to the box. There, any amount of content can be displayed.
 
-Sie erstellen einen neuen Boxentyp, indem Sie folgenden neuen XML-Knoten in der ``info.xml`` anlegen:
+You can create a new box type by creating a new XML node in the ``info.xml`` file.
 
 .. code-block:: xml
    :emphasize-lines: 3-5
@@ -656,12 +656,12 @@ Sie erstellen einen neuen Boxentyp, indem Sie folgenden neuen XML-Knoten in der 
        ...
    </Install>
 
-Innerhalb dieses Knotens können dann beliebig viele Unterelemente vom Typ ``<Box>`` liegen. |br|
-Das heißt, ein Plugin kann beliebig viele Boxentypen anlegen.
+Within this node, there can be any number of subelements of type ``<Box>``. |br|
+This means, that a plug-in is capable of creating any number of boxes.
 
-Vergeben Sie stets eindeutige Boxennamen, damit sich diese nicht mit anderen Plugins überschneiden.
+Always assign unique box names so that they do not overlap with other plug-ins.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: xml
 
@@ -674,14 +674,14 @@ Vergeben Sie stets eindeutige Boxennamen, damit sich diese nicht mit anderen Plu
     </Boxes>
 
 +--------------------+------------------------------------------------------------------+
-| Elementname        | Beschreibung                                                     |
+| Element name       | Description                                                      |
 +====================+==================================================================+
-| ``<Name>``         | Name des Boxentyps                                               |
+| ``<Name>``         | name of box type                                                 |
 +--------------------+------------------------------------------------------------------+
-| ``<Available>``    | Seitentyp, in dem die Box angezeigt wird |br|                    |
-|                    | (z. B.: 0= jede Seite, 1= Artikeldetails, 2= Artikelliste, usw.) |
+| ``<Available>``    | page type in which the box will be displayed |br|                |
+|                    | (e.g.: 0= each page, 1= item details, 2= item list, etc.)        |
 +--------------------+------------------------------------------------------------------+
-| ``<TemplateFile>`` | Templatedatei mit dem Inhalt der Box                             |
+| ``<TemplateFile>`` | template file with box content                                   |
 +--------------------+------------------------------------------------------------------+
 
 Soll beispielsweise eine Box auf der Artikeldetailseite und in der Artikelliste des EVO-Templates angezeigt werden,
@@ -712,15 +712,15 @@ finden Sie in der ``includes/defines_inc.php``.
 Widgets
 -------
 
-Mit Plugin-Widgets lassen sich einfach und schnell eigene Widgets im Backend-Dashboard von JTL-Shop implementieren.
+Plug-in widgets enable you to implement your own widgets in the back end dashboard of the JTL-Shop easily and quickly.
 
-Ein Plugin ist in der Lage, ein *AdminWidget* anzulegen.
-Der Inhalt dieses Widgets wird durch eine Klasse und ein Template gesteuert. Somit können beliebige Inhalte
-angezeigt werden. Wo die zugehörigen Dateien zu platzieren sind, erfahren Sie unter "Aufbau"
-im Abschnitt ":ref:`label_aufbau_widgets`".
+A plug-in is capable of creating an *AdminWidget*.
+The content of this widget is controlled via a class and a template. Therefore, any content can be displayed.
+ For information on where to place the files,
+see the "Structure" section, under ":ref:`label_aufbau_widgets`".
 
-Sie erstellen einen neues *AdminWidget*, indem Sie folgenden neuen XML-Knoten im XML-Container ``<Install>``
-in Ihrer ``info.xml`` einfügen:
+You can create a new *AdminWidget* by inserting the following new XML nodes in the ``<Install>`` XML container into
+your ``info.xml`` file:
 
 .. code-block:: xml
    :emphasize-lines: 3-5
@@ -733,10 +733,10 @@ in Ihrer ``info.xml`` einfügen:
        ...
    </Install>
 
-In diesem XML-Container können sich beliebig viele Unterelemente vom Typ ``<Widget>`` befinden.
-Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
+Any number of subelements from type ``<Widget>`` could be in this XML container.
+This means that a plug-in is capable of creating any number of *AdminWidgets*.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: xml
 
@@ -745,7 +745,7 @@ Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
             <Title>Serverinfo (Plugin)</Title>
             <Class>Info</Class>
             <Container>center</Container>
-            <Description>Beispielplugin</Description>
+            <Description>plug-in example</Description>
             <Pos>1</Pos>
             <Expanded>1</Expanded>
             <Active>1</Active>
@@ -753,24 +753,24 @@ Das heißt, ein Plugin kann beliebig viele *AdminWidgets* anlegen.
     </AdminWidget>
 
 +-------------------+-----------------------------------------------------------------------+
-| Elementname       | Beschreibung                                                          |
+| Element name       | Description                                                          |
 +===================+=======================================================================+
-| ``<Title>`` *     | Titelüberschrift des AdminWidgets                                     |
+| ``<Title>`` *     | adminWidget title heading                                             |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Class>`` *     | Klassenname der PHP-Klasse, die den Inhalt des Widgets bereitstellt   |
+| ``<Class>`` *     | class name of the PHP class that provides widget content              |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Container>`` * | Position des Dashboardcontainers. Werte: center, left, right          |
+| ``<Container>`` * | position of dashboard container. Values: center, left, right          |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Description>`` | Beschreibung des AdminWidgets                                         |
+| ``<Description>`` | description of admin widget                                           |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Pos>`` *       | Vertikale Position im Container. Ganzzahl (1 = oben)                  |
+| ``<Pos>`` *       | vertical position in container. Integer (1 = above)                   |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Expanded>`` *  | AdminWidget soll ausgeklappt oder minimiert sein. Ganzzahl, 0 oder 1. |
+| ``<Expanded>`` *  | AdminWidget should be expanded or minimized. Integer, 0 or 1.         |
 +-------------------+-----------------------------------------------------------------------+
-| ``<Active>`` *    | AdminWidget direkt sichtbar im Dashboard. Ganzzahl, 0 oder 1.         |
+| ``<Active>`` *    | AdminWidget directly viewable in the dashboard. Integer, 0 or 1.      |
 +-------------------+-----------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
 Widgets bis JTL-Shop 4.x
 """"""""""""""""""""""""
@@ -788,7 +788,7 @@ Der Klassenname wird bis einschließlich JTL-Shop 4.x wie folgt generiert:
 * Die Klasse in der Datei muss den Namen ``Widget + <Class> +_ + <PluginID>`` tragen
   und muss von der Basisklasse ``WidgetBase`` abgeleitet sein. |br|
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -798,22 +798,22 @@ Der Klassenname wird bis einschließlich JTL-Shop 4.x wie folgt generiert:
    {
    }
 
-Widgets ab JTL-Shop 5.x
-"""""""""""""""""""""""
+Widgets as of JTL-Shop 5.x
+""""""""""""""""""""""""""
 
-Ab JTL-Shop 5.0.0 werden Klassen wie folgt generiert:
+As of JTL-Shop 5.0.0, classes will be generated as follows:
 
-* Annahme: Das XML schreibt vor, die Klasse heißt ``<Class>Info</Class>``
-  und die Plugin-ID lautet ``<PluginID>jtl_test</PluginID>``.
+* Scenario: The XML specifies that the class be named ``<Class>Info</Class>``
+   and the plug-in be called ``<PluginID>jtl_test</PluginID>``.
 
-* Dann muss im Verzeichnis ``/adminmenu/widget/`` des Plugins die Datei ``Info.php`` liegen
-  (siehe auch: Abschnitt ":ref:`Aufbau / Widgets <label_aufbau_widgets>`")
+* So, the ``Info.php`` file must be located in the ``/adminmenu/widget/`` directory of the plug-in
+  (see also: Section ":ref:`Aufbau / Widgets <label_aufbau_widgets>`")
 
-* Die Klasse in der Datei muss den Namen "*Info*" tragen und von der Basisklasse "*AbstractWidget*" abgeleitet sein.
+The class in the file must contain the name "*Info*" and be derived from the "*AbstractWidget*" base class.
 
-* Die Klasse muss im Namespace ``<PluginID>`` liegen.
+* The class has to be located in the ``<PluginID>`` namespace.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -829,12 +829,12 @@ Ab JTL-Shop 5.0.0 werden Klassen wie folgt generiert:
 
 .. _label_infoxml_portlets:
 
-Portlets (ab 5.0.0)
--------------------
+Portlets (as of 5.0.0)
+----------------------
 
-Ab Shop 5.0.0 können Plugins auch :doc:`Portlets </shop_plugins/portlets>` für den *OnPageComposer* definieren. |br|
-Dies geschieht über den XML-Knoten ``<Portlets>``, der seinerseits unlimitiert viele Unterknoten vom Typ ``<Portlet>``
-enthalten kann.
+As of Shop 5.0.0, plug-ins can also define :doc:`Portlets </shop_plugins/portlets>` for the *OnPageComposer*. |br|
+This happens via the XML nodes ``<Portlets>``, which can contain an unlimited number of sub-nodes of the
+type ``<Portlet>``.
 
 .. code-block:: xml
 
@@ -860,26 +860,27 @@ enthalten kann.
 ``<Portlet>``:
 
 +----------------+-------------------------------------------------------------------------------------+
-| Elementname    | Beschreibung                                                                        |
+| Element name    | Description                                                                        |
 +================+=====================================================================================+
-| ``<Title>`` *  | Titel des Portlets (lokalisierbar mit PO-Datei),                                    |
-|                | wie im "*OPC-Editor*" (Frontend) und unter "*OnPage Composer*" im Backend angezeigt |
+| ``<Title>`` *  | portlet title (localisable with portable object file),                              |
+|                | as displayed in the "*OPC-Editor*" (front end) and in the "*OnPage Composer*" in    |
+|                | the back end                                                                        |
 +----------------+-------------------------------------------------------------------------------------+
-| ``<Class>`` *  | Klassenname des Portlets                                                            |
+| ``<Class>`` *  | portlet class name                                                                  |
 +----------------+-------------------------------------------------------------------------------------+
-| ``<Group>`` *  | Name der Gruppe, unter welcher das Portlet in der Portlet-Palette eingeordnet ist   |
+| ``<Group>`` *  | name of the group to which the portlet in the portlet palette is assigned           |
 +----------------+-------------------------------------------------------------------------------------+
-| ``<Active>`` * | Status (1 = aktiviert, 0 = deaktiviert)                                             |
+| ``<Active>`` * | status (1 = activated, 0 = deactivated)                                             |
 +----------------+-------------------------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Portlets bestehen immer aus einer PHP-Datei mit dem Dateinamen ``<Portlet-Class-Name>.php``, die eine einzelne Klasse
-mit dem Namen ``<Portlet-Class-Name>`` definiert und sich im
-Namespace ``Plugin\[Plugin-ID]\Portlets\[Portlet-Class-Name]`` befinden muss. |br|
-Diese neue Portletklasse sollte immer von der OPC-Portlet-Klasse ``JTL\OPC\Portlet`` des Onlineshops erben. |br|
+Portlets are always comprised of a PHP file with the name ``<Portlet-Class-Name>.php``, which defines a single class
+with the name ``<Portlet-Class-Name>``,
+that must be located in the namespace ``Plugin\[Plugin-ID]\Portlets\[Portlet-Class-Name]``. |br|
+This new portlet class should always be inherited from the OPC portlet class ``JTL\OPC\Portlet`` of the online shop. |br|
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: php
 
@@ -894,20 +895,20 @@ Diese neue Portletklasse sollte immer von der OPC-Portlet-Klasse ``JTL\OPC\Portl
         // ...
     }
 
-Die korrekte Platzierung aller entsprechenden Dateien in Ihrem Plugin finden Sie unter "Aufbau"
-im Abschnitt ":ref:`label_aufbau_portlets`". |br|
-Wie Sie mit Ihren neuen Portlets weiter verfahren können, lesen Sie
-im Abschnitt :doc:`Portlets </shop_plugins/portlets>`.
+You can find information about the correct placement of the relevant file in your plug-in in
+the "Structure" section, under ":ref:`label_aufbau_portlets`". |br|
+For information on how to further proceed with your new portlets,
+see :doc:`Portlets </shop_plugins/portlets>`.
 
 .. _label_infoxml_blueprints:
 
-Blueprints (ab 5.0.0)
----------------------
+Blueprints (as of 5.0.0)
+------------------------
 
-Ab JTL-Shop 5.0.0 können Plugins auch Blueprints, also *Kompositionen von einzelnen Portlets*, definieren.
+As of JTL-Shop 5.0.0, plug-ins can also define blueprints, also known as *compositions of individual portlets*.
 
-Hierfür definiert man ebenfalls wieder einen neuen Knoten namens ``Blueprints`` im Container ``Install``, der
-seinerseits wiederum unlimitiert Unterknoten des Typs ``Blueprint`` enthalten kann.
+For this purpose, another node named ``Blueprints`` is defined in the ``Install`` container, which can, in turn, contain
+an unlimited number of sub-nodes.
 
 .. code-block:: xml
 
@@ -915,11 +916,11 @@ seinerseits wiederum unlimitiert Unterknoten des Typs ``Blueprint`` enthalten ka
         ...
         <Blueprints>
            <Blueprint>
-               <Name>Bild links Text rechts</Name>
+               <Name>Image left text right</Name>
                <JSONFile>image_4_text_8.json</JSONFile>
            </Blueprint>
            <Blueprint>
-               <Name>Text links Bild rechts</Name>
+               <Name>Text left image right</Name>
                <JSONFile>text_8_image_4.json</JSONFile>
            </Blueprint>
         </Blueprints>
@@ -930,27 +931,27 @@ seinerseits wiederum unlimitiert Unterknoten des Typs ``Blueprint`` enthalten ka
 Blueprint:
 
 +------------------+----------------------------------------------------------------+
-| Elementname      | Beschreibung                                                   |
+| Element name     | Description                                                    |
 +==================+================================================================+
-| ``<Name>`` *     | Der im OPC Control Center angezeigte Name                      |
+| ``<Name>`` *     | name shown in the OPC control centre                           |
 +------------------+----------------------------------------------------------------+
-| ``<JSONFile>`` * | Name der JSON-Datei im Unterordner ``blueprints/`` des Plugins |
+| ``<JSONFile>`` * | JSON file name in the plug-in subdirectory ``blueprints/``     |
 +------------------+----------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Erstellt werden können die json-Datein über den Export im *OPC-Editor*. |br|
-Wie diese Struktur unterhalb Ihres Plugins aussieht, finden Sie unter "Aufbau"
-im Abschnitt ":ref:`label_aufbau_blueprints`".
+JSON files can be created via the export in the *OPC Editor*. |br|
+You can find out more about what this structure below your plug-in looks like,
+in the "Structure" section, under ":ref:`label_aufbau_blueprints`".
 
-Consent-Manager (ab 5.0.0)
---------------------------
+Consent manager (as of 5.0.0)
+-----------------------------
 
-Ab JTL-Shop 5.0.0 können Plugins eigene Einträge im Consent-Manager definieren. |br|
-Um das zu realisieren, fügen Sie den XML-Knoten ``<ServicesRequiringConsent>`` in die ``info.xml`` Ihres Plugins
-ein. Dieser XML-Knoten kann selbst wiederum beliebig viele Unterknoten des Typs ``<Vendor>`` beinhalten.
+As of JTL-Shop 5.0.0, plug-ins will be able to define entries in the Consent Manager. |br|
+To do this, insert the XML nodes ``<ServicesRequiringConsent>`` in the ``info.xml`` file of your
+plug-in. This XML node can contain any number of sub-nodes of type ``<Vendor>``.
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: xml
 
@@ -983,43 +984,43 @@ ein. Dieser XML-Knoten kann selbst wiederum beliebig viele Unterknoten des Typs 
 ``<Vendor>``:
 
 +-----------------------+-------------------------------------------------------------------------------------+
-| Elementname           | Beschreibung                                                                        |
+| Element name          | Description                                                                         |
 +=======================+=====================================================================================+
-| ``<ID>`` *            | ID des Elements (``[a-zA-Z0-9_]``)                                                  |
+| ``<ID>`` *            | ID of an element (``[a-zA-Z0-9_]``)                                                 |
 +-----------------------+-------------------------------------------------------------------------------------+
-| ``<Company>`` *       | Firmenname                                                                          |
+| ``<Company>`` *       | company name                                                                        |
 +-----------------------+-------------------------------------------------------------------------------------+
-| ``<Localization>`` *  | Gruppe von Übersetzungen                                                            |
+| ``<Localization>`` *  | group of translations                                                               |
 +-----------------------+-------------------------------------------------------------------------------------+
 
 
 ``<Localization>``:
 
 +------------------------+-------------------------------------------------------------------------------------+
-| Elementname            | Beschreibung                                                                        |
+| Element name           | Description                                                                         |
 +========================+=====================================================================================+
-| ``<Name>`` *           | Name der Funktionalität                                                             |
+| ``<Name>`` *           | feature name                                                                        |
 +------------------------+-------------------------------------------------------------------------------------+
-| ``<Purpose>`` *        | Zweck des Cookies                                                                   |
+| ``<Purpose>`` *        | cookies purpose                                                                     |
 +------------------------+-------------------------------------------------------------------------------------+
-| ``<Description>`` *    | Ausführliche Beschreibung des Zweckes und der Funktionalität                        |
+| ``<Description>`` *    | in-depth description of the purpose and function                                    |
 +------------------------+-------------------------------------------------------------------------------------+
-| ``<PrivacyPolicy>`` *  | Externer Link zur Datenschutzerklärung                                              |
+| ``<PrivacyPolicy>`` *  | external link to the privacy policy                                                 |
 +------------------------+-------------------------------------------------------------------------------------+
 
 
-(*) Pflichtfeld
+(*) Mandatory field
 
 
-Adminmenü
----------
+Admin menu
+----------
 
-Im Administrationsbereich von JTL-Shop werden im Menüpunkt **Pluginverwaltung** alle Plugins angezeigt, die entweder
-nicht installiert (verfügbar), fehlerhaft oder installiert sind.
-Falls kein Adminmenü gewünscht ist, lassen Sie bitte den kompletten ``<Adminmenu>``-Container weg.
+All plug-ins that are either not installed (available), faulty, or installed are displayed in the menu item **Plug-in Manager** in
+the admin area of the JTL-Shop.
+If the option of an admin menu is not desired, then simply omit the entire ``<Adminmenu>`` container.
 
-Fehlerhafte Plugins werden mit dem entsprechenden Fehlercode angezeigt. |br|
-Eine Tabelle mit möglichen Fehlercodes finden Sie unter :doc:`Fehlercodes </shop_plugins/fehlercodes>`.
+Faulty plug-ins will be displayed with the relevant error code. |br|
+You can find a table with all possible error codes in :doc:`Fehlercodes </shop_plugins/fehlercodes>`.
 
 .. code-block:: xml
 
@@ -1027,54 +1028,54 @@ Eine Tabelle mit möglichen Fehlercodes finden Sie unter :doc:`Fehlercodes </sho
         ...
     </Adminmenu>
 
-In diesem Element folgen, je nach Bedarf, das Kindelement ``<Customlink>`` (":ref:`label_infoxml_custom_links`") und
-``<Settinglink>`` (":ref:`label_infoxml_setting_links`"). |br|
-Falls kein ``<Customlink>`` und kein ``<Settinglink>`` existiert, wird der ``<Adminmenu>``-Container ignoriert.
+If necessary, the child element ``<Customlink>`` (":ref:`label_infoxml_custom_links`") and
+``<Settinglink>`` (":ref:`label_infoxml_setting_links`”) will follow in this element. |br|
+If there is no ``<Customlink>`` and no ``<Settinglink>``, the ``<Adminmenu>`` container will be ignored.
 
 .. _label_infoxml_custom_links:
 
-Custom-Links
+Custom links
 ------------
 
-*Custom-Links* werden im Adminbereich unter dem jeweiligen Plugin angezeigt. |br|
-Mit Hilfe dieser Links kann ein Plugin Seiten mit eigenem Inhalt im Backend anlegen, die Informationen für den
-Betreiber des Onlineshops bereitstellen. |br|
-*Custom-Links* werden im Backend in Tabs dargestellt.
+*Custom links* are displayed in the admin area under the respective plug-in. |br|
+By using these links, a plug-in can create pages in the back end with its own content. These pages serve to provide information for the operator
+of the online shop. |br|
+*Custom links* are shown as tabs in the back end.
 
 .. code-block:: xml
 
     <Customlink sort="1">
-        <Name>Statistik</Name>
+        <Name>Statistics</Name>
         <Filename>stats.php</Filename>
     </Customlink>
 
 
-+----------------------+-------------------------------------+
-| Elementname          | Funktion                            |
-+======================+=====================================+
-| Attribut ``sort=`` * | Sortierungsnummer des Tabs          |
-+----------------------+-------------------------------------+
-| ``<Name>`` *         | Name des Tabs (``[a-zA-Z0-9_\-]+``) |
-+----------------------+-------------------------------------+
-| ``<Filename>`` *     | Ausführbare PHP-Datei               |
-+----------------------+-------------------------------------+
++-----------------------+-------------------------------------+
+| Element name          | Function                            |
++=======================+=====================================+
+| attribute ``sort=`` * | tab sorting number                  |
++-----------------------+-------------------------------------+
+| ``<Name>`` *          | tab name (``[a-zA-Z0-9_\-]+``)      |
++-----------------------+-------------------------------------+
+| ``<Filename>`` *      | executable PHP file                 |
++-----------------------+-------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
 .. _label_infoxml_setting_links:
 
-Setting-Links
+Setting links
 -------------
 
-*Setting-Links* sind Tabs, die Einstellungen zum Plugin abfragen. |br|
-Hier können beliebig viele Einstellungen angelegt werden. Einstellungen können unterschiedliche Werte abfragen
-(z. B Text, Zahl, Auswahl aus einer Selectbox). Diese Einstellungen können durch den Betreiber des Onlineshops im
-Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
+*Setting links* are tabs that query plug-in settings. |br|
+Any number of settings can be created here. Settings can query various values
+(e.g. text, numbers, selection from a select box). These settings can be configured by the shop operator in the back end
+and then queried in their own plug-in code.
 
 .. code-block:: xml
 
     <Settingslink sort="2">
-        <Name>Einstellungen</Name>
+        <Name>Settings</Name>
         <Setting type="text" initialValue="Y" sort="4" conf="N">
             <Name>Online Watcher</Name>
             <Description>Online Watcher</Description>
@@ -1084,120 +1085,121 @@ Backend konfiguriert und dann im eigenen Plugin-Code abgefragt werden.
 
 ``<Settinglink>``:
 
-+----------------------+----------------------------+
-| Elementname          | Funktion                   |
-+======================+============================+
-| Attribut ``sort=`` * | Sortierungsnummer des Tabs |
-+----------------------+----------------------------+
-| ``<Name>`` *         | Name des Tabs              |
-+----------------------+----------------------------+
-| ``<Setting>`` *      | Einstellungselement        |
-+----------------------+----------------------------+
++-----------------------+----------------------------+
+| Element name          | Function                   |
++=======================+============================+
+| attribute ``sort=`` * | tab sorting number         |
++-----------------------+----------------------------+
+| ``<Name>`` *          | tab name                   |
++-----------------------+----------------------------+
+| ``<Setting>`` *       | setting element            |
++-----------------------+----------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
 .. _label_infoxml_settingtypes:
 
 ``<Setting>``:
 
-+------------------------------+-------------------------------------------------------------------------------------------+
-| Elementname                  | Funktion                                                                                  |
-+==============================+===========================================================================================+
-| Attribut ``type=`` *         | Einstellungstyp (``text``, ``textarea``, ``selectbox``, ``checkbox``, ``radio``, |br|     |
-|                              | ``colorpicker``, ``email``, ``date``, ``time``, ``tel``, ``url`` [ab Shop 5.0: ``none``]) |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| Attribut ``initialValue=`` * | Vorausgewählte Einstellung                                                                |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| Attribut ``sort=``           | Sortierung der Einstellung (höher = weiter unten)                                         |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| Attribut ``conf=`` *         | Y = echte Einstellung, N = Überschrift                                                    |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<Name>`` *                 | Name der Einstellung (``[a-zA-Z0-9_\-]+``)                                                |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<Description>``            | Beschreibung der Einstellung                                                              |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<ValueName>`` *            | Name der Einstellungsvariable, die im PHP-Code genutzt wird                               |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<SelectboxOptions>``       | Optionales Kindelement bei type = selectbox                                               |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<RadioOptions>``           | Optionales Kindelement bei type = radio                                                   |
-+------------------------------+-------------------------------------------------------------------------------------------+
-| ``<OptionsSource>``          | Dynamische Quelle für Optionen in Checkbox/Selectbox                                      |
-+------------------------------+-------------------------------------------------------------------------------------------+
++-------------------------------+-------------------------------------------------------------------------------------------+
+| Element name                  | Function                                                                                  |
++===============================+===========================================================================================+
+| attribute ``type=`` *         | setting type (``text``, ``textarea``, ``selectbox``, ``checkbox``, ``radio``, |br|        |
+|                               | ``colorpicker``, ``email``, ``date``, ``time``, ``tel``, ``url`` [as of Shop 5.0:         |
+|                               | ``none``])                                                                                |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| attribute ``initialValue=`` * | pre-selected setting                                                                      |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| attribute ``sort=``           | setting sorting (higher = further down)                                                   |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| attribute ``conf=`` *         | Y = true setting, N= caption                                                              |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<Name>`` *                  | setting name (``[a-zA-Z0-9_\-]+``)                                                        |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<Description>``             | setting description                                                                       |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<ValueName>`` *             | name of the setting variable that is used in the PHP code                                 |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<SelectboxOptions>``        | optional child element for type = select box                                              |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<RadioOptions>``            | optional child element for type = radio                                                   |
++-------------------------------+-------------------------------------------------------------------------------------------+
+| ``<OptionsSource>``           | dynamic source for options in check or select boxes                                       |
++-------------------------------+-------------------------------------------------------------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
-**Ab JTL-Shop 5.0.0** kann als Typ auch "``type=none``" gewählt werden. Solche Optionen werden nicht im Settings-Tab
-angezeigt. |br|
-Dies bietet sich an, falls eine eigene Darstellung in einem anderen Tab für die Option gewählt werden soll.
-Der Wert wird dann trotzdem in der Plugininstanz gespeichert, sodass kein Umweg über eine eigene SQL-Logik
-erforderlich ist. Allerdings müssen Sie den Objektcache ggf. manuell invalidieren.
+**As of JTL-Shop 5.0.0** type can also be selected as "``type=none``". Such options are not shown in the
+settings tab. |br|
+This is useful if a separate display in another tab is to be selected for this option.
+The value will be stored in the plug-in instance anyway, so that no circumvention over an individual SQL logic
+is necessary. However, you may have to manually invalidate the object cache.
 
-Falls der Typ der Einstellung ``type=selectbox`` ist, geben Sie das Kindelement ``<SelectboxOptions>`` an.
+If the type of setting is ``type=selectbox``, specify the child element as ``<SelectboxOptions>``.
 
 .. code-block:: xml
 
     <SelectboxOptions>
-        <Option value="Y" sort="1">Ja</Option>
-        <Option value="N" sort="2">Nein</Option>
+        <Option value="Y" sort=”1”>Yes</Option>
+        <Option value="N" sort=”2”>No</Option>
     </SelectboxOptions>
 
-+-----------------------+----------------------------------------------+
-| Elementname           | Funktion                                     |
-+=======================+==============================================+
-| ``<Option>`` *        | Angezeigter Wert in der Selectbox-Option     |
-+-----------------------+----------------------------------------------+
-| Attribut ``value=`` * | Wert der Selectbox-Option                    |
-+-----------------------+----------------------------------------------+
-| Attribut ``sort=``    | Sortierung der Option (höher = weiter unten) |
-+-----------------------+----------------------------------------------+
++------------------------+----------------------------------------------+
+| Element name           | Function                                     |
++========================+==============================================+
+| ``<Option>`` *         | displayed value in the select box option     |
++------------------------+----------------------------------------------+
+| attribute ``value=`` * | value of the select box option               |
++------------------------+----------------------------------------------+
+| attribute ``sort=``    | sorting the option (higher = further down)   |
++------------------------+----------------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
-Falls der Typ der Einstellung ``type=radio`` ist, geben Sie das Kindelement ``<RadioOptions>`` an.
+If the type of setting is ``type=radio``, specify the child element as ``<RadioOptions>``.
 
 .. code-block:: xml
 
-    <RadioOptions>
-        <Option value="Y" sort="1">Ja</Option>
-        <Option value="N" sort="2">Nein</Option>
-        <Option value="V" sort="3">Vielleicht</Option>
+    </RadioOptions>
+        <Option value="Y" sort=”1”>Yes</Option>
+        <Option value="N" sort=”2”>No</Option>
+        <Option value="V" sort=”3”>Maybe</Option>
     </RadioOptions>
 
-+-----------------------+----------------------------------------------+
-| Elementname           | Funktion                                     |
-+=======================+==============================================+
-| ``<Option>`` *        | Angezeigter Wert in der Radio-Option         |
-+-----------------------+----------------------------------------------+
-| Attribut ``value=`` * | Wert der Radio-Option                        |
-+-----------------------+----------------------------------------------+
-| Attribut ``sort=``    | Sortierung der Option (höher = weiter unten) |
-+-----------------------+----------------------------------------------+
++------------------------+----------------------------------------------+
+| Element name           | Function                                     |
++========================+==============================================+
+| ``<Option>`` *         | displayed value in the radio option          |
++------------------------+----------------------------------------------+
+| attribute ``value=`` * | value of the radio option                    |
++------------------------+----------------------------------------------+
+| attribute ``sort=``    | sorting the option (higher = further down)   |
++------------------------+----------------------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
-Anstelle von oder zusätzlich zu *RadioOptions* bzw. *SelectboxOptions* können Sie seit JTL-Shop 4.05 das
-Element ``<OptionsSource>`` hinzufügen. Sobald es vorhanden ist, wird das RadioOptions- bzw. SelectboxOptions-Element
-ignoriert.
+As of JTL-Shop 4.05, in lieu of or in addition to *RadioOptions* or *SelectboxOptions* you can add the
+element ``<OptionsSource>``. Once it is there, the RadioOptions or SelectboxOptions element
+will be ignored.
 
 +--------------+---------------------------------+
-| Elementname  | Funktion                        |
+| Element name | Function                        |
 +==============+=================================+
-| ``<File>`` * | Dateiname, relativ zu adminmenu |
+| ``<File>`` * | file name based on admin menu   |
 +--------------+---------------------------------+
 
-(*)Pflichtfelder
+(*)Mandatory field
 
-Hierdurch können in einer PHP-Datei dynamische Optionswerte definiert werden. |br|
-Dies ist insbesondere dann sinnvoll, wenn keine statischen Auswahlmöglichkeiten wie "Ja/Nein" o. Ä. zur Auswahl
-angeboten werden sollten, sondern z. B. Artikel/Kategorien/Seiten oder andere onlineshopspezifische Werte. |br|
-Die angegebene Datei muss ein Array von Objekten liefern, wobei als Objektmember jeweils "*cWert*" und "*cName*" und
-optional "*nSort*" vorhanden sein müssen.
+This allows dynamic option values to be defined in a PHP file. |br|
+This is especially useful in the event that item/category/page/any shop-specific values are to be displayed, instead of static
+selection options, like “yes/no” options, for example. |br|
+The file specified must deliver an object array, where "*cValue*" and "*cName*", and
+optionally "*nSort*", must be present as object members.
 
-Die entsprechende Datei muss sich hierbei im Ordner ``adminmenu/`` des Plugins befinden.
-(siehe auch: Abschnitt :ref:`label_adminmenu_structure`)
+The relevant file must be located in the plug-in folder ``adminmenu/``.
+(See also: Section :ref:`label_adminmenu_structure`)
 
-**Beispiel für eine dynamische Option**:
+**Example of a dynamic option**:
 
 .. code-block:: php
 
@@ -1205,174 +1207,174 @@ Die entsprechende Datei muss sich hierbei im Ordner ``adminmenu/`` des Plugins b
         $options = [];
         $option  = new stdClass();
 
-        $option->cWert = 123;
-        $option->cName = 'Wert A';
+        $option->cValue = 123;
+        $option->cName = ‘Value A';
         $option->nSort = 1;
         $options[]     = $option;
 
         $option        = new stdClass();
-        $option->cWert = 456;
-        $option->cName = 'Wert B';
+        $option->cValue = 456;
+        $option->cName = ‘Value B';
         $option->nSort = 2;
         $options[]     = $option;
 
         $option        = new stdClass();
-        $option->cWert = 789;
-        $option->cName = 'Wert C';
+        $option->cValue = 789;
+        $option->cName = ‘Value C';
         $option->nSort = 2;
         $options[]     = $option;
 
         return $options;
 
-In diesem Beispiel würden entsprechend die 3 Auswahlmöglichkeiten "*Wert A*", "*Wert B*" und "*Wert C*" zur Auswahl
-stehen.
+In this example, the 3 selection options "*Value A*", "*Value B*" and "*Value C*" would be available
+for selection.
 
 
 .. _label_infoxml_locale:
 
-Übersetzung von Settings
-------------------------
+Translation of settings
+-----------------------
 
-Ab JTL-Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden. |br|
-Dies betrifft in jedem ``<Setting>``-Element die Knoten ``<Name>`` und ``<Description>`` sowie die Werte von
-``<SelectboxOptions>`` und ``<RadioOptions>``.
-Die jeweiligen Werte können als *msgid*-Schlüssel in der ``base.po`` des Plugins angegeben und übersetzt werden.
+As of JTL-Shop 5.0.0, plug-in options can be multilingual. |br|
+This affects the ``<Name>`` and ``<Description>`` nodes in each ``<Setting>`` element, as well as the values of
+`<SelectboxOptions>`` and ``<RadioOptions>``.
+The respective values can be specified and translated as *msgid* keys in the plug-in's ``base.po``.
 
-Generell müssen Sie hierzu im Unterordner ``locale/`` des Plugins für jede zu übersetzende Sprache einen Unterordner
-mit zugehörigem IETF-Language-Tag und darin die Datei ``base.po`` erstellen. |br|
-Die entsprechende Verzeichnisstruktur finden Sie unter "Aufbau"
-im Abschnitt ":ref:`label_aufbau_locale`".
+In general, you need to create a subfolder
+with an associated IETF language tag in the ``locale/`` subfolder of the plug-in for each language you want to translate and create the ``base.po`` file in it. |br|
+You can find the corresponding directory structure for this
+in the "Structure" section, under ":ref:`label_aufbau_locale`".
 
-**Beispiel:**
+**Example:**
 
-Angenommen, Sie möchten die folgende Option in die Sprachen Englisch und Deutsch übersetzen:
+Suppose you would like to display the following option in English and German:
 
 .. code-block:: xml
 
     <Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
-        <Name>Finden Sie das hier hilfreich?</Name>
-        <Description>Stellt eine simple Ja/Nein-Frage</Description>
+        <Name>Do you find this helpful?</Name>
+        <Description>Asks a simple yes/no question</Description>
         <ValueName>myplugin_is_helpful</ValueName>
         <SelectboxOptions>
-            <Option value="Y" sort="0">Ja</Option>
-            <Option value="N" sort="1">Nein</Option>
-            <Option value="V" sort="2">Vielleicht</Option>
+            <Option value="Y" sort=”0”>Yes</Option>
+            <Option value="N" sort="1”>No</Option>
+            <Option value=”M" sort=”2”>Maybe</Option>
         </SelectboxOptions>
     </Setting>
 
-Im Beispiel wollen Sie eine einfache "Ja/Nein"-Frage in den Settings unseres Plugins stellen.
+In this example, we will only ask simple "yes/no" questions in our plug-in settings.
 
-Legen Sie folgende Dateien unter der Plugin-Root an:
+Add the following files to the plug-in root:
 
 * ``locale/de-DE/base.po``
 * ``locale/en-US/base.po``
 
-Ausführliche Informationen dazu finden Sie im Kapitel "Aufbau" im Abschnitt ":ref:`label_aufbau_locale`".
+You can find more information on this in the "Structure" section under ":ref:`label_aufbau_locale`".
 
-Der Inhalt könnte für *Deutsch* folgendermaßen aussehen (``de-DE/base.po``):
+The contents for *German* could look like this (``de-DE/base.po``):
 
 .. code-block:: pot
 
-    msgid "Ja"
+    msgid “Yes"
     msgstr "Ja"
 
-    msgid "Nein"
+    msgid “No"
     msgstr "Nein"
 
-    msgid "Finden Sie das hier hilfreich?"
+    msgid “Do you find this helpful?"
     msgstr "Finden Sie das hier hilfreich?"
 
-    msgid "Stellt eine simple Ja/Nein-Frage"
+    msgid “Asks a simple yes/no question"
     msgstr "Stellt eine simple Ja/Nein-Frage"
 
 
-und für *Englisch* entsprechend so (``en-US/base.po``):
+and that for *English* is created accordingly (``en-US/base.po``):
 
 .. code-block:: pot
 
-    msgid "Ja"
+    msgid “Yes"
     msgstr "Yes"
 
-    msgid "Nein"
+    msgid “No"
     msgstr "No"
 
-    msgid "Finden Sie das hier hilfreich?"
+    msgid “Do you find this helpful?"
     msgstr "Do you find this helpful?"
 
-    msgid "Stellt eine simple Ja/Nein-Frage"
+    msgid “Asks a simple yes/no question"
     msgstr "Asks a simple yes/no question"
 
-In unserem Beispiel haben wir absichtlich den String "*Vielleicht*" weder aufgeführt, noch übersetzt. |br|
-Dies soll verdeutlichen, dass "*Veilleicht*" in allen Sprachen *unverändert* ausgegeben wird.
+In our example, “*Maybe*” was intentionally not translated or addressed. |br|
+This would then mean that “*Maybe*” is displayed *unaltered* in all languages.
 
-Anschließend müssen Sie die .po-Dateien nur noch z. B. mit `Poedit <https://poedit.net/>`_ zur ``base.mo``
-kompilieren.
+Finally, you just have to compile the .po file with `Poedit <https://poedit.net/>`_ to
+the ``base.mo``.
 
 .. note:
 
-    Checkbox-Spezialfunktionen
-    --------------------------
+    Check box special functions
+    ---------------------------
 
-    Über die Pluginschnittstelle lassen sich auch Checkboxfunktionen registrieren, welche dann als Spezialfunktion in der
-    Checkboxverwaltung zur Verfügung stehen.
+    The plug-in interface can also be used to register check box functions, which are then available as special functions in the check box control.
+    
 
-    **Beispiel:**
+    **Example:**
 
     .. code-block:: xml
 
         <CheckBoxFunction>
             <Function>
-                <Name>Name der Spezialfunktion</Name>
-                <ID>meinespezialfunktion</ID>
+                <Name>Name of the special function</Name>
+                <ID>myspecialfunction</ID>
             </Function>
         </CheckBoxFunction>
 
-    Hiermit wird bei einer Plugin-Installation ein neuer Eintrag in die Tabelle ``tcheckboxfunktion`` geschrieben.
+    This will write a new entry in the ``tcheckbox function`` table upon plug-in installation.
 
-    Wird die Checkbox angehakt und ist dafür "*Spezialfunktion Plugin*" gewählt, so wird die jeweilige php-Datei des
-    Plugins inkludiert.
+    If the check box for "*Plug-in special features*" is checked, the respective php file of the
+    plug-in will be included.
 
 
 .. _label_infoxml_frontendlinks:
 
-Frontend-Links
---------------
+Front end links
+---------------
 
-Mit Hilfe von *Frontend-Links* ist ein Plugin in der Lage, einen Link in JTL-Shop anzulegen
-und den Inhalt zu verwalten. |br|
-Sie können beliebig viele Elemente des Typs ``<Link>`` anlegen. Falls kein *Frontend-Link* angegeben wird, sollten Sie
-den Block ``<FrontendLink>`` komplett weglassen. |br|
+Via *front end links*, a plug-in can create a link in the JTL-Shop to manage
+content. |br|
+You can create any number of ``<Link>`` elements. If no *front end link* is specified, then completely omit
+the ``<FrontendLink>`` block. |br|
 
-In Versionen bis JTL-Shop 4.x werden Links in *Linkgruppen-Verwaltung* unter CMS ("Seiten -> Eigene Seiten") angelegt.
-Dort können durch Plugins angelegte Links im Nachhinein verwaltet werden. |br|
-Ab JTL-Shop 5.x werden neue *Frontend-Links*, unter "Eigene Inhalte" -> "Seiten", der Linkgruppe "Hidden" zugewiesen.
+In versions up to JTL-Shop 4.x, links are created in the *Link groups manager* under CMS ("Pages -> Custom pages").
+Here, links created by plug-ins can be managed in retrospect. |br|
+As of JTL-Shop 5.x, new *front end links*, under "Custom content" -> "Pages", are assigned to the "Hidden" link group.
 
-Um nun beispielsweise den Frontend-Link "JTL Test Page" des JTL-Plugins
-"`Demo Plugin <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_" in Ihrem Onlineshop sichtbar zu
-machen, können Sie ihn aus der Linkgruppe "Hidden" in die Linkgruppe "Megamenu" verschieben.
-Im Megamenü Ihres Onlineshops wird sodann dieser neue Frontend-Link als letzter Eintrag angezeigt.
+In order to, for example, make the front end link "JTL Test Page" of the JTL plug-in
+"`Demo Plugin <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_" visible in your online shop, you can move it from
+the link group "Hidden" to the link group "Mega menu".
+In the mega menu of your online shop, this new front end link will then be displayed as the last entry.
 
-Jeder Link kann in beliebig vielen Sprachen *lokalisiert* werden. |br|
-Dazu wird das Element ``<LinkLanguage>`` mit seinem Attribut ``iso`` verwendet. Sein Inhalt wird in Großbuchstaben
-geschrieben (z. B.: für Deutsch = GER).
-Es werden jedoch immer nur maximal die Sprachen installiert, die der Onlineshop auch beinhaltet. |br|
-Hat ein Plugin weniger als die im Onlineshop installierten Sprachen hinterlegt, werden alle weiteren Onlineshopsprachen
-mit der Standardsprache aufgefüllt.
+Every link can be *localised* in any language, as needed. |br|
+To do this, the ``<LinkLanguage>`` element is used with its ``iso`` attribute. Its contents are written in capital letters
+(e.g.: For German = GER).
+However, only the languages that the online shop includes will be installed. |br|
+If a plug-in has stored fewer languages than those installed in the online shop, all other shop languages are automatically substituted with the default language.
 
-Jeder Frontend-Link benötigt eine Smarty-Templatedatei. |br|
-Es gibt zwei verschiedene Arten, diese Inhalte anzuzeigen. |br|
-Die erste Möglichkeit besteht darin, den Inhalt in einem definierten Bereich (*Contentbereich*) des Onlineshop
-anzuzeigen. Dies wird durch das Element ``<Template>`` erreicht. |br|
-Die zweite Möglichkeit wäre, den Inhalt auf einer komplett neuen Seite zu zeigen. Dies benötigt das
-Element ``<FullscreenTemplate>``. |br|
+
+Each front end link requires a Smary template file. |br|
+There are two ways to display these contents. |br|
+The first option is to display the content in a defined area (*content area*) of the online shop.
+ This is done via the ``<Template>``element. |br|
+The second option would be to display the contents on a completely new page. For this, you need
+the ``<FullscreenTemplate>`` element. |br|
 
 .. important::
 
-    Eine der beiden Varianten muss gesetzt sein. |br|
-    Es ist **nicht** möglich, beide Anzeigemöglichkeiten **gleichzeitig** in der ``info.xml`` zu definieren.
+    One of two of these variants must be set. |br|
+    It is **not** possible to define both display options in the ``info.xml`` **simultaneously**.
 
-Im folgenden Beispiel wird die Smarty-Templatedatei ``test_page.tpl``, die sich
-im Ordner ``template/`` befindet, im fest definierten Contentbereich des Onlineshops geladen.
+In the following example, the Smarty template file ``test_page.tpl``,
+which is located in the ``template/`` folder, is loaded in the defined content area of the online shop.
 
 .. code-block:: xml
 
@@ -1396,68 +1398,68 @@ im Ordner ``template/`` befindet, im fest definierten Contentbereich des Onlines
         </Link>
     </FrontendLink>
 
-Ein Frontend-Link benötigt keinen expliziten Hook, denn das System bindet den Link automatisch an einem fest
-definierten Hook.
+A front end link does not require a specific hook, since the system connects the link automatically to a defined hook.
+
 
 Link:
 
 +----------------------------+---------------------------------------------------------+
-| Elementname                | Funktion                                                |
+| Element name               | Function                                                |
 +============================+=========================================================+
-| ``<Filename>`` *           | Auszuführende Datei beim Link                           |
+| ``<Filename>`` *           | file to be exported with link                           |
 +----------------------------+---------------------------------------------------------+
-| ``<Name>`` *               | Name des Links (``[a-zA-Z0-9 ]+``)                      |
+| ``<Name>`` *               | link name (``[a-zA-Z0-9 ]+``)                           |
 +----------------------------+---------------------------------------------------------+
-| ``<Template>`` *           | Smarty-Templatedatei die den Linkinhalt anzeigt         |
+| ``<Template>`` *           | Smarty template file that displays link content         |
 +----------------------------+---------------------------------------------------------+
-| ``<FullscreenTemplate>`` * | Smarty-Templatedatei die den Linkinhalt anzeigt         |
+| ``<FullscreenTemplate>`` * | Smarty template file that displays link content         |
 +----------------------------+---------------------------------------------------------+
-| ``<VisibleAfterLogin>`` *  | Nur anzeigen wenn der User eingeloggt ist ([NY]{1,1})   |
+| ``<VisibleAfterLogin>`` *  | display only if user in logged in ([NY]{1,1})           |
 +----------------------------+---------------------------------------------------------+
-| ``<PrintButton>`` *        | Druckbutton anzeigen ([NY]{1,1})                        |
+| ``<PrintButton>`` *        | display push button ([NY]{1,1})                         |
 +----------------------------+---------------------------------------------------------+
-| ``<NoFollow>`` *           | NoFollow-Attribut in den HTML Code einfügen ([NY]{1,1}) |
+| ``<NoFollow>`` *           | add no follow attribute in the HTML code ([NY]{1,1})    |
 +----------------------------+---------------------------------------------------------+
 | ``<LinkLanguage>`` *       |                                                         |
 +----------------------------+---------------------------------------------------------+
-| ``<Identifier>``           | Unveränderbare ID, seit 5.1.0 (``[a-zA-Z0-9 ]+``)       |
+| ``<Identifier>``           | unmodifiable ID, as of 5.1.0 (``[a-zA-Z0-9 ]+``)        |
 +----------------------------+---------------------------------------------------------+
-| ``<SSL>``                  | 0 oder 1 für Standard, 2 für erzwungenes SSL            |
+| ``<SSL>``                  | 0 or 1 for default, 2 for forced SSL                    |
 +----------------------------+---------------------------------------------------------+
 
 LinkLanguage
 
 +-----------------------+--------------------------------------------------+
-| Elementname           | Funktion                                         |
+| Element name          | Function                                         |
 +=======================+==================================================+
-| ``<iso>`` *           | Sprach.ISO (``[A-Z]{3}``)                        |
+| ``<iso>`` *           | ISO (``[A-Z]{3}``)                               |
 +-----------------------+--------------------------------------------------+
-| ``<Seo>`` *           | SEO-Name des Links (``[a-zA-Z0-9 ]+``)           |
+| ``<Seo>`` *           | SEO link name (``[a-zA-Z0-9 ]+``)                |
 +-----------------------+--------------------------------------------------+
-| ``<Name>`` *          | Name des Links (``[a-zA-Z0-9 ]+``)               |
+| ``<Name>`` *          | link name (``[a-zA-Z0-9 ]+``)                    |
 +-----------------------+--------------------------------------------------+
-| ``<Title>`` *         | Titel des Links (``[a-zA-Z0-9 ]+``)              |
+| ``<Title>`` *         | link title (``[a-zA-Z0-9 ]+``)                   |
 +-----------------------+--------------------------------------------------+
-| ``<MetaTitle>`` *     | Meta Title des Links (``[a-zA-Z0-9,. ]+``)       |
+| ``<MetaTitle>`` *     | link meta title (``[a-zA-Z0-9,. ]+``)            |
 +-----------------------+--------------------------------------------------+
-| ``<MetaKeywords>`` *  | Meta Keywords des Links (``[a-zA-Z0-9, ]+``)     |
+| ``<MetaKeywords>`` *  | link meta keywords (``[a-zA-Z0-9, ]+``)          |
 +-----------------------+--------------------------------------------------+
-| ``<MetaDescription>`` | Meta Description des Links (``[a-zA-Z0-9,. ]+``) |
+| ``<MetaDescription>`` | link meta description (``[a-zA-Z0-9,. ]+``)      |
 +-----------------------+--------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
 
 .. _label_infoxml_paymentmethode:
 
-Zahlungsmethoden
-----------------
+Payment methods
+---------------
 
-Das Pluginsystem von JTL-Shop ist in der Lage, eine oder mehrere Zahlungsmethoden zugleich
-zu implementieren. Dabei wird nicht in den Code von JTL-Shop eingegriffen. |br|
-Das Hauptelement ``<PaymentMethod>`` wird unter dem Element ``<Install>`` eingefügt. Es kann beliebig viele
-Zahlungsmethoden (``<Method>``) enthalten. |br|
-Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentMethod>`` Block ganz weggelassen.
+The JTL-Shop plug-in system has the ability to implement several payment methods
+at the same time. This does not interfere with the JTL-Shop code. |br|
+The main element, ``<PaymentMethod>``, will be added under the ``<Install>`` element. This can contain any number
+of payment methods (``<Method>``). |br|
+In the case that the plug-in should not implement any payment method, the ``<PaymentMethod>`` block will be omitted entirely.
 
 .. code-block:: xml
 
@@ -1470,12 +1472,12 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
     </Install>
 
 +----------------+-----------------+
-| Elementname    | Funktion        |
+| Element name   | Function        |
 +================+=================+
-| ``<Method>`` * | Zahlungsmethode |
+| ``<Method>`` * | payment method  |
 +----------------+-----------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
 **Beispiel, JTL-Shop 4.x:** |br|
 
@@ -1510,7 +1512,7 @@ Falls das Plugin keine Zahlungsmethode implementieren soll, wird der ``<PaymentM
 
 **JTL-Shop 5.x:**
 
-Für JTL-Shop 5 sieht der in der oberen Abbildung gelb hervorgehobene Teil der Struktur wie folgt aus:
+For JTL-Shop 5, the structure will look like this:
 
 .. code-block:: xml
 
@@ -1522,156 +1524,156 @@ Für JTL-Shop 5 sieht der in der oberen Abbildung gelb hervorgehobene Teil der S
     </Method>
 
 +------------------------------+-----------------------------------------------------------------+
-| Elementname                  | Funktion                                                        |
+| Element name                 | Function                                                        |
 +==============================+=================================================================+
-| ``<Name>`` *                 | Name der Zahlungsmethode                                        |
+| ``<Name>`` *                 | name of payment method                                          |
 +------------------------------+-----------------------------------------------------------------+
-| ``<PictureURL>`` *           | Link zu einem Logo                                              |
+| ``<PictureURL>`` *           | link to logo                                                    |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Sort>`` *                 | Sortierungsnummer der Zahlungsmethode (``[0-9]+``)              |
+| ``<Sort>`` *                 | payment method sorting number (``[0-9]+``)                      |
 +------------------------------+-----------------------------------------------------------------+
-| ``<SendMail>`` *             | Versand einer E-Mail bei Zahlungseingang (1 = "Ja", 0 = "Nein") |
+| ``<SendMail>`` *             | send an email upon receipt of payment (1 = “Yes", 0 = “No”)     |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Provider>``               | Zahlungsanbieter                                                |
+| ``<Provider>``               | payment provider                                                |
 +------------------------------+-----------------------------------------------------------------+
-| ``<TSCode>`` *               | Trusted Shops TSCode(``[A-Z_]+``)                               |
+| ``<TSCode>`` *               | trusted shops TSCode(``[A-Z_]+``)                               |
 +------------------------------+-----------------------------------------------------------------+
-| ``<PreOrder>`` *             | Pre(1)- oder Post(0)-Bestellung(``[0-1]{1}``)                   |
+| ``<PreOrder>`` *             | pre(1)- or post(0)-order (``[0-1]{1}``)                         |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Soap>`` *                 | Übertragungsprotokoll Flag (``[0-1]{1}``)                       |
+| ``<Soap>`` *                 | transmission protocol flag (``[0-1]{1}``)                       |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Curl>`` *                 | Übertragungsprotokoll Flag (``[0-1]{1}``)                       |
+| ``<Curl>`` *                 | transmission protocol flag (``[0-1]{1}``)                       |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Sockets>`` *              | Übertragungsprotokoll Flag (``[0-1]{1}``)                       |
+| ``<Sockets>`` *              | transmission protocol flag (``[0-1]{1}``)                       |
 +------------------------------+-----------------------------------------------------------------+
-| ``<ClassFile>`` *            | Name der Datei der PHP-Klasse (``[a-zA-Z0-9\/_\-.]+.php``)      |
+| ``<ClassFile>`` *            | name of PHP file class (``[a-zA-Z0-9\/_\-.]+.php``)             |
 +------------------------------+-----------------------------------------------------------------+
-| ``<ClassName>`` *            | Name der Klasse                                                 |
+| ``<ClassName>`` *            | class name                                                      |
 +------------------------------+-----------------------------------------------------------------+
-| ``<TemplateFile>``           | Name der Templatedatei (``[a-zA-Z0-9\/_\-.]+.tpl``)             |
+| ``<TemplateFile>``           | template file name (``[a-zA-Z0-9\/_\-.]+.tpl``)                 |
 +------------------------------+-----------------------------------------------------------------+
-| ``<AdditionalTemplateFile>`` | Templatedatei für einen Zusatzschritt                           |
+| ``<AdditionalTemplateFile>`` | template file for additional step                               |
 +------------------------------+-----------------------------------------------------------------+
-| ``<MethodLanguage>`` *       | Lokalisierung der Zahlungsmethode                               |
+| ``<MethodLanguage>`` *       | payment method localisation                                     |
 +------------------------------+-----------------------------------------------------------------+
-| ``<Setting>``                | Einstellungen der Zahlungsmethode                               |
+| ``<Setting>``                | payment method settings                                         |
 +------------------------------+-----------------------------------------------------------------+
 
-(*) Pflichtfelder
+(*) Mandatory field
 
-Die Elemente ``<Soap>``, ``<Curl>`` und ``<Sockets>`` benennen die erforderlichen Kommunikationswege zum Server
-des Zahlungsanbieters, die von diesem Zahlungsmethodenplugin genutzt werden sollen. |br|
-Diese Elemente werden bei der Installation des Plugins vom Plugin-System des Shops geprüft und mit den vorhandenen
-Möglichkeiten des aktuellen Shop-Servers abgeglichen (z. B. das Vorhandensein entsprechender PHP-Module). Die Prüfung
-erfolgt hierbei in einer **ODER**-Verknüpfung. |br|
-D.h. sobald eine der geforderten Übertragungarten zum Server des Zahlungsnabieters verfügbar ist, wird auch das
-Zahlungsmethodenplugin nach der Installation als arbeitsfähig markiert. |br|
-In einigen Fällen werden jedoch mehrere Übertragungswege benötigt, beispielsweise SOAP zur Nutzerdatenübertragung
-und CURL für Liquiditätsprüfungen. Das Plugin-System prüft jedoch standardmäßig nicht, ob alle benötigten
-Übertragungswege zur Verfügung stehen. Deshalb müssen Sie selbst programmatisch dafür sorgen (z. B. mithilfe der
-Methode ":ref:`isValidIntern() <label_public-function-method-isValidIntern>`"), dass das Plugin dem Plugin-System
-mitteilt, wenn nicht alle benötigten Übertragungswege verfügbar sind. |br|
-Falls das Zahlungsplugin dagegen z.B. auf einem POST-Formular aufgebaut ist, kann man hier jedem Element
-eine ``0`` zuweisen.
+The ``<Soap>``, ``<Curl>`` and ``<Sockets>`` elements designate the required communication paths to the server
+of the payment provider to be used by this payment method plug-in. |br|
+These elements are then checked by the shop's plug-in system when the plug-in is installed and synchronized with the options available
+on the current shop server (e.g. the availability of relevant PHP modules). This check
+is performed in an **OR** statement. |br|
+In other words, as soon as one of the required transfer methods to the payment provider's server is available, the
+payment method plug-in will also be marked as operational after installation. |br|
+However, in certain cases, multiple transfer paths are needed, for example SOAP for user data transfer
+and CURL for liquidity checks. By default, the plug-in system does not check if all necessary transfer
+methods are available or not. Therefore, you have to ensure that the plug-in communicates to the plug-in system
+when all necessary transfer methods are not available, by using
+the ":ref:`isValidIntern() <label_public-function-method-isValidIntern>`" method, for example. |br|
+If, on the other hand, the payment plug-in is built on a POST-form, you can assign a ``0`` to each element
+here.
 
-Im Element ``<TemplateFile>`` kann der Name oder Pfad zu einer Smarty Template-Datei angegeben werden.
-Dort können dann z.B. POST-Formulare ausgegeben werden. |br|
+In the ``<TemplateFile>`` element, the name or path to a Smarty template file can be specified.
+POST forms can then be returned there, for example. |br|
 
 .. _label_AdditionalTemplateFile:
 
-Im Element ``<AdditionalTemplateFile>`` können Sie außerdem eine Smarty-Templatedatei für einen zusätzlichen
-Zahlungsschritt angeben. Hier können z. B. Kreditkarteninfos abgefragt werden.
+In the ``<AdditionalTemplateFile>`` element, you can also specify a Smarty template file for an additional
+payment step. This is where credit card information can be requested.
 
-Das Element ``<TSCode>`` kann folgende Werte enthalten: "*DIRECT_DEBIT*", "*CREDIT_CARD*", "*INVOICE*",
+The ``<TSCode>`` element can contain the following values: "*DIRECT_DEBIT*", "*CREDIT_CARD*", "*INVOICE*",
 "*CASH_ON_DELIVERY*", "*PREPAYMENT*", "*CHEQUE*", "*PAYBOX*", "*PAYPAL*", "*CASH_ON_PICKUP*", "*FINANCING*",
 "*LEASING*", "*T_PAY*", "*CLICKANDBUY*", "*GIROPAY*", "*GOOGLE_CHECKOUT*", "*SHOP_CARD*", "*DIRECT_E_BANKING*",
 "*OTHER*".
 
-Der XML-Knoten ``<MethodLanguage>`` sorgt für die Mehrsprachigkeit der Zahlungsmethode. |br|
-Sie können beliebig viele Sprachen für eine Zahlungsmethode implementieren. Eine Sprache muss jedoch mindestens
-enthalten sein.
+The ``<MethodLanguage>`` XML node provides multilingual options for payment methods. |br|
+You can implement any number of languages for a payment method. It must contain at least one
+language.
 
 +--------------------+------------------------------------------------------------------+
-| Elementname        | Funktion                                                         |
+| Element name       | Function                                                         |
 +====================+==================================================================+
-| ``<iso>`` *        | Sprachcode der jeweiligen Sprache                                |
+| ``<iso>`` *        | language code of respective language                             |
 +--------------------+------------------------------------------------------------------+
-| ``<Name>`` *       | Name der Zahlungsmethode                                         |
+| ``<Name>`` *       | name of payment method                                           |
 +--------------------+------------------------------------------------------------------+
-| ``<ChargeName>`` * | Sortierungsnummer der Zahlungsmethode (``[0-9]+``)               |
+| ``<ChargeName>`` * | payment method sorting number (``[0-9]+``)                       |
 +--------------------+------------------------------------------------------------------+
-| ``<InfoText>`` *   | Kurzbeschreibung der Zahlart, wie sie im Frontend angezeigt wird |
+| ``<InfoText>`` *   | short description of payment method, as displayed in front end   |
 +--------------------+------------------------------------------------------------------+
 
-(*) Pflichtfelder
+(*) Mandatory field
 
-Der XML-Knoten ``<Setting>`` ermöglicht es dem Plugin, spezifische Einstellungen des Onlineshopbetreibers
-entgegenzunehmen. |br|
-Jede Zahlungsmethode kann beliebig viele Einstellungen enthalten, z.B. die Logindaten für einen bestimmten
-Onlineshopbetreiber. Diese Einstellungen werden im Backend bei der jeweiligen Zahlungsmethode angezeigt und können dort
-editiert werden.
+The XML node ``<Setting>`` allows the plug-in to receive specific settings from the online shop operator
+. |br|
+Each payment method can contain any number of settings, like the login details of a specific
+shop operator, for example. These settings are displayed in the back end for the respective payment method and can be edited there
+.
 
 +------------------------+---------------------------------------------------+
-| Elementname            | Funktion                                          |
+| Element name           | Function                                          |
 +========================+===================================================+
-| ``<type>`` *           | Einstellungstyp (text, zahl, selectbox)           |
+| ``<type>`` *           | settings type (text, number, select box)          |
 +------------------------+---------------------------------------------------+
-| ``<initValue>`` *      | Vorausgewählte Einstellung                        |
+| ``<initValue>`` *      | pre-selected setting                              |
 +------------------------+---------------------------------------------------+
-| ``<sort>`` *           | Sortierung der Einstellung (höher = weiter unten) |
+| ``<sort>`` *           | setting sorting (higher = further down)           |
 +------------------------+---------------------------------------------------+
-| ``<conf>``  *          | Y = echte Einstellung, N = Überschrift            |
+| ``<conf>``  *          | Y = true setting, N = caption                     |
 +------------------------+---------------------------------------------------+
-| ``<Name>`` *           | Name der Einstellung                              |
+| ``<Name>`` *           | setting name                                      |
 +------------------------+---------------------------------------------------+
-| ``<Description>`` *    | Beschreibung der Einstellungsvariable             |
+| ``<Description>`` *    | setting variable description                      |
 +------------------------+---------------------------------------------------+
-| ``<ValueName>`` *      | Name der Einstellungsvariable                     |
+| ``<ValueName>`` *      | setting variable name                             |
 +------------------------+---------------------------------------------------+
-| ``<SelectboxOptions>`` | Optionales Element bei type = selectbox           |
+| ``<SelectboxOptions>`` | optional element for type = selectbox             |
 +------------------------+---------------------------------------------------+
 
-(*) Pflichtfelder
+(*) Mandatory field
 
-Weitere Informationen zum Thema "Zahlungsarten im Plugin" finden Sie im Kapitel ":doc:`payment_plugins`".
+For further information about "payment types in plug-ins", please see ":doc:`payment_plugins`".
 
-Sprachvariablen
----------------
+Language variables
+------------------
 
-Sprachvariablen sind lokalisierte Variablen, die für verschiedene Sprachen hinterlegt und abgerufen werden können. |br|
-Sofern die Sprachen von JTL-Shop und die Sprachen des Plugins übereinstimmen, passen sich die Sprachvariablen für jede
-eingestellte Sprache im Onlineshop automatisch lokalisiert an. |br|
-Sollte das Plugin *Frontend-Links* bereitstellen, so sollte jede textuelle Ausgabe mittels dieser Sprachvariablen
-ausgegeben werden.
+Language variables are localised variables, which can be stored and retrieved for different languages. |br|
+As long as the languages in the JTL-Shop match those in the plug-in, the language variables automatically localise for each
+set language in the online shop. |br|
+If the plug-in provides *front end links*, then any textual output should be generated using this
+language variable.
 
 .. note::
 
-    *Sprachvariablen* sind nicht zu verwechseln mit den ":ref:`label_infoxml_locale`", im Backend des Onlineshops.
+    *Language variables* are not to be confused with ":ref:`label_infoxml_locale`” in the back end of an online shop.
 
-Anpassung der Sprachvariablen in den Plugineinstellungen des Adminbereichs
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Adapting the languages variables in the admin area’s plug-in settings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Sprachvariablen können nach der Installation eines Plugins vom Betreiber des Onlineshops angepasst werden. |br|
-Zu diesem Zweck stellt die Pluginverwaltung die Spalte "*Sprachvariablen*" bereit, in der sich die Schaltfläche
-"*Bearbeiten*" befinden kann, sobald ein Plugin Sprachvariablen bereitstellt.
+Language variables can be adapted by a shop owner after installation of a plug-in. |br|
+For this reason, the plug-in manager provides a column for “*language variables*” in which
+the "*Edit*" button can be found as soon as a plug-in provides language variables.
 
-Ein Plugin kann beliebig viele Sprachvariablen definieren. |br|
-Das Hauptelement der Sprachvariablen heißt ``<Locales>`` und jede Sprachvariable wird im Element ``<Variable>``
-definiert. |br|
-``<Locales>`` ist ein Unterknoten von ``<Install>``. |br|
-Im XML-Container ``<Variable>`` können beliebig viele ``<VariableLocalized>``-Knoten eingebunden werden.
+A plug-in can define any number of language variables. |br|
+The main element of the language variables is called ``<Locales>``
+and every language element will be defined in ``<Variable>``. |br|
+``<Locales>`` is a sub-node of ``<Install>``. |br|
+In the XML-Container ``<Variable>`` any number of ``<VariableLocalized>`` nodes can be integrated.
 
 .. code-block:: xml
 
     <Locales>
         <Variable>
             <Name>xmlp_lang_var_1</Name>
-            <Description>Eine Beispiel-Variable.</Description>
+            <Description>An example variable.</Description>
             <VariableLocalized iso="GER">PI ist %s und Parameter 2 lautet: %s.</VariableLocalized>
             <VariableLocalized iso="ENG">PI is %s and parameter 2 has the value: %s.</VariableLocalized>
         </Variable>
         <Variable>
-            <Description>Eine weitere Beispiel-Variable.</Description>
+            <Description>Another example variable.</Description>
             <Name>xmlp_lang_var_2</Name>
             <VariableLocalized iso="GER">Ich bin variabel!</VariableLocalized>
             <VariableLocalized iso="ENG">I'm variable!</VariableLocalized>
@@ -1680,37 +1682,37 @@ Im XML-Container ``<Variable>`` können beliebig viele ``<VariableLocalized>``-K
     </Locales>
 
 +---------------------------+----------------------------------+
-| Elementname               | Funktion                         |
+| Element name              | Function                         |
 +===========================+==================================+
-| ``<Name>`` *              | Name der Sprachvariable          |
+| ``<Name>`` *              | language variable name           |
 +---------------------------+----------------------------------+
-| ``<Description>`` *       | Beschreibung der Sprachvariable  |
+| ``<Description>`` *       | language variable description    |
 +---------------------------+----------------------------------+
-| ``<VariableLocalized>`` * | Lokalisierter Name               |
+| ``<VariableLocalized>`` * | localised name                   |
 +---------------------------+----------------------------------+
-| ``<Type>``                | Typ des Eingabefeldes (ab 5.0.0) |
+| ``<Type>``                | type of input field (as of 5.0.0 |
 +---------------------------+----------------------------------+
 
-(*) Pflichtfelder
+(*) Mandatory field
 
 .. hint::
 
-    Diesbezügliche Änderungen an der ``info.xml`` sind erst nach einer Neuinstallation des Plugins sichtbar, da die
-    Variablen **bei der Installation** in die Datenbank geschrieben werden.
+    Any changes to the ``info.xml`` file, in this regard, are only visible after reinstalling the plug-in, as the
+    variables are written to the database **during installation**.
 
-Die Angabe des Typs ist seit Shop 5.0.0 möglich, aber optional. Standardmäßig wird er auf "text" gestellt, was einem
-einfachen Texteingabefeld im Backend entspricht. Für längere Texte bietet sich der Typ "textarea" an.
-Prinzipiell lassen sich hier alle in JTL\Plugin\Admin\InputType definierten Typen nutzen.
+As of Shop 5.0.0 type specification is possible but remains optional. By default, type will be set to “text”, which corresponds as
+a simple text input field in the back end. For longer texts, the type "textarea” is recommended.
+Basically, all types defined in JTL\Plugin\Admin\InputType can be used here.
 
-Sprachvariablen können auf ihren Ursprungswert zurückgesetzt werden. |br|
-Bei einem Pluginupdate oder beim Deaktivieren eines Plugins bleiben die Sprachvariablen erhalten, die durch den
-Betreiber des Onlineshops angepasst wurden. Erst bei einer Deinstallation des Plugins werden die Sprachvariablen
-endgültig gelöscht.
+Language variables can always be reset to their original value. |br|
+In case of a plug-in update or deactivation of a plug-in, the language variables that were modified by the shop owner, will be kept.
+ Only once the plug-in is uninstalled, will the language variables be permanently deleted.
 
-Nutzung im Plugin
-"""""""""""""""""
 
-Es sei folgendes Beispiel-XML gegeben:
+Application of the plug-in
+""""""""""""""""""""""""""
+
+Consider the following XML example:
 
 .. code-block:: xml
 
@@ -1724,11 +1726,11 @@ Es sei folgendes Beispiel-XML gegeben:
                 <Name>lang_var_one</Name>
                 <VariableLocalized iso="GER">Ich bin variabel!</VariableLocalized>
                 <VariableLocalized iso="ENG">I'm variable!</VariableLocalized>
-                <Description>Eine Beispiel-Variable.</Description>
+                <Description>An example variable.</Description>
             </Variable>
             <Variable>
                 <Name>lang_var_two</Name>
-                <Description>Eine Beispiel-Variable mit Platzhalter.</Description>
+                <Description>An example variable with placeholder.</Description>
                 <VariableLocalized iso="GER">Hallo, mein Name ist %s.</VariableLocalized>
                 <VariableLocalized iso="ENG">Hello, my name is %s.</VariableLocalized>
             </Variable>
@@ -1736,7 +1738,7 @@ Es sei folgendes Beispiel-XML gegeben:
         ...
     </Install>
 
-Der Wert der Sprachvariablen kann via PHP auf folgende Weise ausgegeben werden:
+The value of the language variable can be returned via PHP in the following way:
 
 JTL-Shop 4.x
 """"""""""""
@@ -1751,14 +1753,14 @@ JTL-Shop 5.x
 
 .. code-block:: php
 
-    // z.B. innerhalb der Bootstrap.php in der Boot-Methode:
+    // i.e. within Bootstrap.php in the boot method:
     $plugin = $this->getPlugin();
     $test1  = $plugin->getLocalization()->getTranslation('lang_var_one');
     $test2  = \sprintf($plugin->getLocalization()->getTranslation('lang_var_two'), 'Peter');
 
 
-Ab Shop 5.1.0 können Sprachvariablen direkt innerhalb von Templatedateien genutzt werden.
-Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-id'}`` - im Beispiel also
+As of Shop 5.1.0, language variables can be used within the template file.
+To do this, use the ``{lang key='variable-name' section='my-plug-in-id’}`` syntax - as in the example below
 
 .. code-block:: php
 
@@ -1768,23 +1770,23 @@ Nutzen Sie dafür die Syntax ``{lang key='variablen-name' section='meine-plugin-
 
 .. _label_infoxml_email:
 
-E-Mail-Templates
+Email templates
 ----------------
 
-Ein Plugin kann auch neue E-Mail-Typen definieren, die als E-Mail versendet werden können. Dabei kann der E-Mail-Inhalt
-eines Templates für alle im Onlineshop verfügbaren Sprachen vorbelegt werden. Die vordefinierten Texte sind weiterhin
-in der E-Mail-Vorlagenverwaltung im Backend durch den Betreiber des Onlineshops editierbar.
+A plug-in can also define new email types, that can be sent as emails. The email content of a template
+can be predefined for all languages available in the online shop. The predefined texts can still be edited
+in the email template manager in the back end by the online shop owner.
 
-Der Hauptknoten ``<Emailtemplate>``, welcher im Container ``<Install>`` liegt, definiert eine neue E-Mailvorlage.
+The main node ``<Emailtemplate>``, which is located in the ``<Install>`` container, defines a new email template.
 
 .. code-block:: xml
 
     <Emailtemplate>
-        <Template>
-            <Name>Zahlungs-Erinnerungsemail</Name>
+        </Template>
+            <Name>Payment reminder email</Name>
             <Description></Description>
             <Type>text/html</Type>
-            <ModulId>zahlungserinnerung</ModulId>
+            <ModulId>payment reminder</ModulId>
             <Active>Y</Active>
             <AKZ>0</AKZ>
             <AGB>0</AGB>
@@ -1795,7 +1797,7 @@ Der Hauptknoten ``<Emailtemplate>``, welcher im Container ``<Install>`` liegt, d
                 <ContentText></ContentText>
             </TemplateLanguage>
             <TemplateLanguage iso="ENG">
-                <Subject>Reminder</Subject>
+                <Subject>Payment reminder</Subject>
                 <ContentHtml></ContentHtml>
                 <ContentText></ContentText>
             </TemplateLanguage>
@@ -1803,35 +1805,35 @@ Der Hauptknoten ``<Emailtemplate>``, welcher im Container ``<Install>`` liegt, d
     </Emailtemplate>
 
 +------------------------+--------------------------------------------------------------------------------------------+
-| Element                | Funktion                                                                                   |
+| Element                | Function                                                                                   |
 +========================+============================================================================================+
-| ``<Template>``         | Hauptcontainerelement (pro E-Mail-Vorlage muss es ein Element ``<Template>`` geben)        |
+| ``<Template>``         | main container element (for every email template, there must be a ``<Template>`` element   |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<Name>``             | Name der E-Mail-Vorlage                                                                    |
+| ``<Name>``             | email template name                                                                        |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<Description>``      | Beschreibung der E-Mail-Vorlage                                                            |
+| ``<Description>``      | email template description                                                                 |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<Type>``             | Sendeformat der E-Mail-Vorlage (html/text oder text)                                       |
+| ``<Type>``             | email template format (html/text or text)                                                  |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<ModulId>``          | Eindeutiger Schlüssel der E-Mail-Vorlage                                                   |
+| ``<ModulId>``          | email template unique key                                                                  |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<Active>``           | Aktivierungsflag der E-Mail-Vorlage (Y/N)                                                  |
+| ``<Active>``           | email template activation flag (Y/N)                                                       |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<AKZ>``              | Anbieterkennzeichnung in der E-Mail-Vorlage anhängen (1/0)                                 |
+| ``<AKZ>``              | add provider information to email template (1/0)                                           |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<AGB>``              | Allgemeine Geschäftsbedingungen in der E-Mail-Vorlage anhängen (1/0)                       |
+| ``<AGB>``              | add general terms and conditions to email template (1/0)                                   |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<WRB>``              | Widerrufsbelehrung in der E-Mail-Vorlage anhängen (1/0)                                    |
+| ``<WRB>``              | add cancellation policy to email template (1/0)                                            |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<TemplateLanguage>`` | Lokalisierte Inhalte pro Sprache (min. eine Sprache muss vorhanden sein) (Key = SprachISO) |
+| ``<TemplateLanguage>`` | localised content per language (min. one language must be available) (Key = SprachISO)     |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<Subject>``          | Betreff der E-Mail-Vorlage in der jeweiligen Sprache                                       |
+| ``<Subject>``          | email template subject in the respective language                                          |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<ContentHtml>``      | Inhalt als HTML                                                                            |
+| ``<ContentHtml>``      | content as HTML                                                                            |
 +------------------------+--------------------------------------------------------------------------------------------+
-| ``<ContentText>``      | Inhalt als Text                                                                            |
+| ``<ContentText>``      | content as text                                                                            |
 +------------------------+--------------------------------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Weitere Informationen zum Thema "E-Mail-Templates im Plugin" finden Sie im Kapitel ":doc:`mailing`".
+For further information on the topic of "email templates in the plug-in", see ":doc:`mailing`”.

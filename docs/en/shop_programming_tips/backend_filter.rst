@@ -1,72 +1,71 @@
-Backend-Filter
-==============
+Back end filter
+===============
 
 .. |br| raw:: html
 
    <br />
 
-Filter ermöglichen es, mit einer konfigurierbaren Menge von Textfeldern, Selectboxen oder Date-Range-Pickern Einträge
-einer Tabellenübersicht im Backend einzugrenzen. Einsatzbeispiele finden Sie unter anderem unter
-*Aktionen -> Coupons* (in JTL-Shop 4.x unter *Kaufabwicklung -> Kupons*) oder unter *SEO -> Weiterleitungen* (in
-JTL-Shop 4.x unter *Globale Einstellungen -> Weiterleitungen*).
+With a configurable amount of text fields, filters allow you to limit selectboxes or Date Range Picker entries
+of a table overview in the back end. You can find examples of application and more at 
+*Campaigns-> Coupons* or *SEO -> Redirection*.
 
-Ein Filter besteht aus einer Sammlung von Filterfeldern unterschiedlichen Typs (Freitext, Auswahl, Date-Range). |br|
-Diese Filterfelder werden mit dem Template auf der gewünschten Seite zum Suchen und Filtern angeboten.
-Die Bedingungen, die jedes Feld erzeugt, werden konjunktiv (UND) verknüpft und für eine anschließende Datenbankabfrage
-als ``WHERE``-Klausel zur Verfügung gestellt. |br|
-Das bedeutet, dass jedes Filterfeld, falls es definiert ist, die Ergebnismenge weiter einschränkt.
+A filter is comprised of a variety of different types of filter fields (text, selection, date range). |br|
+These filter fields are offered with the template on the desired page for searching and filtering.
+The conditions created by each field are both related AND conditional and made available for a subsequent database query as
+a ``WHERE`` clause. |br|
+This means that every defined field filter further restricts the result set.
 
-Dateien der *Backend-Filter*
-----------------------------
+*Back end filter* files
+-----------------------
 
-Alle Klassen, die zu den Backend-Filtern gehören, befinden sich im Verzeichnis ``includes/src/Pagination/``,
-die Template-Datei entsprechend im ``tpl_inc/``-Verzeichnis.
+All the classes that belong to the back end filters can be found in the ``includes/src/Pagination/`` directory,
+and the corresponding template file in the ``tpl_inc/`` directory.
 
-+-------------------------------------------------------+------------------------------------------------+
-| Datei                                                 | Funktion                                       |
-+=======================================================+================================================+
-| ``Filter.php``                                        | Filter-Klasse                                  |
-+-------------------------------------------------------+------------------------------------------------+
-| ``FilterField.php``                                   | Abstrakte Basisklasse für jeden Filterfeld-Typ |
-+-------------------------------------------------------+------------------------------------------------+
-| ``FilterTextField.php``                               | Freitext-Filterfeld-Klasse                     |
-+-------------------------------------------------------+------------------------------------------------+
-| ``FilterSelectField.php``                             | Selectbox-Filterfeld-Klasse                    |
-+-------------------------------------------------------+------------------------------------------------+
-| ``FilterSelectOption.php``                            | Optionsklasse für ein Selectbox-Filterfeld     |
-+-------------------------------------------------------+------------------------------------------------+
-| ``FilterDateRangeField.php``                          | Klasse des Filterfeldes "Date-Range-Picker"    |
-+-------------------------------------------------------+------------------------------------------------+
-| ``admin/templates/bootstrap/tpl_inc/filtertools.tpl`` | Template für das Backend                       |
-+-------------------------------------------------------+------------------------------------------------+
++-------------------------------------------------------+----------------------------------------------------+
+| File                                                 | Function                                            |
++=======================================================+====================================================+
+| ``Filter.php``                                        | filter class                                       |
++-------------------------------------------------------+----------------------------------------------------+
+| ``FilterField.php``                                   | abstract base class for every type of filter field |
++-------------------------------------------------------+----------------------------------------------------+
+| ``FilterTextField.php``                               | free text filter field class                       |
++-------------------------------------------------------+----------------------------------------------------+
+| ``FilterSelectField.php``                             | selectbox filter field class                       |
++-------------------------------------------------------+----------------------------------------------------+
+| ``FilterSelectOption.php``                            | option class for a selectbox filter field          |
++-------------------------------------------------------+----------------------------------------------------+
+| ``FilterDateRangeField.php``                          | filter field class "Date Range Picker"             |
++-------------------------------------------------------+----------------------------------------------------+
+| ``admin/templates/bootstrap/tpl_inc/filtertools.tpl`` | template for the back end                          |
++-------------------------------------------------------+----------------------------------------------------+
 
-Quick-Start
+Quick start
 -----------
 
-Erzeugen Sie als erstes eine Instanz des Filters und weisen Sie ihm einen ID-String zu. Mit diesem ID-String können
-der Filter und seine in der Session gespeicherten Einstellungen von denen anderer Instanzen unterschieden werden:
+First, create a filter instance and assign it a string ID. This string ID can be used to distinguish
+the filter and its settings stored in the session from those of other instances:
 
 .. code-block:: php
 
    $oFilterStandard = new Filter('standard');
 
-Fügen Sie dem Filter nun ein Freitext-Suchfeld hinzu, um beispielsweise in einer Tabellenspalte ``cName`` zu
-suchen. |br|
-Dieses Textfeld bekommt hier die Beschriftung "Name":
+Add a free text search field to the filter to search, for example, ``cName`` in a table
+column. |br|
+This text field is labelled as "Name":
 
 .. code-block:: php
 
    $oFilterStandard->addTextfield('Name', 'cName');
 
-Fügen Sie dem Filter ein Dropdown-Auswahlfeld hinzu, dessen Wert z. B. mit einer Spalte ``cAktiv`` verglichen wird. |br|
-Das Auswahlfeld bekommt nun die Beschriftung "Status". |br|
-Die Methode ``addSelectfield()`` gibt das neu erzeugte Auswahlfeld zurück:
+Add a drop-down list to the filter whose value, for example, corresponds to a ``cAktiv`` column. |br|
+The selection field is now labelled as "Status". |br|
+The ``addSelectfield()`` method will return the newly created selection field:
 
 .. code-block:: php
 
    $oAktivSelect = $oFilterStandard->addSelectfield('Status', 'cAktiv');
 
-Diesem Auswahlfeld können Sie nun beliebige Auswahl-Optionen hinzufügen.
+You may now add any selection options to the selection field.
 
 .. code-block:: php
 
@@ -74,23 +73,23 @@ Diesem Auswahlfeld können Sie nun beliebige Auswahl-Optionen hinzufügen.
     $oAktivSelect->addSelectOption('aktiv', 'Y', Operation::EQUALS);
     $oAktivSelect->addSelectOption('inaktiv', 'N', Operation::EQUALS);
 
-Die Methode ``addSelectOption($cTitle, $cValue, $nTestOp = 0)`` fügt eine weitere Option zu einem Auswahlfeld
-hinzu. |br|
-Diese Option erhält als Beschriftung den ersten Parameter (hier ``$cTitle``) und als zugehörigen Wert
-den zweiten Parameter (hier ``$cValue``). Der dritte Parameter bestimmt die *Vergleichsmethode* beim Suchen in der
-Tabellenspalte. Hier können Sie entscheiden ob der Wert exakt übereinstimmen muss, als Prä- oder Postfix vorkommen
-muss, numerisch größer oder kleiner sein soll etc. |br|
+The``addSelectOption($cTitle, $cValue, $nTestOp = 0)`` method adds an additional option to a given selection
+field. |br|
+This option is then labelled as the first parameter (here ``$cTitle``) and the corresponding value as the second parameter
+ (here ``$cValue``). The third parameter defines the *comparison method* when searching in the table
+columns. Here you can decide whether the value must match exactly, appear as a prefix or postfix
+, be numerically larger or smaller, etc. |br|
 
 
 .. _label_backend_filter_compare_const:
 
-Alle möglichen Werte für die *Vergleichsmethode* sind in der folgenden Tabelle aufgelistet:
+All possible *comparison method* values are listed in the following table:
 
 +-----------------------------------+------+--------------------------------------------------+
-| Konstante                         | Wert | SQL-Entsprechung                                 |
+| Constant                         | Value | SQL compliance                                   |
 +===================================+======+==================================================+
-| ``Operation::CUSTOM``             | 0    | Benutzerdefiniert: die gewünschte Methode kann   |
-|                                   |      | in der Filterleiste per Selectbox gewählt werden |
+| ``Operation::CUSTOM``             | 0    | User defined: the selected method can be         |
+|                                   |      | selected from the filter list in the selectbox   |
 +-----------------------------------+------+--------------------------------------------------+
 | ``Operation::CONTAINS``           | 1    | ``LIKE '%foo%'``                                 |
 +-----------------------------------+------+--------------------------------------------------+
@@ -111,17 +110,17 @@ Alle möglichen Werte für die *Vergleichsmethode* sind in der folgenden Tabelle
 | ``Operation::NOT_EQUAL``          | 9    | ``!=``                                           |
 +-----------------------------------+------+--------------------------------------------------+
 
-Der Wert ``0`` (oder ``Operation::CUSTOM``) erzeugt eine Auswahloption mit leerer Filterbedingung, d. h. diese Option
-schränkt die Ergebnismenge nicht weiter ein.
+The value ``0`` (or ``Operation::CUSTOM``) generates a selection with a blank filter condition. This means that this option
+no longer restricts the result set.
 
-Nun kann der Filter mit ``assemble()`` fertiggestellt werden.
+Now, the filter can be finalised with ``assemble()``.
 
 .. code-block:: php
 
    $oFilterStandard->assemble();
 
-Ab jetzt sind die gesetzten Filterparameter in der *SESSION* gespeichert und eine SQL ``WHERE``-Klausel wurde
-erstellt, welche Sie mit ``getWhereSQL()`` abrufen und in Ihrer eigenen SQL-Abfrage einsetzen können.
+Now, the filter parameters are saved in the *SESSION* and a SQL ``WHERE`` clause has been generated, which you can
+retrieve via ``getWhereSQL()`` and use in your SQL query.
 
 .. code-block:: php
    :emphasize-lines: 1,6
@@ -136,81 +135,81 @@ erstellt, welche Sie mit ``getWhereSQL()`` abrufen und in Ihrer eigenen SQL-Abfr
            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
        ReturnType::ARRAY_OF_OBJECTS);
 
-Damit Ihr Filter auch im Backend angezeigt werden kann, übergeben Sie das Filterobjekt an Smarty:
+So that your filter can also be shown in the back end, assign the filter object to Smarty:
 
 .. code-block:: php
 
    $smarty->assign('oFilterStandard', $oFilterStandard);
 
-Als Letztes binden Sie auf der gewünschten Seite noch das Filter-Template ein:
+Finally, add the filter template to the desired page:
 
 .. code-block:: smarty
 
    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilterStandard}
 
-Methoden des Filterobjekts
---------------------------
+Filter object methods
+---------------------
 
 ``addTextfield($cTitle, $cColumn, $nTestOp = 0, $nDataType = 0)``
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Mit dieser Methode können Sie ein neues Textfeld zum Filterobjekt mit der Beschriftung ``$cTitle`` hinzufügen, welches
-mit der Tabellenspalte ``$cColumn`` verglichen wird. |br|
-``$cTitle`` kann anstatt eines Strings auch ein Paar aus 2 Strings enthalten, das z. B. aus einer einfachen
-Beschriftung und einem längerem Text, welcher als Tooltip angezeigt wird, besteht:
+With this method, you can add a new text field to the filter object with the label ``$cTitle``, which will then be compared
+with the ``$cColumn`` table column. |br|
+Instead of containing only one string, ``$cTitle`` can contain a pair of 2 strings that consist of a simple label and
+longer text, displayed as a tooltip:
 
 .. code-block:: php
 
-    ['Suchbegriff', 'Sucht in Bestell-Nr., Betrag, Kunden-Vornamen, E-Mail-Adresse, Hinweis'];
+    ['Search term', 'Searches in order number, amount, customer first name, email address, note'];
 
-``$nTestOp`` legt die Vergleichsmethode fest. |br| Dabei sind alle Werte möglich, die
-unter :ref:`Vergleichsmethoden <label_backend_filter_compare_const>` gelistet sind.
+``$nTestOp`` determines the comparison method. |br| Therefore, all values that are listed
+under :ref:`Comparison methods <label_backend_filter_compare_const>` are possible.
 
-Mit dem vierten Parameter ``$nDataType`` können Sie angeben, ob das Textfeld einen String (``0``) enthält oder einen
-skalaren Wert (``1``). |br|
-Dementsprechend werden für ``$nDataType = 0`` die Vergleichsmethoden 5 bis 8 ausgeblendet und für ``$nDataType = 0``
-werden die Methoden 1 bis 3 ausgeblendet.
+With the fourth parameter, ``$nDataType``, you can specify if the text field contains a string (``0``) or a
+scalar value (``1``). |br|
+Accordingly, for ``$nDataType = 0`` the comparison methods 5 to 8 are hidden, as well as methods
+1 to 3 for ``$nDataType = 0``.
 
-Die Methode gibt dann ein ``FilterTextField``-Objekt zurück, das dem hinzugefügten Textfeld-Objekt entspricht.
+This method then returns a ``FilterTextField`` object that corresponds to the added text field object.
 
 ``addSelectfield($cTitle, $cColumn)``
 """""""""""""""""""""""""""""""""""""
 
-Diese Methode ermöglicht es Ihnen, ein neues Dropdown-Auswahlfeld zum Filterobjekt hinzuzufügen, welches die
-Beschriftung ``$cTitle`` trägt und mit der Tabellenspalte ``$cColumn`` verglichen wird.
+With this method, you can add a new drop-down list to the filter object with the label ``$cTitle``, which will then be compared
+with the ``$cColumn`` table column.
 
-Weitere Optionen können Sie dem Feld mit ``addSelectOption()`` hinzufügen
-(siehe: :ref:`label_backend_filter_select_field`).
+You can add other options to the field by using ``addSelectOption()``
+(See: :ref:`label_backend_filter_select_field`).
 
-Der Rückgabewert dieser Methode ist ein ``FilterSelectField``-Objekt, welches dem hinzugefügten Auswahlfeld-Objekt
-entspricht.
+The return value of this method is a ``FilterSelectField`` which corresponds to the added drop-down list object.
+
 
 ``addDaterangefield($cTitle, $cColumn)``
 """"""""""""""""""""""""""""""""""""""""
 
-Mithilfe dieser Methode fügen Sie dem Filterobjekt einen neuen Date-Range-Picker mit der Beschriftung ``$cTitle`` hinzu.
-Die Tabellenspalte ``$cColumn`` enthält das Datum, welches im gewählten Bereich liegen muss.
+By using this method, you are adding a new Date Range Picker with the label ``$cTitle`` to the filter object.
+The table column ``$cColumn`` contains the date , which must be in the selected range.
 
-Das Template ``filtertools.tpl`` stellt dazu einen Date-Range-Picker zur Verfügung.
-(siehe auch: :ref:`label_backend_filter_template`)
+The ``filtertools.tpl`` template provides a Date Range Picker for this purpose.
+(See also: :ref:`label_backend_filter_template`)
 
 ``assemble()``
 """"""""""""""
 
-``assemble()`` stellt den Filter fertig. |br|
-Diese Methode setzt eine SQL ``WHERE``-Klausel zusammen und speichert die getroffenen Filtereinstellungen in
-der *SESSION*.
+``assemble()`` finalises the filter. |br|
+This method assembles a SQL ``WHERE`` clause and saves the filter settings made
+in the *SESSION*.
 
-Rufen Sie diese Funktion auf, nachdem Sie alle Filterfelder konfiguriert haben.
+Call up this function after you have configured all the filter fields.
 
 
 .. _label_backend_filter_template:
 
-Einbindung des Templates
-------------------------
+Template integration
+--------------------
 
-Das Template stellt alle Filterfelder in einer Leiste zur Verfügung und kann mit folgender Direktive im Backend
-eingebunden werden:
+The template provides all filter fields in one bar and can be included with the following directive in
+the back end:
 
 .. code-block:: smarty
 
@@ -221,23 +220,23 @@ eingebunden werden:
         ]}
 
 +---------------------------+----------------------------------------------------------------------------------------------+
-| Parameter                 | Bedeutung                                                                                    |
+| Parameter                 | Meaning                                                                                      |
 +===========================+==============================================================================================+
-| ``oFilter``               | das Filterobjekt                                                                             |
+| ``oFilter``               | the filter object                                                                            |
 +---------------------------+----------------------------------------------------------------------------------------------+
-| ``cParam_arr`` (optional) | assoziatives Array von GET-Parametern, welche beim Filtern mit durchgeschleift werden sollen |
+| ``cParam_arr`` (optional) | an associative array of GET parameters, which are to be looped through during filtering      |
 +---------------------------+----------------------------------------------------------------------------------------------+
 
 
 .. _label_backend_filter_select_field:
 
-Das Auswahlfeld-Objekt ``FilterSelectField``
---------------------------------------------
+The selection field object ``FilterSelectField``
+------------------------------------------------
 
-Mittels ``Filter::addSelectField()`` können Sie ein Dropdown-Auswahlfeld erzeugen und dieses einem Filter-Objekt
-hinzufügen.
+``Filter::addSelectField()`` can generate a drop-down list and add this to a filter
+object.
 
-Die Methode ``addSelectOption($cTitle, $cValue, $nTestOp = 0)`` fügt dem Auswahlfeld eine neue Option mit der
-Beschriftung ``$cTitle`` und dem zugehörigen Wert ``$cValue`` hinzu.
+The ``addSelectOption($cTitle, $cValue, $nTestOp = 0)`` method adds a new option with the label ``$cTitle`` and
+corresponding value ``$cValue`` to the selection field.
 
-Der dritte Parameter ``$nTestOp`` dieser Methode entspricht dem dritten Parameter von ``Filter::addTextfield()``.
+The third parameter of this method, ``$nTestOp``, corresponds with the third parameter of ``Filter::addTextfield()``.

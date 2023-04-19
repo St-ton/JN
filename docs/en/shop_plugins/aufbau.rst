@@ -1,48 +1,48 @@
-Aufbau
-======
+Structure
+=========
 
 .. |br| raw:: html
 
    <br />
 
-Ein Plugin besteht aus einer *Verzeichnisstruktur*, die physikalisch auf dem Datenträger des Onlineshops vorhanden sein
-muss, und einer XML-Datei (``info.xml``, siehe auch :doc:`hier <infoxml>`), die für die Installation und die Updates
-des Plugins zuständig ist. |br|
-Die ``info.xml`` beschreibt das Plugin. Dort wird definiert, welche Dateien ein Plugin nutzt,
-welche Aufgaben es übernehmen soll und welche Identität das Plugin hat.
+A plug-in consists of a *directory structure*, which must be physically present
+on the data medium of the online shop, and an XML file (``info.xml``, see also :doc:`here <infoxml>`), which is responsible for the installation and the updates
+of the plug-in. |br|
+The ``info.xml`` file defines the plug-in. It defines which files a plug-in uses,
+which tasks it should perform, and what the plug-in’s identity is.
 
-Die Installationsdatei und damit auch die Verzeichnisstruktur variiert je nach Aufgabenbereich des jeweiligen
-Plugins. |br|
-In der JTL-Shop-Ordnerstruktur existiert ein fest definierter Ordner, der alle Plugins beinhaltet.
-Von dort aus greift das System auf Pluginressourcen und Installationsinformationen zu.
+The installation file and the directory structure varies depending on the range of tasks of the respective
+plug-in. |br|
+In the JTL-Shop directory structure there is a defined directory that contains all plug-ins.
+From there, the system accesses plug-in resources and installation information.
 
 .. hint::
 
-    Ein Plugin zur automatischen Erstellung von JTL-Shop-Plugins findet sich im
-    `öffentlichen Gitlab-Repository <https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/plugin-bootstrapper>`_.
-    Dadurch kann das manuelle Erstellen der ``info.xml`` und der Dateistruktur vereinfacht werden.
+    A plug-in for automatic creation of JTL-Shop plug-ins can be found in the
+    `public Gitlab repository. <https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/plugin-bootstrapper>`_.
+    This can simplify the manual creation of the ``info.xml`` and the file structure.
 
-Verzeichnisstruktur
+Directory structure
 -------------------
 
-Ein Plugin benötigt eine fest definierte Verzeichnisstruktur, damit es installiert werden kann. |br|
-Es gibt einige Ausnahmen, wobei man gewisse Verzeichnisse weglassen oder nach eigenen Vorlieben strukturieren kann.
-Jedes Plugin hat sein eigenes Unterverzeichnis innerhalb des Pluginverzeichnisses.
+A plug-in needs a defined directory structure to be installed. |br|
+There are some exceptions where you can omit certain directories, or structure them according to your own preferences.
+Each plug-in has its own subdirectory within the plug-in directory.
 
-Vergeben Sie stets aussagekräftige und eindeutige Pluginnamen, um Überschneidungen in Pluginverzeichnisnamen zu
-vermeiden.
-Das neuere Pluginverzeichnis würde demnach beim Upload das ältere überschreiben und das ursprüngliche Plugin
-würde nicht mehr funktionieren. Wir empfehlen, den Pluginverzeichnisnamen um eindeutige Merkmale
-wie z. B. den Firmennamen des Autors zu erweitern.
+Always assign meaningful and unique plug-in names to avoid overlaps in plug-in directory
+names.
+The newer plug-in directory would, therefore, overwrite the older one during the upload and the original plug-in
+would no longer work. We recommend extending the plug-in directory name with unique attributes
+such as the plug-in author's company name.
 
-**Bis JTL-Shop 4.x** liegt das Pluginverzeichnis ``plugins/``, in dem alle Plugins des Shops zu finden sind,
-im Ordner ``<Shop-Root>/includes/``. |br|
-Demnach könnte ein typisches Plugin unter ``[Shop-Rot]/includes/plugins/[Ihr_Pluginordner]`` zu finden sein.
+For all versions prior to **JTL-Shop 5.x**, the plug-ins directory ``plugins/``, in which all shop plug-ins can be found,
+is located in the ``<Shop-Root>/includes/``directory. |br|
+Accordingly, a typical plug-in can be found under ``[Shop-Rot]/includes/plugins/[Ihr_Pluginordner]``.
 
 Jedes Plugin in einem Onlineshop der Version 4.x muss mindestens einen *Versionsordner* enthalten. |br|
-Die Versionen fangen bei der Ganzzahl 100 an (Bedeutung: Version 1.00) und werden mit 101, 102 usw. weitergeführt.
-Die ganzzahligen Versionsnummern sind gleichzeitig die Ordnernamen unterhalb des *Versionsordners*. |br|
-Jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen).
+The versions start with the integer 100 (meaning: version 1.00) and continue with 101, 102, and so on.
+The integer version numbers are also the folder names below the *version directory*. |br|
+Each plug-in must contain the ``100/`` directory in any case (see versions).
 
 .. code-block:: console
    :emphasize-lines: 2-3
@@ -56,13 +56,13 @@ Jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen)
     ├── info.xml
     └── README.md
 
-**Ab JTL-Shop 5.x** befindet sich der Pluginordner direkt unterhalb der Shop-Root,
-also ``[Shop-Root]/plugins/[Ihr_Pluginordner]``.
+**As of JTL-Shop 5.x**, the plug-in directory is located directly under the shop root,
+like so ``[Shop-Root]/plugins/[Ihr_Pluginordner]``.
 
 .. attention::
 
-    Beachten Sie, dass ab JTL-Shop 5.x der **Plugin-Ordnername** zwingend
-    der **Plugin-ID** in der ``info.xml`` entsprechen muss.
+    Note that as of JTL-Shop 5.x, the **plug-in directory name** must
+    correspond to the **plug-in ID** in the ``info.xml`` file.
 
 .. code-block:: console
    :emphasize-lines: 12
@@ -82,37 +82,37 @@ also ``[Shop-Root]/plugins/[Ihr_Pluginordner]``.
     ├── README.md
     └── Bootstrap.php
 
-Mögliche Unterverzeichnisse
-"""""""""""""""""""""""""""
+Possible subdirectories
+"""""""""""""""""""""""
 
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| Ordnername         | Funktion                                                                                                    |
+| Directory name     | Function                                                                                                    |
 +====================+=============================================================================================================+
-| ``adminmenu/``     | Onlineshopadmin-Tabs, um eigenen Inhalt im Adminbereich auszugeben bzw. um Einstellungen zu implementieren. |
+| ``adminmenu/``     | Shop admin tabs for displaying custom content in the admin area or to implement settings.                   |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``frontend/``      | Frontend Links zu Seiten im Onlineshop mit eigenem Inhalt                                                   |
+| ``frontend/``      | Front end links to pages in the online shop with custom content.                                            |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``paymentmethod/`` | Implementierung von Zahlungsmethoden im Onlineshop.                                                         |
+| ``paymentmethod/`` | Implementation of payment methods in the online shop.                                                       |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``sql/``           | Nur bis 4.x; SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern.      |
+| ``sql/``           | For versions older than 5.x; SQL file to make custom database tables to store data in or to modify.         |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``src/``           | Ab 5.0.0, pluginspezifische Helper-Klassen (organisiert als Packages)                                       |
+| ``src/``           | As of 5.0.0, plug-in specific helper classes (organised as packages)                                        |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``locale/``        | Ab 5.0.0, Übersetzungsdateien                                                                               |
+| ``locale/``        | As of 5.0.0, translation files                                                                              |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``Migrations/``    | Ab 5.0.0, SQL-Migrationen                                                                                   |
+| ``Migrations/``    | As of 5.0.0, SQL migrations                                                                                 |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``Portlets/``      | Ab 5.0.0, OPC-Portlets                                                                                      |
+| ``Portlets/``      | As of 5.0.0, OPC portlets                                                                                   |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
-| ``blueprints/``    | Ab 5.0.0, OPC-Blueprints                                                                                    |
+| ``blueprints/``    | As of 5.0.0, OPC blueprints                                                                                 |
 +--------------------+-------------------------------------------------------------------------------------------------------------+
 
-Verzeichnisstruktur Payment
+Payment directory structure
 """""""""""""""""""""""""""
 
-Ein Plugin kann beliebig viele Zahlungsmethoden im Onlineshop implementieren. |br|
-Hierfür wird ein Unterordner namens ``paymentmethod/`` benötigt, der in JTL-Shop 4.x unterhalb der jeweiligen
-Pluginversion und ab JTL-Shop 5.x direkt unterhalb der Plugin-Root liegt.
+A plug-in can implement any number of payment methods in the online shop. |br|
+To do this, a subdirectory called ``paymentmethod/`` is needed, which is located in JTL-Shop 5.x, directly below
+the plug-in root.
 
 **Beispiel, JTL-Shop 4.x**
 
@@ -135,7 +135,7 @@ Pluginversion und ab JTL-Shop 5.x direkt unterhalb der Plugin-Root liegt.
     ├── README.md
     └── LICENSE.md
 
-**Beispiel, JTL-Shop 5.x**
+**JTL-Shop 5.x example**
 
 .. code-block:: console
    :emphasize-lines: 6-7
@@ -157,11 +157,11 @@ Pluginversion und ab JTL-Shop 5.x direkt unterhalb der Plugin-Root liegt.
     ├── LICENSE.md
     └── Bootstrap.php
 
-Unterhalb des Ordners ``paymentmethod/`` ist es sinnvoll, mindestens den Ordner ``template/`` anzulegen. Legen Sie dort
-entsprechend die Templates ab, die zahlungsartspezifische Inhalte anzeigen. |br|
-Ordnen Sie die eigentlichen Zahlart-Klassen direkt unterhalb von ``paymentmethod/`` an. |br|
-Platzieren Sie eventuelle "Helper"-Klassen unterhalb des pluginspezifischen ``src/``-Ordners und organisieren Sie sie
-dort namespacekonform in Packages. |br|
+Under the directory ``paymentmethod/``, it is useful to create at least the ``template/`` directory. Put the templates that display payment type specific content there
+accordingly. |br|
+Arrange the actual payment method classes directly under ``paymentmethod/``. |br|
+Place any "helper" classes below the plug-in-specific ``src/`` folder and organize them
+there in packages in a namespace-compliant way. |br|
 
 .. code-block:: console
    :emphasize-lines: 3,9-10,12
@@ -179,29 +179,29 @@ dort namespacekonform in Packages. |br|
         │   └── ...
         └── PayPalPlus.php
 
-Im Abschnitt :ref:`label_infoxml_paymentmethode` finden Sie ein **Beispiel**, wie diese Verzeichnisstruktur in
-der ``info.xlm`` definiert wird.
+See section :ref:`label_infoxml_payment method` for an **example** of how this directory structure is defined in
+the ``info.xlm`` file.
 
 
 .. _label_aufbau_versionierung:
 
-Versionierung
--------------
+Versioning
+----------
 
-Wie die XML-Definition der Plugin-Version aussieht, finden Sie
-im ``info.xml``-Abschnitt ":ref:`label_infoxml_versionierung`".
+You can see what the XML definition of the plug-in version looks like
+in the ``info.xml`` section ":ref:`label_infoxml_versioning`".
 
-Bis JTL-Shop 4.x
-""""""""""""""""
+Before JTL-Shop 5.x
+"""""""""""""""""""
 
-Da sich Plugins mit der Zeit auch weiterentwickeln können, gibt es eine Versionierung der Plugins. |br|
-Damit besteht die Möglichkeit, ein Plugin über den Updatemechanismus des Pluginsystems zu aktualisieren,
-um neue Funktionalität einzuführen oder Fehler zu beheben.
+Since plug-ins can also continue to develop over time, there is a plug-in versioning. |br|
+This provides the possibility to update a plug-in via the plug-in system’s update mechanism,
+to introduce new features or to fix bugs.
 
-Jedes Plugin muss den Ordner ``version/`` enthalten. |br|
-Dieser Ordner enthält alle bisher erschienenen Versionen des Plugins. Jedes Plugin muss die niedrigste Version
-100 (Bedeutung Version 1.00) enthalten. |br|
-In diesen Unterordnern (Versionsordnern) befinden sich alle Ressourcen des Plugins für die jeweilige Version.
+Each plug-in must contain the ``version/`` directory. |br|
+This directory contains all previously released versions of the plug-in. Each plug-in must contain the lowest
+version (meaning version 1.00). |br|
+These subdirectories (version directories) contain all resources of the plug-in for the respective version.
 
 .. code-block:: console
    :emphasize-lines: 2,3
@@ -220,28 +220,28 @@ In diesen Unterordnern (Versionsordnern) befinden sich alle Ressourcen des Plugi
     ├── README.md
     └── LICENSE.md
 
-Wird eine neue Version entwickelt, wird die Version um 1 hochgezählt. Die Versionierung
-ist also fortlaufend: 100, 101, 102, 103 und so weiter. Eine Versionsgrenze nach oben existiert nicht.
+If a new version is developed, the version is incremented by 1. The versioning
+is, therefore, continual: 100, 101, 102, 103 and so on. An upper version limit does not exist.
 
-Um ein Plugin zu aktualisieren, übertragen Sie die ``info.xml`` in das jeweilige Pluginverzeichnis. |br|
-Alle neuen Versionsverzeichnisse übertragen Sie in das Verzeichnis ``/version`` des jeweiligen Pluginverzeichnisses.
-Wenn also eine neue Version eines Plugins erstellt wurde, kopieren Sie die Datei ``<pluginname>/info.xml`` sowie
-alle ``<pluginname>/version/*``-Versionsverzeichnisse in den Onlineshop.
-Die Pluginverwaltung im Adminbereich erkennt dabei automatisch, ob Updates zu einem Plugin vorliegen und bietet
-einen entsprechenden Updatebutton an.
+To update a plug-in, transfer the ``info.xml`` to the respective plug-in directory. |br|
+Transfer all new version directories to the ``/version`` directory of the respective plug-in directory.
+So when a new version of a plug-in is created, paste the ``<pluginname>/info.xml`` file and
+all ``<pluginname>/version/*`` version directories into the online shop.
+The plug-in administrator in the admin area automatically detects when updates are available for a particular plug-in and displays an
+update button.
 
-Beispiel:
-In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner von *version* wie folgt
-aussehen: */version/100/* und */version/101/*.
+Example:
+Two versions are defined in the info.xml file. Accordingly, the *version* subdirectories would look as follows
+: */version/100/* and */version/101/*.
 
-Für jede Version, die in der Installationsdatei definiert wurde, muss auch ein physischer Ordner existieren.
+A physical directory must exist for every version defined in the installation file.
 
-Ab JTL-Shop 5.x
-"""""""""""""""
+As of JTL-Shop 5.x
+""""""""""""""""""
 
 .. important::
-    Ab JTL-Shop 5.0 entfällt der Unterordner ``version/`` und alle anderen Ordner müssen direkt unterhalb
-    des Pluginordners angelegt werden!
+    As of JTL-Shop 5.0, the ``version/`` subdirectory is no longer necessary and all other directories must be created directly
+    under the plug-in directory!
 
 .. code-block:: console
 
@@ -260,34 +260,34 @@ Ab JTL-Shop 5.x
     ├── LICENSE.md
     └── Bootstrap.php
 
-Wie sich die Versionierung in der ``info.xml`` widerspiegelt, lesen Sie
-im entsprechenden Abschnitt ":ref:`label_infoxml_versionierung`".
+To see how versioning is reflected in ``info.xml``, read
+the corresponding section ":ref:`label_infoxml_versioning`".
 
 
 .. _label_infoxml_sql:
 
-SQL im Plugin
--------------
+SQL in the plug-in
+------------------
 
-Bis JTL-Shop 4.x
-""""""""""""""""
+Before JTL-Shop 5.x
+"""""""""""""""""""
 
-Jede Version eines Plugins hat die Möglichkeit, eine SQL-Datei anzugeben, welche beliebige SQL-Befehle ausführt. |br|
-Diese SQL-Datei kann z. B. zum Erstellen neuer Tabellen oder zum Verändern von Daten in der Datenbank genutzt werden.
-Falls in der ``info.xml`` eine SQL-Datei angegeben wurde, muss diese auch physikalisch vorhanden sein. |br|
-Wenn eine neue Tabelle in der SQL-Datei angelegt wird, also der SQL Befehl ``CREATE TABLE``
-genutzt wird, muss der Tabellenname eine bestimmte Konvention einhalten.
-Der Name muss mit ``xplugin_`` beginnen, gefolgt von der eindeutigen ``[PluginID]_``. Er kann mit einem
-beliebigen Namen enden. |br|
-Daraus ergibt sich dann: ``xplugin_[PluginID]_[Name]``.
+Each version of a plug-in has the ability to specify an SQL file that executes any SQL command. |br|
+This SQL file can be used, for example, to create new tables or modify data in the database.
+If an SQL file was specified in the ``info.xml`` file, it must also physically exist. |br|
+When a new table is created in the SQL file, that is, the SQL command ``CREATE TABLE``
+is used, the table name must follow a certain convention.
+The name must start with ``xplugin_``, followed by a unique ``[PluginID]_``. It may, however, end with any
+name. |br|
+This results in: ``xplugin_[PluginID]_[Name]``.
 
-Beispiel: Lautet die Plugin-ID "*jtl_exampleplugin*" und die Tabelle soll "*tuser*" heißen, so muss der Tabellenname
-letztlich "*xplugin_jtl_exampleplugin_tuser*" lauten. |br|
-Der SQL-Ordner liegt im Ordner der jeweiligen Pluginversion.
+Example: If the plug-in ID is "*jtl_exampleplugin*" and the table is called "*tuser*", the table name
+must ultimately read "*xplugin_jtl_exampleplugin_tuser*". |br|
+The SQL directory is located in the directory of the corresponding plug-in version.
 
-**Beispiel:**
+**Example:**
 
-Bei einem Plugin in der Version 102 muss der entsprechende Abschnitt der ``info.xml`` dann wie folgt aussehen:
+For a version 102 plug-in, the corresponding section of ``info.xml`` must then look like this:
 
 .. code-block:: xml
 
@@ -296,8 +296,8 @@ Bei einem Plugin in der Version 102 muss der entsprechende Abschnitt der ``info.
         <CreateDate>2016-03-17</CreateDate>
     </Version>
 
-Hier muss die Datei ``install.sql`` im SQL-Ordner namens ``sql/`` der Version 102 liegen. |br|
-Die Verzeichnisstruktur sieht daher in diesem Beispiel wie folgt aus:
+Here, the ``install.sql`` file must be located in the SQL directory named ``sql/`` in version 102. |br|
+Therefore, the directory structure in this example appears as such:
 
 .. code-block:: console
     :emphasize-lines: 11
@@ -315,29 +315,29 @@ Die Verzeichnisstruktur sieht daher in diesem Beispiel wie folgt aus:
             │    └── install-102.sql
             └── frontend
 
-Pro Pluginversion kann es immer nur eine SQL-Datei geben. Falls in der ``info.xml`` keine SQL-Datei für eine Version
-angegeben wurde, sollte man das SQL-Verzeichnis in der jeweiligen Version *weglassen*.
+There can only be one SQL file for every plug-in version. If no SQL file was specified in the ``info.xml`` for a given version
+, *leave out* the SQL directory in the respective version.
 
-Bei der Installation wird jede SQL-Datei von der kleinsten zur größten Version inkrementell abgearbeitet. |br|
-Wenn also ein Plugin in der Version 1.23 vorliegt, so werden bei der Installation die SQL-Dateien der Versionen
-Version 1.00-1.23 nacheinander ausgeführt. |br|
-Analog verhält es sich bei einem Update. Sie haben Version 1.07 eines Plugin installiert und möchten nun
-auf Version 1.13 updaten. Beim Update werden alle SQL-Dateien ab 1.08 bis 1.13 ausgeführt.
+During installation, each SQL file is incrementally run from the smallest to the largest version. |br|
+So, if a plug-in is in version 1.23, the SQL files of versions 1.00-1.23 will be run successively
+during the installation. |br|
+The process is the same when updating. Suppose that version 1.07 of a plug-in is already installed and must
+now be updated to version 1.13. During the update, all SQL files from 1.08 to 1.13 will be run.
 
-ab JTL-Shop 5.x
-"""""""""""""""
+As of JTL-Shop 5.x
+""""""""""""""""""
 
-Ab JTL-Shop 5.0.0 wird der Unterordner ``sql/`` *nicht mehr unterstützt*. Somit werden auch keine SQL-Dateien mehr
-ausgeführt. |br|
+As of JTL-Shop 5.0.0, the ``sql/`` directory is *no longer supported*. Therefore, no more SQL files
+will be run. |br|
 
 .. hint::
 
-    Plugins können nun, wie der Onlineshop selbst, *Migrationen* nutzen.
+    Like the online shop itself, plug-ins can now use *migrations*.
 
-Diese müssen *nicht mehr* in der ``info.xml`` definiert werden, sondern liegen im Unterordner ``Migrations/``
-des Plugin-Verzeichnisses. |br|
-Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDhhmmss>.php``
-(entspricht in PHP: ``date('YmdHis');``).
+These *no longer* have to be defined in the ``info.xml`` file, but are now located in the ``Migrations/``
+subdirectory of the plug-in directory. |br|
+The naming scheme of the file and the class names are ``Migration<YYYMMDDhhmmss>.php``
+(in PHP this corresponds with: ``date('YmdHis');``).
 
 .. code-block:: console
    :emphasize-lines: 6-8
@@ -355,12 +355,12 @@ Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYM
     ├── preview.png
     └── README.md
 
-Alle Pluginmigrationen müssen das Interface ``JTL\Update\IMigration`` implementieren
-und im Namespace ``Plugin\<PLUGIN-ID>\Migrations`` liegen. |br|
-Dieses Interface definiert die zwei wichtigsten Methoden ``up()`` zur Ausführung von SQL-Code
-und ``down()`` zum Zurücknehmen dieser Änderungen.
+All plug-in migrations must implement the interface ``JTL\Update\IMigration`` and be located
+in the ``Plugin\<PLUGIN-ID>\Migrations`` namespace. |br|
+This interface defines two main methods, ``up()`` for running SQL code
+and ``down()`` for rolling back those changes.
 
-**Beispiel**:
+**Example**:
 
 .. code-block:: php
 
@@ -388,22 +388,22 @@ und ``down()`` zum Zurücknehmen dieser Änderungen.
         }
     }
 
-Bei der Installation des Plugins werden automatisch die ``up()``-Methoden aller Migrationen ausgeführt, bei der
-Deinstallation entsprechend alle ``down()``-Methoden. |br|
-Hier entfällt auch die Beschränkung auf die Erstellung von Tabellen mit dem Präfix ``xplugin_<PLUGIN-ID>``.
-Zusätzlich bietet die Verwendung von :doc:`Bootstrapping <bootstrapping>` mit den Methoden ``installed()``,
-``uninstalled()`` und ``updated()`` erweiterte Möglichkeiten für die Installation, Deinstallation und das
-Update eines Plugins.
+When installing the plug-in, the ``up()`` methods of all migrations are automatically run, and when uninstalling
+, all ``down()`` methods are run accordingly. |br|
+In this case, the limitation on the creation of tables with the prefix ``xplugin_<PLUGIN-ID>`` is also no longer applicable.
+Additionally, by using :doc:`Bootstrapping <bootstrapping>` with the ``installed()``,
+``uninstalled()``, and ``updated()`` methods, this provides more advanced options for installing, uninstalling, and
+updating a plug-in.
 
 
 .. _label_aufbau_locale:
 
-Mehrsprachige Settings (ab 5.0.0)
----------------------------------
+Multilingual settings (as of 5.0.0)
+-----------------------------------
 
-Ab JTL-Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden. |br|
-Zu diesem Zweck kann ein Plugin vom gleichen Mechanismus Gebrauch machen wie das Backend
-von JTL-Shop - `gettext <https://www.gnu.org/software/gettext/>`_.
+As of JTL-Shop 5.0.0, plug-in options can be multilingual. |br|
+To this end, a plug-in can use the same mechanism as the back end of
+JTL-Shop - `gettext <https://www.gnu.org/software/gettext/>`_.
 
 .. code-block:: console
    :emphasize-lines: 8-14
@@ -428,35 +428,35 @@ von JTL-Shop - `gettext <https://www.gnu.org/software/gettext/>`_.
     ├── README.md
     └── Bootstrap.php
 
-Einen exemplarischen Überblick, wie Sie dies mit Hilfe der ``info.xml`` bewerkstelligen können, finden Sie im Kapitel
-``info.xml`` im Abschnitt ":ref:`label_infoxml_locale`".
+For an illustrative overview of how to do this with the ``info.xml``file , see ":ref:`label_infoxml_locale`" in section
+`info.xml``.
 
 .. _label_adminmenu_structure:
 
-"adminmenu/" Struktur
----------------------
+"adminmenu/" structure
+----------------------
 
-Das *Adminmenu* befindet sich bei Onlineshops einer Version bis 4.x in jedem Versionsordner des Plugins und
-bei Onlineshops ab Version 5.x direkt in der Plugin-Root. |br|
-(Falls kein *Adminmenu* in der ``info.xml`` definiert wurde, können Sie diesen Ordner auch weglassen.)
+For online shops version 5.x and higher,
+the *admin menu* is located directly in the plug-in root. For earlier versions, it is located in the version directory of each plug-in. |br|
+(If no *admin menu* has been defined in the ``info.xml`` file, this directory can also be omitted).
 
-Ein Plugin kann beliebig viele eigene Links (:ref:`label_infoxml_custom_links`) im Adminbereich enthalten. |br|
-Falls Sie *Custom Links* in der ``info.xml`` angegeben haben, muss in jedem ``adminmenu/``-Ordner für jeden
-*Custom Link* eine entsprechende PHP-Datei enthalten sein. |br|
+A plug-in can contain any number of custom links (:ref:`label_infoxml_custom_links`) in the admin area. |br|
+If you have specified any *custom links* in the ``info.xml`` file, there must be a corresponding PHP file in each ``adminmenu/`` directory for each
+*custom link*. |br|
 
 .. code-block:: xml
    :emphasize-lines: 4
 
     <Adminmenu>
         <Customlink sort="1">
-            <Name>Statistik</Name>
+            <Name>Statistics</Name>
             <Filename>stats.php</Filename>
         </Customlink>
     </Adminmenu>
 
-In diesem Beispiel wird im Backend von JTL-Shop ein *Custom Link* erstellt, der als Tab mit dem Namen "Statistik"
-erscheint. Dieser Tab führt die Datei ``stats.php``, im Ordner ``adminmenu/``, aus. Diese Datei inkludiert die
-Smarty-Templateengine und lädt ein eigenes Template, das Sie in einem selbst definierten Ordner ablegen können.
+In this example, a *custom link* is created in the back end of JTL-Shop, which appears as a tab called "Statistics"
+. This tab runs the ``stats.php`` file in the ``adminmenu/`` directory. This file includes the
+Smarty template engine and loads a custom template that you can save in a custom defined directory.
 
 .. code-block:: console
    :emphasize-lines: 3
@@ -473,26 +473,26 @@ Smarty-Templateengine und lädt ein eigenes Template, das Sie in einem selbst de
    ├── Bootstrap.php
    └── ...
 
-Weitere Verzeichnisse sind dem Pluginentwickler selbst überlassen. |br|
-Es ist natürlich auch möglich, das Adminmenü nur mit Einstellungen (:ref:`label_infoxml_setting_links`) zu füllen.
+Any additional directories are left to the discretion of the plug-in developer. |br|
+Of course, it is also possible to fill the admin menu with settings only (:ref:`label_infoxml_setting_links`).
 
-"frontend/" Struktur
---------------------
+"frontend/" Structure
+---------------------
 
-Im Frontendmenü können Sie selbst definierte Links im Frontend von JTL-Shop erstellen, so dass dort eigene PHP-Dateien
-ausgeführt werden. |br|
-Der Ordner ``frontend/`` befindet sich bei JTL-Shop 4.x im jeweiligen Versionsordner des Plugins und ab
-JTL-Shop 5.x direkt in der Plugin-Root. |br|
-(Falls kein Frontendmenü in der ``info.xml`` definiert wurde, können Sie diesen Ordner auch weglassen. |br|
-Es können beliebig viele *Frontend Links* eingebunden werden.
+In the front end menu you can create your own defined links in the front end of JTL-Shop, so that custom PHP files
+are run there. |br|
+As of JTL-Shop 5.x, the ``frontend/`` directory is located
+directly in the plug-in root. |br|
+(If no front end menu has been defined in the ``info.xml`` file, you can also omit this directory). |br|
+Any number of *front end links* can be integrated.
 
-Wie *Frontend Links* in der ``infox.xml`` definiert werden, finden Sie im Abschnitt :ref:`label_infoxml_frontendlinks`.
+More information on how to define *front end links* in the ``infox.xml`` file can be found in section :ref:`label_infoxml_frontendlinks`.
 
-Jeder *Frontend Link* benötigt eine Smarty-Templatedatei, um Inhalt im Onlineshop anzuzeigen. |br|
-Diese Templatedatei liegt im ``template/``-Ordner des jeweiligen Ordners ``frontend/``.
-Der Pfad zur Templatedatei für das untere Beispiel würde also ``/meinplugin/version/102/frontend/template/`` lauten.
+Each *front end link* requires a Smarty template file to display content in the online shop. |br|
+This template file is located in the ``template/`` directory of the respective ``frontend/`` directory.
+Therefore, the path to the template file for the example below would look like ``/meinplugin/version/102/frontend/template/``.
 
-**Beispiel für JTL-Shop 5.x:**
+**An example for JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 12-15
@@ -519,30 +519,30 @@ Der Pfad zur Templatedatei für das untere Beispiel würde also ``/meinplugin/ve
 
 .. important::
 
-    Sobald man ein Plugin installiert hat, welches *Frontend Links* beinhaltet, sollte man darauf achten, dass die
-    Links den jeweiligen Linkgruppen des Shops, vom Administrator, zugewiesen werden müssen.
+    Once a plug-in that contains *front end links* is installed, make sure that the
+    links have to be assigned to the respective link groups of the online shop by the administrator.
 
-Hierfür bietet die Pluginverwaltung die Spalte "Linkgruppe".
-Falls *Frontend Links* vorhanden sind, wird dort eine Schaltfläche angezeigt. Die Schaltfläche führt zur Verwaltung der
-Linkgruppen (in JTL-Shop 4.x: "Seiten" -> "Eigene Seiten",
-ab JTL-Shop 5.x: "Darstellung" -> "Eigene Inhalte" -> "Seiten"). |br|
+For this purpose, the plug-in manager offers the "link group" column.
+If *front end links* are available, a button will be displayed there. The button leads to the link group
+management (as of JTL-Shop 5.x: " Display" ->
+"Custom content" -> "Pages"). |br|
 
-Die Installation des Plugins stellt *Frontend Links*  ab JTL-Shop 4 in die Linkgruppe "*hidden*" ein
-(in JTL-Shop 3 in die erste CMS Linkgruppe).
+The installation of the plug-in introduces *front end links* in JTL-Shop 3
+into the first CMS link group.
 
-Die Links des jeweiligen Plugins werden hier farblich hervorgehoben, um das Auffinden der *Frontend Links*  des Plugins
-zu erleichtern. |br|
-Sie können nun die *Frontend Links* des Plugins  über eine Selectbox in andere Linkgruppen verschieben.
+The links of the respective plug-in are highlighted here to make it easier to find the
+plug-in’s *front end links*. |br|
+You can now move the *front end links* of the plug-in to other link groups via a select box.
 
 
 .. _label_aufbau_frontend_res:
 
-Frontend-Ressourcen
+Front end resources
 -------------------
 
-Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlichen "*Frontend-Ressourcen*".
+The structure of the ``frontend/`` directory continues to include the additional "*front end resources*".
 
-**Beispiel bis JTL-Shop 4.x:**
+**Example for versions up to JTL-Shop 4.x:**
 
 .. code-block:: console
    :emphasize-lines: 11-17
@@ -571,7 +571,7 @@ Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlich
    ├── README.md
    └── ...
 
-**Beispiel ab JTL-Shop 5.x:**
+**Example as of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 7-13
@@ -597,18 +597,18 @@ Weiterhin gehören zur Struktur des Verzeichnisses ``frontend/`` die zusätzlich
    ├── Bootstrap.php
    └── ...
 
-Weitere Informationen finden Sie im ``info.xml``-Abschnitt ":ref:`label_infoxml_frontend_res`".
+For more information, see the ``info.xml`` section: ":ref:`label_infoxml_frontend_res`".
 
-Template-Blöcke
+Template blocks
 ---------------
 
-Auch Template-Blöcke des Frontends lassen sich durch Plugins manipulieren. |br|
-Hierfür sind keine Einträge in der ``info.xml`` nötig. Lediglich die Layoutstruktur des Templates muss im Plugin
-nachgebildet werden.
+Front end template blocks can also be manipulated by plug-ins. |br|
+No data in the ``info.xml`` files are necessary for this. Only the layout structure of the template must be reproduced
+in the plug-in.
 
-Ein minimalistisches Plugin, für JTL-Shop 5 und das NOVA-Template, könnte dann so aussehen:
+A minimalistic plug-in for JTL-Shop 5 and the NOVA template could then look like this:
 
-**Beispiel:**
+**Example:**
 
 .. code-block:: console
    :emphasize-lines: 7,8
@@ -624,19 +624,19 @@ Ein minimalistisches Plugin, für JTL-Shop 5 und das NOVA-Template, könnte dann
    │           └── header.tpl
    └── info.xml
 
-Achten Sie Beim Anlegen der Struktur im Plugin-Verzeichnis ``frontend/`` darauf, dass Sie die Templatestruktur genau
-nachgebildet. |br|
-Das Verzeichnis ``adminmenu/`` ist hier nur zur Veranschaulichung des Unterschiedes der Verzeichnisnamen
-``adminmenu/templates`` und ``frontend/template`` aufgelistet. Es muß für dieses Beispiel nicht angelegt werden.
+When creating the structure in the plug-in ``frontend/`` directory, make sure that you exactly replicate the template
+structure. |br|
+The ``adminmenu/`` directory is listed here only to demonstrate the distinction between the directory names
+``adminmenu/templates`` and ``frontend/template``. In the case of this example, it does not need to be created.
 
-Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
+The ``info.xml`` file used here configures only the body of a plug-in:
 
 .. code-block:: xml
 
     <?xml version="1.0" encoding="UTF-8"?>
     <jtlshopplugin>
         <Name>[PluginName]</Name>
-        <Description>Blendet einen deutlichen Hinweis auf jeder Seite ein, dass es sich um einen Testshop handelt</Description>
+        <Description>Displays a clear notice on each page that this is a test shop</Description>
         <Author>JTL</Author>
         <URL>https://www.jtl-software.de</URL>
         <PluginID>[PluginID]</PluginID>
@@ -649,7 +649,7 @@ Die hier verwendete ``info.xml`` konfiguriert nur den Rumpf eines Plugins:
         </Install>
     </jtlshopplugin>
 
-Die Datei ``header.tpl`` enthält alles, was im Frontend ausgegeben werden soll:
+The ``header.tpl`` file contains everything that should be output in the front end:
 
 .. code-block:: smarty
    :emphasize-lines: 2
@@ -657,25 +657,25 @@ Die Datei ``header.tpl`` enthält alles, was im Frontend ausgegeben werden soll:
     extends file="{$parent_template_path}/layout/header.tpl"}
     {block name='layout-header-content-all-starttags' prepend}
         <script>
-            console.log('Diese Ausgabe erscheint in der Javascript-console und wurde erzeugt vom plugin: [PluginID]');
+            console.log('This output appears in the Javascript console and was generated by the plug-in: [PluginID]');
         </script>
         <div id="testing-purpose-alert" class="alert alert-warning text-center">
-            Dieser Shop dient ausschlie&szlig;lich Demonstrations- und Testzwecken.
-            Es k&ouml;nnen keine realen Bestellungen ausgef&uuml;hrt werden.
+            This shop is for demonstrational and testing purposes only.
+            No real orders can be carried out.
         </div>
     {/block}
 
-Weiter Erläuterungen zur Manipulation von Blöcken finden Sie im Abschnitt ":ref:`label_eigenestemplate_tpldateien`".
+For further explanation on block manipulation, see section ":ref:`label_eigenestemplate_tpldateien`".
 
 .. _label_aufbau_boxen:
 
-Boxen
+Boxes
 -----
 
-Ein Plugin kann ebenso Boxen für das Frontend von JTL-Shop mitbringen. |br|
-Das Verzeichnis für diese Darstellungselemente befinden sich ebenfalls im Ordner ``frontend/``.
+A plug-in can also provide boxes for the front end of JTL-Shop. |br|
+The directory for these display elements are also located in the ``frontend/`` directory.
 
-**Beispiel bis JTL-Shop 4.x:**
+**Example for versions up to JTL-Shop 3.0:**
 
 .. code-block:: console
    :emphasize-lines: 11,12
@@ -705,9 +705,9 @@ Das Verzeichnis für diese Darstellungselemente befinden sich ebenfalls im Ordne
 
 .. hint::
 
-    Von JTL-Shop 4.x zu JTL-Shop 5.0 hat sich der Name dieses Verzeichnisses von ``boxen/`` zu ``boxes/`` geändert.
+    From previous versions up to JTL-Shop 5.0, the name of this directory has changed from ``boxen/`` to ``boxes/``.
 
-**Beispiel ab JTL-Shop 5.x:**
+**Example as of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 5,6
@@ -730,8 +730,8 @@ Das Verzeichnis für diese Darstellungselemente befinden sich ebenfalls im Ordne
    ├── Bootstrap.php
    └── ...
 
-Wie Sie diese neuen Boxen in der ``info.xml`` definieren und JTL-Shop bekannt machen,
-finden Sie im Abschnitt ":ref:`label_infoxml_boxen`".
+You can find out how to define these new boxes in the ``info.xml`` file and publish them to JTL-Shop,
+in section ":ref:`label_infoxml_boxen`".
 
 
 .. _label_aufbau_widgets:
@@ -739,14 +739,14 @@ finden Sie im Abschnitt ":ref:`label_infoxml_boxen`".
 Widgets
 -------
 
-Auch im Backend von JTL-Shop lassen sich neue Elemente über Plugins einfügen, z.B. im Dashboard des
-Administrationsbereiches. |br|
-Hierfür werden *Widgets* eingesetzt. Wie sie der Logik des Shops bekannt gemacht werden, erfahren Sie im
-``info.xml``-Abschnitt ":ref:`label_infoxml_widgets`".
+Also in the back end of JTL-Shop new elements can be inserted via plug-ins, like in the dashboard of the
+administration area. |br|
+*Widgets* are used for this purpose. You can find out how to introduce them to the online shop's logic in the
+`info.xml`` page, section ":ref:`label_infoxml_widgets`".
 
-Platziert werden die zugehörigen Dateien wie folgt:
+The related files are placed as follows:
 
-**Bis JTL-Shop 4.x:**
+**Example for versions up to JTL-Shop 4.x:**
 
 .. code-block:: console
    :emphasize-lines: 9-11
@@ -768,7 +768,7 @@ Platziert werden die zugehörigen Dateien wie folgt:
    ├── README.md
    └── ...
 
-**Ab JTL-Shop 5.x:**
+**As of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 6-8
@@ -791,15 +791,15 @@ Platziert werden die zugehörigen Dateien wie folgt:
 
 .. _label_aufbau_license:
 
-Lizenzierung
-------------
+Licencing
+---------
 
-Bei kommerziellen Plugins für JTL-Shop ist es möglich, eine eigene Klasse die Lizenzprüfung erledigen zu lassen. |br|
-Nähere Informationen hierzu finden Sie im Kapitel ``info.xml`` unter dem Abschnitt ":ref:`label_infoxml_license`".
+With commercial plug-ins for JTL-Shop, it is possible to let an individual class do the licensing verification. |br|
+You can find more detailed information on this in the ``info.xml`` page, under the section ":ref:`label_infoxml_license`".
 
-Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
+The licensing verification class is placed here:
 
-**Bis JTL-Shop 4.x:**
+**Example for versions up to JTL-Shop 4.x:**
 
 .. code-block:: console
    :emphasize-lines: 11,12
@@ -820,7 +820,7 @@ Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
    ├── README.md
    └── ...
 
-**Ab JTL-Shop 5.x:**
+**As of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 6,7
@@ -837,18 +837,18 @@ Ihre Klasse zur Lizenzprüfung erhält hier ihren Platz:
    ├── Bootstrap.php
    └── ...
 
-Die Stelle im Root-Verzeichnis des Plugins ist für JTL-Shop 4.x sowie JTL-Shop 5.x der gleiche. |br|
+The location of the plug-in root directory is the same for earlier versions of JTL-Shop as well as JTL-Shop 5.x. |br|
 
 
 
 
 
 
-Exportformate
--------------
+Export formats
+--------------
 
-Mit einem Plugin-Exportformat lassen sich neue Exportformate in den JTL-Shop integrieren.
-Sie erstellen ein neues Exportformat, indem Sie folgenden neuen Block in der info.xml anlegen:
+With a plug-in export format, new export formats can be integrated into the JTL-Shop.
+You create a new export format by creating the following new block in the info.xml file:
 
 .. code-block:: xml
 
@@ -856,17 +856,17 @@ Sie erstellen ein neues Exportformat, indem Sie folgenden neuen Block in der inf
      ...
     </ExportFormat>
 
-In diesem Block können beliebig viele Unterelemente vom Typ <Format> liegen. Das heißt, ein Plugin kann beliebig viele Exportformate anlegen.
+This block can contain any number of subelements of the <format> type. This means, that a plug-in is capable of creating any number of export formats.
 
-XML-Darstellung in der info.xml:
+XML depiction in the info.xml file:
 
 .. code-block:: xml
 
     <ExportFormat>
         <Format>
-            <Name>Google Base (Plugin)</Name>
+            <Name>Google Base (plug-in)</Name>
         <FileName>googlebase.txt</FileName>
-        <Header>link    titel    beschreibung    preis    bildlink    produkttyp    id    verfügbarkeit    zustand    versand    mpn    ean</Header>
+        <Header>link    title    description    price    imagelink    producttype    id    availability    status    shipping    mpn    ean</Header>
         <Content><![CDATA[{$Artikel->cDeeplink}    {$Artikel->cName|truncate:70}    {$Artikel->cBeschreibung}    {$Artikel->Preise->fVKBrutto} {$Waehrung->cISO}    {$Artikel->Artikelbild}    {$Artikel->Kategoriepfad}    {$Artikel->cArtNr}    {if $Artikel->cLagerBeachten == 'N' || $Artikel->fLagerbestand > 0}Auf Lager{else}Nicht auf Lager{/if}    ARTIKELZUSTAND_BITTE_EINTRAGEN    DE::Standardversand:{$Artikel->Versandkosten}    {$Artikel->cHAN}    {$Artikel->cBarcode}]]></Content>
         <Footer></Footer>
         <Encoding>ASCII</Encoding>
@@ -883,49 +883,49 @@ XML-Darstellung in der info.xml:
     </ExportFormat>
 
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| Elementname                        | Beschreibung                                                                                                |
+| Element name                       | Description                                                                                                 |
 +====================================+=============================================================================================================+
-| ``<Name>``                         | Name des Exportformats                                                                                      |
+| ``<Name>``                         | Export format name                                                                                          |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<FileName>``                     | Dateiname ohne Angabe des Pfades, in welchen die Artikel exportiert werden sollen                           |
+| ``<FileName>``                     | File name without indication of the path to which the items are to be exported                              |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<Header>``                       | Kopfzeile der Exportdatei                                                                                   |
+| ``<Header>``                       | Export file header                                                                                          |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<Content>``                      | Exportformat (Smarty)                                                                                       |
+| ``<Content>``                      | Export format (Smarty)                                                                                      |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<footer>``                       | Fußzeile der Exportdatei                                                                                    |
+| ``<footer>``                       | Export file footer                                                                                          |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<Encoding>``                     | ASCII oder UTF-8-Kodierung der Exportdatei                                                                  |
+| ``<Encoding>``                     | ASCII or UTF-8 encoding of the export file                                                                  |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<VarCombiOption>``               | 1 = Vater- und Kindartikel exportieren / 2 = Nur Vaterartikel exportieren / 3 = Nur Kindartikel exportieren |
+| ``<VarCombiOption>``               | 1 = Export parent and child item / 2 =Export parent item only / 3 = Export child item only                  |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<SplitSize>``                    | Größe der Dateien, in die der Export zerlegt werden soll (in Megabyte)                                      |
+| ``<SplitSize>``                    | Size of the files into which the export is to be split (into megabytes)                                     |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<OnlyStockGreaterZero>``         | Nur Produkte mit Lagerbestand über 0                                                                        |
+| ``<OnlyStockGreaterZero>``         | Only products with stock greater than 0                                                                     |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<OnlyPriceGreaterZero>``         | Nur Produkte mit Preis über 0                                                                               |
+| ``<OnlyPriceGreaterZero>``         | Only products with prices greater than 0                                                                    |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<OnlyProductsWithDescription>``  | Nur Produkte mit Beschreibung                                                                               |
+| ``<OnlyProductsWithDescription>``  | Only products with descriptions                                                                             |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<ShippingCostsDeliveryCountry>`` | Versandkosten Lieferland (ISO-Code)                                                                         |
+| ``<ShippingCostsDeliveryCountry>`` | Destination country shipping costs (ISO-Code)                                                               |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<EncodingQuote>``                | Zeichenmaskierung für Anführungszeichen                                                                     |
+| ``<EncodingQuote>``                | Quote encoding                                                                                              |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<EncodingDoubleQuote>``          | Zeichenmaskierung für doppelte Anführungszeichen                                                            |
+| ``<EncodingDoubleQuote>``          | Double quote encoding                                                                                       |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
-| ``<EncodingSemicolon>``            | Zeichenmaskierung für Semikolons                                                                            |
+| ``<EncodingSemicolon>``            | Semicolon encoding                                                                                          |
 +------------------------------------+-------------------------------------------------------------------------------------------------------------+
 
-(*) Pflichtfeld
+(*) Mandatory field
 
-Das folgende Beispiel demonstriert, wie ein Plugin-Exportformat aussehen könnte:
+The following example demonstrates how a plug-in export format might look:
 
 .. code-block:: xml
 
     <?xml version='1.0' encoding="ISO-8859-1"?>
     <jtlshopplugin>
-        <Name>Exportformat</Name>
-        <Description>Beispiel eines Exportformats</Description>
+        <Name>Export format</Name>
+        <Description>Export format example</Description>
         <Author>JTL-Software-GmbH</Author>
         <URL>http://www.jtl-software.de</URL>
         <XMLVersion>100</XMLVersion>
@@ -935,9 +935,9 @@ Das folgende Beispiel demonstriert, wie ein Plugin-Exportformat aussehen könnte
         <Install>
             <ExportFormat>
                 <Format>
-                    <Name>Google Base (Plugin)</Name>
+                    <Name>Google Base (plug-in)</Name>
                     <FileName>googlebase.txt</FileName>
-                    <Header>link    titel    beschreibung    preis    bildlink    produkttyp    id    verfügbarkeit    zustand    versand    mpn    ean</Header>
+                    <Header>link    title    description    price    imagelink    producttype    id    availability    status    shipping    mpn    ean</Header>
                     <Content><![CDATA[{$Artikel->cUrl}    {$Artikel->cName|truncate:70}    {$Artikel->cBeschreibung}    {$Artikel->Preise->fVKBrutto} {$Waehrung->cISO}    {$Artikel->Artikelbild}    {$Artikel->Kategoriepfad}    {$Artikel->cArtNr}    {if $Artikel->cLagerBeachten == 'N' || $Artikel->fLagerbestand > 0}Auf Lager{else}Nicht auf Lager{/if}    ARTIKELZUSTAND_BITTE_EINTRAGEN    DE::Standardversand:{$Artikel->Versandkosten}    {$Artikel->cHAN}    {$Artikel->cBarcode}]]></Content>
                     <Footer></Footer>
                     <Encoding>ASCII</Encoding>
@@ -958,12 +958,12 @@ Das folgende Beispiel demonstriert, wie ein Plugin-Exportformat aussehen könnte
 
 .. _label_aufbau_portlets:
 
-Portlets (ab JTL-Shop 5.0.0)
-----------------------------
+Portlets (as of JTL-Shop 5.0.0)
+-------------------------------
 
-Plugins können auch :doc:`Portlets </shop_plugins/portlets>` für den *OnPageComposer* mitbringen.
+Plug-ins can also provide :doc:`Portlets </shop_plugins/portlets>` for the *OnPageComposer*.
 
-**Ab JTL-Shop 5.x:**
+**As of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 6-9
@@ -983,22 +983,22 @@ Plugins können auch :doc:`Portlets </shop_plugins/portlets>` für den *OnPageCo
    ├── Bootstrap.php
    └── ...
 
-Das Bekanntmachen der neuen Portlets geschieht via XML, in der ``info.xml``. |br|
-Weitere Informationen dazu finden Sie im Abschnitt ":ref:`label_infoxml_portlets`".
+Publishing of the new portlets is carried out via XML in the ``info.xml`` file. |br|
+You can find more information on this in the ":ref:`label_infoxml_portlets`" section.
 
-Alles, was logisch zu einem Portlet gehört, befindet sich in einem eigenen Verzeichnis. |br|
-Wie ein solches Portlet-Unterverzeichnis im Einzelnen aussehen kann, lesen Sie
-im Abschnitt :doc:`Portlets </shop_plugins/portlets>`.
+Everything that belongs to a portlet is located in its own directory. |br|
+You can read about how such a portlet subdirectory might look in detail
+in the section :doc:`Portlets </shop_plugins/portlets>`.
 
 .. _label_aufbau_blueprints:
 
-Blueprints (ab JTL-Shop 5.0.0)
-------------------------------
+Blueprints (as of JTL-Shop 5.0.0)
+---------------------------------
 
-Ebenso können Plugins auch Blueprints, also *Kompositionen von einzelnen Portlets*, definieren. |br|
-Wie dies per ``info.xml`` dem Onlineshop mitgeteilt wird, lesen Sie im Abschnitt ":ref:`label_infoxml_blueprints`".
+Likewise, plug-ins can also define blueprints, which are *compositions of individual portlets*. |br|
+To see how this is communicated to the online shop via the ``info.xml`` file, see section ":ref:`label_infoxml_blueprints`".  
 
-**Ab JTL-Shop 5.x:**
+**As of JTL-Shop 5.x:**
 
 .. code-block:: console
    :emphasize-lines: 6-8
@@ -1020,19 +1020,19 @@ Wie dies per ``info.xml`` dem Onlineshop mitgeteilt wird, lesen Sie im Abschnitt
 ----
 
 
-Änderungen von JTL-Shop 4.x zu JTL-Shop 5.x
--------------------------------------------
+Changes from previous versions up to JTL-Shop 5.x
+-------------------------------------------------
 
-Hier eine kurze Zusammenfassung aller Änderungen für Plugins von JTL-Shop 4.x zu JTL-Shop 5.x
+Here is a brief overview of the changes for plug-ins made since JTL-Shop 5.x:
 
-* neuer Installationsordner: ``<SHOP-ROOT>/plugins/<PLUGIN-ID>/``
-* keine Unterordner ``version/<VERSION>/`` mehr
-* XML-Root ``<jtlshopplugin>`` statt ``<jtlshop3plugin>``
-* Knoten ``<Version>`` als Unterknoten von ``<Install>`` entfallen
-* ``<CreateDate>`` und ``<Version>`` müssen als Unterknoten von ``<jtlshopplugin>`` angegeben werden und nicht mehr
-  von ``<Install><Version>``
-* Plugins erhalten den Namespace ``Plugin\<PLUGIN-ID>``
-* Plugins können Migrationen ausführen aber keine SQL-Dateien
-* Widget-Klassen entsprechen der in ``info.xml`` definierten Klasse und erfordern keinerlei weitere Konventionen
-* Plugins können Lokalisierungen anbieten
-* Plugins können Portlets und Blueprints definieren
+* New installation directory: ``<SHOP-ROOT>/plugins/<PLUGIN-ID>/``
+* No more``version/<VERSION>/`` directory
+* XML root ``<jtlshopplugin>``, in place of``<jtlshop3plugin>``
+* ``<Version>``nodes are omitted as ``<Install>`` subnodes
+* ``<CreateDate>`` and``<Version>`` must now be indicated as ``<jtlshopplugin>``subnodes  and no longer
+  as ``<Install><Version>`` subnodes
+* Plug-ins will have the ``Plugin\<PLUGIN-ID>`` namespace
+* Plug-ins can run migrations but not SQL files
+* Widget classes correspond to the class defined in the ``info.xml`` file and do not require any further conventions
+* Plug-ins can offer localisations
+* Plug-ins can define portlets and blueprints

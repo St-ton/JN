@@ -1837,6 +1837,7 @@ class Product
         $product->oVariationKombiVorschau_arr = $parent->oVariationKombiVorschau_arr ?? [];
         $product->oVariationDetailPreis_arr   = $parent->oVariationDetailPreis_arr;
         $product->cVaterURL                   = $parent->cURL;
+        $product->cVaterURLFull               = $parent->cURLFull;
         $product->VaterFunktionsAttribute     = $parent->FunktionsAttribute;
 
         \executeHook(\HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $product]);

@@ -123,21 +123,12 @@ class DefaultController extends AbstractController
             $className = $controller instanceof PageController
                 ? PageController::class
                 : \get_class($controller);
-            $type      = match ($className) {
-                CategoryController::class            => Router::TYPE_CATEGORY,
-                CharacteristicValueController::class => Router::TYPE_CHARACTERISTIC_VALUE,
-                ManufacturerController::class        => Router::TYPE_MANUFACTURER,
-                NewsController::class                => Router::TYPE_NEWS,
-                ProductController::class             => Router::TYPE_PRODUCT,
-                SearchSpecialController::class       => Router::TYPE_SEARCH_SPECIAL,
-                SearchQueryController::class         => Router::TYPE_SEARCH_QUERY,
-                default                              => Router::TYPE_PAGE
-            };
-            $test  = Shop::getRouter()->getURLByType($type, [
+            $type      = $this->getRouteTypeByClassName($className);
+            $test      = Shop::getRouter()->getURLByType($type, [
                 'name' => $args['slug'],
                 'lang' => $locale
             ]);
-            $query = $request->getUri()->getQuery();
+            $query     = $request->getUri()->getQuery();
             if (\mb_strlen($query) > 0) {
                 $test .= '?' . $query;
             }

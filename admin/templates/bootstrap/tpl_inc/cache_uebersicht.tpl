@@ -529,7 +529,7 @@
                                                         </div>
                                                     </div>
                                                 {elseif $setting->getInputType() === 'pass'}
-                                                    <input class="form-control" type="password" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
+                                                    <input class="form-control" type="password" name="{$setting->getValueName()}" id="{$setting->getValueName()}"  placeholder="****"  tabindex="1" />
                                                 {else}
                                                     <input class="form-control" type="text" name="{$setting->getValueName()}" id="{$setting->getValueName()}" value="{if $setting->getSetValue() !== null}{$setting->getSetValue()}{/if}" tabindex="1" />
                                                 {/if}

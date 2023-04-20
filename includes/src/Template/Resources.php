@@ -306,6 +306,9 @@ class Resources
         foreach ($this->getGroups() as $name => $_tplGroup) {
             $res[$name] = [];
             foreach ($_tplGroup as $_file) {
+                if (!\file_exists($_file['abs'])) {
+                    continue;
+                }
                 $res[$name][] = $absolute === true ? $_file['abs'] : $_file['rel'];
             }
         }

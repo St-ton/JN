@@ -51,5 +51,4 @@ class AttachmentsService extends AbstractService
         }
         return $associatedList;
     }
-
 }

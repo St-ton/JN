@@ -52,3 +52,6 @@ msgstr "Status-E-Mails"
 
 msgid "dataprotection"
 msgstr "Kundendatenanonymisierung"
+
+msgid "mailqueue"
+msgstr "Sende Mails zeitversetzt"

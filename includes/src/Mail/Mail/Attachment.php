@@ -2,7 +2,10 @@
 
 namespace JTL\Mail\Mail;
 
+use JTL\Mail\SendMailObjects\MailDataTableObject;
+use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 
 /**
  * Class Attachment
@@ -136,5 +139,54 @@ final class Attachment
     public function getFullPath(): string
     {
         return $this->dir . $this->fileName;
+    }
+    public function toArray(bool $tableColumns = true): array
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName           = $property->getName();
+            $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return $toArray;
+    }
+
+    /**
+     * $tableColumns = true will ship an object using table column names as array keys
+     *
+     * @param bool $tableColumns
+     * @return object
+     */
+    public function toObject(bool $tableColumns = true): object
+    {
+        return (object)$this->toArray($tableColumns);
+    }
+
+    /**
+     * @param object $object
+     * @return $this
+     */
+    public function hydrateWithObject(object $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+                continue;
+            }
+            if (\property_exists($object, $attribute)
+            && \method_exists($this, $setMethod)) {
+                $this->$setMethod($object->$attribute);
+            }
+        }
+
+
+        return $this;
     }
 }

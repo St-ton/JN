@@ -850,9 +850,6 @@ class Statusmail
                 $mail->setAttachments([$data->mail->attachment]);
             }
             $sent = $mailer->send($mail);
-            foreach ($mail->getAttachments() as $attachment) {
-                \unlink($attachment->getFullPath());
-            }
         }
 
         return $sent;

@@ -123,6 +123,7 @@ final class Controller
             Type::STATUSMAIL,
             Type::DATAPROTECTION,
             Type::TOPSELLER,
+            Type::MAILQUEUE,
         ];
         Dispatcher::getInstance()->fire(Event::GET_AVAILABLE_CRONJOBS, ['jobs' => &$available]);
 

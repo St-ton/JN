@@ -3,15 +3,17 @@
 namespace JTL\Mail;
 
 use JTL\Emailhistory;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Mail\MailInterface;
+use JTL\Mail\Mail\Mail as MailObject;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Validator\ValidatorInterface;
 use JTL\Shop;
 use JTL\Shopsetting;
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\PHPMailer;
-use stdClass;
+use JTL\DB\DbInterface;
 
 /**
  * Class Mailer
@@ -19,10 +21,14 @@ use stdClass;
  */
 class Mailer
 {
+    protected ?DbInterface $db = null;
+
     /**
      * @var array
      */
     private array $config;
+
+    protected MailService $mailService;
 
     /**
      * Mailer constructor.
@@ -32,9 +38,9 @@ class Mailer
      * @param ValidatorInterface $validator
      */
     public function __construct(
-        private HydratorInterface $hydrator,
-        private RendererInterface $renderer,
-        Shopsetting $settings,
+        private HydratorInterface  $hydrator,
+        private RendererInterface  $renderer,
+        Shopsetting                $settings,
         private ValidatorInterface $validator
     ) {
         $this->config = $settings->getAll();
@@ -65,14 +71,6 @@ class Mailer
     }
 
     /**
-     * @param HydratorInterface $hydrator
-     */
-    public function setHydrator(HydratorInterface $hydrator): void
-    {
-        $this->hydrator = $hydrator;
-    }
-
-    /**
      * @return array
      */
     public function getConfig(): array
@@ -96,93 +94,13 @@ class Mailer
         return $this->validator;
     }
 
-    /**
-     * @param ValidatorInterface $validator
-     */
-    public function setValidator(ValidatorInterface $validator): void
+    protected function getMailService(): MailService
     {
-        $this->validator = $validator;
-    }
-
-    /**
-     * @return stdClass
-     */
-    private function getMethod(): stdClass
-    {
-        $method                = new stdClass();
-        $method->methode       = $this->config['emails']['email_methode'];
-        $method->sendmail_pfad = $this->config['emails']['email_sendmail_pfad'];
-        $method->smtp_hostname = $this->config['emails']['email_smtp_hostname'];
-        $method->smtp_port     = $this->config['emails']['email_smtp_port'];
-        $method->smtp_auth     = (int)$this->config['emails']['email_smtp_auth'] === 1;
-        $method->smtp_user     = $this->config['emails']['email_smtp_user'];
-        $method->smtp_pass     = $this->config['emails']['email_smtp_pass'];
-        $method->SMTPSecure    = $this->config['emails']['email_smtp_verschluesselung'];
-        $method->SMTPAutoTLS   = !empty($method->SMTPSecure);
-
-        return $method;
-    }
-
-    /**
-     * @param PHPMailer $phpmailer
-     * @return Mailer
-     */
-    private function initMethod(PHPMailer $phpmailer): self
-    {
-        $method = $this->getMethod();
-        switch ($method->methode) {
-            case 'mail':
-                $phpmailer->isMail();
-                break;
-            case 'sendmail':
-                $phpmailer->isSendmail();
-                $phpmailer->Sendmail = $method->sendmail_pfad;
-                break;
-            case 'qmail':
-                $phpmailer->isQmail();
-                break;
-            case 'smtp':
-                $phpmailer->isSMTP();
-                $phpmailer->Host          = $method->smtp_hostname;
-                $phpmailer->Port          = $method->smtp_port;
-                $phpmailer->SMTPKeepAlive = true;
-                $phpmailer->SMTPAuth      = $method->smtp_auth;
-                $phpmailer->Username      = $method->smtp_user;
-                $phpmailer->Password      = $method->smtp_pass;
-                $phpmailer->SMTPSecure    = $method->SMTPSecure;
-                $phpmailer->SMTPAutoTLS   = $method->SMTPAutoTLS;
-                break;
+        if (empty($this->mailService)) {
+            $this->mailService = new MailService();
         }
 
-        return $this;
-    }
-
-    /**
-     * @param PHPMailer     $phpmailer
-     * @param MailInterface $mail
-     * @return Mailer
-     * @throws Exception
-     */
-    private function addAttachments(PHPMailer $phpmailer, MailInterface $mail): self
-    {
-        foreach ($mail->getPdfAttachments() as $pdf) {
-            $phpmailer->addAttachment(
-                $pdf->getFullPath(),
-                $pdf->getName() . '.pdf',
-                $pdf->getEncoding(),
-                $pdf->getMime()
-            );
-        }
-        foreach ($mail->getAttachments() as $attachment) {
-            $phpmailer->addAttachment(
-                $attachment->getFullPath(),
-                $attachment->getName(),
-                $attachment->getEncoding(),
-                $attachment->getMime()
-            );
-        }
-
-        return $this;
+        return $this->mailService;
     }
 
     /**
@@ -240,69 +158,84 @@ class Mailer
         return $mail;
     }
 
-    /**
+     /**
      * @param MailInterface $mail
      * @return bool
-     * @throws Exception
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
-    private function sendViaPHPMailer(MailInterface $mail): bool
+    public function send(MailInterface $mail): bool
     {
-        $phpmailer             = new PHPMailer();
-        $phpmailer->AllowEmpty = true;
-        $phpmailer->CharSet    = \JTL_CHARSET;
-        $phpmailer->Timeout    = \SOCKET_TIMEOUT;
-        $phpmailer->setLanguage($mail->getLanguage()->getIso639());
-        $phpmailer->setFrom($mail->getFromMail(), $mail->getFromName());
-        $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
-        $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());
-        $phpmailer->Subject = $mail->getSubject();
-        foreach ($mail->getCopyRecipients() as $recipient) {
-            $phpmailer->addBCC($recipient);
-        }
-        $this->initMethod($phpmailer);
-        if ($mail->getBodyHTML()) {
-            $phpmailer->isHTML();
-            $phpmailer->Body    = $mail->getBodyHTML();
-            $phpmailer->AltBody = $mail->getBodyText();
-        } else {
-            $phpmailer->isHTML(false);
-            $phpmailer->Body = $mail->getBodyText();
-        }
-        $this->addAttachments($phpmailer, $mail);
-        \executeHook(\HOOK_MAILER_PRE_SEND, [
-            'mailer'    => $this,
-            'mail'      => $mail,
-            'phpmailer' => $phpmailer
-        ]);
-        if (\mb_strlen($phpmailer->Body) === 0) {
-            Shop::Container()->getLogService()->warning('Empty body for mail {sub}', ['sub' => $phpmailer->Subject]);
-        }
-        $sent = $phpmailer->send();
-        $mail->setError($phpmailer->ErrorInfo);
-        \executeHook(\HOOK_MAILER_POST_SEND, [
-            'mailer'    => $this,
-            'mail'      => $mail,
-            'phpmailer' => $phpmailer,
-            'status'    => $sent
-        ]);
+        //will always run in background so no exception may remain uncatched
+        //alas - if Shop::Container throws an exception everything is broken anyway....
+        try {
+            $mailObject = $this->prepareMail($mail);
 
-        return $sent;
+            return $this->getMailService()->queueMail($mailObject);
+        } catch (\Exception $e) {
+            Shop::Container()->getLogService()->error('Error sending mail: ' . $e->getMessage());
+        }
+
+        return false;
+    }
+
+    /**
+     * @return void
+     */
+    public function sendQueuedMails(): void
+    {
+        /** @var MailDataTableObject[] $mails */
+        $mails = $this->getMailService()->getQueuedMails();
+        $mail  = null;
+        foreach ($mails as $mailDataTableobject) {
+            //will always run in background so no exception may remain uncatched
+            try {
+                $mail = new MailObject();
+
+                $mail->hydrateWithObject($mailDataTableobject);
+
+                $this->sendPreparedMail($mail);
+                if ($mail->getError() !== '') {
+                    $this->getMailService()->setError($mailDataTableobject->getId(), $mail->getError());
+                    $isSendingNow = 0;
+                    $isSent       = 0;
+                    $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], $isSendingNow, $isSent);
+                } else {
+                    $this->getMailService()->deleteQueuedMail($mailDataTableobject->getId());
+                }
+            } catch (\Exception $e) {
+                $this->getMailService()->setError(
+                    $mailDataTableobject->getId(),
+                    ($mail?->getError() ?? $e->getMessage())
+                );
+            }
+        }
     }
 
     /**
      * @param MailInterface $mail
-     * @return bool
-     * @throws Exception
+     * @return MailObject
      * @throws \SmartyException
      */
-    public function send(MailInterface $mail): bool
+    public function prepareMail(MailInterface $mail): MailObject
     {
         \executeHook(\HOOK_MAIL_PRERENDER, [
             'mailer' => $this,
             'mail'   => $mail,
         ]);
         $this->hydrate($mail);
-        $mail = $this->renderTemplate($mail);
+
+        return $this->renderTemplate($mail);
+    }
+
+    /**
+     * @throws ServiceNotFoundException
+     * @throws CircularReferenceException
+     * @throws \Exception
+     */
+    public function sendPreparedMail(MailObject $mail): bool
+    {
+        $mail->getTemplate()?->load($mail->getLanguage()->getId(), $mail->getCustomerGroupID());
         if (!$this->validator->validate($mail)) {
             $mail->setError('Mail failed validation');
 
@@ -317,11 +250,11 @@ class Mailer
             'Emailvorlage'  => null,
             'template'      => $mail->getTemplate()
         ]);
-        $sent = $this->sendViaPHPMailer($mail);
+        $sent = $this->mailService->sendViaPHPMailer($mail);
         if ($sent) {
             $this->log($mail);
         } else {
-            Shop::Container()->getLogService()->error('Error sending mail: {err}', ['err' => $mail->getError()]);
+            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
         }
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 

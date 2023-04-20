@@ -5,11 +5,13 @@ namespace JTL\Mail\Mail;
 use InvalidArgumentException;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
+use JTL\Mail\SendMailObjects\MailDataTableObject;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
+use ReflectionClass;
 
 /**
  * Class Mail
@@ -27,50 +29,50 @@ class Mail implements MailInterface
     /**
      * @var LanguageModel
      */
-    private $language;
+    private LanguageModel $language;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $fromMail;
+    private ?string $fromMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $fromName;
+    private ?string $fromName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $toMail;
+    private ?string $toMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $toName = '';
+    private ?string $toName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $replyToMail;
+    private ?string $replyToMail = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $replyToName;
+    private ?string $replyToName = null;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $subject;
+    private string $subject = '';
 
     /**
-     * @var string
+     * @var string|null
      */
     private string $bodyHTML = '';
 
     /**
-     * @var string
+     * @var string|null
      */
     private string $bodyText = '';
 
@@ -85,7 +87,7 @@ class Mail implements MailInterface
     private array $pdfAttachments = [];
 
     /**
-     * @var string
+     * @var string|null
      */
     private string $error = '';
 
@@ -97,12 +99,12 @@ class Mail implements MailInterface
     /**
      * @var TemplateInterface|null
      */
-    private $template;
+    private ?TemplateInterface $template;
 
     /**
      * @var mixed
      */
-    private $data;
+    private mixed $data;
 
     /**
      * Mail constructor.
@@ -117,11 +119,7 @@ class Mail implements MailInterface
      */
     public function createFromTemplateID(string $id, $data = null, TemplateFactory $factory = null): MailInterface
     {
-        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
-        $template = $factory->getTemplate($id);
-        if ($template === null) {
-            throw new InvalidArgumentException('Cannot find template ' . $id);
-        }
+        $template = $this->getTemplateFromID($factory, $id);
 
         return $this->createFromTemplate($template, $data);
     }
@@ -585,5 +583,71 @@ class Mail implements MailInterface
         $this->template = $template;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        $reflect    = new ReflectionClass($this);
+        $properties = $reflect->getProperties();
+        $toArray    = [];
+        foreach ($properties as $property) {
+            $propertyName            = $property->getName();
+             $toArray[$propertyName] = $property->getValue($this);
+        }
+
+        return $toArray;
+    }
+
+    /**
+     * $tableColumns = true will ship an object using table column names as array keys
+     *
+     * @return object
+     */
+    public function toObject(): object
+    {
+        return (object)$this->toArray();
+    }
+
+    /**
+     * Will accept data from an object.
+     * @param MailDataTableObject $object
+     * @return $this
+     * @throws \Exception
+     */
+    public function hydrateWithObject(MailDataTableObject $object): self
+    {
+        $attributes = \get_object_vars($this);
+        foreach ($attributes as $attribute => $value) {
+            $setMethod = 'set' . \ucfirst($attribute);
+            $getMethod = 'get' . \ucfirst($attribute);
+            if (\method_exists($this, $setMethod)
+                && \method_exists($object, $getMethod)
+                && $object->{$getMethod}() !== null) {
+                $this->$setMethod($object->{$getMethod}());
+            }
+        }
+        $this->setLanguage(Shop::Lang()->getLanguageByID($object->getLanguageId()));
+        $this->template = $this->getTemplateFromID(null, $object->getTemplateId());
+
+        return $this;
+    }
+
+    /**
+     * @param TemplateFactory|null $factory
+     * @param string               $id
+     * @return TemplateInterface
+     */
+    public function getTemplateFromID(?TemplateFactory $factory, string $id): TemplateInterface
+    {
+        $factory  = $factory ?? new TemplateFactory(Shop::Container()->getDB());
+        $template = $factory->getTemplate($id);
+        if ($template === null) {
+            throw new InvalidArgumentException('Cannot find template ' . $id);
+        }
+
+        return $template;
     }
 }

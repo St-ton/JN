@@ -12,12 +12,17 @@ use JTL\Interfaces\RepositoryInterface;
 class CheckboxService extends AbstractService
 {
     /**
+     * @var CheckboxRepository
+     */
+    private CheckboxRepository $repository;
+
+    /**
      * @param int $id
      * @return CheckboxDataTableObject
      */
     public function get(int $id): CheckboxDataTableObject
     {
-        return (new CheckboxDataTableObject())->hydrateWithObject($this->repository->get($id));
+        return (new CheckboxDataTableObject())->hydrateWithObject($this->getRepository()->get($id));
     }
 
     /**
@@ -26,11 +31,7 @@ class CheckboxService extends AbstractService
      */
     public function activate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->activate($checkboxIDs);
-        }
-
-        return false;
+        return $this->getRepository()->activate($checkboxIDs);
     }
 
     /**
@@ -39,22 +40,30 @@ class CheckboxService extends AbstractService
      */
     public function deactivate(array $checkboxIDs): bool
     {
-        if ($this->repository instanceof CheckboxRepository) {
-            return $this->repository->deactivate($checkboxIDs);
-        }
-
-        return false;
+        return $this->getRepository()->deactivate($checkboxIDs);
     }
 
-    protected function initRepository(): void
+    /**
+     * @param array $checkboxIDs
+     * @return bool
+     */
+    public function delete(array $checkboxIDs): bool
+    {
+        return $this->getRepository()->delete($checkboxIDs);
+    }
+
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
     {
         $this->repository = new CheckboxRepository();
     }
 
     /**
-     * @return RepositoryInterface
+     * @return CheckboxRepository
      */
-    public function getRepository(): RepositoryInterface
+    public function getRepository(): CheckboxRepository
     {
         return $this->repository;
     }

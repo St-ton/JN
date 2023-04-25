@@ -6,6 +6,7 @@ use JTL\Emailhistory;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Mail\Hydrator\HydratorInterface;
+use JTL\Mail\Mail\Attachment;
 use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Mail\Mail as MailObject;
 use JTL\Mail\SendMailObjects\MailDataTableObject;
@@ -202,6 +203,10 @@ class Mailer
                     $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], $isSendingNow, $isSent);
                 } else {
                     $this->getMailService()->deleteQueuedMail($mailDataTableobject->getId());
+                    /** @var Attachment $attachment */
+                    foreach ($mailDataTableobject->getAttachments() as $attachment) {
+                        unlink($attachment->getDir() . $attachment->getFileName());
+                    }
                 }
             } catch (\Exception $e) {
                 $this->getMailService()->setError(

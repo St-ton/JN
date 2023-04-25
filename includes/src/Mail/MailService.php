@@ -124,7 +124,7 @@ class MailService extends AbstractService
                 return;
             }
             if ($attachment->getDir() !== \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS) {
-                unlink($attachment->getDir());
+                unlink($attachment->getDir().$attachment->getFileName());
             }
             $attachment->setDir(\PATH_MAILATTACHMENTS);
             $attachment->setFileName($uniqueFilename);

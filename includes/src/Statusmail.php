@@ -3,6 +3,8 @@
 namespace JTL;
 
 use DateTime;
+use Gettext\TranslatorFunctions;
+use Gettext\TranslatorFunctions as Translator;
 use InvalidArgumentException;
 use JTL\Cron\Job\Statusmail as StatusCron;
 use JTL\Cron\JobHydrator;
@@ -13,6 +15,7 @@ use JTL\Helpers\Text;
 use JTL\Mail\Mail\Attachment;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\Container;
 use SmartyException;
 use stdClass;
 use function Functional\first;
@@ -41,6 +44,7 @@ class Statusmail
      */
     public function __construct(private DbInterface $db)
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/statusemail');
     }
 
     /**

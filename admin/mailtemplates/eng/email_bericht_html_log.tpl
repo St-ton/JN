@@ -9,7 +9,7 @@
     <h2>Log entries ({$oMailObjekt->oLogEntry_arr|@count}):</h2>
     {foreach $oMailObjekt->oLogEntry_arr as $oLogEntry}
         <h3>
-            [{date_format($oLogEntry->dErstellt, 'd.m.Y H:i:s')}]
+            [{$oLogEntry->dErstellt|date_format:'%d.%m.%Y %H:%M:%S'}]
             {if $oLogEntry->nLevel === $smarty.const.JTLLOG_LEVEL_NOTICE}
                 <span style="color:#00f;">[Notice]</span>
             {elseif $oLogEntry->nLevel === $smarty.const.JTLLOG_LEVEL_DEBUG}

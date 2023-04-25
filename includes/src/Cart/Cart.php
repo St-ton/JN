@@ -1818,12 +1818,6 @@ class Cart
             ? " OR FIND_IN_SET('" . $customerGroupID . "', REPLACE(va.cKundengruppen, ';', ',')) > 0"
             : '';
         $countryCode      = $_SESSION['cLieferlandISO'];
-        // if nothing changed, return cached shipping-object
-        if ($this->oFavourableShipping !== null
-            && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
-        ) {
-            return $this->oFavourableShipping;
-        }
 
         $maxPrices       = 0;
         $itemCount       = 0;
@@ -1837,6 +1831,16 @@ class Cart
         ), static function ($e) {
             return $e->kVersandart;
         });
+
+        // if nothing changed, return cached shipping-object
+        if ($this->oFavourableShipping !== null
+            && $this->oFavourableShipping->getCountryCode() === $_SESSION['cLieferlandISO']
+        ) {
+            // customer may change language
+            $this->setFavourableShippingString(\count($shippingMethods));
+
+            return $this->oFavourableShipping;
+        }
 
         $this->oFavourableShipping = null;
         if (\count($shippingMethods) === 0) {

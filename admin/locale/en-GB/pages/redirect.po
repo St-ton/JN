@@ -6,7 +6,7 @@ msgid "redirect"
 msgstr "Forwarding"
 
 msgid "redirectDesc"
-msgstr "Manage the forwarding from orphaned URLs whose target pages are reachable under a new path. JTL-Shop automatically records all URLs that could not be found and lists them here. Only create a forwarding if the content of an old page was moved and is now available under a new path."
+msgstr "Manage the forwarding from orphaned URLs whose target pages are reachable under a new path. JTL-Shop may automatically record all URLs that could not be found and list them here <a href=\"./config?einstellungen_suchen=1&cSuche=1566\"> (setting)</a>. Only create a forwarding if the content of an old page was moved and is now available under a new path."
 
 msgid "redirectURL"
 msgstr "https://jtl-url.de/yaxo4"

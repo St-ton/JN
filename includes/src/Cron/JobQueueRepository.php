@@ -35,8 +35,7 @@ class JobQueueRepository extends AbstractRepository
             [
                 'IDs'      => implode(',', $ids),
                 'jobTypes' => implode(',', $exclude)
-            ],
-            ReturnType::DEFAULT
+            ]
         );
     }
 }

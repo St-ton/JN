@@ -40,7 +40,7 @@ class CronService extends AbstractService
      */
     protected function initDependencies(): void
     {
-        $this->repository = new CronRepository();
+        $this->repository      = new CronRepository();
         $this->jobQueueService = new JobQueueService();
     }
 

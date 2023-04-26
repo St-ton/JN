@@ -99,12 +99,12 @@ class Mail implements MailInterface
     /**
      * @var TemplateInterface|null
      */
-    private ?TemplateInterface $template;
+    private ?TemplateInterface $template = null;
 
     /**
      * @var mixed
      */
-    private mixed $data;
+    private mixed $data = null;
 
     /**
      * Mail constructor.

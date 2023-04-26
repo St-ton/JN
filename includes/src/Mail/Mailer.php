@@ -171,7 +171,9 @@ class Mailer
         //alas - if Shop::Container throws an exception everything is broken anyway....
         try {
             $mailObject = $this->prepareMail($mail);
-
+            if (!$this->validator->validate($mail)) {
+                throw new \Exception('Mail failed validation');
+            }
             return $this->getMailService()->queueMail($mailObject);
         } catch (\Exception $e) {
             Shop::Container()->getLogService()->error('Error sending mail: ' . $e->getMessage());
@@ -241,11 +243,7 @@ class Mailer
     public function sendPreparedMail(MailObject $mail): bool
     {
         $mail->getTemplate()?->load($mail->getLanguage()->getId(), $mail->getCustomerGroupID());
-        if (!$this->validator->validate($mail)) {
-            $mail->setError('Mail failed validation');
 
-            return false;
-        }
         \executeHook(\HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
             'mailsmarty'    => $this->renderer->getSmarty(),
             'mail'          => $mail,

@@ -5,7 +5,6 @@ namespace JTL\Mail;
 use JTL\Abstracts\AbstractService;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Interfaces\RepositoryInterface;
 use JTL\Mail\Attachments\AttachmentsService;
 use JTL\Mail\Mail\Mail as MailObject;
 use JTL\Mail\Mail\MailInterface;

@@ -4,9 +4,11 @@ namespace JTL\Router\Controller\Backend;
 
 use DateTimeImmutable;
 use JTL\Backend\Permissions;
+use JTL\Cron\CronService;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
+use JTL\Cron\JobQueueService;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
@@ -27,6 +29,16 @@ use stdClass;
 class CronController extends AbstractBackendController
 {
     /**
+     * @var CronService
+     */
+    protected CronService $cronService;
+
+    /**
+     * @var JobQueueService
+     */
+    protected JobQueueService $jobQueueService;
+
+    /**
      * @var LoggerInterface
      */
     private LoggerInterface $logger;
@@ -44,6 +56,8 @@ class CronController extends AbstractBackendController
         $this->logger   = Shop::Container()->getLogService();
         $this->hydrator = new JobHydrator();
         $this->getText->loadAdminLocale('pages/cron');
+        $this->cronService     = new CronService();
+        $this->jobQueueService = new JobQueueService();
     }
 
     /**
@@ -62,7 +76,7 @@ class CronController extends AbstractBackendController
             if (isset($_POST['reset'])) {
                 $updated = $this->resetQueueEntry(Request::postInt('reset'));
             } elseif (isset($_POST['delete'])) {
-                $deleted = $this->deleteQueueEntry(Request::postInt('delete'));
+                $deleted = $this->cronService->delete([Request::postInt('delete')]);
             } elseif (Request::postInt('add-cron') === 1) {
                 $inserted = $this->addQueueEntry($_POST);
                 $tab      = 'add-cron';

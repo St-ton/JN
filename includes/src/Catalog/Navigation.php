@@ -336,7 +336,8 @@ class Navigation
                             'parent' => 'bestellungen'
                         ],
                         'wl'                   => ['name' => $this->language->get('bcWishlist', 'breadcrumb')],
-                        'pass'                 => ['name' => $this->language->get('changePassword', 'login')]
+                        'pass'                 => ['name' => $this->language->get('changePassword', 'login')],
+                        'return'               => ['name' => $this->language->get('rma')],
                     ];
                     foreach ($childPages as $childPageKey => $childPageData) {
                         $currentId = Request::verifyGPCDataInt($childPageKey);

@@ -61,6 +61,7 @@
                                                    {$order->Status}
                                                 </td>
                                                 <td class="text-right-util d-none d-md-table-cell">
+                                                    <a href="{$cCanonicalURL}?return={$order->kBestellung}" class="me-2 mr-2"><i class="fa fa-retweet" aria-label="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}" title="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}"></i></a>
                                                     <i class="fa fa-eye"></i>
                                                 </td>
                                             </tr>

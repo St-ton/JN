@@ -209,6 +209,9 @@ class AccountController
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
             $step = 'lieferadressen';
         }
+        if (Request::verifyGPCDataInt('return') > 0) {
+            $step = $this->returnOrder($customerID);
+        }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0
             && Request::verifyGPDataString('editAddress') === 'neu'
         ) {
@@ -972,6 +975,27 @@ class AccountController
             );
         }
 
+        return $step;
+    }
+
+    /**
+     * @param int $customerID
+     */
+    private function returnOrder(int $customerID): string
+    {
+        $order = new Bestellung(Request::verifyGPCDataInt('return'), true);
+        if ($order->kKunde === null || (int)$order->kKunde !== $customerID) {
+            return 'login';
+        }
+        $step = 'retoure';
+        $this->smarty->assign('Bestellung', $order);
+        if (Request::verifyGPCDataInt('returnOrder') > 0) {
+            // Prüfe das RMA Formular auf Fehler und übergib eine entsprehende Nachricht an Smarty
+            // Sprachvariablen für passende Fehlermeldungen: rma_error_validquantity, rma_error_alreadysend, rma_gekennzeichnet
+            // Bei Fehler diesen loggen: Shop::Container()->getLogService()->error('');
+            // RMA in Datenbank speichern und ID in der success msg ausgeben
+            $this->alertService->addNotice(Shop::Lang()->get('rma_info_success', 'rma'), 'rma_info_success');
+        }
         return $step;
     }
 

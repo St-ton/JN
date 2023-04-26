@@ -80,6 +80,10 @@
                         {block name='account-index-include-feedback'}
                             {include file='account/feedback.tpl'}
                         {/block}
+                    {elseif $step === 'retoure'}
+                        {block name='account-index-include-order-return'}
+                            {include file='account/order_return.tpl'}
+                        {/block}
                     {else}
                         {block name='account-index-include-my-account-default'}
                             {include file='account/my_account.tpl'}

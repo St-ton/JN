@@ -174,7 +174,12 @@ class Mailer
             if (!$this->validator->validate($mail)) {
                 throw new \Exception('Mail failed validation');
             }
-            return $this->getMailService()->queueMail($mailObject);
+            $queued = $this->getMailService()->queueMail($mailObject);
+            if (\EMAIL_SEND_IMMEDIATELY === true) {
+                $this->sendQueuedMails();
+            }
+
+            return $queued;
         } catch (\Exception $e) {
             Shop::Container()->getLogService()->error('Error sending mail: ' . $e->getMessage());
         }

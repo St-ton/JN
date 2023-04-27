@@ -34,6 +34,8 @@ final class SendMailQueue extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
+        $maxJobTime = ((int)\ini_get('max_execution_time')) / 2;
+        $jobStarted = time();
         parent::start($queueEntry);
 
         $settings  = Shopsetting::getInstance();
@@ -46,8 +48,9 @@ final class SendMailQueue extends Job
             $settings,
             $validator
         );
-        $mailer->sendQueuedMails();
-
+        while (time() < ($jobStarted + $maxJobTime)) {
+            $mailer->sendQueuedMails();
+        }
 
         return $this;
     }

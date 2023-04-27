@@ -301,6 +301,11 @@ ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
 ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
 ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
 
+/**
+ * Mailqueueing
+ */
+ifndef('EMAIL_SEND_IMMEDIATELY', false);
+ifndef('EMAIL_CHUNK_SIZE', 20);
 
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;

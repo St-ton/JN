@@ -53,7 +53,7 @@ class MailService extends AbstractService
         if ($this->emailConfig === []) {
             $this->emailConfig = Shop::getSettingSection(\CONF_EMAILS);
             //ToDo: Remove when setting is created
-            $this->emailConfig['chunkSize'] = 4;
+            $this->emailConfig['chunkSize'] = \EMAIL_CHUNK_SIZE;
         }
 
         return $this->emailConfig;

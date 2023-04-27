@@ -84,7 +84,7 @@ class ControllerFactory
 
                 return $this->fail($request);
             }
-            if ($parentID > 0) {
+            if ($parentID > 0 && \count($request->getQueryParams()) === 1) {
                 $code = \is_array($_POST) && \count($_POST) > 0 ? 308 : 301;
                 $url  = Shop::getRouter()->getURLByType(
                     Router::TYPE_PRODUCT,

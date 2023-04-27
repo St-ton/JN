@@ -1,50 +1,50 @@
-Sichere Plugins schreiben
-=========================
+Writing secure plug-ins
+=======================
 
 .. |br| raw:: html
 
    <br />
 
-Plugins haben vollständigen Zugriff auf den Onlineshop. |br|
-Es ist daher unerlässlich, dass jeder Plugin-Entwickler größten Wert auf die Sicherheit der eigenen Plugins legt.
+Plug-ins have complete access to the online shop. |br|
+It is, therefore, essential that every plug-in developer places the utmost importance on the security of the plug-ins that they write.
 
-Dieser Guide soll Plugin-Entwicklern dabei helfen, ihre Plugins gemäß den gängigen Sicherheitsstandards zu entwickeln
-und die Sicherheit des gesamten Ökosystems von JTL-Shop zu stärken.
+This guide is intended to assist developers in making their plug-ins according to the most up-to-date safety standards,
+and to strengthen the security of the entire JTL-Shop ecosystem.
 
-Validierung
------------
+Validation
+----------
 
-Zunächst sollten sämtliche Eingabewerte für SQL-Queries validiert werden. |br|
-Eine Validierung der Daten ist ein erster Schritt in die richtige Richtung, um *SQL-Injections* und andere Probleme
-zu vermeiden. Allgemeine Hinweise dazu sind z. B. unter
+First, all input values for SQL queries should be validated. |br|
+Data validation is the first step in the right direction to avoid *SQL injections* and other issues.
+ You can find general tips and information about this at
 "`Testing for SQL Injection (OTG-INPVAL-005) <https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)>`_"
-zu finden.
+.
 
-Als gutes Beispiel könnten die von PHP bereitgestellten Validierungsfunktionen genutzt werden:
+A good example might be the validation functions provided by PHP:
 
 .. code-block:: php
 
     <?php
-    // validiert, dass es sich bei der Variable um eine Ganzzahl handelt.
+    // validates that the variable is an integer.
     $productId = filter_input(INPUT_POST, 'productId', FILTER_VALIDATE_INT);
     if (!$productId || $productId < 0) {
-        // Der Wert ist nicht gültig. Die Verarbeitung sollte abgebrochen werden
+        // Value is invalid. Processing should be stopped
         exit();
     }
-    // andernfalls kann mit dem Wert weitergearbeitet werden
+    // otherwise it is possible to continue working with the value
 
 
-Prepared Statements
+Prepared statements
 -------------------
 
-Die einzig wirklich sichere Variante zur Verhinderung von *SQL-Injections* ist es, ausschließlich *Prepared Statements*
-zur Parametrisierung von SQL-Queries zu verwenden. |br|
-Bei der Verwendung von *Prepared Statements* ist es unmöglich, eine *SQL-Injection* zu erzeugen. Wenn Sie sich nur
-auf die Validierung der Daten verlassen, vergessen Sie früher oder später, einen Wert ausreichend zu validieren.
-Zudem können Freitextfelder gar nicht entsprechend validiert werden.
+The only truly sure way to prevent *SQL injections* is to only use *prepared statements* for parameterization of SQL queries.
+ |br|
+When *prepared statements* are used, *SQL injections* are impossible to create. When you only depend on validation of the data,
+you will eventually forget to validate a value sufficiently.
+Moreover, free text fields cannot be validated adequately at all.
 
-JTL-Shop stellt eine einfache Möglichkeit bereit, *Prepared Statements* auszuführen. |br|
-Empfohlene Variante:
+JTL-Shop provides an easy way to execute *prepared statements*. |br|
+The recommended variant:
 
 .. code-block:: php
 
@@ -52,10 +52,10 @@ Empfohlene Variante:
 
     $db = JTL\Shop::Container()->getDB();
 
-    // validiert, dass es sich bei der Variable um eine Ganzzahl handelt.
+    // validates that the variable is an integer.
     $productId = filter_input(INPUT_POST, 'productId', FILTER_VALIDATE_INT);
     if (!$productId || $productId < 0) {
-        // Der Wert ist nicht gültig. Die Verarbeitung sollte abgebrochen werden
+        // Value is invalid. Processing should be stopped
         exit();
     }
 
@@ -70,12 +70,12 @@ Empfohlene Variante:
         JTL\DB\ReturnType::ARRAY_OF_OBJECTS
     );
 
-Hinweis zu Plugin-Zertifizierungen
-----------------------------------
+A note on plug-in certification
+-------------------------------
 
 .. important::
 
-    JTL wird nur noch Plugins **zertifizieren**, die ausschließlich *Prepared Statements* verwenden.
+    JTL will only **certify** plug-ins that exclusively use *prepared statements*
 
-Wir empfehlen daher allen Plugin-Entwicklern, den eigenen Code auf *Prepared Statements* umzustellen bzw. neuen Code
-ausschließlich mit *Prepared Statements* zu entwickeln.
+We, therefore, recommend all plug-in developers to adapt and write their own codes using *prepared statements* only.
+

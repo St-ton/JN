@@ -5,49 +5,49 @@ Hooks
 
    <br />
 
-Hooks bieten Plugins die Möglichkeit, an vordefinierten Stellen in die Ausführungslogik des Onlineshops einzugreifen
-und ggf. übergebene Daten bzw. das Ausgabedokument zu manipulieren. |br|
-Möglich ist dies an allen Stellen im Code des Onlineshops, an denen explizit die Funktion
-``executeHook(int $nHook, array $args_arr)`` ausgeführt wird.
+Hooks offer plug-ins the possibility to intervene in the execution logic of the online shop at predefined points and to
+manipulate transferred data or the output document, if necessary. |br|
+This is possible anywhere in the code of the online shop where the
+function ``executeHook(int $nHook, array $args_arr)`` is explicitly executed.
 
-Eine Liste aller verfügbaren Hooks finden Sie im Kapitel ":doc:`Liste aller Hooks </shop_plugins/hook_list>`". |br|
-Wie Sie dem Onlineshop mitteilen, welche Hooks Ihr Plugin nutzen möchte, erfahren Sie im Kapitel zur ``info.xml``
-im Abschnitt ":ref:`label_infoxml_hooks`".
+A list of all available hooks can be found in section ":doc:`List of all hooks </shop_plugins/hook_list>`”. |br|
+You can learn how to specify to the online shop which hooks your plug-in wants to use in ``info.xml``
+under section ":ref:`label_infoxml_hooks`".
 
-**Beispiel:**
+**Example:**
 
-Ausführen eines Hooks *vor dem Speichern eines News-Kommentars, in der Datenbank*:
+Execute a hook *before storing a news comment in the database*:
 
 .. code-block:: php
 
     executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => &$oNewsKommentar]);
 
-Auf diesen Hook registrierte Plugins können in der entsprechenden Hook-Datei das Array ``$args_arr`` nutzen
-und ggf. modifizieren.
+Plug-ins registered on this hook can use the array ``$args_arr`` in the relevant hook file and modify it,
+if necessary.
 
-Nutzt ein Plugin z. B. den oben genannten Hook ``HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN`` (ID 34), lässt sich
-zum Beispiel der dort übergebene Kommentar verändern.
+For example, if a plug-in uses the above-mentioned hook ``HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN`` (ID 34), the comment
+transferred there can be modified.
 
 .. code-block:: php
 
     <?php
 
     if (!empty($args_arr['comment'])) {
-        $args_arr['comment'] .= '<br>Dieser Text wird an nicht-leere Kommentare angehängt!';
+        $args_arr['comment'] .= '<br>This text is attached to non-empty comments!';
     }
 
-Ab JTL-Shop 5.x existiert eine neue Alternative zu den bekannten Hooks in JTL-Shop - der *EventDispatcher*. |br|
-Wie Sie Gebrauch von diesem neuen Feature machen, finden Sie im Kapitel "Bootstrapping"
-unter ":ref:`label_bootstrapping_eventdispatcher`".
+As of JTL-Shop 5.x, there is a new alternative to the familiar hooks in JTL-Shop - the *EventDispatcher*. |br|
+For more information on how to make use of this new feature, see
+the "Bootstrapping" section under ":ref:`label_bootstrapping_eventdispatcher`".
 
-Manipulation des DOM
---------------------
+DOM manipulation
+----------------
 
-Einer der häufigsten Anwendungsfälle ist, eigenen HTML-Code in das Ausgabedokument zu schreiben. |br|
-Hierzu dient der Hook ``HOOK_SMARTY_OUTPUTFILTER`` (ID 140). Dort kann via PHPQuery beliebiger Inhalt in den DOM
-eingefügt werden. |br|
-In einem trivialen Beispiel könnte ein Plugin den Inhalt eines Templates via Smarty rendern und
-an den Body des HTML-Dokuments anhängen:
+One of the most common application cases is to write your own HTML code into the output document. |br|
+The hook ``HOOK_SMARTY_OUTPUTFILTER`` (ID 140) is used for this purpose. There, any content can be inserted into the DOM
+via PHPQuery. |br|
+As a simple example, a plug-in could render the contents of a template via Smarty and append it
+to the body of the HTML document:
 
 .. code-block:: php
 
@@ -57,4 +57,4 @@ an den Body des HTML-Dokuments anhängen:
     pq('body')->append($smarty->fetch($template));
 
 
-Eine Übersicht über PHPQuery finden Sie in dessen `Dokumentation <https://code.google.com/archive/p/phpquery>`_.
+You can find a general overview about PHPQuery at `Documentation <https://code.google.com/archive/p/phpquery>`_.

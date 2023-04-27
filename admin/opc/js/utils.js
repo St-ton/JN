@@ -1,41 +1,10 @@
-class Subject
+export class Emitter extends EventTarget
 {
     constructor()
     {
-        this.listeners = [];
-    }
+        super();
 
-    on(cb)
-    {
-        this.listeners.includes(cb) || this.listeners.push(cb);
-    }
-
-    off(cb)
-    {
-        this.listeners.includes(cb) && this.listeners.splice(this.listeners.indexOf(cb), 1);
-    }
-
-    once(cb)
-    {
-        let tmpCB = data => {
-            cb(data);
-            this.off(tmpCB);
-        };
-
-        this.on(tmpCB);
-    }
-
-    emit(data)
-    {
-        this.listeners.slice().forEach(cb => cb(data));
-    }
-}
-
-export class Emitter
-{
-    constructor()
-    {
-        this.subjects = {};
+        this.anyEventListeners = new Set();
     }
 
     subject(name)
@@ -45,22 +14,34 @@ export class Emitter
 
     on(name, cb)
     {
-        this.subject(name).on(cb);
+        if (name === '*') {
+            this.anyEventListeners.add(cb);
+        }
+        else {
+            this.addEventListener(name, cb);
+        }
     }
 
     off(name, cb)
     {
-        this.subject(name).off(cb);
+        if (name === '*') {
+            this.anyEventListeners.delete(cb);
+        }
+        else {
+            this.removeEventListener(name, cb);
+        }
     }
 
     once(name, cb)
     {
-        this.subject(name).once(cb);
+        this.addEventListener(name, cb, true);
     }
 
     emit(name, data)
     {
-        this.subject(name).emit(data);
+        let event = Object.assign(new CustomEvent(name), {data});
+        this.dispatchEvent(event);
+        this.anyEventListeners.forEach(cb => cb(event));
     }
 }
 

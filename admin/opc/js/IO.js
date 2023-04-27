@@ -1,9 +1,11 @@
-import {capitalize} from "./utils.js";
+import {capitalize, Emitter} from "./utils.js";
 
-export class IO
+export class IO extends Emitter
 {
     constructor({jtlToken, shopUrl})
     {
+        super();
+
         this.jtlToken = jtlToken;
         this.ioUrl    = shopUrl + '/admin/io';
     }
@@ -27,10 +29,10 @@ export class IO
         return async (...args) => {
             try {
                 let result = await this.ioCall(publicName, ...args);
-                window.opc.emit('io.' + publicName + ':resolve', result);
+                this.emit(publicName + ':resolve', result);
                 return result;
             } catch (e) {
-                window.opc.emit('io.' + publicName + ':reject', e);
+                this.emit(publicName + ':reject', e);
                 throw e;
             }
         };

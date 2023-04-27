@@ -15,6 +15,8 @@ export class Editor extends Emitter
         this.io       = new IO(config);
         this.page     = new Page(this.io, config);
         this.iframe   = new EditorFrame(this.io, this.page, config);
+
+        this.io.on('*', e => this.emit('io.' + e.type, e.data));
     }
 
     async init()

@@ -5,19 +5,19 @@ Container
 
    <br />
 
-Seit JTL-Shop 5.0.0 steht im JTL-Shop ein sogenannter "*Dependency Injection Container*" zur Verfügung. |br|
-In Zukunft wird ein Großteil aller JTL-Shop-Komponenten über diesen Container bereitgestellt. Zudem kann das
-Verhalten des Onlineshops über die im Container registrierten Komponenten von Plugins modifiziert oder erweitert werden.
+Since JTL-Shop 5.0.0, a so-called "*Dependency Injection Container*" is available in the online shop. |br|
+In the future, a large part of all JTL-Shop components will be provided via this container. Additionally, the
+behaviour of the online shop can be modified or extended by plug-ins via the components registered in the container.
 
-SOLID & Dependency Inversion
+SOLID & dependency inversion
 ----------------------------
 
-Der Container dient der Umsetzung des "*Dependency Inversion Principle*".  |br|
-Zu diesem Themenkomplex gibt es viele Erklärungen im Internet. Wir empfehlen Entwicklern daher zunächst, sich mit
-*SOLID* und im Besonderen mit *Dependency Inversion* vertraut zu machen.
+The container is used to implement the "*Dependency Inversion Principle*".  |br|
+There is a wealth of information regarding this subject on the internet. Therefore, we recommend that developers first familiarise
+themselves with *SOLID* and with *dependency inversion* in particular.
 
-Container / Komponente holen
-----------------------------
+Container / Component retrieval
+-------------------------------
 
 .. code-block:: php
 
@@ -30,10 +30,10 @@ Container / Komponente holen
     $passwordService = $container->get(PasswordServiceInterface::class);
     $randomPassword  = $passwordService->generate(12);
 
-Wie hier zu sehen ist, können über den Container Dienste und andere Komponenten von JTL-Shop bezogen werden. |br|
-Der Container ist hierbei gemäß PSR-11 von der PHP-FIG entworfen (https://www.php-fig.org/psr/psr-11/).
-Für den Fall, dass Sie eine IDE mit *IntelliSense* verwenden, haben wir zudem für alle von JTL-Shop bereitgestellten
-Komponenten eine Methode zum Container hinzugefügt.
+As you can see, services and other components of JTL-Shop can be obtained via the container. |br|
+The container is designed by the PHP-FIG according to PSR-11 (https://www.php-fig.org/psr/psr-11/).
+In case you are using an IDE with *IntelliSense*, we have also added a method to the container for all components
+provided by JTL-Shop.
 
 .. code-block:: php
 
@@ -46,14 +46,14 @@ Komponenten eine Methode zum Container hinzugefügt.
     $passwordService = $container->getPasswordService();
     $randomPassword  = $passwordService->generate(12);
 
-Welche Komponenten vom JTL-Shop bereitgestellt werden, können Sie anhand der verfügbaren Methoden des Interfaces
-``/includes/src/Services/DefaultServicesInterface.php`` einsehen.
+You can see which components are provided by the JTL-Shop by using the available methods of the
+``/includes/src/Services/DefaultServicesInterface.php`` interface.
 
-Existenz prüfen
-"""""""""""""""
+Testing for existence
+"""""""""""""""""""""
 
-Wenn Sie prüfen wollen, ob eine Komponente bereitsteht, können Sie dies wie folgt tun. |br|
-(Hinweis: Alle in ``DefaultServicesInterface`` definierten Komponenten sind immer verfügbar.)
+If you want to see if a component is available, you can do the following. |br|
+(Note: All components defined in ``DefaultServicesInterface`` are always available.)
 
 .. code-block:: php
 
@@ -63,15 +63,15 @@ Wenn Sie prüfen wollen, ob eine Komponente bereitsteht, können Sie dies wie fo
 
     $container = Shop::Container();
     if ($container->has(PasswordServiceInterface::class)) {
-        // die komponente existiert
+        // component exists
     }
 
-Eigenen Komponente registrieren
--------------------------------
+Registering custom components
+-----------------------------
 
-Sie haben die Möglichkeit, eigene Komponenten im Container zu registrieren. |br|
-Hierzu benötigen Sie zunächst eine Klasse, die Sie bereitstellen wollen. Wir empfehlen, für jede Komponente ein
-Interface oder eine abstrakte Klasse zu erstellen. Nur so kann das *Decorator Pattern* eingesetzt werden (siehe unten).
+You have the option to register custom components in the container. |br|
+For this, you first need a class that you want to provide. We recommend that you create an interface
+or abstract class for each component. Only then can the *decorator pattern* be implemented (see below)
 
 .. code-block:: php
 
@@ -90,7 +90,7 @@ Interface oder eine abstrakte Klasse zu erstellen. Nur so kann das *Decorator Pa
         }
     }
 
-Nun können Sie die entsprechende Komponente im Container registrieren:
+Now, you can register the relevant component in the container:
 
 .. code-block:: php
 
@@ -101,7 +101,7 @@ Nun können Sie die entsprechende Komponente im Container registrieren:
         return new HelloWorldGenerator();
     });
 
-Nun steht die Komponente über den Container bereit und kann wie folgt abgerufen werden:
+Now, the component is available via the container and can be retrieved as follows:
 
 .. code-block:: php
 
@@ -109,19 +109,19 @@ Nun steht die Komponente über den Container bereit und kann wie folgt abgerufen
 
     $container           = JTL\Shop::Container();
     $HelloWorldGenerator = $container->get(HelloWorldInterface::class);
-    $HelloWorldGenerator->get(); // "Hello World" wird ausgegeben
+    $HelloWorldGenerator->get(); // "Hello World" will be output
 
-Komponenten überschreiben
--------------------------
+Overwriting components
+----------------------
 
-Sie können alle im Container registrierten Komponenten ersetzen. |br|
-Voraussetzung hierfür ist, dass Sie das genutzte Interface implementieren oder, im Falle einer abstrakten Klasse, von
-dieser erben. |br|
+You can replace all registered components in the container. |br|
+The requirement for this is that you implement the interface used or, in the case of an abstract class, that it be inherited from
+the class. |br|
 
 .. attention::
-    Wenn Sie Komponenten überschreiben, gilt dies für den gesamten Onlineshop! |br|
-    Seien Sie also bitte vorsichtig und überschreiben Sie nur dann Komponenten, wenn Ihre Implementation zuverlässig
-    funktioniert.
+    When you overwrite a component, this will apply to the entire online shop! |br|
+    So, be sure to use caution and only overwrite components if your implementation works
+    reliably.
 
 .. code-block:: php
 
@@ -140,19 +140,19 @@ dieser erben. |br|
         return new TrimmedHelloWorldGenerator();
     });
 
-Komponenten erweitern (*Decorator Pattern*)
--------------------------------------------
+Extending components (*decorator pattern*)
+------------------------------------------
 
-Sie können sämtliche über den Container bereitstehenden Komponenten (falls eine abstrakte Klasse oder ein Interface
-bereitsteht) mit Hilfe des *Decorator Pattern* erweitern.
+You can extend all components available via the container, if an abstract class or interface is
+available, using the *decorator pattern*.
 
-Hierzu ein Beispiel, das den "*HelloWorldContainer*" erweitert:
+Here is an example that extends the "*HelloWorldContainer*":
 
 .. code-block:: php
 
     <?php
 
-    // Decorator Class
+    // Decorator class
     class TrimmingHelloWorldGeneratorDecorator implements HelloWorldGeneratorInterface
     {
         protected $inner;
@@ -168,7 +168,7 @@ Hierzu ein Beispiel, das den "*HelloWorldContainer*" erweitert:
         }
     }
 
-    // Register Decorator
+    // Register decorator
 
     $container = Shop::Container();
     $originalFactoryMethod = $container->getFactory(HelloWorldGeneratorInterface::class);
@@ -178,16 +178,16 @@ Hierzu ein Beispiel, das den "*HelloWorldContainer*" erweitert:
     });
 
 
-    // Use Component
+    // Use component
     $helloWorldGenerator = $container->get(HelloWorldGeneratorInterface::class);
     echo $helloWordGenerator->get(); // return "Hello World" instead of " Hello World "
 
 
-Factory oder Singleton
-----------------------
+Factory or singleton
+--------------------
 
-Wenn Sie eine Komponente im Container registrieren, haben Sie die Möglichkeit, zwischen einer *Factory* und
-einem *Singleton* zu wählen.
+When you register a component in the container, you have the option to choose between *factory* and
+*singleton* patterns.
 
 .. code-block:: php
 
@@ -195,13 +195,13 @@ einem *Singleton* zu wählen.
     $container = JTL\Shop::Container();
 
     $container->setSingleton(HelloWorldGeneratorInterface::class, function() { /*...*/ });
-    // oder
+    // or
     $container->setFactory(HelloWorldGeneratorInterface::class, function() { /*...*/ });
 
-Nicht zu verwechseln ist dies mit der sogenannten "*Factory Method*"! |br|
-Sowohl ein *Singleton* als auch eine *Factory* benötigen eine *Factory Method*, welche die Erzeugung des jeweiligen
-Objektes übernimmt. Die *Factory Method* kann sowohl für ein *Singleton* als auch für eine *Factory* auf die gleiche
-Weise geholt werden:
+This is not to be confused with the “*factory method*"! |br|
+Both a *singleton* and a *factory* need a *factory method* to take over the creation of the
+relevant object. The *factory method* can be retrieved for both a *singleton* and a *factory* using the
+same approach:
 
 .. code-block:: php
 
@@ -209,18 +209,18 @@ Weise geholt werden:
     $container = Shop::Container();
     $factoryMethod = $container->getFactoryMethod(HelloWorldGeneratorInterface::class);
 
-Bei einem *Singleton* wird die *Factory Method* nur ein einziges Mal abgerufen und nur ein einziges Objekt existiert
-applikationsweit. Bei einer *Factory* wird die *Factory Method* bei jedem Abruf erneut aufgerufen und ein neues Objekt
-erzeugt.
+With a *singleton*, the *factory method* is called up only once and only one
+object exists application-wide. With a *factory*, the *factory method* is called again with each call and a new object
+is created.
 
-Hook zum Registrieren, Erweitern oder Überschreiben von Komponenten
--------------------------------------------------------------------
+Hook for registration, extension, or overwriting of components
+--------------------------------------------------------------
 
-Komponenten müssen möglichst früh registriert, erweitert oder überschrieben werden, da ansonsten Inkonsistenzen
-auftreten können. Daher sollte der Hook ``HOOK_GLOBALINCLUDE_INC`` (131) genutzt werden.
+Components must be registered, extended, or overwritten as soon as possible, otherwise inconsistencies
+can occur. Therefore, the ``HOOK_GLOBALINCLUDE_INC`` (131) hook should be used for this.
 
 .. note::
 
-    Manche Komponenten können nicht überschrieben werden, da diese schon im Voraus genutzt wurden.
+    Some components cannot be overwritten because they have already been used previously.
 
-Beispielsweise ist die Komponente "*DbInterface*" nicht überschreibbar.
+For example, the "*DbInterface*” component cannot be overwritten.

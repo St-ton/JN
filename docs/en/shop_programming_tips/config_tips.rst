@@ -1,78 +1,79 @@
-Konfigurations-Tips
+Configuration Tips
 ===================
 
 .. |br| raw:: html
 
    <br />
 
-Die folgenden *Defines* für die ``config.JTL-Shop.ini.php`` wurden eingeführt, um die Entwicklungsarbeit zu
-vereinfachen, das Debugging zu verbessern oder die Konfiguration von Parametern zu ermöglichen, ohne Core-Dateien zu
-bearbeiten:
+The following *define functions* for the ``config.JTL-Shop.ini.php`` have been deployed in order to make
+development easier, to improve debugging, or to enable the configuration of parameters, without having to edit core
+files:
 
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| Konstante                               | Zweck                                                                                         |
+| Constant                               | Purpose                                                                                        |
 +=========================================+===============================================================================================+
-| ``DB_SOCKET``                           | erlaubt die Definition eines Sockets zur Verbindung mit der DB                                |
+| ``DB_SOCKET``                           | allows the definition of a socket to connect to the database                                  |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SHOP_LOG_LEVEL``                      | definiert den Wert für error_reporting im Frontend                                            |
-|                                         | (beispielsweise ``E_ALL`` oder ``0``)                                                         |
+| ``SHOP_LOG_LEVEL``                      | defines the value for error_reporting in the front end                                        |
+|                                         | (for example ``E_ALL`` or ``0``)                                                              |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SYNC_LOG_LEVEL``                      | definiert Fehleranzeige in *dbeS*                                                             |
+| ``SYNC_LOG_LEVEL``                      | defines error display in *dbeS*                                                               |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``ADMIN_LOG_LEVEL``                     | definiert Fehleranzeige im Backend                                                            |
+| ``ADMIN_LOG_LEVEL``                     | defines error display in the back end                                                         |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SMARTY_LOG_LEVEL``                    | definiert Fehleranzeige in *Smarty* - insbesondere wichtig                                    |
-|                                         | für die Template-Entwicklung                                                                  |
+| ``SMARTY_LOG_LEVEL``                    | defines error display in *Smarty* - particularly important                                    |
+|                                         | for template development                                                                      |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``PROFILE_SHOP``                        | aktiviert den Profiler *XHprof*                                                               |
+| ``PROFILE_SHOP``                        | activates the *XHprof* profiler                                                               |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``PROFILE_QUERIES``                     | erlaubt das Debugging von SQL-Queries                                                         |
+| ``PROFILE_QUERIES``                     | allows debugging of SQL queries                                                               |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``PROFILE_QUERIES_ECHO``                | gibt eine Statistik über Abfragen auf jeder Seite aus,                                        |
-|                                         | wenn DEBUG_QUERIES gesetzt ist                                                                |
+| ``PROFILE_QUERIES_ECHO``                | provides statistics about the number of queries on each page,                                 |
+|                                         | if DEBUG_QUERIES is set                                                                       |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``DEBUG_LEVEL``                         | konfiguriert die Verbosity dieser Debug-Ausgabe                                               |
+| ``DEBUG_LEVEL``                         | configures the verbosity of this debug output                                                 |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SMARTY_USE_SUB_DIRS``                 | kann die Verwendung von Unterordnern für kompilierte Smarty-Templates                         |
-|                                         | aktivieren                                                                                    |
+| ``SMARTY_USE_SUB_DIRS``                 | can activate use of sub-directories for complied Smarty templates                             |
+|                                         |                                                                                               |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``JOBQUEUE_LIMIT_M_EXPORTE``            | konfiguriert die Exporte - wichtig, wenn Cronjob genutzt wird                                 |
+| ``JOBQUEUE_LIMIT_M_EXPORTE``            | configures exports- this is important, if Cronjob is used                                     |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``JOBQUEUE_LIMIT_JOBS``                 | konfiguriert die Exporte - wichtig, wenn Cronjob genutzt wird                                 |
+| ``JOBQUEUE_LIMIT_JOBS``            | configures exports- this is important, if Cronjob is used                                          |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SAVE_BOT_SESSION``                    | erstellt neue Sessions pro Bot-Aufruf                                                         |
-|                                         | (siehe auch: :doc:`botsessions` )                                                             |
+| ``SAVE_BOT_SESSION``                    | creates new sessions for every bot call command                                               |
+|                                         | (See more: :doc:`botsessions` )                                                               |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``PROFILE_PLUGINS``                     | vom Typ BOOL, aktiviert den Plugin-Profiler, der im Backend unter ``admin/profiler.php`` |br| |
-|                                         | die Laufzeiten einzelner Hooks und Dateien aufbereitet ausgibt                                |
+| ``PROFILE_PLUGINS``                     | of BOOL data type. Activates the plug-in profiler, which outputs the runtimes of |br|         |
+|                                         | individual hooks and files in the back end under ``admin/profiler.php``                       |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``FILTER_SQL_QUERIES``                  | filtert Duplikate beim SQL-Debugging aus                                                      |
+| ``FILTER_SQL_QUERIES``                  | filters out duplicates during SQL debugging                                                   |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``NICEDB_EXCEPTION_BACKTRACE``          | gibt den kompletten Backtrace einer NiceDB-Exception aus                                      |
+| ``NICEDB_EXCEPTION_BACKTRACE``          | outputs the entire back trace of a NiceDB exception                                           |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``NICEDB_EXCEPTION_ECHO``               | gibt den Exception-Message-String aus                                                         |
+| ``NICEDB_EXCEPTION_ECHO``               | outputs the exception message string                                                          |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``ADMIN_MIGRATION``                     | ermöglicht die Anzeige aller DB-Migrationen im Backend                                        |
+| ``ADMIN_MIGRATION``                     | allows the display of all database migrations in the back end                                 |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``NICEDB_DEBUG_STMT_LEN``               | legt die Länge der mit ``PROFILE_QUERIES`` ausgegebenen SQL-Queries fest |br|                 |
-|                                         | (default: 500 Zeichen)                                                                        |
+| ``NICEDB_DEBUG_STMT_LEN``               | establishes the length of the SQL queries that have been output with ``PROFILE_QUERIES`` |br| |
+|                                         | (default: 500 characters)                                                                     |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``KEEP_SYNC_FILES``                     | vom letzten Wawi-Sync gesendete Dateien werden nicht gelöscht                                 |
+| ``KEEP_SYNC_FILES``                     | files sent during the last Wawi synchronisation will not be deleted                           |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SHOW_DEBUG_BAR``                      | blendet im Frontend die PHP-Debug-Bar ein (siehe auch: Abschnitt :ref:`label_debugbar` )      |
+| ``SHOW_DEBUG_BAR``                      | shows the PHP debug bar in the front end (See more: Section :ref:`label_debugbar` )           |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
-| ``SAFE_MODE``                           | deaktiviert alle Plugins und aus Plugins stammende Elemente (Portlets, Widgets, Payment etc.) |
+| ``SAFE_MODE``                           | deactivates all plug-ins and any elements derived from plug-ins (Portlets, Widgets, Payment   |
+|                                         | etc.)                                                                                         |
 +-----------------------------------------+-----------------------------------------------------------------------------------------------+
 
-**Komplettes Beispiel:**
+**Example:**
 
-Im folgenden Beispiel sind **ALLE** möglichen Konstanten aufgelistet, um zu veranschaulichen, welche Werte sie
-annehmen können.
+In the following example, **ALL** possible constants have been listed, in order to illustrate which values can
+be accepted.
 
 .. caution::
 
-    Dieses Beispiel ist nicht dazu gedacht, unangepasst in einen laufenden Onlineshop übernommen zu werden! |br|
-    Bitte verfahren Sie mit diesen Konstanten sehr vorsichtig, da hier mitunter sehr viele Daten ausgegeben werden!
+    This example is not meant to be applied without adjustment to a currently operating online store! |br|
+    Please proceed very carefully with these constants, as sometimes a lot of data is output here!
 
 .. code-block:: php
 
@@ -94,7 +95,7 @@ annehmen können.
 
     // All of the following constants should normally not be used in productive environments!
 
-    // enables printing of all warnings/infos/errors for the shop frontend
+    // enables printing of all warnings/infos/errors for the shop front end
     define('SHOP_LOG_LEVEL', E_ALL);
 
     // enables printing of all warnings/infos/errors for the dbeS sync
@@ -122,7 +123,7 @@ annehmen können.
     // enable/disable debugging for class.core.NiceDB
     define('PROFILE_QUERIES', false);
 
-    // (don't) echo ouput into frontend
+    // (don't) echo ouput into front end
     define('PROFILE_QUERIES_ECHO', false);
 
     // debug granularity
@@ -141,7 +142,7 @@ annehmen können.
     // keep sync files after WaWi-synchronization
     define('KEEP_SYNC_FILES', true);
 
-    // filtert duplikate beim sql-debugging
+    // filters duplicates during sql-debugging
     define('FILTER_SQL_QUERIES', true);
 
     // show all DB-migrations

@@ -1,17 +1,17 @@
-Variablen
+Variables
 =========
 
 .. |br| raw:: html
 
    <br />
 
-*Plugin-Variablen* stehen dem Plugin-Entwickler im Front- und Backend des Onlineshops sowie in jeder vom Plugin verwalteten
-Datei zur Verfügung. |br|
-Alle unten aufgelisteten *Plugin-Variablen* sind in JTL-Shop 3 und 4 *Member* des globalen Objekts ``$oPlugin``.
+*Plug-in variables* are available to the plug-in developer in the front and back ends of the online shop, as well as in every file managed
+by a plug-in. |br|
+All *plug-in variables* listed below are *members* of the global object ``$oPlugin`` in JTL-Shop 3 and 4.
 
-**Beispiel:**
+**Example:**
 
-Ausgabe des Pluginnamens
+Plug-in name output
 
 .. code-block:: php
 
@@ -19,15 +19,15 @@ Ausgabe des Pluginnamens
 
 .. attention::
 
-    *Ab JTL-Shop 5.0.0* werden diese Variablen nur noch aus Kompatibilitätsgründen bereitgestellt. Ein Zugriff auf
-    sie erzeugt eine PHP-Meldung des Typs ``E_USER_DEPRECATED``.
+    *As of JTL-Shop 5.0.0* these variables are only provided for compatibility reasons. Accessing them
+    will produce a ``E_USER_DEPRECATED`` type error.
 
-Nutzen Sie **ab JTL-Shop 5.0** daher das Interface ``JTL\Plugin\PluginInterface``. |br|
-Die entsprechenden *Getter* sind in der Spalte *Methode* dokumentiert.
+Therefore, **as of JTL-Shop 5.0** use only the ``JTL\Plugin\PluginInterface`` interface. |br|
+The corresponding *getters* are documented in the *methods* column.
 
-**Beispiel:**
+**Example:**
 
-in der PHP-Datei eines Frontend-Links
+in the PHP file of a front end link
 
 .. code-block:: php
 
@@ -35,93 +35,93 @@ in der PHP-Datei eines Frontend-Links
         'pluginName' => $plugin->getMeta()->getName()
     ]);
 
-in einem Frontend-Template
+in a front end template
 
 .. code-block:: smarty
 
    {$plugin->getMeta()->getName()}
 
 
-Von den allgemeinen Informationen des Plugins über Sprachvariablen bis hin zu den Einstellungen des Plugins sind alle
-Variablen über die hier aufgeführten Methoden erreichbar.
+All variables are accessible via the methods listed here, from the plug-in's general information to language variables
+and plug-in settings.
 
 
-Klassenvariablen
-----------------
+Class variables
+---------------
 
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| Klassenvariable                      | Methode                                           | Funktionalität                                                                              |
+| Class variable                       | Methods                                           | Functions                                                                                   |
 +======================================+===================================================+=============================================================================================+
-| ``$kPlugin``                         | ``getID(): int``                                  | Eindeutiger Plugin-Key                                                                      |
+| ``$kPlugin``                         | ``getID(): int``                                  | Unique plug-in key                                                                          |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$nStatus``                         | ``getState(): int``                               | Plugin-Status                                                                               |
-|                                      |                                                   | (1 = Deaktiviert, 2 = Aktiviert und Installiert, 3 = Fehlerhaft, 4 = Update fehlgeschlagen) |
+| ``$nStatus``                         | ``getState(): int``                               | Plug-in status                                                                              |
+|                                      |                                                   | (1 = Deactivated, 2 = Activated and installed, 3 = Faulty, 4 = Update failed)               |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$nVersion``                        | ``getMeta()->getVersion(): Version``              | Plugin-Version                                                                              |
+| ``$nVersion``                        | ``getMeta()->getVersion(): Version``              | Plug-in version                                                                             |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$icon``                            | ``getMeta()->getIcon(): string``                  | Dateiname des Icons                                                                         |
+| ``$icon``                            | ``getMeta()->getIcon(): string``                  | Icon file name                                                                              |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
 | ``$nXMLVersion``                     | ---                                               | XML-Version                                                                                 |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$nPrio``                           | ``getPriority(): int``                            | Priorität bei Plugins mit gleichem Autor                                                    |
+| ``$nPrio``                           | ``getPriority(): int``                            | Priority for plug-ins with the same author                                                  |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cName``                           | ``getMeta()->getName(): string``                  | Name des Plugins                                                                            |
+| ``$cName``                           | ``getMeta()->getName(): string``                  | Plug-in name                                                                                |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cBeschreibung``                   | ``getMeta()->getDescription(): string``           | Plugin-Beschreibung                                                                         |
+| ``$cBeschreibung``                   | ``getMeta()->getDescription(): string``           | Plug-in description                                                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cAutor``                          | ``getMeta()->getAuthor(): string``                | Plugin-Autor                                                                                |
+| ``$cAutor``                          | ``getMeta()->getAuthor(): string``                | Plug-in author                                                                              |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cURL``                            | ``getMeta()->getURL(): string``                   | URL zum Plugin-Hersteller                                                                   |
+| ``$cURL``                            | ``getMeta()->getURL(): string``                   | URL to the plug-in creator                                                                  |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cVerzeichnis``                    | ``getPaths()->getBaseDir(): string``              | Plugin-Verzeichnis                                                                          |
+| ``$cVerzeichnis``                    | ``getPaths()->getBaseDir(): string``              | Plug-in directory                                                                           |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cPluginID``                       | ``getPluginID(): string``                         | Einmalige Plugin-ID                                                                         |
+| ``$cPluginID``                       | ``getPluginID(): string``                         | One-time plug-in ID                                                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cLizenz``                         | ``getLicense()->getKey(): string``                | Konfigurierter Lizenzschlüssel                                                              |
+| ``$cLizenz``                         | ``getLicense()->getKey(): string``                | Configured licence key                                                                      |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cLizenzKlasse``                   | ``getLicense()->getClassName(): string``          | Name der Lizenzklasse                                                                       |
+| ``$cLizenzKlasse``                   | ``getLicense()->getClassName(): string``          | Licence class name                                                                          |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cLicencePfad``                    | ``getLicense()->getClass(): string``              | Physischer Pfad auf dem Server zum Ordner *license*                                         |
+| ``$cLicencePfad``                    | ``getLicense()->getClass(): string``              | Physical path to the *licence* folder in the server                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cLicencePfadURL``                 | ---                                               | Vollständige URL zum Ordner *license*                                                       |
+| ``$cLicencePfadURL``                 | ---                                               | Complete URL to *license* folder                                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cLicencePfadURLSSL``              | ---                                               | Vollständige URL via https zum Ordner *license*                                             |
+| ``$cLicencePfadURLSSL``              | ---                                               | Complete URL via https to *license* folder                                                  |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cFrontendPfad``                   | ``getPaths()->getFrontendPath(): string``         | Physischer Pfad auf dem Server zum Ordner *frontend*                                        |
+| ``$cFrontendPfad``                   | ``getPaths()->getFrontendPath(): string``         | Physical path to the *front end* folder in the server                                       |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cFrontendPfadURL``                | ``getPaths()->getFrontendURL(): string``          | Vollständige URL zum Ordner *frontend*                                                      |
+| ``$cFrontendPfadURL``                | ``getPaths()->getFrontendURL(): string``          | Complete URL to the *front end* folder                                                      |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cFrontendPfadURLSSL``             | ``getPaths()->getFrontendURL(): string``          | Vollständige URL via https zum Ordner *frontend*                                            |
+| ``$cFrontendPfadURLSSL``             | ``getPaths()->getFrontendURL(): string``          | Complete URL via https to the *front end* folder                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cAdminmenuPfad``                  | ``getPaths()->getAdminPath(): string``            | Physischer Pfad auf dem Server zum Ordner *adminmenu*                                       |
+| ``$cAdminmenuPfad``                  | ``getPaths()->getAdminPath(): string``            | Physical path to the *admin menu* folder in the server                                      |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$cAdminmenuPfadURLSSL``            | ``getPaths()->getAdminURL(): string``             | Vollständige URL zum SSL-gesicherten Ordner *adminmenu*                                     |
+| ``$cAdminmenuPfadURLSSL``            | ``getPaths()->getAdminURL(): string``             | Complete URL to the SSL-secured *admin menu* folder                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$dZuletztAktualisiert``            | ``getMeta()->getDateLastUpdate(): DateTime``      | Letztes Aktualisierungsdatum                                                                |
+| ``$dZuletztAktualisiert``            | ``getMeta()->getDateLastUpdate(): DateTime``      | Date of last update                                                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$dInstalliert``                    | ``getMeta()->getDateInstalled(): DateTime``       | Installationsdatum                                                                          |
+| ``$dInstalliert``                    | ``getMeta()->getDateInstalled(): DateTime``       | Date of installation                                                                        |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$dErstellt``                       | ``getMeta()->getDateInstalled(): DateTime``       | Erstellungsdatum                                                                            |
+| ``$dErstellt``                       | ``getMeta()->getDateInstalled(): DateTime``       | Date of creation                                                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginHook_arr``                 | ``getHooks(): array``                             | Array mit Hooks                                                                             |
+| ``$oPluginHook_arr``                 | ``getHooks(): array``                             | Array with hooks                                                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginAdminMenu_arr``            | ``getAdminMenu()->getItems: array``               | Array mit Adminmenüs                                                                        |
+| ``$oPluginAdminMenu_arr``            | ``getAdminMenu()->getItems: array``               | Array with admin menus                                                                      |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginEinstellung_arr``          | ``getConfig()->getOptions(): Collection``         | Array mit gesetzten Einstellungen                                                           |
+| ``$oPluginEinstellung_arr``          | ``getConfig()->getOptions(): Collection``         | Array with set settings                                                                     |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginEinstellungConf_arr``      | ``getConfig()->getOptions(): Collection``         | Array mit Einstellungen                                                                     |
+| ``$oPluginEinstellungConf_arr``      | ``getConfig()->getOptions(): Collection``         | Array with settings                                                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginEinstellungAssoc_arr``     | ``getConfig()->getOptions(): Collection``         | Assoziatives Array mit gesetzten Einstellungen                                              |
+| ``$oPluginEinstellungAssoc_arr``     | ``getConfig()->getOptions(): Collection``         | Associative array with set settings                                                         |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
 | ---                                  | ``getConfig()->getValue(<ValueName>): mixed``     | Wert einer einzelnen Einstellung                                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginSprachvariable_arr``       | ``getLocalization()->getTranslations(): array``   | Assoziatives Array mit Sprachvariablen                                                      |
+| ``$oPluginSprachvariable_arr``       | ``getLocalization()->getTranslations(): array``   | Associative array with language variables                                                   |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginFrontendLink_arr``         | ``getLinks()->getLinks(): Collection``            | Array mit Frontend-Links                                                                    |
+| ``$oPluginFrontendLink_arr``         | ``getLinks()->getLinks(): Collection``            | Array with front end links                                                                  |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginZahlungsmethode_arr``      | ``getPaymentMethods()->getMethods(): array``      | Array mit Zahlungsmethoden                                                                  |
+| ``$oPluginZahlungsmethode_arr``      | ``getPaymentMethods()->getMethods(): array``      | Array with payment methods                                                                  |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$oPluginZahlungsmethodeAssoc_arr`` | ``getPaymentMethods()->getMethodsAssoc(): array`` | Assoziatives Array mit Zahlungsmethoden                                                     |
+| ``$oPluginZahlungsmethodeAssoc_arr`` | ``getPaymentMethods()->getMethodsAssoc(): array`` | Associative array with payment methods                                                      |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
 | ``$dInstalliert_DE``                 | ---                                               | Lokalisiertes Installationsdatum                                                            |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
@@ -131,9 +131,9 @@ Klassenvariablen
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
 | ``$nCalledHook``                     | ---                                               | ID des aktuell ausgeführten Hooks                                                           |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$pluginCacheID``                   | ``getCache()->getID(): string``                   | Individuelle Cache-ID zur Nutzung des Objekt-Caches                                         |
+| ``$pluginCacheID``                   | ``getCache()->getID(): string``                   | Individual cache ID for use of the object cache                                             |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
-| ``$pluginCacheGroup``                | ``getCache()->getGroup(): string``                | Individuelle Cache-Gruppe zur Nutzung des Objekt-Caches                                     |
+| ``$pluginCacheGroup``                | ``getCache()->getGroup(): string``                | Individual cache group for use of the object cache                                          |
 +--------------------------------------+---------------------------------------------------+---------------------------------------------------------------------------------------------+
 
 
@@ -143,76 +143,76 @@ Arrays
 oPluginHook_arr
 """""""""""""""
 
-Dieses Array beinhaltet alle durch das Plugin genutzten Hooks.
+This array contains all the hooks used via the plug-in.
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginHook``, ``kPlugin``, ``nHook``, ``cDateiname``
 
 +-----------------+----------------------------------------------+
-| Member          | Funktionalität                               |
+| Member          | Function                                     |
 +=================+==============================================+
-| ``kPluginHook`` | Eindeutiger Hook-Key                         |
+| ``kPluginHook`` | Unique hook key                              |
 +-----------------+----------------------------------------------+
-| ``kPlugin``     | Eindeutiger Plugin-Key                       |
+| ``kPlugin``     | Unique plug-in key                           |
 +-----------------+----------------------------------------------+
-| ``nHook``       | Hook-ID                                      |
+| ``nHook``       | Hook ID                                      |
 +-----------------+----------------------------------------------+
-| ``cDateiname``  | Dateiname, der bei ``nHook`` ausgeführt wird |
+| ``cDateiname``  | File name executed with ``nHook``            |
 +-----------------+----------------------------------------------+
 
 oPluginAdminMenu_arr
 """"""""""""""""""""
 
-Array mit allen Backend-Links
+Array with all back end links
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginAdminMenu``, ``kPlugin``, ``cName``, ``cDateiname``, ``nSort``, ``nConf``
 
 +----------------------+-----------------------------------------------+
-| Member               | Funktionalität                                |
+| Member               | Function                                      |
 +======================+===============================================+
-| ``kPluginAdminMenu`` | Eindeutiger Plugin-Adminmenu-Key              |
+| ``kPluginAdminMenu`` | Unique plug-in admin menu key                 |
 +----------------------+-----------------------------------------------+
-| ``kPlugin``          | Eindeutiger Plugin-Key                        |
+| ``kPlugin``          | Unique plug-in key                            |
 +----------------------+-----------------------------------------------+
-| ``cName``            | Name des Admin-Tabs                           |
+| ``cName``            | Admin tab name                                |
 +----------------------+-----------------------------------------------+
-| ``nSort``            | Sortierungsnummer des Admin-Tabs              |
+| ``nSort``            | Admin tab sorting number                      |
 +----------------------+-----------------------------------------------+
-| ``nConf``            | 0 = Custom Link auf cDateiname / 1 = Settings |
+| ``nConf``            | 0 = Custom link to cDateiname / 1 = Settings |
 +----------------------+-----------------------------------------------+
 
 
 oPluginEinstellung_arr
 """"""""""""""""""""""
 
-Array mit allen gesetzten Einstellungen des Plugins
+Array with all set plug-in settings
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPlugin``, ``cName``, ``cWert``
 
 +-------------+-------------------------------------------+
-| Member      | Funktionalität                            |
+| Member      | Function                                  |
 +=============+===========================================+
-| ``kPlugin`` | Eindeutiger Plugin-Key                    |
+| ``kPlugin`` | Unique plug-in key                        |
 +-------------+-------------------------------------------+
-| ``cName``   | Eindeutiger Einstellungsname der Variable |
+| ``cName``   | Unique setting name of variable           |
 +-------------+-------------------------------------------+
-| ``cWert``   | Wert der Variable                         |
+| ``cWert``   | Variable value                            |
 +-------------+-------------------------------------------+
 
 oPluginEinstellungAssoc_arr
 """""""""""""""""""""""""""
 
-Assoziatives Array mit Einstellungen
+Associative array with settings
 
-Der Unterschied zum obigen Array besteht darin, dass die jeweiligen Einstellungen assoziativ mit ihrem *ValueName*
-angesprochen werden können.
+The difference with the array above is that the respective settings can be called up associatively
+with their *ValueName*.
 
-**Beispiel:**
+**Example:**
 
 JTL-Shop 4
 
@@ -222,7 +222,7 @@ JTL-Shop 4
         //...
     }
 
-**Beispiel:**
+**Example:**
 
 JTL-Shop 5
 
@@ -233,223 +233,223 @@ JTL-Shop 5
     }
 
 
-Typ: *Assoziatives Array*
+Type: *Associative array*
 
 Key: ``cName`` |br|
-Wert: ``cWert``
+Value: ``cWert``
 
 +-----------+-------------------+
-| Member    | Funktionalität    |
+| Member    | Function          |
 +===========+===================+
-| ``cWert`` | Wert der Variable |
+| ``cWert`` | Variable value    |
 +-----------+-------------------+
 
 
 oPluginEinstellungConf_arr
 """"""""""""""""""""""""""
 
-Array mit Einstellungsoptionen
+Array with settings options
 
-Diese Optionen werden im Backend unter dem jeweiligen Settings-Link angezeigt und können dort als Einstellung
-gesetzt werden.
+These options are displayed in the back end under the respective settings link and can be set
+there as a setting.
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginEinstellungenConf``, ``kPlugin``, ``kPluginAdminMenu``, ``cName``, ``cBeschreibung``,
 ``cWertName``, ``cInputTyp``, ``nSort``, ``cConf``, ``oPluginEinstellungenConfWerte_arr``
 
 +---------------------------------------+----------------------------------------------+
-| Member                                | Funktionalität                               |
+| Member                                | Function                                     |
 +=======================================+==============================================+
-| ``kPluginEinstellungenConf``          | Eindeutiger Plugin-Einstellungs-Key          |
+| ``kPluginEinstellungenConf``          | Unique plug-in settings key                  |
 +---------------------------------------+----------------------------------------------+
-| ``kPlugin``                           | Eindeutiger Plugin-Key                       |
+| ``kPlugin``                           | Unique plug-in key                           |
 +---------------------------------------+----------------------------------------------+
-| ``kPluginAdminMenu``                  | Eindeutiger Plugin-Adminmenu-Key             |
+| ``kPluginAdminMenu``                  | Unique plug-in admin menu key                |
 +---------------------------------------+----------------------------------------------+
-| ``cName``                             | Name der Einstellung                         |
+| ``cName``                             | Setting name                                 |
 +---------------------------------------+----------------------------------------------+
-| ``cBeschreibung``                     | Beschreibung der Einstellung                 |
+| ``cBeschreibung``                     | Setting description                          |
 +---------------------------------------+----------------------------------------------+
-| ``cWertName``                         | Wert der Variable                            |
+| ``cWertName``                         | Variable value                               |
 +---------------------------------------+----------------------------------------------+
-| ``cInputTyp``                         | Typ der Variable (text, zahl, selectbox,...) |
+| ``cInputTyp``                         | Variable type (text, number, select box,...) |
 +---------------------------------------+----------------------------------------------+
-| ``nSort``                             | Sortierung der Einstellung                   |
+| ``nSort``                             | Setting sorting                              |
 +---------------------------------------+----------------------------------------------+
-| ``cConf``                             | Y = Einstellung / N = Überschrift            |
+| ``cConf``                             | Y = Setting / N = Heading                    |
 +---------------------------------------+----------------------------------------------+
-| ``oPluginEinstellungenConfWerte_arr`` | Array von Optionswerten                      |
+| ``oPluginEinstellungenConfWerte_arr`` | Array of option values                       |
 +---------------------------------------+----------------------------------------------+
 
 oPluginEinstellungenConfWerte_arr
 """""""""""""""""""""""""""""""""
 
-Array mit Einstellungsoptionswerten
+Array with setting options
 
-Falls eine Einstellungsoption eine *selectbox* oder *radio* ist, beinhaltet dieses Array zu einer bestimmten
-Einstellungsoption alle Optionswerte.
+If a setting option is a *select box* or *radio*, this array contains all option values for a given
+setting option.
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginEinstellungenConf``, ``cName``, ``cWert``, ``nSort``
 
 +------------------------------+--------------------------------------------+
-| Member                       | Funktionalität                             |
+| Member                       | Function                                   |
 +==============================+============================================+
-| ``kPluginEinstellungenConf`` | Eindeutiger Plugin-Einstellungs-Key        |
+| ``kPluginEinstellungenConf`` | Unique plug-in settings key                |
 +------------------------------+--------------------------------------------+
-| ``cName``                    | Eindeutiger Einstellungsname der Variablen |
+| ``cName``                    | Unique setting name of the variables       |
 +------------------------------+--------------------------------------------+
-| ``cWert``                    | Wert der Option                            |
+| ``cWert``                    | Option value                               |
 +------------------------------+--------------------------------------------+
-| ``nSort``                    | Sortierung der Option                      |
+| ``nSort``                    | Option sorting                             |
 +------------------------------+--------------------------------------------+
 
 
 oPluginSprachvariable_arr
 """""""""""""""""""""""""
 
-Array mit allen Sprachvariablen des Plugins
+Array with plug-in language variables
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginSprachvariable``, ``kPlugin``, ``cName``, ``cBeschreibung``, ``oPluginSprachvariableSprache_arr``
 
 +--------------------------------------+----------------------------------------------------------+
-| Member                               | Funktionalität                                           |
+| Member                               | Function                                                 |
 +======================================+==========================================================+
-| ``kPluginSprachvariable``            | Eindeutiger Sprachvariablen-Key                          |
+| ``kPluginSprachvariable``            | Unique language variable key                             |
 +--------------------------------------+----------------------------------------------------------+
-| ``kPlugin``                          | Eindeutiger Plugin-Key                                   |
+| ``kPlugin``                          | Unique plug-in key                                       |
 +--------------------------------------+----------------------------------------------------------+
-| ``cName``                            | Name der Sprachvariable                                  |
+| ``cName``                            | Language variable name                                   |
 +--------------------------------------+----------------------------------------------------------+
-| ``cBeschreibung``                    | Beschreibung der Sprachvariable                          |
+| ``cBeschreibung``                    | language variable description                            |
 +--------------------------------------+----------------------------------------------------------+
-| ``oPluginSprachvariableSprache_arr`` | Array aller lokalisierten Sprachen dieser Sprachvariable |
+| ``oPluginSprachvariableSprache_arr`` | Array of localised languages of this language variable   |
 +--------------------------------------+----------------------------------------------------------+
 
 oPluginSprachvariableSprache_arr
 """"""""""""""""""""""""""""""""
 
-Dieses Array beinhaltet alle Sprachvariablen des jeweiligen Plugins. Es muss assoziativ mit der entsprechenden
-Sprach-ISO angesprochen werden.
+This array contains all language variables of the respective plug-in. It must be addressed associatively with the
+corresponding language ISO.
 
-Assoziatives Array
+Associative array
 
 Key: ISO
 
-Wert: Lokalisierte Sprachvariable
+Value: Localised language variable
 
 
 oPluginFrontendLink_arr
 """""""""""""""""""""""
 
-Array mit vorhanden Frontend-Links
+Array with available front end links
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kLink``, ``kLinkgruppe``, ``kPlugin``, ``cName``, ``nLinkart``, ``cURL``, ``cKundengruppen``,
 ``cSichtbarNachLogin``, ``cDruckButton``, ``nSort``, ``oPluginFrontendLinkSprache_arr``
 
 +------------------------------------+------------------------------------------------------------------+
-| Member                             | Funktionalität                                                   |
+| Member                             | Function                                                         |
 +====================================+==================================================================+
-| ``kLink``                          | Eindeutiger Link-Key                                             |
+| ``kLink``                          | Unique link key                                                  |
 +------------------------------------+------------------------------------------------------------------+
-| ``kLinkgruppe``                    | Eindeutiger Linkgruppen-Key                                      |
+| ``kLinkgruppe``                    | Unique link group key                                            |
 +------------------------------------+------------------------------------------------------------------+
-| ``kPlugin``                        | Eindeutiger Plugin-Key                                           |
+| ``kPlugin``                        | Unique plug-in key                                               |
 +------------------------------------+------------------------------------------------------------------+
-| ``cName``                          | Name des Frontend-Links                                          |
+| ``cName``                          | Front end link name                                              |
 +------------------------------------+------------------------------------------------------------------+
-| ``nLinkart``                       | Eindeutiger Linkart-Key                                          |
+| ``nLinkart``                       | Unique link type key                                             |
 +------------------------------------+------------------------------------------------------------------+
-| ``cURL``                           | Pfad zur Datei, die verlinkt werden soll                         |
+| ``cURL``                           | Path to file that is to be linked                                |
 +------------------------------------+------------------------------------------------------------------+
-| ``cKundengruppen``                 | String von Kundengruppen-Keys                                    |
+| ``cKundengruppen``                 | String of customer groups keys                                   |
 +------------------------------------+------------------------------------------------------------------+
-| ``cSichtbarNachLogin``             | Ist der Link nur nach dem Einloggen sichtbar? Y = Ja / N = Nein  |
+| ``cSichtbarNachLogin``             | Is link visible only after login? Y = Yes / N = No               |
 +------------------------------------+------------------------------------------------------------------+
-| ``cDruckButton``                   | Soll die Linkseite einen Druckbutton erhalten? Y = Ja / N = Nein |
+| ``cDruckButton``                   | Should the link page have a push button? Y = Yes / N = No        |
 +------------------------------------+------------------------------------------------------------------+
-| ``nSort``                          | Sortierungsnummer des Links                                      |
+| ``nSort``                          | Link sorting number                                              |
 +------------------------------------+------------------------------------------------------------------+
-| ``oPluginFrontendLinkSprache_arr`` | Array lokalisierter Linknamen                                    |
+| ``oPluginFrontendLinkSprache_arr`` | Array of localised link names                                    |
 +------------------------------------+------------------------------------------------------------------+
 
 
 oPluginSprachvariableAssoc_arr
 """"""""""""""""""""""""""""""
 
-Assoziatives Array mit allen Sprachvariablen des Plugins
+Associative array with all plug-in language variables
 
-Diese assoziative Array beinhaltet alle Sprachvariablen des Plugins. Sie werden direkt in der entsprechenden
-Sprache des Onlineshops lokalisiert und können über ``cName`` angesprochen werden.
+This associative array contains all plug-in language variables. They will be directly localised in the language
+of the online shop and can be called up via ``cName``.
 
-Typ: *Assoziatives Array*
+Type: *Associative array*
 
 Key: ``cName`` |br|
-Wert: ``Objekt``
+Value: ``Objekt``
 
 Member: ``kPluginSprachvariable``, ``kPlugin``, ``cName``, ``cBeschreibung``, ``oPluginSprachvariableSprache_arr``
 
 +--------------------------------------+--------------------------------------------------------------------+
-| Member                               | Funktionalität                                                     |
+| Member                               | Function                                                           |
 +======================================+====================================================================+
-| ``kPluginSprachvariable``            | Eindeutiger Plugin-Sprachvariablen-Key                             |
+| ``kPluginSprachvariable``            | Unique plug-in language variable key                               |
 +--------------------------------------+--------------------------------------------------------------------+
-| ``kPlugin``                          | Eindeutiger Plugin-Key                                             |
+| ``kPlugin``                          | Unique plug-in key                                                 |
 +--------------------------------------+--------------------------------------------------------------------+
-| ``cName``                            | Name der Sprachvariable                                            |
+| ``cName``                            | Language variable name                                             |
 +--------------------------------------+--------------------------------------------------------------------+
-| ``cBeschreibung``                    | Beschreibung der Sprachvariable                                    |
+| ``cBeschreibung``                    | Language variable description                                      |
 +--------------------------------------+--------------------------------------------------------------------+
-| ``oPluginSprachvariableSprache_arr`` | Array aller Sprachen, für die diese Sprachvariable lokalisiert ist |
+| ``oPluginSprachvariableSprache_arr`` | Array of all languages localised for this language variable        |
 +--------------------------------------+--------------------------------------------------------------------+
 
 
 oPluginFrontendLinkSprache_arr
 """"""""""""""""""""""""""""""
 
-Array mit lokalisierten Namen eines bestimmten Frontend-Links
+Array with localised names of certain front end links
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kLink``, ``cSeo``, ``cISOSprache``, ``cName``, ``cTitle``, ``cContent``, ``cMetaTitle``,
 ``cMetaKeywords``, ``cMetaDescription``
 
 +----------------------+----------------------------------------+
-| Member               | Funktion                               |
+| Member               | Function                               |
 +======================+========================================+
-| ``kLink``            | Eindeutiger Link-Key                   |
+| ``kLink``            | Unique link key                        |
 +----------------------+----------------------------------------+
-| ``cSeo``             | SEO für die jeweilige Linksprache      |
+| ``cSeo``             | SEO for relevant link language         |
 +----------------------+----------------------------------------+
-| ``cISOSprache``      | ISO der Linksprache                    |
+| ``cISOSprache``      | ISO of link language                   |
 +----------------------+----------------------------------------+
-| ``cName``            | Lokalisierter Name des Links           |
+| ``cName``            | Localised link name                    |
 +----------------------+----------------------------------------+
-| ``cTitle``           | Lokalisierter Titel des Links          |
+| ``cTitle``           | Localised link title                   |
 +----------------------+----------------------------------------+
-| ``cContent``         | Lokalisierter Content des Links        |
+| ``cContent``         | Localised link content                 |
 +----------------------+----------------------------------------+
-| ``cMetaTitle``       | Lokalisierter MetaTitel des Links      |
+| ``cMetaTitle``       | Localised link meta title              |
 +----------------------+----------------------------------------+
-| ``cMetaKeywords``    | Lokalisierte MetaKeywords des Links    |
+| ``cMetaKeywords``    | Localised link meta keywords           |
 +----------------------+----------------------------------------+
-| ``cMetaDescription`` | Lokalisierte MetaDescription des Links |
+| ``cMetaDescription`` | Localised link meta description        |
 +----------------------+----------------------------------------+
 
 oPluginZahlungsmethode_arr
 """"""""""""""""""""""""""
 
-Array aller Zahlungsmethoden
+Array of all payment methods
 
-Dieses Array beinhaltet alle verfügbaren Zahlungsmethoden.
+This array contains all available payment methods.
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kZahlungsart``, ``cName``, ``cModulId``, ``cKundengruppen``, ``cZusatzschrittTemplate``, ``cPluginTemplate``,
 ``cBild``, ``nSort``, ``nMailSenden``, ``nActive``, ``cAnbieter``, ``cTSCode``, ``nWaehrendBestellung``, ``nCURL``,
@@ -457,100 +457,100 @@ Member: ``kZahlungsart``, ``cName``, ``cModulId``, ``cKundengruppen``, ``cZusatz
 ``oZahlungsmethodeEinstellung_arr``
 
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| Member                              | Funktionalität                                                                          |
+| Member                              | Function                                                                                |
 +=====================================+=========================================================================================+
-| ``kZahlungsart``                    | Eindeutiger Zahlungsart Key                                                             |
+| ``kZahlungsart``                    | Unique payment method key                                                               |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cName``                           | Name der Zahlungsart                                                                    |
+| ``cName``                           | Name of payment method                                                                  |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cModulId``                        | Eindeutige Modul-ID der Zahlungsart                                                     |
+| ``cModulId``                        | Unique payment method module-ID                                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cKundengruppen``                  | String von Kundengruppen, für die diese Zahlungsart gilt                                |
+| ``cKundengruppen``                  | String of customer groups to which the payment method applies                           |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cZusatzschrittTemplate``          | Zusätzliche Daten für Transaktionen können eingegeben werden                            |
+| ``cZusatzschrittTemplate``          | Additional data for transactions can be entered                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cPluginTemplate``                 | Pfad zum Template der Zahlungsart                                                       |
+| ``cPluginTemplate``                 | Path to payment method template                                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cBild``                           | Bildpfad der Zahlungsart                                                                |
+| ``cBild``                           | Image path to payment method                                                            |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nSort``                           | Sortierungsnummer der Zahlungsart                                                       |
+| ``nSort``                           | Payment method sorting number                                                           |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nMailSenden``                     | Versendet diese Zahlungsart standardmäßig eine E-Mail beim Abschluss? 1 = Ja / 0 = Nein |
+| ``nMailSenden``                     | Does this payment method send an email upon payment by default? 1 = Yes / 0 = No        |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nActive``                         | Ist diese Zahlungsart aktiv? 1 = Ja / 0 = Nein                                          |
+| ``nActive``                         | Is this payment method active? 1 = Yes / 0 = No                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cAnbieter``                       | Name des Anbieters der Zahlungsart                                                      |
+| ``cAnbieter``                       | Name of payment method provider                                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cTSCode``                         | Trusted Shops Code                                                                      |
+| ``cTSCode``                         | Trusted Shops code                                                                      |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nWaehrendBestellung``             | Pre- oder Post-Bestellung                                                               |
+| ``nWaehrendBestellung``             | Pre- or post-order                                                                      |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nCURL``                           | Nutzt diese Zahlungsart das CURL-Protokoll?                                             |
+| ``nCURL``                           | Does this payment method use the cURL protocol?                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nSOAP``                           | Nutzt diese Zahlungsart das SOAP-Protokoll?                                             |
+| ``nSOAP``                           | Does this payment method use the SOAP protocol?                                         |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nSOCKETS``                        | Nutzt diese Zahlungsart Sockets?                                                        |
+| ``nSOCKETS``                        | Does this payment method use sockets?                                                   |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``nNutzbar``                        | Sind alle Serverprotokolle nutzbar, die für diese Zahlungsart benötigt werden?          |
+| ``nNutzbar``                        | Are all server protocols required for this payment method usable?                       |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``cTemplateFileURL``                | Absoluter Pfad zur Template-Datei                                                       |
+| ``cTemplateFileURL``                | Absolute path to template file                                                          |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``oZahlungsmethodeSprache_arr``     | Lokalisierte Zahlungsart für alle angegebenen Sprachen                                  |
+| ``oZahlungsmethodeSprache_arr``     | Localised payment method for all specified languages                                    |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
-| ``oZahlungsmethodeEinstellung_arr`` | Array von lokalisierten Einstellungen                                                   |
+| ``oZahlungsmethodeEinstellung_arr`` | Array of localised settings                                                             |
 +-------------------------------------+-----------------------------------------------------------------------------------------+
 
 oZahlungsmethodeSprache_arr
 """""""""""""""""""""""""""
 
-Array mit lokalisierten Namen der jeweiligen Zahlungsmethode
+Array with localised names of the respective payment methods
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kZahlungsart``, ``cISOSprache``, ``cName``, ``cGebuehrname``, ``cHinweisText``
 
 +------------------+-----------------------------+
-| Member           | Funktionalität              |
+| Member           | Function                    |
 +==================+=============================+
-| ``kZahlungsart`` | Eindeutiger Zahlungsart-Key |
+| ``kZahlungsart`` | Unique payment method key   |
 +------------------+-----------------------------+
-| ``cISOSprache``  | Sprach-ISO                  |
+| ``cISOSprache``  | ISO language code           |
 +------------------+-----------------------------+
-| ``cName``        | Lokalisierter Name          |
+| ``cName``        | Localised name              |
 +------------------+-----------------------------+
-| ``cGebuehrname`` | Lokalisierter Gebührenname  |
+| ``cGebuehrname`` | Localised fee name          |
 +------------------+-----------------------------+
-| ``cHinweisText`` | Lokalisierter Hinweistext   |
+| ``cHinweisText`` | Localised text              |
 +------------------+-----------------------------+
 
 oZahlungsmethodeEinstellung_arr
 """""""""""""""""""""""""""""""
 
-Array mit Einstellungen zu einer bestimmten Zahlungsmethode
+Array with settings for a certain payment method
 
-Typ: *Array von Objekten*
+Type: *Array of objects*
 
 Member: ``kPluginEinstellungenConf``, ``kPlugin``, ``kPluginAdminMenu``, ``cName``, ``cBeschreibung``, ``cWertName``,
 ``cInputTyp``, ``nSort``, ``cConf``
 
 +------------------------------+----------------------------------------------+
-| Member                       | Funktion                                     |
+| Member                       | Function                                     |
 +==============================+==============================================+
-| ``kPluginEinstellungenConf`` | Eindeutiger Plugin-Einstellungs-Key          |
+| ``kPluginEinstellungenConf`` | Unique plug-in settings key                  |
 +------------------------------+----------------------------------------------+
-| ``kPlugin``                  | Eindeutiger Plugin-Key                       |
+| ``kPlugin``                  | Unique plug-in key                           |
 +------------------------------+----------------------------------------------+
-| ``kPluginAdminMenu``         | Eindeutiger Plugin-Adminmenü-Key             |
+| ``kPluginAdminMenu``         | Unique plug-in admin menu key                |
 +------------------------------+----------------------------------------------+
-| ``cName``                    | Name der Einstellung                         |
+| ``cName``                    | Setting name                                 |
 +------------------------------+----------------------------------------------+
-| ``cBeschreibung``            | Beschreibung der Einstellung                 |
+| ``cBeschreibung``            | Setting description                          |
 +------------------------------+----------------------------------------------+
-| ``cWertName``                | Wert der Variable                            |
+| ``cWertName``                | Variable value                               |
 +------------------------------+----------------------------------------------+
-| ``cInputTyp``                | Typ der Variable (text, zahl, selectbox,...) |
+| ``cInputTyp``                | Variable type (text, number, select box,...) |
 +------------------------------+----------------------------------------------+
-| ``nSort``                    | Sortierung der Einstellung                   |
+| ``nSort``                    | Setting sorting                              |
 +------------------------------+----------------------------------------------+
-| ``cConf``                    | Y = Einstellung / N = Überschrift            |
+| ``cConf``                    | Y = Settings / N = Heading                   |
 +------------------------------+----------------------------------------------+

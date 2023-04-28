@@ -5,19 +5,60 @@ namespace JTL\Mail\SendMailObjects;
 use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 
-class MailDataAttachementObject extends AbstractDataObject implements DataTableObjectInterface
+/**
+ * Class MailDataAttachementObject
+ * @package JTL\Mail\SendMailObjects
+ */
+class MailDataAttachmentObject extends AbstractDataObject implements DataTableObjectInterface
 {
+    /**
+     * @var string
+     */
     private string $primarykey = 'id';
-    protected int $id          = 0;
-    protected int $mailID      = 0;
-    protected string $mime     = '';
-    protected string $dir      = '';
+
+    /**
+     * @var int
+     */
+    protected int $id = 0;
+
+    /**
+     * @var int
+     */
+    protected int $mailID = 0;
+
+    /**
+     * @var string
+     */
+    protected string $mime = '';
+
+    /**
+     * @var string
+     */
+    protected string $dir = '';
+
+    /**
+     * @var string
+     */
     protected string $fileName = '';
-    protected string $name     = '';
+
+    /**
+     * @var string
+     */
+    protected string $name = '';
+
+    /**
+     * @var string
+     */
     protected string $encoding = 'base64';
 
+    /**
+     * @var array
+     */
     private array $mapping = [];
 
+    /**
+     * @var array|string[]
+     */
     private array $columnMapping = [
         'primarykey' => 'primarykey',
         'id'         => 'id',
@@ -47,9 +88,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param int $id
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setId(int $id): MailDataAttachementObject
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -66,9 +107,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param int $mailID
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setMailID(int $mailID): MailDataAttachementObject
+    public function setMailID(int $mailID): self
     {
         $this->mailID = $mailID;
 
@@ -85,9 +126,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param string $mime
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setMime(string $mime): MailDataAttachementObject
+    public function setMime(string $mime): self
     {
         $this->mime = $mime;
 
@@ -104,9 +145,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param string $dir
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setDir(string $dir): MailDataAttachementObject
+    public function setDir(string $dir): self
     {
         $this->dir = $dir;
 
@@ -123,9 +164,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param string $fileName
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setFileName(string $fileName): MailDataAttachementObject
+    public function setFileName(string $fileName): self
     {
         $this->fileName = $fileName;
 
@@ -142,9 +183,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param string $name
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setName(string $name): MailDataAttachementObject
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -161,9 +202,9 @@ class MailDataAttachementObject extends AbstractDataObject implements DataTableO
 
     /**
      * @param string $encoding
-     * @return MailDataAttachementObject
+     * @return self
      */
-    public function setEncoding(string $encoding): MailDataAttachementObject
+    public function setEncoding(string $encoding): self
     {
         $this->encoding = $encoding;
 

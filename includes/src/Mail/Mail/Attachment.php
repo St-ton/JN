@@ -2,8 +2,6 @@
 
 namespace JTL\Mail\Mail;
 
-use JTL\Mail\SendMailObjects\MailDataTableObject;
-use JTL\Shop;
 use PHPMailer\PHPMailer\PHPMailer;
 use ReflectionClass;
 
@@ -140,6 +138,11 @@ final class Attachment
     {
         return $this->dir . $this->fileName;
     }
+
+    /**
+     * @param bool $tableColumns
+     * @return array
+     */
     public function toArray(bool $tableColumns = true): array
     {
         $reflect    = new ReflectionClass($this);
@@ -185,7 +188,6 @@ final class Attachment
                 $this->$setMethod($object->$attribute);
             }
         }
-
 
         return $this;
     }

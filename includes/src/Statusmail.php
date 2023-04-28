@@ -3,8 +3,6 @@
 namespace JTL;
 
 use DateTime;
-use Gettext\TranslatorFunctions;
-use Gettext\TranslatorFunctions as Translator;
 use InvalidArgumentException;
 use JTL\Cron\Job\Statusmail as StatusCron;
 use JTL\Cron\JobHydrator;

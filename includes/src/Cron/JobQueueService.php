@@ -3,8 +3,11 @@
 namespace JTL\Cron;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
 
+/**
+ * Class JobQueueService
+ * @package JTL\Cron
+ */
 class JobQueueService extends AbstractService
 {
     /**

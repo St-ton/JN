@@ -5,7 +5,8 @@ namespace JTL\Cron;
 use JTL\Abstracts\AbstractService;
 
 /**
- *
+ * Class CronService
+ * @package JTL\Cron
  */
 class CronService extends AbstractService
 {
@@ -18,14 +19,6 @@ class CronService extends AbstractService
      * @var JobQueueService
      */
     protected JobQueueService $jobQueueService;
-
-    /**
-     * @return JobQueueService
-     */
-    public function getJobQueueService(): JobQueueService
-    {
-        return $this->jobQueueService;
-    }
 
     /**
      * @inheritDoc
@@ -44,6 +37,17 @@ class CronService extends AbstractService
         $this->jobQueueService = new JobQueueService();
     }
 
+    /**
+     * @return JobQueueService
+     */
+    public function getJobQueueService(): JobQueueService
+    {
+        return $this->jobQueueService;
+    }
+
+    /**
+     * @return string[]
+     */
     public static function getPermanentJobTypes(): array
     {
         return [
@@ -52,6 +56,10 @@ class CronService extends AbstractService
         ];
     }
 
+    /**
+     * @param array $cronIDs
+     * @return bool
+     */
     public function delete(array $cronIDs): bool
     {
         $this->getRepository()->deleteCron($cronIDs, self::getPermanentJobTypes());

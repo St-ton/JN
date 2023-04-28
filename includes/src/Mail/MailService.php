@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Mail;
 
@@ -15,7 +15,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use stdClass;
 
 /**
- *
+ * Class MailService
+ * @package JTL\Mail
  */
 class MailService extends AbstractService
 {
@@ -35,7 +36,7 @@ class MailService extends AbstractService
     protected array $emailConfig = [];
 
     /**
-     * @return void
+     * @inheritdoc
      */
     protected function initDependencies(): void
     {
@@ -70,7 +71,7 @@ class MailService extends AbstractService
     /**
      * @return AttachmentsService
      */
-    protected function getAttachmentsService(): AttachmentsService
+    public function getAttachmentsService(): AttachmentsService
     {
         return $this->attachmentsService;
     }
@@ -103,27 +104,27 @@ class MailService extends AbstractService
      */
     private function cacheAttachments(MailDataTableObject $item): void
     {
-        if (!is_dir(\PATH_MAILATTACHMENTS)
-            && !mkdir($concurrentDirectory = \PATH_MAILATTACHMENTS, 0775)
-            && !is_dir($concurrentDirectory)
+        if (!\is_dir(\PATH_MAILATTACHMENTS)
+            && !\mkdir($concurrentDirectory = \PATH_MAILATTACHMENTS, 0775)
+            && !\is_dir($concurrentDirectory)
         ) {
             Shop::Container()->getLogService()->error('Error sending mail: Attachment directory could not be created');
 
             return;
         }
         foreach ($item->getAttachments() as $attachment) {
-            $fileName = preg_replace('/[^öäüÖÄÜßa-zA-Z\d.\-_]/u', '', $attachment->getName());
+            $fileName = \preg_replace('/[^öäüÖÄÜßa-zA-Z\d.\-_]/u', '', $attachment->getName());
             if ($attachment->getMime() === 'application/pdf' && !str_ends_with($attachment->getName(), '.pdf')) {
                 $attachment->setName($fileName . '.pdf');
             }
-            $uniqueFilename = uniqid(str_replace(['.', ':', ' '], '', $item->getDateQueued()), true);
-            if (!copy($attachment->getDir() . $attachment->getFileName(), \PATH_MAILATTACHMENTS . $uniqueFilename)) {
+            $uniqueFilename = \uniqid(str_replace(['.', ':', ' '], '', $item->getDateQueued()), true);
+            if (!\copy($attachment->getDir() . $attachment->getFileName(), \PATH_MAILATTACHMENTS . $uniqueFilename)) {
                 Shop::Container()->getLogService()->error('Error sending mail: Attachment could not be cached');
 
                 return;
             }
             if ($attachment->getDir() !== \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_EMAILPDFS) {
-                unlink($attachment->getDir().$attachment->getFileName());
+                \unlink($attachment->getDir().$attachment->getFileName());
             }
             $attachment->setDir(\PATH_MAILATTACHMENTS);
             $attachment->setFileName($uniqueFilename);
@@ -157,7 +158,7 @@ class MailService extends AbstractService
         $returnMailObjects = [];
         foreach ($mailsToSend as $mail) {
             if (!\is_array($mail['copyRecipients'])) {
-                $mail['copyRecipients'] = explode(';', $mail['copyRecipients']);
+                $mail['copyRecipients'] = \explode(';', $mail['copyRecipients']);
             }
             $attachmentsToAdd    = $mail['hasAttachments'] > 0 ? $attachments[$mail['id']] : [];
             $returnMailObjects[] = (

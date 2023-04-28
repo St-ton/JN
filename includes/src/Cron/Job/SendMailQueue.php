@@ -11,6 +11,7 @@ use JTL\Mail\Renderer\SmartyRenderer;
 use JTL\Mail\Validator\MailValidator;
 use JTL\Shopsetting;
 use JTL\Smarty\MailSmarty;
+use SmartyException;
 
 /**
  * Class Dummy
@@ -30,12 +31,13 @@ final class SendMailQueue extends Job
 
     /**
      * @inheritdoc
-     * @throws \SmartyException
+     * @throws SmartyException
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        $maxJobTime = ((int)\ini_get('max_execution_time')) / 2;
-        $jobStarted = time();
+        $maxJobLength = \ceil(((int)\ini_get('max_execution_time')) / 2);
+        $jobStarted = \time();
+
         parent::start($queueEntry);
 
         $settings  = Shopsetting::getInstance();
@@ -48,7 +50,7 @@ final class SendMailQueue extends Job
             $settings,
             $validator
         );
-        while (time() < ($jobStarted + $maxJobTime)) {
+        while (\time() < ($jobStarted + $maxJobLength)) {
             $mailer->sendQueuedMails();
         }
 

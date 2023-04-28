@@ -3,8 +3,11 @@
 namespace JTL\Cron;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\DB\ReturnType;
 
+/**
+ * Class CronRepository
+ * @package JTL\Cron
+ */
 class CronRepository extends AbstractRepository
 {
     /**
@@ -23,6 +26,11 @@ class CronRepository extends AbstractRepository
         return 'cronID';
     }
 
+    /**
+     * @param array $ids
+     * @param array $exclude
+     * @return bool
+     */
     public function deleteCron(array $ids, array $exclude): bool
     {
         return $this->getDB()->queryPrepared(

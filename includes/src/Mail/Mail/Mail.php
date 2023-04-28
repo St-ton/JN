@@ -594,16 +594,14 @@ class Mail implements MailInterface
         $properties = $reflect->getProperties();
         $toArray    = [];
         foreach ($properties as $property) {
-            $propertyName            = $property->getName();
-             $toArray[$propertyName] = $property->getValue($this);
+            $propertyName           = $property->getName();
+            $toArray[$propertyName] = $property->getValue($this);
         }
 
         return $toArray;
     }
 
     /**
-     * $tableColumns = true will ship an object using table column names as array keys
-     *
      * @return object
      */
     public function toObject(): object

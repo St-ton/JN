@@ -3,8 +3,11 @@
 namespace JTL\Cron;
 
 use JTL\Abstracts\AbstractRepository;
-use JTL\DB\ReturnType;
 
+/**
+ * Class JobQueueRepository
+ * @package JTL\Cron
+ */
 class JobQueueRepository extends AbstractRepository
 {
     /**

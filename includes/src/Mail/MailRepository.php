@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Mail;
 
@@ -6,12 +6,13 @@ use JTL\Abstracts\AbstractRepository;
 use JTL\DataObjects\DataTableObjectInterface;
 
 /**
- *
+ * Class MailRepository
+ * @package JTL\Mail
  */
 class MailRepository extends AbstractRepository
 {
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getTableName(): string
     {
@@ -19,12 +20,13 @@ class MailRepository extends AbstractRepository
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
     public function getKeyName(): string
     {
         return 'id';
     }
+
     /**
      * @param DataTableObjectInterface $mailDataTableObject
      * @return int

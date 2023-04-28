@@ -22,6 +22,9 @@ use JTL\DB\DbInterface;
  */
 class Mailer
 {
+    /**
+     * @var DbInterface|null
+     */
     protected ?DbInterface $db = null;
 
     /**
@@ -29,6 +32,9 @@ class Mailer
      */
     private array $config;
 
+    /**
+     * @var MailService
+     */
     protected MailService $mailService;
 
     /**
@@ -212,7 +218,7 @@ class Mailer
                     $this->getMailService()->deleteQueuedMail($mailDataTableobject->getId());
                     /** @var Attachment $attachment */
                     foreach ($mailDataTableobject->getAttachments() as $attachment) {
-                        unlink($attachment->getDir() . $attachment->getFileName());
+                        \unlink($attachment->getDir() . $attachment->getFileName());
                     }
                 }
             } catch (\Exception $e) {
@@ -259,7 +265,7 @@ class Mailer
             'template'      => $mail->getTemplate()
         ]);
         $sent = $this->mailService->sendViaPHPMailer($mail);
-        if ($sent) {
+        if ($sent === true) {
             $this->log($mail);
         } else {
             Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());

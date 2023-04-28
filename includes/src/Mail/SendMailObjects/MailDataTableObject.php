@@ -90,9 +90,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $id
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setId(string|int $id): MailDataTableObject
+    public function setId(string|int $id): self
     {
         $this->id = (int)$id;
 
@@ -109,9 +109,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $isSent
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setIsSent(string|int $isSent): MailDataTableObject
+    public function setIsSent(string|int $isSent): self
     {
         $this->isSent = (int)$isSent;
 
@@ -128,9 +128,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $isSendingNow
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setIsSendingNow(string|int $isSendingNow): MailDataTableObject
+    public function setIsSendingNow(string|int $isSendingNow): self
     {
         $this->isSendingNow = (int)$isSendingNow;
 
@@ -147,9 +147,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $sendCount
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setSendCount(string|int $sendCount): MailDataTableObject
+    public function setSendCount(string|int $sendCount): self
     {
         $this->sendCount = (int)$sendCount;
 
@@ -166,9 +166,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $errorCount
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setErrorCount(string|int $errorCount): MailDataTableObject
+    public function setErrorCount(string|int $errorCount): self
     {
         $this->errorCount = (int)$errorCount;
 
@@ -185,9 +185,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $lastError
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setLastError(string $lastError): MailDataTableObject
+    public function setLastError(string $lastError): self
     {
         $this->lastError = $lastError;
 
@@ -208,9 +208,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $dateQueued
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setDateQueued(string $dateQueued): MailDataTableObject
+    public function setDateQueued(string $dateQueued): self
     {
         $this->dateQueued = $dateQueued;
 
@@ -227,9 +227,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $dateSent
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setDateSent(string $dateSent): MailDataTableObject
+    public function setDateSent(string $dateSent): self
     {
         $this->dateSent = $dateSent;
 
@@ -246,9 +246,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $fromMail
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setFromMail(string $fromMail): MailDataTableObject
+    public function setFromMail(string $fromMail): self
     {
         $this->fromMail = $fromMail;
 
@@ -265,9 +265,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $fromName
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setFromName(string $fromName): MailDataTableObject
+    public function setFromName(string $fromName): self
     {
         $this->fromName = $fromName;
 
@@ -284,9 +284,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $toEmail
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setToMail(string $toEmail): MailDataTableObject
+    public function setToMail(string $toEmail): self
     {
         $this->toMail = $toEmail;
 
@@ -303,9 +303,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|null $toName
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setToName(?string $toName): MailDataTableObject
+    public function setToName(?string $toName): self
     {
         $this->toName = $toName;
 
@@ -322,9 +322,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $replyToMail
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setReplyToMail(string $replyToMail): MailDataTableObject
+    public function setReplyToMail(string $replyToMail): self
     {
         $this->replyToMail = $replyToMail;
 
@@ -341,9 +341,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $replyToName
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setReplyToName(string $replyToName): MailDataTableObject
+    public function setReplyToName(string $replyToName): self
     {
         $this->replyToName = $replyToName;
 
@@ -360,9 +360,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param array $copyRecipients
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setCopyRecipients(array $copyRecipients): MailDataTableObject
+    public function setCopyRecipients(array $copyRecipients): self
     {
         $this->copyRecipients = implode(';', $copyRecipients);
 
@@ -379,9 +379,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $subject
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setSubject(string $subject): MailDataTableObject
+    public function setSubject(string $subject): self
     {
         $this->subject = $subject;
 
@@ -398,9 +398,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $bodyHTML
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setBodyHTML(string $bodyHTML): MailDataTableObject
+    public function setBodyHTML(string $bodyHTML): self
     {
         $this->bodyHTML = $bodyHTML;
 
@@ -417,9 +417,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string $bodyText
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setBodyText(string $bodyText): MailDataTableObject
+    public function setBodyText(string $bodyText): self
     {
         $this->bodyText = $bodyText;
 
@@ -436,9 +436,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $hasAttachments
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setHasAttachments(string|int $hasAttachments): MailDataTableObject
+    public function setHasAttachments(string|int $hasAttachments): self
     {
         $this->hasAttachments = (int)$hasAttachments;
 
@@ -456,9 +456,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param array|null $attachments
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setAttachments(?array $attachments): MailDataTableObject
+    public function setAttachments(?array $attachments): self
     {
         if (\is_array($attachments)) {
             foreach ($attachments as $attachment) {
@@ -482,9 +482,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int|null $template
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setTemplateId(null|string|int $template): MailDataTableObject
+    public function setTemplateId(null|string|int $template): self
     {
         if ($template !== null) {
             $this->templateId = (string)$template;
@@ -504,9 +504,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $language
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setLanguageId(string|int $language): MailDataTableObject
+    public function setLanguageId(string|int $language): self
     {
         $this->languageId = (int)$language;
 
@@ -523,9 +523,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param LanguageModel|null $languageModel
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setLanguage(?LanguageModel $languageModel): MailDataTableObject
+    public function setLanguage(?LanguageModel $languageModel): self
     {
         $this->language = $languageModel;
 
@@ -542,9 +542,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 
     /**
      * @param string|int $customerGroupID
-     * @return MailDataTableObject
+     * @return self
      */
-    public function setCustomerGroupID(string|int $customerGroupID): MailDataTableObject
+    public function setCustomerGroupID(string|int $customerGroupID): self
     {
         $this->customerGroupID = (int)$customerGroupID;
 

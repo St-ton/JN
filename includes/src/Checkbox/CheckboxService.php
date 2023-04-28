@@ -3,7 +3,6 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
 
 /**
  * Class CheckboxService

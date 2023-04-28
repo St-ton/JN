@@ -11,8 +11,14 @@ use ReflectionProperty;
  */
 abstract class AbstractDataObject implements DataObjectInterface
 {
+    /**
+     * @inheritdoc
+     */
     abstract public function getMapping(): array;
 
+    /**
+     * @inheritdoc
+     */
     abstract public function getReverseMapping(): array;
 
     /**
@@ -167,7 +173,7 @@ abstract class AbstractDataObject implements DataObjectInterface
                 $propertyName = $columnMap[$propertyName];
             }
             if ($serialize && (is_array($property->getValue($this) || is_object($property->getValue($this))))) {
-                $toArray[$propertyName] = serialize($property->getValue($this));
+                $toArray[$propertyName] = \serialize($property->getValue($this));
             } else {
                 $toArray[$propertyName] = $property->getValue($this);
             }

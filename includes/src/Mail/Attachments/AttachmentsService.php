@@ -1,17 +1,26 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace JTL\Mail\Attachments;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Interfaces\RepositoryInterface;
 use JTL\Mail\Mail\Attachment;
-use JTL\Mail\SendMailObjects\MailDataAttachementObject;
+use JTL\Mail\SendMailObjects\MailDataAttachmentObject;
 
+/**
+ * Class AttachmentsService
+ * @package JTL\Cron
+ */
 class AttachmentsService extends AbstractService
 {
 
+    /**
+     * @var AttachmentsRepository
+     */
     protected AttachmentsRepository $repository;
 
+    /**
+     * @return void
+     */
     protected function initDependencies(): void
     {
         $this->repository = new AttachmentsRepository();
@@ -32,10 +41,10 @@ class AttachmentsService extends AbstractService
      */
     public function insertAttachment(Attachment $attachment, int $mailID): int
     {
-        $attachementTableObject = (new MailDataAttachementObject())->hydrateWithObject($attachment->toObject());
-        $attachementTableObject->setMailID($mailID);
+        $attachmentTableObject = (new MailDataAttachmentObject())->hydrateWithObject($attachment->toObject());
+        $attachmentTableObject->setMailID($mailID);
 
-        return $this->insert($attachementTableObject);
+        return $this->insert($attachmentTableObject);
     }
 
     /**

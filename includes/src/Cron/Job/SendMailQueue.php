@@ -36,7 +36,7 @@ final class SendMailQueue extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         $maxJobLength = \ceil(((int)\ini_get('max_execution_time')) / 2);
-        $jobStarted = \time();
+        $jobStarted   = \time();
 
         parent::start($queueEntry);
 

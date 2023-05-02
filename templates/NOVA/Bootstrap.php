@@ -18,14 +18,14 @@ use Smarty;
 class Bootstrap extends Bootstrapper
 {
     /**
-     * @var ComponentRegistratorInterface|null
+     * @var ComponentRegistratorInterface
      */
-    protected ?ComponentRegistratorInterface $scc = null;
+    protected $scc;
 
     /**
-     * @var RendererInterface|null
+     * @var RendererInterface
      */
-    protected ?RendererInterface $renderer = null;
+    protected $renderer;
 
     /**
      * @inheritdoc
@@ -52,34 +52,78 @@ class Bootstrap extends Bootstrapper
             $smarty->display('demo.tpl');
             die();
         }
-        $func = Smarty::PLUGIN_FUNCTION;
-        $mod  = Smarty::PLUGIN_MODIFIER;
 
-        $smarty->registerPlugin($func, 'gibPreisStringLocalizedSmarty', $plugins->getLocalizedPrice(...))
-            ->registerPlugin($func, 'getBoxesByPosition', $plugins->getBoxesByPosition(...))
-            ->registerPlugin($func, 'has_boxes', $plugins->hasBoxes(...))
-            ->registerPlugin($func, 'imageTag', $plugins->getImgTag(...))
-            ->registerPlugin($func, 'getCheckBoxForLocation', $plugins->getCheckBoxForLocation(...))
-            ->registerPlugin($func, 'hasCheckBoxForLocation', $plugins->hasCheckBoxForLocation(...))
-            ->registerPlugin($func, 'aaURLEncode', $plugins->aaURLEncode(...))
-            ->registerPlugin($func, 'get_navigation', $plugins->getNavigation(...))
-            ->registerPlugin($func, 'get_category_array', $plugins->getCategoryArray(...))
-            ->registerPlugin($func, 'get_category_parents', $plugins->getCategoryParents(...))
-            ->registerPlugin($func, 'prepare_image_details', $plugins->prepareImageDetails(...))
-            ->registerPlugin($func, 'get_manufacturers', $plugins->getManufacturers(...))
-            ->registerPlugin($func, 'get_cms_content', $plugins->getCMSContent(...))
-            ->registerPlugin($func, 'get_static_route', $plugins->getStaticRoute(...))
-            ->registerPlugin($func, 'hasOnlyListableVariations', $plugins->hasOnlyListableVariations(...))
-            ->registerPlugin($func, 'get_product_list', $plugins->getProductList(...))
-            ->registerPlugin($func, 'captchaMarkup', $plugins->captchaMarkup(...))
-            ->registerPlugin($func, 'getStates', $plugins->getStates(...))
-            ->registerPlugin($func, 'getDecimalLength', $plugins->getDecimalLength(...))
-            ->registerPlugin($func, 'getUploaderLang', $plugins->getUploaderLang(...))
-            ->registerPlugin($func, 'getCountry', $plugins->getCountry(...))
-            ->registerPlugin($func, 'sanitizeTitle', $plugins->sanitizeTitle(...))
-            ->registerPlugin($mod, 'seofy', $plugins->seofy(...))
-            ->registerPlugin($mod, 'has_trans', $plugins->hasTranslation(...))
-            ->registerPlugin($mod, 'trans', $plugins->getTranslation(...))
-            ->registerPlugin($mod, 'formatForMicrodata', $plugins->formatForMicrodata(...));
+        $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty', [$plugins, 'getLocalizedPrice'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getBoxesByPosition', [$plugins, 'getBoxesByPosition'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'has_boxes', [$plugins, 'hasBoxes'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'imageTag', [$plugins, 'getImgTag'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCheckBoxForLocation', [$plugins, 'getCheckBoxForLocation'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasCheckBoxForLocation', [$plugins, 'hasCheckBoxForLocation'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'aaURLEncode', [$plugins, 'aaURLEncode'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_navigation', [$plugins, 'getNavigation'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_array', [$plugins, 'getCategoryArray'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_parents', [$plugins, 'getCategoryParents'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'prepare_image_details', [$plugins, 'prepareImageDetails'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_manufacturers', [$plugins, 'getManufacturers'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_cms_content', [$plugins, 'getCMSContent'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_static_route', [$plugins, 'getStaticRoute'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasOnlyListableVariations', [$plugins, 'hasOnlyListableVariations'])
+            ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'has_trans', [$plugins, 'hasTranslation'])
+            ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'trans', [$plugins, 'getTranslation'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', [$plugins, 'getProductList'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', [$plugins, 'captchaMarkup'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', [$plugins, 'getStates'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getDecimalLength', [$plugins, 'getDecimalLength'])
+            ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', [$plugins, 'seofy'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getUploaderLang', [$plugins, 'getUploaderLang'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCountry', [$plugins, 'getCountry'])
+            ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'sanitizeTitle', [$plugins, 'sanitizeTitle'])
+            ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatForMicrodata', [$plugins, 'formatForMicrodata']);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function licenseExpired(ExsLicense $license): void
+    {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function installed(): void
+    {
+        parent::installed();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function enabled(): void
+    {
+        parent::enabled();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function disabled(): void
+    {
+        parent::enabled();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function updated($oldVersion, $newVersion): void
+    {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function uninstalled(bool $deleteData = true): void
+    {
+        parent::uninstalled($deleteData);
     }
 }

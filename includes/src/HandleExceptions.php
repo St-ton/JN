@@ -19,9 +19,9 @@ class HandleExceptions
     public function __construct()
     {
         \error_reporting(-1);
-        \set_error_handler($this->handleError(...));
-        \set_exception_handler($this->handleException(...));
-        \register_shutdown_function($this->handleShutdown(...));
+        \set_error_handler([$this, 'handleError']);
+        \set_exception_handler([$this, 'handleException']);
+        \register_shutdown_function([$this, 'handleShutdown']);
     }
 
     /**

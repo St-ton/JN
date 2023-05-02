@@ -226,7 +226,7 @@ class Bewertung
                     ORDER BY' . $orderSQL . $limitSQL,
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
-            each($this->oBewertung_arr, $this->sanitizeRatingData(...));
+            each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
         }
         $total = $db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt

@@ -23,7 +23,7 @@ class ConsentController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->post('/_updateconsent', $this->getResponse(...))
+        $route->post('/_updateconsent', [$this, 'getResponse'])
             ->setName('ROUTE_UPDATE_CONSENTPOST' . $dynName)
             ->setStrategy(new JsonStrategy(new ResponseFactory()));
     }

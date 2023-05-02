@@ -111,7 +111,7 @@ final class Dispatcher
         if (isset($this->listeners[$eventName])) {
             $listeners = \array_merge($listeners, $this->listeners[$eventName]);
         }
-        \usort($listeners, $this->sortByPriority(...));
+        \usort($listeners, [$this, 'sortByPriority']);
 
         return pluck($listeners, 'listener');
     }

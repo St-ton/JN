@@ -796,7 +796,7 @@ abstract class DataModel implements DataModelInterface, Iterator
             throw new Exception(__METHOD__ . ': no primary key', self::ERR_NO_PRIMARY_KEY);
         }
 
-        return $realName ? $keyNames : \array_map($this->getMapping(...), $keyNames);
+        return $realName ? $keyNames : \array_map([$this, 'getMapping'], $keyNames);
     }
 
     /**

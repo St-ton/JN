@@ -68,7 +68,7 @@ class CustomerFields
                 WHERE kSprache = :lid
                 ORDER BY nSort ASC',
             ['lid' => $langID]
-        )->map([$this, 'prepare'])->keyBy('kKundenfeld')->toArray();
+        )->map($this->prepare(...))->keyBy('kKundenfeld')->toArray();
     }
 
     /**

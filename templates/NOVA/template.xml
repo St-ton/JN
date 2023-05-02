@@ -232,6 +232,7 @@
             <Setting Description="Instagram-Link" Key="instagram" Type="text" Value=""/>
             <Setting Description="Pinterest-Link" Key="pinterest" Type="text" Value=""/>
             <Setting Description="Skype-Link" Key="skype" Type="text" Value=""/>
+            <Setting Description="TikTok-Link" Key="tiktok" Type="text" Value=""/>
         </Section>
     </Settings>
     <Minify>

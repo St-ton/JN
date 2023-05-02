@@ -362,9 +362,9 @@ class CampaignController extends AbstractBackendController
                 }
             }
             if ($_SESSION['Kampagne']->cSort === 'ASC') {
-                \uasort($sort, [$this, 'sortAsc']);
+                \uasort($sort, $this->sortAsc(...));
             } else {
-                \uasort($sort, [$this, 'sortDesc']);
+                \uasort($sort, $this->sortDesc(...));
             }
             $tmpStats = [];
             foreach ($sort as $i => $tmp) {

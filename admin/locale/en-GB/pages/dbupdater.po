@@ -88,3 +88,6 @@ msgstr "%d plugins were disabled for compatibility reasons. Please check your in
 
 msgid "errorMinShopVersionRequired"
 msgstr "Your online shop does not have the minimum version required to update to version %s. Please update to version $s first and then to version %s. Please visit our <a href=\"%s\" target=\"_blank\">Guide</a> for further instructions."
+
+msgid "Updated %d config values"
+msgstr "%d Einstellungen aktualisiert"

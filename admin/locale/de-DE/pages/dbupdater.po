@@ -94,3 +94,6 @@ msgstr "%d Plugins wurden aus Kompatibilitätsgründen deaktiviert. Bitte überp
 
 msgid "errorMinShopVersionRequired"
 msgstr "Ihr Onlineshop verfügt nicht über die benötigte Mindestversion für das Update auf Version %s. Sie benötigen mindestens die Version %s, um das Update auf die Version %s durchführen zu können. Folgen Sie dazu bitte der entsprechenden Anleitung in unserem <a href=\"%s\" target=\"_blank\">Guide</a>."
+
+msgid "Updated %d config values"
+msgstr "%d Einstellungen aktualisiert"

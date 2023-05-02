@@ -70,10 +70,10 @@ class DefaultController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $phpFileCheckMiddleware = new PhpFileCheckMiddleware();
-        $route->get('/{slug:.+}', [$this, 'getResponse'])
+        $route->get('/{slug:.+}', $this->getResponse(...))
             ->setName('catchall' . $dynName)
             ->middleware($phpFileCheckMiddleware);
-        $route->post('/{slug:.+}', [$this, 'getResponse'])
+        $route->post('/{slug:.+}', $this->getResponse(...))
             ->setName('catchallPOST' . $dynName)
             ->middleware($phpFileCheckMiddleware);
     }

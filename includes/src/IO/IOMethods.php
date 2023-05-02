@@ -64,26 +64,26 @@ class IOMethods
      */
     public function registerMethods(): IO
     {
-        return $this->io->register('suggestions', [$this, 'suggestions'])
-            ->register('pushToBasket', [$this, 'pushToBasket'])
-            ->register('pushToComparelist', [$this, 'pushToComparelist'])
-            ->register('removeFromComparelist', [$this, 'removeFromComparelist'])
-            ->register('pushToWishlist', [$this, 'pushToWishlist'])
-            ->register('removeFromWishlist', [$this, 'removeFromWishlist'])
-            ->register('updateWishlistDropdown', [$this, 'updateWishlistDropdown'])
-            ->register('checkDependencies', [$this, 'checkDependencies'])
-            ->register('checkVarkombiDependencies', [$this, 'checkVarkombiDependencies'])
-            ->register('buildConfiguration', [$this, 'buildConfiguration'])
-            ->register('getBasketItems', [$this, 'getBasketItems'])
-            ->register('getCategoryMenu', [$this, 'getCategoryMenu'])
-            ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
-            ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
-            ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
-            ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
-            ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
-            ->register('setWishlistVisibility', [$this, 'setWishlistVisibility'])
-            ->register('updateWishlistItem', [$this, 'updateWishlistItem'])
-            ->register('updateReviewHelpful', [$this, 'updateReviewHelpful']);
+        return $this->io->register('suggestions', $this->suggestions(...))
+            ->register('pushToBasket', $this->pushToBasket(...))
+            ->register('pushToComparelist', $this->pushToComparelist(...))
+            ->register('removeFromComparelist', $this->removeFromComparelist(...))
+            ->register('pushToWishlist', $this->pushToWishlist(...))
+            ->register('removeFromWishlist', $this->removeFromWishlist(...))
+            ->register('updateWishlistDropdown', $this->updateWishlistDropdown(...))
+            ->register('checkDependencies', $this->checkDependencies(...))
+            ->register('checkVarkombiDependencies', $this->checkVarkombiDependencies(...))
+            ->register('buildConfiguration', $this->buildConfiguration(...))
+            ->register('getBasketItems', $this->getBasketItems(...))
+            ->register('getCategoryMenu', $this->getCategoryMenu(...))
+            ->register('getRegionsByCountry', $this->getRegionsByCountry(...))
+            ->register('checkDeliveryCountry', $this->checkDeliveryCountry(...))
+            ->register('setSelectionWizardAnswers', $this->setSelectionWizardAnswers(...))
+            ->register('getCitiesByZip', $this->getCitiesByZip(...))
+            ->register('getOpcDraftsHtml', $this->getOpcDraftsHtml(...))
+            ->register('setWishlistVisibility', $this->setWishlistVisibility(...))
+            ->register('updateWishlistItem', $this->updateWishlistItem(...))
+            ->register('updateReviewHelpful', $this->updateReviewHelpful(...));
     }
 
     /**

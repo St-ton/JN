@@ -22,7 +22,7 @@ class Errors extends DataCollector implements Renderable
      */
     public function __construct()
     {
-        \set_error_handler([$this, 'handleError']);
+        \set_error_handler($this->handleError(...));
     }
 
     /**

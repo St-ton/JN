@@ -94,84 +94,84 @@ class IOController extends AbstractBackendController
                     null,
                     'IMPORT_CUSTOMER_VIEW'
                 )
-                ->register('getPages', $jsonApi->getPages(...))
-                ->register('getCategories', $jsonApi->getCategories(...))
-                ->register('getProducts', $jsonApi->getProducts(...))
-                ->register('getManufacturers', $jsonApi->getManufacturers(...))
-                ->register('getCustomers', $jsonApi->getCustomers(...))
-                ->register('getSeos', $jsonApi->getSeos(...))
-                ->register('getAttributes', $jsonApi->getAttributes(...))
-                ->register('getSettingLog', $settings->getSettingLog(...))
-                ->register('isDuplicateSpecialLink', LinkAdmin::isDuplicateSpecialLink(...))
-                ->register('getCurrencyConversion', $this->getCurrencyConversionIO(...))
-                ->register('setCurrencyConversionTooltip', $this->setCurrencyConversionTooltipIO(...))
-                ->register('getNotifyDropIO', Notification::getNotifyDropIO(...))
-                ->register('getNewTwoFA', TwoFA::getNewTwoFA(...))
-                ->register('genTwoFAEmergencyCodes', TwoFA::genTwoFAEmergencyCodes(...))
-                ->register('setWidgetPosition', $widgets->setWidgetPosition(...), null, 'DASHBOARD_VIEW')
-                ->register('closeWidget', $widgets->closeWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('addWidget', $widgets->addWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('expandWidget', $widgets->expandWidget(...), null, 'DASHBOARD_VIEW')
-                ->register('getAvailableWidgets', $widgets->getAvailableWidgetsIO(...), null, 'DASHBOARD_VIEW')
-                ->register('getRemoteData', $widgets->getRemoteDataIO(...), null, 'DASHBOARD_VIEW')
-                ->register('getShopInfo', $widgets->getShopInfoIO(...), null, 'DASHBOARD_VIEW')
-                ->register('truncateJtllog', Jtllog::truncateLog(...), null, 'DASHBOARD_VIEW')
-                ->register('addFav', $this->addFav(...))
-                ->register('reloadFavs', $this->reloadFavs(...))
-                ->register('loadStats', $images->loadStats(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('cleanupStorage', $images->cleanupStorage(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('clearImageCache', $images->clearImageCache(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('generateImageCache', $images->generateImageCache(...), null, 'DISPLAY_IMAGES_VIEW')
-                ->register('dbUpdateIO', $updateIO->update(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterBackup', $updateIO->backup(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterDownload', $updateIO->download(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterStatusTpl', $updateIO->getStatus(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('dbupdaterMigration', $updateIO->executeMigration(...), null, 'SHOP_UPDATE_VIEW')
-                ->register('finishWizard', $wizardIO->answerQuestions(...), null, 'WIZARD_VIEW')
-                ->register('validateStepWizard', $wizardIO->validateStep(...), null, 'WIZARD_VIEW')
+                ->register('getPages', [$jsonApi, 'getPages'])
+                ->register('getCategories', [$jsonApi, 'getCategories'])
+                ->register('getProducts', [$jsonApi, 'getProducts'])
+                ->register('getManufacturers', [$jsonApi, 'getManufacturers'])
+                ->register('getCustomers', [$jsonApi, 'getCustomers'])
+                ->register('getSeos', [$jsonApi, 'getSeos'])
+                ->register('getAttributes', [$jsonApi, 'getAttributes'])
+                ->register('getSettingLog', [$settings, 'getSettingLog'])
+                ->register('isDuplicateSpecialLink', [LinkAdmin::class, 'isDuplicateSpecialLink'])
+                ->register('getCurrencyConversion', [$this, 'getCurrencyConversionIO'])
+                ->register('setCurrencyConversionTooltip', [$this, 'setCurrencyConversionTooltipIO'])
+                ->register('getNotifyDropIO', [Notification::class, 'getNotifyDropIO'])
+                ->register('getNewTwoFA', [TwoFA::class, 'getNewTwoFA'])
+                ->register('genTwoFAEmergencyCodes', [TwoFA::class, 'genTwoFAEmergencyCodes'])
+                ->register('setWidgetPosition', [$widgets, 'setWidgetPosition'], null, 'DASHBOARD_VIEW')
+                ->register('closeWidget', [$widgets, 'closeWidget'], null, 'DASHBOARD_VIEW')
+                ->register('addWidget', [$widgets, 'addWidget'], null, 'DASHBOARD_VIEW')
+                ->register('expandWidget', [$widgets, 'expandWidget'], null, 'DASHBOARD_VIEW')
+                ->register('getAvailableWidgets', [$widgets, 'getAvailableWidgetsIO'], null, 'DASHBOARD_VIEW')
+                ->register('getRemoteData', [$widgets, 'getRemoteDataIO'], null, 'DASHBOARD_VIEW')
+                ->register('getShopInfo', [$widgets, 'getShopInfoIO'], null, 'DASHBOARD_VIEW')
+                ->register('truncateJtllog', [Jtllog::class, 'truncateLog'], null, 'DASHBOARD_VIEW')
+                ->register('addFav', [$this, 'addFav'])
+                ->register('reloadFavs', [$this, 'reloadFavs'])
+                ->register('loadStats', [$images, 'loadStats'], null, 'DISPLAY_IMAGES_VIEW')
+                ->register('cleanupStorage', [$images, 'cleanupStorage'], null, 'DISPLAY_IMAGES_VIEW')
+                ->register('clearImageCache', [$images, 'clearImageCache'], null, 'DISPLAY_IMAGES_VIEW')
+                ->register('generateImageCache', [$images, 'generateImageCache'], null, 'DISPLAY_IMAGES_VIEW')
+                ->register('dbUpdateIO', [$updateIO, 'update'], null, 'SHOP_UPDATE_VIEW')
+                ->register('dbupdaterBackup', [$updateIO, 'backup'], null, 'SHOP_UPDATE_VIEW')
+                ->register('dbupdaterDownload', [$updateIO, 'download'], null, 'SHOP_UPDATE_VIEW')
+                ->register('dbupdaterStatusTpl', [$updateIO, 'getStatus'], null, 'SHOP_UPDATE_VIEW')
+                ->register('dbupdaterMigration', [$updateIO, 'executeMigration'], null, 'SHOP_UPDATE_VIEW')
+                ->register('finishWizard', [$wizardIO, 'answerQuestions'], null, 'WIZARD_VIEW')
+                ->register('validateStepWizard', [$wizardIO, 'validateStep'], null, 'WIZARD_VIEW')
                 ->register(
                     'migrateToInnoDB_utf8',
-                    DBMigrationHelper::doMigrateToInnoDB_utf8(...),
+                    [DBMigrationHelper::class, 'doMigrateToInnoDB_utf8'],
                     null,
                     'DBCHECK_VIEW'
                 )
-                ->register('redirectCheckAvailability', Redirect::checkAvailability(...))
-                ->register('updateRedirectState', $this->updateRedirectState(...), null, 'REDIRECT_VIEW')
-                ->register('getRandomPassword', $this->getRandomPassword(...), null, 'ACCOUNT_VIEW')
-                ->register('saveBannerAreas', BannerController::saveAreasIO(...), null, 'DISPLAY_BANNER_VIEW')
-                ->register('createSearchIndex', $this->createSearchIndex(...), null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('clearSearchCache', $this->clearSearchCache(...), null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-                ->register('adminSearch', $searchController->adminSearch(...), null, 'SETTINGS_SEARCH_VIEW')
-                ->register('saveShippingSurcharge', $this->saveShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
-                ->register('deleteShippingSurcharge', $this->deleteShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
+                ->register('redirectCheckAvailability', [Redirect::class, 'checkAvailability'])
+                ->register('updateRedirectState', [$this, 'updateRedirectState'], null, 'REDIRECT_VIEW')
+                ->register('getRandomPassword', [$this, 'getRandomPassword'], null, 'ACCOUNT_VIEW')
+                ->register('saveBannerAreas', [BannerController::class, 'saveAreasIO'], null, 'DISPLAY_BANNER_VIEW')
+                ->register('createSearchIndex', [$this, 'createSearchIndex'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
+                ->register('clearSearchCache', [$this, 'clearSearchCache'], null, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
+                ->register('adminSearch', [$searchController, 'adminSearch'], null, 'SETTINGS_SEARCH_VIEW')
+                ->register('saveShippingSurcharge', [$this, 'saveShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
+                ->register('deleteShippingSurcharge', [$this, 'deleteShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
                 ->register(
                     'deleteShippingSurchargeZIP',
-                    $this->deleteShippingSurchargeZIP(...),
+                    [$this, 'deleteShippingSurchargeZIP'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
                 ->register(
                     'createShippingSurchargeZIP',
-                    $this->createShippingSurchargeZIP(...),
+                    [$this, 'createShippingSurchargeZIP'],
                     null,
                     'ORDER_SHIPMENT_VIEW'
                 )
-                ->register('getShippingSurcharge', $this->getShippingSurcharge(...), null, 'ORDER_SHIPMENT_VIEW')
+                ->register('getShippingSurcharge', [$this, 'getShippingSurcharge'], null, 'ORDER_SHIPMENT_VIEW')
                 ->register(
                     'exportformatSyntaxCheck',
-                    ExportSyntaxChecker::ioCheckSyntax(...),
+                    [ExportSyntaxChecker::class, 'ioCheckSyntax'],
                     null,
                     'EXPORT_FORMATS_VIEW'
                 )
-                ->register('testExport', ExportSyntaxChecker::testExport(...), null, 'EXPORT_FORMATS_VIEW')
+                ->register('testExport', [ExportSyntaxChecker::class, 'testExport'], null, 'EXPORT_FORMATS_VIEW')
                 ->register(
                     'mailvorlageSyntaxCheck',
-                    SyntaxChecker::ioCheckSyntax(...),
+                    [SyntaxChecker::class, 'ioCheckSyntax'],
                     null,
                     'CONTENT_EMAIL_TEMPLATE_VIEW'
                 )
-                ->register('notificationAction', Notification::ioNotification(...))
-                ->register('pluginTestLoading', Helper::ioTestLoading(...));
+                ->register('notificationAction', [Notification::class, 'ioNotification'])
+                ->register('pluginTestLoading', [Helper::class, 'ioTestLoading']);
         } catch (Exception $e) {
             return $io->getResponse(new IOError($e->getMessage(), $e->getCode()));
         }

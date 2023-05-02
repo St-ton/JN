@@ -90,26 +90,26 @@ class GenerateDemoDataCommand extends Command
 
         if ($this->manufacturers > 0) {
             $this->barStart($this->manufacturers, 'manufacturer');
-            $generator->createManufacturers($this->callBack(...));
+            $generator->createManufacturers([$this, 'callBack']);
             $this->barEnd();
         }
 
         if ($this->categories > 0) {
             $this->barStart($this->categories, 'categories');
-            $generator->createCategories($this->callBack(...));
+            $generator->createCategories([$this, 'callBack']);
             $this->barEnd();
         }
 
         if ($this->products > 0) {
             $this->barStart($this->products, 'products');
-            $generator->createProducts($this->callBack(...));
+            $generator->createProducts([$this, 'callBack']);
             $this->barEnd();
             $generator->updateRatingsAvg();
         }
 
         if ($this->customers > 0) {
             $this->barStart($this->customers, 'customers');
-            $generator->createCustomers($this->callBack(...));
+            $generator->createCustomers([$this, 'callBack']);
             $this->barEnd();
         }
 

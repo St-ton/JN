@@ -214,7 +214,7 @@ class CacheRedisCluster implements ICachingMethod
         $tagged = \array_unique($this->getKeysByTag($tags));
         $tags   = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map(self::_keyFromTagName(...), $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
 
         return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
@@ -238,7 +238,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map(self::_keyFromTagName(...), $tags);
+            : \array_map([self::class, '_keyFromTagName'], $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -328,7 +328,7 @@ class CacheRedisCluster implements ICachingMethod
         return [
             'entries'  => \implode('/', $numEntries),
             'uptime'   => \implode('/', $uptimes), //uptime in seconds
-            'uptime_h' => \implode('/', \array_map($this->secondsToTime(...), $uptimes)), //human readable
+            'uptime_h' => \implode('/', \array_map([$this, 'secondsToTime'], $uptimes)), //human readable
             'hits'     => \implode('/', $hits), //cache hits
             'misses'   => \implode('/', $misses), //cache misses
             'hps'      => \implode('/', $hps), //hits per second

@@ -295,12 +295,6 @@ ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
 
-ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
-ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
-ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
-ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
-
-
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;
 const LOCK_TIME                           = 5;

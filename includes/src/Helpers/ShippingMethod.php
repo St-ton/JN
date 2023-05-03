@@ -1403,8 +1403,10 @@ class ShippingMethod
         $db              = Shop::Container()->getDB();
         $shippingClasses = self::getShippingClasses(Frontend::getCart());
         $defaultShipping = self::normalerArtikelversand($country);
-        $cacheID         = 'vkfrei_' . $customerGroupID . '_'
-            . $country . '_' . $shippingClasses . '_' . Shop::getLanguageCode();
+        $cacheID         = 'vkfrei_' . $customerGroupID
+            . '_' . $country
+            . '_' . $shippingClasses
+            . '_' . Shop::getLanguageCode();
         if (($shippingMethod = $cache->get($cacheID)) === false) {
             $iso = 'DE';
             if (\mb_strlen($country) > 0) {
@@ -1424,6 +1426,8 @@ class ShippingMethod
                 return $e->kVersandart;
             });
             if (\count($shippingMethods) === 0) {
+                $cache->set($cacheID, null, [\CACHING_GROUP_OPTION]);
+
                 return 0;
             }
 

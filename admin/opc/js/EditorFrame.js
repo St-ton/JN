@@ -37,6 +37,31 @@ export class EditorFrame
         this.loadStylesheet(this.shopUrl + '/includes/node_modules/@fortawesome/fontawesome-free/css/all.min.css');
         this.disableLinks();
         this.renderPreview(await this.page.getPreview());
+
+        this.rootAreas.on('click', e => {
+            this.selectPortlet(this.findPortletParent(this.jq(e.target)));
+        });
+    }
+
+    isPortlet(elm)
+    {
+        return elm && elm.is('[data-portlet]');
+    }
+
+    findPortletParent(elm)
+    {
+        if(this.isPortlet(elm)) {
+            return elm;
+        }
+
+        if(!elm.is(this.page.rootAreas)) {
+            return this.findPortletParent(elm.parent());
+        }
+    }
+
+    selectPortlet(portlet)
+    {
+        console.log(portlet);
     }
 
     renderPreview(preview)

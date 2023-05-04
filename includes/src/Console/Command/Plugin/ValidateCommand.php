@@ -130,6 +130,6 @@ class ValidateCommand extends Command
      */
     private function unzip(string $zipfile, XMLParser $parser): InstallationResponse
     {
-        return (new Extractor($parser))->extractPlugin($zipfile);
+        return (new Extractor($parser))->extractPlugin($zipfile, false);
     }
 }

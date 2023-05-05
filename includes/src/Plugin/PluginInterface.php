@@ -24,6 +24,11 @@ use JTLShop\SemVer\Version;
  */
 interface PluginInterface
 {
+    public const FILE_HASHES = '.hashes';
+    public const FILE_INVENTORY_CURRENT = '.current_version_files';
+    public const FILE_INVENTORY_OLD = '.old_version_files';
+    public const FILE_INVENTORY_OLD_CUSTOM = '.old_version_files_custom';
+
     /**
      * @return int
      */

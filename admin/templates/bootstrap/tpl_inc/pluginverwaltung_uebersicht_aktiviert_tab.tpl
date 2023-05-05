@@ -59,7 +59,25 @@
                                 </td>
                                 <td class="text-center">{$plugin->displayVersionRange()}</td>
                                 <td class="text-center plugin-install-date">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="plugin-folder">{$plugin->getDir()}</td>
+                                <td class="plugin-folder">
+                                    {$plugin->getDir()}
+                                    {if $plugin->supportsHashCheck() === false}
+                                        <span title="{__('File check unsupported')}" class="label text-info" data-toggle="tooltip">
+                                            <span class="fal fa-circle"></span>
+                                        </span>
+                                    {else}
+                                        {$modified = $plugin->getModifiedFiles()}
+                                        {if count($modified) === 0}
+                                            <span title="{__('No modified files')}" class="label text-success" data-toggle="tooltip">
+                                                <span class="fal fa-check-circle"></span>
+                                            </span>
+                                        {else}
+                                            <span title="{__('Modified files:')} {implode(', ', $modified)}" class="label text-danger" data-toggle="tooltip">
+                                                <span class="fal fa-times-circle"></span>
+                                            </span>
+                                        {/if}
+                                    {/if}
+                                </td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLangVarCount() > 0}
                                         <a href="{$adminURL}{$route}?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"

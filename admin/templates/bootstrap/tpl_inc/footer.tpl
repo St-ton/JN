@@ -109,7 +109,10 @@
     {/if}
 
     $( document ).ready(function () {
-        rearrangeResponsiveTables(document.getElementsByClassName("table-responsive"));
+        shrinkResponsiveTables(document.getElementsByClassName("table-responsive"));
+    });
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        shrinkResponsiveTables(document.getElementsByClassName("table-responsive"));
     });
 </script>
 

@@ -818,7 +818,8 @@ $.fn.isOnScreen = function(){
 
 };
 
-function tableApplies(elem)
+
+function tableCanBeShrunk(elem)
 {
     if ((elem.nodeName === "TABLE" || elem.firstElementChild.nodeName === "TABLE")
         && (elem.firstElementChild.firstElementChild.nodeName === "THEAD" || elem.firstElementChild.nodeName === "THEAD")) {
@@ -839,14 +840,15 @@ function tableApplies(elem)
 /**
  * Rearranges the content of responsive tables, so it does fit the users view
  */
-function rearrangeResponsiveTables(tables)
+function shrinkResponsiveTables(tables)
 {
     for (let i = 0; i < tables.length; i++) {
         let table = tables[i];
-        if (tableApplies(table)) {
+        if (tableCanBeShrunk(table)) {
             table.getElementsByTagName("tbody")[0].className = 'd-block';
             let trs = table.getElementsByTagName("tr");
             let thead = trs[0].querySelectorAll("th,td");
+            // Remove table head row
             trs[0].remove();
             for (let e = 0; e < trs.length; e++) {
                 let tds = trs[e].getElementsByTagName("td");
@@ -856,17 +858,27 @@ function rearrangeResponsiveTables(tables)
                         title= document.createElement('span'),
                         value= document.createElement('span');
                     cardView.className = 'd-flex align-items-center mb-2';
-                    title.className = 'd-inline-block w-25 me-3 mr-3';
-                    if (thead[o].innerHTML !== '') {
-                        title.innerHTML = '<h6 class="m-0">' + thead[o].innerHTML + ': </h6>';
+                    if (tds[o].innerHTML.trim().length === 0 || tds[o].innerHTML.trim() === "&nbsp;") {
+                        continue;
                     }
-                    value.className = 'd-inline-block w-75';
-                    value.innerHTML = tds[o].innerHTML;
+                    if (thead[o].innerHTML.trim().length === 0 || thead[o].innerHTML.trim() === "&nbsp;") {
+                        title.innerHTML = tds[o].innerHTML;
+                        value.innerHTML = '';
+                        title.className = tds[o].className;
+                    } else {
+                        title.innerHTML = '<h6 class="text-nowrap m-0">' + thead[o].innerHTML + ': </h6>';
+                        value.innerHTML = tds[o].innerHTML;
+                        value.className = tds[o].className;
+                    }
+                    title.className += ' text-left mr-1';
+                    value.className += ' flex-grow-1 text-right';
+                    title.classList.remove("text-center");
+                    value.classList.remove("text-center");
                     cardView.appendChild(title);
                     cardView.appendChild(value);
                     cardViews.appendChild(cardView);
                 }
-                trs[e].className = 'd-block';
+                trs[e].classList.add('d-block');
                 let cell = trs[e].insertCell(0);
                 cell.className = 'd-block';
                 cell.appendChild(cardViews);

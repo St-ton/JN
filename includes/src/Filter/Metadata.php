@@ -623,30 +623,37 @@ class Metadata implements MetadataInterface
      */
     public function getHeader(): string
     {
+        if ($this->productFilter->getBaseState()->isNotFound()) {
+            return '';
+        }
         if ($this->productFilter->hasCategory()) {
-            $this->breadCrumb = $this->productFilter->getCategory()->getName();
+            $this->breadCrumb = $this->productFilter->getCategory()->getName() ?? '';
 
-            return $this->breadCrumb ?? '';
+            return $this->breadCrumb;
         }
         if ($this->productFilter->hasManufacturer()) {
-            $this->breadCrumb = $this->productFilter->getManufacturer()->getName();
+            $this->breadCrumb = $this->productFilter->getManufacturer()->getName() ?? '';
 
-            return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
+            return $this->breadCrumb === ''
+                ? ''
+                : Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasCharacteristicValue()) {
-            $this->breadCrumb = $this->productFilter->getCharacteristicValue()->getName();
+            $this->breadCrumb = $this->productFilter->getCharacteristicValue()->getName() ?? '';
 
-            return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
+            return $this->breadCrumb === ''
+                ? ''
+                : Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
-            $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
+            $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName() ?? '';
 
-            return $this->breadCrumb ?? '';
+            return $this->breadCrumb;
         }
         if ($this->productFilter->hasSearch()) {
-            $this->breadCrumb = $this->productFilter->getSearch()->getName();
+            $this->breadCrumb = $this->productFilter->getSearch()->getName() ?? '';
         } elseif ($this->productFilter->getSearchQuery()->isInitialized()) {
-            $this->breadCrumb = $this->productFilter->getSearchQuery()->getName();
+            $this->breadCrumb = $this->productFilter->getSearchQuery()->getName() ?? '';
         }
         if (!empty($this->productFilter->getSearch()->getName())
             || !empty($this->productFilter->getSearchQuery()->getName())

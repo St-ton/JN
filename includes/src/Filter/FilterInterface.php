@@ -440,4 +440,14 @@ interface FilterInterface
      * @return string|null
      */
     public function getRoute(array $additional): ?string;
+
+    /**
+     * @return bool
+     */
+    public function isNotFound(): bool;
+
+    /**
+     * @param bool $notFound
+     */
+    public function setNotFound(bool $notFound): void;
 }

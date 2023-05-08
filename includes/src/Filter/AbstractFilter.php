@@ -164,6 +164,11 @@ abstract class AbstractFilter implements FilterInterface
     protected ?string $filterName = null;
 
     /**
+     * @var bool
+     */
+    protected bool $notFound = false;
+
+    /**
      * AbstractFilter constructor.
      * @param ProductFilter|null $productFilter
      */
@@ -882,5 +887,21 @@ abstract class AbstractFilter implements FilterInterface
     public function getRoute(array $additional): ?string
     {
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNotFound(): bool
+    {
+        return $this->notFound;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNotFound(bool $notFound): void
+    {
+        $this->notFound = $notFound;
     }
 }

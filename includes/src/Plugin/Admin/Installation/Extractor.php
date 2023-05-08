@@ -5,6 +5,7 @@ namespace JTL\Plugin\Admin\Installation;
 use InvalidArgumentException;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
+use JTL\Plugin\PluginInterface;
 use JTL\Shop;
 use JTL\XMLParser;
 use League\Flysystem\FileAttributes;
@@ -124,6 +125,13 @@ class Extractor
             $base = \PFAD_PLUGIN;
         } else {
             throw new InvalidArgumentException(\sprintf(\__('pluginInstallDefinitionNotFound'), $info));
+        }
+        $inventory = 'plgn://' . $base . $dirName . PluginInterface::FILE_INVENTORY_CURRENT;
+        if ($this->manager->has($inventory)) {
+            try {
+                $this->manager->move($inventory, 'plgn://' . $base . $dirName . PluginInterface::FILE_INVENTORY_OLD);
+            } catch (Throwable) {
+            }
         }
         try {
             $this->manager->createDirectory('plgn://' . $base . $dirName);
@@ -278,6 +286,25 @@ class Extractor
         }
         $zip->close();
         $this->response->setPath(self::UNZIP_DIR . $dirName);
+
+        $fileList = self::UNZIP_DIR . $dirName . PluginInterface::FILE_INVENTORY_CURRENT;
+        $hashes   = self::UNZIP_DIR . $dirName . PluginInterface::FILE_HASHES;
+        if (!\file_exists($fileList)) {
+            \touch($fileList);
+            foreach ($this->response->getFilesUnpacked() as $file) {
+                if ($file === $dirName) {
+                    continue;
+                }
+                if (\str_starts_with($file, $dirName)) {
+                    $file = \mb_substr($file, \mb_strlen($dirName));
+                }
+                $path = self::UNZIP_DIR . $dirName . $file;
+                if (\is_file($path)) {
+                    \file_put_contents($hashes, $file . '###' . \md5_file($path) . \PHP_EOL, \FILE_APPEND);
+                }
+                \file_put_contents($fileList, $file . \PHP_EOL, \FILE_APPEND);
+            }
+        }
 
         return $dirName;
     }

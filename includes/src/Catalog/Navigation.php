@@ -203,6 +203,9 @@ class Navigation
      */
     private function getProductFilterName(): string
     {
+        if ($this->productFilter->getBaseState()->isNotFound()) {
+            return Shop::Container()->getLinkService()->getSpecialPage(\LINKTYP_404)->getName();
+        }
         if ($this->productFilter->hasCategory()) {
             return $this->productFilter->getCategory()->getName() ?? '';
         }

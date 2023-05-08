@@ -1,5 +1,4 @@
 {include file='tpl_inc/pluginverwaltung_uebersicht_aktiviert_tab.tpl'}
-{include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='enabled' selector='#enabled-plugins' button='#uninstall-enabled-plugin'}
 {if $smarty.const.SAFE_MODE}
 <script>
     {literal}

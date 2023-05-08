@@ -178,3 +178,4 @@
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}
 </div>
+{include file='tpl_inc/pluginverwaltung_uninstall_modal.tpl' context='enabled' selector='#enabled-plugins' button='#uninstall-enabled-plugin'}

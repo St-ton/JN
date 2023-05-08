@@ -309,7 +309,10 @@ class ListingItem implements JsonSerializable
             return [];
         }
         $modified = [];
-        $items    = \array_filter(\explode("\n", \file_get_contents($this->getPath() . PluginInterface::FILE_HASHES)));
+        $items    = \array_filter(\explode(
+            \PHP_EOL,
+            \file_get_contents($this->getPath() . PluginInterface::FILE_HASHES)
+        ));
         foreach ($items as $item) {
             [$file, $hash] = \explode('###', $item);
             if (\md5_file($this->getPath() . $file) !== $hash) {

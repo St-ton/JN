@@ -7,6 +7,7 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
 use JTL\Plugin\BootstrapperInterface;
@@ -19,7 +20,9 @@ use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\XMLParser;
 use JTLShop\SemVer\Version;
+use League\Flysystem\MountManager;
 use stdClass;
+use Throwable;
 use function Functional\map;
 use function Functional\select;
 
@@ -48,11 +51,11 @@ final class Installer
      * @param JTLCacheInterface|null $cache
      */
     public function __construct(
-        private DbInterface $db,
-        private Uninstaller $uninstaller,
-        private ValidatorInterface $legacyValidator,
-        private ValidatorInterface $pluginValidator,
-        private ?JTLCacheInterface $cache = null
+        private readonly DbInterface        $db,
+        private readonly Uninstaller        $uninstaller,
+        private readonly ValidatorInterface $legacyValidator,
+        private readonly ValidatorInterface $pluginValidator,
+        private ?JTLCacheInterface          $cache = null
     ) {
         $this->cache = $cache ?? Shop::Container()->getCache();
     }
@@ -279,7 +282,7 @@ final class Installer
         if ($plugin->bExtension === 1) {
             try {
                 $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $hasSQLError = true;
                 $code        = InstallCode::SQL_ERROR;
             }
@@ -389,9 +392,9 @@ final class Installer
      */
     private function parseSQLFile(string $sqlFile, string $pluginName, int $pluginVersion): array
     {
-        $file = \PFAD_ROOT . \PFAD_PLUGIN . $pluginName . '/' .
-            \PFAD_PLUGIN_VERSION . $pluginVersion . '/' .
-            \PFAD_PLUGIN_SQL . $sqlFile;
+        $file = \PFAD_ROOT . \PFAD_PLUGIN . $pluginName
+            . '/' . \PFAD_PLUGIN_VERSION . $pluginVersion
+            . '/' . \PFAD_PLUGIN_SQL . $sqlFile;
 
         if (!\file_exists($file)) {
             return [];// SQL Datei existiert nicht
@@ -402,14 +405,7 @@ final class Installer
         while (($data = \fgets($handle)) !== false) {
             $data = \trim($data);
             if ($data !== '' && !\str_starts_with($data, '--')) {
-                if (\str_contains($data, 'CREATE TABLE')) {
-                    $line .= \trim($data);
-                } elseif (\str_contains($data, 'INSERT')) {
-                    $line .= \trim($data);
-                } else {
-                    $line .= \trim($data);
-                }
-
+                $line .= \trim($data);
                 if (\mb_substr($data, \mb_strlen($data) - 1, 1) === ';') {
                     $sqlLines[] = $line;
                     $line       = '';
@@ -428,7 +424,7 @@ final class Installer
      * @return array|Version
      * @throws Exception
      */
-    private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion)
+    private function updateByMigration(stdClass $plugin, string $pluginPath, Version $targetVersion): array|Version
     {
         $path              = $pluginPath . \PFAD_PLUGIN_MIGRATIONS;
         $manager           = new MigrationManager($this->db, $path, $plugin->cPluginID, $targetVersion);
@@ -500,7 +496,7 @@ final class Installer
      * @param string $action
      * @return string|bool
      */
-    private function getTableName(string $sql, string $action = 'create table( if not exists)')
+    private function getTableName(string $sql, string $action = 'create table( if not exists)'): bool|string
     {
         \preg_match('/' . $action . "? ([`']?)([a-z\d_]+)\\2/i", $sql, $matches);
 
@@ -565,8 +561,64 @@ final class Installer
         $this->db->update('tspezialseite', 'kPlugin', $pluginID, $upd);
         $this->updatePaymentMethods($newPluginID, $pluginID);
         $this->updateCronJobs($cronJobs, $newPluginID);
+        $this->deleteOldFiles();
 
         return InstallCode::OK;
+    }
+
+    private function deleteOldFiles(): void
+    {
+        /** @var Filesystem $fs */
+        $fs             = Shop::Container()->get(Filesystem::class);
+        $prefix         = \PLUGIN_DIR . \basename($this->dir) . '/';
+        $srcFileCurrent = $prefix . PluginInterface::FILE_INVENTORY_CURRENT;
+        $srcFileOld     = $prefix . PluginInterface::FILE_INVENTORY_OLD;
+        $srcFileCustom  = $prefix . PluginInterface::FILE_INVENTORY_OLD_CUSTOM;
+        $resultFile     = $prefix . '.deleted_files_ ' . $this->plugin->getCurrentVersion()->getOriginalVersion() . '.txt';
+        if (!$fs->fileExists($srcFileCurrent) || !$fs->fileExists($srcFileOld)) {
+            return;
+        }
+        $deletedFiles = [];
+        $currentFiles = \array_filter(\explode(\PHP_EOL, $fs->read($srcFileCurrent)));
+        $oldFiles     = \array_filter(\explode(\PHP_EOL, $fs->read($srcFileOld)));
+        if ($fs->fileExists($srcFileCustom)) {
+            $oldFiles = \array_unique(\array_merge(
+                $oldFiles,
+                \array_filter(\explode(\PHP_EOL, $fs->read($srcFileCustom)))
+            ));
+        }
+        $filesToDelete = \array_diff($oldFiles, $currentFiles);
+        foreach ($filesToDelete as $file) {
+            $src = $prefix . $file;
+            try {
+                $src = $fs->normalizeToBasePath($src, $prefix);
+            } catch (Exception $e) {
+                Shop::Container()->getLogService()->warning($e->getMessage());
+                continue;
+            }
+            if (!$fs->fileExists($src) && !$fs->directoryExists($src)) {
+                continue;
+            }
+            $deleted = true;
+            if ($fs->directoryExists($src)) {
+                try {
+                    $fs->deleteDirectory($src);
+                } catch (Throwable) {
+                    $deleted = false;
+                }
+            } else {
+                try {
+                    $fs->delete($src);
+                } catch (Throwable) {
+                    $deleted = false;
+                }
+            }
+            if ($deleted === true) {
+                $deletedFiles[] = \mb_substr($src, \mb_strlen($prefix));
+            }
+        }
+        $fs->write($resultFile, \implode(\PHP_EOL, $deletedFiles));
+        $fs->delete($srcFileOld);
     }
 
     /**
@@ -577,9 +629,8 @@ final class Installer
     {
         foreach ($cronJobs as $cronJob) {
             $match = $this->db->select('texportformat', ['kPlugin', 'cName'], [$pluginID, $cronJob->cName]);
-            if (isset($match->kExportformat)) {
-                $update               = new stdClass();
-                $update->foreignKeyID = $match->kExportformat;
+            if ($match !== null && isset($match->kExportformat)) {
+                $update = (object)['foreignKeyID' => (int)$match->kExportformat];
                 $this->db->update('tcron', 'cronID', $cronJob->cronID, $update);
             }
         }
@@ -761,12 +812,12 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        if (isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)) {
+        if ($oldMailTpl !== null && $newMailTpl !== null && $oldMailTpl->kEmailvorlage > 0) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
                 'kEmailvorlage',
-                $oldMailTpl->kEmailvorlage,
-                (object)['kEmailvorlage' => $newMailTpl->kEmailvorlage]
+                (int)$oldMailTpl->kEmailvorlage,
+                (object)['kEmailvorlage' => (int)$newMailTpl->kEmailvorlage]
             );
         }
         foreach ($this->plugin->getMailTemplates()->getTemplatesAssoc() as $moduleID => $oldTpl) {
@@ -781,7 +832,7 @@ final class Installer
                 false,
                 'kEmailvorlage'
             );
-            if (isset($newTpl->kEmailvorlage) && $newTpl->kEmailvorlage > 0) {
+            if ($newTpl !== null && $newTpl->kEmailvorlage > 0) {
                 $newTplID = (int)$newTpl->kEmailvorlage;
                 $oldTplID = (int)$oldTpl->kEmailvorlage;
                 $this->db->delete('temailvorlagesprache', 'kEmailvorlage', $newTplID);

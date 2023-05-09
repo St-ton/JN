@@ -176,7 +176,7 @@ class MailService extends AbstractService
      * @param int   $isSent
      * @return int
      */
-    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): int
+    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): bool
     {
         return $this->getRepository()->setMailStatus($mailIds, $isSendingNow, $isSent);
     }
@@ -196,7 +196,9 @@ class MailService extends AbstractService
         $phpmailer->Timeout    = \SOCKET_TIMEOUT;
         $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->setFrom($mail->getFromMail(), $mail->getFromName());
-        $phpmailer->addAddress($mail->getToMail(), $mail->getToName());
+        foreach ($mail->getRecipients() as $recipient) {
+            $phpmailer->addAddress($recipient['mail'], $recipient['name']);
+        }
         $phpmailer->addReplyTo($mail->getReplyToMail(), $mail->getReplyToName());
         $phpmailer->Subject = $mail->getSubject();
         if (!empty($mail->getCopyRecipients()[0])) {

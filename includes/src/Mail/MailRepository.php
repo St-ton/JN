@@ -55,7 +55,7 @@ class MailRepository extends AbstractRepository
      * @param int   $isSent
      * @return int
      */
-    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): int
+    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): bool
     {
         $ids  = implode(',', $this->ensureIntValuesInArray($mailIds));
         $stmt = 'UPDATE ' .

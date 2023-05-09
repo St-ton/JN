@@ -6,24 +6,24 @@ Shop CLI
     <br />
 
 
-Die Shop CLI ist ein Kommandozeilen-Tool, welches mit dem PHP-Kommandozeileninterpreter
-verwendet wird und die Möglichkeit bietet, administrative Aufgaben ohne Shop-Backend
-auszuführen. |br|
-Um die Shop CLI verwenden zu können, muss PHP als Kommandozeileninterpreter verfügbar sein.
-(siehe: PHP-Konfiguration des jeweiligen Servers)
+The shop CLI is a command line tool which is used together with the PHP
+command line interpreter and allows you to carry out administrative tasks without having to run the shop’s
+back end. |br|
+To be able to use the shop CLI, PHP must be available in the form of a command line interpreter.
+(See: PHP server configuration)
 
 
-Aufruf der Shop CLI
--------------------
+Executing the shop CLI
+----------------------
 
-Die Shop CLI wird Im Hauptverzeichnis (Installationsverzeichnis) von JTL-Shop aufgerufen:
+The shop CLI will be executed in the main directory (installation directory) of the JTL-Shop:
 
 .. code-block:: text
 
     $> php cli [befehl:sub-befehl [parameter]]
 
-Ein Aufruf ohne Befehle, wie auch der Aufruf mit dem Befehl ``list``, gibt eine kurze
-Liste aller verfügbaren Befehle aus.
+Executing without a command, as also happens when the ``list`` command is executed, will show
+a short list of all available commands.
 
 .. code-block:: text
 
@@ -32,15 +32,15 @@ Liste aller verfügbaren Befehle aus.
     $> php cli list
     ...
 
-Mehrere Befehle haben nur einen Sub-Befehl. |br|
-Werden solche Befehle angegeben, fragt die Shop CLI interaktiv, ob der eine Sub-Befehl ausgeführt werden soll.
+Many commands have only one sub-command. |br|
+In this case, a prompt from the shop CLI will ask if the sub-command should be carried out.
 
 
-Hilfe zu Befehlen
------------------
+Help with commands
+------------------
 
-Mit ``help`` vor einem Befehl, wie auch mit den Parametern ``-h`` und ``--help`` nach
-einem Befehl, erhält man Hilfe zu diesem spezifischen Befehl.
+With ``help`` before a command, as is the case with Parameter ``-h`` and ``--help`` after
+a command, you will receive help regarding this specific command.
 
 .. code-block:: text
 
@@ -52,142 +52,142 @@ einem Befehl, erhält man Hilfe zu diesem spezifischen Befehl.
     ...
 
 
-Die Befehle im Einzelnen
-------------------------
+Individual commands
+-------------------
 
 ``migrate``
 ...........
 
-Wird der Befehl ``migrate`` ohne Sub-Befehl aufgerufen, so führt er alle Migrationen aus,
-die bis zum aktuellen Zeitpunkt noch nicht ausgeführt wurden.
+If the command ``migrate`` is executed without a sub-command, it will run all
+migrations that were not previously run.
 
 ``migrate:create``
 ..................
 
-Der Befehl ``create`` erzeugt den Objektrumpf einer neuen Migration. |br|
-Diese neue Migration enthält zwei leere Methoden (``up()``, ``down()``), die vom Entwickler zu implementieren sind.
+The ``create`` command will create the object of a new migration. |br|
+New migrations contain two empty methods (``up()``, ``down()``) that are to be used by the developer.
 
 ``migrate:innodbutf8``
 ......................
 
-Der Befehl ``innodbutf8`` konvertiert alle Tabellen der Datenbank auf die *Engine* "InnoDB", die bis dato noch mit
-der Engine "MyISAM" laufen. |br|
-Zudem werden all diese Tabellen auf den Zeichensatz ``CHARACTER SET 'utf8'`` und die Sortierungsregel
-``COLLATE 'utf8_unicode_ci'`` umgestellt.
+The ``innodbutf8`` command converts all database tables to the "InnoDB" *engine* that to date are still running on
+the "MyISAM" engine. |br|
+Subsequently, all the tables change to ``CHARACTER SET 'utf8'`` and the sorting rule changes to
+``COLLATE 'utf8_unicode_ci'``.
 
 ``migrate:status``
 ..................
 
-Mit dem Befehl ``status`` können Sie sich eine Liste aller Migrationen und deren Ausführungsstatus ausgeben lassen.
+With the ``status`` command, you can generate a list of all migrations and their respective execution status.
 
 
 backup
 ......
 
-Der Befehl ``backup`` ist nicht alleinstehend aufrufbar. Er kann nur mit einem spezifischen Unterbefehl aufgerufen
-werden.
+The command ``backup`` cannot be independently executed. It can only be executed with a specific
+sub-command.
 
 ``backup:db``
 .............
 
-``db`` erzeugt ein Backup der Shop-Datenbank. |br|
-Das erzeugte Backup wird unter ``export/backup/[DatumID]_backup.sql`` gespeichert. |br|
-Mit dem Parameter ``-c`` (oder ``--compress``) kann die Backupdatei mit *gzip* gepackt werden. Der Dateiname
-wird dann zu ``export/backup/[DatumID]_backup.sql.gz``.
+``db`` creates a backup of the shop’s database. |br|
+The backup that is created will then be saved under ``export/backup/[DatumID]_backup.sql``. |br|
+With the ``-c`` (or ``--compress``) parameter, the backup file can be compressed with gzip*. The file name will
+then change to ``export/backup/[DatumID]_backup.sql.gz``.
 
 ``backup:files``
 ................
 
-``files`` erzeugt ein Backup der Ordner- und Dateistruktur des Shops. |br|
-Mit dem Parameter ``--exclude-dir=`` können ein oder mehrere Verzeichnisse vom Archiviervorgang ausgeschlossen
-werden. |br|
-(Bei mehreren Verzeichnissen wird der exclude-Parameter
-auch mehrmals benutzt: ``exclude-dir=pfad_a --exclude-dir=pfad_b`` usw.)
+``files`` creates a backup of the file and folder structure of the shop. |br|
+With the ``--exclude-dir=`` parameter, one or more of the directories can be excluded from the
+archiving process. |br|
+In the case of multiple directories, the exclude-parameter
+will be used several times: ``exclude-dir=pfad_a --exclude-dir=pfad_b`` etc.)
 
 .. danger::
 
-    Sollte es sich beim Installationsverzeichnis um ein git-Repository handeln, ist es ratsam,
-    das ``.git/``-Verzeichnis immer mit ``--exclude-dir=.git/`` vom Archivieren auszuschließen!
+    Should the installation directory involve a git repository, then it is advised
+    that ``.git/``-directory always be excluded from archiving with ``--exclude-dir=.git/`!
 
 .. caution::
 
-    Sehr große Verzeichnisse (zum Beispiel: Bilderverzeichnisse, ggf. ``includes/vendor/``) solltem, nach Möglichkeit,
-    beim Archivieren weggelassen werden, da der Vorgang sonst sehr lange dauern kann.
+    Large directories, like picture directories or possibly ``includes/vendor/``, should be, if at all possible,
+    left out when archiving. Otherwise, the process could take much longer.
 
-Die erzeugte ``.zip``-Datei wird unter ``export/backup/[DatumID]_file_backup.zip`` gespeichert.
+The``.zip`` file created will then be saved under ``export/backup/[DatumID]_file_backup.zip``.
 
 
 cache
 .....
 
-Der Befehl ``cache`` ist nicht alleinstehend aufrufbar. Er kann nur mit einem spezifischen Unterbefehl aufgerufen
-werden.
+The command ``cache`` cannot be independently executed. It can only be executed with a specific
+sub-command.
 
 ``cache:dbes:delete``
 .....................
 
-Der Abgleich von JTL-Wawi und JTL-Shop erzeugt temporäre Dateien, die standardmäßig automatisch gelöscht werden. |br|
-Wird dieses automatische Löschen durch die config-Konstante ``KEEP_SYNC_FILES`` unterbunden, können diese temporären
-Dateien mit diesem Befehl gelöscht werden.
+The synchronisation between JTL-Wawi and JTL-Shop creates temporary folders that are usually automatically deleted. |br|
+In the case that automatic deletion is blocked by the ``KEEP_SYNC_FILES`` constant, these temporary files can be deleted with
+this command.
 
 ``cache:file:delete``
 .....................
 
-Sobald für JTL-Shop die Caching-Methode "Datein" (und "Dateien (erweitert)") eingestellt ist, werden diese Dateien
-unter ``templates_c/filecache/`` gespeichert. JTL-Shop verwaltet das Verzeichnis ``filecache/`` automatisch.
+As long as the caching method for JTL-Shop is set to "Files" (and "Files (extended)"), these files will be saved
+under ``templates_c/filecache/``. JTL-Shop automatically manages the ``filecache/`` directory.
 
-Bei Bedarf kann mithilfe der Shop CLI und diesem Befehl das Verzeichnis geleert und entfernt werden.
+When necessary, with the help of the shop CLI and this command, the directory can be emptied and removed altogether.
 
 ``cache:tpl:delete``
 ....................
 
-Für jedes aktivierte Template in JTL-Shop existiert ein Verzeichnis unterhalb des Ordners ``templates_c/``. Hier
-werden alle durch Smarty vor-compilierten Dateien des jeweiligen Templates abgelegt. |br|
+For every activated template in JTL-Shop, there is a directory in the ``templates_c/`` folder. Here,
+all the template files that are pre-compiled by Smarty will be stored. |br|
 
-Mit diesem Sub-Befehl kann dieser Ordner bei Bedarf auch manuell geleert und entfernt werden.
+With this sub-command, this folder can also be manually emptied and deleted, if necessary.
 
 ``cache:clear``
 ...............
 
-Dieser Sub-Befehl leert den jeweiligen Speicher der aktuell aktivierten Objekt-Cache-Methode. |br|
-(wie im Backende eingestellt, siehe: *System -> Cache -> Einstellungen -> Methode:*)
+This sub-command clears the corresponding memory of the currently activated object cache method. |br|
+(As set in the back end. See: *System -> Cache -> Settings-> Method:*)
 
 ``cache:warm``
 ..............
 
-Dieser Sub-Befehl führt ein s.g. "cache warmup" durch, wobei bereits verschiedene Inhalte im Cache aufbereitet werden,
-um sie schneller zur Verfügung stellen zu können.
+This command carries out a “cache warm-up”. When this happens, various contents will be
+prepared for quicker access.
 
-Mit einem entsprechenden Parameter können Sie gesondert festlegen, welche Bereiche des Cache "aufgewärmt"
-werden sollen:
+With the proper parameters, you can specifically establish which areas of the cache are to be
+“warmed up”.
 
 .. code-block:: text
 
-    -d, --details         Artikeldetails vorbereiten
-    -l, --list            Artikellisten vorbereiten
-    -k, --childproducts   Kindartikel vorbereiten
-    -g, --linkgroups      Linkgruppen vorbereiten
-    -c, --categories      Kategorien vorbereiten
-    -m, --manufacturers   Hersteller vorbereiten
+    -d, --details         prepare item details
+    -l, --list            prepare item lists
+    -k, --childproducts   prepare child items
+    -g, --linkgroups      prepare link groups
+    -c, --categories      prepare categories
+    -m, --manufacturers   prepare manufacturers
 
 .. caution::
 
-    Das Aufwärmen des Caches kann, abhängig von der Größe Ihres JTL-Shop, einige Zeit in Anspruch nehmen.
+    Warming up the cache can take a while, depending on the size of your JTL-Shop.
 
-Mit dem folgenden Paramter kann man das Leeren des Caches, vor dem Aufwärmen, erzwingen:
+You can force the cache to clear before warm-up with the following parameter:
 
 .. code-block:: text
 
-    -p, --preflush        Cache löschen vor dem Aufwärmen
+    -p, --preflush        Clear cache before warm-up
 
-Diese Parameter können beliebig kombiniert werden.
+The parameters can be arbitrarily combined.
 
 
 compile
 .......
 
-Der Befehl ``compile`` ist nicht alleinstehend aufrufbar. Er kann nur mit einem spezifischen Unterbefehl aufgerufen
-werden.
+The command ``compile`` can not be independently executed. It can only be executed with a specific
+sub-command.
 
 ``compile:less``
 ................
@@ -196,110 +196,110 @@ Alle *Themes* des EVO-Templates enthalten ``.less``-Dateien. |br|
 Sollten Sie die ``.less``-Dateien in einem *Theme* an Ihre Bedürfnisse angepaßt haben, können Sie mit diesen Befehl
 alle ``.less``-Dateien, aller Themes des EVO-Templates, in ``.css``-Dateien übersetzen.
 
-Mit dem Parameter ``--theme=[Theme-Name]`` können Sie ein bestimmtes *Theme* angeben. |br|
-Mit dem Parameter ``--templateDir=[Template-Name]`` bestimmen Sie ein anderes Template-Verzeichnis.
+With the ``--theme=[Theme-Name]`` parameter, you can select a specific *theme*. |br|
+With the ``--templateDir=[Template-Name]`` parameter, you can define another template directory.
 
 ``compile:sass``
 ................
 
-Alle *Themes* des NOVA-Templates enthalten ``.scss``-Dateien. |br|
-Sollten Sie die ``.scss``-Dateien in einem *Theme* an Ihre Bedürfnisse angepaßt haben, können Sie mit diesen Befehl
-alle ``.scss``-Dateien, aller Themes des NOVA-Templates, in ``.css``-Dateien übersetzen.
+All NOVA template *themes* contain ``.scss`` files. |br|
+If you have customised the ``.scss`` files in a *theme* according to your needs, you can use this command to convert all
+``.scss`` files, of all themes of the NOVA template, to ``.css`` files.
 
-Dieser Befehl übersetzt ebenso das "*critical SCSS*", welches im Seitenkopf immer mit übertragen wird.
+This command also converts the "*critical SCSS*", which is always included in the page header.
 
-Mit dem Parameter ``--theme=[Theme-Name]`` können Sie ein bestimmtes *Theme* angeben. |br|
-Mit dem Parameter ``--templateDir=[Template-Name]`` bestimmen Sie ein anderes Template-Verzeichnis.
+With the ``--theme=[Theme-Name]`` parameter, you can select a specific *theme*. |br|
+With the ``--templateDir=[Template-Name]`` parameter, you can define another template directory.
 
 generate
 ........
 
-Der Befehl ``generate`` kann alleinstehend aufgerufen werden, fragt aber dann interaktiv, ob der einzige
-Sub-Befehl aufgerufen werden soll.
+The ``generate`` command can be independently executed, but it will then prompt and ask if the sub-command
+should be executed.
 
 ``generate:demodata``
 .....................
 
-Mit diesem Befehl können Sie einfache Artikel und Kategorien in einem noch leeren JTL-Shop erzeugen,
-um die grundlegende Funktion von JTL-Shop zu demonstrieren.
+With this command, you can create simple items and categories in a still empty JTL-Shop, to demonstrate
+some of the shop’s basic functions.
 
 
 mailtemplates
 .............
 
-Der Befehl ``mailtemplates`` kann alleinstehend aufgerufen werden, fragt aber dann interaktiv, ob der einzige
-Sub-Befehl aufgerufen werden soll.
+The ``mailtemplates`` command can be independently executed, but it will then prompt and ask if the sub-command
+should be executed.
 
 ``mailtemplates:reset``
 .......................
 
-Alle Mailtemplates des JTL-Shop sind vom Shopbetreiber frei konfigurierbar. Sie werden in der Datenbank
-gespeichert. |br|
-Um diese Mailtemplates wieder auf ihren Auslieferungszustand zu setzen, kann dieser Befehl verwendet werden.
+All JTL-Shop mail templates are fully configurable. They are stored in
+the database. |br|
+This command can be used to set the mail templates back to the factory default setting.
 
 
 model
 .....
 
-Der Befehl ``model`` kann alleinstehend aufgerufen werden, fragt aber dann interaktiv, ob der einzige
-Sub-Befehl aufgerufen werden soll.
+The ``model`` command can be independently executed, but it will then prompt and ask if the sub-command
+should be executed.
 
 ``model:create``
 ................
 
-Dieser Befehl kann interaktiv aufgerufen werden. |br|
-Er erzeugt eine neue Klasse, abgeleitet von ``DataModel``, mit dem Namen ``T[Tabellenname]Model.php``,
-welche die angegebene Tabelle abbildet.
+This command can be executed interactively. |br|
+It creates a new class derived from ``DataModel`` under the name ``T[Table name]Model.php``,
+which then displays the table.
 
 .. caution::
 
-    Zum Speichern der neuen Objekte muss ein Ordner names ``models/`` im Hauptverzeichnis des Shops vorhanden und von
-    der PHP CLI beschreibbar sein.
+    In order to save the new objects, there must be a folder called ``models/`` in the main directory of the shop that can be writable
+    by the PHP CLI.
 
 
 
 
-Erweiterung durch Plugin
-------------------------
+Extension via plug-in
+---------------------
 
-Das Plugin `jtl_plugin_bootstrapper <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_plugin_bootstrapper>`_
-erweitert die Shop CLI um den Befehl "*create-plugin*". |br|
-Wenn dieses Plugin in JTL-Shop installiert ist, können Sie mit der Shop CLI den Befehl
-``jtl_plugin_bootstrapper:create-plugin`` aufrufen, um sich die grundlegende Struktur eines JTL-Shop Plugins erzeugen
-zu lassen.
+The `jtl_plugin_bootstrapper <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_plugin_bootstrapper>`_
+plug-in extends the shop CLI using the command "*create-plugin*". |br|
+If this plug-in is installed in JTL-Shop, you can execute the command
+``jtl_plugin_bootstrapper:create-plugin`` with the shop CLI in order to create the fundamental structure of a JTL-Shop
+plug-in.
 
-Der Befehl ``jtl_plugin_bootstrapper`` kann alleinstehend aufgerufen werden, fragt aber dann interaktiv, ob der
-einzige Sub-Befehl ``create-plugin`` aufgerufen werden soll. |br|
-Der Sub-Befehl ``create-plugin`` fragt dann seinerseits interaktiv alle erforderlichen Parameter ab und erzeugt sodann
-die grundlegend erforderlichen Verzeichnisse und Dateien im Ordner ``plugins/``.
+The ``jtl_plugin_bootstrapper`` command can be independently executed, but it will then prompt and ask if the
+sub-command ``create-plugin`` should be executed. |br|
+The ``create-plugin`` sub-command then queries all required parameters and creates the necessary foundational directories
+and files in the ``plugins/`` folder.
 
-Ist ein Ausführen des Sub-Befehls ``create-plugin`` per Script gewünscht, können alle Parameter
-auch in einem Shell-Script übergeben werden. |br|
+If execution of the sub-command ``create-plugin`` is required by script, all parameters
+ can also be passed in a shell script. |br|
 
-Beispiel:
+Example:
 
 .. code-block:: sh
 
     #!/bin/env bash
 
-    PLUGIN_NAME='TestPlugin'                 # Name des Plugins
-    PLUGIN_VERSION='1.0.0'                   # Version des Plugin (SemVer-konform)
-    DESCRIPTION='Dies ist eine Test-Plugin'  # Beschreibungstext des Plugins
-    AUTHOR='Max Mustermann'                  # Name des Authors
-    URL='http://example.com'                 # URL, beispielsweise zur Homepage des Authors
-    ID='test_plugin'                         # Plugin-ID (Plugin-Verzeichnisname und Shop-interne ID)
-    FLUSH_TAGS='CACHING_GROUP_PRODUCT'       # Caching-Gruppen, die bei Installation gelöscht werden sollen (kommagetrennte Liste)
-    MINSHOPVERSION='5.0.0'                   # minimale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
-    MAXSHOPVERSION='5.1.3'                   # maximale Shop-Version, in der das Plugin noch lauffähig ist (SemVer-konform)
-    CREATE_MIGRATIONS='tplugin_table'        # Migrations zur Tabellerstellung erzeugen (kommagetrennte Liste)
-    CREATE_MODELS='Yes'                      # Model erstellen, für neue Tabellen? (Yes/No)
-    HOOKS='61,62'                            # Hooks, die genutzt werden sollen (kommagetrennt und numerisch)
-    JS='main.js'                             # Javascript-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
-    CSS='main.css'                           # CSS-Dateien, die erzeugt werden sollen (kommagetrennte Liste)
-    DELETE='Yes'                             # Soll das Plugin, bei Installation, eine alte Version ersetzen? (Yes/No)
-    LINKS='test-plugin'                      # Frontend-Link-Name des Plugins (SEO-konformer, kommagetrennte Liste)
-    SETTINGS='Textarea Test,Checkbox Test'   # Backend-Setting-Name (kommagetrennte Liste, muss mit Settings-Typ deckungsgleich sein)
-    SETTINGSTYPES='textarea,checkbox'        # Typ des Backend-Settings (kommagetrennte Liste)
+    PLUGIN_NAME='TestPlugin'                 # Plug-in name
+    PLUGIN_VERSION='1.0.0'                   # Plug-in version (SemVer compliant)
+    DESCRIPTION='This is a test plug-in'     # Plug-in description
+    AUTHOR='John Smith'                      # Author name
+    URL='http://example.com'                 # Sample author home page
+    ID='test_plugin'                         # Plug-in ID (Plug-in and internal shop ID)
+    FLUSH_TAGS='CACHING_GROUP_PRODUCT'       # Caching groups that should be cleared during installation (comma-separated values)
+    MINSHOPVERSION='5.0.0'                   # minimal shop version in which the plug-in is still executable (SemVer compliant)
+    MAXSHOPVERSION='5.1.3'                   # maximal shop version in which the plug-in is still executable (SemVer compliant)
+    CREATE_MIGRATIONS='tplugin_table'        # Generate migrations to create new tables (comma-separated values)
+    CREATE_MODELS='Yes'                      # Generate a model to create new tables? (Yes/No)
+    HOOKS='61,62'                            # Hooks that should be used (comma-separated and numerical)
+    JS='main.js'                             # Javascript files that are to be created (comma-separated values)
+    CSS='main.css'                           # CSS files that are to be created (comma-separated values)
+    DELETE='Yes'                             # Upon installation, should the plug-in replace an older version? (Yes/No)
+    LINKS='test-plugin'                      # Front end plug-in link name (SEO compliant, comma-separated values)
+    SETTINGS='Textarea Test,Checkbox Test'   # Back end setting name (comma-separated values, must be congruent with the settings type)
+    SETTINGSTYPES='textarea,checkbox'        # Back end setting type (comma-separated values)
 
 
     php cli jtl_plugin_bootstrapper:create-plugin  \
@@ -322,14 +322,14 @@ Beispiel:
       --settings="${SETTINGS}"                     \
       --settingstypes="${SETTINGSTYPES}"           \
 
-Nicht alle Parameter sind Pflichtangaben. |br|
-Bei interaktiver Ausführung wird nur der grundlegende Teil abgefragt.
+Not all parameters must be provided. |br|
+During interactive execution, only the essential specifications are asked.
 
-Für den Parameter ``SETTINGSTYPES`` sind die Werte, die im Abschnitt ``info.xml``
-in der Tabellenzeile ":ref:`Attribut Typ <label_infoxml_settingtypes>`" gelistet sind, gültig. |br|
-``SETTINGS`` (die Einstellungsnamen) und ``SETTINGSTYPES`` müssen zwei "deckungsgleiche" Arrays sein, bei denen
-beispielsweise Wert 1 im Array ``SETTINGS`` auch dem Wert 1 im Array ``SETTINGSTYPES`` entspricht.
+For the parameter ``SETTINGSTYPES``, the values that are listed in the``info.xml`` segment
+in the ":ref:`Attribut Typ <label_infoxml_settingtypes>`" row are valid. |br|
+``SETTINGS`` (setting names) and ``SETTINGSTYPES`` must be two "congruent" arrays in which, for example,
+value 1 in the ``SETTINGS`` array corresponds with value 1 in the ``SETTINGSTYPES`` array.
 
-Der Parameter ``--flush-tags`` bezieht sich auf die Caching-Group-Konstanten, die in den Datei ``includes/defines_inc.php``
-zu finden sind.
+The``--flush-tags`` parameter applies to the cache group constants, which can be found in the ``includes/defines_inc.php``
+file.
 

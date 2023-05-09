@@ -754,11 +754,11 @@ class Router
                 $this->defaultLocale = $language->getIso639();
             }
         }
-        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
-        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
+        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'F';
+        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'F';
         if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
-            $defaultScheme = 'xF';
-            $otherSchemes  = 'xF';
+            $defaultScheme = 'F';
+            $otherSchemes  = 'F';
         }
         if ($defaultScheme !== 'F' || $otherSchemes !== 'F') {
             if ($this->isMultiDomain === false && \count($locales) > 1) {

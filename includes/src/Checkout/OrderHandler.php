@@ -385,7 +385,7 @@ class OrderHandler
         $this->db->update('tbesucher', 'kKunde', $upd->kKunde, $upd);
         $obj->tkunde         = $this->customer;
         $obj->tbestellung    = $order;
-        $obj->totalLocalized = Preise::getLocalizedPriceString($amount->total[1], $amount->currency, false);
+        $obj->totalLocalized = Preise::getLocalizedPriceWithoutFactor($amount->total[1], $amount->currency, false);
         $obj->payments       = $order->getIncommingPayments(false);
 
         if (isset($order->oEstimatedDelivery->longestMin, $order->oEstimatedDelivery->longestMax)) {

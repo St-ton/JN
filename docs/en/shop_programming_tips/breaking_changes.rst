@@ -1,4 +1,4 @@
-Breaking Changes
+Breaking changes
 ================
 
 .. |rarr| raw:: html
@@ -13,52 +13,52 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
 --------------------------------
 
 
-- **Systemvoraussetzung auf PHP 7.3 angehoben**
+- **System requirements upgraded to PHP 7.3**
 
-    Für den Betrieb von JTL-Shop 5.x ist PHP 7.3 Voraussetzung.
+    PHP 7.3 is a requirement for the operation of JTL-Shop 5.x.
 
-- **jQuery Version auf 3.0 angehoben**
+- **jQuery version upgraded to 3.0**
 
-    Mit JTL-Shop 5.x erfolgte für das Javascript-Framework *jQuery* ein Update von Version 1.12 auf
+    For JTL-Shop 5.x, the Javascript framework *jQuery* was updated from version 1.12 to
     Version 3.0. |br|
-    Weitere Informationen hierzu finden Sie im Abschnitt ":doc:`/shop_templates/jquery_update`".
+    You can find more information in section ":doc:`/shop_templates/jquery_update`".
 
-- **Bootstrap-Version auf 4.1 angehoben**
+- **Bootstrap updated to version 4.1**
 
-    Das CSS-Framework *Bootstrap* hat mit JTL-Shop 5.x ebenfalls ein Update erhalten und ist nun in Version 4.1.3
-    im Onlineshop enthalten.
+    The CSS-Framework *Bootstrap* has also received an update along with JTL-Shop 5.x and is now version 4.1.3
+    in the online shop.
 
-- **Die veralteten Bibliotheken "xajax" und "PclZip" wurden entfernt**
+- **The outdated libraries "xajax" and "PclZip" were removed**
 
-- **Die ungenutzten Seitentypen "Newsarchiv" und "RMA" wurden entfernt**
+- **The unused page types "News archive" and "RMA" were removed**
 
-- **Die Versionierung wurde geändert**
+- **The versioning was changed**
 
-    "Semantic Versioning" : für JTL-Shop, |br|
-    "API-Versioning" : intern für den Abgleich mit JTL-Wawi**
+    "Semantic versioning" : for JTL-Shop, |br|
+    "API versioning" : internally for the synchronisation with JTL-Wawi**
 
-    Mit JTL-Shop 5.x wird die Versionsnummerierung des Onlineshops auf das allgemein gültige Verfahren
-    `SemVer <http://semver.org/>`_ umgestellt. |br|
-    Für die Verbindung zur JTL-Wawi wird intern weiterhin die bisherige Versionierung als interne API-Version geführt.
+    With JTL-Shop 5.x, the version numbering of the online shop will be changed to the generally accepted method
+    `SemVer <http://semver.org/>`_. |br|
+    For the purpose of connecting to JTL-Wawi, the previous versioning will continue to be maintained as the internal API version.
 
-- **Die Upgrade-Möglichkeit von JTL-Shop *kleiner* Version 4.02 auf Version 5.x wurde entfernt**
+- **The option to upgrade the JTL-Shop from the *earlier* version 4.02 to version 5.x was removed**
 
-    Nutzer vorheriger Versionen (zum Beispiel Version und kleiner 3.0x) müssen auf JTL-Shop Version 4.06
-    aktualisieren, um von dort auf JTL-Shop Version 5.x upgraden zu können.
+    Users of previous versions, like version 3.0 and earlier, must upgrade to JTL-Shop version 4.06
+    , in order to then upgrade to version 5.x.
 
-- **Das von JTL-Shop 4 bekannte Template "Evo" wird ab JTL-Shop 5.x als separates Projekt geführt
-  und ist nicht mehr im Lieferumfang von JTL-Shop enhalten**
+- **As of version 5.x, the "Evo" template from JTL-Shop 4 will be continued as a separate project and will no
+  longer be provided in newer shop versions.**
 
-    Sie finden das Template "Evo" im JTL-Repository auf gitlab unter
-    `Evo <https://gitlab.com/jtl-software/jtl-shop/templates>` und auf dem JTL Builds-Server unter
-    `build.jtl-shop.de <https://build.jtl-shop.de/get/template_evo-5-0-0-rc-3.zip/template>`
+    You can find the "Evo" template in the JTL gitlab repository at
+    `Evo <https://gitlab.com/jtl-software/jtl-shop/templates>` and on the JTL Builds server at
+    `build.jtl-shop.de <https://build.jtl-shop.de/get/template_evo-5-0-0-rc-3.zip/template>`.
 
-- **UTF8-Migration für gesamten Onlineshop**
+- **UTF8 migration for the entire online shop**
 
-    + Zur String-Manipulation werden die PHP *Multibyte String Funktionen* (``mb_``) empfohlen.
-    + Die Funktion ``utf8_encode()`` sollte in Plugins nicht mehr eingesetzt werden.
-    + Die Datenbank von JTL-Shop 5.x  wurde hinsichtlich ihrer Kollationen und der jeweiligen Tabellen-Engines
-      überarbeitet und auf UTF8 umgestellt. |br|
+    + For string manipulation, it is recommended to use the PHP *Multibyte String Function* (``mb_``).
+    + The ``utf8_encode()`` function should not be used in plug-ins anymore.
+    + The database of JTL-Shop 5.x was overhauled with regard to its collations and the respective table engines,
+      and changed to UTF8. |br|
 
       +-------------------+---------------------+
       | default collation | ``utf8_unicode_ci`` |
@@ -66,65 +66,65 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
       | default engine    | ``InnoDB``          |
       +-------------------+---------------------+
 
-- **Darstellung und Erzeugung der Menüstruktur im Backend wurde geändert**
+- **The display and creation of the menu structure in the back end was altered**
 
-    Die dynamische Erzeugung der Menüstruktur des Backends wurde überarbeitet. Sie basiert ab JTL-Shop 5.0 nicht mehr
-    auf Datenbanktabellen, sondern auf der Struktur in der Datei ``admin/includes/admin_menu.php``. |br|
-    Die Anordnung sämtlicher Menüeinträge wurde im Zuge dieser Änderung ebenfalls stark modernisiert.
+    The dynamic creation of the menu structure of the back end has been overhauled. As of JTL-Shop 5.0 it is no longer based on
+    database tables, but rather on the structure in the ``admin/includes/admin_menu.php`` file. |br|
+    The layout of all menu items has also been greatly modernized in the course of this change.
 
-- **Mehrsprachigkeit des Backends wurde auf "gettext" umgestellt**
+- **Multilingual capability of the back end was changed to "gettext"**
 
-    Die Mehrsprachigkeit aller Menüs im Backend von JTL-Shop wird ab Version 5.0 mittels
-    `gettext/gettext <https://github.com/php-gettext/Gettext>`_ geregelt. |br|
+    The multilingual capability of all menus in the back end of JTL-Shop as of version 5.0 are managed via
+    `gettext/gettext <https://github.com/php-gettext/Gettext>`_. |br|
 
-- **Plugins werden nicht mehr im Installationspaket ausgeliefert**
+- **Plug-ins will no longer come in installation packages**
 
-    Plugins werden zukünftig über den JTL-Extension Store installierbar sein. |br|
-    Aus diesem Grund sind im Installationspaket des Onlineshops keine Plugins mehr enthalten.
+    Plug-ins can instead be obtained from the JTL-Extension Store. |br|
+    For this reason, plug-ins will no longer come along with the installation package of the online shop.
 
-    Folgende Plugins fallen ersatzlos weg:
+    The following plug-ins will be no longer be available, nor will they be replaced:
 
     - JTL Backend User Extension
     - JTL Themebar
 
-- **Werkzeuge zum Kompilieren von Themes überarbeitet**
+- **Tools for compiling themes have been overhauled**
 
-    Zum Kompilieren eines eigenen Themes dient in JTL-Shop 4.x der
+    To compile your own theme in JTL-Shop 4.x, you can use the
     `Evo Editor <https://gitlab.com/jtl-software/jtl-shop/legacy-plugins/evo-editor>`_ |br|
-    In JTL-Shop 5.x werden Themes mit dem
-    `JTL Theme Editor <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_theme_editor>`_ übersetzt
+    In JTL-Shop 5.x themes were compiled with the
+    `JTL Theme Editor <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_theme_editor>`_
 
-    Weitere Informationen zur Verwendung dieser Plugins finden Sie im Abschnitt ":ref:`label_eigenestheme_kompilieren`".
+    You can find more information on the application of these plug-ins in section ":ref:`label_eigenestheme_kompilieren`".
 
-- **Von inländischer auf europaweite USt-ID-Prüfung umgestellt**
+- **VAT ID number validation has been expanded from domestic to EU-wide**
 
-    Die bisherige Lösung zur Prüfung der Umsatzsteuer-ID (gültig nur für Deutschland) wurde ersetzt durch die
-    EU-weite Prüfung durch das Mehrwertsteuer-Informationsaustauschsystem MIAS der Europäischen Union.
+    The previous validation process of VAT ID numbers, which was only valid for Germany, has now been replaced
+    with an EU-wide validation process using the VAT information exchange system, (VIES) from the European Union.
 
-    Weitere Informationen zu diesem System finden Sie unter:
-    `MIAS der EU <https://europa.eu/youreurope/business/taxation/vat/check-vat-number-vies/index_de.htm>`_
+    You can find further information about this system here:
+    EU VIES <https://europa.eu/youreurope/business/taxation/vat/check-vat-number-vies/index_de.htm>`_
 
-- **Tabelle `tpreise`, inkl. deren Befüllung durch dbeS, entfernt**
+- **The table `tpreise`, including its contents provided by dbeS were removed**
 
-    In JTL-Shop 4.x werden aus Kompatibilitätsgründen zu JTL-Wawi 0.9 Preise redundant in mehreren Tabellen der
-    Datenbank gehalten (``tpreise`` und ``tpreis``/``tpreisdetail``). |br|
-    Diese doppelte Datenhaltung wurde in JTL-Shop 5.x entfernt. Alle Daten zu Preisen befinden sich nun ausschließlich
-    in den Tabellen ``tpreis`` und ``tpreisdetail``.
+    In JTL-Shop 4.x, for compatibility reasons with JTL-Wawi 0.9, prices were kept in several tables in the
+    database (``tpreise`` and ``tpreis``/``tpreisdetail``). |br|
+    This repetitive data storage has been removed altogether from JTL-Shop 5.x. All price data are now only found in 
+    the tables ``tpreis`` und ``tpreisdetail``.
 
-- **Einstellung "Finanzierungsvorschlag zeigen" (1324) entfernt**
+- **The "Show financing proposals" setting (1324) has been removed**
 
-    Diese Einstellung wurde mit JTL-Shop 3.x im Rahmen des Finanzierungsmoduls "Dresdner Cetelem" / "Commerz Finanz"
-    angelegt. Sie ist in JTL-Shop 4.x und JTL-Shop 5.x nicht mehr enthalten.
+    This setting was first introduced with JTL-Shop 3.x as part of the financing module "Dresdner Cetelem" / "Commerz Finanz"
+    . It is no longer available in JTL-Shop 4.x or JTL-Shop 5.x.
 
-- **Datentyp für Mediendateien Tabs geändert**
+- **Data type for media files tabs changed**
 
-    Die Artikeleigenschaft ``$cMedienTyp_arr`` ist in JTL-Shop 5.x nun ein Array von Arrays und nicht mehr wie bisher
-    ein assoziatives Array.
+    The item properties ``$cMedienTyp_arr`` are no longer an associative array, but rather now in JTL-Shop 5.x
+    an array of arrays.
 
-- **Mehrere Zahlungsart-Integrationen wurden entfernt**
+- **Several payment method integrations were removed**
 
-    Die folgenden Zahlungsmodule werden von JTL im Auslieferungszustand von JTL-Shop nicht mehr angeboten und wurden
-    aus dem Core von JTL-Shop 5.x entfernt: |br|
+    JTL-Shop will no longer come with the following payment modules, as they have been altogether
+    removed from the core of JTL-Shop 5.x: |br|
 
     - EOS
     - Wirecard
@@ -139,76 +139,76 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - Moneybookers
     - UOS
 
-    Die alte Core-Zahlungsart "PayPal" wurde entfernt. Das Plugin *JTL PayPal* wird weiterhin angeboten.
+    The old core payment method "PayPal" has been removed. The plug-in *JTL PayPal* will be available from now on instead.
 
-- **Hooks erweitert/ergänzt/entfernt**
+- **Hooks that have been extended, complemented or removed**
 
-    Im Zuge der hier genannten Anpassungen und Änderungen haben sich auch verschiedene Hooks des Plugin-Systems
-    geändert, wurden ergänzt oder sind ganz weggefallen. |br|
-    Eine komplette Liste aller aktuell verfügbaren Hooks und ihrer Parameter finden Sie hier in der
-    Entwicklerdokumentation unter ":doc:`/shop_plugins/hook_list`".
+    Over the course of the modifications and changes mentioned here, various hooks of the plug-in system
+    have also been either changed, supplemented or completely removed. |br|
+    You can find a complete list of all available hooks and their respective parameters in the developer documentation at
+    ":doc:`/shop_plugins/hook_list`".
 
-- **Die "Imanee Image Manipulation Lib" wurde entfernt**
+- **The "Imanee Image Manipulation Lib" was removed**
 
-    Das Imanee-Projekt zur Bildbearbeitung wird vom Betreiber seit mehreren Jahren nicht mehr gewartet und wurde nun
-    aus dem Core von JTL-Shop 5.x entfernt.
+    The Imanee project for image processing has not been maintained by the provider for several years now and has
+    been removed from the core of JTL-Shop 5.x.
 
-- **Das Feature "Produkt-Tags" wurde entfernt**
+- **The "product tags" feature was removed**
 
-    Das Produkttagging durch Kunden wird wenig genutzt und ist nicht mehr zeitgemäß. |br|
-    Dieses Feature wurde mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
+    This feature was seldom used by customers and is no longer up to date. |br|
+    This feature was removed from the core of JTL-Shop with JTL-Shop 5.x.
 
-- **Die URL-Generierung wurde überarbeitet**
+- **URL generation has been overhauled**
 
-    SEO-URLs werden nicht mehr mit der alten Funktion ``iso2ascii()`` behandelt, sondern erhalten zentralisiert
-    im SEO-Helper ein eigenes Prüf- und Kodierverfahren.
+    SEO URLs will no longer be dealt with using ``iso2ascii()``, but rather with its own testing and coding
+    procedures all centralised in the SEO assistant.
 
-- **Die Einstellungen (1142) und (1130) für die Anzahl der Vorschaubilder bei Varkombis wurde entfernen**
+- **Settings (1142) and (1130) for the number of thumbnails displayed for parent-child relationships have both been removed**
 
-    Aufgrund der performanteren Darstellung der Artikeldetails im NOVA-Template sind diese beiden Einstellungen
-    überholt und wurden mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
+    Due to the more efficient display of item details in the NOVA template, these two settings
+    are obsolete and have been removed from the core of JTL-Shop with JTL-Shop 5.x.
 
-- **Das Duplizieren von Bildern in Multilanguage-Onlineshops wurde deaktiviert**
+- **Duplication of pictures in multilingual shops has been deactivated**
 
-    In multilingualen Onlineshops wurden bisher alle Artikelbilder pro Sprache erzeugt und geladen. Dieser Overhead an
-    Rechenzeit und Datentransfer wird in JTL-Shop 5.x relativiert, indem nur noch ein Bildersatz in der Standardsprache
-    vorgehalten wird. |br|
-    Die fremdsprachigen Bildnamen-Attribute aus JTL-Wawi werden nicht länger berücksichtigt, da diese Attribute
-    nur verbalen Charakter besitzen. JTL-Wawi speichert ebenfalls nur einen Bildersatz für die Standardsprache.
+    In multilingual shops, all item images were previously generated and loaded for each language. This overhead on
+    computation time and data transfer is relativised in JTL store 5.x, in that only a single image set is kept in the
+    default language. |br|
+    The foreign language image attribute from JTL-Wawi are no longer being considered, as these attributes
+    are only of verbal quality. JTL-Wawi also only stores one image set for the default language.
 
-- **Veraltete Module wurden entfernt**
+- **Outdated modules were removed**
 
-    Folgende veraltete Module wurden aus dem Core von JTL-Shop entfernt:
+    The following outdated modules were removed from the core of JTL-Shop:
 
-    - Preisradar
-    - Preisgrafik
-    - Umfrage
+    - Price radar
+    - Price graphics
+    - Surveys
 
-- **Das Widget "Do You Know" ("DUK") wurde entfernt**
+- **The "Do You Know" ("DUK") widget was removed**
 
-    Diese Features wurden bisher sehr wenig genutzt und sind nicht mehr zeitgemäß. |br|
-    Sie wurden mit JTL-Shop 5.x aus dem Core von JTL-Shop entfernt.
+    Until now, these features were rarely used and are no longer up to date. |br|
+    They were, therefore, removed from the core of JTL-Shop with the release of JTL-Shop 5.x.
 
-- **Die dynamische Preisberechnung erlaubt nun gleichbleibende Preise bei Auslandslieferungen**
+- **Dynamic price calculation now allows consistent pricing for orders abroad**
 
-    Die dynamische Berechnung der Nettopreise wurde in JTL-Shop 5.x in die default-Einstellungen übernommen.
+    The dynamic calculation of net prices was set as the default setting in JTL-Shop 5.x.
 
-    Ab JTL-Shop 4.06 kann diese Berechnung mittels Konfigurationseinstellung in der
-    ``includes/config.JTL-Shop.ini.php`` aktiviert werden:
+    As of JTL-Shop 4.06, this calculation can be activated by means of a configuration setting in the
+    ``includes/config.JTL-Shop.ini.php``:
 
     .. code-block:: php
 
        define('CONSISTENT_GROSS_PRICES', true);
 
-- **Das Yatego-Exportformat wurde entfernt**
+- **The Yatego export format was removed**
 
-    Das veraltete und fehlerhafte Exportformat "Yatego" wurde aus dem Core von JTL-Shop entfernt.
+    The outdated and defected export format "Yatego" was removed from the core of the JTL-Shop.
 
-    Zukünftig wird dieses Exportformat ggf. von Yatego selbst als Plugin zur Verfügung gestellt.
+    This format will instead be made available, if necessary, from Yatego directly as a plug-in.
 
-- **Exportformate von Drittanbietern wurden entfernt:**
+- **Export formats of third-party providers were removed:**
 
-    Folgende Exportformat von Drittanbietern wurden aus dem Core von JTL-Shop entfernt:
+    The following export formats of third-party providers were removed from the core of the JTL-Shop:
 
     - Hardwareschotte
     - Kelkoo
@@ -229,50 +229,50 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
     - LeGuide.com
     - Twenga
 
-- **Alte Shop3-Backend-Templates wurden entfernt**
+- **Old Shop3 back end templates were removed**
 
-- **Die Unterstützung für ein separates MobileTemplate wurde entfernt**
+- **Support for a separate mobile template was removed**
 
-- **Folgende veraltete Core-Funktionalitäten wurden entfernt:**
+- **The following outdated core features were removed:**
 
-    - Bilderfunktion "Hochskalieren"
-    - Funktion und Box "Globale Merkmale"
+    - The "scale up" image function
+    - Function and box "Global characteristics"
     - VCard Upload
     - Google Analytics
     - News-Widget
-    - Kunden werben Kunden
-    - Alte JTL-Shop 3.0 Bilderschnittstelle
-    - Internes Wort-Verlinkssystem
+    -Customer referral programme
+    - The old JTL-Shop 3.0 image interface
+    - Internal word linking system
 
-- **Im meta-Tag "robots" von Spezialseiten ist der "content" nun auf "nofollow, noindex" gesetzt**
+- **In the meta tag "robots" of special pages, the "content" is now set to "nofollow, noindex"**
 
-    Aus SEO-Sicht bringt die Indexierung dieser Seitentypen keinen Mehrwert. |br|
-    Liegen hier zudem Fehler in den Rechtstexten vor, kann eine Indexierung dazu führen, dass diese Seiten von
-    Abmahn-Anwälten per Google-Suche leicht gefunden werden.
+    From a SEO perspective, indexing these page types in particular brings no value whatsoever. |br|
+    Furthermore, if there are errors in the legal texts, indexing can lead to these pages being easily found by
+ cease and desist lawyers via Google search.
 
-    Die Spezialseiten wurden daher in JTL-Shop 5.x im meta-Tag-Parameter "content" auf "nofollow, noindex" gesetzt.
+    Therefore, the special pages were set to "nofollow, noindex" in the meta tag parameter "content" in JTL-Shop 5.x.
 
-- **Schnellere Versandarten werden priorisiert**
+- **Faster shipping methods have been prioritised**
 
-    Ab JTL-Shop 5.x werden Versandarten nicht nur nach ihrem Preis sortiert angezeigt. |br|
+    As of JTL-Shop 5.x shipping methods will be displayed and sorted not only based on price. |br|
 
-    Beispielsweise wird nun bei zwei Versandarten mit gleichem Preis die Versandart mit der niedrigeren
-    Sortiernummer (entspricht höherer Priorität) vor der Versandart mit höherer Sortiernummer angezeigt. |br|
-    Somit können Versandarten mit schnellerem Versand in der Versandartenliste höher eingeordnet werden.
+    For example, if two shipping methods have the same price, the shipping method with the lower
+ sorting number, which corresponds to higher priority, is now displayed before the shipping method with higher sorting number. |br|
+    This way, faster shipping methods will be displayed higher on the list of available shipping options.
 
-- **Konsistenzprüfung im Warenkorb**
+- **Basket consistency check**
 
-    Ab JTL-Shop 4.05 wird mit Hilfe einer Checksumme eine Konsistenzprüfung im Warenkorb durchgeführt. |br|
-    Weitere Informationen hierzu finden im Abschnitt ":ref:`label_hinweise_wkchecksum`".
+    As of JTL-Shop 4.05, checksums will be carried out with the help of the basket consistency check. |br|
+    You can find more information on this in section ":ref:`label_hinweise_wkchecksum`".
 
-- **Die favicon-Uploadfunktionalität wurde überarbeitet**
+- **The favicon upload feature has been overhauled**
 
-    Mit JTL-Shop 5.x wurde die Uploadfunktionalität für das Onlineshop-*favicon* überarbeitet.
+    With JTL-Shop 5.x, the upload feature for the online shop *favicon* has been overhauled.
 
-    Die folgenden Pfade zeigen die Verzeichnisse, in denen nach dem favicon gesucht wird: |br|
-    (in der Reihenfolge von oben nach unten)
+    The following paths display the directories, where favicon is searched for: |br|
+    (sorted from top to bottom)
 
-    * Frontend:
+    * Front end:
 
     .. code-block:: console
 
@@ -281,50 +281,50 @@ JTL-Shop 4.x |rarr| JTL-Shop 5.x
        [Shop-root]/favicon.ico
        [Shop-root]/favicon-default.ico
 
-    * Backend:
+    * Back end:
 
     .. code-block:: console
 
        [Shop-root]/[admin-Pfad]/favicon.ico
        [Shop-root]/[admin-Pfad]/favicon-default.ico
 
-    Sobald in einem der Pfade ein *favicon* gefunden wird, wird die Suche beendet und das gefundene *favicon*
-    verwendet.
+    As soon as *favicon* is found in one of the paths, the search will end and the located *favicon*
+    is then used.
 
-- **Google Analytics Tracking wurde aus dem Core von JTL-Shop entfernt**
+- **Google Analytics tracking was removed from the core of JTL-Shop**
 
-    Aufgrund umfangreicher Änderungen in "Google Analytics" wurde die bisher im Onlineshop verwendete Implementierung
-    (``ga.js``) aus JTL-Shop 5.x entfernt.
+    Due to extensive changes in "Google Analytics", the previously used implementation
+    (``ga.js``) was removed from JTL-Shop 5.x.
 
-    Zukünftig kann das Tracking über gesonderte Plugins geregelt werden, die auch den jeweils aktuellen Anforderungen
-    der DSGVO entsprechen.
+    In the future, tracking will also be managed by separate plug-ins that comply with current GDPR
+ regulations.
 
-- **Google-Recaptcha und Gravatar wurden aus dem Core von JTL-Shop entfernt**
+- **Google-Recaptcha and Gravatar were removed from the core of JTL-Shop**
 
-    Gemäß den Anforderungen der DSGVO müssen für die Datenweitergabe an Drittanbieter jeweils gesonderte
-    Einverständnisse von allen Endkunden eingeholt werden. Deshalb wurden diese Drittanbietermodule aus JTL-Shop 5.x
-    entfernt.
+    According to the requirements of the GDPR, for the data transfer to third-party providers, consent must be explicitly obtained from each
+    and every individual customer. Which is why modules from third-party providers have been removed from
+    JTL-Shop 5.x.
 
-    JTL-Shop wird standardmäßig so ausgeliefert, dass keine Datenweitergabe an Drittanbieter stattfindet.
+    The JTL-Shop is by default released in a way that no data is passed on to third-party providers.
 
-- **DSGVO-Konformität hergestellt**
+- **GDPR compliance established**
 
-    Mit Inkrafttreten der DSGVO wurden im Onlineshop mehrere Anpassungen vorgenommen.
+    As the GDPR came into effect, the online shop was modified in a number of ways.
 
-    Das Einholen der Einverständniserklärung von Endkunden für marketingrelevante E-Mails wird nun durch ein neues
-    Double-OptIn-Interface (siehe ``includes/src/Optin/``) abgedeckt. |br|
-    Weiterhin wurde in JTL-Shop 5.x eine Bereinigung bzw. Verschlüsselung von personenbezogenen Daten von Endkunden
-    implementiert (siehe ``includes/src/GeneralDataProtection/``), die regelmäßig über Chronjobs getriggert wird.
+    Obtaining customer consent for marketing-relevant emails is now taken care of by a new double opt-in procedure
+    (see ``includes/src/Optin/``). |br|
+    Furthermore, in JTL-Shop 5.x a “clean-up”, or encryption, of personal data of individual customers
+ has been implemented, which is regularly triggered by Chronjobs. See ``includes/src/GeneralDataProtection/``.
 
-- **Kryptografische Funktionen überarbeitet**
+- **Cryptographic functions have been overhauled**
 
-    Kryptografische Funktionen wie auch Funktionen zur Generierung von IDs sind stark auf die Erzeugung von
-    Zufallszahlen angewiesen, welche nicht immer wirklich zufällig sind, sobald sie maschinell erzeugt werden. |br|
-    Die PHP-Standardfunktionen zur Erzeugung von Zufallszahlen sind hier keine Ausnahme. |br|
+    Cryptographic functions, as well as ID generation functions, rely heavily on the generation of
+    random numbers, which are not always truly random once they are machine generated. |br|
+    The PHP default function for this purpose is also no exception. |br|
 
-    Um diesem Problem wirkungsvoll zu begegnen, wurden entsprechend verbesserte Bibliotheken zur Erzeugung von
-    Zufallszahlen in JTL-Shop 5.x integriert.
+    In order to tackle this issue effectively, improved libraries have been integrated into JTL-Shop 5.x for random number
+    generation.
 
-    Diese Überarbeitung der kryptografischen Funktionen des Onlineshops bedingte ebenso einen Austausch der
-    Hashing-Funktionen, die vor dem Speichern von Passworten aufgerufen werden.
+    This revision of the cryptographic functions of the online shop also entailed the replacement of the
+    hashing functions that are called up before passwords are stored.
 

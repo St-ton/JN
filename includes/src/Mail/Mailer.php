@@ -78,11 +78,12 @@ class Mailer
     }
 
     /**
+     * @param string|null $section - since 5.3.0
      * @return array
      */
-    public function getConfig(): array
+    public function getConfig(?string $section = null): array
     {
-        return $this->config;
+        return $section === null ? $this->config : ($this->config[$section] ?? []);
     }
 
     /**

@@ -22,6 +22,7 @@ class Queue
      */
     public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
 
     /**

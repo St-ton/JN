@@ -27,29 +27,29 @@ class Mail implements MailInterface
     private int $customerGroupID = 0;
 
     /**
-     * @var LanguageModel
+     * @var LanguageModel|null
      */
-    private LanguageModel $language;
+    private ?LanguageModel $language = null;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $fromMail = null;
+    private string $fromMail;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $fromName = null;
+    private string $fromName;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $toMail = null;
+    private $toMail;
 
     /**
-     * @var string|null
+     * @var string
      */
-    private ?string $toName = null;
+    private string $toName = '';
 
     /**
      * @var string|null
@@ -64,15 +64,15 @@ class Mail implements MailInterface
     /**
      * @var string|null
      */
-    private string $subject = '';
+    private ?string $subject = null;
 
     /**
-     * @var string|null
+     * @var string
      */
     private string $bodyHTML = '';
 
     /**
-     * @var string|null
+     * @var string
      */
     private string $bodyText = '';
 
@@ -87,7 +87,7 @@ class Mail implements MailInterface
     private array $pdfAttachments = [];
 
     /**
-     * @var string|null
+     * @var string
      */
     private string $error = '';
 
@@ -105,6 +105,11 @@ class Mail implements MailInterface
      * @var mixed
      */
     private mixed $data = null;
+
+    /**
+     * @var array{mail: string, name: string}
+     */
+    private array $recipients = [];
 
     /**
      * Mail constructor.
@@ -131,8 +136,8 @@ class Mail implements MailInterface
     {
         $this->setData($data);
         $this->setTemplate($template);
-        $this->language        = $language ?? $this->detectLanguage();
-        $this->customerGroupID = Frontend::getCustomer()->getGroupID();
+        $this->setLanguage($language ?? $this->detectLanguage());
+        $this->setCustomerGroupID(Frontend::getCustomer()->getGroupID());
         $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
@@ -144,13 +149,13 @@ class Mail implements MailInterface
             $this->addPdfFile($name, $attachment);
         }
         $this->setSubject($model->getSubject($this->language->getId()));
-        $this->fromName       = $template->getFromName() ?? $this->fromName;
-        $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
-        $this->copyRecipients = $template->getCopyTo() ?? $this->copyRecipients;
-        $this->subject        = $template->getSubject() ?? $this->subject;
+        $this->setFromName($template->getFromName() ?? $this->fromName ?? '');
+        $this->setFromMail($template->getFromMail() ?? $this->fromMail ?? '');
+        $this->setCopyRecipients($template->getCopyTo() ?? $this->copyRecipients);
+        $this->setSubject($template->getSubject() ?? $this->subject ?? '');
         $this->parseData();
-        $this->replyToMail = $this->replyToMail ?? $this->fromMail;
-        $this->replyToName = $this->replyToName ?? $this->replyToMail;
+        $this->setReplyToMail($this->replyToMail ?? $this->fromMail);
+        $this->setReplyToName($this->replyToName ?? $this->replyToMail);
 
         return $this;
     }
@@ -348,6 +353,31 @@ class Mail implements MailInterface
         $this->toMail = $toMail;
 
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function addRecipient(string $mail, string $name = ''): void
+    {
+        $this->recipients[] = ['mail' => $mail, 'name' => $name];
+    }
+
+    /**
+     * @param array{mail: string, name: string} $recipients
+     * @return void
+     */
+    public function setRecipients(array $recipients): void
+    {
+        $this->recipients = $recipients;
+    }
+
+    /**
+     * @return array{mail: string, name: string}
+     */
+    public function getRecipients(): array
+    {
+        return \array_merge([['mail' => $this->getToMail(), 'name' => $this->getToName()]], $this->recipients);
     }
 
     /**

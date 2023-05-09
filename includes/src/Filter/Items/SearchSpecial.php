@@ -312,10 +312,10 @@ class SearchSpecial extends AbstractFilter
         $state            = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
         $cacheID          = $this->getCacheID($this->productFilter->getFilterSQL()->getBaseQuery($state))
             . '_' . $this->productFilter->getFilterConfig()->getLanguageID();
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
+        $wasCached        = true;
+        if (($cached = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $cached    = [];
+            $wasCached = false;
         }
         for ($i = 1; $i < 7; ++$i) {
             $state = (new StateSQL())->from($this->productFilter->getCurrentStateData($ignore));
@@ -395,9 +395,15 @@ class SearchSpecial extends AbstractFilter
                 default:
                     break;
             }
-            $qry    = $this->productFilter->getFilterSQL()->getBaseQuery($state);
-            $qryRes = $this->productFilter->getDB()->getObjects($qry);
-            if (($count = \count($qryRes)) > 0) {
+            if ($wasCached === false) {
+                $qry        = $this->productFilter->getFilterSQL()->getBaseQuery($state);
+                $qryRes     = $this->productFilter->getDB()->getObjects($qry);
+                $count      = \count($qryRes);
+                $cached[$i] = $count;
+            } else {
+                $count = $cached[$i];
+            }
+            if ($count > 0) {
                 if ($baseValue === $i) {
                     continue;
                 }
@@ -414,7 +420,9 @@ class SearchSpecial extends AbstractFilter
             }
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
+        if ($wasCached === false) {
+            $this->productFilter->getCache()->set($cacheID, $cached, [\CACHING_GROUP_FILTER]);
+        }
 
         return $options;
     }

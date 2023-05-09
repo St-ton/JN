@@ -242,48 +242,52 @@ class Category extends BaseCategory
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $cacheID   = $this->getCacheID($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
-        $db                 = $this->productFilter->getDB();
-        $categories         = $db->getObjects(
-            'SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, 
-                ssMerkmal.nSort, COUNT(*) AS nAnzahl
+        if (($categories = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $db         = $this->productFilter->getDB();
+            $categories = $db->getObjects(
+                'SELECT tseo.cSeo AS slug, ssMerkmal.kKategorie AS id, ssMerkmal.cName AS name, 
+                ssMerkmal.nSort AS sort, COUNT(*) AS cnt
                 FROM (' . $baseQuery . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
                         AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName",
-            ['lid' => $this->getLanguageID()]
-        );
-        $langID             = $this->getLanguageID();
+                ['lid' => $this->getLanguageID()]
+            );
+            foreach ($categories as $category) {
+                $category->id   = (int)$category->id;
+                $category->sort = (int)$category->sort;
+                $category->cnt  = (int)$category->cnt;
+            }
+            if ($categoryFilterType === 'KP') { // category path
+                $langID = $this->getLanguageID();
+                $helper = CategoryHelper::getInstance($langID, $customerGroupID);
+                foreach ($categories as $category) {
+                    $category->name = $helper->getPath(new Kategorie(
+                        $category->id,
+                        $langID,
+                        $customerGroupID,
+                        false,
+                        $db
+                    ));
+                }
+            }
+            $this->productFilter->getCache()->set($cacheID, $categories, [\CACHING_GROUP_FILTER]);
+        }
         $additionalFilter   = new self($this->productFilter);
-        $helper             = CategoryHelper::getInstance($langID, $customerGroupID);
         $filterURLGenerator = $this->productFilter->getFilterURL();
         foreach ($categories as $category) {
-            $category->kKategorie = (int)$category->kKategorie;
-            if ($categoryFilterType === 'KP') { // category path
-                $category->cName = $helper->getPath(new Kategorie(
-                    $category->kKategorie,
-                    $langID,
-                    $customerGroupID,
-                    false,
-                    $db
-                ));
-            }
             $options[] = (new Option())
-                ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->kKategorie))
+                ->setIsActive($this->productFilter->filterOptionIsActive($this->getClassName(), $category->id))
                 ->setParam($this->getUrlParam())
-                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->kKategorie)))
+                ->setURL($filterURLGenerator->getURL($additionalFilter->init($category->id)))
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
-                ->setName($category->cName)
-                ->setValue($category->kKategorie)
-                ->setCount((int)$category->nAnzahl)
-                ->setSort((int)$category->nSort);
+                ->setName($category->name)
+                ->setValue($category->id)
+                ->setCount($category->cnt)
+                ->setSort($category->sort);
         }
         if ($categoryFilterType === 'KP') {
             \usort($options, static function ($a, $b): int {
@@ -293,7 +297,6 @@ class Category extends BaseCategory
             });
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

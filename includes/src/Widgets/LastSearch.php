@@ -2,8 +2,6 @@
 
 namespace JTL\Widgets;
 
-use JTL\Widgets\AbstractWidget;
-
 /**
  * Class LastSearch
  * @package Plugin\jtl_widgets

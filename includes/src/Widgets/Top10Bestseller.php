@@ -2,7 +2,6 @@
 
 namespace JTL\Widgets;
 
-
 /**
  * Class Top10Bestseller
  * @package Plugin\jtl_widgets

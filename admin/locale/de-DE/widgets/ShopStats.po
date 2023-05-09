@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "ShopStats_title"
+msgstr "Shop-Statistiken"
+
+msgid "ShopStats_desc"
+msgstr " "
+
+msgid "Today"
+msgstr "Heute"
+
+msgid "Yesterday"
+msgstr "Gestern"
+
+msgid "Sales revenues"
+msgstr "Umsatz"
+
+msgid "Visitors"
+msgstr "Besucher"
+
+msgid "New registered customers"
+msgstr "Neuregistrierungen"
+
+msgid "Number orders"
+msgstr "Anzahl Bestellungen"
+
+msgid "Visitors per order"
+msgstr "Besucher pro Bestellung"

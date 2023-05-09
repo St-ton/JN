@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Campaigns_title"
+msgstr "Campaigns"
+
+msgid "Campaigns_desc"
+msgstr " "
+
+msgid "Statistics"
+msgstr "Statistics"

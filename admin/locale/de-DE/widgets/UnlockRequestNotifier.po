@@ -1,0 +1,27 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "UnlockRequestNotifier_title"
+msgstr "Anfragen für Freischaltungen"
+
+msgid "UnlockRequestNotifier_desc"
+msgstr " "
+
+msgid "See Approvals to manage your open requests."
+msgstr "Verwalten Sie ausstehende Anfragen in der <a href=\"freischalten.php\">Freischaltzentrale</a>."
+
+msgid "At the moment there are no open requests."
+msgstr "Zur Zeit gibt es keine ausstehenden Anfragen die freigeschaltet werden müssen."
+
+msgid "Customer reviews"
+msgstr "Bewertungen"
+
+msgid "Search queries"
+msgstr "Suchanfragen"
+
+msgid "News comments"
+msgstr "News-Kommentare"
+
+msgid "Newsletter recipients"
+msgstr "Newsletterempfänger"

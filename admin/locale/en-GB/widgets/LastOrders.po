@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "LastOrders_title"
+msgstr "Last orders"
+
+msgid "LastOrders_desc"
+msgstr " "
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Shipping method"
+msgstr "Shipping method"
+
+msgid "Payment method"
+msgstr "Payment method"
+
+msgid "Total"
+msgstr "Total"
+
+msgid "Customer"
+msgstr "Customer"
+
+msgid "Order date"
+msgstr "Order date"
+
+msgid "Order number"
+msgstr "Order number"
+
+msgid "No customer account"
+msgstr "No customer account"
+
+msgid "Order details"
+msgstr "Order details"

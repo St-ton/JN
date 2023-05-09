@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Top10Bestseller_title"
+msgstr "Top-10 Bestseller"
+
+msgid "Top10Bestseller_desc"
+msgstr " "
+
+msgid "Count"
+msgstr "Anzahl"
+
+msgid "No bestsellers found."
+msgstr "Keine Bestseller vorhanden."

@@ -1,0 +1,18 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Top10Search_title"
+msgstr "Top-10 Suchanfragen"
+
+msgid "Top10Search_desc"
+msgstr " "
+
+msgid "No search queries found."
+msgstr "Keine Suchanfragen vorhanden."
+
+msgid "Search queries"
+msgstr "Suchanfragen"
+
+msgid "Count"
+msgstr "Anzahl"

@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "LastSearch_title"
+msgstr "Last search requests"
+
+msgid "LastSearch_desc"
+msgstr " "
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Search count"
+msgstr "Search count"
+
+msgid "Hits"
+msgstr "Hits"
+
+msgid "No search queries found."
+msgstr "No search queries found."
+
+msgid "Language"
+msgstr "Language"

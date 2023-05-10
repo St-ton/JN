@@ -288,8 +288,13 @@ class ConsoleIO extends OutputStyle
      *
      * @return $this
      */
-    public function block($messages, $type = null, $style = null, $prefix = ' ', $padding = false): self
-    {
+    public function block(
+        $messages,
+        ?string $type = null,
+        ?string $style = null,
+        string $prefix = ' ',
+        bool $padding = false
+    ): self {
         $this->autoPrependBlock();
 
         $messages = \is_array($messages) ? \array_values($messages) : [$messages];

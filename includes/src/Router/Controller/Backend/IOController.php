@@ -10,6 +10,8 @@ use JTL\Backend\JSONAPI;
 use JTL\Backend\Notification;
 use JTL\Backend\Settings\Manager as SettingsManager;
 use JTL\Backend\TwoFA;
+use JTL\Backend\Upgrade\Channels;
+use JTL\Backend\Upgrade\UpgradeIO;
 use JTL\Backend\Wizard\WizardIO;
 use JTL\Catalog\Currency;
 use JTL\Checkout\ShippingSurcharge;
@@ -80,6 +82,8 @@ class IOController extends AbstractBackendController
         );
         $searchController->setSmarty($smarty);
 
+        $upgradeIO = new UpgradeIO($smarty);
+
         try {
             Shop::Container()->getOPC()->registerAdminIOFunctions($io);
             Shop::Container()->getOPCPageService()->registerAdminIOFunctions($io);
@@ -117,6 +121,7 @@ class IOController extends AbstractBackendController
                 ->register('getShopInfo', $widgets->getShopInfoIO(...), null, 'DASHBOARD_VIEW')
                 ->register('truncateJtllog', Jtllog::truncateLog(...), null, 'DASHBOARD_VIEW')
                 ->register('addFav', $this->addFav(...))
+                ->register('changeUpgradeChannel', $upgradeIO->updateChannelIO(...))
                 ->register('reloadFavs', $this->reloadFavs(...))
                 ->register('loadStats', $images->loadStats(...), null, 'DISPLAY_IMAGES_VIEW')
                 ->register('cleanupStorage', $images->cleanupStorage(...), null, 'DISPLAY_IMAGES_VIEW')

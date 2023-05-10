@@ -94,6 +94,7 @@ use JTL\Router\Controller\Backend\SystemCheckController;
 use JTL\Router\Controller\Backend\SystemLogController;
 use JTL\Router\Controller\Backend\TaCController;
 use JTL\Router\Controller\Backend\TemplateController;
+use JTL\Router\Controller\Backend\UpgradeController;
 use JTL\Router\Controller\Backend\WarehousesController;
 use JTL\Router\Controller\Backend\WishlistController;
 use JTL\Router\Controller\Backend\WizardController;
@@ -236,6 +237,7 @@ class BackendRouter
             Route::ELFINDER              => ElfinderController::class,
             Route::CODE                  => CodeController::class,
             Route::LOCALIZATION_CHECK    => LocalizationController::class,
+            Route::UPGRADE               => UpgradeController::class,
         ];
         foreach ($controllers as $route => $controller) {
             $container->add($controller, function () use (

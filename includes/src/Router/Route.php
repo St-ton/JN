@@ -99,4 +99,5 @@ class Route
     public const ELFINDER              = 'elfinder';
     public const CODE                  = 'code';
     public const LOCALIZATION_CHECK    = 'localizationcheck';
+    public const UPGRADE               = 'upgrade';
 }

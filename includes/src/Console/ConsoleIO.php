@@ -289,7 +289,7 @@ class ConsoleIO extends OutputStyle
      * @return $this
      */
     public function block(
-        $messages,
+        string|array $messages,
         ?string $type = null,
         ?string $style = null,
         string $prefix = ' ',
@@ -413,7 +413,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function text($message): self
+    public function text(string|array $message): self
     {
         $this->autoPrependText();
 
@@ -429,7 +429,7 @@ class ConsoleIO extends OutputStyle
      * @param string|array $message
      * @return $this
      */
-    public function comment($message): self
+    public function comment(string|array $message): self
     {
         $this->autoPrependText();
 
@@ -442,10 +442,10 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @param string|array $message
+     * @param array|string $message
      * @return $this
      */
-    public function verbose($message): self
+    public function verbose(array|string $message): self
     {
         return $this->block($message, null, 'fg=black;bg=cyan', ' ', true);
     }
@@ -453,7 +453,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function success($message): self
+    public function success(string|array $message): self
     {
         return $this->block($message, null, 'fg=black;bg=green', ' ', true);
     }
@@ -461,7 +461,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function error($message): self
+    public function error(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=red', ' ', true);
     }
@@ -469,7 +469,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function warning($message): self
+    public function warning(string|array $message): self
     {
         return $this->block($message, null, 'fg=black;bg=yellow', ' ', true);
     }
@@ -477,7 +477,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function note($message): self
+    public function note(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=blue', ' ', true);
     }
@@ -485,7 +485,7 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function caution($message): self
+    public function caution(string|array $message): self
     {
         return $this->block($message, null, 'fg=white;bg=red', ' ', true);
     }
@@ -702,7 +702,7 @@ class ConsoleIO extends OutputStyle
         if (!isset($chars[0])) {
             return $this->newLine(); //empty history, so we should start with a new line.
         }
-        //Prepend new line for each non LF chars (This means no blank line was output before)
+        // Prepend new line for each non LF chars (This means no blank line was output before)
         $this->newLine(2 - \substr_count($chars, "\n"));
 
         return $this;
@@ -714,8 +714,7 @@ class ConsoleIO extends OutputStyle
     private function autoPrependText(): self
     {
         $fetched = $this->bufferedOutput->fetch();
-
-        //Prepend new line if last char isn't EOL:
+        // Prepend new line if last char isn't EOL:
         if (!\str_ends_with($fetched, "\n")) {
             $this->newLine();
         }

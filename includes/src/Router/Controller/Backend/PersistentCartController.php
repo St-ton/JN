@@ -109,8 +109,25 @@ class PersistentCartController extends AbstractBackendController
         foreach ($customers as $item) {
             $customer = new Customer((int)$item->kKunde);
 
-            $item->cNachname = $customer->cNachname;
-            $item->cFirma    = $customer->cFirma;
+            $item->cNachname       = $customer->cNachname;
+            $item->cFirma          = $customer->cFirma;
+            $item->cAusstiegsseite = $this->db->getSingleObject(
+                'SELECT * FROM (
+                    (SELECT tbesucher.cAusstiegsseite
+                     FROM tbesucher
+                     WHERE tbesucher.kKunde = :cid
+                     ORDER BY tbesucher.kBesucher DESC
+                     LIMIT 1)
+                UNION
+                     (SELECT tbesucherarchiv.cAusstiegsseite
+                     FROM tbesucherarchiv
+                     WHERE tbesucherarchiv.kKunde = :cid
+                     ORDER BY tbesucherarchiv.kBesucher DESC
+                     LIMIT 1)
+                ) AS besucher
+                LIMIT 1',
+                ['cid' => (int)$item->kKunde]
+            )->cAusstiegsseite;
         }
 
         $this->smarty->assign('oKunde_arr', $customers)

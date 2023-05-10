@@ -26,6 +26,9 @@ msgstr "Item"
 msgid "warenkorbpersCount"
 msgstr "Quantity"
 
+msgid "warenkorbpersAusstiegsseite"
+msgstr "Exit page"
+
 msgid "warenkorbpersDate"
 msgstr "Date"
 

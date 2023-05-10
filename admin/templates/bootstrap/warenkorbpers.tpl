@@ -42,6 +42,7 @@
                             <th class="text-left">{__('warenkorbpersCompany')}</th>
                             <th class="text-left">{__('warenkorbpersClientName')}</th>
                             <th class="th-3 text-center">{__('warenkorbpersCount')}</th>
+                            <th class="th-3 text-center">{__('warenkorbpersAusstiegsseite')}</th>
                             <th class="th-4 text-center">{__('warenkorbpersDate')}</th>
                             <th class="th-5 text-center">{__('warenkorbpersAction')}</th>
                         </tr>
@@ -52,6 +53,7 @@
                                 <td>{$oKunde->cFirma}</td>
                                 <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
                                 <td class="text-center">{$oKunde->nAnzahl}</td>
+                                <td class="text-center">{$oKunde->cAusstiegsseite}</td>
                                 <td class="text-center">{$oKunde->Datum}</td>
                                 <td class="text-center">
                                     <div class="btn-group">

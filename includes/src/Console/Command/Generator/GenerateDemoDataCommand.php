@@ -100,7 +100,7 @@ class GenerateDemoDataCommand extends Command
             [
                 'manufacturers'        => $this->manufacturers,
                 'categories'           => $this->categories,
-                'articles'             => $this->products,
+                'products'             => $this->products,
                 'customers'            => $this->customers,
                 'links'                => $this->links,
                 'characteristics'      => $this->characteristics,
@@ -149,11 +149,13 @@ class GenerateDemoDataCommand extends Command
             $this->barEnd();
         }
 
-        $this->getIO()->writeln('Generated manufacturers: ' . $this->manufacturers);
-        $this->getIO()->writeln('Generated categories: ' . $this->categories);
-        $this->getIO()->writeln('Generated products: ' . $this->products);
-        $this->getIO()->writeln('Generated customers: ' . $this->customers);
-        $this->getIO()->writeln('Generated links: ' . $this->links);
+        $this->getIO()->writeln('Generated manufacturers: ' . $this->manufacturers)
+            ->writeln('Generated categories: ' . $this->categories)
+            ->writeln('Generated products: ' . $this->products)
+            ->writeln('Generated characteristics: ' . $this->characteristics)
+            ->writeln('Generated characteristic values: ' . $this->characteristicValues)
+            ->writeln('Generated customers: ' . $this->customers)
+            ->writeln('Generated links: ' . $this->links);
     }
 
     /**

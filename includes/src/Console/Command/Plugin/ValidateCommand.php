@@ -21,7 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ValidateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -42,7 +42,7 @@ class ValidateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -54,7 +54,7 @@ class ValidateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): ?int
     {

@@ -102,7 +102,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isQuiet(): bool
     {
@@ -118,7 +118,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isVerbose(): bool
     {
@@ -126,7 +126,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isVeryVerbose(): bool
     {
@@ -134,7 +134,7 @@ class ConsoleIO extends OutputStyle
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isDebug(): bool
     {

@@ -57,7 +57,7 @@ class GenerateDemoDataCommand extends Command
     private ?ProgressBar $bar = null;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -73,7 +73,7 @@ class GenerateDemoDataCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -159,8 +159,6 @@ class GenerateDemoDataCommand extends Command
     }
 
     /**
-     * execute before starting any Progress to initialize the progress-bar.
-     *
      * @param int    $max
      * @param string $subject
      */
@@ -172,9 +170,6 @@ class GenerateDemoDataCommand extends Command
         $this->bar->setMessage('Generate ' . $subject . ':');
     }
 
-    /**
-     * execute if progress has finished.
-     */
     private function barEnd(): void
     {
         $this->bar->finish();

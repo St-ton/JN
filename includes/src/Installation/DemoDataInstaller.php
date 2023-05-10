@@ -6,7 +6,6 @@ use Cocur\Slugify\Slugify;
 use Faker\Factory as Fake;
 use Faker\Generator;
 use JTL\DB\DbInterface;
-use JTL\DB\ReturnType;
 use JTL\Installation\Faker\de_DE\Commerce;
 use JTL\Installation\Faker\ImageProvider;
 use JTL\Language\LanguageHelper;
@@ -534,9 +533,9 @@ class DemoDataInstaller
      */
     public function createProducts(?callable $callback = null): self
     {
-        $maxPk         = (int)$this->db->getSingleObject('SELECT MAX(kArtikel) AS cnt FROM tartikel')->cnt;
-        $manufacturers = (int)$this->db->getSingleObject('SELECT COUNT(kHersteller) AS cnt FROM thersteller')->cnt;
-        $categories    = (int)$this->db->getSingleObject('SELECT COUNT(kKategorie) AS cnt FROM tkategorie')->cnt;
+        $maxPk         = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
+        $manufacturers = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
+        $categories    = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
         if ($categories === 0) {
             return $this;
         }
@@ -630,10 +629,11 @@ class DemoDataInstaller
                 for ($j = 0; $j < $numRatings; ++$j) {
                     $this->createRating($product->kArtikel);
                 }
-                $maxCategoryProduct = (int)$this->db->getSingleObject(
+                $maxCategoryProduct = $this->db->getSingleInt(
                     'SELECT MAX(kKategorieArtikel) AS cnt 
-                        FROM tkategorieartikel'
-                )->cnt;
+                        FROM tkategorieartikel',
+                    'cnt'
+                );
 
                 $productCategory                    = new stdClass();
                 $productCategory->kKategorieArtikel = $maxCategoryProduct + 1;

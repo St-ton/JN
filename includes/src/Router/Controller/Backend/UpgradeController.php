@@ -10,6 +10,8 @@ use JTL\Backend\Settings\SectionFactory;
 use JTL\Backend\Settings\Sections\SectionInterface;
 use JTL\Backend\Upgrade\Channels;
 use JTL\Backend\Upgrade\ReleaseDownloader;
+use JTL\Backend\Upgrade\Upgrader;
+use JTL\Filesystem\Filesystem;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -50,7 +52,10 @@ class UpgradeController extends AbstractBackendController
             if (Request::postInt('upgrade') === 1) {
                 $requestedID = Request::postInt('newerversions');
                 $release = $releaseDownloader->getReleaseByID($requestedID);
-                dd($release);
+                if ($release !== null) {
+                    $upgrader = new Upgrader(Shop::Container()->get(Filesystem::class));
+                    $upgrader->upgradeByRelease($release);
+                }
             }
         }
 

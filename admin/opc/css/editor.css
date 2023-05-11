@@ -29,6 +29,38 @@
   font-weight: bold;
   src: url("../fonts/OpenSans/OpenSans-BoldItalic.ttf");
 }
+.opc-tooltip {
+  background: #000;
+  color: #fff;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0.75;
+}
+.opc-tooltip:not(.shown) {
+  display: none;
+}
+.opc-tooltip .tooltip-arrow:before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #000;
+  transform: rotate(45deg);
+  display: block;
+}
+.opc-tooltip[data-popper-placement^=top] > .tooltip-arrow {
+  bottom: -4px;
+}
+.opc-tooltip[data-popper-placement^=bottom] > .tooltip-arrow {
+  top: -4px;
+}
+.opc-tooltip[data-popper-placement^=left] > .tooltip-arrow {
+  right: -4px;
+}
+.opc-tooltip[data-popper-placement^=right] > .tooltip-arrow {
+  left: -4px;
+}
+
 .opc {
   font-family: "Open Sans", sans-serif;
 }
@@ -200,37 +232,6 @@
 .opc .form-group input[type=checkbox]:checked + label:before {
   content: "";
   font-weight: 900;
-}
-.opc .tooltip {
-  background: #000;
-  color: #fff;
-  font-size: 14px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  opacity: 0.75;
-}
-.opc .tooltip:not(.shown) {
-  display: none;
-}
-.opc .tooltip .tooltip-arrow:before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background: #000;
-  transform: rotate(45deg);
-  display: block;
-}
-.opc .tooltip[data-popper-placement^=top] > .tooltip-arrow {
-  bottom: -4px;
-}
-.opc .tooltip[data-popper-placement^=bottom] > .tooltip-arrow {
-  top: -4px;
-}
-.opc .tooltip[data-popper-placement^=left] > .tooltip-arrow {
-  right: -4px;
-}
-.opc .tooltip[data-popper-placement^=right] > .tooltip-arrow {
-  left: -4px;
 }
 .opc .dropdown {
   display: flex;
@@ -562,6 +563,9 @@
 .opc #editor #pageview #iframe {
   width: 100%;
   height: 100%;
+}
+.opc #domTemplates {
+  display: none;
 }
 
 /*# sourceMappingURL=editor.css.map */

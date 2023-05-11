@@ -1,0 +1,41 @@
+@import "variables";
+
+.opc-tooltip {
+    background: #000;
+    color: #fff;
+    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    opacity: 0.75;
+
+    &:not(.shown) {
+        display: none;
+    }
+
+    .tooltip-arrow {
+        &:before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #000;
+            transform: rotate(45deg);
+            display: block;
+        }
+    }
+
+    &[data-popper-placement^='top'] > .tooltip-arrow {
+        bottom: -4px;
+    }
+
+    &[data-popper-placement^='bottom'] > .tooltip-arrow {
+        top: -4px;
+    }
+
+    &[data-popper-placement^='left'] > .tooltip-arrow {
+        right: -4px;
+    }
+
+    &[data-popper-placement^='right'] > .tooltip-arrow {
+        left: -4px;
+    }
+}

@@ -1,4 +1,5 @@
-import {enableTooltip} from "./gui.js";
+import {enableTooltip, enableTooltips} from "./gui.js";
+import {loadIframe} from "./utils.js";
 
 export class EditorFrame
 {
@@ -9,6 +10,7 @@ export class EditorFrame
         this.shopUrl           = shopUrl;
         this.loadedStylesheets = new Set();
         this.rootAreas         = [];
+        this.selectedPortlet   = null;
     }
 
     async init()
@@ -16,52 +18,72 @@ export class EditorFrame
         let url = new URL(this.page.fullUrl);
         url.searchParams.set('opcEditMode', 'yes');
         url.searchParams.set('opcEditedPageKey', this.page.key);
-        let iframeUrl = url.href;
+        await loadIframe(window.iframe, url.href);
 
-        await new Promise(res => {
-            $(window.iframe).one('load', res).attr('src', iframeUrl);
-        });
-
-        this.ctx       = window.iframe.contentWindow;
-        this.ctx.opc   = window.opc;
-        this.jq        = this.ctx.$;
-        this.head      = this.jq('head');
-        this.body      = this.jq('body');
-        this.rootAreas = this.jq('.opc-rootarea');
+        this.ctx                 = window.iframe.contentWindow;
+        this.ctx.opc             = window.opc;
+        this.jq                  = this.ctx.$;
+        this.head                = this.jq('head');
+        this.body                = this.jq('body');
+        this.rootAreas           = this.jq('.opc-rootarea');
+        this.portletToolbar      = this.jq(window.template_portletToolbar.innerHTML);
+        this.dropTargetBlueprint = this.jq(window.template_dropTarget.innerHTML);
 
         for(const cssLink of this.jq('[data-opc-portlet-css-link=true]')) {
             this.loadedStylesheets.add(cssLink.href);
         }
 
-        this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
-        this.loadStylesheet(this.shopUrl + '/includes/node_modules/@fortawesome/fontawesome-free/css/all.min.css');
+        await this.loadStylesheet(this.shopUrl+'/admin/opc/css/iframe.css');
+        await this.loadStylesheet(this.shopUrl+'/includes/node_modules/@fortawesome/fontawesome-free/css/all.min.css');
+        await this.loadScript(this.shopUrl+'/includes/node_modules/@popperjs/core/dist/umd/popper.min.js')
+
         this.disableLinks();
         this.renderPreview(await this.page.getPreview());
+        this.updateDropTargets();
 
         this.rootAreas.on('click', e => {
-            this.selectPortlet(this.findPortletParent(this.jq(e.target)));
+            let $target  = $(e.target);
+            let $portlet = this.findPortletParent($target);
+            this.selectPortlet($portlet);
         });
     }
 
-    isPortlet(elm)
+    isPortlet($elm)
     {
-        return elm && elm.is('[data-portlet]');
+        return $elm.is('[data-portlet]');
     }
 
-    findPortletParent(elm)
+    findPortletParent($elm)
     {
-        if(this.isPortlet(elm)) {
-            return elm;
+        if(this.isPortlet($elm)) {
+            return $elm;
         }
 
-        if(!elm.is(this.page.rootAreas)) {
-            return this.findPortletParent(elm.parent());
+        if(!$elm.is(this.page.rootAreas)) {
+            return this.findPortletParent($elm.parent());
         }
     }
 
-    selectPortlet(portlet)
+    selectPortlet(portlet = null)
     {
-        console.log(portlet);
+        if(portlet && portlet.is(this.selectedPortlet)) {
+            return;
+        }
+
+        if(this.selectedPortlet) {
+            this.selectedPortlet.removeClass('opc-selected');
+        }
+
+        if(this.portletToolbar.popper) {
+            this.portletToolbar.popper.destroy();
+            this.portletToolbar.popper = null;
+        }
+
+        if(portlet) {
+            this.portletToolbar.popper = this.ctx.Popper.createPopper(portlet[0], this.portletToolbar[0], { });
+            this.body.append(this.portletToolbar);
+            this.selectedPortlet = portlet;
+        }
     }
 
     renderPreview(preview)
@@ -92,18 +114,24 @@ export class EditorFrame
         this.stripDropTargets();
 
         for(const area of this.getAreas()) {
-            let droptarget = $(window.dropTargetBlueprint).clone().attr('id', '').show();
+            let $area       = this.jq(area);
+            let $droptarget = this.dropTargetBlueprint.clone();
 
-            droptarget
+            $droptarget
                 .find('.opc-droptarget-info')
-                .attr('title', area.data('title') || area.data('area-id'));
+                .attr('title', $area.data('title') || $area.data('area-id'));
 
-            this.jq(area)
-                .append(droptarget.clone())
-                .children('[data-portlet]').before(droptarget.clone());
+            $area
+                .append($droptarget.clone())
+                .children('[data-portlet]').before($droptarget.clone());
         }
 
-        enableTooltip(this.areas().find('.opc-droptarget-info'));
+        enableTooltips(this.getAreas().find('.opc-droptarget-info'));
+
+        for(const dropTarget of this.getDropTargets()) {
+            let $dropTarget = this.jq(dropTarget);
+            $dropTarget.on('drop', console.log)
+        }
     }
 
     stripDropTargets()
@@ -133,6 +161,16 @@ export class EditorFrame
                     .appendTo(this.head);
             })
         }
+    }
+
+    async loadScript(url)
+    {
+        await new Promise(res => {
+            let script = this.ctx.document.createElement('script');
+            script.onload = res;
+            script.src = url;
+            this.head[0].append(script);
+        });
     }
 
     getAreas()

@@ -120,83 +120,10 @@ export function sleep(ms)
     return new Promise(res => setTimeout(res, ms));
 }
 
-function bindProtoOnHandlers(obj)
+export async function loadIframe(iframe, url)
 {
-    var proto = obj.constructor.prototype;
-    var keys  = Object.getOwnPropertyNames(proto);
-
-    for(var i=0; i<keys.length; i++) {
-        var key    = keys[i];
-        var member = proto[key];
-
-        if(typeof member === 'function' && key.substr(0, 2) === 'on') {
-            obj[key] = member.bind(obj);
-        }
-    }
-}
-
-/**
- * Query DOM elements, bind handlers available in obj to them and set them as properties to obj
- * @param obj
- * @param elmIds
- */
-function installGuiElements(obj, elmIds)
-{
-    elmIds.forEach(function(elmId) {
-        var elm         = $('#' + elmId);
-        var elmVarName  = elmId;
-        var handlerName = '';
-
-        if (elm.length === 0) {
-            elm         = $('.' + elmId);
-            elmVarName  = elmId + 's';
-        }
-
-        if (elm.length === 0) {
-            console.log('warning: ' + elmId + ' could not be found');
-            return;
-        }
-
-        if (elm.attr('draggable') === 'true') {
-            handlerName = 'on' + capitalize(elmId) + 'DragStart';
-
-            if (obj[handlerName]) {
-                elm.off('dragstart').on('dragstart', obj[handlerName]);
-            }
-
-            handlerName = 'on' + capitalize(elmId) + 'DragEnd';
-
-            if (obj[handlerName]) {
-                elm.off('dragend').on('dragend', obj[handlerName]);
-            }
-
-        } else if (elm.tagName() === 'a' || elm.tagName() === 'button') {
-            handlerName = 'on' + capitalize(elmId);
-
-            if (obj[handlerName]) {
-                elm.off('click').on('click', obj[handlerName]);
-            }
-        } else if (elm.tagName() === 'form') {
-            handlerName = 'on' + capitalize(elmId);
-
-            if (obj[handlerName]) {
-                elm.off('submit').submit(obj[handlerName]);
-            }
-        } else if (elm.tagName() === 'input' && elm.attr('type') === 'checkbox') {
-            handlerName = 'on' + capitalize(elmId);
-
-            if (obj[handlerName]) {
-                elm.off('click').on('click', obj[handlerName]);
-            }
-        }
-
-        obj[elmVarName] = elm;
+    await new Promise(res => {
+        iframe.addEventListener('load', res, true);
+        iframe.src = url;
     });
-}
-
-function initDragStart(e)
-{
-    // firefox needs this
-    e.originalEvent.dataTransfer.effectAllowed = 'move';
-    e.originalEvent.dataTransfer.setData('text/html', '');
 }

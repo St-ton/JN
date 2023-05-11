@@ -1,4 +1,4 @@
-<div id="publishModal" class="modal">
+<div id="{$}" class="modal">
     <div class="modal-dialog">
         <div class="modal-header">
             <div class="modal-title">{__('draftPublic')}</div>

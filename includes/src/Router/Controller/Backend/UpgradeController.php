@@ -19,6 +19,7 @@ use JTL\Helpers\Text;
 use JTL\Minify\MinifyService;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
+use JTL\Update\MigrationManager;
 use JTLShop\SemVer\Version;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -43,6 +44,7 @@ class UpgradeController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
+
         $this->checkPermissions(Permissions::OBJECTCACHE_VIEW);
         $this->getText->loadAdminLocale('pages/upgrade');
 
@@ -53,7 +55,12 @@ class UpgradeController extends AbstractBackendController
                 $requestedID = Request::postInt('newerversions');
                 $release = $releaseDownloader->getReleaseByID($requestedID);
                 if ($release !== null) {
-                    $upgrader = new Upgrader(Shop::Container()->get(Filesystem::class));
+                    $upgrader = new Upgrader(
+                        $this->db,
+                        $this->cache,
+                        Shop::Container()->get(Filesystem::class),
+                        $smarty
+                    );
                     $upgrader->upgradeByRelease($release);
                 }
             }

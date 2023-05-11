@@ -73,7 +73,6 @@ class DBMigrationHelper
         $versionInfo->innodb = new stdClass();
 
         $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
         $versionInfo->innodb->size    = $innodbSize;
         $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
             $utf8Support->IS_COMPILED,
@@ -243,13 +242,6 @@ class DBMigrationHelper
      */
     public static function isTableInUse(DbInterface $db, $table): bool
     {
-        $mysqlVersion = self::getMySQLVersion();
-        if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-            $tableInfo = self::getTable($table);
-
-            return $tableInfo !== null && \str_contains($tableInfo->TABLE_COMMENT, ':Migrating');
-        }
-
         $tableStatus = $db->getSingleObject(
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
@@ -308,9 +300,7 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}:Migrating'"
-            : '';
+        return '';
     }
 
     /**
@@ -321,9 +311,7 @@ class DBMigrationHelper
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}'"
-            : '';
+        return '';
     }
 
     /**
@@ -377,9 +365,7 @@ class DBMigrationHelper
             return '';
         }
 
-        return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? $sql
-            : $sql . ', LOCK EXCLUSIVE';
+        return $sql . ', LOCK EXCLUSIVE';
     }
 
     /**
@@ -424,11 +410,7 @@ class DBMigrationHelper
                 . (!empty($col->EXTRA) ? ' ' . $col->EXTRA : '');
         }
 
-        $sql .= \implode(", $lineBreak", $columnChange);
-
-        if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-            $sql .= ', LOCK EXCLUSIVE';
-        }
+        $sql .= \implode(", $lineBreak", $columnChange) . ', LOCK EXCLUSIVE';
 
         return $sql;
     }
@@ -611,20 +593,6 @@ class DBMigrationHelper
                         && !\in_array($table->TABLE_NAME, $exclude, true)
                     ) {
                         if (!self::isTableInUse($db, $tableName)) {
-                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                                // If MySQL version is lower than 5.6 use alternative lock method
-                                // and delete all fulltext indexes because these are not supported
-                                $db->query(self::sqlAddLockInfo($table));
-                                $fulltextIndizes = self::getFulltextIndizes($table->TABLE_NAME);
-                                if ($fulltextIndizes) {
-                                    foreach ($fulltextIndizes as $fulltextIndex) {
-                                        $db->query(
-                                            'ALTER TABLE `' . $table->TABLE_NAME . '`
-                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
-                                        );
-                                    }
-                                }
-                            }
                             if (($migration & self::MIGRATE_TABLE) !== 0) {
                                 $fkSQLs = self::sqlRecreateFKs($table->TABLE_NAME);
                                 foreach ($fkSQLs->dropFK as $fkSQL) {
@@ -643,9 +611,6 @@ class DBMigrationHelper
                                 $result->status    = 'migrate';
                             } else {
                                 $result->status = 'failure';
-                            }
-                            if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                                $db->query(self::sqlClearLockInfo($table));
                             }
                         } else {
                             $result->status = 'in_use';
@@ -706,14 +671,6 @@ class DBMigrationHelper
                 $dirMan      = new DirManager();
                 $dirMan->getData(\PFAD_ROOT . \PFAD_COMPILEDIR . $templateDir, $callback);
                 $dirMan->getData(\PFAD_ROOT . \PFAD_ADMIN . \PFAD_COMPILEDIR, $callback);
-                // Reset Fulltext search if version is lower than 5.6
-                if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                    $db->query(
-                        "UPDATE `teinstellungen` 
-                            SET `cWert` = 'N' 
-                            WHERE `cName` = 'suche_fulltext'"
-                    );
-                }
                 $result->nextTable = '';
                 $result->status    = 'finished';
                 break;
@@ -761,17 +718,15 @@ class DBMigrationHelper
             }
             $dbStructure =& $dbStruct['extended'];
 
-            if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-                $dbStatus = $db->getObjects(
-                    'SHOW OPEN TABLES
-                    WHERE `Database` LIKE :schema',
-                    ['schema' => $database]
-                );
-                if ($dbStatus) {
-                    foreach ($dbStatus as $oStatus) {
-                        if ((int)$oStatus->In_use > 0) {
-                            $dbLocked[$oStatus->Table] = 1;
-                        }
+            $dbStatus = $db->getObjects(
+                'SHOW OPEN TABLES
+                WHERE `Database` LIKE :schema',
+                ['schema' => $database]
+            );
+            if ($dbStatus) {
+                foreach ($dbStatus as $oStatus) {
+                    if ((int)$oStatus->In_use > 0) {
+                        $dbLocked[$oStatus->Table] = 1;
                     }
                 }
             }
@@ -813,11 +768,7 @@ class DBMigrationHelper
                     $dbStructure[$table]            = $data;
                     $dbStructure[$table]->Columns   = [];
                     $dbStructure[$table]->Migration = self::MIGRATE_NONE;
-                    if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                        $dbStructure[$table]->Locked = \str_contains($data->TABLE_COMMENT, ':Migrating') ? 1 : 0;
-                    } else {
-                        $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
-                    }
+                    $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
                 } else {
                     $dbStructure[$table] = [];
                 }

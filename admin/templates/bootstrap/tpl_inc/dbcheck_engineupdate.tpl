@@ -10,24 +10,6 @@
     {sprintf(__('structureMigrationNeededLong'), $engineUpdate->tableCount, $engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;')}}
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
-    {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}
-        <div class="alert alert-warning">
-            <div class="card-title">{__('warningOldDBVersion')}</div>
-            {sprintf(__('warningOldDBVersionLong'), $DB_Version->server)}
-            {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
-                <ul>
-                    {if (isset($config.artikeluebersicht.suche_fulltext) && $config.artikeluebersicht.suche_fulltext !== 'N')}
-                    <li>{__('fullTextDeactivate')}</li>
-                    {/if}
-                    {if $FulltextIndizes !== false}
-                    {foreach $FulltextIndizes as $index}
-                    <li>{sprintf(__('fullTextDelete'), $index->INDEX_NAME, $index->TABLE_NAME)}</li>
-                    {/foreach}
-                    {/if}
-                </ul>
-            {/if}
-        </div>
-    {/if}
     {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
         <div class="alert alert-warning">
             <div class="card-title">{__('notEnoughTableSpace')}</div>

@@ -130,17 +130,15 @@ class DBCheckController extends AbstractBackendController
             }
             $dbStructure =& $dbStruct['extended'];
 
-            if (\version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
-                $dbStatus = $db->getObjects(
-                    'SHOW OPEN TABLES
-                    WHERE `Database` LIKE :schema',
-                    ['schema' => $database]
-                );
-                if ($dbStatus) {
-                    foreach ($dbStatus as $oStatus) {
-                        if ((int)$oStatus->In_use > 0) {
-                            $dbLocked[$oStatus->Table] = 1;
-                        }
+            $dbStatus = $db->getObjects(
+                'SHOW OPEN TABLES
+                WHERE `Database` LIKE :schema',
+                ['schema' => $database]
+            );
+            if ($dbStatus) {
+                foreach ($dbStatus as $oStatus) {
+                    if ((int)$oStatus->In_use > 0) {
+                        $dbLocked[$oStatus->Table] = 1;
                     }
                 }
             }
@@ -183,11 +181,7 @@ class DBCheckController extends AbstractBackendController
                     $dbStructure[$table]->Columns   = [];
                     $dbStructure[$table]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
-                    if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                        $dbStructure[$table]->Locked = (int)\str_contains($data->TABLE_COMMENT, ':Migrating');
-                    } else {
-                        $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
-                    }
+                    $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
                 } else {
                     $dbStructure[$table] = [];
                 }
@@ -415,21 +409,6 @@ class DBCheckController extends AbstractBackendController
                 continue;
             }
 
-            if (\version_compare($mysqlVer->innodb->version, '5.6', '<')) {
-                // Fulltext indizes are not supported for innoDB on MySQL < 5.6
-                $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
-
-                if ($fulltextIndizes) {
-                    $result .= $nl . '--' . $nl;
-                    $result .= '-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 '
-                        . $nl;
-                    foreach ($fulltextIndizes as $fulltextIndex) {
-                        $fulltextSQL[] = /** @lang text */
-                            'ALTER TABLE `' . $table->TABLE_NAME . '` DROP KEY `' . $fulltextIndex->INDEX_NAME . '`';
-                    }
-                }
-            }
-
             if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $result .= $nl . '--' . $nl;
                 if (($migration & DBMigrationHelper::MIGRATE_TABLE) === DBMigrationHelper::MIGRATE_TABLE) {
@@ -470,15 +449,6 @@ class DBCheckController extends AbstractBackendController
         }
 
         $result .= $nl;
-
-        if (\version_compare($mysqlVer->innodb->version, '5.6', '<')) {
-            // Fulltext search is not available on MySQL < 5.6
-            $result .= '--' . $nl;
-            $result .= '-- Fulltext search is not available on MySQL < 5.6' . $nl;
-            $result .= '--' . $nl;
-            $result .= "UPDATE `teinstellungen` SET `cWert` = 'N' WHERE `cName` = 'suche_fulltext';" . $nl;
-            $result .= $nl;
-        }
 
         if (!empty($recreateFKs)) {
             $result .= '--' . $nl;

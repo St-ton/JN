@@ -65,18 +65,6 @@ msgstr "Struktur-Migration erforderlich!"
 msgid "structureMigrationNeededLong"
 msgstr "Für %s Tabellen ist eine Verschiebung in den InnoDB-Tablespace und ggfs. die Konvertierung in einen UTF-8-Zeichensatz erforderlich. Von dieser Migration sind ca. %s an Daten betroffen."
 
-msgid "warningOldDBVersion"
-msgstr "Veraltete Datenbank-Version"
-
-msgid "warningOldDBVersionLong"
-msgstr "Die verwendete Datenbank-Version %s unterstützt nicht alle Möglichkeiten dieser Version von JTL-Shop. Einige Funktionen stehen deshalb nach der Migration nicht mehr zur Verfügung."
-
-msgid "fullTextDeactivate"
-msgstr "Die Volltextsuche wird deaktiviert."
-
-msgid "fullTextDelete"
-msgstr "Der Volltextindex %s für %s wird gelöscht."
-
 msgid "notEnoughTableSpace"
 msgstr "Nicht genügend Platz im InnoDB-Tablespace."
 

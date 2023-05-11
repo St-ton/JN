@@ -35,7 +35,6 @@ class SearchConfigController extends AbstractBackendController
         $sectionID        = \CONF_ARTIKELUEBERSICHT;
         $conf             = Shop::getSettings([$sectionID]);
         $standardwaehrung = $this->db->select('twaehrung', 'cStandard', 'Y');
-        $mysqlVersion     = $this->db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
         $step             = 'einstellungen bearbeiten';
         $createIndex      = false;
         $sectionFactory   = new SectionFactory();
@@ -44,17 +43,11 @@ class SearchConfigController extends AbstractBackendController
         if (Request::postInt('einstellungen_bearbeiten') === 1 && Form::validateToken()) {
             $sucheFulltext = \in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
             if ($sucheFulltext) {
-                if (\version_compare($mysqlVersion, '5.6', '<')) {
-                    //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
-                    $_POST['suche_fulltext'] = 'N';
-                    $this->alertService->addError(\__('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
-                } else {
-                    // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
-                    $currentVal = $this->db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
-                    if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
-                        $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
-                        $this->alertService->addWarning(\__('errorFulltextSearchMinLen'), 'errorFulltextSearchMinLen');
-                    }
+                // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
+                $currentVal = $this->db->getSingleObject('SELECT @@ft_min_word_len AS ft_min_word_len');
+                if (($currentVal->ft_min_word_len ?? $_POST['suche_min_zeichen']) !== $_POST['suche_min_zeichen']) {
+                    $_POST['suche_min_zeichen'] = $currentVal->ft_min_word_len;
+                    $this->alertService->addWarning(\__('errorFulltextSearchMinLen'), 'errorFulltextSearchMinLen');
                 }
             }
 
@@ -123,7 +116,7 @@ class SearchConfigController extends AbstractBackendController
             ->assign('sections', [$section])
             ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
             ->assign('step', $step)
-            ->assign('supportFulltext', \version_compare($mysqlVersion, '5.6', '>='))
+            ->assign('supportFulltext', true)
             ->assign('createIndex', $createIndex)
             ->assign('waehrung', $standardwaehrung->cName ?? '')
             ->assign('route', $this->route)

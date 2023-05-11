@@ -48,11 +48,10 @@ class InnodbUtf8Command extends Command
             $output->write('migrate ' . $table->TABLE_NAME . '... ');
 
             if (DBMigrationHelper::isTableInUse($db, $table->TABLE_NAME)) {
-                $table = $this->nextWithFailure($output, $db, $table, false, 'already in use!');
+                $table = $this->nextWithFailure($output, $db, $table, 'already in use!');
                 continue;
             }
 
-            $this->prepareTable($db, $table);
             $migrationState = DBMigrationHelper::isTableNeedMigration($table);
             if (($migrationState & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
                 $fkSQLs = DBMigrationHelper::sqlRecreateFKs($table->TABLE_NAME);
@@ -75,7 +74,6 @@ class InnodbUtf8Command extends Command
                     continue;
                 }
             }
-            $this->releaseTable($db, $table);
             $output->writeln('<info> ✔ </info>');
 
             $table = DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
@@ -91,44 +89,9 @@ class InnodbUtf8Command extends Command
     }
 
     /**
-     * @param DbInterface $db
-     * @param stdClass    $table
-     */
-    private function prepareTable(DbInterface $db, $table): void
-    {
-        if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
-            // If MySQL version is lower than 5.6 use alternative lock method
-            // and delete all fulltext indexes because these are not supported
-            $db->query(DBMigrationHelper::sqlAddLockInfo($table->TABLE_NAME));
-            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
-            if ($fulltextIndizes) {
-                foreach ($fulltextIndizes as $fulltextIndex) {
-                    /** @noinspection SqlResolve */
-                    $db->query(
-                        'ALTER TABLE `' . $table->TABLE_NAME . '`
-                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`'
-                    );
-                }
-            }
-        }
-    }
-
-    /**
-     * @param DbInterface $db
-     * @param stdClass    $table
-     */
-    private function releaseTable(DbInterface $db, $table): void
-    {
-        if (\version_compare(DBMigrationHelper::getMySQLVersion()->innodb->version, '5.6', '<')) {
-            $db->query(DBMigrationHelper::sqlClearLockInfo($table));
-        }
-    }
-
-    /**
      * @param OutputInterface $output
      * @param DbInterface     $db
      * @param stdClass        $table
-     * @param bool            $releaseTable
      * @param string          $msg
      * @return stdClass|null
      */
@@ -136,15 +99,11 @@ class InnodbUtf8Command extends Command
         OutputInterface $output,
         DbInterface $db,
         stdClass $table,
-        bool $releaseTable = true,
         string $msg = 'failure!'
     ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');
         $this->excludeTables[] = $table->TABLE_NAME;
-        if ($releaseTable) {
-            $this->releaseTable($db, $table);
-        }
 
         return DBMigrationHelper::getNextTableNeedMigration($db, $this->excludeTables);
     }

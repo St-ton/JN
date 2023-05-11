@@ -40,6 +40,7 @@ class UpdateCheckMiddleware implements MiddlewareInterface
             $path = $request->getUri()->getPath();
             if (!\str_contains($path, Route::LOGOUT)
                 && !\str_contains($path, Route::DBUPDATER)
+                && !\str_contains($path, Route::UPGRADE)
                 && !\str_ends_with($path, Route::IO)
                 && ($request->getQueryParams()['action'] ?? null) !== 'quick_change_language'
                 && $this->account->logged()

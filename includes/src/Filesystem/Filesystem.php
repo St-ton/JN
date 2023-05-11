@@ -132,18 +132,13 @@ class Filesystem extends \League\Flysystem\Filesystem
             if ($pos === 0) {
                 $path = \substr_replace($path, '', $pos, \strlen(\PFAD_ROOT));
             }
-            try {
-                if ($file->getType() === 'dir') {
-                    $manager->createDirectory('zip://' . $path);
-                } else {
-                    $manager->copy('root://' . $path, 'zip://' . $path);
-                }
-            } catch (Throwable $e) {
-                // @todo!!! - handle this error better
-                echo $e->getMessage() . \PHP_EOL;
+            if ($file->getType() === 'dir') {
+                $manager->createDirectory('zip://' . $path);
+            } else {
+                $manager->copy('root://' . $path, 'zip://' . $path);
             }
             if (\is_callable($callback)) {
-                $callback($count, $index);
+                $callback($count, $index, $path);
                 ++$index;
             }
         }

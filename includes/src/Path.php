@@ -17,11 +17,11 @@ class Path
     public static function combine(): string
     {
         $paths = \func_get_args();
-        if (!\is_array($paths) || \count($paths) === 0) {
+        if (\count($paths) === 0) {
             throw new InvalidArgumentException('Empty or invalid paths');
         }
 
-        return static::clean(\implode(\DIRECTORY_SEPARATOR, \array_map('self::clean', $paths)));
+        return static::clean(\implode(\DIRECTORY_SEPARATOR, \array_map(self::clean(...), $paths)));
     }
 
     /**

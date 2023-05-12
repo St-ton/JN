@@ -305,7 +305,7 @@ ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
  * Mailqueueing
  */
 ifndef('EMAIL_SEND_IMMEDIATELY', false);
-ifndef('EMAIL_CHUNK_SIZE', 20);
+ifndef('EMAIL_CHUNK_SIZE', 1);
 
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;

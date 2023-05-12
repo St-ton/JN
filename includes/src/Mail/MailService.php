@@ -3,6 +3,7 @@
 namespace JTL\Mail;
 
 use JTL\Abstracts\AbstractService;
+use JTL\Cron\JobQueueService;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Mail\Attachments\AttachmentsService;
@@ -150,10 +151,11 @@ class MailService extends AbstractService
      */
     public function getQueuedMails(): array
     {
-        $mailsToSend  = $this->getRepository()->getNextMailsFromQueue($this->getEmailConfig()['chunkSize']);
-        $isSendingNow = 1;
-        $isSent       = 0;
-        $this->setMailStatus(array_column($mailsToSend, 'id'), $isSendingNow, $isSent);
+        $mailsToSend = $this->getRepository()->getNextMailsFromQueue(
+            $this->getEmailConfig()['chunkSize']
+        );
+        //Do not send Mails multiple times
+        $this->setMailStatus(\array_column($mailsToSend, 'id'), 1);
         $attachments       = $this->getAttachmentsService()->getListByMailIDs(\array_column($mailsToSend, 'id'));
         $returnMailObjects = [];
         foreach ($mailsToSend as $mail) {
@@ -176,9 +178,9 @@ class MailService extends AbstractService
      * @param int   $isSent
      * @return int
      */
-    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): bool
+    public function setMailStatus(array $mailIds, int $isSendingNow): bool
     {
-        return $this->getRepository()->setMailStatus($mailIds, $isSendingNow, $isSent);
+        return $this->getRepository()->setMailStatus($mailIds, $isSendingNow);
     }
 
     /**

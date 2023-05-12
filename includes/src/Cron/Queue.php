@@ -19,9 +19,18 @@ class Queue
      * @param DbInterface     $db
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
+     * @param int             $cronStartedAt
+     * @since 5.3.0
      */
-    public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
-    {
+    public function __construct(
+        private DbInterface     $db,
+        private LoggerInterface $logger,
+        private JobFactory      $factory,
+        private int             $cronStartedAt = 0
+    ) {
+        if ($this->cronStartedAt === 0) {
+            $this->cronStartedAt = \time();
+        }
         Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
 
@@ -31,7 +40,8 @@ class Queue
     public function loadQueueFromDB(): array
     {
         $queueEntries = $this->db->getCollection(
-            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency
+            'SELECT tjobqueue.*, tcron.nextStart, tcron.startTime AS cronStartTime, tcron.frequency, ' .
+                    $this->cronStartedAt . ' AS cronHasStartedAt
                 FROM tjobqueue
                 JOIN tcron
                     ON tcron.cronID = tjobqueue.cronID

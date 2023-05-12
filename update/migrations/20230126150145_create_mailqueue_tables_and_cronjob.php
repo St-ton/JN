@@ -25,7 +25,7 @@ class Migration_20230126150145 extends Migration implements IMigration
     {
         $this->execute("CREATE TABLE `emails` (
               `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-              `isSent` tinyint(1) unsigned NOT NULL DEFAULT 0,
+              `reSend` tinyint(1) unsigned NOT NULL DEFAULT 0,
               `isSendingNow` tinyint(1) unsigned DEFAULT 0,
               `sendCount` int(11) unsigned DEFAULT 0,
               `errorCount` int(11) DEFAULT 0,

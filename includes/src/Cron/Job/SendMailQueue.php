@@ -14,7 +14,7 @@ use JTL\Smarty\MailSmarty;
 use SmartyException;
 
 /**
- * Class Dummy
+ * Class SendMailQueue
  * @package JTL\Cron\Job
  */
 final class SendMailQueue extends Job
@@ -35,23 +35,24 @@ final class SendMailQueue extends Job
      */
     public function start(QueueEntry $queueEntry): JobInterface
     {
-        $maxJobLength = \ceil(((int)\ini_get('max_execution_time')) / 2);
-        $jobStarted   = \time();
+        $maxJobLength = (int)\ceil(((int)\ini_get('max_execution_time')) / 2);
 
         parent::start($queueEntry);
 
-        $settings  = Shopsetting::getInstance();
-        $smarty    = new SmartyRenderer(new MailSmarty($this->db));
-        $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $this->db, $settings);
-        $validator = new MailValidator($this->db, $settings->getAll());
-        $mailer    = new Mailer(
+        $settings        = Shopsetting::getInstance();
+        $smarty          = new SmartyRenderer(new MailSmarty($this->db));
+        $hydrator        = new DefaultsHydrator($smarty->getSmarty(), $this->db, $settings);
+        $validator       = new MailValidator($this->db, $settings->getAll());
+        $lastIDProcessed = 0;
+        $mailer          = new Mailer(
             $hydrator,
             $smarty,
             $settings,
             $validator
         );
-        while (\time() < ($jobStarted + $maxJobLength)) {
-            $mailer->sendQueuedMails();
+        $mailsSent       = true;
+        while ($mailsSent === true && \time() < ($queueEntry->cronHasStartedAt + $maxJobLength)) {
+            $mailsSent = $mailer->sendQueuedMails();
         }
 
         return $this;

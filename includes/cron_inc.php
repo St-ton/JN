@@ -9,6 +9,8 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 defined('JTLCRON') || define('JTLCRON', true);
+//$nStartzeit will be set in globalinclude - just to make sure it exists..
+$nStartzeit = \time();
 if (!defined('PFAD_LOGFILES')) {
     require __DIR__ . '/globalinclude.php';
 }
@@ -37,5 +39,5 @@ if (PHP_SAPI === 'cli') {
 }
 $db     = Shop::Container()->getDB();
 $cache  = Shop::Container()->getCache();
-$runner = new Queue($db, $logger, new JobFactory($db, $logger, $cache));
+$runner = new Queue($db, $logger, new JobFactory($db, $logger, $cache), (int)$nStartzeit);
 $runner->run(new Checker($db, $logger));

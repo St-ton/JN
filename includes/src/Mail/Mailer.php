@@ -195,9 +195,9 @@ class Mailer
     }
 
     /**
-     * @return void
+     * @return bool
      */
-    public function sendQueuedMails(): void
+    public function sendQueuedMails(): bool
     {
         /** @var MailDataTableObject[] $mails */
         $mails = $this->getMailService()->getQueuedMails();
@@ -206,15 +206,15 @@ class Mailer
             //will always run in background so no exception may remain uncatched
             try {
                 $mail = new MailObject();
-
                 $mail->hydrateWithObject($mailDataTableobject);
-
                 $this->sendPreparedMail($mail);
+                $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], 0);
                 if ($mail->getError() !== '') {
-                    $this->getMailService()->setError($mailDataTableobject->getId(), $mail->getError());
-                    $isSendingNow = 0;
-                    $isSent       = 0;
-                    $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], $isSendingNow, $isSent);
+                    $this->getMailService()->setError(
+                        $mailDataTableobject->getId(),
+                        'Template: ' . $mailDataTableobject->getTemplateId() .'. ' .
+                        $mail->getError()
+                    );
                 } else {
                     $this->getMailService()->deleteQueuedMail($mailDataTableobject->getId());
                     /** @var Attachment $attachment */
@@ -223,12 +223,15 @@ class Mailer
                     }
                 }
             } catch (\Exception $e) {
+                $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], 0);
                 $this->getMailService()->setError(
                     $mailDataTableobject->getId(),
                     ($mail?->getError() ?? $e->getMessage())
                 );
             }
         }
+
+        return (count($mails) > 0);
     }
 
     /**

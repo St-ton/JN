@@ -10,12 +10,12 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
 {
     private string $primarykey   = 'id';
     protected int $id            = 0;
-    protected int $isSent        = 0;
+    protected int $reSend        = 0;
     protected int $isSendingNow  = 0;
     protected int $sendCount     = 0;
     protected int $errorCount    = 0;
     protected string $lastError  = '';
-    protected string $dateQueued = '';
+    protected string $dateQueued = 'now()';
     protected string $dateSent   = '';
     protected string $fromMail;
     protected string $fromName = '';
@@ -39,7 +39,7 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     private array $columnMapping = [
         'primarykey'        => 'primarykey',
         'id'                => 'id',
-        'isSent'            => 'isSent',
+        'reSend'            => 'reSend',
         'isCancelled'       => 'isCancelled',
         'isBlocked'         => 'isBlocked',
         'isSendingNow'      => 'isSendingNow',
@@ -102,18 +102,18 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     /**
      * @return int
      */
-    public function getIsSent(): int
+    public function getReSend(): int
     {
-        return $this->isSent;
+        return $this->reSend;
     }
 
     /**
-     * @param string|int $isSent
+     * @param string|int $reSend
      * @return self
      */
-    public function setIsSent(string|int $isSent): self
+    public function setReSend(string|int $reSend): self
     {
-        $this->isSent = (int)$isSent;
+        $this->reSend = (int)$reSend;
 
         return $this;
     }
@@ -199,10 +199,6 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
      */
     public function getDateQueued(): string
     {
-        if ($this->dateQueued === '') {
-            $this->dateQueued = date('Y.m.d H:i:s');
-        }
-
         return $this->dateQueued;
     }
 

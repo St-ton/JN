@@ -38,12 +38,13 @@ class MailRepository extends AbstractRepository
 
     /**
      * @param int $chunkSize
+     * @param int $lastIDProcessed
      * @return array
      */
-    public function getNextMailsFromQueue(int $chunkSize = 20): array
+    public function getNextMailsFromQueue(int $chunkSize): array
     {
         $stmt = 'SELECT * FROM ' . $this->getTableName() .
-            ' WHERE isSent = 0 AND isSendingNow = 0 AND sendCount < 3 AND errorCount < 3' .
+            ' WHERE (isSendingNow = 0 AND sendCount < 3 AND errorCount < 3) OR reSend = 1' .
             ' ORDER BY id LIMIT :chunkSize';
 
         return $this->getDB()->getArrays($stmt, ['chunkSize' => $chunkSize]);
@@ -55,15 +56,14 @@ class MailRepository extends AbstractRepository
      * @param int   $isSent
      * @return int
      */
-    public function setMailStatus(array $mailIds, int $isSendingNow, int $isSent): bool
+    public function setMailStatus(array $mailIds, int $isSendingNow): bool
     {
         $ids  = implode(',', $this->ensureIntValuesInArray($mailIds));
         $stmt = 'UPDATE ' .
-            $this->getTableName() . ' SET isSent = :isSent, isSendingnow = :isSendingNow, sendCount = sendCount + 1 ' .
+            $this->getTableName() . ' SET reSend = 0, isSendingNow = :isSendingNow, sendCount = sendCount + 1 ' .
             'WHERE id IN (:mailId)';
 
         return $this->getDB()->queryPrepared($stmt, [
-            'isSent'       => $isSent,
             'isSendingNow' => $isSendingNow,
             'mailId'       => $ids
         ]);
@@ -80,7 +80,7 @@ class MailRepository extends AbstractRepository
             'SET isSendingNow = 0, sendCount = sendCount + 1, errorCount = errorCount + 1, lastError = :errorMsg ' .
             'WHERE id = :mailID';
 
-        return $this->getDB()->queryPrepared($stmt, [
+        return (int)$this->getDB()->queryPrepared($stmt, [
             'errorMsg' => $errorMsg,
             'mailID'   => $mailID,
         ]);

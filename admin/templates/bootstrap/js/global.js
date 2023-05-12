@@ -838,14 +838,23 @@ function tableCanBeShrunk(elem)
 }
 
 /**
- * Rearranges the content of responsive tables, so it does fit the users view
+ * Rearranges the content of a responsiv table, so it does fit the users view
  */
 function shrinkResponsiveTables(tables)
 {
     for (let i = 0; i < tables.length; i++) {
         let table = tables[i];
         if (tableCanBeShrunk(table)) {
-            table.getElementsByTagName("tbody")[0].className = 'd-block';
+            //table.getElementsByTagName("tbody")[0].className = 'd-block';
+            let paddingCardView = '3';
+            table.className += ' shrunkTable mb-0'
+            if (table.parentNode.className.split(' ').indexOf('card-body') >= 0) {
+                table.parentNode.classList.add('p-0');
+                paddingCardView = '4';
+            } else if (table.className.split(' ').indexOf('card-body') >= 0) {
+                table.classList.add('p-0');
+                paddingCardView = '4';
+            }
             let trs = table.getElementsByTagName("tr");
             let thead = trs[0].querySelectorAll("th,td");
             // Remove table head row
@@ -857,19 +866,15 @@ function shrinkResponsiveTables(tables)
                     let cardView= document.createElement('div'),
                         title= document.createElement('span'),
                         value= document.createElement('span');
-                    cardView.className = 'd-flex align-items-center mb-2';
+                    cardView.className = 'shrunkTable-row d-flex align-items-top p-' + paddingCardView;
                     if (tds[o].innerHTML.trim().length === 0 || tds[o].innerHTML.trim() === "&nbsp;") {
                         continue;
                     }
-                    if (thead[o].innerHTML.trim().length === 0 || thead[o].innerHTML.trim() === "&nbsp;") {
-                        title.innerHTML = tds[o].innerHTML;
-                        value.innerHTML = '';
-                        title.className = tds[o].className;
-                    } else {
+                    if (thead[o].innerHTML.trim().length > 0 && thead[o].innerHTML.trim() !== "&nbsp;") {
                         title.innerHTML = '<h6 class="text-nowrap m-0">' + thead[o].innerHTML + ': </h6>';
-                        value.innerHTML = tds[o].innerHTML;
-                        value.className = tds[o].className;
                     }
+                    value.innerHTML = tds[o].innerHTML;
+                    value.className = tds[o].className;
                     title.className += ' text-left mr-1';
                     value.className += ' flex-grow-1 text-right';
                     title.classList.remove("text-center");
@@ -878,9 +883,8 @@ function shrinkResponsiveTables(tables)
                     cardView.appendChild(value);
                     cardViews.appendChild(cardView);
                 }
-                trs[e].classList.add('d-block');
                 let cell = trs[e].insertCell(0);
-                cell.className = 'd-block';
+                cell.className = 'p-0';
                 cell.appendChild(cardViews);
                 while (trs[e].getElementsByTagName("td").length > 1) {
                     trs[e].deleteCell(-1);

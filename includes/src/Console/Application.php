@@ -140,7 +140,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
@@ -158,7 +158,7 @@ class Application extends BaseApplication
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function getDefaultCommands(): array
     {

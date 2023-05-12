@@ -16,7 +16,7 @@ use Throwable;
 class DeleteFileCacheCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -25,7 +25,7 @@ class DeleteFileCacheCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

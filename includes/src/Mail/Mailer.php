@@ -226,6 +226,7 @@ class Mailer
                 $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], 0);
                 $this->getMailService()->setError(
                     $mailDataTableobject->getId(),
+                    'Template: ' . $mailDataTableobject->getTemplateId() .'. ' .
                     ($mail?->getError() ?? $e->getMessage())
                 );
             }

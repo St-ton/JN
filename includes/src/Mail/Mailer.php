@@ -212,7 +212,7 @@ class Mailer
                 if ($mail->getError() !== '') {
                     $this->getMailService()->setError(
                         $mailDataTableobject->getId(),
-                        'Template: ' . $mailDataTableobject->getTemplateId() .'. ' .
+                        'Template: ' . $mailDataTableobject->getTemplateId() .'\n ' .
                         $mail->getError()
                     );
                 } else {
@@ -226,7 +226,7 @@ class Mailer
                 $this->getMailService()->setMailStatus([$mailDataTableobject->getId()], 0);
                 $this->getMailService()->setError(
                     $mailDataTableobject->getId(),
-                    'Template: ' . $mailDataTableobject->getTemplateId() .'. ' .
+                    'Template: ' . $mailDataTableobject->getTemplateId() .'\n ' .
                     ($mail?->getError() ?? $e->getMessage())
                 );
             }
@@ -272,9 +272,8 @@ class Mailer
         $sent = $this->mailService->sendViaPHPMailer($mail);
         if ($sent === true) {
             $this->log($mail);
-        } else {
-            Shop::Container()->getLogService()->error('Error sending mail: ' . $mail->getError());
         }
+
         \executeHook(\HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
 
         return $sent;

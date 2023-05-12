@@ -323,6 +323,9 @@ class MailService extends AbstractService
     public function setError(int $mailID, string $errorMsg): void
     {
         $this->getRepository()->setError($mailID, $errorMsg);
+
+        Shop::Container()->getLogService()->error("Error sending mail: \nMailId: " .
+            $mailID . "\n" . $errorMsg );
     }
 
     /**

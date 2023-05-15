@@ -35,7 +35,7 @@ class SearchConfigController extends AbstractBackendController
         $sectionID        = \CONF_ARTIKELUEBERSICHT;
         $conf             = Shop::getSettings([$sectionID]);
         $standardwaehrung = $this->db->select('twaehrung', 'cStandard', 'Y');
-        $mysqlVersion     = $this->db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        $mysqlVersion     = $this->db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value ?? '5.6';
         $step             = 'einstellungen bearbeiten';
         $createIndex      = false;
         $sectionFactory   = new SectionFactory();
@@ -118,6 +118,8 @@ class SearchConfigController extends AbstractBackendController
             );
         }
         $this->getAdminSectionSettings(\CONF_ARTIKELUEBERSICHT);
+
+        $this->assignScrollPosition();
 
         return $smarty->assign('kEinstellungenSektion', $sectionID)
             ->assign('sections', [$section])

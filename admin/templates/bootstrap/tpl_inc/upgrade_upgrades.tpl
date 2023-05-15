@@ -2,7 +2,7 @@
     <label class="col-form-label" for="newerversions">{__('chooseRelease')}:</label>
 {*    <pre>*}
 {*        {foreach $availableVersions as $version}*}
-{*        {var_dump($version->version)}*}
+{*        {var_dump($version)}*}
 {*        {/foreach}*}
 {*    </pre>*}
     {select

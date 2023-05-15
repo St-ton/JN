@@ -8,7 +8,11 @@ use JTL\Backend\Upgrade\ReleaseDownloader;
 use JTL\Backend\Upgrade\Upgrader;
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
+use JTL\License\Struct\ExsLicense;
+use JTL\Plugin\Data\License;
+use JTL\Plugin\InstallCode;
 use JTL\Shop;
+use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +21,7 @@ use Symfony\Component\Finder\Finder;
 /**
  * Class UpgradeCommand
  * @package JTL\Console\Command\Backup
+ * @since 5.3.0
  */
 class UpgradeCommand extends Command
 {
@@ -50,11 +55,15 @@ class UpgradeCommand extends Command
             $channel = $this->getIO()->choice('Channel', ['stable', 'beta', 'bleeding-edge'], 'stable');
         }
         $input->setOption('channel', $channel);
-        $releaseDL       = new ReleaseDownloader(Shop::Smarty());
-        $test            = $releaseDL->getReleases($channel);
-        $allowedReleases = [];
+        $releaseDL         = new ReleaseDownloader(Shop::Smarty());
+        $availableReleases = $releaseDL->getReleases($channel);
+        $allowedReleases   = [];
+        if (\count($availableReleases) === 0) {
+            $this->fail('Currently no releases available in this channel.');
+            exit(Command::FAILURE);
+        }
         /** @var Release $release */
-        foreach ($test as $release) {
+        foreach ($availableReleases as $release) {
             $this->getIO()->write((string)$release->version)->newLine();
             $allowedReleases[] = (string)$release->version;
         }
@@ -113,9 +122,27 @@ class UpgradeCommand extends Command
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
-        $downloadURL = $releaseItem->downloadURL;
-        $io          = $this->getIO();
-        $tmpFile     = '';
+        $pluginUpdates = $upgrader->getPluginUpdates();
+        $downloadURL   = $releaseItem->downloadURL;
+        $io            = $this->getIO();
+        $tmpFile       = '';
+        $action        = 'continue';
+        if ($pluginUpdates->count() > 0) {
+            $io->writeln('Plugin updates available:');
+            foreach ($pluginUpdates as $pluginUpdate) {
+                $io->writeln(' * ' . $pluginUpdate);
+            }
+            $action = $io->choice('Continue, quit or update plugins?', ['continue', 'quit', 'update'], 'quit');
+        }
+        if ($action === 'quit') {
+            return Command::SUCCESS;
+        }
+        if ($action === 'update') {
+            $result = $upgrader->updatePlugins($pluginUpdates->map(static function (ExsLicense $license) {
+                return $license->getReferencedItem()?->getID();
+            })->toArray());
+            $this->printPluginUpdateTable($result);
+        }
 
         $io->progress(
             static function ($mycb) use ($upgrader, $downloadURL, &$tmpFile) {
@@ -225,5 +252,26 @@ class UpgradeCommand extends Command
         $this->getIO()->error($message);
 
         return Command::FAILURE;
+    }
+
+    private function printPluginUpdateTable(array $result): void
+    {
+        $tableStyle = new TableStyle();
+        $tableStyle->setPadType(\STR_PAD_BOTH);
+        $this->getIO()->writeln('');
+        $rows = [];
+
+        foreach ($result as $item => $status) {
+            if ($item === null) {
+                continue;
+            }
+            $rows[] = [
+                $item,
+                $status === InstallCode::OK
+                    ? '<info> ✔ </info>'
+                    : '<comment>' . $status . '</comment>'
+            ];
+        }
+        $this->getIO()->table(['Plugin', 'Status'], $rows, ['style' => $tableStyle]);
     }
 }

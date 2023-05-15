@@ -220,7 +220,7 @@ trait MultiSizeImage
     /**
      * @param string $size
      * @param int $number
-     * @return object
+     * @return int
      */
     public function getImageWidth(string $size, int $number = 1): int
     {
@@ -231,7 +231,7 @@ trait MultiSizeImage
     /**
      * @param string $size
      * @param int $number
-     * @return object
+     * @return int
      */
     public function getImageHeight(string $size, int $number = 1): int
     {

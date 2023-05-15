@@ -22,8 +22,8 @@ class IOController extends AbstractController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->get('/io', [$this, 'getResponse'])->setName('ROUTE_IO' . $dynName);
-        $route->post('/io', [$this, 'getResponse'])->setName('ROUTE_IOPOST' . $dynName);
+        $route->get('/io', $this->getResponse(...))->setName('ROUTE_IO' . $dynName);
+        $route->post('/io', $this->getResponse(...))->setName('ROUTE_IOPOST' . $dynName);
     }
 
     /**

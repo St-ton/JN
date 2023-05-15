@@ -451,7 +451,8 @@ class EmailTemplateController extends AbstractBackendController
 
             return self::ERROR_NO_TEMPLATE;
         }
-        $res = true;
+        $res  = true;
+        $conf = $this->mailer->getConfig('emails');
         foreach (LanguageHelper::getAllLanguages(0, true, true) as $lang) {
             $mail = new Mail();
             try {
@@ -461,8 +462,8 @@ class EmailTemplateController extends AbstractBackendController
                 $res = self::ERROR_NO_TEMPLATE;
                 continue;
             }
-            $mail->setToMail($this->mailer->getConfig()['emails']['email_master_absender']);
-            $mail->setToName($this->mailer->getConfig()['emails']['email_master_absender_name']);
+            $mail->setToMail($conf['email_master_absender']);
+            $mail->setToName($conf['email_master_absender_name']);
             $res = ($sent = $this->mailer->send($mail)) && $res;
             if ($sent !== true) {
                 $this->addErrorMessage($mail->getError());
@@ -519,8 +520,12 @@ class EmailTemplateController extends AbstractBackendController
     public static function resetTemplate(int $templateID, DbInterface $db): bool
     {
         $db->queryPrepared(
-            'DELETE FROM temailvorlagesprache
-                WHERE kEmailvorlage = :tid',
+            'DELETE evs
+                FROM temailvorlagesprache evs
+                JOIN temailvorlagespracheoriginal evso
+                    ON evs.kEmailvorlage = evso.kEmailvorlage
+                       AND evs.kSprache = evso.kSprache
+                WHERE evs.kEmailvorlage = :tid',
             ['tid' => $templateID]
         );
         $db->queryPrepared(

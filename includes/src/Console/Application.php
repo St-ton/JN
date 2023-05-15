@@ -24,6 +24,7 @@ use JTL\Console\Command\Model\CreateCommand as CreateModelCommand;
 use JTL\Console\Command\Plugin\CreateCommandCommand;
 use JTL\Console\Command\Plugin\CreateMigrationCommand;
 use JTL\Console\Command\Plugin\ValidateCommand;
+use JTL\Console\Command\Upgrade\UpgradeCommand;
 use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
@@ -181,6 +182,7 @@ class Application extends BaseApplication
             $cmds[] = new SASSCommand();
             $cmds[] = new ResetCommand();
             $cmds[] = new GenerateDemoDataCommand();
+            $cmds[] = new UpgradeCommand();
 
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();

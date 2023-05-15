@@ -2,16 +2,13 @@
 
 namespace JTL\Console\Command\Upgrade;
 
-use GuzzleHttp\Client;
+use Exception;
 use JTL\Backend\Upgrade\Release;
 use JTL\Backend\Upgrade\ReleaseDownloader;
 use JTL\Backend\Upgrade\Upgrader;
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
-use Symfony\Component\Console\Completion\CompletionInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,14 +34,10 @@ class UpgradeCommand extends Command
             'c',
             InputOption::VALUE_REQUIRED,
             'Select channel (stable, beta,bleedingedge)',
-        );
-
-        $this->addOption(
-            'release',
-            'r',
-            InputOption::VALUE_REQUIRED,
-            'Select release ID',
-        );
+        )
+            ->addOption('release', 'r', InputOption::VALUE_REQUIRED, 'Select release ID')
+            ->addOption('filesystembackup', 'f', InputOption::VALUE_OPTIONAL, 'Create file system backup?')
+            ->addOption('databasebackup', 'd', InputOption::VALUE_OPTIONAL, 'Create database backup?');
     }
 
     /**
@@ -53,12 +46,12 @@ class UpgradeCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $channel = \trim($input->getOption('channel') ?? '');
-        while (!\in_array($channel, ['stable', 'beta', 'bleedingedge'], true)) {
-            $channel = $this->getIO()->ask('Channel (stable/beta/bleedingedge)');
+        while (!\in_array($channel, ['stable', 'beta', 'bleeding-edge'], true)) {
+            $channel = $this->getIO()->choice('Channel', ['stable', 'beta', 'bleeding-edge'], 'stable');
         }
         $input->setOption('channel', $channel);
-        $releaseDL = new ReleaseDownloader(Shop::Smarty());
-        $test = $releaseDL->getReleases($channel);
+        $releaseDL       = new ReleaseDownloader(Shop::Smarty());
+        $test            = $releaseDL->getReleases($channel);
         $allowedReleases = [];
         /** @var Release $release */
         foreach ($test as $release) {
@@ -67,9 +60,21 @@ class UpgradeCommand extends Command
         }
         $release = \trim($input->getOption('release') ?? '');
         while (!\in_array($release, $allowedReleases, true)) {
-            $release = $this->getIO()->ask('Target version:');
+            $release = $this->getIO()->choice('Release', $allowedReleases);
         }
-//        dd($test);
+        $input->setOption('release', $release);
+
+        $dbBackup = \trim($input->getOption('databasebackup') ?? '');
+        if ($dbBackup === '') {
+            $dbBackup = $this->getIO()->confirm('Create database backup?', true, '/^(y|j)/i');
+        }
+        $input->setOption('databasebackup', $dbBackup);
+
+        $fsBackup = \trim($input->getOption('filesystembackup') ?? '');
+        if ($fsBackup === '') {
+            $fsBackup = $this->getIO()->confirm('Create file system backup?', true, '/^(y|j)/i');
+        }
+        $input->setOption('filesystembackup', $fsBackup);
     }
 
     /**
@@ -77,35 +82,148 @@ class UpgradeCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-Shop::dbg($input->getOption('channel'));
-Shop::dbg($input->getOption('release'));
-        return Command::SUCCESS;
-        $downloadURL = 'https://api.jtl-shop.de/get/shop-v5-2-2.zip';
-        $io          = $this->getIO();
-        $upgrader    = new Upgrader(
-            Shop::Container()->getDB(),
-            Shop::Container()->getCache(),
-            Shop::Container()->get(Filesystem::class),
+        $release  = $input->getOption('release');
+        $dbBackup = $input->getOption('databasebackup');
+        $fsBackup = $input->getOption('filesystembackup');
+        if (\is_string($dbBackup)) {
+            $dbBackup = (bool)\preg_match('/^(y|j)/i', $dbBackup);
+        }
+        if (\is_string($fsBackup)) {
+            $fsBackup = (bool)\preg_match('/^(y|j)/i', $fsBackup);
+        }
+
+        $releaseDL   = new ReleaseDownloader(Shop::Smarty());
+        $releaseItem = $releaseDL->getReleasyByVersionString($release);
+        if ($releaseItem === null) {
+            return $this->fail('Could not find release with version ' . $release);
+        }
+        $fs       = Shop::Container()->get(Filesystem::class);
+        $upgrader = new Upgrader(
+            $this->db,
+            $this->cache,
+            $fs,
             Shop::Smarty()
         );
 
+        $upgrader->initLock();
+        $upgrader->setDoCreateFilesystemBackup($fsBackup);
+        $upgrader->setDoCreateDatabaseBackup($dbBackup);
+        try {
+            $upgrader->aquireLock();
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        $downloadURL = $releaseItem->downloadURL;
+        $io          = $this->getIO();
+        $tmpFile     = '';
+
         $io->progress(
-            static function ($mycb) use ($upgrader, $downloadURL) {
-                $cb = static function ($bytesTotal, $bytesDownloaded) use (&$mycb) {
+            static function ($mycb) use ($upgrader, $downloadURL, &$tmpFile) {
+                $cb      = static function ($bytesTotal, $bytesDownloaded) use (&$mycb) {
                     $mbTotal      = \number_format($bytesTotal / 1024 / 1024, 2);
                     $mbDownloaded = \number_format($bytesDownloaded / 1024 / 1024, 2);
                     if ($bytesTotal > 0) {
                         $mycb($bytesTotal, $bytesDownloaded, $mbDownloaded . 'MiB/' . $mbTotal . 'MiB');
                     }
                 };
-                $upgrader->download($downloadURL, $cb);
+                $tmpFile = $upgrader->download($downloadURL, $cb);
             },
             '%percent:3s%% [%bar%] 100%' . "\n%message%"
-
         )
             ->newLine()
             ->success('File "' . $downloadURL . '" downloaded.');
+        try {
+            $upgrader->verifyIntegrity($releaseItem->checksum, $tmpFile);
+            $io->success('Successfully validated ' . $tmpFile);
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        if ($dbBackup === true) {
+            try {
+                $file = $upgrader->createDatabaseBackup();
+                $io->success('Created database backup ' . $file);
+            } catch (Exception $e) {
+                return $this->fail($e->getMessage());
+            }
+        }
+        if ($fsBackup === true) {
+            $archive  = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
+            $excludes = [
+                'build',
+                'bilder',
+                'admin/templates_c',
+                'export',
+                'templates_c',
+                'dbeS/tmp',
+                'dbeS/logs',
+                'jtllogs',
+                'includes/plugins',
+                'install',
+                'media',
+                'mediafiles',
+                'docs',
+                'downloads',
+                'gfx',
+                'uploads',
+            ];
+            $finder   = Finder::create()
+                ->ignoreVCS(true)
+                ->ignoreDotFiles(false)
+                ->exclude($excludes)
+                ->in(\PFAD_ROOT);
+
+            try {
+                $io->progress(
+                    static function ($mycb) use ($fs, $archive, $finder) {
+                        $fs->zip($finder, $archive, static function ($count, $index) use (&$mycb) {
+                            $mycb($count, $index);
+                        });
+                    },
+                    'Creating archive [%bar%] %percent:3s%%'
+                )
+                    ->newLine()
+                    ->success('File system backup "' . $archive . '" created.');
+            } catch (Exception $e) {
+                return $this->fail($e->getMessage());
+            }
+        }
+        try {
+            $source = $upgrader->unzip($tmpFile);
+            $io->success('Successfully unpacked ' . $tmpFile . ' to ' . $source);
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        try {
+            $upgrader->verifyContents($source);
+            $io->success('Successfully validated ' . $source);
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        try {
+            $upgrader->moveToRoot($source);
+            $io->success('Successfully moved upgrade files to root');
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        try {
+            $upgrader->migrate();
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        $upgrader->finalize();
+        $upgrader->releaseLock();
+
+        $targetVersion = $release;
+
+        $io->success('Successfully upgrade to version ' . $targetVersion);
 
         return Command::SUCCESS;
+    }
+
+    private function fail(string $message): int
+    {
+        $this->getIO()->error($message);
+
+        return Command::FAILURE;
     }
 }

@@ -7,6 +7,8 @@ use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
+use JTL\Exceptions\InvalidNamespaceException;
+use JTL\Plugin\Migration;
 use JTL\Plugin\MigrationHelper;
 use JTL\Update\IMigration;
 use JTLShop\SemVer\Version;
@@ -262,7 +264,7 @@ final class MigrationManager
                 require_once $filePath;
 
                 if (!\class_exists($class)) {
-                    throw new InvalidArgumentException(\sprintf(
+                    throw new InvalidNamespaceException(\sprintf(
                         'Could not find class "%s" in file "%s"',
                         $class,
                         $filePath
@@ -271,10 +273,18 @@ final class MigrationManager
                 $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
                 /** @var IMigration $migration */
                 if (!\is_subclass_of($migration, IMigration::class)) {
-                    throw new InvalidArgumentException(\sprintf(
+                    throw new InvalidNamespaceException(\sprintf(
                         'The class "%s" in file "%s" must implement IMigration interface',
                         $class,
                         $filePath
+                    ));
+                }
+                if (!\is_subclass_of($migration, Migration::class)) {
+                    throw new InvalidNamespaceException(\sprintf(
+                        'The class "%s" in file "%s" must extend %s',
+                        $class,
+                        $filePath,
+                        Migration::class
                     ));
                 }
 

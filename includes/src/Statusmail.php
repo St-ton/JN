@@ -41,6 +41,7 @@ class Statusmail
      */
     public function __construct(private DbInterface $db)
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/statusemail');
     }
 
     /**

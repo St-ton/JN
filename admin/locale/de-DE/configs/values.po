@@ -1,6 +1,15 @@
 msgid ""
 msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.1\n"
 
 msgid "artikel_artikelanzeigefilter_value(1)"
 msgstr "Alle Artikel anzeigen"
@@ -2488,3 +2497,9 @@ msgstr "Nein"
 
 msgid "forgot_password_captcha_value(Y)"
 msgstr "Ja"
+
+msgid "street_name_number_concatenation_value(Y)"
+msgstr "Ja"
+
+msgid "street_name_number_concatenation_value(N)"
+msgstr "Nein"

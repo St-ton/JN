@@ -170,23 +170,32 @@
                 {formrow}
                     {* street / number *}
                     {block name='checkout-inc-billing-address-form-street-wrap'}
-                        {col cols=12 md=8}
+                        {if $Einstellungen.kunden.street_name_number_concatenation === 'Y'}
+                            {assign var=placeholder_street value={lang key='street' section='account data'}|cat:', '|cat:{lang key='streetnumber' section='account data'}}
+                            {assign var=width_street value=12}
+                        {else}
+                            {assign var=placeholder_street value={lang key='street' section='account data'}}
+                            {assign var=width_street value=8}
+                        {/if}
+                        {col cols=12 md=$width_street}
                             {if isset($cPost_var['strasse'])}
                                 {assign var=inputVal_street value=$cPost_var['strasse']}
                             {elseif isset($Kunde->cStrasse)}
                                 {assign var=inputVal_street value=$Kunde->cStrasse}
                             {/if}
+
                             {block name='checkout-inc-billing-address-form-street'}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         'text', 'street', 'strasse',
-                                        {$inputVal_street|default:null}, {lang key='street' section='account data'},
+                                        {$inputVal_street|default:null}, {$placeholder_street},
                                         true, null, 'billing address-line1'
                                     ]
                                 }
                             {/block}
                         {/col}
 
+                        {if $Einstellungen.kunden.street_name_number_concatenation === 'N'}
                         {col cols=12 md=4}
                             {if isset($cPost_var['hausnummer'])}
                                 {assign var=inputVal_streetnumber value=$cPost_var['hausnummer']}
@@ -203,6 +212,7 @@
                                 }
                             {/block}
                         {/col}
+                        {/if}
                         <div class="w-100-util"></div>
                     {/block}
                     {* adress addition *}

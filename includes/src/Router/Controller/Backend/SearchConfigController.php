@@ -35,7 +35,9 @@ class SearchConfigController extends AbstractBackendController
         $sectionID        = \CONF_ARTIKELUEBERSICHT;
         $conf             = Shop::getSettings([$sectionID]);
         $standardwaehrung = $this->db->select('twaehrung', 'cStandard', 'Y');
-        $mysqlVersion     = $this->db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        $mysqlVersion     = $this->db->getSingleObject(
+            "SHOW VARIABLES LIKE 'innodb_version'"
+        )->Value ?? '5.6';
         $step             = 'einstellungen bearbeiten';
         $createIndex      = false;
         $sectionFactory   = new SectionFactory();
@@ -45,7 +47,12 @@ class SearchConfigController extends AbstractBackendController
             $sucheFulltext = \in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
             if ($sucheFulltext) {
                 if (\version_compare($mysqlVersion, '5.6', '<')) {
-                    //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt
+                    /*
+                     * Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt.
+                     * Since MariaDB 10.0, the default InnoDB implementation is based on InnoDB from MySQL 5.6.
+                     * Since MariaDB 10.3.7 and later, the InnoDB implementation has diverged substantially from the
+                     * InnoDB in MySQL and the InnoDB Version is no longer reported.
+                     */
                     $_POST['suche_fulltext'] = 'N';
                     $this->alertService->addError(\__('errorFulltextSearchMYSQL'), 'errorFulltextSearchMYSQL');
                 } else {

@@ -21,10 +21,10 @@ class ReleaseDownloader
         $this->releases = \collect((array)$available)->mapInto(Release::class);
     }
 
-    public function getReleases(): Collection
+    public function getReleases(?string $channel = null): Collection
     {
         $channels       = Channels::getChannels();
-        $activeChannel  = Channels::getActiveChannel();
+        $activeChannel  = $channel ?? Channels::getActiveChannel();
         $currentVersion = Version::parse(\APPLICATION_VERSION);
 
         $filtered = $this->releases->filter(static function (Release $item) use ($activeChannel) {

@@ -15,6 +15,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class DatabaseCommand extends Command
 {
+    protected static $defaultDescription = 'Backup shop database';
+
     /**
      * @inheritdoc
      */
@@ -22,7 +24,6 @@ class DatabaseCommand extends Command
     {
         $this->setName('backup:db')
             ->setAliases(['database:backup'])
-            ->setDescription('Backup shop database')
             ->addOption('compress', 'c', InputOption::VALUE_NONE, 'Enable (gzip) compression');
     }
 

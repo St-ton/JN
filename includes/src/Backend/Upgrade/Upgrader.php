@@ -177,14 +177,14 @@ class Upgrader
         \fclose($this->lock);
     }
 
-    private function download(string $downloadURL): string
+    public function download(string $downloadURL, ?callable $cb = null): string
     {
         $tmpFile = \PFAD_ROOT . \PFAD_DBES_TMP . '.release.tmp.zip';
         if (\file_exists($tmpFile)) {
             \unlink($tmpFile);
         }
         $client = new Client();
-        $client->get($downloadURL, ['sink' => $tmpFile]);
+        $client->get($downloadURL, ['sink' => $tmpFile, 'progress' => $cb]);
 
         return $tmpFile;
     }
@@ -207,14 +207,15 @@ class Upgrader
     private function createFilesystemBackup(array $excludes = []): void
     {
         $archive  = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
-        $excludes = \array_merge(['export',
-                                  'templates_c',
-                                  'build',
-                                  'admin/templates_c',
-                                  'dbeS/tmp',
-                                  'dbeS/logs',
-                                  'jtllogs',
-                                  'install/logs'],
+        $excludes = \array_merge(
+            ['export',
+             'templates_c',
+             'build',
+             'admin/templates_c',
+             'dbeS/tmp',
+             'dbeS/logs',
+             'jtllogs',
+             'install/logs'],
             $excludes
         );
         $finder   = Finder::create()

@@ -25,6 +25,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class WarmCacheCommand extends Command
 {
+    protected static $defaultDescription = 'Warm object cache';
+
+    protected static $defaultName = 'cache:warm';
+
     /**
      * @var bool
      */
@@ -70,9 +74,7 @@ class WarmCacheCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName('cache:warm')
-            ->setDescription('Warm object cache')
-            ->addOption('details', 'd', InputOption::VALUE_NONE, 'Warm product details')
+        $this->addOption('details', 'd', InputOption::VALUE_NONE, 'Warm product details')
             ->addOption('list', 'l', InputOption::VALUE_NONE, 'Warm product lists')
             ->addOption('childproducts', 'k', InputOption::VALUE_NONE, 'Warm product lists')
             ->addOption('linkgroups', 'g', InputOption::VALUE_NONE, 'Warm link groups')

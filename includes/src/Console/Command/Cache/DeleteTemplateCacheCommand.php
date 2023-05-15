@@ -18,14 +18,16 @@ use Throwable;
  */
 class DeleteTemplateCacheCommand extends Command
 {
+    protected static $defaultDescription = 'Delete smarty template cache';
+
+    protected static $defaultName = 'cache:tpl:delete';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('cache:tpl:delete')
-            ->setDescription('Delete template cache')
-            ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Also delete admin template cache');
+        $this->addOption('admin', 'a', InputOption::VALUE_NONE, 'Also delete admin template cache');
     }
 
     /**

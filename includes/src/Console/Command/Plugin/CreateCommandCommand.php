@@ -19,14 +19,16 @@ use Throwable;
  */
 class CreateCommandCommand extends Command
 {
+    protected static $defaultDescription = 'Create new plugin command';
+
+    protected static $defaultName = 'plugin:command:create';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('plugin:command:create')
-            ->setDescription('Create new plugin command')
-            ->addArgument('plugin-id', InputArgument::REQUIRED, 'Plugin id')
+        $this->addArgument('plugin-id', InputArgument::REQUIRED, 'Plugin id')
             ->addArgument('command-name', InputArgument::REQUIRED, 'Command name, like \'CronCommand\'')
             ->addArgument('author', InputArgument::REQUIRED, 'Author');
     }

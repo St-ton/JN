@@ -14,14 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ResetCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('mailtemplates:reset')
-            ->setDescription('reset all mailtemplates');
-    }
+    protected static $defaultDescription = 'reset all mailtemplates';
+
+    protected static $defaultName = 'mailtemplates:reset';
 
     /**
      * @inheritdoc

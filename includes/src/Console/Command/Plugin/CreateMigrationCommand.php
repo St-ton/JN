@@ -15,14 +15,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateMigrationCommand extends Command
 {
+    protected static $defaultDescription = 'Create new plugin migration';
+
+    protected static $defaultName = 'plugin:migration:create';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('plugin:migration:create')
-            ->setDescription('Create new plugin migration')
-            ->setDefinition(
+        $this->setDefinition(
                 new InputDefinition([
                     new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED, 'Plugin dir name'),
                     new InputOption('description', null, InputOption::VALUE_REQUIRED, 'Short migration description'),

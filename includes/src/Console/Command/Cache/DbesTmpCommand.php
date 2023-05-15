@@ -17,14 +17,9 @@ use Throwable;
  */
 class DbesTmpCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('cache:dbes:delete')
-            ->setDescription('Delete dbeS cache');
-    }
+    protected static $defaultDescription = 'Delete dbeS cache';
+
+    protected static $defaultName = 'cache:dbes:delete';
 
     /**
      * @inheritdoc

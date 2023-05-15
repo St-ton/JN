@@ -13,14 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ClearObjectCacheCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('cache:clear')
-            ->setDescription('Clear object cache');
-    }
+    protected static $defaultDescription = 'Clear object cache';
+
+    protected static $defaultName = 'cache:clear';
 
     /**
      * @inheritdoc

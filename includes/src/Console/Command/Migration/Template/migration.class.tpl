@@ -11,6 +11,7 @@ use JTL\Update\Migration;
 
 /**
  * Class Migration_{$timestamp}
+ * @since 5.X.Y
  */
 class Migration_{$timestamp} extends Migration implements IMigration
 {

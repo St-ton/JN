@@ -14,14 +14,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateCommand extends Command
 {
+    protected static $defaultDescription = 'Create a new migration';
+
+    protected static $defaultName = 'migrate:create';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('migrate:create')
-            ->setDescription('Create a new migration')
-            ->addArgument('description', InputArgument::REQUIRED, 'Short migration description')
+        $this->addArgument('description', InputArgument::REQUIRED, 'Short migration description')
             ->addArgument('author', InputArgument::REQUIRED, 'Author');
     }
 

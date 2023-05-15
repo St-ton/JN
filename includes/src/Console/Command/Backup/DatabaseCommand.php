@@ -17,13 +17,14 @@ class DatabaseCommand extends Command
 {
     protected static $defaultDescription = 'Backup shop database';
 
+    protected static $defaultName = 'backup:db';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('backup:db')
-            ->setAliases(['database:backup'])
+        $this->setAliases(['database:backup'])
             ->addOption('compress', 'c', InputOption::VALUE_NONE, 'Enable (gzip) compression');
     }
 

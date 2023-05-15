@@ -17,6 +17,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InstallCommand extends Command
 {
+    protected static $defaultDescription = 'JTL-Shop install';
+
+    protected static $defaultName = 'shop:install';
+
     /**
      * @var int
      */
@@ -94,10 +98,7 @@ class InstallCommand extends Command
         $this->currentStep = 1;
         $this->currentUser = \trim(\getenv('USER'));
 
-        $this
-            ->setName('shop:install')
-            ->setDescription('JTL-Shop install')
-            ->addOption('shop-url', null, InputOption::VALUE_REQUIRED, 'Shop url')
+        $this->addOption('shop-url', null, InputOption::VALUE_REQUIRED, 'Shop url')
             ->addOption('database-host', null, InputOption::VALUE_OPTIONAL, 'Database host')
             ->addOption('database-socket', null, InputOption::VALUE_OPTIONAL, 'Database socket')
             ->addOption('database-name', null, InputOption::VALUE_REQUIRED, 'Database name')

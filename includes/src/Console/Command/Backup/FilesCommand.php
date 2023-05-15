@@ -16,14 +16,16 @@ use Symfony\Component\Finder\Finder;
  */
 class FilesCommand extends Command
 {
+    protected static $defaultDescription = 'Backup shop content';
+
+    protected static $defaultName = 'backup:files';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('backup:files')
-            ->setDescription('Backup shop content')
-            ->addOption(
+        $this->addOption(
                 'exclude-dir',
                 'x',
                 InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,

@@ -15,14 +15,10 @@ use Throwable;
  */
 class DeleteFileCacheCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('cache:file:delete')
-            ->setDescription('Delete file cache');
-    }
+    protected static $defaultDescription = 'Delete file cache';
+
+    protected static $defaultName = 'cache:file:delete';
+
 
     /**
      * @inheritdoc

@@ -25,13 +25,13 @@ class UpgradeCommand extends Command
 {
     protected static $defaultDescription = 'Upgrade base system';
 
+    protected static $defaultName = 'upgrader:upgrade';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('upgrader:upgrade');
-
         $this->addOption(
             'channel',
             'c',

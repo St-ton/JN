@@ -15,11 +15,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class {$commandName} extends Command
 {
+    protected static $defaultDescription = 'Test description';
+
+    protected static $defaultName = 'plugin:test';
+
     protected function configure()
     {
-        $this->setName('plugin:test')
-            ->setDescription('Test description')
-            ->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
+        $this->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
     }
 
     /**

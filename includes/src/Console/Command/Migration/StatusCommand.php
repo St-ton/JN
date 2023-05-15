@@ -14,14 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class StatusCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('migrate:status')
-            ->setDescription('Show the status of each migration');
-    }
+    protected static $defaultDescription = 'Show the status of each migration';
+
+    protected static $defaultName = 'migrate:status';
 
     /**
      * @inheritdoc

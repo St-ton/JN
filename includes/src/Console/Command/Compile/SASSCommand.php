@@ -16,14 +16,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SASSCommand extends Command
 {
+    protected static $defaultDescription = 'Compile all theme specific sass files';
+
+    protected static $defaultName = 'compile:sass';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('compile:sass')
-            ->setDescription('Compile all theme specific sass files')
-            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'Single theme name to compile')
+        $this->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'Single theme name to compile')
             ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'Template directory to compile from');
     }
 

@@ -16,6 +16,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GenerateDemoDataCommand extends Command
 {
+    protected static $defaultDescription = 'Generate demo data';
+
+    protected static $defaultName = 'generate:demodata';
+
     /**
      * @var int
      */
@@ -61,9 +65,7 @@ class GenerateDemoDataCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName('generate:demodata')
-            ->setDescription('Generate demo data')
-            ->addOption('manufacturers', 'm', InputOption::VALUE_OPTIONAL, 'Amount of manufacturers', 0)
+        $this->addOption('manufacturers', 'm', InputOption::VALUE_OPTIONAL, 'Amount of manufacturers', 0)
             ->addOption('links', 'l', InputOption::VALUE_OPTIONAL, 'Amount of links', 0)
             ->addOption('categories', 'c', InputOption::VALUE_OPTIONAL, 'Amount of categories', 0)
             ->addOption('customers', 'u', InputOption::VALUE_OPTIONAL, 'Amount of customers', 0)

@@ -19,14 +19,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class MigrateCommand extends Command
 {
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('migrate')
-            ->setDescription('Run the database migrations');
-    }
+    protected static $defaultDescription = 'Run the database migrations';
+
+    protected static $defaultName = 'migrate';
 
     /**
      * @inheritdoc

@@ -16,14 +16,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class LESSCommand extends Command
 {
+    protected static $defaultDescription = 'Compile all theme specific less files';
+
+    protected static $defaultName = 'compile:less';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('compile:less')
-            ->setDescription('Compile all theme specific less files')
-            ->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'Single theme name to compile')
+        $this->addOption('theme', null, InputOption::VALUE_OPTIONAL, 'Single theme name to compile')
             ->addOption('templateDir', null, InputOption::VALUE_OPTIONAL, 'Template directory to compile from');
     }
 

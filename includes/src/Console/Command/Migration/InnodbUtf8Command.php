@@ -16,20 +16,15 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class InnodbUtf8Command extends Command
 {
+    protected static $defaultDescription = 'Execute Innodb and UTF-8 migration';
+
+    protected static $defaultName = 'migrate:innodbutf8';
+
     /** @var array */
-    private $excludeTables = [];
+    private array $excludeTables = [];
 
     /** @var int */
-    private $errCounter = 0;
-
-    /**
-     * @inheritdoc
-     */
-    protected function configure(): void
-    {
-        $this->setName('migrate:innodbutf8')
-            ->setDescription('Execute Innodb and UTF-8 migration');
-    }
+    private int $errCounter = 0;
 
     /**
      * @inheritdoc

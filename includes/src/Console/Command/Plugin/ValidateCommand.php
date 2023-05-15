@@ -20,14 +20,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ValidateCommand extends Command
 {
+    protected static $defaultDescription = 'Validate available plugin';
+
+    protected static $defaultName = 'plugin:validate';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('plugin:validate')
-            ->setDescription('Validate available plugin')
-            ->setDefinition(
+        $this->setDefinition(
                 new InputDefinition([
                     new InputOption(
                         'plugin-dir',

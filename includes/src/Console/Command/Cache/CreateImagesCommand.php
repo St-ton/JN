@@ -25,6 +25,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateImagesCommand extends Command
 {
+    protected static $defaultDescription = 'Create images in various sizes';
+
+    protected static $defaultName = 'cache:images:create';
+
     /**
      * @var DbInterface|null
      */
@@ -90,9 +94,7 @@ class CreateImagesCommand extends Command
      */
     protected function configure(): void
     {
-        $this->setName('cache:images:create')
-            ->setDescription('Create images in various sizes')
-            ->addOption('printErrors', 'e', InputOption::VALUE_NONE, 'Show error messages')
+        $this->addOption('printErrors', 'e', InputOption::VALUE_NONE, 'Show error messages')
             ->addOption('all', 'a', InputOption::VALUE_NONE, 'Create all images')
             ->addOption('products', 'p', InputOption::VALUE_NONE, 'Create product images')
             ->addOption('categories', 'c', InputOption::VALUE_NONE, 'Create category images')

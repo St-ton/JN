@@ -21,14 +21,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class CreateCommand extends Command
 {
+    protected static $defaultDescription = 'Create a new model for given table';
+
+    protected static $defaultName = 'model:create';
+
     /**
      * @inheritdoc
      */
     protected function configure(): void
     {
-        $this->setName('model:create')
-            ->setDescription('Create a new model for given table    ')
-            ->addArgument('table', InputArgument::REQUIRED, 'Name of the table for that model')
+        $this->addArgument('table', InputArgument::REQUIRED, 'Name of the table for that model')
             ->addArgument('target-dir', InputArgument::OPTIONAL, 'Shop installation dir', \PFAD_ROOT);
     }
 
@@ -99,7 +101,7 @@ class CreateCommand extends Command
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
-                    if (!isset($carry) && \preg_match("/{$item}/", $dataType)) {
+                    if (!isset($carry) && \preg_match("/$item/", $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
                     }
 

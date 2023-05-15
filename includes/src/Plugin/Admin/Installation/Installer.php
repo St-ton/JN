@@ -6,6 +6,7 @@ use Exception;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\InvalidNamespaceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Validation\ValidatorInterface;
@@ -279,14 +280,23 @@ final class Installer
         if ($plugin->bExtension === 1) {
             try {
                 $this->updateByMigration($plugin, $versionedDir, Version::parse($version));
+            } catch (InvalidNamespaceException $e) {
+                Shop::Container()->getLogService()->error($e->getMessage());
+                $code        = InstallCode::INVALID_MIGRATION;
+                $hasSQLError = true;
             } catch (Exception $e) {
                 $hasSQLError = true;
                 $code        = InstallCode::SQL_ERROR;
+                Shop::Container()->getLogService()->error($e->getMessage());
             }
         }
         // Ist ein SQL Fehler aufgetreten? Wenn ja, deinstalliere wieder alles
         if ($hasSQLError) {
-            $this->uninstaller->uninstall($plugin->kPlugin);
+            try {
+                $this->uninstaller->uninstall($plugin->kPlugin);
+            } catch (Exception $e) {
+                Shop::Container()->getLogService()->error($e->getMessage());
+            }
         }
         if ($code === InstallCode::OK
             && $this->plugin === null

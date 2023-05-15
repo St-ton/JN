@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class LESSCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -28,7 +28,7 @@ class LESSCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

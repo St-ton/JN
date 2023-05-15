@@ -25,12 +25,12 @@ class CreateMigrationCommand extends Command
     protected function configure(): void
     {
         $this->setDefinition(
-                new InputDefinition([
-                    new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED, 'Plugin dir name'),
-                    new InputOption('description', null, InputOption::VALUE_REQUIRED, 'Short migration description'),
-                    new InputOption('author', null, InputOption::VALUE_REQUIRED, 'Author')
-                ])
-            );
+            new InputDefinition([
+                new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED, 'Plugin dir name'),
+                new InputOption('description', null, InputOption::VALUE_REQUIRED, 'Short migration description'),
+                new InputOption('author', null, InputOption::VALUE_REQUIRED, 'Author')
+            ])
+        );
     }
 
     /**

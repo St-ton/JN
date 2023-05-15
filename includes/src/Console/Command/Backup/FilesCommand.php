@@ -26,11 +26,11 @@ class FilesCommand extends Command
     protected function configure(): void
     {
         $this->addOption(
-                'exclude-dir',
-                'x',
-                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'Exclude directory'
-            );
+            'exclude-dir',
+            'x',
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+            'Exclude directory'
+        );
     }
 
     /**

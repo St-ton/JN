@@ -257,8 +257,8 @@ class WarmCacheCommand extends Command
 
     private function warm(): void
     {
-        $start    = \microtime(true);
-        $io       = $this->getIO();
+        $start = \microtime(true);
+        $io    = $this->getIO();
         ProgressBar::setFormatDefinition(
             'cache',
             " \033[44;37m %message:-37s% \033[0m\n %current%/%max% %bar% %percent:3s%%"

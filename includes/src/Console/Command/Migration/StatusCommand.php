@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class StatusCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -24,7 +24,7 @@ class StatusCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

@@ -38,7 +38,7 @@ class Release
         } catch (Exception) {
             $this->version = Version::parse('0.0.0');
         }
-//        $this->isNewer = $this->version->greaterThan(Version::parse(\APPLICATION_VERSION));
-        $this->isNewer = $this->version->greaterThan(Version::parse('5.1.0'));
+        $this->isNewer = $this->version->greaterThan(Version::parse(\APPLICATION_VERSION));
+//        $this->isNewer = $this->version->greaterThan(Version::parse('5.1.0'));
     }
 }

@@ -479,7 +479,8 @@ class Status
 
         foreach ($data as $item) {
             try {
-                $plugin = Helper::getLoader((int)$item->bExtension === 1)->init((int)$item->kPlugin);
+                $loader = Helper::getLoader((int)$item->bExtension === 1, $this->db, $this->cache);
+                $plugin = $loader->init((int)$item->kPlugin);
             } catch (Exception) {
                 continue;
             }

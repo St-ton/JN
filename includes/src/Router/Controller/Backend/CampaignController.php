@@ -44,7 +44,6 @@ class CampaignController extends AbstractBackendController
         $this->checkPermissions(Permissions::STATS_CAMPAIGN_VIEW);
         $this->getText->loadAdminLocale('pages/kampagne');
 
-
         $campaignID   = 0;
         $definitionID = 0;
         $stamp        = '';

@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
-use JTL\DB\DbInterface;
 use JTL\Media\Image\Category;
 use JTL\Media\Image\Characteristic;
 use JTL\Media\Image\CharacteristicValue;
@@ -13,7 +12,6 @@ use JTL\Media\Image\OPC;
 use JTL\Media\Image\Product;
 use JTL\Media\Image\Variation;
 use JTL\Media\IMedia;
-use JTL\Shop;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,11 +26,6 @@ class CreateImagesCommand extends Command
     protected static $defaultDescription = 'Create images in various sizes';
 
     protected static $defaultName = 'cache:images:create';
-
-    /**
-     * @var DbInterface|null
-     */
-    private ?DbInterface $db = null;
 
     /**
      * @var bool
@@ -111,7 +104,6 @@ class CreateImagesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->db                   = Shop::Container()->getDB();
         $this->products             = $this->getOption('products');
         $this->manufacturers        = $this->getOption('manufacturers');
         $this->categories           = $this->getOption('categories');

@@ -24,17 +24,17 @@ class InstallCommand extends Command
     /**
      * @var int
      */
-    protected $steps;
+    protected int $steps;
 
     /**
      * @var int
      */
-    protected $currentStep;
+    protected int $currentStep;
 
     /**
      * @var string
      */
-    protected $currentUser;
+    protected string $currentUser;
 
     /**
      * @var array
@@ -96,7 +96,7 @@ class InstallCommand extends Command
     {
         $this->steps       = 6;
         $this->currentStep = 1;
-        $this->currentUser = \trim(\getenv('USER'));
+        $this->currentUser = \trim(\getenv('USER') ?: '');
 
         $this->addOption('shop-url', null, InputOption::VALUE_REQUIRED, 'Shop url')
             ->addOption('database-host', null, InputOption::VALUE_OPTIONAL, 'Database host')
@@ -128,7 +128,7 @@ class InstallCommand extends Command
     /**
      * @inheritdoc
      */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $io              = $this->getIO();
         $requiredOptions = [
@@ -154,12 +154,11 @@ class InstallCommand extends Command
     }
 
     /**
-     * @param int $length
      * @return string
      */
-    private function getRandomString(int $length = 10): string
+    private function getRandomString(): string
     {
-        return \bin2hex(\random_bytes($length));
+        return \bin2hex(\random_bytes(10));
     }
 
     /**
@@ -214,7 +213,8 @@ class InstallCommand extends Command
 
         if ($installCheck['installed']) {
             $io->warning('Shop is already installed');
-            return 1;
+
+            return Command::FAILURE;
         }
         $io->success('Shop can be installed');
 
@@ -278,7 +278,7 @@ class InstallCommand extends Command
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
 
-            return 1;
+            return Command::FAILURE;
         }
         $io->success('Credentials matched');
         $io->setStep($this->currentStep++, $this->steps, 'JTL-Shop install');

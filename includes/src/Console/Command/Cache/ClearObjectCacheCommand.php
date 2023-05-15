@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Cache;
 
 use JTL\Console\Command\Command;
-use JTL\Shop;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -23,7 +22,7 @@ class ClearObjectCacheCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getIO();
-        if (Shop::Container()->getCache()->flushAll()) {
+        if ($this->cache->flushAll()) {
             $io->success('Object cache cleared.');
 
             return Command::SUCCESS;

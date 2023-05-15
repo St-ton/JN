@@ -2,13 +2,11 @@
 
 namespace JTL\Console\Command\Cache;
 
-use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Console\Command\Command;
 use JTL\Customer\CustomerGroup;
-use JTL\DB\DbInterface;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
@@ -63,11 +61,6 @@ class WarmCacheCommand extends Command
      * @var bool
      */
     private bool $childProducts = false;
-
-    /**
-     * @var DbInterface|null
-     */
-    private ?DbInterface $db = null;
 
     /**
      * @inheritdoc
@@ -239,10 +232,9 @@ class WarmCacheCommand extends Command
     }
 
     /**
-     * @param JTLCacheInterface $cache
      * @return int
      */
-    private function warmLinks(JTLCacheInterface $cache): int
+    private function warmLinks(): int
     {
         if ($this->links === false) {
             return 0;
@@ -251,7 +243,7 @@ class WarmCacheCommand extends Command
         $bar   = new ProgressBar($this->getIO(), $total);
         $bar->setFormat('cache');
         $bar->setMessage('Warming link groups');
-        $lgl = new LinkGroupList($this->db, $cache);
+        $lgl = new LinkGroupList($this->db, $this->cache);
         $lgl->loadAll();
         $bar->start();
         $bar->advance($total);
@@ -267,15 +259,13 @@ class WarmCacheCommand extends Command
     {
         $start    = \microtime(true);
         $io       = $this->getIO();
-        $this->db = Shop::Container()->getDB();
-        $cache    = Shop::Container()->getCache();
         ProgressBar::setFormatDefinition(
             'cache',
             " \033[44;37m %message:-37s% \033[0m\n %current%/%max% %bar% %percent:3s%%"
         );
         Shop::setProductFilter(Shop::buildProductFilter([]));
         if ($this->preFlush === true) {
-            $cache->flushAll();
+            $this->cache->flushAll();
         }
         if (\str_starts_with(\URL_SHOP, 'https://')
             || Shop::getSettingValue(\CONF_GLOBAL, 'kaufabwicklung_ssl_nutzen') === 'P'
@@ -285,7 +275,7 @@ class WarmCacheCommand extends Command
 
         global $_SESSION;
         $_SESSION             = [];
-        $_SESSION['Sprachen'] = LanguageHelper::getInstance($this->db, $cache)->gibInstallierteSprachen();
+        $_SESSION['Sprachen'] = LanguageHelper::getInstance($this->db, $this->cache)->gibInstallierteSprachen();
 
         $generated      = 0;
         $customerGroups = $this->db->getCollection('SELECT kKundengruppe AS id FROM tkundengruppe')
@@ -298,9 +288,9 @@ class WarmCacheCommand extends Command
         $generated += $this->warmCategories($customerGroups, $languages);
         $generated += $this->warmProducts($customerGroups, $languages);
         $generated += $this->warmManufacturers($languages);
-        $generated += $this->warmLinks($cache);
+        $generated += $this->warmLinks();
 
-        $cacheStats = $cache->getStats();
+        $cacheStats = $this->cache->getStats();
         $io->writeln('Entries in cache: ' . $cacheStats['entries'] . \PHP_EOL . 'Used Memory: ' . $cacheStats['mem']);
         $io->success('Generated ' . $generated . ' cache entries for '
             . \count($customerGroups) . ' customer group(s) and '
@@ -313,7 +303,6 @@ class WarmCacheCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->db            = Shop::Container()->getDB();
         $this->details       = $this->getOption('details');
         $this->list          = $this->getOption('list');
         $this->childProducts = $this->getOption('childproducts');

@@ -5,7 +5,6 @@ namespace JTL\Console\Command\Model;
 use DateTime;
 use Exception;
 use JTL\Console\Command\Command;
-use JTL\Shop;
 use JTL\Smarty\CLISmarty;
 use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
@@ -85,7 +84,7 @@ class CreateCommand extends Command
         $relPath   = 'models';
         $modelPath = $relPath . \DIRECTORY_SEPARATOR . $modelName . '.php';
         $tableDesc = [];
-        $attribs   = Shop::Container()->getDB()->getPDO()->query('DESCRIBE ' . $table);
+        $attribs   = $this->db->getPDO()->query('DESCRIBE ' . $table);
         $typeMap   = [
             'bool|boolean',
             'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',

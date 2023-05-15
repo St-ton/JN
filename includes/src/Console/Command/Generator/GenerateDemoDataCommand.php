@@ -4,7 +4,6 @@ namespace JTL\Console\Command\Generator;
 
 use JTL\Console\Command\Command;
 use JTL\Installation\DemoDataInstaller;
-use JTL\Shop;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -98,7 +97,7 @@ class GenerateDemoDataCommand extends Command
     private function generate(): void
     {
         $generator = new DemoDataInstaller(
-            Shop::Container()->getDB(),
+            $this->db,
             [
                 'manufacturers'        => $this->manufacturers,
                 'categories'           => $this->categories,

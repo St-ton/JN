@@ -248,7 +248,7 @@ class ConsoleIO extends OutputStyle
      * @param string $step
      * @return $this
      */
-    public function setStep($current, $limit, $step): self
+    public function setStep(int $current, int $limit, string $step): self
     {
         $this->setLabel('Step ' . $current . ' of ' . $limit, $step);
 
@@ -260,7 +260,7 @@ class ConsoleIO extends OutputStyle
      * @param string|null $sub
      * @return $this
      */
-    public function setLabel($title, $sub = null): self
+    public function setLabel(string $title, ?string $sub = null): self
     {
         $this->writeln('');
         $this->writeln('<comment>' . $title . '</comment> ' . ($sub !== null ? '<info>' . $sub . '</info>' : ''));
@@ -545,9 +545,9 @@ class ConsoleIO extends OutputStyle
     /**
      * @inheritdoc
      */
-    public function confirm(string $question, bool $default = true): bool
+    public function confirm(string $question, bool $default = true, $regex = '/^y/i'): bool
     {
-        return $this->askQuestion(new ConfirmationQuestion($question, $default));
+        return $this->askQuestion(new ConfirmationQuestion($question, $default, $regex));
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Migration;
 
 use JTL\Console\Command\Command;
-use JTL\Shop;
 use JTL\Update\MigrationManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,7 +23,7 @@ class StatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $list               = [];
-        $manager            = new MigrationManager(Shop::Container()->getDB());
+        $manager            = new MigrationManager($this->db);
         $executedMigrations = $manager->getExecutedMigrations();
         foreach ($manager->getMigrations() as $key => $migration) {
             $list[] = (object)[

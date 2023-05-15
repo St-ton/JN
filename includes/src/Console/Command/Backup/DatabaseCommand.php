@@ -3,7 +3,6 @@
 namespace JTL\Console\Command\Backup;
 
 use JTL\Console\Command\Command;
-use JTL\Shop;
 use JTL\Update\Updater;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -35,7 +34,7 @@ class DatabaseCommand extends Command
     {
         $io       = $this->getIO();
         $compress = $this->getOption('compress');
-        $updater  = new Updater(Shop::Container()->getDB());
+        $updater  = new Updater($this->db);
         try {
             $file = $updater->createSqlDumpFile($compress);
             $updater->createSqlDump($file, $compress);

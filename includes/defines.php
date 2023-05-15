@@ -74,7 +74,6 @@ ifndef('MAX_CORRUPTED_IMAGES', 50);
 ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');

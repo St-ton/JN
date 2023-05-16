@@ -267,6 +267,7 @@ class UpgradeCommand extends Command
             return $this->fail($e->getMessage());
         }
         $upgrader->finalize();
+        $upgrader->addLogEntry();
         $upgrader->releaseLock();
         $upgrader->disableMaintenanceMode();
         if ($io->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {

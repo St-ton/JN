@@ -82,11 +82,12 @@ class FileCheck
     }
 
     /**
+     * @param string $targetVersion
      * @return string
      */
-    public function getVersionString(): string
+    public function getVersionString(string $targetVersion = \APPLICATION_VERSION): string
     {
-        $version    = Version::parse(\APPLICATION_VERSION);
+        $version    = Version::parse($targetVersion);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
             $preRelease  = $version->getPreRelease();

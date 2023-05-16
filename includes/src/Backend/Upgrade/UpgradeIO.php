@@ -2,11 +2,16 @@
 
 namespace JTL\Backend\Upgrade;
 
+use JTL\DB\DbInterface;
 use JTL\Smarty\JTLSmarty;
+use JTLShop\SemVer\Version;
 
+/**
+ * @since 5.3.0
+ */
 class UpgradeIO
 {
-    public function __construct(private readonly JTLSmarty $smarty)
+    public function __construct(private readonly JTLSmarty $smarty, private readonly DbInterface $db)
     {
     }
 
@@ -19,9 +24,13 @@ class UpgradeIO
 
     public function render(): array
     {
-        $this->smarty->assign('channels', Channels::getChannels());
-        $releaseDownloader = new ReleaseDownloader($this->smarty);
-        $filtered = $releaseDownloader->getReleases();
+        $activeChannel     = Channels::getActiveChannel();
+        $releaseDownloader = new ReleaseDownloader($this->db);
+        $filtered          = $releaseDownloader->getReleases($activeChannel);
+        $this->smarty->assign('channels', Channels::getChannels())
+            ->assign('activeChannel', $activeChannel)
+            ->assign('availableVersions', $filtered)
+            ->assign('currentVersion', Version::parse(\APPLICATION_VERSION));
 
         return [
             'channels' => $this->smarty->fetch('tpl_inc/upgrade_channels.tpl'),

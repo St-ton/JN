@@ -30,7 +30,7 @@ class Migration_20230516103300 extends Migration implements IMigration
     /**
      * @inheritdoc
      */
-    public function down()
+    public function down(): void
     {
         $this->execute('DROP TABLE IF EXISTS releases');
         $this->execute("DELETE FROM `tadminrecht` WHERE `cRecht` = 'UPGRADE'");

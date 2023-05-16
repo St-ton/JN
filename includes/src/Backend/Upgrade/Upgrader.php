@@ -5,6 +5,7 @@ namespace JTL\Backend\Upgrade;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use Ifsnop\Mysqldump\Mysqldump;
 use JTL\Backend\FileCheck;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
@@ -49,11 +50,17 @@ class Upgrader
      */
     private $lock;
 
-    private bool $doCreateDatabaseBackup = false;
+    private bool $doCreateDatabaseBackup = true;
 
     private bool $doCreateFilesystemBackup = false;
 
     private ?Version $targetVersion = null;
+
+    private Version $sourceVersion;
+
+    private ?string $dbBackupFile = null;
+
+    private ?string $fsBackupFile = null;
 
     public function __construct(
         private readonly DbInterface       $db,
@@ -61,10 +68,11 @@ class Upgrader
         private readonly Filesystem        $filesystem,
         private readonly JTLSmarty         $smarty
     ) {
-        $this->manager = new MountManager([
+        $this->manager       = new MountManager([
             'root'    => Shop::Container()->get(LocalFilesystem::class),
             'upgrade' => $this->filesystem
         ]);
+        $this->sourceVersion = Version::parse(\APPLICATION_VERSION);
     }
 
     public function upgradeByRelease(Release $release): bool
@@ -96,8 +104,8 @@ class Upgrader
         if ($this->doCreateDatabaseBackup === true) {
             $this->logs[] = 'creating database backup...';
             try {
-                $backup       = $this->createDatabaseBackup();
-                $this->logs[] = 'Created db backup ' . $backup;
+                $this->dbBackupFile = $this->createDatabaseBackup();
+                $this->logs[]       = 'Created db backup ' . $this->dbBackupFile;
             } catch (Exception $e) {
                 $this->errors[] = $e->getMessage();
 
@@ -107,7 +115,7 @@ class Upgrader
         if ($this->doCreateFilesystemBackup === true) {
             $this->logs[] = 'creating filesystem backup...';
             try {
-                $this->createFilesystemBackup();
+                $this->fsBackupFile = $this->createFilesystemBackup();
             } catch (Exception $e) {
                 $this->errors[] = $e->getMessage();
 
@@ -152,6 +160,7 @@ class Upgrader
         }
         $this->logs[] = 'finalizing...';
         $this->finalize();
+        $this->addLogEntry();
         $this->releaseLock();
         $this->disableMaintenanceMode();
         $end          = \microtime(true);
@@ -218,12 +227,12 @@ class Upgrader
     {
         $updater = new Updater($this->db);
         $file    = $updater->createSqlDumpFile();
-        $updater->createSqlDump($file);
+        $updater->createSqlDump($file, true, ['add-drop-table' => true]);
 
         return $file;
     }
 
-    public function createFilesystemBackup(array $excludes = []): void
+    public function createFilesystemBackup(array $excludes = []): string
     {
         $backupedFiles = [];
         $archive       = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
@@ -256,6 +265,8 @@ class Upgrader
         });
 
         $this->logs[] = 'Created filesystem backup ' . $archive;
+
+        return $archive;
     }
 
     public function getPluginUpdates(): Collection
@@ -303,6 +314,10 @@ class Upgrader
     public function unzip(string $archive): string
     {
         $target = \PFAD_DBES_TMP . 'release';
+        if ($this->filesystem->directoryExists($target)) {
+            $this->filesystem->deleteDirectory($target);
+        }
+        $this->filesystem->createDirectory($target);
         if ($this->filesystem->unzip($archive, $target)) {
             return $target;
         }
@@ -352,7 +367,7 @@ class Upgrader
             $executedMigrations[] = $migration;
         }
         if (\count($manager->getPendingMigrations()) === 0) {
-            $updater->setVersion(Version::parse(\APPLICATION_VERSION));
+            $updater->setVersion($this->targetVersion);
         }
 
         return $executedMigrations;
@@ -397,6 +412,54 @@ class Upgrader
     {
         $this->smarty->clearCompiledTemplate();
         $this->cache->flushAll();
+    }
+
+    public function rollback(): void
+    {
+        if ($this->dbBackupFile === null || $this->fsBackupFile === null) {
+            $this->errors[] = 'Cannot roll back - no backup created.';
+            return;
+        }
+        $target = $this->unzip($this->fsBackupFile);
+        $this->moveToRoot($target);
+
+        $content = \gzdecode(\file_get_contents($this->dbBackupFile));
+        \file_put_contents(\PFAD_ROOT . \PFAD_DBES_TMP . 'tmp.sql', $content);
+        $connectionStr = \sprintf('mysql:host=%s;dbname=%s', \DB_HOST, \DB_NAME);
+        $dumper        = new Mysqldump($connectionStr, \DB_USER, \DB_PASS);
+        $dumper->restore(\PFAD_ROOT . \PFAD_DBES_TMP . 'tmp.sql');
+        return;
+        $content = \explode(\PHP_EOL, $content);
+        $query   = '';
+        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+        foreach ($content as $line) {
+            $tsl = \trim($line);
+            if ($tsl !== ''
+                && !\str_starts_with($tsl, '/*')
+                && !\str_starts_with($tsl, '--')
+                && !\str_starts_with($tsl, '#')
+            ) {
+                $query .= $line;
+                if (\preg_match('/;\s*$/', $line)) {
+                    $this->db->getPDOStatement($query);
+                    $query = '';
+                }
+            }
+        }
+        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+    }
+
+    public function addLogEntry(): void
+    {
+        $data = (object)[
+            'timestamp'    => 'now()',
+            'version_from' => $this->sourceVersion,
+            'version_to'   => $this->targetVersion,
+            'backup_db'    => $this->dbBackupFile ?? '_DBNULL_',
+            'backup_fs'    => $this->fsBackupFile ?? '_DBNULL_',
+            'errors'       => \implode(\PHP_EOL, $this->errors)
+        ];
+        $this->db->insert('upgrade_log', $data);
     }
 
     /**
@@ -477,5 +540,37 @@ class Upgrader
     public function setTargetVersion(Version $targetVersion): void
     {
         $this->targetVersion = $targetVersion;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDbBackupFile(): ?string
+    {
+        return $this->dbBackupFile;
+    }
+
+    /**
+     * @param string|null $file
+     */
+    public function setDBBackupFile(?string $file): void
+    {
+        $this->dbBackupFile = $file;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFsBackupFile(): ?string
+    {
+        return $this->fsBackupFile;
+    }
+
+    /**
+     * @param string|null $file
+     */
+    public function setFsBackupFile(?string $file): void
+    {
+        $this->fsBackupFile = $file;
     }
 }

@@ -24,12 +24,12 @@ final class Attachment
     /**
      * @var string
      */
-    private string $fileName;
+    private string $fileName = '';
 
     /**
      * @var string
      */
-    private string $name;
+    private string $name = '';
 
     /**
      * @var string
@@ -151,6 +151,7 @@ final class Attachment
             $propertyName           = $property->getName();
             $toArray[$propertyName] = $property->getValue($this);
         }
+
         return (object)$toArray;
     }
 

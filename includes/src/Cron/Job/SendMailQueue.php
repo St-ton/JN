@@ -39,18 +39,17 @@ final class SendMailQueue extends Job
 
         parent::start($queueEntry);
 
-        $settings        = Shopsetting::getInstance();
-        $smarty          = new SmartyRenderer(new MailSmarty($this->db));
-        $hydrator        = new DefaultsHydrator($smarty->getSmarty(), $this->db, $settings);
-        $validator       = new MailValidator($this->db, $settings->getAll());
-        $lastIDProcessed = 0;
-        $mailer          = new Mailer(
+        $settings  = Shopsetting::getInstance();
+        $smarty    = new SmartyRenderer(new MailSmarty($this->db));
+        $hydrator  = new DefaultsHydrator($smarty->getSmarty(), $this->db, $settings);
+        $validator = new MailValidator($this->db, $settings->getAll());
+        $mailer    = new Mailer(
             $hydrator,
             $smarty,
             $settings,
             $validator
         );
-        $mailsSent       = true;
+        $mailsSent = true;
         while ($mailsSent === true && \time() < ($queueEntry->cronHasStartedAt + $maxJobLength)) {
             $mailsSent = $mailer->sendQueuedMails();
         }

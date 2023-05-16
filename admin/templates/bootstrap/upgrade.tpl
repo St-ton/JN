@@ -18,6 +18,18 @@
 
     {include file="tpl_inc/upgrade_upgrades.tpl"}
     <hr>
+    {if count($logs) > 0}
+        {foreach $logs as $log}
+            <pre>{$log}</pre>
+        {/foreach}
+        <hr>
+    {/if}
+    {if count($errors) > 0}
+        {foreach $errors as $error}
+            <pre>{$error}</pre>
+        {/foreach}
+        <hr>
+    {/if}
     {button type='submit' name='upgrade' value='1' block=true variant='primary'}
         {__('update')}
     {/button}

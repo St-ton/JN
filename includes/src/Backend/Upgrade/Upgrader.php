@@ -28,14 +28,20 @@ use League\Flysystem\MountManager;
 use Symfony\Component\Finder\Finder;
 
 /**
- * @5.3.0
+ * @since 5.3.0
  */
 class Upgrader
 {
     private MountManager $manager;
 
+    /**
+     * @var string[]
+     */
     private array $logs = [];
 
+    /**
+     * @var string[]
+     */
     private array $errors = [];
 
     /**
@@ -61,11 +67,12 @@ class Upgrader
         ]);
     }
 
-    public function upgradeByRelease(Release $release)
+    public function upgradeByRelease(Release $release): bool
     {
         $start = \microtime(true);
         $this->initLock();
         $this->aquireLock();
+        $this->enableMaintenanceMode();
         $this->targetVersion = $release->version;
         $downloadURL         = $release->downloadURL;
         $this->logs[]        = 'Downloading archive ' . $downloadURL . '...';
@@ -99,23 +106,8 @@ class Upgrader
         }
         if ($this->doCreateFilesystemBackup === true) {
             $this->logs[] = 'creating filesystem backup...';
-            $exclude      = [
-                'media',
-                'mediafiles',
-                'docs',
-                'downloads',
-                'gen',
-                'gfx',
-                'install',
-                'jtllogs',
-                'Rest',
-                'plugins',
-                'includes/plugins',
-                'includes/vendor',
-                'bilder',
-            ];
             try {
-                $this->createFilesystemBackup($exclude);
+                $this->createFilesystemBackup();
             } catch (Exception $e) {
                 $this->errors[] = $e->getMessage();
 
@@ -160,16 +152,25 @@ class Upgrader
         }
         $this->logs[] = 'finalizing...';
         $this->finalize();
-        $end = \microtime(true);
         $this->releaseLock();
+        $this->disableMaintenanceMode();
+        $end          = \microtime(true);
         $time         = \number_format($end - $start, 2);
-        $this->logs[] = 'total time: ' . $time . 's';
-        echo '<br>logs:<br>';
-        dump($this->logs);
-        echo '<br>errors:<br>';
-        dump($this->errors);
+        $this->logs[] = \sprintf('Successfully pgraded to target version %s - took %ss.', $this->targetVersion, $time);
 
-        dd('Upgraded to target version ' . (string)$this->targetVersion . ' - took ' . $time . 's');
+        return true;
+    }
+
+    public function enableMaintenanceMode(): void
+    {
+        $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'Y']);
+        $this->cache->flushTags([\CACHING_GROUP_OPTION]);
+    }
+
+    public function disableMaintenanceMode(): void
+    {
+        $this->db->update('teinstellungen', 'cName', 'wartungsmodus_aktiviert', (object)['cWert' => 'N']);
+        $this->cache->flushTags([\CACHING_GROUP_OPTION]);
     }
 
     public function initLock(): void
@@ -224,28 +225,34 @@ class Upgrader
 
     public function createFilesystemBackup(array $excludes = []): void
     {
-        $archive  = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
-        $excludes = \array_merge(
-            ['export',
-             'templates_c',
-             'build',
+        $backupedFiles = [];
+        $archive       = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
+        $excludes      = \array_merge(
+            ['build',
+             'bilder',
              'admin/templates_c',
+             'export',
+             'templates_c',
              'dbeS/tmp',
              'dbeS/logs',
              'jtllogs',
-             'install/logs'],
+             'includes/plugins',
+             'install',
+             'media',
+             'mediafiles',
+             'docs',
+             'downloads',
+             'gfx',
+             'uploads'],
             $excludes
         );
-        $finder   = Finder::create()
+        $finder        = Finder::create()
             ->ignoreVCS(true)
             ->ignoreDotFiles(false)
             ->exclude($excludes)
             ->in(\PFAD_ROOT);
-
-        $backupedFiles = [];
-
         $this->filesystem->zip($finder, $archive, static function ($count, $index, $path) use (&$backupedFiles) {
-//            $backupedFiles[] = $path;
+            $backupedFiles[] = $path;
         });
 
         $this->logs[] = 'Created filesystem backup ' . $archive;
@@ -337,9 +344,10 @@ class Upgrader
         foreach ($migrations as $id) {
             $migration = $manager->getMigrationById($id);
             $manager->executeMigration($migration);
-            $this->logs[]         = 'Migrated '
-                . $migration->getName() . ' '
-                . $migration->getDescription();
+            $this->logs[]         = \sprintf('Migrated %s - %s',
+                $migration->getName(),
+                $migration->getDescription()
+            );
             $executedMigrations[] = $migration;
         }
         if (\count($manager->getPendingMigrations()) === 0) {
@@ -364,7 +372,6 @@ class Upgrader
         $data         = \array_filter(\explode(\PHP_EOL, $this->manager->read($fileList)));
         $totalCount   = \count($data);
         foreach ($data as $i => $file) {
-            sleep(1);
             if (\is_callable($cb)) {
                 $cb($i, $totalCount, $file);
             }
@@ -373,10 +380,10 @@ class Upgrader
                 continue;
             }
             if ($this->manager->fileExists($path)) {
-                //$this->manager->delete($path);
+                $this->manager->delete($path);
                 $this->logs[] = 'Deleted file ' . $file;
             } else {
-                //$this->manager->deleteDirectory($path);
+                $this->manager->deleteDirectory($path);
                 $this->logs[] = 'Deleted directory ' . $file;
             }
             $deleted[] = $file;

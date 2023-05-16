@@ -344,7 +344,8 @@ class Upgrader
         foreach ($migrations as $id) {
             $migration = $manager->getMigrationById($id);
             $manager->executeMigration($migration);
-            $this->logs[]         = \sprintf('Migrated %s - %s',
+            $this->logs[]         = \sprintf(
+                'Migrated %s - %s',
                 $migration->getName(),
                 $migration->getDescription()
             );

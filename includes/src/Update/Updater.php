@@ -281,10 +281,10 @@ class Updater
 
     /**
      * @param Version $targetVersion
-     * @return array|bool
+     * @return array
      * @throws Exception
      */
-    protected function getSqlUpdates(Version $targetVersion)
+    protected function getSqlUpdates(Version $targetVersion): array
     {
         $sqlFilePathVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
         $sqlFile            = $this->getSqlUpdatePath((int)$sqlFilePathVersion);
@@ -293,7 +293,7 @@ class Updater
             throw new Exception('SQL file in path "' . $sqlFile . '" not found');
         }
 
-        $lines = \file($sqlFile);
+        $lines = \file($sqlFile) ?: [];
         foreach ($lines as $i => $line) {
             $line = \trim($line);
             if (\str_starts_with($line, '--') || \str_starts_with($line, '#')) {

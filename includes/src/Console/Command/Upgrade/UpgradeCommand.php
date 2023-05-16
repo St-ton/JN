@@ -9,10 +9,8 @@ use JTL\Backend\Upgrade\Upgrader;
 use JTL\Console\Command\Command;
 use JTL\Filesystem\Filesystem;
 use JTL\License\Struct\ExsLicense;
-use JTL\Plugin\Data\License;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
-use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,10 +36,12 @@ class UpgradeCommand extends Command
             'channel',
             'c',
             InputOption::VALUE_REQUIRED,
-            'Select channel (stable, beta,bleedingedge)',
+            'Select channel (stable, beta, bleedingedge)',
         )
             ->addOption('release', 'r', InputOption::VALUE_REQUIRED, 'Select release ID')
             ->addOption('filesystembackup', 'f', InputOption::VALUE_OPTIONAL, 'Create file system backup?')
+            ->addOption('ignore-plugin-updates', 'i', InputOption::VALUE_NONE, 'Ignore plugin updates')
+            ->addOption('install-plugin-updates', 'p', InputOption::VALUE_NONE, 'Install plugin updates')
             ->addOption('databasebackup', 'd', InputOption::VALUE_OPTIONAL, 'Create database backup?');
     }
 
@@ -55,7 +55,7 @@ class UpgradeCommand extends Command
             $channel = $this->getIO()->choice('Channel', ['stable', 'beta', 'bleeding-edge'], 'stable');
         }
         $input->setOption('channel', $channel);
-        $releaseDL         = new ReleaseDownloader(Shop::Smarty());
+        $releaseDL         = new ReleaseDownloader($this->db);
         $availableReleases = $releaseDL->getReleases($channel);
         $allowedReleases   = [];
         if (\count($availableReleases) === 0) {
@@ -95,26 +95,27 @@ class UpgradeCommand extends Command
         $dbBackup = $input->getOption('databasebackup');
         $fsBackup = $input->getOption('filesystembackup');
         if (\is_string($dbBackup)) {
-            $dbBackup = (bool)\preg_match('/^(y|j)/i', $dbBackup);
+            $dbBackup = (bool)\preg_match('/^[y|j]/i', $dbBackup);
         }
         if (\is_string($fsBackup)) {
-            $fsBackup = (bool)\preg_match('/^(y|j)/i', $fsBackup);
+            $fsBackup = (bool)\preg_match('/^[y|j]/i', $fsBackup);
         }
-
-        $releaseDL   = new ReleaseDownloader(Shop::Smarty());
+        $releaseDL   = new ReleaseDownloader($this->db);
         $releaseItem = $releaseDL->getReleasyByVersionString($release);
         if ($releaseItem === null) {
             return $this->fail('Could not find release with version ' . $release);
         }
-        $fs       = Shop::Container()->get(Filesystem::class);
-        $upgrader = new Upgrader(
+        $fs            = Shop::Container()->get(Filesystem::class);
+        $upgrader      = new Upgrader(
             $this->db,
             $this->cache,
             $fs,
             Shop::Smarty()
         );
-
+        $targetVersion = $releaseItem->version;
+        $upgrader->setTargetVersion($targetVersion);
         $upgrader->initLock();
+        $upgrader->enableMaintenanceMode();
         $upgrader->setDoCreateFilesystemBackup($fsBackup);
         $upgrader->setDoCreateDatabaseBackup($dbBackup);
         try {
@@ -128,11 +129,15 @@ class UpgradeCommand extends Command
         $tmpFile       = '';
         $action        = 'continue';
         if ($pluginUpdates->count() > 0) {
-            $io->writeln('Plugin updates available:');
+            $io->writeln('<info>Plugin updates available:</info>');
             foreach ($pluginUpdates as $pluginUpdate) {
                 $io->writeln(' * ' . $pluginUpdate);
             }
-            $action = $io->choice('Continue, quit or update plugins?', ['continue', 'quit', 'update'], 'quit');
+            if ($input->getOption('install-plugin-updates') === true) {
+                $action = 'update';
+            } elseif ($input->getOption('ignore-plugin-updates') === false) {
+                $action = $io->choice('Continue, quit or update plugins?', ['continue', 'quit', 'update'], 'quit');
+            }
         }
         if ($action === 'quit') {
             return Command::SUCCESS;
@@ -158,17 +163,17 @@ class UpgradeCommand extends Command
             '%percent:3s%% [%bar%] 100%' . "\n%message%"
         )
             ->newLine()
-            ->success('File "' . $downloadURL . '" downloaded.');
+            ->writeln(\sprintf('Successfully downloaded file "%s"', $downloadURL));
         try {
             $upgrader->verifyIntegrity($releaseItem->checksum, $tmpFile);
-            $io->success('Successfully validated ' . $tmpFile);
+            $io->writeln(\sprintf('<info>Successfully validated %s</info>', $tmpFile));
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
         if ($dbBackup === true) {
             try {
                 $file = $upgrader->createDatabaseBackup();
-                $io->success('Created database backup ' . $file);
+                $io->writeln(\sprintf('<info>Created database backup %s</info>', $file));
             } catch (Exception $e) {
                 return $this->fail($e->getMessage());
             }
@@ -206,43 +211,71 @@ class UpgradeCommand extends Command
                             $mycb($count, $index);
                         });
                     },
-                    'Creating archive [%bar%] %percent:3s%%'
+                    'Creating backup archive [%bar%] %percent:3s%%'
                 )
                     ->newLine()
-                    ->success('File system backup "' . $archive . '" created.');
+                    ->writeln('File system backup "' . $archive . '" created.');
             } catch (Exception $e) {
                 return $this->fail($e->getMessage());
             }
         }
         try {
             $source = $upgrader->unzip($tmpFile);
-            $io->success('Successfully unpacked ' . $tmpFile . ' to ' . $source);
+            $io->writeln(\sprintf('<info>Successfully unpacked %s to %s</info>', $tmpFile, $source));
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
         try {
             $upgrader->verifyContents($source);
-            $io->success('Successfully validated ' . $source);
+            $io->writeln(\sprintf('<info>Successfully validated %s</info>', $source));
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
         try {
             $upgrader->moveToRoot($source);
-            $io->success('Successfully moved upgrade files to root');
+            $io->writeln('<info>Successfully moved upgrade files to root</info>');
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
         try {
-            $upgrader->migrate();
+            $executedMigrations = $upgrader->migrate();
+            if (\count($executedMigrations) > 0) {
+                $io->writeln('Migrated: ');
+                foreach ($executedMigrations as $migration) {
+                    $io->writeln(\sprintf('* %s - %s', $migration->getName(), $migration->getDescription()));
+                }
+            }
+        } catch (Exception $e) {
+            return $this->fail($e->getMessage());
+        }
+        try {
+            $deletedFiles = [];
+            $io->writeln('<info>Deleting old files...</info>');
+            $io->progress(
+                static function ($deletecb) use ($upgrader, &$deletedFiles) {
+                    $cb = static function (int $index, int $count, string $file) use (&$deletecb, &$deletedFiles) {
+                        $deletecb($count, $index + 1, $file);
+                        $deletedFiles[] = $file;
+                    };
+                    $upgrader->cleanupDeletedFiles($cb);
+                },
+                '%percent:3s%% [%bar%] 100%' . "\n%message%"
+            )
+                ->newLine()
+                ->writeln('Old files cleaned up.');
         } catch (Exception $e) {
             return $this->fail($e->getMessage());
         }
         $upgrader->finalize();
         $upgrader->releaseLock();
-
-        $targetVersion = $release;
-
-        $io->success('Successfully upgrade to version ' . $targetVersion);
+        $upgrader->disableMaintenanceMode();
+        if ($io->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
+            $io->writeln('Deleted files: ');
+            foreach ($deletedFiles as $file) {
+                $io->writeln('* ' . $file);
+            }
+        }
+        $io->success(\sprintf('Successfully upgraded to version %s', $targetVersion));
 
         return Command::SUCCESS;
     }
@@ -256,11 +289,7 @@ class UpgradeCommand extends Command
 
     private function printPluginUpdateTable(array $result): void
     {
-        $tableStyle = new TableStyle();
-        $tableStyle->setPadType(\STR_PAD_BOTH);
-        $this->getIO()->writeln('');
         $rows = [];
-
         foreach ($result as $item => $status) {
             if ($item === null) {
                 continue;
@@ -269,9 +298,9 @@ class UpgradeCommand extends Command
                 $item,
                 $status === InstallCode::OK
                     ? '<info> ✔ </info>'
-                    : '<comment>' . $status . '</comment>'
+                    : '<error> ⚠ </error>'
             ];
         }
-        $this->getIO()->table(['Plugin', 'Status'], $rows, ['style' => $tableStyle]);
+        $this->getIO()->table(['Plugin', 'Status'], $rows);
     }
 }

@@ -70,7 +70,7 @@
 .opc.resizing iframe {
   pointer-events: none;
 }
-.opc button, .opc input {
+.opc button, .opc input, .opc select {
   border: none;
   padding: 0;
   background-color: transparent;
@@ -79,6 +79,7 @@
   color: inherit;
   line-height: inherit;
   outline: none;
+  appearance: none;
 }
 .opc button {
   cursor: pointer;
@@ -193,6 +194,8 @@
 .opc .control {
   border: 1px solid #435a6b;
   border-radius: 5px;
+  background-color: #fff;
+  color: #435a6b;
   height: 38px;
   padding: 8px;
   font-size: 14px;

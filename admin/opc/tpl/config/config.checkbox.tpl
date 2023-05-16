@@ -1,11 +1,10 @@
-<div class="form-group checkbox-standalone">
-    <input type="hidden" value="0" name="{$propname}">
-    <input type="checkbox" id="config-{$propname}" value="1" name="{$propname}"
-           {if $propval == '1'}checked{/if} {if $required === true}required{/if}>
-    <label for="config-{$propname}"
+<div class="form-group">
+    <input type="checkbox" id="config_{$propname}" value="1" name="{$propname}"
+            {if $propval == '1'}checked{/if}
+            {if $required === true}required{/if}>
+    <label for="config_{$propname}"
             {if !empty($propdesc.desc)}
-                data-toggle="tooltip" title="{$propdesc.desc|default:''}"
-                data-placement="auto"
+                data-tooltip title="{$propdesc.desc|default:''}"
             {/if}>
         {$propdesc.label}
         {if !empty($propdesc.desc)}
@@ -15,21 +14,23 @@
 </div>
 
 {if isset($propdesc.children)}
-    <script>
-        $('#config-{$propname}').on('change', function() {
-            if (this.checked === true) {
-                $('#children-{$propname}').collapse('show');
-            } else {
-                $('#children-{$propname}').collapse('hide');
-            }
-        });
+    <script type="module">
+        import { collapseShow, collapseHide } from "{$shopUrl}/admin/opc/js/gui.js";
 
-        $(function() {
-            {if $propval == '1'}
-                $('#children-{$propname}').collapse('show');
-            {else}
-                $('#children-{$propname}').collapse('hide');
-            {/if}
-        });
+        const childContainer = document.getElementById('children-{$propname}');
+
+        {if $propval === '1'}
+            collapseShow(childContainer);
+        {else}
+            collapseHide(childContainer);
+        {/if}
+
+        document.getElementById('config_{$propname}').onchange = e => {
+            if (e.target.checked === true) {
+                collapseShow(childContainer);
+            } else {
+                collapseHide(childContainer);
+            }
+        };
     </script>
 {/if}

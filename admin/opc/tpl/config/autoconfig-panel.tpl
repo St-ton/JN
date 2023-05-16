@@ -1,14 +1,12 @@
-<ul class="nav nav-tabs">
+<div class="tabs">
     {foreach $tabs as $tabname => $tab}
         {$tabId = 'conftab'|cat:$tab@index}
 
-        <li class="nav-item">
-            <a href="#{$tabId}" data-toggle="tab" class="nav-link {if $tab@index === 0}active{/if}">
-                {$tabname}
-            </a>
-        </li>
+        <button data-tab="{$tabId}" {if $tab@index === 0}class="active"{/if}>
+            {$tabname}
+        </button>
     {/foreach}
-</ul>
+</div>
 
 <div class="tab-content">
     {foreach $tabs as $tabname => $tab}

@@ -14,7 +14,7 @@
         }
     }
 
-    button, input {
+    button, input, select {
         border: none;
         padding: 0;
         background-color: transparent;
@@ -23,6 +23,7 @@
         color: inherit;
         line-height: inherit;
         outline: none;
+        appearance: none;
     }
 
     button {
@@ -164,6 +165,8 @@
     .control {
         border: 1px solid $text-color;
         border-radius: 5px;
+        background-color: #fff;
+        color: $text-color;
         height: 38px;
         padding: 8px;
         font-size: 14px;

@@ -46,9 +46,69 @@ export function enableTooltip(elm)
     });
 }
 
-export function enableTooltips(elms)
+export function enableTooltips(parent = document)
 {
-    for(const elm of elms) {
-        enableTooltip(elm);
+    for(const tooltipBtn of parent.querySelectorAll('[data-tooltip]')) {
+        enableTooltip(tooltipBtn);
     }
+}
+
+export function enableTabs(parent = document)
+{
+    for(const tabBtn of parent.querySelectorAll('[data-tab]')) {
+        let tab        = document.getElementById(tabBtn.dataset.tab);
+        let allTabBtns = tabBtn.closest('.tabs').querySelectorAll('[data-tab]');
+
+        tabBtn.addEventListener('click', () => {
+            for(const tabBtn of allTabBtns) {
+                let tab = document.getElementById(tabBtn.dataset.tab);
+                tabBtn.classList.remove('active');
+                tab.classList.remove('active');
+            }
+
+            tabBtn.scrollIntoView();
+            tabBtn.classList.add('active');
+            tab.classList.add('active');
+        });
+    }
+}
+
+export function enableCollapses(parent = document)
+{
+    for(const collapseBtn of parent.querySelectorAll('[data-collapse]')) {
+        let collapse = document.getElementById(collapseBtn.dataset.collapse);
+
+        collapse.addEventListener('transitionend', () => {
+            if (!collapseBtn.classList.contains('collapsed')) {
+                collapse.style.removeProperty('height');
+            }
+        });
+
+        collapseBtn.addEventListener('click', async() => {
+            if (collapseBtn.classList.contains('collapsed')) {
+                await collapseShow(collapse);
+            } else {
+                await collapseHide(collapse);
+            }
+
+            collapseBtn.classList.toggle('collapsed');
+        });
+    }
+}
+
+export async function collapseShow(collapse)
+{
+    let curHeight = collapse.offsetHeight;
+    collapse.style.removeProperty('height');
+    let orgHeight = collapse.offsetHeight;
+    collapse.style.height = curHeight + 'px';
+    await sleep(0);
+    collapse.style.height = orgHeight + 'px';
+}
+
+export async function collapseHide(collapse)
+{
+    collapse.style.height = collapse.offsetHeight + 'px';
+    await sleep(0);
+    collapse.style.height = 0;
 }

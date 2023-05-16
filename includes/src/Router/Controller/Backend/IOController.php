@@ -82,7 +82,7 @@ class IOController extends AbstractBackendController
         );
         $searchController->setSmarty($smarty);
 
-        $upgradeIO = new UpgradeIO($smarty);
+        $upgradeIO = new UpgradeIO($smarty, $this->db);
 
         try {
             Shop::Container()->getOPC()->registerAdminIOFunctions($io);

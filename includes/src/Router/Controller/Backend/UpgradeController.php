@@ -28,7 +28,7 @@ class UpgradeController extends AbstractBackendController
     public function getResponse(ServerRequestInterface $request, array $args, JTLSmarty $smarty): ResponseInterface
     {
         $this->smarty = $smarty;
-        $this->checkPermissions(Permissions::OBJECTCACHE_VIEW);
+        $this->checkPermissions(Permissions::UPGRADE);
         $this->getText->loadAdminLocale('pages/upgrade');
         $this->smarty->assign('logs', [])
             ->assign('errors', []);
@@ -39,8 +39,15 @@ class UpgradeController extends AbstractBackendController
             }
         }
         $this->assignReleaseData();
+        $this->assignLogData();
 
         return $this->smarty->getResponse('upgrade.tpl');
+    }
+
+    private function assignLogData(): void
+    {
+        $logs = $this->db->selectAll('upgrade_log', [], []);
+        $this->smarty->assign('upgrade_log', $logs);
     }
 
     private function assignReleaseData(): void

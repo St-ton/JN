@@ -813,7 +813,7 @@ msgid "Modified files:"
 msgstr "Modifizierte Dateien:"
 
 msgid "No modified files"
-msgstr "Kein modifizierte Dateien"
+msgstr "Kein modifizierten Dateien"
 
 msgid "File check unsupported"
 msgstr "Dateicheck nicht unterstützt"

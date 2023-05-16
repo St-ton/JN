@@ -45,4 +45,11 @@ class ReleaseDownloader
             return $release->id === $id;
         });
     }
+
+    public function getReleasyByVersionString(string $version): ?Release
+    {
+        return $this->releases->first(static function (Release $release) use ($version) {
+            return (string)$release->version === $version;
+        });
+    }
 }

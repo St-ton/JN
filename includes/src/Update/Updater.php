@@ -103,9 +103,10 @@ class Updater
      *
      * @param string $file
      * @param bool   $compress
+     * @param array  $config
      * @throws Exception
      */
-    public function createSqlDump(string $file, bool $compress = true): void
+    public function createSqlDump(string $file, bool $compress = true, array $config = []): void
     {
         if ($compress && \pathinfo($file, \PATHINFO_EXTENSION) !== 'gz') {
             $file .= '.gz';
@@ -113,16 +114,19 @@ class Updater
         if (\file_exists($file)) {
             @\unlink($file);
         }
+        $config        = \array_merge(
+            [
+                'skip-comments'  => true,
+                'skip-dump-date' => true,
+                'compress'       => $compress === true
+                    ? Mysqldump::GZIP
+                    : Mysqldump::NONE
+            ],
+            $config
+        );
         $connectionStr = \sprintf('mysql:host=%s;dbname=%s', \DB_HOST, \DB_NAME);
-        $sql           = new Mysqldump($connectionStr, \DB_USER, \DB_PASS, [
-            'skip-comments'  => true,
-            'skip-dump-date' => true,
-            'compress'       => $compress === true
-                ? Mysqldump::GZIP
-                : Mysqldump::NONE
-        ]);
-
-        $sql->start($file);
+        $dumper        = new Mysqldump($connectionStr, \DB_USER, \DB_PASS, $config);
+        $dumper->start($file);
     }
 
     /**

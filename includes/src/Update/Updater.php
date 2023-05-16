@@ -360,7 +360,9 @@ class Updater
                 ++$updates;
             }
         }
-        Shop::Container()->getLogService()->info(\sprintf(\__('Updated %d config values'), $updates));
+        Shop::Container()->getLogService()->info(\sprintf(
+            \__('%d config values were updated after database update.'), $updates)
+        );
     }
 
     /**

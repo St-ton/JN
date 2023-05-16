@@ -89,6 +89,7 @@ class Permissions
     public const STATS_VISITOR_VIEW              = 'STATS_VISITOR_VIEW';
     public const SYSTEMLOG_VIEW                  = 'SYSTEMLOG_VIEW';
     public const UNLOCK_CENTRAL_VIEW             = 'UNLOCK_CENTRAL_VIEW';
+    public const UPGRADE                         = 'UPGRADE';
     public const WAREHOUSE_VIEW                  = 'WAREHOUSE_VIEW';
     public const WAWI_SYNC_VIEW                  = 'WAWI_SYNC_VIEW';
     public const WIZARD_VIEW                     = 'WIZARD_VIEW';

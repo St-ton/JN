@@ -8,7 +8,7 @@ use JTL\Mail\SendMailObjects\MailDataAttachmentObject;
 
 /**
  * Class AttachmentsService
- * @package JTL\Cron
+ * @package JTL\Mail\Attachments
  */
 class AttachmentsService extends AbstractService
 {

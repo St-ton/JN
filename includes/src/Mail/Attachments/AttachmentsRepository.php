@@ -5,11 +5,27 @@ namespace JTL\Mail\Attachments;
 use JTL\Abstracts\AbstractRepository;
 
 /**
- * Class JobQueueRepository
- * @package JTL\Cron
+ * Class AttachmentsRepository
+ * @package JTL\Mail\Attachments
  */
 class AttachmentsRepository extends AbstractRepository
 {
+    /**
+     * @inheritdoc
+     */
+    public function getTableName(): string
+    {
+        return 'emailAttachments';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getKeyName(): string
+    {
+        return 'id';
+    }
+
     /**
      * @param array $IDs
      * @return array
@@ -25,21 +41,5 @@ class AttachmentsRepository extends AbstractRepository
         }
 
         return [];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTableName(): string
-    {
-        return 'emailAttachments';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getKeyName(): string
-    {
-        return 'id';
     }
 }

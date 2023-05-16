@@ -6,7 +6,7 @@ use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 
 /**
- * Class MailDataAttachementObject
+ * Class MailDataAttachmentObject
  * @package JTL\Mail\SendMailObjects
  */
 class MailDataAttachmentObject extends AbstractDataObject implements DataTableObjectInterface
@@ -14,7 +14,7 @@ class MailDataAttachmentObject extends AbstractDataObject implements DataTableOb
     /**
      * @var string
      */
-    private string $primarykey = 'id';
+    private string $primaryKey = 'id';
 
     /**
      * @var int
@@ -60,7 +60,7 @@ class MailDataAttachmentObject extends AbstractDataObject implements DataTableOb
      * @var array|string[]
      */
     private array $columnMapping = [
-        'primarykey' => 'primarykey',
+        'primaryKey' => 'primaryKey',
         'id'         => 'id',
         'mailID'     => 'mailID',
         'mime'       => 'mime',
@@ -73,9 +73,9 @@ class MailDataAttachmentObject extends AbstractDataObject implements DataTableOb
     /**
      * @return string
      */
-    public function getPrimarykey(): string
+    public function getPrimaryKey(): string
     {
-        return $this->primarykey;
+        return $this->primaryKey;
     }
 
     /**

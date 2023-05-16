@@ -42,9 +42,9 @@ class Mail implements MailInterface
     private string $fromName;
 
     /**
-     * @var string
+     * @var ?string
      */
-    private $toMail;
+    private ?string $toMail = null;
 
     /**
      * @var string
@@ -616,9 +616,9 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return array
+     * @return object
      */
-    public function toArray(): array
+    public function toObject(): object
     {
         $reflect    = new ReflectionClass($this);
         $properties = $reflect->getProperties();
@@ -628,15 +628,7 @@ class Mail implements MailInterface
             $toArray[$propertyName] = $property->getValue($this);
         }
 
-        return $toArray;
-    }
-
-    /**
-     * @return object
-     */
-    public function toObject(): object
-    {
-        return (object)$this->toArray();
+        return (object)$toArray;
     }
 
     /**

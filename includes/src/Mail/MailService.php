@@ -3,7 +3,6 @@
 namespace JTL\Mail;
 
 use JTL\Abstracts\AbstractService;
-use JTL\Cron\JobQueueService;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Mail\Attachments\AttachmentsService;
@@ -175,8 +174,7 @@ class MailService extends AbstractService
     /**
      * @param array $mailIds
      * @param int   $isSendingNow
-     * @param int   $isSent
-     * @return int
+     * @return bool
      */
     public function setMailStatus(array $mailIds, int $isSendingNow): bool
     {
@@ -319,6 +317,8 @@ class MailService extends AbstractService
      * @param int    $mailID
      * @param string $errorMsg
      * @return void
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function setError(int $mailID, string $errorMsg): void
     {

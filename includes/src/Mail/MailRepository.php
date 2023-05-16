@@ -38,7 +38,6 @@ class MailRepository extends AbstractRepository
 
     /**
      * @param int $chunkSize
-     * @param int $lastIDProcessed
      * @return array
      */
     public function getNextMailsFromQueue(int $chunkSize): array
@@ -53,8 +52,7 @@ class MailRepository extends AbstractRepository
     /**
      * @param array $mailIds
      * @param int   $isSendingNow
-     * @param int   $isSent
-     * @return int
+     * @return bool
      */
     public function setMailStatus(array $mailIds, int $isSendingNow): bool
     {

@@ -196,6 +196,8 @@ class Mailer
 
     /**
      * @return bool
+     * @throws CircularReferenceException
+     * @throws ServiceNotFoundException
      */
     public function sendQueuedMails(): bool
     {

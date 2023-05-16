@@ -6,9 +6,13 @@ use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 use JTL\Language\LanguageModel;
 
+/**
+ * Class MailDataTableObject
+ * @package JTL\Mail\SendMailObjects
+ */
 class MailDataTableObject extends AbstractDataObject implements DataTableObjectInterface
 {
-    private string $primarykey   = 'id';
+    private string $primaryKey   = 'id';
     protected int $id            = 0;
     protected int $reSend        = 0;
     protected int $isSendingNow  = 0;
@@ -75,9 +79,9 @@ class MailDataTableObject extends AbstractDataObject implements DataTableObjectI
     /**
      * @return string
      */
-    public function getPrimarykey(): string
+    public function getPrimaryKey(): string
     {
-        return $this->primarykey;
+        return $this->primaryKey;
     }
 
     /**

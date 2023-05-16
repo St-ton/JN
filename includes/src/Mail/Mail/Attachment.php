@@ -24,12 +24,12 @@ final class Attachment
     /**
      * @var string
      */
-    private $fileName;
+    private string $fileName;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var string
@@ -140,10 +140,9 @@ final class Attachment
     }
 
     /**
-     * @param bool $tableColumns
-     * @return array
+     * @return object
      */
-    public function toArray(bool $tableColumns = true): array
+    public function toObject(): object
     {
         $reflect    = new ReflectionClass($this);
         $properties = $reflect->getProperties();
@@ -152,19 +151,7 @@ final class Attachment
             $propertyName           = $property->getName();
             $toArray[$propertyName] = $property->getValue($this);
         }
-
-        return $toArray;
-    }
-
-    /**
-     * $tableColumns = true will ship an object using table column names as array keys
-     *
-     * @param bool $tableColumns
-     * @return object
-     */
-    public function toObject(bool $tableColumns = true): object
-    {
-        return (object)$this->toArray($tableColumns);
+        return (object)$toArray;
     }
 
     /**

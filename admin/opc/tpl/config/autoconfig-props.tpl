@@ -30,7 +30,7 @@
                         <i class="fas fa-info-circle fa-fw"></i>
                     {/if}
                 </label>
-                <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
+                <input type="{$type}" class="control" id="config-{$propname}" name="{$propname}"
                        value="{$propval|default:''|escape:'html'}"
                        {if !empty($propdesc.placeholder)}
                            placeholder="{$propdesc.placeholder|default:''|escape:'html'}"{/if}

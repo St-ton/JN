@@ -186,6 +186,7 @@ trait PortletHtml
             ->assign('portlet', $this)
             ->assign('instance', $instance)
             ->assign('tabs', $tabs)
+            ->assign('shopUrl', Shop::getURL())
             ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/autoconfig-panel.tpl');
     }
 

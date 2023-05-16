@@ -1,11 +1,13 @@
-import {enableTooltip, showModal} from "./gui.js";
+import {enableCollapses, enableTabs, enableTooltip, showModal} from "./gui.js";
 import {Emitter, sleep} from "./utils.js";
 
 export class Sidebar extends Emitter
 {
-    constructor()
+    constructor(io)
     {
         super();
+
+        this.io = io;
     }
 
     init()
@@ -22,68 +24,19 @@ export class Sidebar extends Emitter
             window.navtabs.scrollLeft -= 64;
         });
 
-        $('.portlet-button').on('dragstart', e => {
-            let button = $(e.target);
-
-            this.emit(
-                'startPortletDrag', {
-                    portletClass: button.data('portlet-class'),
-                }
-            )
-        });
-
-        $('.portlet-button').on('dragover', e => {
-            e.preventDefault()
+        $('.portlet-button').on('dragstart', async e => {
+            let button       = $(e.target);
+            let portletClass = button.data('portlet-class');
+            this.emit('portletDragStarted', {portlet: portletClass});
         });
 
         // tabs
 
-        for(const tab of $('[data-tab]')) {
-            let $tab = $(tab);
-            let tabPane = $('#' + tab.dataset.tab)[0];
-            let allTabs = $tab.closest('.tabs').find('[data-tab]');
-
-            $tab.on('click', () => {
-                allTabs.each((i, tab) => {
-                    let tabPane = $('#' + tab.dataset.tab);
-                    tab.classList.remove('active');
-                    tabPane[0].classList.remove('active');
-                });
-
-                tab.classList.add('active')
-                tab.scrollIntoView();
-                tabPane.classList.add('active');
-            });
-        }
+        enableTabs();
 
         // collapses
 
-        for(const collapseBtn of $('[data-collapse]')) {
-            let collapse = document.querySelector('#' + collapseBtn.dataset.collapse);
-
-            collapse.addEventListener('transitionend', () => {
-                if (!collapseBtn.classList.contains('collapsed')) {
-                    collapse.style.removeProperty('height');
-                }
-            });
-
-            collapseBtn.addEventListener('click', async() => {
-                if (collapseBtn.classList.contains('collapsed')) {
-                    let curHeight = collapse.offsetHeight;
-                    collapse.style.removeProperty('height');
-                    let orgHeight = collapse.offsetHeight;
-                    collapse.style.height = curHeight + 'px';
-                    await sleep(0);
-                    collapse.style.height = orgHeight + 'px';
-                } else {
-                    collapse.style.height = collapse.offsetHeight + 'px';
-                    await sleep(0);
-                    collapse.style.height = 0;
-                }
-
-                collapseBtn.classList.toggle('collapsed');
-            });
-        }
+        enableCollapses();
 
         // tooltips
 

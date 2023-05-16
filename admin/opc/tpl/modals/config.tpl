@@ -1,33 +1,29 @@
-<div id="configModal" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false">
+<div id="configModal" class="modal">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="configModalTitle">
-                    {__('editPortletPrefix')}
-                    <span id="configPortletName"></span>
-                    {__('editPortletPostfix')}
-                </h5>
-                <button type="button" class="opc-header-btn" data-toggle="tooltip" data-dismiss="modal"
-                        data-placement="bottom">
-                    <i class="fa fas fa-times"></i>
+        <div class="modal-header">
+            <div class="modal-title">
+                {__('editPortletPrefix')}
+                <span id="configPortletName"></span>
+                {__('editPortletPostfix')}
+            </div>
+            <button data-close><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="configModalBody">
+        </div>
+        <div class="modal-footer">
+            <div class="btn-group" id="stdConfigButtons">
+                <button data-close class="btn">
+                    {__('cancel')}
+                </button>
+                <button class="btn btn-primary" id="configSave">
+                    {__('Save')}
                 </button>
             </div>
-            <form id="configForm" action="javascript:void(0);" onsubmit="opc.gui.saveConfig()">
-                <div class="modal-body" id="configModalBody"></div>
-                <div class="modal-footer" id="stdConfigButtons">
-                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
-                        {__('cancel')}
-                    </button>
-                    <button type="submit" class="opc-btn-primary opc-small-btn" id="configSave">
-                        {__('Save')}
-                    </button>
-                </div>
-                <div class="modal-footer" id="missingConfigButtons">
-                    <button type="submit" class="opc-btn-primary opc-small-btn"  data-dismiss="modal">
-                        {__('OK')}
-                    </button>
-                </div>
-            </form>
+            <div class="btn-group" id="missingConfigButtons">
+                <button data-close class="btn">
+                    {__('OK')}
+                </button>
+            </div>
         </div>
     </div>
 </div>

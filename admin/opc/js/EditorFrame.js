@@ -1,10 +1,12 @@
 import {enableTooltip, enableTooltips} from "./gui.js";
-import {loadIframe} from "./utils.js";
+import {Emitter, loadIframe} from "./utils.js";
 
-export class EditorFrame
+export class EditorFrame extends Emitter
 {
     constructor(io, page, {shopUrl})
     {
+        super();
+
         this.io                = io;
         this.page              = page;
         this.shopUrl           = shopUrl;
@@ -46,6 +48,10 @@ export class EditorFrame
             let $portlet = this.findPortletParent($target);
             this.selectPortlet($portlet);
         });
+
+        this.portletToolbar.find('#btnConfig').on('click', e => {
+            this.emit('editPortlet', {portlet: this.selectedPortlet});
+        });
     }
 
     isPortlet($elm)
@@ -80,7 +86,9 @@ export class EditorFrame
         }
 
         if(portlet) {
+            let portletData = portlet.data('portlet');
             this.portletToolbar.popper = this.ctx.Popper.createPopper(portlet[0], this.portletToolbar[0], { });
+            this.portletToolbar.find('#portletLabel').text(portletData.title);
             this.body.append(this.portletToolbar);
             this.selectedPortlet = portlet;
         }
@@ -109,6 +117,11 @@ export class EditorFrame
         // TODO offscreenAreaIds
     }
 
+    setDraggingPortlet(portlet)
+    {
+        this.draggingPortlet = portlet;
+    }
+
     updateDropTargets()
     {
         this.stripDropTargets();
@@ -126,17 +139,37 @@ export class EditorFrame
                 .children('[data-portlet]').before($droptarget.clone());
         }
 
-        enableTooltips(this.getAreas().find('.opc-droptarget-info'));
+        for(const dropTargetInfo of this.getAreas().find('.opc-droptarget-info')) {
+            enableTooltip(dropTargetInfo);
+        }
 
         for(const dropTarget of this.getDropTargets()) {
             let $dropTarget = this.jq(dropTarget);
-            $dropTarget.on('drop', console.log)
+
+            $dropTarget.on('dragover', e => {
+                e.preventDefault();
+            });
+
+            $dropTarget.on('drop', e => {
+                this.dropPortlet(this.draggingPortlet, $dropTarget);
+            });
         }
     }
 
     stripDropTargets()
     {
         this.getDropTargets().remove();
+    }
+
+    async dropPortlet(portlet, target)
+    {
+        if(typeof portlet === 'string') {
+            let portletHtml = await this.io.createPortlet(portlet);
+            portlet = this.jq(portletHtml);
+        }
+
+        target.replaceWith(portlet);
+        this.updateDropTargets();
     }
 
     disableLinks()

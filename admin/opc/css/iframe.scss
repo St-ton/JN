@@ -58,3 +58,43 @@
         margin-top: -2px;
     }
 }
+.opc-portlet-toolbar {
+    z-index: 19;
+    display: flex;
+    font-size: 12px;
+
+    .opc-toolbar-btn {
+        border: none;
+        background: #fff;
+        padding: 4px 12px;
+        border-top: 1px solid $primary-color;
+        border-bottom: 1px solid $primary-color;
+        color: $text-color;
+
+        &:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &:last-child{
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            border-right: 1px solid $primary-color;
+        }
+
+        &:hover {
+        }
+    }
+
+    .opc-label {
+        background: $primary-color;
+        color: #fff;
+        padding: 4px 12px;
+        background-color: $primary-color;
+
+        &:hover {
+        }
+    }
+}

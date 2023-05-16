@@ -70,7 +70,7 @@
 .opc.resizing iframe {
   pointer-events: none;
 }
-.opc button, .opc input {
+.opc button, .opc input, .opc select {
   border: none;
   padding: 0;
   background-color: transparent;
@@ -79,6 +79,7 @@
   color: inherit;
   line-height: inherit;
   outline: none;
+  appearance: none;
 }
 .opc button {
   cursor: pointer;
@@ -193,11 +194,19 @@
 .opc .control {
   border: 1px solid #435a6b;
   border-radius: 5px;
+  background-color: #fff;
+  color: #435a6b;
   height: 38px;
   padding: 8px;
   font-size: 14px;
   width: 100%;
   box-sizing: border-box;
+}
+.opc select.control {
+  background-image: url(../../../includes/node_modules/@fortawesome/fontawesome-free/svgs/solid/chevron-down.svg);
+  background-repeat: no-repeat;
+  background-position: right 0.5em center;
+  background-size: 12px;
 }
 .opc .form-group {
   margin-bottom: 16px;
@@ -304,6 +313,9 @@
 }
 .opc .modal .modal-dialog .modal-body {
   margin: 24px;
+}
+.opc .modal .modal-dialog .modal-body .tabs {
+  margin: -24px 0 0 0;
 }
 .opc .modal .modal-dialog .modal-footer {
   margin: 24px;
@@ -566,6 +578,9 @@
 }
 .opc #domTemplates {
   display: none;
+}
+.opc #configModal .modal-dialog {
+  width: 800px;
 }
 
 /*# sourceMappingURL=editor.css.map */

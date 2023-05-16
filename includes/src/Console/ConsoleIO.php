@@ -15,14 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Style\OutputStyle;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 
 /**
  * Class ConsoleIO
  * @package JTL\Console
  */
-class ConsoleIO extends OutputStyle
+class ConsoleIO extends SymfonyStyle
 {
     public const MAX_LINE_LENGTH = 120;
 
@@ -74,7 +74,7 @@ class ConsoleIO extends OutputStyle
         $this->bufferedOutput = new BufferedOutput($output->getVerbosity(), false, $formatter);
         $this->lineLength     = $this->getTerminalWidth() - (int)(\DIRECTORY_SEPARATOR === '\\');
 
-        parent::__construct($output);
+        parent::__construct($input, $output);
     }
 
     /**
@@ -293,7 +293,8 @@ class ConsoleIO extends OutputStyle
         ?string $type = null,
         ?string $style = null,
         string $prefix = ' ',
-        bool $padding = false
+        bool $padding = false,
+        bool $escape = true
     ): self {
         $this->autoPrependBlock();
 
@@ -617,7 +618,7 @@ class ConsoleIO extends OutputStyle
      * @param Question $question
      * @return string
      */
-    public function askQuestion(Question $question)
+    public function askQuestion(Question $question): mixed
     {
         if ($this->input->isInteractive()) {
             $this->autoPrependBlock();

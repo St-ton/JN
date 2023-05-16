@@ -5,13 +5,21 @@ namespace JTL\Backend\Upgrade;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use JTL\Backend\FileCheck;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
+use JTL\License\AjaxResponse;
+use JTL\License\Collection;
+use JTL\License\Installer\Helper;
+use JTL\License\Manager;
+use JTL\License\Mapper;
+use JTL\Path;
+use JTL\Plugin\InstallCode;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Update\IMigration;
+use JTL\Update\Migration;
 use JTL\Update\MigrationManager;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
@@ -19,6 +27,9 @@ use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\MountManager;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * @5.3.0
+ */
 class Upgrader
 {
     private MountManager $manager;
@@ -32,13 +43,18 @@ class Upgrader
      */
     private $lock;
 
+    private bool $doCreateDatabaseBackup = false;
+
+    private bool $doCreateFilesystemBackup = false;
+
+    private ?Version $targetVersion = null;
+
     public function __construct(
         private readonly DbInterface       $db,
         private readonly JTLCacheInterface $cache,
         private readonly Filesystem        $filesystem,
         private readonly JTLSmarty         $smarty
-    )
-    {
+    ) {
         $this->manager = new MountManager([
             'root'    => Shop::Container()->get(LocalFilesystem::class),
             'upgrade' => $this->filesystem
@@ -50,9 +66,9 @@ class Upgrader
         $start = \microtime(true);
         $this->initLock();
         $this->aquireLock();
-        $downloadURL = $release->downloadURL;
-        echo '<br>### downloading archive ' . $downloadURL;
-//        $downloadURL = 'http://localhost:8080/sim.zip';
+        $this->targetVersion = $release->version;
+        $downloadURL         = $release->downloadURL;
+        $this->logs[]        = 'Downloading archive ' . $downloadURL . '...';
 
         try {
             $tmpFile = $this->download($downloadURL);
@@ -61,10 +77,8 @@ class Upgrader
 
             return false;
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### checking checksum.';
-        $checksum = $release->checksum;
-//        $checksum = \sha1_file($tmpFile);
+        $this->logs[] = 'validating checksum..';
+        $checksum     = $release->checksum;
         try {
             $this->verifyIntegrity($checksum, $tmpFile);
         } catch (Exception $e) {
@@ -72,43 +86,43 @@ class Upgrader
 
             return false;
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### creating database backup.';
-        try {
-            $this->createDatabaseBackup();
-        } catch (Exception $e) {
-            $this->errors[] = $e->getMessage();
+        if ($this->doCreateDatabaseBackup === true) {
+            $this->logs[] = 'creating database backup...';
+            try {
+                $backup       = $this->createDatabaseBackup();
+                $this->logs[] = 'Created db backup ' . $backup;
+            } catch (Exception $e) {
+                $this->errors[] = $e->getMessage();
 
-            return false;
+                return false;
+            }
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### creating filesystem backup.';
-        $exclude = [
-            'media',
-            'mediafiles',
-            'docs',
-            'downloads',
-            'gen',
-            'gfx',
-            'install',
-            'jtllogs',
-            'Rest',
-            'plugins',
-            'includes/plugins',
-            'includes/vendor',
-            'bilder',
-            'sub',
-            'subshop',
-        ];
-        try {
-            $this->createFilesystemBackup($exclude);
-        } catch (Exception $e) {
-            $this->errors[] = $e->getMessage();
+        if ($this->doCreateFilesystemBackup === true) {
+            $this->logs[] = 'creating filesystem backup...';
+            $exclude      = [
+                'media',
+                'mediafiles',
+                'docs',
+                'downloads',
+                'gen',
+                'gfx',
+                'install',
+                'jtllogs',
+                'Rest',
+                'plugins',
+                'includes/plugins',
+                'includes/vendor',
+                'bilder',
+            ];
+            try {
+                $this->createFilesystemBackup($exclude);
+            } catch (Exception $e) {
+                $this->errors[] = $e->getMessage();
 
-            return false;
+                return false;
+            }
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### unzipping archive.';
+        $this->logs[] = 'unzipping archive ' . $tmpFile . '...';
         try {
             $source = $this->unzip($tmpFile);
         } catch (Exception $e) {
@@ -116,8 +130,7 @@ class Upgrader
 
             return false;
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### validating contents.';
+        $this->logs[] = 'validating contents...';
         try {
             $this->verifyContents($source);
         } catch (Exception $e) {
@@ -125,8 +138,7 @@ class Upgrader
 
             return false;
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### moving to shop root.';
+        $this->logs[] = 'moving source ' . $source . ' to shop root...';
         try {
             $this->moveToRoot($source);
         } catch (Exception $e) {
@@ -134,28 +146,33 @@ class Upgrader
 
             return false;
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### executing migrations.';
+        $this->logs[] = 'executing migrations...';
         try {
             $this->migrate();
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
         }
-        echo '<br>...ok!<br>';
-        echo '<br>### finalizing.';
+        $this->logs[] = 'deleting old files...';
+        try {
+            $this->cleanupDeletedFiles();
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+        }
+        $this->logs[] = 'finalizing...';
         $this->finalize();
-        echo '<br>...ok!<br>';
+        $end = \microtime(true);
+        $this->releaseLock();
+        $time         = \number_format($end - $start, 2);
+        $this->logs[] = 'total time: ' . $time . 's';
         echo '<br>logs:<br>';
         dump($this->logs);
         echo '<br>errors:<br>';
         dump($this->errors);
-        $end = \microtime(true);
-        $this->releaseLock();
 
-        dd('Upgraded to target version 5.3.1 - took ' . \number_format($end - $start, 2) . 's');
+        dd('Upgraded to target version ' . (string)$this->targetVersion . ' - took ' . $time . 's');
     }
 
-    private function initLock()
+    public function initLock(): void
     {
         $lockFile = \PFAD_ROOT . \PFAD_DBES_TMP . 'upgrade.lock';
         if (!\file_exists($lockFile)) {
@@ -164,14 +181,14 @@ class Upgrader
         $this->lock = \fopen($lockFile, 'wb');
     }
 
-    private function aquireLock(): void
+    public function aquireLock(): void
     {
         if (!\flock($this->lock, \LOCK_EX | \LOCK_NB)) {
             throw new Exception('Cannot lock - upgrade running?');
         }
     }
 
-    private function releaseLock(): void
+    public function releaseLock(): void
     {
         \flock($this->lock, \LOCK_UN);
         \fclose($this->lock);
@@ -189,22 +206,23 @@ class Upgrader
         return $tmpFile;
     }
 
-    private function verifyIntegrity(string $checksum, string $file): void
+    public function verifyIntegrity(string $checksum, string $file): void
     {
         if (\sha1_file($file) !== $checksum) {
             throw new Exception('Invalid checksum');
         }
     }
 
-    private function createDatabaseBackup(): void
+    public function createDatabaseBackup(): string
     {
         $updater = new Updater($this->db);
         $file    = $updater->createSqlDumpFile();
         $updater->createSqlDump($file);
-        $this->logs[] = 'Created db backup ' . $file;
+
+        return $file;
     }
 
-    private function createFilesystemBackup(array $excludes = []): void
+    public function createFilesystemBackup(array $excludes = []): void
     {
         $archive  = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
         $excludes = \array_merge(
@@ -233,7 +251,37 @@ class Upgrader
         $this->logs[] = 'Created filesystem backup ' . $archive;
     }
 
-    private function verifyContents(string $dir): void
+    public function getPluginUpdates(): Collection
+    {
+        return (new Mapper(new Manager($this->db, $this->cache)))->getCollection()->getUpdateableItems();
+    }
+
+    public function updatePlugins(array $itemIDs): array
+    {
+        $manager  = new Manager($this->db, $this->cache);
+        $helper   = new Helper($manager, $this->db, $this->cache);
+        $response = new AjaxResponse();
+        $results  = [];
+        foreach ($itemIDs as $itemID) {
+            $licenseData = $manager->getLicenseByItemID($itemID);
+            if ($licenseData === null) {
+                continue;
+            }
+            $installer = $helper->getInstaller($itemID);
+            $download  = $helper->getDownload($itemID);
+            $result    = $installer->update($licenseData->getExsID(), $download, $response);
+            if ($result === InstallCode::DUPLICATE_PLUGIN_ID) {
+                $download = $helper->getDownload($itemID);
+                $result   = $installer->forceUpdate($download, $response);
+            }
+            $results[$itemID] = $result;
+        }
+        $this->cache->flushTags([\CACHING_GROUP_LICENSES]);
+
+        return $results;
+    }
+
+    public function verifyContents(string $dir): void
     {
         $dir      = \PFAD_ROOT . \rtrim($dir, '/') . '/';
         $index    = $dir . 'index.php';
@@ -245,24 +293,16 @@ class Upgrader
         }
     }
 
-    private function unzip(string $archive): string
+    public function unzip(string $archive): string
     {
         $target = \PFAD_DBES_TMP . 'release';
         if ($this->filesystem->unzip($archive, $target)) {
             return $target;
         }
         throw new Exception(\sprintf('Could not unzip archive %s to %s', $archive, $target));
-//        try {
-//            $res = $fs->unzip($tmpFile, \PFAD_DBES_TMP . 'release');
-//        } catch (\Exception $e) {
-//            throw $e;
-//        }
-//        if ($res !== true) {
-//            throw new \Exception('Could not unzip');
-//        }
     }
 
-    private function moveToRoot(string $source): void
+    public function moveToRoot(string $source): void
     {
         $source   = \rtrim($source, '/') . '/';
         $contents = $this->manager->listContents('root://' . $source, true);
@@ -282,28 +322,152 @@ class Upgrader
         }
     }
 
-    private function migrate(): void
+    /**
+     * @return Migration[]
+     * @throws Exception
+     */
+    public function migrate(): array
     {
         $updater = new Updater($this->db);
         $manager = new MigrationManager($this->db);
         $manager->setMigrations([]);
-        $migrations = $manager->getPendingMigrations(true);
+        $migrations         = $manager->getPendingMigrations(true);
+        $executedMigrations = [];
         \ksort($migrations);
         foreach ($migrations as $id) {
             $migration = $manager->getMigrationById($id);
             $manager->executeMigration($migration);
-            $this->logs[] = 'Migrated '
+            $this->logs[]         = 'Migrated '
                 . $migration->getName() . ' '
                 . $migration->getDescription();
+            $executedMigrations[] = $migration;
         }
         if (\count($manager->getPendingMigrations()) === 0) {
             $updater->setVersion(Version::parse(\APPLICATION_VERSION));
         }
+
+        return $executedMigrations;
+    }
+
+    public function cleanupDeletedFiles(?callable $cb = null): array
+    {
+        $deleted  = [];
+        $check    = new FileCheck();
+        $fileList = 'upgrade://' . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5
+            . 'deleted_files_' . $check->getVersionString() . '.csv';
+        if (!$this->manager->fileExists($fileList)) {
+            $this->errors[] = 'No deleted files list: ' . $fileList;
+
+            return $deleted;
+        }
+        $this->logs[] = '### reading deleted files list: ' . $fileList;
+        $data         = \array_filter(\explode(\PHP_EOL, $this->manager->read($fileList)));
+        $totalCount   = \count($data);
+        foreach ($data as $i => $file) {
+            sleep(1);
+            if (\is_callable($cb)) {
+                $cb($i, $totalCount, $file);
+            }
+            $path = 'upgrade://' . Path::clean($file);
+            if (!$this->manager->has($path)) {
+                continue;
+            }
+            if ($this->manager->fileExists($path)) {
+                //$this->manager->delete($path);
+                $this->logs[] = 'Deleted file ' . $file;
+            } else {
+                //$this->manager->deleteDirectory($path);
+                $this->logs[] = 'Deleted directory ' . $file;
+            }
+            $deleted[] = $file;
+        }
+
+        return $deleted;
     }
 
     public function finalize(): void
     {
         $this->smarty->clearCompiledTemplate();
         $this->cache->flushAll();
+    }
+
+    /**
+     * @return array
+     */
+    public function getLogs(): array
+    {
+        return $this->logs;
+    }
+
+    /**
+     * @param array $logs
+     */
+    public function setLogs(array $logs): void
+    {
+        $this->logs = $logs;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors(): array
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param array $errors
+     */
+    public function setErrors(array $errors): void
+    {
+        $this->errors = $errors;
+    }
+
+    /**
+     * @return bool
+     */
+    public function doCreateDatabaseBackup(): bool
+    {
+        return $this->doCreateDatabaseBackup;
+    }
+
+    /**
+     * @param bool $doCreateDatabaseBackup
+     */
+    public function setDoCreateDatabaseBackup(bool $doCreateDatabaseBackup): void
+    {
+        $this->doCreateDatabaseBackup = $doCreateDatabaseBackup;
+    }
+
+    /**
+     * @return bool
+     */
+    public function doCreateFilesystemBackup(): bool
+    {
+        return $this->doCreateFilesystemBackup;
+    }
+
+    /**
+     * @param bool $doCreateFilesystemBackup
+     */
+    public function setDoCreateFilesystemBackup(bool $doCreateFilesystemBackup): void
+    {
+        $this->doCreateFilesystemBackup = $doCreateFilesystemBackup;
+    }
+
+    /**
+     * @return Version|null
+     */
+    public function getTargetVersion(): ?Version
+    {
+        return $this->targetVersion;
+    }
+
+    /**
+     * @param Version $targetVersion
+     */
+    public function setTargetVersion(Version $targetVersion): void
+    {
+        $this->targetVersion = $targetVersion;
     }
 }

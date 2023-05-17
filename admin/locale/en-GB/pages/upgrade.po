@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "System upgrade"
+msgstr "System upgrade"
+
+msgid "Currently installed version:"
+msgstr "Currently installed version:"
+
+msgid "choose channel"
+msgstr "Choose channel"
+
+msgid "choose release"
+msgstr "Choose release"
+
+msgid "Start upgrade"
+msgstr "Start upgrade"
+
+msgid "Previous upgrades"
+msgstr "Previous upgrades"
+
+msgid "roll back"
+msgstr "Start rollback"

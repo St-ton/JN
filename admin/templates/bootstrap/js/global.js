@@ -839,15 +839,17 @@ function tableCanBeShrunk(elem)
 }
 
 /**
- * Rearranges the content of a responsiv table, so it does fit the users view
+ * Reverse the axes of .table-responsive when they have a scrollbar on page load or tab change
  */
 function shrinkResponsiveTables(tables) {
     for (let i = 0; i < tables.length; i++) {
         let table = tableCanBeShrunk(tables[i]);
         if (table !== null) {
-            table.className += ' shrunkTable'
+            table.className += ' shrunkTable table-striped d-block'
+            table.classList.remove("table-hover");
             let trs= table.getElementsByTagName("tr");
             let thead= trs[0].querySelectorAll("th,td");
+            // Remove table head
             trs[0].remove();
             let tbody = document.createElement('tbody');
 
@@ -856,73 +858,39 @@ function shrinkResponsiveTables(tables) {
                     colHeading = row.insertCell(-1),
                     containerHeading= document.createElement('div');
                 containerHeading.innerHTML = thead[o].innerHTML;
-                colHeading.className = 'text-right font-weight-bold mr-3';
+                $(containerHeading).css({
+                    "position": "relative",
+                    "top": "50%",
+                    "transform": "translateY(-50%)"
+                });
+                colHeading.className = 'text-right font-weight-bold';
                 colHeading.appendChild(containerHeading);
 
-                for (let u = 1; u < trs.length; u++) {
-                    let colContent= row.insertCell(-1),
-                        containerContent= document.createElement('div'),
-                        tds= trs[u].getElementsByTagName("td");
-                    containerContent.innerHTML = tds[o].innerHTML;
-                    colContent.className = 'text-center';
-                    colContent.appendChild(containerContent);
+                for (let u = 0; u < trs.length; u++) {
+                    let td = trs[u].getElementsByTagName("td").item(o).cloneNode(true);
+                    td.className += ' text-center';
+                    row.appendChild(td);
                 }
             }
             table.innerHTML = "";
             table.appendChild(tbody);
-        }
-    }
-}
-
-function shrinkResponsiveTables2(tables)
-{
-    for (let i = 0; i < tables.length; i++) {
-        let table = tables[i];
-        if (tableCanBeShrunk(table)) {
-            //table.getElementsByTagName("tbody")[0].className = 'd-block';
-            let paddingCardView = '3';
-            table.className += ' shrunkTable mb-0'
-            if (table.parentNode.className.split(' ').indexOf('card-body') >= 0) {
-                table.parentNode.classList.add('p-0');
-                paddingCardView = '4';
-            } else if (table.className.split(' ').indexOf('card-body') >= 0) {
-                table.classList.add('p-0');
-                paddingCardView = '4';
-            }
-            let trs = table.getElementsByTagName("tr");
-            let thead = trs[0].querySelectorAll("th,td");
-            // Remove table head row
-            trs[0].remove();
-            for (let e = 0; e < trs.length; e++) {
-                let tds = trs[e].getElementsByTagName("td");
-                let cardViews= document.createElement('div');
-                for (let o = 0; o < thead.length; o++) {
-                    let cardView= document.createElement('div'),
-                        title= document.createElement('span'),
-                        value= document.createElement('span');
-                    cardView.className = 'shrunkTable-row d-flex align-items-top p-' + paddingCardView;
-                    if (tds[o].innerHTML.trim().length === 0 || tds[o].innerHTML.trim() === "&nbsp;") {
-                        continue;
-                    }
-                    if (thead[o].innerHTML.trim().length > 0 && thead[o].innerHTML.trim() !== "&nbsp;") {
-                        title.innerHTML = '<h6 class="text-nowrap m-0">' + thead[o].innerHTML + ': </h6>';
-                    }
-                    value.innerHTML = tds[o].innerHTML;
-                    value.className = tds[o].className;
-                    title.className += ' text-left mr-1';
-                    value.className += ' flex-grow-1 text-right';
-                    title.classList.remove("text-center");
-                    value.classList.remove("text-center");
-                    cardView.appendChild(title);
-                    cardView.appendChild(value);
-                    cardViews.appendChild(cardView);
-                }
-                let cell = trs[e].insertCell(0);
-                cell.className = 'p-0';
-                cell.appendChild(cardViews);
-                while (trs[e].getElementsByTagName("td").length > 1) {
-                    trs[e].deleteCell(-1);
-                }
+            let firstCol = $(table).find('tr td:first-child');
+            firstCol.each(function(){
+                $(this).css("height", $(this).outerHeight() + 10);
+                $(this).closest("tr").css("height", $(this).outerHeight());
+            });
+            let headingsWidth = $(table).find('tr:first-child td:first-child').outerWidth() + 10,
+                maxWidth = $(table).outerWidth() * .5;
+            headingsWidth = (headingsWidth > maxWidth) ? maxWidth : headingsWidth;
+            firstCol.css({
+                "position": "absolute",
+                "width": headingsWidth + "px",
+                "overflow-wrap": "break-word",
+                "word-break": "break-word"
+            });
+            $(table).find('tr td:nth-child(2)').css("padding-left", headingsWidth + 20 + "px");
+            if (table.scrollWidth <= table.offsetWidth) {
+                $(table).removeClass("d-block");
             }
         }
     }

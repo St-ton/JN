@@ -106,7 +106,6 @@ use JTL\Router\Middleware\WizardCheckMiddleware;
 use JTL\Router\Strategy\SmartyStrategy;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\Response;
 use Laminas\Diactoros\ResponseFactory;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\HttpHandlerRunner\Emitter\SapiEmitter;
@@ -311,9 +310,9 @@ class BackendRouter
         try {
             $response = $this->router->dispatch($request);
         } catch (NotFoundException) {
-            $response = (new Response())->withStatus(404);
+            $response = $this->smarty->getResponse('404.tpl')->withStatus(404);
         } catch (PermissionException) {
-            $response = $this->smarty->getResponse('tpl_inc/berechtigung.tpl');
+            $response = $this->smarty->getResponse('tpl_inc/berechtigung.tpl')->withStatus(403);
         }
         try {
             (new SapiEmitter())->emit($response);

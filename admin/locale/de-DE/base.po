@@ -2197,3 +2197,6 @@ msgstr "Kein Theme ausgewählt. Versuchen Sie bitte die Template-Einstellungen e
 
 msgid "Theme %s does not exist."
 msgstr "Das Theme %s existiert nicht."
+
+msgid "Page not found."
+msgstr "Die Seite konnte nicht gefunden werden."

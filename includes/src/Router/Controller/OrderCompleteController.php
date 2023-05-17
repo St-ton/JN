@@ -70,7 +70,7 @@ class OrderCompleteController extends CheckoutController
             } elseif (!isset($_SESSION['kommentar'])) {
                 $_SESSION['kommentar'] = '';
             }
-            if (SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
+            if (isset($_SESSION['Kunde']) && SimpleMail::checkBlacklist($_SESSION['Kunde']->cMail)) {
                 return new RedirectResponse($linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', 303);
             }
             if (!$this->isOrderComplete()) {

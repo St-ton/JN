@@ -828,19 +828,53 @@ function tableCanBeShrunk(elem)
             let titleCount = trs[0].getElementsByTagName("th").length;
             for (let i = 1; i < trs.length; i++) {
                 if (trs[i].getElementsByTagName("td").length !== titleCount) {
-                    return false;
+                    return null;
                 }
             }
-            return true;
+            elem.className += ' mh-100'
+            return (elem.nodeName === "TABLE") ? elem : elem.firstElementChild;
         }
     }
-    return false;
+    return null;
 }
 
 /**
  * Rearranges the content of a responsiv table, so it does fit the users view
  */
-function shrinkResponsiveTables(tables)
+function shrinkResponsiveTables(tables) {
+    for (let i = 0; i < tables.length; i++) {
+        let table = tableCanBeShrunk(tables[i]);
+        if (table !== null) {
+            table.className += ' shrunkTable'
+            let trs= table.getElementsByTagName("tr");
+            let thead= trs[0].querySelectorAll("th,td");
+            trs[0].remove();
+            let tbody = document.createElement('tbody');
+
+            for (let o = 0; o < thead.length; o++) {
+                let row= tbody.insertRow(-1),
+                    colHeading = row.insertCell(-1),
+                    containerHeading= document.createElement('div');
+                containerHeading.innerHTML = thead[o].innerHTML;
+                colHeading.className = 'text-right font-weight-bold mr-3';
+                colHeading.appendChild(containerHeading);
+
+                for (let u = 1; u < trs.length; u++) {
+                    let colContent= row.insertCell(-1),
+                        containerContent= document.createElement('div'),
+                        tds= trs[u].getElementsByTagName("td");
+                    containerContent.innerHTML = tds[o].innerHTML;
+                    colContent.className = 'text-center';
+                    colContent.appendChild(containerContent);
+                }
+            }
+            table.innerHTML = "";
+            table.appendChild(tbody);
+        }
+    }
+}
+
+function shrinkResponsiveTables2(tables)
 {
     for (let i = 0; i < tables.length; i++) {
         let table = tables[i];

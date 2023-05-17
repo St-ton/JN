@@ -16,6 +16,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Payment\LegacyMethod;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 
@@ -451,6 +452,8 @@ class Bestellung
      * @param bool $initProduct
      * @param bool $disableFactor - @see #8544, hack to avoid applying currency factor twice
      * @return $this
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function fuelleBestellung(
         bool $htmlCurrency = true,
@@ -530,23 +533,6 @@ class Bestellung
             $this->dBezahldatum_en  = $date->dBezahldatum_en;
             $this->dErstelldatum_en = $date->dErstelldatum_en;
         }
-        // Hole Netto- oder Bruttoeinstellung der Kundengruppe
-        $nNettoPreis = false;
-        if ($this->kBestellung > 0) {
-            $netOrderData = $db->getSingleObject(
-                'SELECT tkundengruppe.nNettoPreise
-                    FROM tkundengruppe
-                    JOIN tbestellung 
-                        ON tbestellung.kBestellung = :oid
-                    JOIN tkunde 
-                        ON tkunde.kKunde = tbestellung.kKunde
-                    WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe',
-                ['oid' => (int)$this->kBestellung]
-            );
-            if ($netOrderData !== null && $netOrderData->nNettoPreise > 0) {
-                $nNettoPreis = true;
-            }
-        }
         if ($this->kWaehrung > 0) {
             $this->Waehrung = new Currency((int)$this->kWaehrung);
             if ($this->fWaehrungsFaktor !== null && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
@@ -557,7 +543,7 @@ class Bestellung
             }
             $this->Steuerpositionen = Tax::getOldTaxItems(
                 $this->Positionen,
-                $nNettoPreis,
+                Frontend::getCustomerGroup()->isMerchant(),
                 $htmlCurrency,
                 $this->Waehrung
             );

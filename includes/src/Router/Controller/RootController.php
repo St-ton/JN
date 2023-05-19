@@ -19,8 +19,8 @@ class RootController extends AbstractController
      */
     public function register(RouteGroup $route, string $dynName): void
     {
-        $route->get('/', [$this, 'getResponse'])->setName('ROUTE_ROOT' . $dynName);
-        $route->post('/', [$this, 'getResponse'])->setName('ROUTE_ROOTPOST' . $dynName);
+        $route->get('/', $this->getResponse(...))->setName('ROUTE_ROOT' . $dynName);
+        $route->post('/', $this->getResponse(...))->setName('ROUTE_ROOTPOST' . $dynName);
     }
 
     /**

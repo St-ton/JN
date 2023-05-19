@@ -2,9 +2,10 @@
 
 namespace JTL\OPC;
 
+use JTL\Cache\JTLCacheInterface;
+use JTL\DB\DbInterface;
+use JTL\L10n\GetText;
 use JTL\Plugin\PluginInterface;
-use JTL\Plugin\PluginLoader;
-use JTL\Shop;
 
 /**
  * Class Portlet
@@ -15,11 +16,6 @@ class Portlet implements \JsonSerializable
     use PortletHtml;
     use PortletStyles;
     use PortletAnimations;
-
-    /**
-     * @var PluginInterface|null
-     */
-    protected ?PluginInterface $plugin = null;
 
     /**
      * @var string
@@ -38,21 +34,22 @@ class Portlet implements \JsonSerializable
 
     /**
      * Portlet constructor.
-     * @param string $class
-     * @param int    $id
-     * @param int    $pluginId
+     * @param string               $class
+     * @param int                  $id
+     * @param PluginInterface|null $plugin
      */
-    final public function __construct(protected string $class, protected int $id, int $pluginId)
-    {
-        if ($pluginId > 0) {
-            $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
-            $this->plugin = $loader->init($pluginId);
-        }
-
+    final public function __construct(
+        protected string $class,
+        protected int $id,
+        protected DbInterface $db,
+        protected JTLCacheInterface $cache,
+        protected GetText $getText,
+        protected ?PluginInterface $plugin = null
+    ) {
         if ($this->plugin === null) {
-            Shop::Container()->getGetText()->loadAdminLocale('portlets/' . $this->class);
+            $this->getText->loadAdminLocale('portlets/' . $this->class);
         } else {
-            Shop::Container()->getGetText()->loadPluginLocale('portlets/' . $this->class, $this->plugin);
+            $this->getText->loadPluginLocale('portlets/' . $this->class, $this->plugin);
         }
     }
 

@@ -22,8 +22,8 @@ class MailSmarty extends JTLSmarty
         $this->setCaching(JTLSmarty::CACHING_OFF)
             ->setDebugging(false)
             ->registerResource('db', new SmartyResourceNiceDB($db, $context))
-            ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', [$this, 'includeMailTemplate'])
-            ->registerPlugin(\Smarty::PLUGIN_MODIFIER, 'maskPrivate', [$this, 'maskPrivate'])
+            ->registerPlugin(\Smarty::PLUGIN_FUNCTION, 'includeMailTemplate', $this->includeMailTemplate(...))
+            ->registerPlugin(\Smarty::PLUGIN_MODIFIER, 'maskPrivate', $this->maskPrivate(...))
             ->setCompileDir(\PFAD_ROOT . \PFAD_COMPILEDIR)
             ->setTemplateDir(\PFAD_ROOT . \PFAD_EMAILTEMPLATES);
         if ($context === ContextType::MAIL && \MAILTEMPLATE_USE_SECURITY) {
@@ -56,7 +56,7 @@ class MailSmarty extends JTLSmarty
             'cDateiname',
             $params['template']
         );
-        if (isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
+        if ($tpl !== null && isset($tpl->kEmailvorlage) && $tpl->kEmailvorlage > 0) {
             $lang = $smarty->getTemplateVars('int_lang');
             $row  = $params['type'] === 'html' ? 'cContentHtml' : 'cContentText';
             $res  = $this->db->getSingleObject(

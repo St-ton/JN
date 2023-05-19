@@ -17,6 +17,7 @@ use DebugBar\DebugBarException;
 use DebugBar\JavascriptRenderer;
 use JTL\Debug\DataCollector\DummyTimeDataCollector;
 use JTL\Debug\DataCollector\Errors;
+use JTL\Debug\DataCollector\JTLCache;
 
 /**
  * Class JTLDebugBar
@@ -72,6 +73,7 @@ class JTLDebugBar extends DebugBar
         $this->addCollector(new MemoryCollector());
         $this->addCollector(new ExceptionsCollector());
         $this->addCollector(new Errors());
+        $this->addCollector(new JTLCache());
     }
 
     /**

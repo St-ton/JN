@@ -19,7 +19,7 @@ use Throwable;
 class DeleteTemplateCacheCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -50,7 +50,7 @@ class DeleteTemplateCacheCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

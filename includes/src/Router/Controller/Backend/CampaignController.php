@@ -44,7 +44,6 @@ class CampaignController extends AbstractBackendController
         $this->checkPermissions(Permissions::STATS_CAMPAIGN_VIEW);
         $this->getText->loadAdminLocale('pages/kampagne');
 
-
         $campaignID   = 0;
         $definitionID = 0;
         $stamp        = '';
@@ -362,9 +361,9 @@ class CampaignController extends AbstractBackendController
                 }
             }
             if ($_SESSION['Kampagne']->cSort === 'ASC') {
-                \uasort($sort, [$this, 'sortAsc']);
+                \uasort($sort, $this->sortAsc(...));
             } else {
-                \uasort($sort, [$this, 'sortDesc']);
+                \uasort($sort, $this->sortDesc(...));
             }
             $tmpStats = [];
             foreach ($sort as $i => $tmp) {

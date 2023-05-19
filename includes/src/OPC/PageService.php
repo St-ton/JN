@@ -35,7 +35,7 @@ class PageService
      */
     public function __construct(protected Service $opc, protected PageDB $pageDB, protected Locker $locker)
     {
-        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
+        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', $this->renderMountPoint(...));
     }
 
     /**

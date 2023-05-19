@@ -356,7 +356,7 @@ class CheckBox
         bool $special = false,
         bool $logging = false
     ): array {
-        if (!$customerGroupID) {
+        if ($customerGroupID === 0) {
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             } else {

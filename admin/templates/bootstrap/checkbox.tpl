@@ -175,10 +175,10 @@
                         {$jtl_token}
                         <input name="erstellen" type="hidden" value="1" />
                         <input name="tab" type="hidden" value="erstellen" />
-                        {if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}oCheckBox
+                        {if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}
                             <input name="nInternal" type="hidden" value= "{$oCheckBox->nInternal}" />
                             <input name="kCheckBox" type="hidden" value="{$oCheckBox->kCheckBox}" />
-                        {elseif isset($kCheckBox) && $kCheckBox > 0}kcheckbox
+                        {elseif isset($kCheckBox) && $kCheckBox > 0}
                             <input name="kCheckBox" type="hidden" value="{$kCheckBox}" />
                             <input name="nInternal" type="hidden" value= "{$nInternal}" />
                         {/if}

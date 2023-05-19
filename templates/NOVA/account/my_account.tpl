@@ -20,7 +20,124 @@
         {/row}
     {/block}
     {block name='account-my-account-account-data'}
-        {row }
+        {row}
+            {col cols=12 lg=6 class="account-data-item account-data-item-address"}
+                {block name='account-my-account-billing-address'}
+                    {card no-body=true}
+                        {cardheader}
+                            {block name='account-my-account-billing-address-header'}
+                                {row class="align-items-center-util"}
+                                    {col}
+                                        <span class="h3">
+                                            {link class='text-decoration-none-util'
+                                                href="$cCanonicalURL?editRechnungsadresse=1"}
+                                            {lang key='myPersonalData'}
+                                            {/link}
+                                        </span>
+                                    {/col}
+                                    {col class="col-auto font-size-sm"}
+                                        {link href="$cCanonicalURL?editRechnungsadresse=1"}
+                                            {lang key='showAll'}
+                                        {/link}
+                                    {/col}
+                                {/row}
+                            {/block}
+                        {/cardheader}
+                        {block name='account-my-account-billing-address-body'}
+                            <div class="table-responsive">
+                                <table class="table table-vertical-middle table-hover">
+                                    <tbody>
+                                    {block name='account-my-account-billing-address-billing-address'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='billingAdress' section='account data'}
+                                                <small class="text-muted-util d-block">{$Kunde->cStrasse}
+                                                    {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}
+                                                </small>
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link href="$cCanonicalURL?editRechnungsadresse=1" aria=["label"=>{lang
+                                                key='editBillingAdress' section='account data'}]}
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
+                                    {block name='account-my-account-billing-address-contact'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='contactInformation' section='account data'} {lang key='and'}
+                                                {lang key='email' section='account data'}
+                                                <small class="text-muted-util d-block">{$Kunde->cMail}</small>
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"
+                                                aria=["label"=>{lang key='editCustomerData' section='account data'}]
+                                                }
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
+                                    {block name='account-my-account-billing-address-password'}
+                                        <tr>
+                                            <td class="min-w-sm">
+                                                {lang key='password' section='account data'}
+                                            </td>
+                                            <td class="text-right-util">
+                                                {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"
+                                                aria=["label"=>{lang key='changePassword' section='login'}]}
+                                                    <span class="fas fa-pencil-alt"></span>
+                                                {/link}
+                                            </td>
+                                        </tr>
+                                    {/block}
+                                </table>
+                            </div>
+                        {/block}
+                    {/card}
+                {/block}
+            {/col}
+
+            {col cols=12 lg=6 class="account-data-item account-data-shipping-address"}
+                {block name='account-my-account-shipping-address-shipping-address'}
+                    {card no-body=true class="account-shipping-address"}
+                        {cardheader}
+                            {block name='account-my-account-shipping-address-header'}
+                                {row class="align-items-center-util"}
+                                    {col}
+                                        <span class="h3">
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?editLieferadresse=1"}
+                                            {lang key='shippingAdress' section='account data'}
+                                            {/link}
+                                        </span>
+                                    {/col}
+                                    {col class="col-auto font-size-sm"}
+                                        {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang
+                                        key='editShippingAddress' section='account data'}]}
+                                            {lang key='showAll'}
+                                        {/link}
+                                    {/col}
+                                {/row}
+                            {/block}
+                        {/cardheader}
+                        {cardbody}
+                            {block name='account-my-account-shipping-address-body'}
+                                <p>
+                                    Sie haben noch keine Lieferadressen.
+                                </p>
+                                {link class="btn btn-outline-secondary btn-sm" href="$cCanonicalURL?editLieferadresse=1"}
+                                    <i class="fa fa-truck" aria-label="{lang key='shippingAdress' section='account data'}"
+                                       title="{lang key='shippingAdress' section='account data'}"></i>
+                                    Lieferadressen anlegen
+                                {/link}
+                            {/block}
+                        {/cardbody}
+                    {/card}
+                {/block}
+            {/col}
+        {/row}
+        {row}
             {col cols=12 lg=6 class="account-data-item account-data-item-orders"}
                 {block name='account-my-account-orders-content'}
                     {card no-body=true}
@@ -49,7 +166,8 @@
                                         <tbody>
                                         {foreach $Bestellungen as $order}
                                             {if $order@index === 5}{break}{/if}
-                                            <tr title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
+                                            <tr title="{lang key='showOrder' section='login'}: {lang key='orderNo'
+                                            section='login'} {$order->cBestellNr}"
                                                 class="clickable-row cursor-pointer"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
@@ -61,7 +179,8 @@
                                                    {$order->Status}
                                                 </td>
                                                 <td class="text-right-util d-none d-md-table-cell">
-                                                    <a href="{$cCanonicalURL}?return={$order->kBestellung}" class="me-2 mr-2"><i class="fa fa-retweet" aria-label="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}" title="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}"></i></a>
+                                                    <a href="{$cCanonicalURL}?return={$order->kBestellung}"
+                                                       class="me-2 mr-2"><i class="fa fa-retweet" aria-label="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}" title="{lang key='rma' section='rma'}: {lang key='rma_artikelwahl' section='rma'}"></i></a>
                                                     <i class="fa fa-eye"></i>
                                                 </td>
                                             </tr>
@@ -80,16 +199,17 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6 class="account-data-item account-data-item-address"}
-                {block name='account-my-account-billing-address'}
-                    {card no-body=true}
+            {col cols=12 lg=6 class="account-data-item account-data-item-rma"}
+                {block name='account-my-account-rma'}
+                    {card no-body=true class="account-rma"}
                         {cardheader}
-                            {block name='account-my-account-billing-address-header'}
+                            {block name='account-my-account-comparelist-header'}
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            {link class='text-decoration-none-util' href="$cCanonicalURL?editRechnungsadresse=1"}
-                                                {lang key='myPersonalData'}
+                                            {link class='text-decoration-none-util' href="{get_static_route
+                                            id='vergleichsliste.php'}"}
+                                                Warenrücksendungen
                                             {/link}
                                         </span>
                                     {/col}
@@ -101,72 +221,22 @@
                                 {/row}
                             {/block}
                         {/cardheader}
-                        {block name='account-my-account-billing-address-body'}
-                            <div class="table-responsive">
-                                <table class="table table-vertical-middle table-hover">
-                                    <tbody>
-                                    {block name='account-my-account-billing-address-billing-address'}
-                                        <tr>
-                                            <td class="min-w-sm">
-                                                {lang key='billingAdress' section='account data'}
-                                                <small class="text-muted-util d-block">{$Kunde->cStrasse} {$Kunde->cHausnummer}, {$Kunde->cPLZ} {$Kunde->cOrt}, {$Kunde->cLand}</small>
-                                            </td>
-                                            <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editRechnungsadresse=1" aria=["label"=>{lang key='editBillingAdress' section='account data'}]}
-                                                    <span class="fas fa-pencil-alt"></span>
-                                                {/link}
-                                            </td>
-                                        </tr>
-                                    {/block}
-                                    {block name='account-my-account-shipping-address-shipping-address'}
-                                        <tr>
-                                            <td class="min-w-sm">
-                                                {lang key='shippingAdress' section='account data'}
-                                            </td>
-                                            <td class="text-right-util">
-                                                {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang key='editShippingAddress' section='account data'}]}
-                                                    <span class="fas fa-pencil-alt"></span>
-                                                {/link}
-                                            </td>
-                                        </tr>
-                                    {/block}
-                                    {block name='account-my-account-billing-address-contact'}
-                                        <tr>
-                                            <td class="min-w-sm">
-                                                {lang key='contactInformation' section='account data'} {lang key='and'} {lang key='email' section='account data'}
-                                                <small class="text-muted-util d-block">{$Kunde->cMail}</small>
-                                            </td>
-                                            <td class="text-right-util">
-                                                {link class='float-right' href="$cCanonicalURL?editRechnungsadresse=1"
-                                                    aria=["label"=>{lang key='editCustomerData' section='account data'}]
-                                                }
-                                                    <span class="fas fa-pencil-alt"></span>
-                                                {/link}
-                                            </td>
-                                        </tr>
-                                    {/block}
-                                    {block name='account-my-account-billing-address-password'}
-                                        <tr>
-                                            <td class="min-w-sm">
-                                                {lang key='password' section='account data'}
-                                            </td>
-                                            <td class="text-right-util">
-                                                {link href="{get_static_route id='jtl.php' params=['pass' => 1]}"
-                                                    aria=["label"=>{lang key='changePassword' section='login'}]
-                                                }
-                                                    <span class="fas fa-pencil-alt"></span>
-                                                {/link}
-                                            </td>
-                                        </tr>
-                                    {/block}
-                                </table>
-                            </div>
-                        {/block}
+                        {cardbody}
+                            {block name='account-my-account-comparelist-body'}
+                                <p>
+                                    Sie haben noch keine Warenrücksendungen.
+                                </p>
+                                {link class="btn btn-outline-secondary btn-sm" href="{get_static_route id='vergleichsliste.php'}"}
+                                    <i class="fa fa-retweet" aria-label="Warenrücksendung: Zur Artikelauswahl"
+                                       title="Warenrücksendung: Zur Artikelauswahl"></i>
+                                    Retoure anlegen
+                                {/link}
+                            {/block}
+                        {/cardbody}
                     {/card}
                 {/block}
             {/col}
         {/row}
-
         {row}
             {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
             {col cols=12 lg=6 class="account-data-item account-data-item-wishlist"}

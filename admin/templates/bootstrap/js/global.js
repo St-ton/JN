@@ -819,11 +819,11 @@ $.fn.isOnScreen = function(){
 };
 
 
-function tableCanBeShrunk(elem)
+function tableCanBeReversed(elem)
 {
     if ((elem.nodeName === "TABLE" || elem.firstElementChild.nodeName === "TABLE")
         && (elem.firstElementChild.firstElementChild.nodeName === "THEAD" || elem.firstElementChild.nodeName === "THEAD")) {
-        if (elem.scrollWidth > elem.offsetWidth) {
+        if (elem.className.indexOf('shrunkTable') < 0 && elem.scrollWidth > elem.offsetWidth) {
             let trs = elem.getElementsByTagName("tr");
             let titleCount = trs[0].getElementsByTagName("th").length;
             for (let i = 1; i < trs.length; i++) {
@@ -841,7 +841,7 @@ function tableCanBeShrunk(elem)
 /**
  * Reverse the axes of .table-responsive when they have a scrollbar on page load or tab change
  */
-function shrinkResponsiveTables(tables) {
+function reverseResponsiveTables(tables) {
     for (let i = 0; i < tables.length; i++) {
         let table = tableCanBeShrunk(tables[i]);
         if (table !== null) {

@@ -108,31 +108,79 @@
                                     {col}
                                         <span class="h3">
                                             {link class='text-decoration-none-util' href="$cCanonicalURL?editLieferadresse=1"}
-                                            {lang key='shippingAdress' section='account data'}
+                                                {lang key='myShippingAddresses'}
                                             {/link}
                                         </span>
                                     {/col}
                                     {col class="col-auto font-size-sm"}
                                         {link href="$cCanonicalURL?editLieferadresse=1" aria=["label"=>{lang
                                         key='editShippingAddress' section='account data'}]}
-                                            {lang key='showAll'}
+                                            {lang key='shippingAddress' section='account data'}
                                         {/link}
                                     {/col}
                                 {/row}
                             {/block}
                         {/cardheader}
-                        {cardbody}
-                            {block name='account-my-account-shipping-address-body'}
-                                <p>
-                                    Sie haben noch keine Lieferadressen.
-                                </p>
-                                {link class="btn btn-outline-secondary btn-sm" href="$cCanonicalURL?editLieferadresse=1"}
-                                    <i class="fa fa-truck" aria-label="{lang key='shippingAdress' section='account data'}"
-                                       title="{lang key='shippingAdress' section='account data'}"></i>
-                                    Lieferadressen anlegen
-                                {/link}
-                            {/block}
-                        {/cardbody}
+                        {block name='account-my-account-shipping-address-body'}
+                            {if count($Lieferadressen) > 0}
+                                {block name='account-my-account-shipping-addresses'}
+                                    <div class="table-responsive">
+                                        <table class="table table-vertical-middle table-hover">
+                                            <tbody>
+                                            {foreach $Lieferadressen as $lieferadresse}
+                                                <tr>
+                                                    {block name='account-my-account-shipping-address-name'}
+                                                        <td>
+                                                            {$lieferadresse->cStrasse} {$lieferadresse->cHausnummer},
+                                                            {$lieferadresse->cPLZ}
+                                                            {$lieferadresse->cOrt}, {$lieferadresse->cLand}
+                                                            <small class="text-muted-util d-block">
+                                                                Bestellungen
+                                                                <span class="badge badge-light">
+                                                                    {$lieferadresse->totalBestellungen}
+                                                                </span>
+                                                            </small>
+                                                        </td>
+                                                    {/block}
+                                                    {block name='account-my-account-shipping-address-default'}
+                                                        <td class="text-right-util">
+                                                            <div class="d-inline-flex flex-nowrap">
+                                                                <span data-switch-label-state="default-{$lieferadresse->kLieferadresse}" class="">
+                                                                    {lang key='standard'}
+                                                                </span>
+                                                                <div class="custom-control custom-switch">
+                                                                    <input type='checkbox'
+                                                                           class='custom-control-input la-default-switch'
+                                                                           id="la-default-{$lieferadresse->kLieferadresse}"
+                                                                           data-la-id="{$lieferadresse->kLieferadresse}"
+                                                                           {if $lieferadresse->nIstStandardLieferadresse > 0}checked{/if}
+                                                                           aria-label="{if $lieferadresse->nIstStandardLieferadresse > 0}{lang key='defaultShippingAddresses' section="account data"}{/if}">
+                                                                    <label class="custom-control-label" for="la-default-{$lieferadresse->kLieferadresse}"></label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    {/block}
+                                                </tr>
+                                            {/foreach}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {/block}
+                            {else}
+                                {block name='account-my-account-shipping-address-no-data'}
+                                    {cardbody}
+                                        <p>
+                                            Sie haben noch keine Lieferadressen.
+                                        </p>
+                                        {link class="btn btn-outline-secondary btn-sm" href="$cCanonicalURL?editLieferadresse=1"}
+                                            <i class="fa fa-truck" aria-label="{lang key='shippingAdress' section='account data'}"
+                                               title="{lang key='shippingAdress' section='account data'}"></i>
+                                            Lieferadressen anlegen
+                                        {/link}
+                                    {/cardbody}
+                                {/block}
+                            {/if}
+                        {/block}
                     {/card}
                 {/block}
             {/col}

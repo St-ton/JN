@@ -37,6 +37,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Smarty\JTLSmarty;
 use SmartyException;
+use JTL\Checkout\DeliveryAddressTemplate;
 use stdClass;
 use function Functional\filter;
 use function Functional\flatten;
@@ -83,7 +84,8 @@ class IOMethods
             ->register('getOpcDraftsHtml', $this->getOpcDraftsHtml(...))
             ->register('setWishlistVisibility', $this->setWishlistVisibility(...))
             ->register('updateWishlistItem', $this->updateWishlistItem(...))
-            ->register('updateReviewHelpful', $this->updateReviewHelpful(...));
+            ->register('updateReviewHelpful', $this->updateReviewHelpful(...))
+            ->register('setDeliveryaddressDefault', $this->setDeliveryaddressDefault(...));
     }
 
     /**
@@ -1406,6 +1408,29 @@ class IOMethods
         $response->wlID  = $wlID;
         $response->state = $state;
         $response->url   = $wl->getURL();
+
+        $ioResponse->assignVar('response', $response);
+
+        return $ioResponse;
+    }
+
+    /**
+     * @param int $laID
+     * @param bool $state
+     * @param string $token
+     * @return IOResponse
+     * @since 5.3.0
+     */
+    public function setDeliveryaddressDefault(int $laID, bool $state, string $token): IOResponse
+    {
+        $ioResponse      = new IOResponse();
+        $response        = new stdClass();
+        $response->laID  = $laID;
+        $response->state = 0;
+        if (Form::validateToken($token)) {
+            $la               = new DeliveryAddressTemplate($this->db);
+            $response->result = $la->setAsDefault($laID, (int)$state);
+        }
 
         $ioResponse->assignVar('response', $response);
 

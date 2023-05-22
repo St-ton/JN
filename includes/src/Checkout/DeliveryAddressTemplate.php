@@ -4,6 +4,7 @@ namespace JTL\Checkout;
 
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
+use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;
@@ -40,6 +41,12 @@ class DeliveryAddressTemplate extends Adresse
     public int $nIstStandardLieferadresse = 0;
 
     /**
+     * @var int
+     * @since 5.3.0
+     */
+    public int $totalBestellungen = 0;
+
+    /**
      * @param DbInterface $db
      * @param int         $id
      */
@@ -56,7 +63,17 @@ class DeliveryAddressTemplate extends Adresse
      */
     public function load(int $id): ?self
     {
-        $data = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
+        //$data = $this->db->select('tlieferadressevorlage', 'kLieferadresse', $id);
+        $data = $this->db->executeQueryPrepared(
+            'SELECT tlieferadressevorlage.*, COUNT(tbestellung.kBestellung) AS totalBestellungen
+            FROM tlieferadressevorlage
+            LEFT JOIN tbestellung
+                ON tbestellung.kLieferadresse = tlieferadressevorlage.kLieferadresse
+            WHERE tlieferadressevorlage.kLieferadresse LIKE :kLieferadresse
+            GROUP BY tlieferadressevorlage.kLieferadresse',
+            ['kLieferadresse' => $id],
+            ReturnType::SINGLE_OBJECT
+        );
         if ($data === null || $data->kLieferadresse < 1) {
             return null;
         }
@@ -81,6 +98,7 @@ class DeliveryAddressTemplate extends Adresse
         $this->kLieferadresse            = $id;
         $this->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse;
         $this->cAnredeLocalized          = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->totalBestellungen         = (int)$data->totalBestellungen;
         // Workaround for WAWI-39370
         $this->cLand           = self::checkISOCountryCode($this->cLand);
         $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
@@ -192,25 +210,26 @@ class DeliveryAddressTemplate extends Adresse
      */
     public static function createFromObject($data): DeliveryAddressTemplate
     {
-        $address                = new self(Shop::Container()->getDB());
-        $address->cVorname      = $data->cVorname;
-        $address->cNachname     = $data->cNachname;
-        $address->cFirma        = $data->cFirma ?? null;
-        $address->cZusatz       = $data->cZusatz ?? null;
-        $address->kKunde        = $data->kKunde;
-        $address->cAnrede       = $data->cAnrede ?? null;
-        $address->cTitel        = $data->cTitel;
-        $address->cStrasse      = $data->cStrasse;
-        $address->cHausnummer   = $data->cHausnummer;
-        $address->cAdressZusatz = $data->cAdressZusatz ?? null;
-        $address->cPLZ          = $data->cPLZ;
-        $address->cOrt          = $data->cOrt;
-        $address->cLand         = $data->cLand;
-        $address->cBundesland   = $data->cBundesland ?? null;
-        $address->cTel          = $data->cTel ?? null;
-        $address->cMobil        = $data->cMobil ?? null;
-        $address->cFax          = $data->cFax ?? null;
-        $address->cMail         = $data->cMail ?? null;
+        $address                    = new self(Shop::Container()->getDB());
+        $address->cVorname          = $data->cVorname;
+        $address->cNachname         = $data->cNachname;
+        $address->cFirma            = $data->cFirma ?? null;
+        $address->cZusatz           = $data->cZusatz ?? null;
+        $address->kKunde            = $data->kKunde;
+        $address->cAnrede           = $data->cAnrede ?? null;
+        $address->cTitel            = $data->cTitel;
+        $address->cStrasse          = $data->cStrasse;
+        $address->cHausnummer       = $data->cHausnummer;
+        $address->cAdressZusatz     = $data->cAdressZusatz ?? null;
+        $address->cPLZ              = $data->cPLZ;
+        $address->cOrt              = $data->cOrt;
+        $address->cLand             = $data->cLand;
+        $address->cBundesland       = $data->cBundesland ?? null;
+        $address->cTel              = $data->cTel ?? null;
+        $address->cMobil            = $data->cMobil ?? null;
+        $address->cFax              = $data->cFax ?? null;
+        $address->cMail             = $data->cMail ?? null;
+        $address->totalBestellungen = $data->totalBestellungen ?? 0;
 
         return $address;
     }
@@ -220,26 +239,49 @@ class DeliveryAddressTemplate extends Adresse
      */
     public function getDeliveryAddress(): Lieferadresse
     {
-        $address                = new Lieferadresse();
-        $address->cVorname      = $this->cVorname;
-        $address->cNachname     = $this->cNachname;
-        $address->cFirma        = $this->cFirma ?? null;
-        $address->cZusatz       = $this->cZusatz ?? null;
-        $address->kKunde        = $this->kKunde;
-        $address->cAnrede       = $this->cAnrede ?? null;
-        $address->cTitel        = $this->cTitel;
-        $address->cStrasse      = $this->cStrasse;
-        $address->cHausnummer   = $this->cHausnummer;
-        $address->cAdressZusatz = $this->cAdressZusatz ?? null;
-        $address->cPLZ          = $this->cPLZ;
-        $address->cOrt          = $this->cOrt;
-        $address->cLand         = $this->cLand;
-        $address->cBundesland   = $this->cBundesland ?? null;
-        $address->cTel          = $this->cTel ?? null;
-        $address->cMobil        = $this->cMobil ?? null;
-        $address->cFax          = $this->cFax ?? null;
-        $address->cMail         = $this->cMail ?? null;
+        $address                    = new Lieferadresse();
+        $address->cVorname          = $this->cVorname;
+        $address->cNachname         = $this->cNachname;
+        $address->cFirma            = $this->cFirma ?? null;
+        $address->cZusatz           = $this->cZusatz ?? null;
+        $address->kKunde            = $this->kKunde;
+        $address->cAnrede           = $this->cAnrede ?? null;
+        $address->cTitel            = $this->cTitel;
+        $address->cStrasse          = $this->cStrasse;
+        $address->cHausnummer       = $this->cHausnummer;
+        $address->cAdressZusatz     = $this->cAdressZusatz ?? null;
+        $address->cPLZ              = $this->cPLZ;
+        $address->cOrt              = $this->cOrt;
+        $address->cLand             = $this->cLand;
+        $address->cBundesland       = $this->cBundesland ?? null;
+        $address->cTel              = $this->cTel ?? null;
+        $address->cMobil            = $this->cMobil ?? null;
+        $address->cFax              = $this->cFax ?? null;
+        $address->cMail             = $this->cMail ?? null;
+        $address->totalBestellungen = $this->totalBestellungen ?? 0;
 
         return $address;
+    }
+
+    /**
+     * @param int $id
+     * @param int $val
+     * @return bool
+     * @since 5.3.0
+     */
+    public function setAsDefault(int $id, int $val):bool
+    {
+        $this->db->executeQuery(
+            'UPDATE tlieferadressevorlage SET nIstStandardLieferadresse = 0',
+            ReturnType::AFFECTED_ROWS
+        );
+        $upd                            = new stdClass();
+        $upd->nIstStandardLieferadresse = $val;
+        return (bool)$this->db->updateRow(
+            'tlieferadressevorlage',
+            'kLieferadresse',
+            $id,
+            $upd
+        );
     }
 }

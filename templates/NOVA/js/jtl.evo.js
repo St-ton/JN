@@ -824,6 +824,29 @@
             });
         },
 
+        setDeliveryAdressDefaultSwitches: function() {
+            $('.la-default-switch').on('change', function () {
+                let input = $(this);
+                $('.la-default-switch').each(function() {
+                    if (input.attr('id') !== $(this).attr('id')) {
+                        $(this).prop('checked', false);
+                    }
+                });
+                $.evo.io().call(
+                    'setDeliveryaddressDefault',
+                    [$(this).data('la-id'), $(this).is(":checked"), $('.jtl_token').val()],
+                    $(this), function(error, data) {
+                        if (error) {
+                            return;
+                        }
+                        if (!data.response.result) {
+                            input.prop('checked', false);
+                        }
+                    }
+                );
+            });
+        },
+
         initEModals: function () {
             $('.author-modal').on('click', function (e) {
                 e.preventDefault();
@@ -1143,6 +1166,7 @@
             }
             this.fixStickyElements();
             this.setWishlistVisibilitySwitches();
+            this.setDeliveryAdressDefaultSwitches();
             this.initEModals();
             $.evo.article().initConfigListeners();
             this.initScrollEvents();

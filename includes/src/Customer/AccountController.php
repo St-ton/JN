@@ -263,7 +263,7 @@ class AccountController
                 'kKunde',
                 $customerID,
                 'kLieferadresse',
-                'nIstStandardLieferadresse DESC'
+                'kLieferadresse ASC'
             );
             foreach ($addressData as $item) {
                 if ($item->kLieferadresse > 0) {

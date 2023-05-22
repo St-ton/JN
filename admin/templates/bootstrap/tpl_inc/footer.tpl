@@ -107,6 +107,10 @@
             scrollTop: $("html").offset().top + scrollPosition
         }, 1000);
     {/if}
+
+    $( document ).ready(function () {
+        rearrangeResponsiveTables(document.getElementsByClassName("table-responsive"));
+    });
 </script>
 
 {/if}

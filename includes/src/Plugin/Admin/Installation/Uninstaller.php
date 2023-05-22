@@ -72,7 +72,10 @@ final class Uninstaller
             if (!\SAFE_MODE && ($p = Helper::bootstrap($pluginID, $loader)) !== null) {
                 $p->uninstalled($deleteData);
             }
-            $this->executeMigrations($plugin, $deleteData);
+            try {
+                $this->executeMigrations($plugin, $deleteData);
+            } catch (Exception) {
+            }
             $uninstaller = $plugin->getPaths()->getUninstaller();
             if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {

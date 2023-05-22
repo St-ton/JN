@@ -74,7 +74,6 @@ ifndef('MAX_CORRUPTED_IMAGES', 50);
 ifndef('MAX_IMAGES_PER_STEP', 50000);
 
 // Pfade
-ifndef('PFAD_CLASSES', 'classes/old/'); // DEPRECATED
 ifndef('PFAD_CONFIG', 'config/');
 ifndef('PFAD_INCLUDES', 'includes/');
 ifndef('PFAD_TEMPLATES', 'templates/');
@@ -294,6 +293,12 @@ const SAFE_MODE_LOCK = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR . 'safemode.lck'
 ifndef('SAFE_MODE', $GLOBALS['plgSafeMode'] ?? file_exists(SAFE_MODE_LOCK));
 
 ifndef('TRACK_VISITORS', true);
+
+ifndef('DELIVERY_TIME_DAYS_TO_WEEKS_LIMIT', 15);
+ifndef('DELIVERY_TIME_DAYS_TO_MONTHS_LIMIT', 61);
+ifndef('DELIVERY_TIME_DAYS_PER_WEEK', 7);
+ifndef('DELIVERY_TIME_DAYS_PER_MONTH', 30);
+
 
 const ADMINGROUP                          = 1;
 const MAX_LOGIN_ATTEMPTS                  = 3;

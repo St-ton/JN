@@ -2397,7 +2397,7 @@ msgid "caching_debug_method_value(echo)"
 msgstr "Echo"
 
 msgid "caching_debug_method_value(ssd)"
-msgstr "JTLDebug"
+msgstr "JTLDebug/DebugBar"
 
 msgid "caching_rediscluster_strategy_value(1)"
 msgstr "All requests only to master"

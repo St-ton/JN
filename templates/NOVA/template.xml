@@ -4,7 +4,7 @@
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
     <MinShopVersion>5.2.0</MinShopVersion>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Preview>preview.png</Preview>
     <Description>JTL-Shop Responsive-Template</Description>
     <Framework>Bootstrap4</Framework>
@@ -232,6 +232,7 @@
             <Setting Description="Instagram-Link" Key="instagram" Type="text" Value=""/>
             <Setting Description="Pinterest-Link" Key="pinterest" Type="text" Value=""/>
             <Setting Description="Skype-Link" Key="skype" Type="text" Value=""/>
+            <Setting Description="TikTok-Link" Key="tiktok" Type="text" Value=""/>
         </Section>
     </Settings>
     <Minify>

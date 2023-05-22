@@ -188,7 +188,7 @@
                                                     {/block}
                                                 </td>
                                             {elseif $oArtikel->$row['key'] !== ''}
-                                                <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px; max-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                     {if $row['key'] === 'fArtikelgewicht' || $row['key'] === 'fGewicht'}
                                                         {block name='comparelist-index-products-row-weight'}
                                                             {$oArtikel->$row['key']} {lang key='weightUnit' section='comparelist'}
@@ -198,16 +198,17 @@
                                                             {if $oArtikel->$row['key']|strlen < $descriptionLength}
                                                                 {$oArtikel->$row['key']}
                                                             {else}
-                                                                <div>
+                                                                <div class="collapse-container">
                                                                     <span>
-                                                                        {substr($oArtikel->$row['key'], 0, $descriptionLength)}
+                                                                        {substr($oArtikel->$row['key']|strip_tags, 0, $descriptionLength)}
+                                                                        {if strlen($oArtikel->$row['key']|strip_tags) > $descriptionLength}...{/if}
                                                                     </span>
                                                                     {collapse tag='span' id="read-more-{$oArtikel->kArtikel}-"|cat:$row['key']}
-                                                                        {substr($oArtikel->$row['key'], $descriptionLength)}
+                                                                        {$oArtikel->$row['key']}
                                                                     {/collapse}
                                                                 </div>
                                                                 {block name='comparelist-index-products-row-description-more'}
-                                                                    {button class='comparelist-item-more' variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}-"|cat:$row['key']]}
+                                                                    {button class='comparelist-item-more' variant='link' data=['toggle' => 'collapse', 'target' => "#read-more-{$oArtikel->kArtikel}-"|cat:$row['key'], 'label-show' => "{lang key='more'}", 'label-hide' => "{lang key='less'}"]}
                                                                         {lang key='more'}
                                                                     {/button}
                                                                 {/block}
@@ -236,7 +237,7 @@
                                                     {$name|truncate:20}
                                                 </td>
                                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                                    <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
+                                                    <td style="min-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px; max-width: {$Einstellungen.vergleichsliste.vergleichsliste_spaltengroesse}px" data-product-id-cl="{$oArtikel->kArtikel}">
                                                         {if count($oArtikel->oMerkmale_arr) > 0}
                                                             {foreach $oArtikel->oMerkmale_arr as $oMerkmaleArtikel}
                                                                 {$innerName = $oMerkmaleArtikel->getName($languageID)|default:$oMerkmaleArtikel->getName($fallback)}

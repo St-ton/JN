@@ -42,6 +42,9 @@ class RegistrationForm extends AbstractValidator
     private function validateBaseData(): void
     {
         foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land', 'email'] as $dataKey) {
+            if ($dataKey === 'hausnummer' && $this->config['kunden']['street_name_number_concatenation'] === 'Y') {
+                continue;
+            }
             $this->data[$dataKey] = isset($this->data[$dataKey]) ? \trim($this->data[$dataKey]) : null;
             if (!isset($this->data[$dataKey]) || !$this->data[$dataKey]) {
                 $this->errors[$dataKey] = 1;

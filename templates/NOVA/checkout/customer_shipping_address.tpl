@@ -104,28 +104,37 @@
 
         {* street / number *}
         {block name='checkout-customer-shipping-address-street-wrap'}
-            {col cols=12 md=8}
+            {if $Einstellungen.kunden.street_name_number_concatenation === 'Y'}
+                {assign var=placeholder_street value={lang key='street' section='account data'}|cat:', '|cat:{lang key='streetnumber' section='account data'}}
+                {assign var=width_street value=12}
+            {else}
+                {assign var=placeholder_street value={lang key='street' section='account data'}}
+                {assign var=width_street value=8}
+            {/if}
+            {col cols=12 md=$width_street}
                 {block name='checkout-customer-shipping-address-street'}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             "text", "{$prefix}-{$name}-street", "{$prefix}[{$name}][strasse]",
-                            {$Lieferadresse->cStrasse|default:null}, {lang key='street' section='account data'},
+                            {$Lieferadresse->cStrasse|default:null}, {$placeholder_street},
                             true, null, "shipping address-line1"
                         ]
                     }
                 {/block}
             {/col}
-            {col cols=12 md=4}
-                {block name='checkout-customer-shipping-address-street-number'}
-                    {include file='snippets/form_group_simple.tpl'
-                        options=[
-                            "text", "{$prefix}-{$name}-streetnumber", "{$prefix}[{$name}][hausnummer]",
-                            {$Lieferadresse->cHausnummer|default:null}, {lang key='streetnumber' section='account data'},
-                            true, null, "shipping address-line2"
-                        ]
-                    }
-                {/block}
-            {/col}
+            {if $Einstellungen.kunden.street_name_number_concatenation === 'N'}
+                {col cols=12 md=4}
+                    {block name='checkout-customer-shipping-address-street-number'}
+                        {include file='snippets/form_group_simple.tpl'
+                            options=[
+                                "text", "{$prefix}-{$name}-streetnumber", "{$prefix}[{$name}][hausnummer]",
+                                {$Lieferadresse->cHausnummer|default:null}, {lang key='streetnumber' section='account data'},
+                                true, null, "shipping address-line2"
+                            ]
+                        }
+                    {/block}
+                {/col}
+            {/if}
             <div class="w-100-util"></div>
         {/block}
 

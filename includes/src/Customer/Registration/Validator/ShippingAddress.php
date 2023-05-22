@@ -27,6 +27,9 @@ class ShippingAddress extends AbstractValidator
     private function validateBaseData(): void
     {
         foreach (['nachname', 'strasse', 'hausnummer', 'plz', 'ort', 'land'] as $dataKey) {
+            if ($dataKey === 'hausnummer' && $this->config['street_name_number_concatenation'] === 'Y') {
+                continue;
+            }
             $this->data[$dataKey] = isset($this->data[$dataKey]) ? \trim($this->data[$dataKey]) : null;
             if (!isset($this->data[$dataKey]) || !$this->data[$dataKey]) {
                 $this->errors[$dataKey] = 1;

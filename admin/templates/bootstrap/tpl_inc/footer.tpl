@@ -109,8 +109,13 @@
     {/if}
 
     $( document ).ready(function () {
-        rearrangeResponsiveTables(document.getElementsByClassName("table-responsive"));
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
     });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
+
 </script>
 
 {/if}

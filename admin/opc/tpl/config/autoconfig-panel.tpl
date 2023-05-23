@@ -1,11 +1,13 @@
-<div class="tabs">
-    {foreach $tabs as $tabname => $tab}
-        {$tabId = 'conftab'|cat:$tab@index}
+<div class="navbar">
+    <div class="tabs">
+        {foreach $tabs as $tabname => $tab}
+            {$tabId = 'conftab'|cat:$tab@index}
 
-        <button data-tab="{$tabId}" {if $tab@index === 0}class="active"{/if}>
-            {$tabname}
-        </button>
-    {/foreach}
+            <button data-tab="{$tabId}" {if $tab@index === 0}class="active"{/if}>
+                {$tabname}
+            </button>
+        {/foreach}
+    </div>
 </div>
 
 <div class="tab-content">

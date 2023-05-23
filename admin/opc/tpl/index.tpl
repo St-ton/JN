@@ -9,16 +9,7 @@
         <script src="{$shopUrl}/includes/node_modules/jquery/dist/jquery.min.js"></script>
         <script src="{$shopUrl}/includes/node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
         <script type="module" src="{$shopUrl}/admin/opc/js/index.js"></script>
-        <script type="application/json" id="editorConfig">
-            {
-                "jtlToken": "{$smarty.session.jtl_token}",
-                "shopUrl":  "{$shopUrl}",
-                "pageKey":  {$pageKey},
-                "pageUrl":  "{$page->getUrl()}",
-                "error":    {json_encode($error)},
-                "messages": {json_encode($opc->getEditorMessages())}
-            }
-        </script>
+        <script type="application/json" id="editorConfig">{json_encode($editorConfig)}</script>
     </head>
     <body class="opc">
         {$pageName = $page->getName()}

@@ -42,7 +42,17 @@ class OPCController extends AbstractBackendController
 
         $templateUrl = $this->baseURL . '/' . $smarty->getTemplateUrlPath();
 
-        $smarty->assign('shopUrl', $shopURL)
+        $editorConfig = [
+            'jtlToken' => $_SESSION['jtl_token'],
+            'shopUrl'  => $shopURL,
+            'pageKey'  => $pageKey,
+            'pageUrl'  => $pageUrl,
+            'error'    => null,
+            'messages' => $opc->getEditorMessages(),
+        ];
+
+        $smarty
+            ->assign('shopUrl', $shopURL)
             ->assign('adminUrl', $this->baseURL)
             ->assign('templateUrl', $templateUrl)
             ->assign('pageKey', $pageKey)
@@ -56,10 +66,13 @@ class OPCController extends AbstractBackendController
             // Database update needed
             $this->getText->loadAdminLocale('pages/dbupdater');
 
-            return $smarty->assign('error', [
+            $editorConfig['error'] = [
                 'heading' => \__('dbUpdate') . ' ' . \__('required'),
                 'desc'    => \sprintf(\__('dbUpdateNeeded'), $this->baseURL),
-            ])
+            ];
+
+            return $smarty
+                ->assign('editorConfig', $editorConfig)
                 ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/index.tpl');
         }
         if ($action === 'edit') {
@@ -73,7 +86,9 @@ class OPCController extends AbstractBackendController
 
             $this->getText->loadAdminLocale('pages/opc/tutorials');
 
-            return $smarty->assign('error', $error)
+            return $smarty
+                ->assign('editorConfig', $editorConfig)
+                ->assign('error', $error)
                 ->assign('page', $page)
                 ->getResponse(\PFAD_ROOT . \PFAD_ADMIN . '/opc/tpl/index.tpl');
         }

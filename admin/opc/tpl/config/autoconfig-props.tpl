@@ -22,8 +22,7 @@
             <div class="form-group">
                 <label for="config-{$propname}"
                         {if !empty($propdesc.desc)}
-                            data-toggle="tooltip" title="{$propdesc.desc|default:''|escape:'html'}"
-                            data-placement="auto"
+                            data-tooltip title="{$propdesc.desc|default:''|escape:'html'}"
                         {/if}>
                     {$propdesc.label}
                     {if !empty($propdesc.desc)}

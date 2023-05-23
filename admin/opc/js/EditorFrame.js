@@ -166,6 +166,10 @@ export class EditorFrame extends Emitter
         if(typeof portlet === 'string') {
             let portletHtml = await this.io.createPortlet(portlet);
             portlet = this.jq(portletHtml);
+
+            portlet.on('dblclick', () => {
+                this.emit('editPortlet', {portlet});
+            });
         }
 
         target.replaceWith(portlet);

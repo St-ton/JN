@@ -3,7 +3,7 @@ import {Page} from "./Page.js";
 import {EditorFrame} from "./EditorFrame.js";
 import {Emitter} from "./utils.js";
 import {Sidebar} from "./Sidebar.js";
-import {enableCollapses, enableTabs, enableTooltips, showModal} from "./gui.js";
+import {enableCollapses, enableColorpickers, enableTabs, enableTooltips, showModal} from "./gui.js";
 
 export class Editor extends Emitter
 {
@@ -66,6 +66,7 @@ export class Editor extends Emitter
         enableTabs(window.configModal);
         enableCollapses(window.configModal);
         enableTooltips(window.configModal);
+        enableColorpickers(window.configModal);
         showModal(window.configModal);
     }
 }

@@ -23,7 +23,7 @@
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
-    <div id="navbar">
+    <div id="navbar" class="navbar">
         <button id="navScrollLeft"><i class="fa-solid fa-angles-left"></i></button>
         <div id="navtabs" class="tabs">
             <button type="button" data-tab="portlets" class="active">

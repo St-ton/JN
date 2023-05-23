@@ -1,10 +1,10 @@
 {if !isset($propid)}
     {$propid = $propname}
 {/if}
-<div class="form-group no-pb">
+<div class="form-group">
     <label for="config-{$propid}"
             {if !empty($propdesc.desc)}
-                data-toggle="tooltip" title="{$propdesc.desc|default:''}"
+                data-tooltip title="{$propdesc.desc|default:''}"
                 data-placement="auto"
             {/if}>
         {$propdesc.label}
@@ -13,15 +13,16 @@
         {/if}
     </label>
     <div class="input-group" id="config-{$propid}-group">
-        <input type="text" class="form-control colorpicker-input" name="{$propname}"
+        <input type="color" class="control" name="{$propname}"
                value="{$propval|default:''|escape:'html'}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"
                placeholder="{__('Default colour')}">
-        <span class="input-group-append">
-            <span class="input-group-text colorpicker-input-addon"><i></i></span>
-        </span>
+{*        <span class="input-group-append">*}
+{*            <span class="input-group-text colorpicker-input-addon"><i></i></span>*}
+{*        </span>*}
     </div>
     <script>
+        /*
         $('#config-{$propid}-group').colorpicker({
             format: '{$propdesc.colorFormat|default:'rgba'}',
             fallbackColor: 'rgba(0,0,0,1.0)',
@@ -52,5 +53,6 @@
                 }
             ]
         });
+        */
     </script>
 </div>

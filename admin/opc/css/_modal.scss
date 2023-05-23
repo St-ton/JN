@@ -1,0 +1,66 @@
+.opc {
+    .modal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        transition: opacity 0.25s;
+
+        &:not(.shown) {
+            display: none;
+        }
+
+        .modal-dialog {
+            width: 550px;
+            background-color: #fff;
+            font-size: 14px;
+            color: $text-color;
+            margin-top: 4em;
+
+            .modal-header {
+                background-color: $primary-color;
+                padding: 12px 24px;
+                font-size: 16px;
+                color: #fff;
+                display: flex;
+
+                .modal-title {
+                    flex: auto;
+                }
+
+                button {
+                    flex: none;
+
+                    &:hover {
+                        color: $primary-lighter;
+                    }
+                }
+            }
+
+            .modal-body {
+                margin: 24px;
+
+                .navbar {
+                    margin: -24px -24px 24px -24px;
+                }
+            }
+
+            .modal-footer {
+                margin: 24px;
+
+                .btn-group {
+                    justify-content: right;
+                }
+            }
+        }
+    }
+
+    #configModal .modal-dialog{
+        width: 800px;
+    }
+}

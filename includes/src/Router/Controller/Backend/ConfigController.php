@@ -155,6 +155,7 @@ class ConfigController extends AbstractBackendController
                 ->assign('title', \__('settings') . ': ' . ($group !== '' ? \__($group) : \__($section->getName())))
                 ->assign('sections', $sections);
         }
+        $this->assignScrollPosition();
 
         return $smarty->assign('cPrefURL', \__('prefURL' . $sectionID))
             ->assign('step', $step)

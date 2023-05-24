@@ -6,7 +6,7 @@ Cache
    <br />
 
 Since JTL-Shop 4 an object cache is provided by the class ``JTLCache``, or ``JTL\Cache\JTLCache``, and the
-corresponding back end classes in ``<Shop-Root>/classes/CachingMethods/``, or ``<Shop-Root>/includes/src/Cache/Methods/``, which can
+corresponding back end classes in ``<Shop-Root>/includes/src/Cache/Methods/``, which can
 also be used in plug-ins.
 
 The configuration is done in the back end via the menu items "*System -> Maintenance -> Cache*" (up to JTL-Shop 4.x) and
@@ -283,7 +283,7 @@ Afterwards, your changes are automatically saved in the cache and do **not** nee
 again.
 
 This way, a plug-in can add its own tag and react to changes
-to the plug-in options, for instance, and flush the affected caches 
+to the plug-in options, for instance, and flush the affected caches
 (see `jtl_example_plugin <https://gitlab.com/jtl-software/jtl-shop/plugins/jtl_test>`_).
 
 Note the following order:

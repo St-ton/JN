@@ -593,3 +593,31 @@ function autoExpand(field)
 
     field.style.height = height + 'px';
 }
+
+function htmlCollapse(collapse, action)
+{
+    let childsInParent = collapse.closest(".collapse-container").find("> *");
+    if (childsInParent.length === 2) {
+        if (action === 'show') {
+            childsInParent.eq(0).hide();
+        } else {
+            childsInParent.eq(0).show();
+        }
+    }
+}
+
+$(document).ready(function () {
+    $('.collapse')
+        .on('show.bs.collapse', function (e) {
+            htmlCollapse($(e.target), 'show');
+            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-hide]');
+            btn.html(btn.data('labelHide'));
+            e.stopPropagation();
+        })
+        .on('hidden.bs.collapse', function (e) {
+            htmlCollapse($(e.target), 'hide');
+            let btn = $('*[data-toggle="collapse"][data-target="#' + $(e.target).attr("id") + '"][data-label-show]');
+            btn.html(btn.data('labelShow'));
+            e.stopPropagation();
+        });
+});

@@ -31,9 +31,9 @@ final class SyntaxChecker
      * @param HydratorInterface $hydrator
      */
     public function __construct(
-        private TemplateFactory $factory,
-        private RendererInterface $renderer,
-        private HydratorInterface $hydrator
+        private readonly TemplateFactory   $factory,
+        private readonly RendererInterface $renderer,
+        private readonly HydratorInterface $hydrator
     ) {
     }
 

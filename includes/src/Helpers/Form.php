@@ -192,7 +192,7 @@ class Form
         $betreff = isset($_POST['subject'])
             ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', Request::postInt('subject'))
             : null;
-        if (empty($betreff->kKontaktBetreff)) {
+        if ($betreff === null || empty($betreff->kKontaktBetreff)) {
             return false;
         }
         $betreffSprache             = Shop::Container()->getDB()->select(

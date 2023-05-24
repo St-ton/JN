@@ -35,7 +35,9 @@ class UpgradeController extends AbstractBackendController
 
         if ($request->getMethod() === 'POST' && Form::validateToken()) {
             if (Request::postInt('upgrade') === 1) {
-                $this->upgrade();
+                $this->upgrade(Request::postInt('newerversions'));
+            } elseif (Request::postInt('rollback') === 1) {
+                $this->rollback(Request::postInt('backups'));
             }
         }
         $this->assignReleaseData();
@@ -46,8 +48,7 @@ class UpgradeController extends AbstractBackendController
 
     private function assignLogData(): void
     {
-        $logs = $this->db->selectAll('upgrade_log', [], []);
-        $this->smarty->assign('upgrade_log', $logs);
+        $this->smarty->assign('upgrade_log', $this->db->selectAll('upgrade_log', [], []));
     }
 
     private function assignReleaseData(): void
@@ -60,11 +61,9 @@ class UpgradeController extends AbstractBackendController
             ->assign('currentVersion', Version::parse(\APPLICATION_VERSION));
     }
 
-    private function upgrade(): void
+    private function upgrade(int $requestedID): void
     {
-        $requestedID       = Request::postInt('newerversions');
-        $releaseDownloader = new ReleaseDownloader($this->db);
-        $release           = $releaseDownloader->getReleaseByID($requestedID);
+        $release = (new ReleaseDownloader($this->db))->getReleaseByID($requestedID);
         if ($release === null) {
             return;
         }
@@ -75,6 +74,23 @@ class UpgradeController extends AbstractBackendController
             $this->smarty
         );
         $upgrader->upgradeByRelease($release);
+        $this->smarty->assign('logs', $upgrader->getLogs())
+            ->assign('errors', $upgrader->getErrors());
+    }
+
+    private function rollback(int $id): void
+    {
+        $backup = $this->db->select('upgrade_log', 'id', $id);
+        if ($backup === null || $backup->backup_db === null || $backup->backup_fs === null) {
+            return;
+        }
+        $upgrader = new Upgrader(
+            $this->db,
+            $this->cache,
+            Shop::Container()->get(Filesystem::class),
+            $this->smarty
+        );
+        $upgrader->rollback($backup->backup_db, $backup->backup_fs);
         $this->smarty->assign('logs', $upgrader->getLogs())
             ->assign('errors', $upgrader->getErrors());
     }

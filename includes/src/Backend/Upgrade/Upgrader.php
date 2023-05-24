@@ -384,7 +384,7 @@ class Upgrader
 
             return $deleted;
         }
-        $this->logs[] = '### reading deleted files list: ' . $fileList;
+        $this->logs[] = 'reading deleted files list: ' . $fileList;
         $data         = \array_filter(\explode(\PHP_EOL, $this->manager->read($fileList)));
         $totalCount   = \count($data);
         foreach ($data as $i => $file) {
@@ -414,39 +414,46 @@ class Upgrader
         $this->cache->flushAll();
     }
 
-    public function rollback(): void
+    /**
+     * @todo: target version?
+     * @todo: add log entry?
+     */
+    public function rollback(string $dbBackupFile, string $fsBackupFile): void
     {
-        if ($this->dbBackupFile === null || $this->fsBackupFile === null) {
-            $this->errors[] = 'Cannot roll back - no backup created.';
+        if (!\file_exists($dbBackupFile)) {
+            $this->errors[] = \sprintf('Cannot roll back - backup file %s does not exist.', $dbBackupFile);
             return;
         }
-        $target = $this->unzip($this->fsBackupFile);
+        if (!\file_exists($fsBackupFile)) {
+            $this->errors[] = \sprintf('Cannot roll back - backup file %s does not exist.', $fsBackupFile);
+            return;
+        }
+        $target = $this->unzip($fsBackupFile);
         $this->moveToRoot($target);
 
-        $content = \gzdecode(\file_get_contents($this->dbBackupFile));
+        $content = \gzdecode(\file_get_contents($dbBackupFile));
         \file_put_contents(\PFAD_ROOT . \PFAD_DBES_TMP . 'tmp.sql', $content);
         $connectionStr = \sprintf('mysql:host=%s;dbname=%s', \DB_HOST, \DB_NAME);
         $dumper        = new Mysqldump($connectionStr, \DB_USER, \DB_PASS);
         $dumper->restore(\PFAD_ROOT . \PFAD_DBES_TMP . 'tmp.sql');
-        return;
-        $content = \explode(\PHP_EOL, $content);
-        $query   = '';
-        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
-        foreach ($content as $line) {
-            $tsl = \trim($line);
-            if ($tsl !== ''
-                && !\str_starts_with($tsl, '/*')
-                && !\str_starts_with($tsl, '--')
-                && !\str_starts_with($tsl, '#')
-            ) {
-                $query .= $line;
-                if (\preg_match('/;\s*$/', $line)) {
-                    $this->db->getPDOStatement($query);
-                    $query = '';
-                }
-            }
-        }
-        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
+//        $content = \explode(\PHP_EOL, $content);
+//        $query   = '';
+//        $this->db->query('SET FOREIGN_KEY_CHECKS=0');
+//        foreach ($content as $line) {
+//            $tsl = \trim($line);
+//            if ($tsl !== ''
+//                && !\str_starts_with($tsl, '/*')
+//                && !\str_starts_with($tsl, '--')
+//                && !\str_starts_with($tsl, '#')
+//            ) {
+//                $query .= $line;
+//                if (\preg_match('/;\s*$/', $line)) {
+//                    $this->db->getPDOStatement($query);
+//                    $query = '';
+//                }
+//            }
+//        }
+//        $this->db->query('SET FOREIGN_KEY_CHECKS=1');
     }
 
     public function addLogEntry(): void

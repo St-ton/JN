@@ -248,7 +248,7 @@
                     {if $language->getShopDefault() === 'Y'}
                     <link rel="alternate"
                         hreflang="x-default"
-                        href="{if $language->getShopDefault() === 'Y' && isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
+                        href="{if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}{$ShopURL}/{else}{$language->getUrl()}{/if}">
                     {/if}
                 {/foreach}
             {/if}

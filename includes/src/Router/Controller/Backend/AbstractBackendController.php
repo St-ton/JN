@@ -18,7 +18,6 @@ use JTL\L10n\GetText;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use Laminas\Diactoros\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
@@ -130,14 +129,13 @@ abstract class AbstractBackendController implements ControllerInterface
 
     /**
      * @inheritdoc
-     * @todo!!!!
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
         array $args,
         JTLSmarty $smarty
     ): ResponseInterface {
-        return (new Response())->withStatus(404);
+        return $smarty->getResponse('404.tpl')->withStatus(404);
     }
 
     /**

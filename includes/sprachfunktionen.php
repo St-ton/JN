@@ -142,6 +142,22 @@ function lang_bestellstatus(int $state): string
 }
 
 /**
+ * @param int $state
+ * @return string
+ */
+function lang_retourestatus(int $state): string
+{
+    return match ($state) {
+        RETOURE_STATUS_ABGELEHNT      => Shop::Lang()->get('statusRejected', 'rma'),
+        RETOURE_STATUS_OFFEN          => Shop::Lang()->get('statusOpen', 'rma'),
+        RETOURE_STATUS_AKZEPTIERT     => Shop::Lang()->get('statusAccepted', 'rma'),
+        RETOURE_STATUS_IN_BEARBEITUNG => Shop::Lang()->get('statusProcessing', 'rma'),
+        RETOURE_STATUS_ABGESCHLOSSEN  => Shop::Lang()->get('statusCompleted', 'rma'),
+        default                       => '',
+    };
+}
+
+/**
  * @param Artikel   $product
  * @param int|float $amount
  * @param int       $configItemID

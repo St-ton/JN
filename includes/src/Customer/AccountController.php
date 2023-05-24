@@ -31,6 +31,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
+use JTL\Retouren\Retoure;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
@@ -209,8 +210,12 @@ class AccountController
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
             $step = 'lieferadressen';
         }
-        if (Request::verifyGPCDataInt('return') > 0) {
-            $step = $this->returnOrder($customerID);
+        $retoureID = Request::verifyGPCDataInt('retoure');
+        if ($retoureID > 0) {
+            $step = $this->returnOrder($retoureID);
+        }
+        if (Request::verifyGPCDataInt('retouren') > 0) {
+            $step = $this->returnOrders($customerID);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0
             && Request::verifyGPDataString('editAddress') === 'neu'
@@ -978,17 +983,20 @@ class AccountController
         return $step;
     }
 
+
     /**
-     * @param int $customerID
+     * @param int $retoureID
+     * @return string
+     * @since 5.3.0
      */
-    private function returnOrder(int $customerID): string
+    private function returnOrder(int $retoureID): string
     {
-        $order = new Bestellung(Request::verifyGPCDataInt('return'), true);
-        if ($order->kKunde === null || (int)$order->kKunde !== $customerID) {
+        $retoure = new Retoure($retoureID);
+        if ($retoure->kKunde !== Frontend::getCustomer()->kKunde) {
             return 'login';
         }
         $step = 'retoure';
-        $this->smarty->assign('Bestellung', $order);
+        $this->smarty->assign('Retoure', $retoure);
         if (Request::verifyGPCDataInt('returnOrder') > 0) {
             // Prüfe das RMA Formular auf Fehler und übergib eine entsprehende Nachricht an Smarty
             // Sprachvariablen für passende Fehlermeldungen: rma_error_validquantity, rma_error_alreadysend, rma_gekennzeichnet
@@ -997,6 +1005,26 @@ class AccountController
             $this->alertService->addNotice(Shop::Lang()->get('rma_info_success', 'rma'), 'rma_info_success');
         }
         return $step;
+    }
+
+    /**
+     * @param int $customerID
+     * @return string
+     * @since 5.3.0
+     */
+    private function returnOrders(int $customerID): string
+    {
+        $retouren = Retoure::getRetouren($customerID);
+
+        $retourenPagination = (new Pagination('retouren'))
+            ->setItemArray($retouren)
+            ->setItemsPerPage(10)
+            ->assemble();
+
+        $this->smarty->assign('retourenPagination', $retourenPagination)
+            ->assign('Retouren', $retouren);
+
+        return 'retouren';
     }
 
     /**

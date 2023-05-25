@@ -3,6 +3,7 @@
 namespace JTL\Backend\Upgrade;
 
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 
@@ -24,6 +25,7 @@ class UpgradeIO
 
     public function render(): array
     {
+        Shop::Container()->getGetText()->loadAdminLocale('pages/upgrade');
         $activeChannel     = Channels::getActiveChannel();
         $releaseDownloader = new ReleaseDownloader($this->db);
         $filtered          = $releaseDownloader->getReleases($activeChannel);

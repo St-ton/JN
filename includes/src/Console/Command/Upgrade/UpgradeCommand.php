@@ -173,6 +173,7 @@ class UpgradeCommand extends Command
         if ($dbBackup === true) {
             try {
                 $file = $upgrader->createDatabaseBackup();
+                $upgrader->setDBBackupFile($file);
                 $io->writeln(\sprintf('<info>Created database backup %s</info>', $file));
             } catch (Exception $e) {
                 return $this->fail($e->getMessage());
@@ -218,6 +219,7 @@ class UpgradeCommand extends Command
             } catch (Exception $e) {
                 return $this->fail($e->getMessage());
             }
+            $upgrader->setFsBackupFile($archive);
         }
         try {
             $source = $upgrader->unzip($tmpFile);

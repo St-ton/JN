@@ -84,7 +84,7 @@ class NewsController extends AbstractController
         }
         if ($name !== null) {
             $parser = new DefaultParser($this->db, $this->state);
-            $name   = $parser->parse($name);
+            $name   = $parser->parse($name, $args);
         }
         $seo = $id > 0
             ? $this->db->getSingleObject(

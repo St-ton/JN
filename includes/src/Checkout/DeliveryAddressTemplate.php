@@ -2,6 +2,7 @@
 
 namespace JTL\Checkout;
 
+use Illuminate\Support\Collection;
 use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -210,26 +211,28 @@ class DeliveryAddressTemplate extends Adresse
      */
     public static function createFromObject($data): DeliveryAddressTemplate
     {
-        $address                    = new self(Shop::Container()->getDB());
-        $address->cVorname          = $data->cVorname;
-        $address->cNachname         = $data->cNachname;
-        $address->cFirma            = $data->cFirma ?? null;
-        $address->cZusatz           = $data->cZusatz ?? null;
-        $address->kKunde            = $data->kKunde;
-        $address->cAnrede           = $data->cAnrede ?? null;
-        $address->cTitel            = $data->cTitel;
-        $address->cStrasse          = $data->cStrasse;
-        $address->cHausnummer       = $data->cHausnummer;
-        $address->cAdressZusatz     = $data->cAdressZusatz ?? null;
-        $address->cPLZ              = $data->cPLZ;
-        $address->cOrt              = $data->cOrt;
-        $address->cLand             = $data->cLand;
-        $address->cBundesland       = $data->cBundesland ?? null;
-        $address->cTel              = $data->cTel ?? null;
-        $address->cMobil            = $data->cMobil ?? null;
-        $address->cFax              = $data->cFax ?? null;
-        $address->cMail             = $data->cMail ?? null;
-        $address->totalBestellungen = $data->totalBestellungen ?? 0;
+        $address                            = new self(Shop::Container()->getDB());
+        $address->kLieferadresse            = $data->kLieferadresse ?? 0;
+        $address->cVorname                  = $data->cVorname;
+        $address->cNachname                 = $data->cNachname;
+        $address->cFirma                    = $data->cFirma ?? null;
+        $address->cZusatz                   = $data->cZusatz ?? null;
+        $address->kKunde                    = $data->kKunde;
+        $address->cAnrede                   = $data->cAnrede ?? null;
+        $address->cTitel                    = $data->cTitel;
+        $address->cStrasse                  = $data->cStrasse;
+        $address->cHausnummer               = $data->cHausnummer;
+        $address->cAdressZusatz             = $data->cAdressZusatz ?? null;
+        $address->cPLZ                      = $data->cPLZ;
+        $address->cOrt                      = $data->cOrt;
+        $address->cLand                     = $data->cLand;
+        $address->cBundesland               = $data->cBundesland ?? null;
+        $address->cTel                      = $data->cTel ?? null;
+        $address->cMobil                    = $data->cMobil ?? null;
+        $address->cFax                      = $data->cFax ?? null;
+        $address->cMail                     = $data->cMail ?? null;
+        $address->totalBestellungen         = $data->totalBestellungen ?? 0;
+        $address->nIstStandardLieferadresse = (int)$data->nIstStandardLieferadresse ?? 0;
 
         return $address;
     }
@@ -283,5 +286,25 @@ class DeliveryAddressTemplate extends Adresse
             $id,
             $upd
         );
+    }
+    
+    /**
+     * @param int $customerID
+     * @return Collection
+     * @since 5.3.0
+     */
+    public static function getAll(int $customerID = 0): Collection
+    {
+        return Shop::Container()->getDB()->getCollection(
+            'SELECT tlieferadressevorlage.*
+            FROM tlieferadressevorlage
+            WHERE tlieferadressevorlage.kKunde LIKE :customerID
+            ORDER BY tlieferadressevorlage.nIstStandardLieferadresse DESC',
+            ['customerID' => $customerID]
+        )->map(static function ($address): self {
+            $result = self::createFromObject($address);
+            $result->decrypt();
+            return $result;
+        });
     }
 }

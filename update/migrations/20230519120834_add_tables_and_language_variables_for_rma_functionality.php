@@ -44,10 +44,10 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `kRetourePosWawi` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `kRetoure` INT(10) UNSIGNED NOT NULL,
                 `kArtikel` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `cName` VARCHAR(255) NOT NULL DEFAULT '',
                 `fPreisEinzelNetto` DOUBLE NOT NULL DEFAULT 0,
                 `nAnzahl` DOUBLE(10,4) NOT NULL DEFAULT 0,
                 `fMwSt` FLOAT(5,2),
-                `nPosTyp` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
                 `cEinheit` VARCHAR(255),
                 `fLagerbestandVorAbschluss` DOUBLE,
                 `nLongestMinDelivery` INT(11) NOT NULL DEFAULT 0,
@@ -70,29 +70,35 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Abgelehnt',
                     'eng' => 'Rejected'
                 ]
-            ,
-            'statusOpen' =>
+            , 'statusOpen' =>
                 [
                     'ger' => 'Offen',
                     'eng' => 'Open'
                 ]
-            ,
-            'statusAccepted' =>
+            , 'statusAccepted' =>
                 [
                     'ger' => 'Akzeptiert',
                     'eng' => 'Accepted'
                 ]
-            ,
-            'statusProcessing' =>
+            , 'statusProcessing' =>
                 [
                     'ger' => 'In Bearbeitung',
                     'eng' => 'Processing'
                 ]
-            ,
-            'statusCompleted' =>
+            , 'statusCompleted' =>
                 [
                     'ger' => 'Abgeschlossen',
                     'eng' => 'Completed'
+                ]
+            , 'showPositions' =>
+                [
+                    'ger' => 'Positionen anzeigen',
+                    'eng' => 'Show positions'
+                ]
+            , 'createRetoure' =>
+                [
+                    'ger' => 'Retoure anlegen',
+                    'eng' => 'Request RMA'
                 ]
 
         ];
@@ -101,6 +107,11 @@ class Migration_20230519120834 extends Migration implements IMigration
                 $this->setLocalization($iso, 'rma', $key, $value);
             }
         }
+        
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Suche', cStandard = 'Suche'
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35");
     }
 
     /**
@@ -118,9 +129,15 @@ class Migration_20230519120834 extends Migration implements IMigration
                         'statusOpen',
                         'statusAccepted',
                         'statusProcessing',
-                        'statusCompleted'
+                        'statusCompleted',
+                        'showPositions'
                     )
                     AND bSystem = 1"
         );
+        
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Adresssuche', cStandard = 'Adresssuche'
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35");
     }
 }

@@ -3,6 +3,7 @@
 namespace JTL\Retouren;
 
 use Illuminate\Support\Collection;
+use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Shop;
 
 /**
@@ -51,6 +52,11 @@ class Retoure
      */
     public ?string $ErstelltDatum;
     
+    /**
+     * @var DeliveryAddressTemplate|null
+     */
+    public ?DeliveryAddressTemplate $Lieferadresse;
+    
     
     /**
      * @param int $kRetoure
@@ -98,7 +104,7 @@ class Retoure
             $rt->cStatus        = $retoure->cStatus;
             $rt->Status         = \lang_retourestatus((int)$retoure->cStatus);
             $rt->dErstellt      = $retoure->dErstellt;
-            $rt->ErstelltDatum  = date('d.m.Y', \strtotime($retoure->dErstellt));
+            $rt->ErstelltDatum  = date('d.m.Y H:i', \strtotime($retoure->dErstellt));
 
             return $rt;
         });
@@ -111,5 +117,11 @@ class Retoure
     public function fuelleRetoure(): void
     {
         $this->PositionenArr = RetoureItem::loadAllFromDB($this->kRetoure);
+        if ($this->kLieferadresse > 0) {
+            $this->Lieferadresse = new DeliveryAddressTemplate(
+                Shop::Container()->getDB(),
+                $this->kLieferadresse
+            );
+        }
     }
 }

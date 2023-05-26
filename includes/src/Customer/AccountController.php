@@ -29,6 +29,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\License\Collection;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
 use JTL\Retouren\Retoure;
@@ -262,22 +263,9 @@ class AccountController
             $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
-            $deliveryAddresses = [];
-            $addressData       = $this->db->selectAll(
-                'tlieferadressevorlage',
-                'kKunde',
-                $customerID,
-                'kLieferadresse',
-                'kLieferadresse ASC'
-            );
-            foreach ($addressData as $item) {
-                if ($item->kLieferadresse > 0) {
-                    $deliveryAddresses[] = new DeliveryAddressTemplate($this->db, (int)$item->kLieferadresse);
-                }
-            }
+            $deliveryAddresses = $this->getDeliveryAddresses();
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
-            $this->smarty->assign('Lieferadressen', $deliveryAddresses)
-                ->assign('compareList', new ComparisonList());
+            $this->smarty->assign('compareList', new ComparisonList());
         }
         if ($step === 'rechnungsdaten') {
             $this->getCustomerFields($customer);
@@ -1015,15 +1003,8 @@ class AccountController
     private function returnOrders(int $customerID): string
     {
         $retouren = Retoure::getRetouren($customerID);
-
-        $retourenPagination = (new Pagination('retouren'))
-            ->setItemArray($retouren)
-            ->setItemsPerPage(10)
-            ->assemble();
-
-        $this->smarty->assign('retourenPagination', $retourenPagination)
-            ->assign('Retouren', $retouren);
-
+        $this->smarty->assign('Retouren', $retouren);
+        
         return 'retouren';
     }
 
@@ -1131,32 +1112,21 @@ class AccountController
     }
 
     /**
-     * @return void
+     * @return \Illuminate\Support\Collection
      */
-    private function getDeliveryAddresses(): void
+    private function getDeliveryAddresses(): \Illuminate\Support\Collection
     {
         $customer   = Frontend::getCustomer();
         $customerID = $customer->getID();
         if ($customerID < 1) {
-            return;
+            return Collection::empty();
         }
-        $addresses = [];
-        $data      = $this->db->selectAll(
-            'tlieferadressevorlage',
-            'kKunde',
-            $customerID,
-            '*',
-            'nIstStandardLieferadresse DESC'
-        );
-
-        foreach ($data as $item) {
-            if ($item->kLieferadresse > 0) {
-                $addresses[] = new DeliveryAddressTemplate($this->db, (int)$item->kLieferadresse);
-            }
-        }
+        $addresses = DeliveryAddressTemplate::getAll($customerID);
 
         $this->smarty->assign('Lieferadressen', $addresses)
             ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
+        
+        return $addresses;
     }
 
     /**

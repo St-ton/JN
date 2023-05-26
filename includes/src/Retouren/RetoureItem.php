@@ -3,6 +3,10 @@
 namespace JTL\Retouren;
 
 use Illuminate\Support\Collection;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Exceptions\CircularReferenceException;
+use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Shop;
 
 /**
@@ -31,11 +35,21 @@ class RetoureItem
      * @var int|null
      */
     public ?int $kArtikel;
-
+    
+    /**
+     * @var string
+     */
+    public $cName = '';
+    
     /**
      * @var float
      */
     public float $fPreisEinzelNetto;
+    
+    /**
+     * @var string
+     */
+    public string $Preis;
 
     /**
      * @var float
@@ -46,11 +60,6 @@ class RetoureItem
      * @var float|null
      */
     public ?float $fMwSt;
-
-    /**
-     * @var int
-     */
-    public int $nPosTyp;
 
     /**
      * @var string
@@ -86,6 +95,11 @@ class RetoureItem
      * @var string
      */
     public string $dErstellt;
+    
+    /**
+     * @var Artikel|null
+     */
+    public ?Artikel $Artikel;
 
     /**
      * @param int $id
@@ -109,6 +123,7 @@ class RetoureItem
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
+        $this->Preis = Preise::getLocalizedPriceString($obj->fPreisEinzelNetto);
 
         return $this;
     }
@@ -126,8 +141,21 @@ class RetoureItem
             foreach ($members as $member) {
                 $rtPos->$member = $retourePos->$member;
             }
+            $rtPos->Preis = Preise::getLocalizedPriceString($retourePos->fPreisEinzelNetto);
 
             return $rtPos;
         });
+    }
+    
+    /**
+     * @return void
+     * @since 5.3.0
+     */
+    public function fuelleArtikel(): void
+    {
+        if ($this->kArtikel > 0) {
+            $this->Artikel = new Artikel();
+            $this->Artikel->fuelleArtikel($this->kArtikel);
+        }
     }
 }

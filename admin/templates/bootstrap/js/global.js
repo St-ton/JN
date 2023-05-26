@@ -837,19 +837,28 @@ $.fn.isOnScreen = function(){
 function respTableSwipeIndicator(tables)
 {
     for (let i = 0; i < tables.length; i++) {
-        let table = tables[i];
-        if (table.scrollWidth > table.offsetWidth) {
-            if (!table.getElementsByClassName('swipeIndicator').length) {
-                let swipeIndicator = document.createElement('div');
-                swipeIndicator.className = 'swipeIndicator';
+        let table;
+        // Check if the table itself is scrollable or if the first child is scrollable
+        if (tables[i].scrollWidth > tables[i].offsetWidth) {
+            table = tables[i];
+        } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
+            table = tables[i].firstElementChild;
+        }
+        if (typeof table !== 'undefined' && !table.getElementsByClassName('swipeIndicator').length) {
+            let swipeIndicator = document.createElement('div');
+            swipeIndicator.className = 'swipeIndicator';
+            for (let i = 0; i < 3; i++) {
                 swipeIndicator.appendChild(document.createElement('span'));
-                swipeIndicator.appendChild(document.createElement('span'));
-                swipeIndicator.appendChild(document.createElement('span'));
-                table.appendChild(swipeIndicator);
-                table.addEventListener("scroll", () => {
-                    swipeIndicator.remove();
-                });
             }
+            table.appendChild(swipeIndicator);
+            // Set position of swipeIndicator to appear in the first ROW of the table
+            let thead = $(table).find('thead');
+            if (thead.length) {
+                swipeIndicator.style.top = thead.height() + swipeIndicator.offsetHeight + 'px';
+            }
+            table.addEventListener("scroll", () => {
+                swipeIndicator.remove();
+            });
         }
     }
 }

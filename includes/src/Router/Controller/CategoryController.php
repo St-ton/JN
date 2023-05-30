@@ -57,11 +57,11 @@ class CategoryController extends ProductListController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_CATEGORIES . '/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_CATEGORIES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_CATEGORY_BY_ID' . $dynName);
         $route->get('/' . \ROUTE_PREFIX_CATEGORIES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_CATEGORIES . '/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_CATEGORIES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_CATEGORY_BY_ID' . $dynName . 'POST');
         $route->post('/' . \ROUTE_PREFIX_CATEGORIES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_CATEGORY_BY_NAME' . $dynName . 'POST');

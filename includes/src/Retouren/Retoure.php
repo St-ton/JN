@@ -136,8 +136,9 @@ class Retoure
         return Shop::Container()->getDB()->getCollection(
             'SELECT twarenkorbpos.kArtikel, twarenkorbpos.cEinheit, twarenkorbpos.cArtNr,
        twarenkorbpos.fPreisEinzelNetto, twarenkorbpos.fMwSt, twarenkorbpos.cName, tbestellung.kBestellung,
-       tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.cStatus, tlieferscheinpos.kLieferschein,
-       tlieferscheinpos.fAnzahl, DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), "%d-%m-%Y") AS dVersandDatum
+       tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.cStatus, tbestellung.cBestellNr,
+       tlieferscheinpos.kLieferschein, tlieferscheinpos.fAnzahl,
+       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), "%d-%m-%Y") AS dVersandDatum
             FROM tbestellung
             RIGHT JOIN twarenkorbpos
                 ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb

@@ -43,7 +43,8 @@ class Migration_20230519120834 extends Migration implements IMigration
             "CREATE TABLE IF NOT EXISTS `tretourepos` (
                 `kRetourePos` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `kRetoure` INT(10) UNSIGNED NOT NULL,
-                `kArtikel` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `kBestellPos` INT(10) UNSIGNED,
+                `kArtikel` INT(10) UNSIGNED,
                 `cName` VARCHAR(255) NOT NULL DEFAULT '',
                 `fPreisEinzelNetto` DOUBLE NOT NULL DEFAULT 0,
                 `nAnzahl` DOUBLE(10,4) NOT NULL DEFAULT 0,

@@ -30,6 +30,11 @@ class RetoureItem
      * @var int
      */
     public int $kRetoure;
+    
+    /**
+     * @var int|null
+     */
+    public ?int $kBestellPos;
 
     /**
      * @var int|null
@@ -100,6 +105,11 @@ class RetoureItem
      * @var Artikel|null
      */
     public ?Artikel $Artikel;
+    
+    /**
+     * @var string|null
+     */
+    public ?string $cBestellNr;
 
     /**
      * @param int $id
@@ -131,8 +141,13 @@ class RetoureItem
     public static function loadAllFromDB(int $kRetoure): Collection
     {
         return Shop::Container()->getDB()->getCollection(
-            'SELECT tretourepos.*
+            'SELECT tretourepos.*, twarenkorbpos.kWarenkorb, tbestellung.cBestellNr
             FROM tretourepos
+            LEFT JOIN twarenkorbpos
+                ON tretourepos.kBestellPos = twarenkorbpos.kBestellpos
+                AND tretourepos.kRetoure = twarenkorbpos.kWarenkorb
+            LEFT JOIN tbestellung
+                ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
             WHERE tretourepos.kRetoure LIKE :kRetoure',
             ['kRetoure' => $kRetoure]
         )->map(static function ($retourePos): self {
@@ -142,7 +157,7 @@ class RetoureItem
                 $rtPos->$member = $retourePos->$member;
             }
             $rtPos->Preis = Preise::getLocalizedPriceString($retourePos->fPreisEinzelNetto);
-
+            
             return $rtPos;
         });
     }

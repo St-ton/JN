@@ -23,6 +23,7 @@
                                         <th>&nbsp;</th>
                                         <th>&nbsp;</th>
                                         <th>&nbsp;</th>
+                                        <th>&nbsp;</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -30,9 +31,13 @@
                                         {foreach $retournierbareArtikel as $rArtikel}
                                             <tr>
                                                 <td class="d-none">123</td>
+                                                <td class="">FOTO</td>
                                                 <td>
                                                     <div class="d-block font-weight-bold">
                                                         {$rArtikel->cName}
+                                                        <small class="text-muted-util d-block">
+                                                            Bestellnummer: {$rArtikel->cBestellNr}
+                                                        </small>
                                                     </div>
                                                     {$rArtikel->Preis}
                                                 </td>
@@ -124,6 +129,7 @@
                     },
                     columns: [
                         { data: 'sort' },
+                        { data: 'image' },
                         { data: 'address' },
                         { data: 'buttons' }
                     ],

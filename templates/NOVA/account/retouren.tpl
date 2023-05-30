@@ -52,35 +52,38 @@
                                                                                 <tr>
                                                                                     <td>
                                                                                         {formrow}
-                                                                                        {block name='account-retoure-include-inc-positions-table-item-image'}
-                                                                                            {if isset($oPosition->Artikel)}
+                                                                                            {block name='account-retoure-include-inc-positions-table-item-image'}
+                                                                                                {if isset($oPosition->Artikel)}
+                                                                                                    {col class="col-auto"}
+                                                                                                    {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
+                                                                                                        {include file='snippets/image.tpl'
+                                                                                                        fluid=false
+                                                                                                        item=$oPosition->Artikel
+                                                                                                        square=false
+                                                                                                        srcSize='xs'
+                                                                                                        sizes='50px'
+                                                                                                        class='rma-img'}
+                                                                                                    {/link}
+                                                                                                    {/col}
+                                                                                                {/if}
+                                                                                            {/block}
+                                                                                            {block name='account-retoure-include-inc-positions-table-item-desc'}
                                                                                                 {col class="col-auto"}
-                                                                                                {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                                                                    {include file='snippets/image.tpl'
-                                                                                                    fluid=false
-                                                                                                    item=$oPosition->Artikel
-                                                                                                    square=false
-                                                                                                    srcSize='xs'
-                                                                                                    sizes='50px'
-                                                                                                    class='rma-img'}
-                                                                                                {/link}
+                                                                                                    {$oPosition->nAnzahl|replace_delim}x
                                                                                                 {/col}
-                                                                                            {/if}
-                                                                                        {/block}
-                                                                                        {block name='account-retoure-include-inc-positions-table-item-desc'}
-                                                                                            {col class="col-auto"}
-                                                                                            {$oPosition->nAnzahl|replace_delim}x
-                                                                                            {/col}
-                                                                                            {col}
-                                                                                            {if isset($oPosition->Artikel)}
-                                                                                                {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
-                                                                                                {$oPosition->cName|trans}
-                                                                                                {/link}
-                                                                                            {else}
-                                                                                                {$oPosition->cName|trans}
-                                                                                            {/if}
-                                                                                            {/col}
-                                                                                        {/block}
+                                                                                                {col}
+                                                                                                    {if isset($oPosition->Artikel)}
+                                                                                                        {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
+                                                                                                            {$oPosition->cName|trans}
+                                                                                                        {/link}
+                                                                                                    {else}
+                                                                                                        {$oPosition->cName|trans}
+                                                                                                    {/if}
+                                                                                                    <small class="text-muted-util d-block">
+                                                                                                        Bestellnummer: {$oPosition->cBestellNr}
+                                                                                                    </small>
+                                                                                                {/col}
+                                                                                            {/block}
                                                                                         {/formrow}
                                                                                     </td>
                                                                                     {block name='account-retoure-include-inc-positions-table-item-price'}

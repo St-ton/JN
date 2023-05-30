@@ -25,12 +25,13 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
         "CREATE TABLE IF NOT EXISTS `tretoure` (
                 `kRetoure` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `cRetoureWawi` VARCHAR(255),
                 `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `kLieferadresse` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `cStatus` CHAR(2),
                 `dErstellt` DATETIME NOT NULL,
                 PRIMARY KEY (`kRetoure`),
-                KEY `kArtikel` (`kKunde`,`kLieferadresse`,`cStatus`)
+                KEY `kArtikel` (`cRetoureWawi`,`kKunde`,`kLieferadresse`,`cStatus`)
             )
             COMMENT='Retouren werden hier eingetragen'
             DEFAULT CHARSET=utf8mb3
@@ -41,7 +42,6 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
             "CREATE TABLE IF NOT EXISTS `tretourepos` (
                 `kRetourePos` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `kRetourePosWawi` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `kRetoure` INT(10) UNSIGNED NOT NULL,
                 `kArtikel` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `cName` VARCHAR(255) NOT NULL DEFAULT '',
@@ -56,7 +56,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `cStatus` CHAR(2),
                 `dErstellt` DATETIME NOT NULL,
                 PRIMARY KEY (`kRetourePos`),
-                KEY `kArtikel` (`kRetourePos`,`kRetourePosWawi`,`kRetoure`,`kArtikel`)
+                KEY `kArtikel` (`kRetourePos`,`kRetoure`,`kArtikel`)
             )
             COMMENT='Retourenposition erstellt im Shop oder aus der WaWi übernommen.'
             DEFAULT CHARSET=utf8mb3
@@ -111,7 +111,20 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
             "UPDATE tsprachwerte
                    SET cWert = 'Suche', cStandard = 'Suche'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35");
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Search', cStandard = 'Search'
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
+        
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = '_MENU_ Einträge anzeigen', cStandard = '_MENU_ Einträge anzeigen'
+                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Show _MENU_ entries', cStandard = 'Show _MENU_ entries'
+                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
     }
 
     /**
@@ -138,6 +151,19 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
             "UPDATE tsprachwerte
                    SET cWert = 'Adresssuche', cStandard = 'Adresssuche'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35");
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Search address', cStandard = 'Search address'
+                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
+        
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = '_MENU_ Adressen anzeigen', cStandard = '_MENU_ Adressen anzeigen'
+                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
+        $this->execute(
+            "UPDATE tsprachwerte
+                   SET cWert = 'Show _MENU_ addresses', cStandard = 'Show _MENU_ addresses'
+                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
     }
 }

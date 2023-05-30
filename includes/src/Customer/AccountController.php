@@ -979,20 +979,11 @@ class AccountController
      */
     private function returnOrder(int $retoureID): string
     {
-        $retoure = new Retoure($retoureID);
-        if ($retoure->kKunde !== Frontend::getCustomer()->kKunde) {
-            return 'login';
-        }
-        $step = 'retoure';
-        $this->smarty->assign('Retoure', $retoure);
-        if (Request::verifyGPCDataInt('returnOrder') > 0) {
-            // Prüfe das RMA Formular auf Fehler und übergib eine entsprehende Nachricht an Smarty
-            // Sprachvariablen für passende Fehlermeldungen: rma_error_validquantity, rma_error_alreadysend, rma_gekennzeichnet
-            // Bei Fehler diesen loggen: Shop::Container()->getLogService()->error('');
-            // RMA in Datenbank speichern und ID in der success msg ausgeben
-            $this->alertService->addNotice(Shop::Lang()->get('rma_info_success', 'rma'), 'rma_info_success');
-        }
-        return $step;
+        $this->getDeliveryAddresses();
+        $this->smarty->assign('Retoure', new Retoure($retoureID))
+            ->assign('retournierbareArtikel', Retoure::getProducts());
+        
+        return 'retoure';
     }
 
     /**
@@ -1002,9 +993,7 @@ class AccountController
      */
     private function returnOrders(int $customerID): string
     {
-        $retouren = Retoure::getRetouren($customerID);
-        $this->smarty->assign('Retouren', $retouren);
-        
+        $this->smarty->assign('Retouren', Retoure::getRetouren($customerID));
         return 'retouren';
     }
 

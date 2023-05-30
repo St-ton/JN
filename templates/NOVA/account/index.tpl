@@ -80,8 +80,12 @@
                         {block name='account-index-include-feedback'}
                             {include file='account/feedback.tpl'}
                         {/block}
+                    {elseif $step === 'retoure'}
+                        {block name='account-index-include-retoure'}
+                            {include file='account/retoure.tpl'}
+                        {/block}
                     {elseif $step === 'retouren'}
-                        {block name='account-index-include-order-return'}
+                        {block name='account-index-include-retouren'}
                             {include file='account/retouren.tpl'}
                         {/block}
                     {else}

@@ -255,14 +255,13 @@
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            {link class='text-decoration-none-util' href="{get_static_route
-                                            id='vergleichsliste.php'}"}
-                                                Warenrücksendungen
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?retouren=1"}
+                                                Meine Retouren
                                             {/link}
                                         </span>
                                     {/col}
                                     {col class="col-auto font-size-sm"}
-                                        {link href="$cCanonicalURL?editRechnungsadresse=1"}
+                                        {link href="$cCanonicalURL?retouren=1"}
                                             {lang key='showAll'}
                                         {/link}
                                     {/col}
@@ -274,7 +273,7 @@
                                 <p>
                                     Sie haben noch keine Warenrücksendungen.
                                 </p>
-                                {link class="btn btn-outline-secondary btn-sm" href="{get_static_route id='vergleichsliste.php'}"}
+                                {link class="btn btn-outline-secondary btn-sm" href="$cCanonicalURL?retoure=1"}
                                     <i class="fa fa-retweet" aria-label="Warenrücksendung: Zur Artikelauswahl"
                                        title="Warenrücksendung: Zur Artikelauswahl"></i>
                                     Retoure anlegen

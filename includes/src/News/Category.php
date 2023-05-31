@@ -4,6 +4,7 @@ namespace JTL\News;
 
 use DateTime;
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
 use JTL\Contracts\RoutableInterface;
 use JTL\DB\DbInterface;
 use JTL\MagicCompatibilityTrait;
@@ -133,13 +134,20 @@ class Category implements CategoryInterface, RoutableInterface
     protected Collection $items;
 
     /**
-     * Category constructor.
-     * @param DbInterface $db
+     * @var JTLCacheInterface
      */
-    public function __construct(private DbInterface $db)
+    private JTLCacheInterface $cache;
+
+    /**
+     * Category constructor.
+     * @param DbInterface            $db
+     * @param JTLCacheInterface|null $cache
+     */
+    public function __construct(private readonly DbInterface $db, ?JTLCacheInterface $cache = null)
     {
         $this->items            = new Collection();
         $this->children         = new Collection();
+        $this->cache            = $cache ?? Shop::Container()->getCache();
         $this->dateLastModified = \date_create();
         $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWSCATEGORY);
@@ -206,7 +214,7 @@ class Category implements CategoryInterface, RoutableInterface
             $this->generateAllImageDimensions(1, $preview);
         }
         $this->createBySlug($this->id);
-        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
+        $this->items = (new ItemList($this->db, $this->cache))->createItems($this->db->getInts(
             'SELECT tnewskategorienews.kNews
                 FROM tnewskategorienews
                 JOIN tnews
@@ -247,7 +255,7 @@ class Category implements CategoryInterface, RoutableInterface
             Shop::getLanguageID()
         );
 
-        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
+        $this->items = (new ItemList($this->db, $this->cache))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewskategorienews 
@@ -274,7 +282,7 @@ class Category implements CategoryInterface, RoutableInterface
     public function getOverview(stdClass $filterSQL): Category
     {
         $this->setID(0);
-        $this->items = (new ItemList($this->db))->createItems($this->db->getInts(
+        $this->items = (new ItemList($this->db, $this->cache))->createItems($this->db->getInts(
             'SELECT tnews.kNews
                 FROM tnews
                 JOIN tnewssprache 

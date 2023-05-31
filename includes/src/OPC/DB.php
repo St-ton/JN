@@ -203,7 +203,7 @@ class DB
      */
     protected function getPortletByClassName(string $class): ?stdClass
     {
-        if (isset($this->mapping[$class])) {
+        if (\array_key_exists($class, $this->mapping)) {
             return $this->mapping[$class];
         }
         $mapping = $this->shopDB->select('topcportlet', 'cClass', $class);

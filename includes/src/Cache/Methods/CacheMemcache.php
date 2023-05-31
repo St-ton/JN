@@ -4,6 +4,7 @@ namespace JTL\Cache\Methods;
 
 use JTL\Cache\ICachingMethod;
 use JTL\Cache\JTLCacheTrait;
+use Memcache;
 
 /**
  * Class CacheMemcache
@@ -16,9 +17,9 @@ class CacheMemcache implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var \Memcache
+     * @var Memcache|null
      */
-    private $memcache;
+    private ?Memcache $memcache = null;
 
     /**
      * @param array $options
@@ -44,7 +45,7 @@ class CacheMemcache implements ICachingMethod
     private function setMemcache(string $host, int $port): ICachingMethod
     {
         $this->memcache?->close();
-        $this->memcache = new \Memcache();
+        $this->memcache = new Memcache();
         $this->memcache->addServer($host, $port);
 
         return $this;

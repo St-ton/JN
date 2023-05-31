@@ -77,11 +77,12 @@ class CMS
         if ((int)($conf['news']['news_anzahl_content'] ?? 0) === 0) {
             return $items;
         }
+        $cache   = Shop::Container()->getCache();
         $limit   = '';
         $cgID    = Frontend::getCustomerGroup()->getID();
         $langID  = Shop::getLanguageID();
         $cacheID = 'news_' . \md5(\json_encode($conf['news'], \JSON_THROW_ON_ERROR) . '_' . $langID . '_' . $cgID);
-        if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
+        if (($items = $cache->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
                 $limit = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
@@ -109,7 +110,7 @@ class CMS
                 'kNews',
                 ['lid' => $langID, 'cgid' => $cgID]
             );
-            $items   = new ItemList(Shop::Container()->getDB());
+            $items   = new ItemList(Shop::Container()->getDB(), $cache);
             $items->createItems($newsIDs);
             $items     = $items->getItems();
             $cacheTags = [\CACHING_GROUP_NEWS];
@@ -118,7 +119,7 @@ class CMS
                 'cacheTags' => &$cacheTags,
                 'oNews_arr' => $items
             ]);
-            Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
+            $cache->set($cacheID, $items, $cacheTags);
 
             return $items;
         }

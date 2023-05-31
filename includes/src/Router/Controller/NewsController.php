@@ -185,7 +185,7 @@ class NewsController extends AbstractController
                 $newsCategoryID       = $this->state->newsCategoryID;
                 $overview             = $this->displayOverview($pagination, $newsCategoryID);
                 $this->breadCrumbName = $overview->getName();
-                $newsCategory         = new Category($this->db);
+                $newsCategory         = new Category($this->db, $this->cache);
                 $newsCategory->load($newsCategoryID);
                 $this->canonicalURL    = $newsCategory->getURL();
                 $this->breadCrumbURL   = $this->canonicalURL;
@@ -398,7 +398,7 @@ class NewsController extends AbstractController
      */
     public function displayOverview(Pagination $pagination, int $categoryID = 0, int $monthOverviewID = 0): Category
     {
-        $category = new Category($this->db);
+        $category = new Category($this->db, $this->cache);
         if ($categoryID > 0) {
             $category->load($categoryID);
         } elseif ($monthOverviewID > 0) {
@@ -448,7 +448,7 @@ class NewsController extends AbstractController
      */
     public function getAllNewsCategories(bool $activeOnly = false): Collection
     {
-        $itemList = new CategoryList($this->db);
+        $itemList = new CategoryList($this->db, $this->cache);
         $ids      = $this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node INNER JOIN tnewskategorie AS parent
@@ -729,7 +729,7 @@ class NewsController extends AbstractController
         );
         $items       = [];
         foreach ($categoryIDs as $categoryID) {
-            $items[] = (new Category($this->db))->load($categoryID);
+            $items[] = (new Category($this->db))->load($categoryID, $this->cache);
         }
 
         return $items;

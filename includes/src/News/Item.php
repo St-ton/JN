@@ -130,28 +130,16 @@ class Item extends AbstractItem implements RoutableInterface
     protected ?stdClass $author = null;
 
     /**
-     * @var DbInterface|null
-     */
-    protected ?DbInterface $db = null;
-
-    /**
-     * @var JTLCacheInterface
-     */
-    protected JTLCacheInterface $cache;
-
-    /**
      * Item constructor.
-     * @param DbInterface            $db
-     * @param JTLCacheInterface|null $cache
+     * @param DbInterface       $db
+     * @param JTLCacheInterface $cache
      */
-    public function __construct(DbInterface $db, ?JTLCacheInterface $cache = null)
+    public function __construct(protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        $this->db            = $db;
         $this->date          = \date_create();
         $this->dateCreated   = $this->date;
         $this->dateValidFrom = $this->date;
         $this->comments      = new CommentList($this->db);
-        $this->cache         = $cache ?? Shop::Container()->getCache();
         $this->setRouteType(Router::TYPE_NEWS);
         $this->setImageType(Image::TYPE_NEWS);
     }

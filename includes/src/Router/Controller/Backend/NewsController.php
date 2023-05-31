@@ -80,7 +80,7 @@ class NewsController extends AbstractBackendController
         $this->checkPermissions(Permissions::CONTENT_NEWS_SYSTEM_VIEW);
         $this->getText->loadAdminLocale('pages/news');
         $author    = Author::getInstance($this->db);
-        $category  = new Category($this->db);
+        $category  = new Category($this->db, $this->cache);
         $languages = LanguageHelper::getAllLanguages(0, true, true);
         $valid     = Form::validateToken();
         $tab       = Request::verifyGPDataString('tab');
@@ -688,7 +688,7 @@ class NewsController extends AbstractBackendController
         if ($error === false) {
             $this->msg .= \__('successNewsCatSave') . '<br />';
         }
-        $newsCategory = new Category($this->db);
+        $newsCategory = new Category($this->db, $this->cache);
         $this->flushCache();
 
         return $newsCategory->load($categoryID);
@@ -813,7 +813,7 @@ class NewsController extends AbstractBackendController
      */
     private function createCategoryFromPost(array $post, array $languages): CategoryInterface
     {
-        $category    = new Category($this->db);
+        $category    = new Category($this->db, $this->cache);
         $languageIDs = [];
         foreach ($languages as $language) {
             $iso           = $language->getCode();
@@ -912,7 +912,7 @@ class NewsController extends AbstractBackendController
      */
     public function getAllNewsCategories(bool $showOnlyActive = false): Collection
     {
-        $itemList = new CategoryList($this->db);
+        $itemList = new CategoryList($this->db, $this->cache);
         $itemList->createItems($this->db->getInts(
             'SELECT node.kNewsKategorie AS id
                 FROM tnewskategorie AS node 
@@ -1552,7 +1552,7 @@ class NewsController extends AbstractBackendController
         }
 
         if ($category === null) {
-            $category = new Category($this->db);
+            $category = new Category($this->db, $this->cache);
             if (Request::getInt('kNewsKategorie') <= 0) {
                 return $category;
             }

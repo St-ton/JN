@@ -1111,7 +1111,7 @@ class LanguageHelper
                             $newsItem->load(Shop::$kNews);
                             $url = $newsItem->getURL($langID);
                         } elseif (Shop::$kNewsKategorie > 0) {
-                            $newsCategory = new Category($this->db);
+                            $newsCategory = new Category($this->db, $this->cache);
                             $newsCategory->load(Shop::$kNewsKategorie);
                             $url = $newsCategory->getURL($langID);
                         } else {

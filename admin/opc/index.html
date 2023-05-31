@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.placeholder {
+				height: 75vh;
+			}
+			
+			.container {
+				--overflow: hidden;
+			}
+		</style>
+		<link rel="stylesheet" href="css/editor.css">
+		<script type="module">
+			import {enableColorpickers} from "./js/colorpicker.js";
+			enableColorpickers();
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			First Color:
+			<input data-colorpicker name="myColor" id="myColor"
+				value="#99ccff">
+		</div>
+		<div class="placeholder"></div>
+		Second Color:
+		<input data-colorpicker name="otherColor" value="#cc80ff02">
+		<div class="placeholder"></div>
+		<br>
+	</body>
+</html>

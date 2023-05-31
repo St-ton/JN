@@ -73,20 +73,6 @@ export function enableTabs(parent = document)
     }
 }
 
-export function enableColorpickers(parent = document)
-{
-    for(const colorInput of parent.querySelectorAll('input[type=color]')) {
-        let colorTextInput = document.createElement('input');
-        colorTextInput.classList.add('control');
-        colorTextInput.classList.add('color');
-        colorInput.parentNode.insertBefore(colorTextInput, colorInput);
-
-        colorInput.addEventListener('input', e => {
-            colorTextInput.value = colorInput.value;
-        });
-    }
-}
-
 export function enableCollapses(parent = document)
 {
     for(const collapseBtn of parent.querySelectorAll('[data-collapse]')) {

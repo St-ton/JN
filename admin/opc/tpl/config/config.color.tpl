@@ -13,10 +13,11 @@
         {/if}
     </label>
     <div class="input-group" id="config-{$propid}-group">
-        <input type="color" class="control" name="{$propname}"
+        <input type="text" class="control" name="{$propname}"
                value="{$propval|default:''|escape:'html'}"
                {if $required}required{/if} id="config-{$propid}" autocomplete="off"
-               placeholder="{__('Default colour')}">
+               data-colorpicker placeholder="{__('Default colour')}"
+                data-presets="[[248,191,0,1], [82,82,82,1]]">
 {*        <span class="input-group-append">*}
 {*            <span class="input-group-text colorpicker-input-addon"><i></i></span>*}
 {*        </span>*}

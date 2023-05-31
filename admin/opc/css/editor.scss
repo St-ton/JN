@@ -2,6 +2,7 @@
 @import "opc";
 @import "modal";
 @import "sidebar";
+@import "colorpicker";
 
 .opc {
     font-family: "Open Sans", sans-serif;
@@ -205,13 +206,12 @@
         background-size: 12px;
     }
 
-    input[type=color].control {
-        border-left: none;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        flex: none;
-        width: 38px;
-        padding: 6px;
+    input.control.color-input {
+        padding-left: 38px;
+    }
+
+    .color-display {
+        margin: 8px;
     }
 
     .image-btn {

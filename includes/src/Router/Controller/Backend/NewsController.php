@@ -874,7 +874,7 @@ class NewsController extends AbstractBackendController
      */
     public function getAllNews(): Collection
     {
-        $itemList = new ItemList($this->db);
+        $itemList = new ItemList($this->db, $this->cache);
         $itemList->createItems($this->db->getInts(
             'SELECT kNews FROM tnews',
             'kNews'

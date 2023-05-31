@@ -154,7 +154,7 @@ class NewsController extends AbstractController
                 Shop::setPageType(\PAGE_NEWSDETAIL);
                 $pagination = new Pagination('comments');
                 $newsItemID = $this->state->newsItemID;
-                $newsItem   = new Item($this->db);
+                $newsItem   = new Item($this->db, $this->cache);
                 try {
                     $newsItem->load($newsItemID);
                 } catch (Exception $e) {

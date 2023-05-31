@@ -71,15 +71,10 @@ class Seo
         );
         $convertedStr = @\iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
         $str          = $convertedStr === false ? \preg_replace('/[^a-zA-Z\d\s]/', '', $str) : $convertedStr;
-        $str          = \trim($str);
-
-        if (\preg_match('/^\d+$/', $str)) {
-            return '_' . $str;
-        }
 
         return $keepUnderscore === false ?
-            \preg_replace('/[\-_\s]+/u', '-', $str) :
-            \preg_replace('/[\-\s]+/u', '-', $str);
+            \preg_replace('/[\-_\s]+/u', '-', \trim($str)) :
+            \preg_replace('/[\-\s]+/u', '-', \trim($str));
     }
 
     /**

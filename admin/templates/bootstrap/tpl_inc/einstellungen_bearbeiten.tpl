@@ -66,9 +66,7 @@
                             {/foreach}
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
-                                {__('saveWithIcon')}
-                            </button>
+                            {include file='snippets/buttons/saveButton.tpl' value="{__('savePreferences')}" scrollFunction=true}
                         </div>
                     </div>
                 </div>

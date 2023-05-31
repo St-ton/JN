@@ -1107,7 +1107,7 @@ class LanguageHelper
                         $url = $shopURL . '?lang=' . $langISO;
                     } elseif ($specialPage->getFileName() !== '') {
                         if (Shop::$kNews > 0) {
-                            $newsItem = new Item($this->db);
+                            $newsItem = new Item($this->db, $this->cache);
                             $newsItem->load(Shop::$kNews);
                             $url = $newsItem->getURL($langID);
                         } elseif (Shop::$kNewsKategorie > 0) {

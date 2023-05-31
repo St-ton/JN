@@ -9,6 +9,7 @@ use JTL\Checkout\DeliveryAddressTemplate;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
+use stdClass;
 
 /**
  * Class Retoure
@@ -90,10 +91,15 @@ class Retoure
             'kKunde',
             $customerID
         );
-        $members    = \array_keys(\get_object_vars($obj));
+        $members    = \array_keys(\get_object_vars($obj ?? new stdClass()));
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
+        \executeHook(\HOOK_RETOURE_CLASS_LOADFROMDB, [
+            'kRetoure'   => $kRetoure,
+            'customerID' => $customerID
+        ]);
+        
         return $this;
     }
 
@@ -128,7 +134,7 @@ class Retoure
      * @return Collection
      * @since 5.3.0
      */
-    public static function getProducts(int $customerID = 0): Collection
+    public static function getReturnableProducts(int $customerID = 0): Collection
     {
         // ToDo: Artikel mit Attribute XXX (nicht retournierbar) dürfen nicht geladen werden.
         $customerID       = ($customerID === 0) ? Frontend::getCustomer()->getID() : $customerID;
@@ -156,10 +162,23 @@ class Retoure
                 'cancellationTime' => $cancellationTime
             ]
         )->map(static function ($rArtikel): \stdClass {
-            $rArtikel->Preis = Preise::getLocalizedPriceString($rArtikel->fPreisEinzelNetto);
+            $rArtikel->Preis             = Preise::getLocalizedPriceString($rArtikel->fPreisEinzelNetto);
+            $rArtikel->Artikel           = new Artikel();
+            $rArtikel->Artikel->kArtikel = $rArtikel->kArtikel;
+            $rArtikel->Artikel->holBilder();
             
             return $rArtikel;
         });
+    }
+    
+    /**
+     * @param Collection $rArtikel
+     * @return array
+     * @since 5.3.0
+     */
+    public static function getBestellnummern(Collection $rArtikel): array
+    {
+        return $rArtikel->unique('cBestellNr')->pluck('cBestellNr')->toArray();
     }
 
     /**

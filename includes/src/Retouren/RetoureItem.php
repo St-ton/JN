@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class RetoureItem
@@ -129,11 +130,13 @@ class RetoureItem
     public function loadFromDB(int $kRetourePos): self
     {
         $obj     = Shop::Container()->getDB()->select('tretourepos', 'kRetourePos', $kRetourePos);
-        $members = \array_keys(\get_object_vars($obj));
+        $members = \array_keys(\get_object_vars($obj ?? new stdClass()));
         foreach ($members as $member) {
             $this->$member = $obj->$member;
         }
-        $this->Preis = Preise::getLocalizedPriceString($obj->fPreisEinzelNetto);
+        if ($obj->fPreisEinzelNetto !== null) {
+            $this->Preis = Preise::getLocalizedPriceString($obj->fPreisEinzelNetto);
+        }
 
         return $this;
     }

@@ -2011,3 +2011,12 @@ const HOOK_PAYMENT_METHOD_ADDINCOMINGPAYMENT = 401;
  * @param int                              orderID
  */
 const HOOK_ORDER_DOWNLOAD_FILE = 402;
+
+/**
+ * @since 5.3.0
+ * @file Retoure.php
+ * @param int kRetoure
+ * @param int customerID
+ * @file includes/src/Retouren/Retoure.php
+ */
+const HOOK_RETOURE_CLASS_LOADFROMDB = 403;

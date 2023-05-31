@@ -981,8 +981,10 @@ class AccountController
     private function returnOrder(int $retoureID): string
     {
         $this->getDeliveryAddresses();
+        $retournierbareArtikel = Retoure::getReturnableProducts();
         $this->smarty->assign('Retoure', new Retoure($retoureID))
-            ->assign('retournierbareArtikel', Retoure::getProducts());
+            ->assign('retournierbareArtikel', $retournierbareArtikel)
+            ->assign('retournierbareBestellungen', Retoure::getBestellnummern($retournierbareArtikel));
         
         return 'retoure';
     }

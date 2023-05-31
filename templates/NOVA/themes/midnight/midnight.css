@@ -22334,6 +22334,9 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   width: 100%;
   height: auto;
 }
+table td.product-thumbnail {
+  width: 80px;
+}
 /* basket */
 /* cart-dropdown */
 .cart-dropdown .cart-dropdown-total-item {

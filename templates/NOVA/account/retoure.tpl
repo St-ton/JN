@@ -17,6 +17,19 @@
                         {/cardheader}
                         {cardbody}
                             {block name='rma-positions-body'}
+                                <table class="inputs">
+                                    <tbody><tr>
+                                        <td>Bestellnummer:</td>
+                                        <td>
+                                            {select id="orderID" name="bestellnummer" aria=["label"=>"Bestellnummer"]}
+                                                <option value="" selected>Alle anzeigen</option>
+                                                {foreach $retournierbareBestellungen as $rBestellung}
+                                                    <option value="{$rBestellung}">{$rBestellung}</option>
+                                                {/foreach}
+                                            {/select}
+                                        </td>
+                                    </tr></tbody>
+                                </table>
                                 <table id="returnable-items" class="table display compact">
                                     <thead>
                                     <tr>
@@ -30,8 +43,18 @@
                                     {block name='account-retouren-returnable-items'}
                                         {foreach $retournierbareArtikel as $rArtikel}
                                             <tr>
-                                                <td class="d-none">123</td>
-                                                <td class="">FOTO</td>
+                                                <td class="d-none">{$rArtikel->cBestellNr}</td>
+                                                <td class="product-thumbnail">
+                                                    {include file='snippets/image.tpl'
+                                                    item=$rArtikel->Artikel
+                                                    square=false
+                                                    srcSize='sm'
+                                                    sizes='80px'
+                                                    width='80'
+                                                    height='80'
+                                                    class='img-aspect-ratio'
+                                                    alt=$rArtikel->cName}
+                                                </td>
                                                 <td>
                                                     <div class="d-block font-weight-bold">
                                                         {$rArtikel->cName}
@@ -111,7 +134,7 @@
     {block name='account-retoure-form-script'}
         {inline_script}<script>
             function initDataTable(table, rows = 5) {
-                table.DataTable( {
+                return table.DataTable( {
                     language: {
                         "lengthMenu":        "{lang key='lengthMenu' section='datatables'}",
                         "info":              "{lang key='info' section='datatables'}",
@@ -146,7 +169,24 @@
                 } );
             }
             $(document).ready(function () {
-                initDataTable($('#returnable-items'));
+                let orderID = $('#orderID');
+
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    var bNummer = orderID.val();
+                    var bestellnummern = data[0] || '';
+
+                    if (bNummer === bestellnummern || bNummer === '') {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                let table = initDataTable($('#returnable-items'));
+
+                orderID.on('change', function () {
+                    table.draw();
+                });
             });
         </script>{/inline_script}
     {/block}

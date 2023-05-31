@@ -3,7 +3,9 @@
 namespace JTL\News;
 
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Shop;
 use function Functional\group;
 use function Functional\map;
 
@@ -19,11 +21,18 @@ final class ItemList implements ItemListInterface
     private Collection $items;
 
     /**
-     * ItemList constructor.
-     * @param DbInterface $db
+     * @var JTLCacheInterface
      */
-    public function __construct(private DbInterface $db)
+    private JTLCacheInterface $cache;
+
+    /**
+     * ItemList constructor.
+     * @param DbInterface            $db
+     * @param JTLCacheInterface|null $cache
+     */
+    public function __construct(private readonly DbInterface $db, ?JTLCacheInterface $cache = null)
     {
+        $this->cache = $cache ?? Shop::Container()->getCache();
         $this->items = new Collection();
     }
 
@@ -67,7 +76,7 @@ final class ItemList implements ItemListInterface
         $items         = map(group($itemLanguages, static function ($e): int {
             return (int)$e->kNews;
         }), function ($e, $newsID): Item {
-            $l = new Item($this->db);
+            $l = new Item($this->db, $this->cache);
             $l->setID($newsID);
             $l->map($e);
 

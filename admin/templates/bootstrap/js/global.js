@@ -450,6 +450,15 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Responsive table swipe indicator
+    respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
 });
 
 $(window).on('load', () => {

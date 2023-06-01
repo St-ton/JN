@@ -107,19 +107,6 @@
             scrollTop: $("html").offset().top + scrollPosition
         }, 1000);
     {/if}
-
-    $( document ).ready(function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
-    });
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
-    });
-
-    $('.collapse').on('shown.bs.collapse', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
-    });
-
 </script>
 
 {/if}

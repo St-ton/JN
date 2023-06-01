@@ -69,24 +69,26 @@
     <form method="post">
         {$jtl_token}
         <div class="card">
-            <div class="table-responsive card-body">
-                <table class="list table table-hover" id="favs">
-                    <thead>
-                    <tr>
-                        <th class="text-left">{__('title')}</th>
-                        <th class="text-left">{__('link')}</th>
-                        <th width="30"></th>
-                        <th width="50"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $favorites as $favorite}
-                            {fav_item title=$favorite->cTitel url=$favorite->cUrl}
-                        {foreachelse}
-                            {fav_item title='' url=''}
-                        {/foreach}
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="list table table-hover" id="favs">
+                        <thead>
+                        <tr>
+                            <th class="text-left">{__('title')}</th>
+                            <th class="text-left">{__('link')}</th>
+                            <th width="30"></th>
+                            <th width="50"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {foreach $favorites as $favorite}
+                                {fav_item title=$favorite->cTitel url=$favorite->cUrl}
+                            {foreachelse}
+                                {fav_item title='' url=''}
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

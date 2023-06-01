@@ -450,6 +450,15 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Responsive table swipe indicator
+    respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
 });
 
 $(window).on('load', () => {
@@ -828,62 +837,38 @@ $.fn.isOnScreen = function(){
 
 };
 
-function tableApplies(elem)
-{
-    if ((elem.nodeName === "TABLE" || elem.firstElementChild.nodeName === "TABLE")
-        && (elem.firstElementChild.firstElementChild.nodeName === "THEAD" || elem.firstElementChild.nodeName === "THEAD")) {
-        if (elem.scrollWidth > elem.offsetWidth) {
-            let trs = elem.getElementsByTagName("tr");
-            let titleCount = trs[0].getElementsByTagName("th").length;
-            for (let i = 1; i < trs.length; i++) {
-                if (trs[i].getElementsByTagName("td").length !== titleCount) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-    return false;
-}
-
 /**
- * Rearranges the content of responsive tables, so it does fit the users view
+ * Adds three arrows to inform the user about the scrollable content
+ * @returns void
+ * @since 5.3.0
+ * @param tables
  */
-function rearrangeResponsiveTables(tables)
+function respTableSwipeIndicator(tables)
 {
     for (let i = 0; i < tables.length; i++) {
-        let table = tables[i];
-        if (tableApplies(table)) {
-            table.getElementsByTagName("tbody")[0].className = 'd-block';
-            let trs = table.getElementsByTagName("tr");
-            let thead = trs[0].querySelectorAll("th,td");
-            trs[0].remove();
-            for (let e = 0; e < trs.length; e++) {
-                let tds = trs[e].getElementsByTagName("td");
-                let cardViews= document.createElement('div');
-                for (let o = 0; o < thead.length; o++) {
-                    let cardView= document.createElement('div'),
-                        title= document.createElement('span'),
-                        value= document.createElement('span');
-                    cardView.className = 'd-flex align-items-center mb-2';
-                    title.className = 'd-inline-block w-25 me-3 mr-3';
-                    if (thead[o].innerHTML !== '') {
-                        title.innerHTML = '<h6 class="m-0">' + thead[o].innerHTML + ': </h6>';
-                    }
-                    value.className = 'd-inline-block w-75';
-                    value.innerHTML = tds[o].innerHTML;
-                    cardView.appendChild(title);
-                    cardView.appendChild(value);
-                    cardViews.appendChild(cardView);
-                }
-                trs[e].className = 'd-block';
-                let cell = trs[e].insertCell(0);
-                cell.className = 'd-block';
-                cell.appendChild(cardViews);
-                while (trs[e].getElementsByTagName("td").length > 1) {
-                    trs[e].deleteCell(-1);
-                }
+        let table;
+        // Check if the table itself is scrollable or if the first child is scrollable
+        if (tables[i].scrollWidth > tables[i].offsetWidth) {
+            table = tables[i];
+        } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
+            table = tables[i].firstElementChild;
+        }
+        if (typeof table !== 'undefined' && !table.getElementsByClassName('swipeIndicator').length) {
+            let swipeIndicator = document.createElement('div');
+            swipeIndicator.className = 'swipeIndicator';
+            for (let i = 0; i < 3; i++) {
+                swipeIndicator.appendChild(document.createElement('span'));
             }
+            table.appendChild(swipeIndicator);
+            // Set position of swipeIndicator to appear in the first ROW of the table
+            let thead = $(table).find('thead');
+            if (thead.length) {
+                swipeIndicator.style.top = thead.height() + swipeIndicator.offsetHeight + 'px';
+            }
+            table.addEventListener("scroll", () => {
+                swipeIndicator.remove();
+            });
         }
     }
 }
+

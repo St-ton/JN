@@ -26,37 +26,37 @@ class DemoDataInstaller
      * number of categories to create.
      */
     public const NUM_CATEGORIES = 10;
-
+    
     /**
      * number of products to create.
      */
     public const NUM_PRODUCTS = 50;
-
+    
     /**
      * number of manufacturers to create.
      */
     public const NUM_MANUFACTURERS = 10;
-
+    
     /**
      * number of customers to create.
      */
     public const NUM_CUSTOMERS = 100;
-
+    
     /**
      * number of links to create.
      */
     public const NUM_LINKS = 0;
-
+    
     /**
      * number of characteristics to create.
      */
     public const NUM_CHARACTERISTICS = 0;
-
+    
     /**
      * number of characteristic values to create.
      */
     public const NUM_CHARACTERISTICVALUES = 0;
-
+    
     /**
      * @var array{
      *     manufacturers: int,
@@ -69,17 +69,17 @@ class DemoDataInstaller
      *     }
      */
     protected array $config;
-
+    
     /**
      * @var Generator
      */
     private Generator $faker;
-
+    
     /**
      * @var Slugify
      */
     private Slugify $slugify;
-
+    
     /**
      * @var array
      */
@@ -92,12 +92,12 @@ class DemoDataInstaller
         'characteristics'      => self::NUM_CHARACTERISTICS,
         'characteristicValues' => self::NUM_CHARACTERISTICVALUES,
     ];
-
+    
     /**
      * @var LanguageModel[]
      */
     private array $languages;
-
+    
     /**
      * DemoDataInstaller constructor.
      * @param DbInterface $db
@@ -110,13 +110,13 @@ class DemoDataInstaller
         $this->faker     = Fake::create('de_DE');
         $this->faker->addProvider(new Commerce($this->faker));
         $this->faker->addProvider(new ImageProvider($this->faker));
-
+        
         $this->slugify = new Slugify([
             'lowercase' => false,
             'rulesets'  => ['default', 'german'],
         ]);
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -134,10 +134,10 @@ class DemoDataInstaller
             ->updateRatingsAvg()
             ->setConfig()
             ->updateGlobals();
-
+        
         return $this;
     }
-
+    
     /**
      * @return $this
      */
@@ -337,10 +337,10 @@ class DemoDataInstaller
         $this->db->query(
             "INSERT INTO `tseo` (`cSeo`,`cKey`,`kKey`,`kSprache`) VALUES ('kindseite-zwei', 'kLink', 104, 3);"
         );
-
+        
         return $this;
     }
-
+    
     /**
      * @return $this
      */
@@ -356,15 +356,15 @@ class DemoDataInstaller
         $this->db->query('DELETE FROM tlinksprache WHERE kLink > 99;');
         $this->db->query("DELETE FROM tseo WHERE cKey = 'kLink' AND kKey > 99;");
         $this->db->query(
-            "DELETE FROM tseo 
-                WHERE cKey = 'kArtikel' 
-                    OR cKey = 'kKategorie' 
+            "DELETE FROM tseo
+                WHERE cKey = 'kArtikel'
+                    OR cKey = 'kKategorie'
                     OR cKey = 'kHersteller'"
         );
-
+        
         return $this;
     }
-
+    
     /**
      * @return DemoDataInstaller
      */
@@ -389,10 +389,10 @@ class DemoDataInstaller
         $ins->cIBAN         = 'DE257864472';
         $ins->cBIC          = 'FOOOBAR';
         $this->db->insert('tfirma', $ins);
-
+        
         return $this;
     }
-
+    
     /**
      * @return int
      */
@@ -400,7 +400,7 @@ class DemoDataInstaller
     {
         return $this->db->getAffectedRows('UPDATE tglobals SET dLetzteAenderung = NOW()');
     }
-
+    
     /**
      * @return $this
      */
@@ -409,13 +409,13 @@ class DemoDataInstaller
         $this->db->query('TRUNCATE TABLE tartikelext');
         $this->db->query(
             'INSERT INTO tartikelext(kArtikel, fDurchschnittsBewertung)
-                SELECT kArtikel, AVG(nSterne) 
+                SELECT kArtikel, AVG(nSterne)
                 FROM tbewertung GROUP BY kArtikel'
         );
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -429,8 +429,8 @@ class DemoDataInstaller
             try {
                 $name = $this->faker->unique()->company;
                 $res  = $this->db->getObjects(
-                    'SELECT kHersteller 
-                        FROM thersteller 
+                    'SELECT kHersteller
+                        FROM thersteller
                         WHERE cName = :nm',
                     ['nm' => $name]
                 );
@@ -440,7 +440,7 @@ class DemoDataInstaller
             } catch (OverflowException) {
                 $name = $this->faker->unique(true)->company . '_' . ++$index;
             }
-
+            
             $manufacturer              = new stdClass();
             $manufacturer->kHersteller = $maxPk + $i;
             $manufacturer->cName       = $name;
@@ -467,13 +467,13 @@ class DemoDataInstaller
                     $this->db->insert('therstellersprache', $localization);
                 }
             }
-
+            
             $this->callback($callback, $i, $limit, $res > 0, $name);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -487,8 +487,8 @@ class DemoDataInstaller
             try {
                 $name = $this->faker->unique()->department;
                 $res  = $this->db->getObjects(
-                    'SELECT kKategorie 
-                        FROM tkategorie 
+                    'SELECT kKategorie
+                        FROM tkategorie
                         WHERE cName = :nm',
                     ['nm' => $name]
                 );
@@ -523,23 +523,29 @@ class DemoDataInstaller
             $this->callback($callback, $i, $limit, $res > 0, $name);
         }
         $this->rebuildCategoryTree(0, 1);
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
      */
     public function createProducts(?callable $callback = null): self
     {
-        $maxPk         = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
-        $manufacturers = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
-        $categories    = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxPk            = $this->db->getSingleInt('SELECT MAX(kArtikel) AS cnt FROM tartikel', 'cnt');
+        $manufacturers    = $this->db->getSingleInt('SELECT COUNT(kHersteller) AS cnt FROM thersteller', 'cnt');
+        $categories       = $this->db->getSingleInt('SELECT COUNT(kKategorie) AS cnt FROM tkategorie', 'cnt');
+        $maxEigk          = $this->db->getSingleInt('SELECT MAX(kEigenschaft) AS cnt FROM teigenschaft', 'cnt') + 1;
+        $maxEigWertk      = $this->db->getSingleInt('SELECT MAX(kEigenschaftWert) AS cnt FROM teigenschaftwert', 'cnt');
+        $maxEigKombiWertk = $this->db->getSingleInt(
+            'SELECT MAX(kEigenschaftKombi) AS cnt FROM teigenschaftkombiwert',
+            'cnt'
+        );
         if ($categories === 0) {
             return $this;
         }
-        $unitCount = $this->db->getSingleInt(
+        $unitCount         = $this->db->getSingleInt(
             'SELECT MAX(groupCount) AS unitCount
                 FROM (
                     SELECT COUNT(*) AS groupCount
@@ -548,24 +554,76 @@ class DemoDataInstaller
                 ) x',
             'unitCount'
         );
-        $limit     = $this->config['products'];
-        $index     = 0;
-        $taxRate   = 19.00;
+        $limit             = $this->config['products'];
+        $index             = 0;
+        $taxRate           = 19.00;
+        $variationen       = ['Rot', 'Blau', 'Gelb'];
+        $variation         = (count($variationen) > 0 && $limit > count($variationen)) ? $limit - count($variationen)
+            : 0;
+        $idEig             = 0;
+        $lastName          = '';
+        $kVaterArtikel     = 0;
+        $kEigenschaftKombi = 0;
+        
         for ($i = 1; $i <= $limit; ++$i) {
-            try {
-                $name = $this->faker->unique()->productName;
-                $res  = $this->db->getObjects(
-                    'SELECT kArtikel 
+            if ($idEig > 0 && $variationen[$i - $variation - 1] !== null) {
+                $name          = $lastName . '-' . $variationen[$i - $variation - 1];
+                $kVaterArtikel = $eigenschaft->kArtikel ?? $kVaterArtikel;
+                
+                $eigenschaftwert                   = new stdClass();
+                $eigenschaftwert->kEigenschaftwert = $maxEigWertk + ($i - $variation);
+                $eigenschaftwert->kEigenschaft     = $maxEigk;
+                $eigenschaftwert->cName            = $variationen[$i - $variation - 1];
+                $eigenschaftwert->fAufpreisNetto   = 0.0000;
+                $eigenschaftwert->fGewichtDiff     = 0.0000;
+                $eigenschaftwert->cArtNr           = '0';
+                $eigenschaftwert->nSort            = $i - $variation;
+                $eigenschaftwert->fLagerbestand    = 0;
+                $eigenschaftwert->fPackeinheit     = 0.0000;
+                $this->db->insert('teigenschaftwert', $eigenschaftwert);
+                
+                $kEigenschaftKombi                       = $maxEigKombiWertk + ($i - $variation);
+                $eigenschaftkombiwert                    = new stdClass();
+                $eigenschaftkombiwert->kEigenschaftKombi = $kEigenschaftKombi;
+                $eigenschaftkombiwert->kEigenschaft      = $maxEigk;
+                $eigenschaftkombiwert->kEigenschaftWert  = $maxEigWertk + ($i - $variation);
+                $this->db->insert('teigenschaftkombiwert', $eigenschaftkombiwert);
+            } else {
+                try {
+                    $name = $this->faker->unique()->productName;
+                    $res  = $this->db->getObjects(
+                        'SELECT kArtikel
                         FROM tartikel WHERE cName = :nm',
-                    ['nm' => $name]
-                );
-                if (\count($res) > 0) {
-                    throw new OverflowException();
+                        ['nm' => $name]
+                    );
+                    if (\count($res) > 0) {
+                        throw new OverflowException();
+                    }
+                } catch (OverflowException) {
+                    $name = $this->faker->unique(true)->productName . '_' . ++$index;
                 }
-            } catch (OverflowException) {
-                $name = $this->faker->unique(true)->productName . '_' . ++$index;
+                $lastName = $name;
             }
-
+            
+            if ($i === $variation) {
+                $eigenschaft               = new stdClass();
+                $eigenschaft->kEigenschaft = $maxEigk;
+                $eigenschaft->kArtikel     = $maxPk + $i;
+                $eigenschaft->cName        = 'Farbe';
+                $eigenschaft->cWaehlbar    = 'Y';
+                $eigenschaft->cTyp         = 'SELECTBOX';
+                $eigenschaft->nSort        = 0;
+                $idEig                     = $this->db->insert('teigenschaft', $eigenschaft);
+                
+                $eigenschaftsprache               = new stdClass();
+                $eigenschaftsprache->kEigenschaft = $idEig;
+                foreach ($this->languages as $language) {
+                    $eigenschaftsprache->kSprache = $language->getId();
+                    $eigenschaftsprache->cName    = ($language->getCode() === 'ger') ? 'Farbe' : 'Color';
+                    $this->db->insert('teigenschaftsprache', $eigenschaftsprache);
+                }
+            }
+            
             $price                             = \random_int(1, 2999);
             $product                           = new stdClass();
             $product->kArtikel                 = $maxPk + $i;
@@ -576,8 +634,8 @@ class DemoDataInstaller
                 ? \random_int(1, $unitCount)
                 : 0;
             $product->kVersandklasse           = 1;
-            $product->kEigenschaftKombi        = 0;
-            $product->kVaterArtikel            = 0;
+            $product->kEigenschaftKombi        = $kEigenschaftKombi;
+            $product->kVaterArtikel            = $kVaterArtikel;
             $product->kStueckliste             = 0;
             $product->kWarengruppe             = 0;
             $product->kVPEEinheit              = 0;
@@ -619,6 +677,7 @@ class DemoDataInstaller
             $product->dErscheinungsdatum       = 'now()';
             $product->dErstellt                = 'now()';
             $product->dLetzteAktualisierung    = 'now()';
+            $product->nIstVater                = ($i === $variation) ? 1 : 0;
             $productID                         = $this->db->insert('tartikel', $product);
             if ($productID > 0) {
                 $maxImages = $this->faker->numberBetween(1, 3);
@@ -630,17 +689,17 @@ class DemoDataInstaller
                     $this->createRating($product->kArtikel);
                 }
                 $maxCategoryProduct = $this->db->getSingleInt(
-                    'SELECT MAX(kKategorieArtikel) AS cnt 
+                    'SELECT MAX(kKategorieArtikel) AS cnt
                         FROM tkategorieartikel',
                     'cnt'
                 );
-
+                
                 $productCategory                    = new stdClass();
                 $productCategory->kKategorieArtikel = $maxCategoryProduct + 1;
                 $productCategory->kArtikel          = $product->kArtikel;
                 $productCategory->kKategorie        = \random_int(1, $categories);
                 $this->db->insert('tkategorieartikel', $productCategory);
-
+                
                 $seoItem       = new stdClass();
                 $seoItem->cKey = 'kArtikel';
                 $seoItem->kKey = $product->kArtikel;
@@ -660,7 +719,7 @@ class DemoDataInstaller
                     $price3->fVKNetto  = $price / 19.00;
                     $this->db->insert('tpreisdetail', $price3);
                 }
-
+                
                 $price2->kKundengruppe = 2;
                 $idxKg2                = $this->db->insert('tpreis', $price2);
                 if ($idxKg2 > 0) {
@@ -671,13 +730,13 @@ class DemoDataInstaller
                     $this->db->insert('tpreisdetail', $price3);
                 }
             }
-
+            
             $this->callback($callback, $i, $limit, $productID > 0, $name);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -707,7 +766,7 @@ class DemoDataInstaller
             $streetNameEnc = $xtea->encrypt($streetName);
             $lastNameEnc   = $xtea->encrypt($lastName);
             $lastName      = $fake->lastName;
-
+            
             $customer = (object)[
                 'kKundengruppe'  => 1,
                 'kSprache'       => 1,
@@ -744,14 +803,14 @@ class DemoDataInstaller
                 'nRegistriert'   => 1,
                 'nLoginversuche' => 0,
             ];
-
+            
             $res = $pdo->insert('tkunde', $customer);
             $this->callback($callback, $i, $limit, $res > 0, $firstName . ' ' . $lastName);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -798,10 +857,10 @@ class DemoDataInstaller
             $linkadmin->createOrUpdateLink($data);
             $this->callback($callback, $i, $limit, true, $data['cName']);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -839,10 +898,10 @@ class DemoDataInstaller
             }
             $this->callback($callback, $i, $limit, true, $characteristic->cName);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param callable|null $callback
      * @return $this
@@ -901,7 +960,7 @@ class DemoDataInstaller
             }
             $products = $this->db->getInts(
                 'SELECT kArtikel
-                    FROM tartikel 
+                    FROM tartikel
                     ORDER BY RAND()
                     LIMIT :lmt',
                 'kArtikel',
@@ -916,10 +975,10 @@ class DemoDataInstaller
             }
             $this->callback($callback, $i, $limit, true, $characteristicValue->cName);
         }
-
+        
         return $this;
     }
-
+    
     /**
      * @param string      $path
      * @param null|string $text
@@ -930,10 +989,10 @@ class DemoDataInstaller
     private function createImage(string $path, string $text = null, int $width = 500, int $height = 500): bool
     {
         $file = $this->faker->imageFile(null, $width, $height, 'jpg', true, $text, null, null, $this->getFontFile());
-
+        
         return $file !== null && \rename($file, $path);
     }
-
+    
     /**
      * @param int    $manufacturerID
      * @param string $text
@@ -945,10 +1004,10 @@ class DemoDataInstaller
             return '';
         }
         $file = $this->slug($text) . '.jpg';
-
+        
         return $this->createImage(\PFAD_ROOT . \STORAGE_MANUFACTURERS . $file, $text, 800, 800) === true ? $file : '';
     }
-
+    
     /**
      * @param int    $productID
      * @param string $text
@@ -972,7 +1031,7 @@ class DemoDataInstaller
             $this->db->insert('tartikelpict', $image);
         }
     }
-
+    
     /**
      * @param int    $categoryID
      * @param string $text
@@ -987,7 +1046,7 @@ class DemoDataInstaller
             $this->db->insert('tkategoriepict', (object)['kKategorie' => $categoryID, 'cPfad' => $file]);
         }
     }
-
+    
     /**
      * @param int $productID
      * @return bool
@@ -1009,10 +1068,10 @@ class DemoDataInstaller
         $rating->nSterne         = \random_int(1, 5);
         $rating->nAktiv          = 1;
         $rating->dDatum          = 'now()';
-
+        
         return $this->db->insert('tbewertung', $rating) > 0;
     }
-
+    
     /**
      * update lft/rght values for categories in the nested set model.
      *
@@ -1027,8 +1086,8 @@ class DemoDataInstaller
         $right = $left + 1;
         // get all children of this node
         $result = $this->db->getInts(
-            'SELECT kKategorie 
-                FROM tkategorie 
+            'SELECT kKategorie
+                FROM tkategorie
                 WHERE kOberKategorie = :pid
                 ORDER BY nSort, cName',
             'kKategorie',
@@ -1043,11 +1102,11 @@ class DemoDataInstaller
                 WHERE kKategorie = :pid',
             ['lft' => $left, 'rght' => $right, 'lvl' => $level, 'pid' => $parentID]
         );
-
+        
         // return the right value of this node + 1
         return $right + 1;
     }
-
+    
     /**
      * @param string $seo
      * @return string
@@ -1059,10 +1118,10 @@ class DemoDataInstaller
         while ($this->db->getSingleObject('SELECT cSeo FROM tseo WHERE cSeo = :seo', ['seo' => $seo]) !== null) {
             $seo = $original . '_' . ++$seoIndex;
         }
-
+        
         return $seo;
     }
-
+    
     /**
      * @param string $text
      * @return string
@@ -1071,7 +1130,7 @@ class DemoDataInstaller
     {
         return $this->slugify->slugify($text);
     }
-
+    
     /**
      *
      */
@@ -1079,12 +1138,12 @@ class DemoDataInstaller
     {
         $arguments = \func_get_args();
         $cb        = \array_shift($arguments);
-
+        
         if ($cb !== null && \is_callable($cb)) {
             \call_user_func_array($cb, $arguments);
         }
     }
-
+    
     /**
      * @return string
      */

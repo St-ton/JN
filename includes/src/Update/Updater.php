@@ -11,10 +11,13 @@ use JTL\Network\JTLApi;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
+use JTL\Template\Config;
+use JTL\Template\XMLReader;
 use JTLShop\SemVer\Version;
 use JTLShop\SemVer\VersionCollection;
 use PDOException;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Updater
@@ -317,11 +320,49 @@ class Updater
 
     public function finalize(): void
     {
+        $this->updateTemplateConfig();
         $smarty = new JTLSmarty(true, ContextType::FRONTEND);
         $smarty->clearCompiledTemplate();
         Shop::Container()->getCache()->flushAll();
         $ms = new MinifyService();
         $ms->flushCache();
+    }
+
+    protected function updateTemplateConfig(): void
+    {
+        $parentFolder = null;
+        $reader       = new XMLReader();
+        $current      = Shop::Container()->getTemplateService()->getActiveTemplate();
+        $tplXML       = $reader->getXML($current->getPaths()->getBaseDirName());
+        if ($tplXML !== null && !empty($tplXML->Parent)) {
+            $parentFolder = (string)$tplXML->Parent;
+        }
+        $config     = new Config($current->getPaths()->getBaseDirName(), $this->db);
+        $oldConfig  = $config->loadConfigFromDB();
+        $updates    = 0;
+        foreach ($config->getConfigXML($reader, $parentFolder) as $conf) {
+            foreach ($conf->settings as $setting) {
+                if ($setting->cType === 'upload') {
+                    continue;
+                }
+                if (isset($oldConfig[$setting->section][$setting->key])) {
+                    // not a new setting - no need to update
+                    continue;
+                }
+                $value = $setting->value ?? null;
+                if ($value === null) {
+                    continue;
+                }
+                if (\is_array($value)) {
+                    $value = first($value);
+                }
+                $config->updateConfigInDB($setting->section, $setting->key, $value);
+                ++$updates;
+            }
+        }
+        Shop::Container()->getLogService()->info(\sprintf(
+            \__('%d config values were updated after database update.'), $updates)
+        );
     }
 
     /**

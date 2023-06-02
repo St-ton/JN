@@ -32,7 +32,7 @@ class DefaultController extends AbstractController
             return $this->state;
         }
         $parser = new DefaultParser($this->db, $this->state);
-        $slug   = $parser->parse($slug);
+        $slug   = $parser->parse($slug, $args);
         $seo    = $this->db->getSingleObject(
             'SELECT *
                 FROM tseo

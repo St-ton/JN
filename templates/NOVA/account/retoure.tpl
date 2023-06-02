@@ -206,7 +206,7 @@
                         { data: 'product' },
                         { data: 'buttons' }
                     ],
-                    lengthMenu: [ [rows, rows*2, rows*3], [rows, rows*2, rows*3] ],
+                    lengthMenu: [ [rows, rows*2, rows*3, rows*6, rows*10], [rows, rows*2, rows*3, rows*6, rows*10] ],
                     pageLength: rows,
                     order: [0, 'desc'],
                     initComplete: function (settings, json) {
@@ -245,15 +245,27 @@
                     return false;
                 });
 
-                let table = initDataTable('#returnable-items');
+                let table = initDataTable('#returnable-items', 1);
 
                 orderID.on('change', function () {
                     table.draw();
                 });
 
+                table.on( 'draw', function () {
+                    $('.ra-switch').off('change').on('change', function () {
+                        toggleArtikel($(this), $(this).prop('checked'));
+                    });
+                });
+
                 $('.ra-switch').on('change', function () {
                     toggleArtikel($(this), $(this).prop('checked'));
                 });
+            });
+
+            $('#shipping-calculator-form').on('submit', function (e) {
+                e.preventDefault();
+                let inputs = $(this).find('input,select,textarea');
+
             });
         </script>{/inline_script}
     {/block}

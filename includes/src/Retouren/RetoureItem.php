@@ -5,8 +5,6 @@ namespace JTL\Retouren;
 use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Shop;
 use stdClass;
 
@@ -144,14 +142,14 @@ class RetoureItem
     public static function loadAllFromDB(int $kRetoure): Collection
     {
         return Shop::Container()->getDB()->getCollection(
-            'SELECT tretourepos.*, twarenkorbpos.kWarenkorb, tbestellung.cBestellNr
+            "SELECT tretourepos.*, twarenkorbpos.kWarenkorb, tbestellung.cBestellNr
             FROM tretourepos
             LEFT JOIN twarenkorbpos
                 ON tretourepos.kBestellPos = twarenkorbpos.kBestellpos
                 AND tretourepos.kRetoure = twarenkorbpos.kWarenkorb
             LEFT JOIN tbestellung
                 ON tbestellung.kWarenkorb = twarenkorbpos.kWarenkorb
-            WHERE tretourepos.kRetoure LIKE :kRetoure',
+            WHERE tretourepos.kRetoure = :kRetoure",
             ['kRetoure' => $kRetoure]
         )->map(static function ($retourePos): self {
             $rtPos   = new self();

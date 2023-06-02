@@ -65,7 +65,8 @@ class Migration_20230519120834 extends Migration implements IMigration
             ENGINE=InnoDB
         ");
 
-        $newVars = [
+        $newVars = new stdClass();
+        $newVars->rma = [
             'statusRejected' =>
                 [
                     'ger' => 'Abgelehnt',
@@ -101,31 +102,26 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Retoure anlegen',
                     'eng' => 'Request RMA'
                 ]
-
         ];
-        foreach ($newVars as $key => $values) {
-            foreach ($values as $iso => $value) {
-                $this->setLocalization($iso, 'rma', $key, $value);
+        $newVars->datatables = [
+            'search' =>
+                [
+                    'ger' => 'Suche',
+                    'eng' => 'Search'
+                ]
+            , 'lengthMenu' =>
+                [
+                    'ger' => '_MENU_ Einträge anzeigen',
+                    'eng' => 'Show _MENU_ entries'
+                ]
+        ];
+        foreach ($newVars as $sprachsektion => $arr) {
+            foreach ($arr as $key => $values) {
+                foreach ($values as $iso => $value) {
+                    $this->setLocalization($iso, $sprachsektion, $key, $value);
+                }
             }
         }
-        
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Suche', cStandard = 'Suche'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Search', cStandard = 'Search'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
-        
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = '_MENU_ Einträge anzeigen', cStandard = '_MENU_ Einträge anzeigen'
-                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Show _MENU_ entries', cStandard = 'Show _MENU_ entries'
-                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
     }
 
     /**
@@ -149,22 +145,22 @@ class Migration_20230519120834 extends Migration implements IMigration
                     AND bSystem = 1"
         );
         
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Adresssuche', cStandard = 'Adresssuche'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Search address', cStandard = 'Search address'
-                   WHERE cName LIKE 'search' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
-        
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = '_MENU_ Adressen anzeigen', cStandard = '_MENU_ Adressen anzeigen'
-                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 1");
-        $this->execute(
-            "UPDATE tsprachwerte
-                   SET cWert = 'Show _MENU_ addresses', cStandard = 'Show _MENU_ addresses'
-                   WHERE cName LIKE 'lengthMenu' AND kSprachsektion LIKE 35 AND kSprachISO LIKE 2");
+        $newVars = [
+            'search' =>
+                [
+                    'ger' => 'Adresssuche',
+                    'eng' => 'Search address'
+                ]
+            , 'lengthMenu' =>
+                [
+                    'ger' => '_MENU_ Adressen anzeigen',
+                    'eng' => 'Show _MENU_ addresses'
+                ]
+        ];
+        foreach ($newVars as $key => $values) {
+            foreach ($values as $iso => $value) {
+                $this->setLocalization($iso, 'datatables', $key, $value);
+            }
+        }
     }
 }

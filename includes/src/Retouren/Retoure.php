@@ -111,9 +111,9 @@ class Retoure
     public static function getRetouren(int $customerID = 0): Collection
     {
         return Shop::Container()->getDB()->getCollection(
-            'SELECT tretoure.*
+            "SELECT tretoure.*
             FROM tretoure
-            WHERE tretoure.kKunde LIKE :customerID',
+            WHERE tretoure.kKunde = :customerID",
             ['customerID' => $customerID]
         )->map(static function ($retoure): self {
             $rt                 = new self();
@@ -136,15 +136,15 @@ class Retoure
      */
     public static function getReturnableProducts(int $customerID = 0): Collection
     {
-        // ToDo: Artikel mit Attribute XXX (nicht retournierbar) dürfen nicht geladen werden.
         $customerID       = ($customerID === 0) ? Frontend::getCustomer()->getID() : $customerID;
         $cancellationTime = Shopsetting::getInstance()->getValue(\CONF_GLOBAL, 'global_cancellation_time');
         return Shop::Container()->getDB()->getCollection(
-            'SELECT twarenkorbpos.kArtikel, twarenkorbpos.cEinheit, twarenkorbpos.cArtNr,
+            "SELECT twarenkorbpos.kArtikel, twarenkorbpos.cEinheit, twarenkorbpos.cArtNr,
        twarenkorbpos.fPreisEinzelNetto, twarenkorbpos.fMwSt, twarenkorbpos.cName, tbestellung.kBestellung,
        tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.cStatus, tbestellung.cBestellNr,
        tlieferscheinpos.kLieferschein, tlieferscheinpos.fAnzahl,
-       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), "%d-%m-%Y") AS dVersandDatum
+       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS dVersandDatum,
+       tartikelattribut.cWert AS nicht_retournierbar
             FROM tbestellung
             RIGHT JOIN twarenkorbpos
                 ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
@@ -153,8 +153,11 @@ class Retoure
             RIGHT JOIN tversand
                 ON tversand.kLieferschein = tlieferscheinpos.kLieferschein
                 AND DATE(FROM_UNIXTIME(tversand.dErstellt)) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
+            LEFT JOIN tartikelattribut
+                ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
+                AND tartikelattribut.cName = 'nicht_retournierbar'
             WHERE tbestellung.kKunde = :customerID
-                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)',
+                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)",
             [
                 'customerID' => $customerID,
                 'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,
@@ -180,7 +183,7 @@ class Retoure
     {
         return $rArtikel->unique('cBestellNr')->pluck('cBestellNr')->toArray();
     }
-
+    
     /**
      * @return void
      * @since 5.3.0

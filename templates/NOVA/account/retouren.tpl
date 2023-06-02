@@ -17,7 +17,7 @@
                         {/cardheader}
                         {cardbody}
                             {block name='account-retoure-shipping-addresses-body'}
-                                <table id="retouren-liste" class="table display compact">
+                                <table id="retouren-liste" class="table display compact stripe">
                                     <thead>
                                     <tr>
                                         <th>&nbsp;</th>
@@ -150,7 +150,7 @@
                         { data: 'address' },
                         { data: 'buttons' }
                     ],
-                    lengthMenu: [ [rows, rows*2, rows*3], [rows, rows*2, rows*3] ],
+                    lengthMenu: [ [rows, rows*2, rows*3, rows*6, rows*10], [rows, rows*2, rows*3, rows*6, rows*10] ],
                     pageLength: rows,
                     order: [0, 'desc'],
                     initComplete: function (settings, json) {

@@ -11,45 +11,47 @@
                     <div class="subheading1">{__('imageSizes')}</div>
                     <hr class="mb-n3">
                 </div>
-                <div class="table-responsive card-body">
-                    <table class="list table table-border-light table-images">
-                        <thead>
-                        <tr>
-                            <th class="text-left">{__('type')}</th>
-                            <th class="text-center">{__('xs')} <small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('sm')} <small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('md')} <small>{__('widthXHeight')}</small></th>
-                            <th class="text-center">{__('lg')} <small>{__('widthXHeight')}</small></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $indices as $idx => $name}
-                        <tr>
-                            <td class="text-left">{$name}</td>
-                            {foreach $sizes as $size}
-                            <td class="text-center">
-                                <div class="input-group form-counter min-w-sm">
-                                    {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_breite'}
-                                    {if !isset($imgConf.$optIdx)}
-                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_breite'}
-                                    {/if}
-                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
-                                </div>
-                                <span class="cross-sign text-center">x</span>
-                                <div class="input-group form-counter min-w-sm">
-                                    {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_hoehe'}
-                                    {if !isset($imgConf.$optIdx)}
-                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_hoehe'}
-                                    {/if}
-                                    <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
-                                </div>
-                            </td>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="list table table-border-light table-images">
+                            <thead>
+                            <tr>
+                                <th class="text-left">{__('type')}</th>
+                                <th class="text-center">{__('xs')} <small>{__('widthXHeight')}</small></th>
+                                <th class="text-center">{__('sm')} <small>{__('widthXHeight')}</small></th>
+                                <th class="text-center">{__('md')} <small>{__('widthXHeight')}</small></th>
+                                <th class="text-center">{__('lg')} <small>{__('widthXHeight')}</small></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $indices as $idx => $name}
+                            <tr>
+                                <td class="text-left">{$name}</td>
+                                {foreach $sizes as $size}
+                                <td class="text-center">
+                                    <div class="input-group form-counter min-w-sm">
+                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_breite'}
+                                        {if !isset($imgConf.$optIdx)}
+                                            {$optIdx = 'bilder_'|cat:$idx|cat:'_breite'}
+                                        {/if}
+                                        <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
+                                    </div>
+                                    <span class="cross-sign text-center">x</span>
+                                    <div class="input-group form-counter min-w-sm">
+                                        {$optIdx = 'bilder_'|cat:$idx|cat:'_'|cat:$size|cat:'_hoehe'}
+                                        {if !isset($imgConf.$optIdx)}
+                                            {$optIdx = 'bilder_'|cat:$idx|cat:'_hoehe'}
+                                        {/if}
+                                        <input size="4" class="form-control" type="number" name="{$optIdx}" value="{$imgConf.$optIdx}" />
+                                    </div>
+                                </td>
+                                {/foreach}
+                            </tr>
                             {/foreach}
-                        </tr>
-                        {/foreach}
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             {foreach $sections as $section}

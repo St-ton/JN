@@ -1,11 +1,6 @@
 {block name='account-retouren-form'}
     {block name='account-retoure-form-form'}
-        {form method="post"
-        action="{if isset($oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND])}{$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL()}{else}{$ShopURL}/{/if}{if $bExclusive}?exclusive_content=1{/if}"
-        class="jtl-validate shipping-calculator-form row"
-        id="shipping-calculator-form"
-        slide=true}
-            {input type="hidden" name="s" value=$Link->getID()}
+        {row}
             {col cols=12 md=12 class='retouren-form-wrapper'}
                 {block name='account-my-account-rma'}
                     {card no-body=true class="rma-positions"}
@@ -43,7 +38,7 @@
                                     <tbody>
                                     {block name='account-retouren-returnable-items'}
                                         {foreach $retournierbareArtikel as $rArtikel}
-                                            <tr data-id="ra-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
+                                            <tr>
                                                 <td class="d-none">{$rArtikel->cBestellNr}</td>
                                                 <td class="product-thumbnail">
                                                     {include file='snippets/image.tpl'
@@ -78,12 +73,14 @@
                                                                 {input type="number"
                                                                 required=($rArtikel->Artikel->fAbnahmeintervall > 0)
                                                                 step="{if $rArtikel->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}any{elseif $rArtikel->Artikel->fAbnahmeintervall > 0}{$rArtikel->Artikel->fAbnahmeintervall}{else}1{/if}"
-                                                                id="quantity[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]" class="quantity" name="anzahl[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]"
+                                                                id="quantity[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]" class="quantity" name="anzahl[]"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$rArtikel->fAnzahl
                                                                 data=[
-                                                                "decimals"=>{getDecimalLength quantity=$rArtikel->Artikel->fAbnahmeintervall},
-                                                                "product-id"=>"{if isset($rArtikel->Artikel->kVariKindArtikel)}{$rArtikel->Artikel->kVariKindArtikel}{else}{$rArtikel->Artikel->kArtikel}{/if}"
+                                                                    "decimals" => {getDecimalLength quantity=$rArtikel->Artikel->fAbnahmeintervall},
+                                                                    "product-id" => "{if isset($rArtikel->Artikel->kVariKindArtikel)}{$rArtikel->Artikel->kVariKindArtikel}{else}{$rArtikel->Artikel->kArtikel}{/if}",
+                                                                    "bid" => {$rArtikel->cBestellNr},
+                                                                    "aid" => {$rArtikel->kArtikel}
                                                                 ]
                                                                 }
                                                                 {inputgroupappend}
@@ -97,7 +94,12 @@
                                                             </div>
 
                                                             <div class="flex-fill mr-2 mb-2">
-                                                                {select name="" aria=["label"=>""]
+                                                                {select aria=["label"=>""]
+                                                                name="reason[]"
+                                                                data=[
+                                                                    "bid" => "{$rArtikel->cBestellNr}",
+                                                                    "aid" => "{$rArtikel->kArtikel}"
+                                                                ]
                                                                 class="custom-select form-control"}
                                                                     <option value="-1" selected>Grund</option>
                                                                     <option value="0">Artikel defekt</option>
@@ -107,7 +109,11 @@
                                                             </div>
 
                                                             <div class="flex-fill mr-2 mb-2">
-                                                                {textarea id="" name="cKommentar"}{/textarea}
+                                                                {textarea name="comment[]"
+                                                                data=[
+                                                                    "bid" => "{$rArtikel->cBestellNr}",
+                                                                    "aid" => "{$rArtikel->kArtikel}"
+                                                                ]}{/textarea}
                                                             </div>
                                                         </div>
 
@@ -118,13 +124,12 @@
                                                         <div class="custom-control custom-switch">
                                                             <input type='checkbox'
                                                                    class='custom-control-input ra-switch'
-                                                                   id="ra-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}"
-                                                                   data-ra-id="{$rArtikel->kArtikel}"
-                                                                   data-rb-id="{$rArtikel->cBestellNr}"
+                                                                   id="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}"
+                                                                   name="returnItem"
                                                                {if false}checked{/if}
                                                                aria-label="Lorem ipsum">
                                                             <label class="custom-control-label"
-                                                                   for="ra-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
+                                                                   for="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
                                                             </label>
                                                         </div>
                                                     </div>
@@ -139,17 +144,16 @@
                     {/card}
                 {/block}
 
-                {form method="post" id='retouren' action="#" class="jtl-validate mt-3" slide=true}
-                    {input name="Artikel" type="hidden" value=""}
+                {form method="post" id='retoure' action="#" class="jtl-validate mt-3" slide=true}
                     {block name='account-retoure-form-include-customer-retouren'}
                         {block name='checkout-customer-shipping-address'}
                             <fieldset>
                                 {formrow}
                                     {col cols=12}
                                         {block name='checkout-customer-shipping-address-country'}
-                                            {formgroup label="{lang key='shippingAdress' section='account data'}" label-for="shippingAdress"}
+                                            {formgroup label="Abholadrese" label-for="shippingAdress"}
                                                 {select name="shippingAdress" id="shippingAdress" class="custom-select" autocomplete="shipping Adress"}
-                                                    <option value="" selected disabled>{lang key='shippingAdress' section='account data'}</option>
+                                                    <option value="" selected disabled>Abholadrese</option>
                                                     {foreach $Lieferadressen as $lfa}
                                                         <option value="{$lfa->kLieferadresse}">
                                                             {if $lfa->cFirma}{$lfa->cFirma}, {/if}
@@ -168,8 +172,6 @@
                     {block name='account-retoure-form-form-submit'}
                         {row class='btn-row'}
                             {col md=12 xl=12 class="checkout-button-row-submit mb-3"}
-                                {input type="hidden" name="editLieferadresse" value="1"}
-                                {input type="hidden" name="editAddress" value="neu"}
                                 {button type="submit" value="1" block=true variant="primary"}
                                     {lang key='createRetoure' section='rma'}
                                 {/button}
@@ -178,7 +180,7 @@
                     {/block}
                 {/form}
             {/col}
-        {/form}
+        {/row}
     {/block}
     {block name='account-retoure-form-script'}
         {inline_script}<script>
@@ -221,51 +223,66 @@
                 } );
             }
 
-            function toggleArtikel(artikel, active) {
-                let raID = artikel.data('ra-id');
-                let rbID = artikel.data('rb-id');
+            function toggleProduct(artikel, active) {
                 if (active) {
-                    $('*[data-id="ra-' + rbID + '-' + raID + '"] .formFields').removeClass("d-none").addClass("d-flex");
+                    artikel.closest('tr').find('.formFields').removeClass("d-none").addClass('d-flex');
                 } else {
-                    $('*[data-id="ra-' + rbID + '-' + raID + '"] .formFields').removeClass("d-flex").addClass("d-none");
+                    artikel.closest('tr').find('.formFields').removeClass("d-flex").addClass('d-none');
                 }
             }
 
+            function setListenerForToggles(id='.ra-switch') {
+                $(id).off('change').on('change', function () {
+                    toggleProduct($(this), $(this).prop('checked'));
+                });
+            }
+
             $(document).ready(function () {
-                let orderID = $('.dataTable-custom-filter select[name="bestellnummer"]');
+                let customFilter = $('.dataTable-custom-filter select[name="bestellnummer"]');
 
-                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                    var bNummer = orderID.val();
-                    var bestellnummern = data[0] || '';
+                // Filter by order id
+                $.fn.dataTable.ext.search.push(function (settings, data) {
+                    let orderId = customFilter.val(),
+                        orderIds = data[0] || '';
 
-                    if (bNummer === bestellnummern || bNummer === '') {
-                        return true;
-                    }
-
-                    return false;
+                    return orderId === orderIds || orderId === '';
                 });
 
-                let table = initDataTable('#returnable-items', 1);
+                let table = initDataTable('#returnable-items');
 
-                orderID.on('change', function () {
+                // Set toggle listener again when table redraws
+                table.on('draw', function () {
+                    setListenerForToggles();
+                });
+
+                customFilter.on('change', function () {
                     table.draw();
                 });
 
-                table.on( 'draw', function () {
-                    $('.ra-switch').off('change').on('change', function () {
-                        toggleArtikel($(this), $(this).prop('checked'));
+                setListenerForToggles();
+
+                $('#retoure').on('submit', function (e) {
+                    e.preventDefault();
+                    let inputs = [];
+                    table.rows().every(function () {
+                        if ($(this.node()).find('input[name="returnItem"]').prop('checked')) {
+                            $(this.node()).find('[data-aid], [data-bid]').each(function () {
+                                inputs.push(
+                                    {
+                                        name: $(this).attr('name'),
+                                        value: {
+                                            aid: $(this).attr('data-aid'),
+                                            bid: $(this).attr('data-bid'),
+                                            val: $(this).val(),
+                                        }
+                                    }
+                                );
+                            });
+                        }
                     });
+                    let formData = $(this).serializeArray().concat(inputs);
+                    console.log(formData);
                 });
-
-                $('.ra-switch').on('change', function () {
-                    toggleArtikel($(this), $(this).prop('checked'));
-                });
-            });
-
-            $('#shipping-calculator-form').on('submit', function (e) {
-                e.preventDefault();
-                let inputs = $(this).find('input,select,textarea');
-
             });
         </script>{/inline_script}
     {/block}

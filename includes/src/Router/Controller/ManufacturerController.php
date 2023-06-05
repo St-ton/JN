@@ -55,11 +55,11 @@ class ManufacturerController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_MANUFACTURERS . '/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_MANUFACTURERS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_MANUFACTURER_BY_ID' . $dynName);
         $route->get('/' . \ROUTE_PREFIX_MANUFACTURERS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_MANUFACTURER_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_MANUFACTURERS . '/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_MANUFACTURERS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_MANUFACTURER_BY_ID' . $dynName . 'POST');
         $route->post('/' . \ROUTE_PREFIX_MANUFACTURERS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_MANUFACTURER_BY_NAME' . $dynName . 'POST');

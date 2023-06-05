@@ -2,91 +2,93 @@
 <div id="content" class="row mr-0">
     <div class="{if $recommendations->getRecommendations()->isNotEmpty()}col-md-7{else}col-lg-9 col-xl-7{/if} pr-0 pr-md-4">
         <div class="card">
-            <div class="card-body table-responsive">
-                <table class="table table-content-center">
-                    <thead>
-                    <tr>
-                        <th>{__('installedPaymentTypes')}</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $zahlungsarten as $zahlungsart}
-                        <tr class="text-vcenter">
-                            <td>
-                                {if $zahlungsart->nActive == 1}
-                                    <span class="text-success" title="{__('active')}"><i class="fal fa-check text-success"></i></span>
-                                {else}
-                                    <span class="text-danger" title="{__('inactive')}">
-                                        <i class="fa fa-exclamation-triangle"></i>
-                                    </span>
-                                {/if}
-                                <span class="ml-2">{$zahlungsart->cName}
-                                    <small>{$zahlungsart->cAnbieter}</small>
-                                </span>
-                            </td>
-                            <td class="text-right">
-                                <div class="btn-group">
-                                    <a href="{$adminURL}{$route}?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-link sx-2 down
-                                                  {if $zahlungsart->nLogCount > 0}
-                                                        {if $zahlungsart->nErrorLogCount}text-danger{/if}
-                                                  {else}
-                                                        text-success disabled
-                                                  {/if}"
-                                       title="{__('viewLog')}"
-                                       data-toggle="tooltip">
-                                        <span class="icon-hover">
-                                            {if $zahlungsart->nLogCount > 0}
-                                                {if $zahlungsart->nErrorLogCount}
-                                                    <span class="fal fa-exclamation-triangle"></span>
-                                                    <span class="fas fa-exclamation-triangle"></span>
-                                                {else}
-                                                    <span class="fal fa-bars"></span>
-                                                    <span class="fas fa-bars"></span>
-                                                {/if}
-                                            {else}
-                                                <span class="fal fa-check"></span>
-                                                <span class="fas fa-check"></span>
-                                            {/if}
-                                        </span>
-                                    </a>
-                                    <a {if $zahlungsart->nEingangAnzahl > 0}href="{$adminURL}{$route}?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
-                                       class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="{__('paymentsReceived')}"
-                                       data-toggle="tooltip">
-                                        <span class="icon-hover">
-                                            <span class="fal fa-hand-holding-usd"></span>
-                                            <span class="fas fa-hand-holding-usd"></span>
-                                        </span>
-                                    </a>
-                                    {if $zahlungsart->markedForDelete}
-                                        <a href="{$adminURL}{$route}?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-link sx-2"
-                                           title="{__('delete')}"
-                                           data-toggle="tooltip">
-                                            <span class="icon-hover">
-                                                <span class="fal fa-trash"></span>
-                                                <span class="fas fa-trash"></span>
-                                            </span>
-                                        </a>
-                                    {else}
-                                        <a href="{$adminURL}{$route}?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-link sx-2"
-                                           title="{__('edit')}"
-                                           data-toggle="tooltip">
-                                            <span class="icon-hover">
-                                                <span class="fal fa-edit"></span>
-                                                <span class="fas fa-edit"></span>
-                                            </span>
-                                        </a>
-                                    {/if}
-                                </div>
-                            </td>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-content-center">
+                        <thead>
+                        <tr>
+                            <th>{__('installedPaymentTypes')}</th>
+                            <th></th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach $zahlungsarten as $zahlungsart}
+                            <tr class="text-vcenter">
+                                <td>
+                                    {if $zahlungsart->nActive == 1}
+                                        <span class="text-success" title="{__('active')}"><i class="fal fa-check text-success"></i></span>
+                                    {else}
+                                        <span class="text-danger" title="{__('inactive')}">
+                                            <i class="fa fa-exclamation-triangle"></i>
+                                        </span>
+                                    {/if}
+                                    <span class="ml-2">{$zahlungsart->cName}
+                                        <small>{$zahlungsart->cAnbieter}</small>
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <div class="btn-group">
+                                        <a href="{$adminURL}{$route}?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-link sx-2 down
+                                                      {if $zahlungsart->nLogCount > 0}
+                                                            {if $zahlungsart->nErrorLogCount}text-danger{/if}
+                                                      {else}
+                                                            text-success disabled
+                                                      {/if}"
+                                           title="{__('viewLog')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                {if $zahlungsart->nLogCount > 0}
+                                                    {if $zahlungsart->nErrorLogCount}
+                                                        <span class="fal fa-exclamation-triangle"></span>
+                                                        <span class="fas fa-exclamation-triangle"></span>
+                                                    {else}
+                                                        <span class="fal fa-bars"></span>
+                                                        <span class="fas fa-bars"></span>
+                                                    {/if}
+                                                {else}
+                                                    <span class="fal fa-check"></span>
+                                                    <span class="fas fa-check"></span>
+                                                {/if}
+                                            </span>
+                                        </a>
+                                        <a {if $zahlungsart->nEingangAnzahl > 0}href="{$adminURL}{$route}?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
+                                           class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
+                                           title="{__('paymentsReceived')}"
+                                           data-toggle="tooltip">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-hand-holding-usd"></span>
+                                                <span class="fas fa-hand-holding-usd"></span>
+                                            </span>
+                                        </a>
+                                        {if $zahlungsart->markedForDelete}
+                                            <a href="{$adminURL}{$route}?a=del&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-link sx-2"
+                                               title="{__('delete')}"
+                                               data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash"></span>
+                                                    <span class="fas fa-trash"></span>
+                                                </span>
+                                            </a>
+                                        {else}
+                                            <a href="{$adminURL}{$route}?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-link sx-2"
+                                               title="{__('edit')}"
+                                               data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </a>
+                                        {/if}
+                                    </div>
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="card-footer save-wrapper">
                 <form method="post" action="{$adminURL}{$route}" class="top">

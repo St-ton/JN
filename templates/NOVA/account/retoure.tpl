@@ -43,17 +43,12 @@
                                                 <td class="product">
                                                     <div class="d-flex flex-wrap">
                                                         <div class="d-flex flex-nowrap flex-grow-1">
-                                                            {include file='snippets/image.tpl'
-                                                            item=$rArtikel->Artikel
-                                                            square=false
-                                                            srcSize='sm'
-                                                            sizes='80px'
-                                                            width='80'
-                                                            height='80'
-                                                            class='img-aspect-ratio pr-2'
-                                                            alt=$rArtikel->cName
-                                                            style='max-width: 80px;'
-                                                            }
+                                                            <div class="d-block">
+                                                                {image lazy=true webp=true fluid=true
+                                                                src=$rArtikel->Artikel->Bilder[0]->cURLKlein|default:$smarty.const.BILD_KEIN_ARTIKELBILD_VORHANDEN
+                                                                alt=$rArtikel->cName
+                                                                class="img-aspect-ratio product-thumbnail pr-2"}
+                                                            </div>
 
                                                             <div class="d-flex flex-nowrap flex-grow-1 flex-column">
                                                                 <div class="d-inline-flex flex-nowrap justify-content-between">
@@ -72,6 +67,9 @@
                                                                 </div>
                                                                 <small class="text-muted-util d-block">
                                                                     Bestellnummer: {$rArtikel->cBestellNr}<br>
+                                                                    Referenz: {link href=$rArtikel->cBestellNr}
+                                                                        {$rArtikel->cArtNr}
+                                                                    {/link}<br>
                                                                     {$rArtikel->fAnzahl} {$rArtikel->cEinheit|default:''} x {$rArtikel->Preis}
                                                                 </small>
                                                             </div>

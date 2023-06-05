@@ -142,22 +142,33 @@ class Retoure
             "SELECT twarenkorbpos.kArtikel, twarenkorbpos.cEinheit, twarenkorbpos.cArtNr,
        twarenkorbpos.fPreisEinzelNetto, twarenkorbpos.fMwSt, twarenkorbpos.cName, tbestellung.kBestellung,
        tbestellung.kKunde, tbestellung.kLieferadresse, tbestellung.cStatus, tbestellung.cBestellNr,
-       tlieferscheinpos.kLieferschein, tlieferscheinpos.fAnzahl,
-       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS dVersandDatum,
+       tbestellung.dVersandDatum AS bestellungVersandDatum,
+       tlieferscheinpos.kLieferschein, tlieferscheinpos.fAnzahl, tartikel.cSeo,
+       DATE_FORMAT(FROM_UNIXTIME(tlieferschein.dErstellt), '%d-%m-%Y') AS lieferscheinVersandDatum,
+       DATE_FORMAT(FROM_UNIXTIME(tversand.dErstellt), '%d-%m-%Y') AS versandVersandDatum,
        tartikelattribut.cWert AS nicht_retournierbar
             FROM tbestellung
-            RIGHT JOIN twarenkorbpos
+            JOIN twarenkorbpos
                 ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
-            RIGHT JOIN tlieferscheinpos
+            JOIN tlieferscheinpos
                 ON tlieferscheinpos.kBestellPos = twarenkorbpos.kBestellpos
-            RIGHT JOIN tversand
+            JOIN tlieferschein
+            	ON tlieferschein.kLieferschein = tlieferscheinpos.kLieferschein
+                AND DATE(FROM_UNIXTIME(tlieferschein.dErstellt)) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
+            JOIN tversand
                 ON tversand.kLieferschein = tlieferscheinpos.kLieferschein
                 AND DATE(FROM_UNIXTIME(tversand.dErstellt)) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
             LEFT JOIN tartikelattribut
                 ON tartikelattribut.kArtikel = twarenkorbpos.kArtikel
                 AND tartikelattribut.cName = 'nicht_retournierbar'
+            LEFT JOIN tartikel
+                ON tartikel.kArtikel = twarenkorbpos.kArtikel
             WHERE tbestellung.kKunde = :customerID
-                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)",
+                AND tbestellung.cStatus IN (:status_versandt, :status_teilversandt)
+                AND (
+                    tbestellung.dVersandDatum IS NULL
+                        OR DATE(tbestellung.dVersandDatum) > DATE_SUB(NOW(), INTERVAL :cancellationTime DAY)
+                    )",
             [
                 'customerID' => $customerID,
                 'status_versandt' => \BESTELLUNG_STATUS_VERSANDT,

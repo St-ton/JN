@@ -149,6 +149,6 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
   width: 100%;
   height: auto;
 }
-table td.product-thumbnail {
-  width: 80px;
+.product-thumbnail {
+  max-width: 80px;
 }

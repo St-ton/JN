@@ -18,19 +18,19 @@
                         {cardbody}
                             {block name='rma-positions-body'}
                                 <div class="col-sm-12 col-md-4 dataTable-custom-filter">
-                                    {select name="bestellnummer" aria=["label"=>"Bestellnummer"]
-                                    class="custom-select custom-select-sm form-control form-control-sm"}
-                                        <option value="" selected>Alle Bestellungen</option>
-                                        {foreach $retournierbareBestellungen as $rBestellung}
-                                            <option value="{$rBestellung}">{$rBestellung}</option>
-                                        {/foreach}
-                                    {/select}
+                                    <label>
+                                        {select name="bestellnummer" aria=["label"=>"Bestellnummer"]
+                                        class="custom-select custom-select-sm form-control form-control-sm"}
+                                            <option value="" selected>Alle Bestellungen</option>
+                                            {foreach $retournierbareBestellungen as $rBestellung}
+                                                <option value="{$rBestellung}">{$rBestellung}</option>
+                                            {/foreach}
+                                        {/select}
+                                    </label>
                                 </div>
                                 <table id="returnable-items" class="table display compact">
                                     <thead>
                                     <tr>
-                                        <th>&nbsp;</th>
-                                        <th>&nbsp;</th>
                                         <th>&nbsp;</th>
                                         <th>&nbsp;</th>
                                     </tr>
@@ -40,28 +40,45 @@
                                         {foreach $retournierbareArtikel as $rArtikel}
                                             <tr>
                                                 <td class="d-none">{$rArtikel->cBestellNr}</td>
-                                                <td class="product-thumbnail">
-                                                    {include file='snippets/image.tpl'
-                                                    item=$rArtikel->Artikel
-                                                    square=false
-                                                    srcSize='sm'
-                                                    sizes='80px'
-                                                    width='80'
-                                                    height='80'
-                                                    class='img-aspect-ratio'
-                                                    alt=$rArtikel->cName}
-                                                </td>
-                                                <td>
+                                                <td class="product">
                                                     <div class="d-flex flex-wrap">
-                                                        <div class="flex-grow-1">
-                                                            <span class="font-weight-bold">{$rArtikel->cName}</span>
-                                                            <small class="text-muted-util d-block">
-                                                                Bestellnummer: {$rArtikel->cBestellNr}<br>
-                                                                {$rArtikel->fAnzahl} {$rArtikel->cEinheit|default:''} x {$rArtikel->Preis}
-                                                            </small>
+                                                        <div class="d-flex flex-nowrap flex-grow-1">
+                                                            {include file='snippets/image.tpl'
+                                                            item=$rArtikel->Artikel
+                                                            square=false
+                                                            srcSize='sm'
+                                                            sizes='80px'
+                                                            width='80'
+                                                            height='80'
+                                                            class='img-aspect-ratio pr-2'
+                                                            alt=$rArtikel->cName
+                                                            style='max-width: 80px;'
+                                                            }
+
+                                                            <div class="d-flex flex-nowrap flex-grow-1 flex-column">
+                                                                <div class="d-inline-flex flex-nowrap justify-content-between">
+                                                                    <span class="font-weight-bold">{$rArtikel->cName}</span>
+                                                                    <div class="custom-control custom-switch">
+                                                                        <input type='checkbox'
+                                                                               class='custom-control-input ra-switch'
+                                                                               id="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}"
+                                                                               name="returnItem"
+                                                                               {if false}checked{/if}
+                                                                               aria-label="Lorem ipsum">
+                                                                        <label class="custom-control-label"
+                                                                               for="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <small class="text-muted-util d-block">
+                                                                    Bestellnummer: {$rArtikel->cBestellNr}<br>
+                                                                    {$rArtikel->fAnzahl} {$rArtikel->cEinheit|default:''} x {$rArtikel->Preis}
+                                                                </small>
+                                                            </div>
                                                         </div>
-                                                        <div class="d-none formFields flex-wrap">
-                                                            <div class="qty-wrapper dropdown max-w-sm mr-2 mb-2">
+
+                                                        <div class="d-none retoureFormPositions flex-wrap mt-2 w-100">
+                                                            <div class="qty-wrapper max-w-sm mr-2 mb-2">
                                                                 {inputgroup id="quantity-grp{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}" class="form-counter choose_quantity"}
                                                                 {inputgroupprepend}
                                                                 {button variant="" class="btn-decrement"
@@ -73,14 +90,16 @@
                                                                 {input type="number"
                                                                 required=($rArtikel->Artikel->fAbnahmeintervall > 0)
                                                                 step="{if $rArtikel->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}any{elseif $rArtikel->Artikel->fAbnahmeintervall > 0}{$rArtikel->Artikel->fAbnahmeintervall}{else}1{/if}"
-                                                                id="quantity[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]" class="quantity" name="anzahl[]"
+                                                                min="1"
+                                                                max="{$rArtikel->fAnzahl}"
+                                                                id="quantity[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]" class="quantity" name="quantity[]"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$rArtikel->fAnzahl
                                                                 data=[
-                                                                    "decimals" => {getDecimalLength quantity=$rArtikel->Artikel->fAbnahmeintervall},
-                                                                    "product-id" => "{if isset($rArtikel->Artikel->kVariKindArtikel)}{$rArtikel->Artikel->kVariKindArtikel}{else}{$rArtikel->Artikel->kArtikel}{/if}",
-                                                                    "bid" => {$rArtikel->cBestellNr},
-                                                                    "aid" => {$rArtikel->kArtikel}
+                                                                "decimals" => {getDecimalLength quantity=$rArtikel->Artikel->fAbnahmeintervall},
+                                                                "product-id" => "{if isset($rArtikel->Artikel->kVariKindArtikel)}{$rArtikel->Artikel->kVariKindArtikel}{else}{$rArtikel->Artikel->kArtikel}{/if}",
+                                                                "bid" => {$rArtikel->cBestellNr},
+                                                                "aid" => {$rArtikel->kArtikel}
                                                                 ]
                                                                 }
                                                                 {inputgroupappend}
@@ -93,12 +112,12 @@
                                                                 {/inputgroup}
                                                             </div>
 
-                                                            <div class="flex-fill mr-2 mb-2">
+                                                            <div class="mr-2 mb-2">
                                                                 {select aria=["label"=>""]
                                                                 name="reason[]"
                                                                 data=[
-                                                                    "bid" => "{$rArtikel->cBestellNr}",
-                                                                    "aid" => "{$rArtikel->kArtikel}"
+                                                                "bid" => "{$rArtikel->cBestellNr}",
+                                                                "aid" => "{$rArtikel->kArtikel}"
                                                                 ]
                                                                 class="custom-select form-control"}
                                                                     <option value="-1" selected>Grund</option>
@@ -108,29 +127,14 @@
                                                                 {/select}
                                                             </div>
 
-                                                            <div class="flex-fill mr-2 mb-2">
+                                                            <div class="flex-grow-1 mr-2 mb-2">
                                                                 {textarea name="comment[]"
                                                                 data=[
-                                                                    "bid" => "{$rArtikel->cBestellNr}",
-                                                                    "aid" => "{$rArtikel->kArtikel}"
-                                                                ]}{/textarea}
+                                                                "bid" => "{$rArtikel->cBestellNr}",
+                                                                "aid" => "{$rArtikel->kArtikel}"
+                                                                ]
+                                                                rows=1}{/textarea}
                                                             </div>
-                                                        </div>
-
-                                                    </div>
-                                                </td>
-                                                <td class="text-right">
-                                                    <div class="d-inline-flex flex-nowrap">
-                                                        <div class="custom-control custom-switch">
-                                                            <input type='checkbox'
-                                                                   class='custom-control-input ra-switch'
-                                                                   id="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}"
-                                                                   name="returnItem"
-                                                               {if false}checked{/if}
-                                                               aria-label="Lorem ipsum">
-                                                            <label class="custom-control-label"
-                                                                   for="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
-                                                            </label>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -152,7 +156,8 @@
                                     {col cols=12}
                                         {block name='checkout-customer-shipping-address-country'}
                                             {formgroup label="Abholadrese" label-for="shippingAdress"}
-                                                {select name="shippingAdress" id="shippingAdress" class="custom-select" autocomplete="shipping Adress"}
+                                                {select name="shippingAdress" id="shippingAdress" class="custom-select"
+                                                autocomplete="shipping Adress"}
                                                     <option value="" selected disabled>Abholadrese</option>
                                                     {foreach $Lieferadressen as $lfa}
                                                         <option value="{$lfa->kLieferadresse}">
@@ -204,9 +209,7 @@
                     },
                     columns: [
                         { data: 'sort' },
-                        { data: 'image' },
-                        { data: 'product' },
-                        { data: 'buttons' }
+                        { data: 'product' }
                     ],
                     lengthMenu: [ [rows, rows*2, rows*3, rows*6, rows*10], [rows, rows*2, rows*3, rows*6, rows*10] ],
                     pageLength: rows,
@@ -225,9 +228,9 @@
 
             function toggleProduct(artikel, active) {
                 if (active) {
-                    artikel.closest('tr').find('.formFields').removeClass("d-none").addClass('d-flex');
+                    artikel.closest('tr').find('.retoureFormPositions').removeClass("d-none").addClass('d-flex');
                 } else {
-                    artikel.closest('tr').find('.formFields').removeClass("d-flex").addClass('d-none');
+                    artikel.closest('tr').find('.retoureFormPositions').removeClass("d-flex").addClass('d-none');
                 }
             }
 
@@ -238,7 +241,7 @@
             }
 
             $(document).ready(function () {
-                let customFilter = $('.dataTable-custom-filter select[name="bestellnummer"]');
+                const customFilter = $('.dataTable-custom-filter select[name="bestellnummer"]');
 
                 // Filter by order id
                 $.fn.dataTable.ext.search.push(function (settings, data) {
@@ -248,7 +251,7 @@
                     return orderId === orderIds || orderId === '';
                 });
 
-                let table = initDataTable('#returnable-items');
+                const table = initDataTable('#returnable-items');
 
                 // Set toggle listener again when table redraws
                 table.on('draw', function () {
@@ -260,6 +263,36 @@
                 });
 
                 setListenerForToggles();
+
+                $('.qty-wrapper .btn-decrement, .qty-wrapper .btn-increment').on('click', function () {
+                    let input = $(this).closest('.qty-wrapper').find('input.quantity'),
+                        step = parseFloat(input.attr('step')),
+                        min = parseFloat(input.attr('min')),
+                        max = parseFloat(input.attr('max')),
+                        val = parseFloat(input.val());
+                    if ($(this).hasClass('btn-increment')) {
+                        val += step;
+                        if (val > max) {
+                            val = max;
+
+                            let options = {
+                                message: 'Sie können nicht mehr Artikel retournieren als Sie bestellt haben.',
+                                title: 'Maximale Anzahl erreicht!'
+                            };
+                            eModal.alert({
+                                message: html,
+                                title: title
+                            });
+                        }
+                    } else {
+                        val -= step;
+                        if (val < min) {
+                            val = min;
+                            alert('Minimale Anzahl erreicht!');
+                        }
+                    }
+                    input.val(val);
+                });
 
                 $('#retoure').on('submit', function (e) {
                     e.preventDefault();

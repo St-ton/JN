@@ -2,6 +2,7 @@
 
 namespace JTL\Backend;
 
+use JsonException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
@@ -87,6 +88,38 @@ class JSONAPI
         }
 
         return $this->itemsToJson($this->getItems('tlink', ['kLink', 'cName'], null, $searchIn, $search, (int)$limit));
+    }
+
+    /**
+     * @param string|array|null $search
+     * @param int|string        $limit
+     * @param string            $keyName
+     * @param int               $linkGroupID
+     * @return string
+     * @throws JsonException
+     * @since 5.2.3
+     */
+    public function getPagesByLinkGroup(
+        string $search = '',
+        int $limit = 50,
+        int $linkGroupID = 0,
+        string $keyName = 'kLink'
+    ): string {
+        if ($linkGroupID === 0) {
+            return $this->getPages($search, $limit, $keyName);
+        }
+
+        return $this->itemsToJson(
+            $this->db->getObjects(
+                "SELECT kLink, cName
+                FROM tlink
+                    JOIN tlinkgroupassociations
+                        ON tlink.kLink = tlinkgroupassociations.linkID AND tlinkgroupassociations.linkGroupID = :GroupID
+                WHERE tlink.cName LIKE '%" . $search . "%'
+                LIMIT " . $limit,
+                ['GroupID' => $linkGroupID]
+            ) ?? []
+        );
     }
 
     /**
@@ -415,7 +448,7 @@ class JSONAPI
     /**
      * @param array|mixed $items
      * @return string
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function itemsToJson($items): string
     {

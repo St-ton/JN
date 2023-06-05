@@ -3,7 +3,47 @@
         $('.duplicate-special-link').closest('.link-group-wrapper').find('.duplicate-special-page-warning')
             .removeClass('d-none');
     });
+
+    function onSelectVaterLink(e, item) {
+        $(e.target).closest("form").find("input[name='kVaterLink']").val(item.kLink);
+        $(e.target).trigger("change");
+    }
+
+    function confirmLinkAction(elem, formID, title="") {
+        let modalMSG = "";
+        if ($(elem).val() < 0) {
+            return false;
+        }
+        if (title.length > 0) {
+            let val = "";
+            if ($(elem).find("option:selected").length > 0) {
+                val = $(elem).find("option:selected").html();
+            } else {
+                let suggestions = [];
+                let typeahead = $(elem).closest(".twitter-typeahead");
+
+                if (typeahead.length) {
+                    typeahead.find(".tt-suggestion.tt-selectable").each(function(){
+                        suggestions.push($(this).text());
+                    });
+                }
+                if (suggestions.indexOf($(elem).val()) > -1) {
+                    val = $(elem).val();
+                }
+            }
+            if (val === '') {
+                return false;
+            }
+            modalMSG = title + ": " + val;
+            $("#areYouSureModal .modal-body").html(modalMSG);
+        }
+        $("#areYouSureModal")
+            .attr("data-form-id", formID)
+            .modal("show");
+    }
 </script>
+
+
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content">
@@ -116,3 +156,4 @@
         </div>
     </form>
 </div>
+{include file='tpl_inc/links_action_modal.tpl'}

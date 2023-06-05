@@ -29,7 +29,7 @@ final class Uninstaller
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
@@ -56,7 +56,10 @@ final class Uninstaller
         if ($pluginID <= 0) {
             return InstallCode::WRONG_PARAM;
         }
-        $data   = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        $data = $this->db->select('tplugin', 'kPlugin', $pluginID);
+        if ($data === null) {
+            return InstallCode::NO_PLUGIN_FOUND;
+        }
         $loader = (int)$data->bExtension === 1
             ? new PluginLoader($this->db, $this->cache)
             : new LegacyPluginLoader($this->db, $this->cache);

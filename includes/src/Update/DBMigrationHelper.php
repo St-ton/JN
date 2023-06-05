@@ -73,7 +73,14 @@ class DBMigrationHelper
         $versionInfo->innodb = new stdClass();
 
         $versionInfo->innodb->support = $innodbSupport && \in_array($innodbSupport->SUPPORT, ['YES', 'DEFAULT'], true);
-        $versionInfo->innodb->version = $db->getSingleObject("SHOW VARIABLES LIKE 'innodb_version'")->Value;
+        /*
+         * Since MariaDB 10.0, the default InnoDB implementation is based on InnoDB from MySQL 5.6.
+         * Since MariaDB 10.3.7 and later, the InnoDB implementation has diverged substantially from the
+         * InnoDB in MySQL and the InnoDB Version is no longer reported.
+         */
+        $versionInfo->innodb->version = $db->getSingleObject(
+            "SHOW VARIABLES LIKE 'innodb_version'"
+        )->Value ?? '';
         $versionInfo->innodb->size    = $innodbSize;
         $versionInfo->collation_utf8  = $utf8Support && \mb_convert_case(
             $utf8Support->IS_COMPILED,

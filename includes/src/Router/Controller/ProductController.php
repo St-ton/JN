@@ -124,13 +124,13 @@ class ProductController extends AbstractController
     {
         $name                 = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
         $visibilityMiddleware = new VisibilityMiddleware();
-        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName)
             ->middleware($visibilityMiddleware);
         $route->get('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_NAME' . $dynName)
             ->middleware($visibilityMiddleware);
-        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PRODUCT_BY_ID' . $dynName . 'POST')
             ->middleware($visibilityMiddleware);
         $route->post('/' . \ROUTE_PREFIX_PRODUCTS . '/{' . $name . '}', $this->getResponse(...))
@@ -224,7 +224,7 @@ class ProductController extends AbstractController
         }
         // Canonical bei non SEO Shops oder wenn SEO kein Ergebnis geliefert hat
         if (empty($this->canonicalURL)) {
-            $this->canonicalURL = $shopURL . $this->currentProduct->cSeo;
+            $this->canonicalURL = $this->currentProduct->cURLFull;
         }
         $this->currentProduct->berechneSieSparenX((int)$this->config['artikeldetails']['sie_sparen_x_anzeigen']);
 

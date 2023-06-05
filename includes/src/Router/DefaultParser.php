@@ -85,10 +85,12 @@ class DefaultParser
     }
 
     /**
-     * @param string $slug
+     * @param string      $slug
+     * @param array|null  $replacements
+     * @param string|null $type
      * @return string
      */
-    public function parse(string $slug): string
+    public function parse(string $slug, ?array $replacements = null, ?string $type = null): string
     {
         $page = 0;
         $slug = $this->checkCustomFilters($slug);
@@ -102,8 +104,22 @@ class DefaultParser
             $slug = \mb_substr($slug, 0, $matches[1][1]);
         }
         if ($page === 1 && \mb_strlen($slug) > 0) {
+            $url = Shop::getURL() . '/';
+            if ($type !== null && isset($replacements['name'])) {
+                $replacements['name'] = \mb_substr($replacements['name'], 0, $matches[1][1]);
+                $url                  = Shop::getRouter()->getURLByType($type, $replacements);
+            } elseif (isset($replacements['lang'])) {
+                $c1 = Shop::getSettingValue(\CONF_GLOBAL, 'routing_default_language');
+                $c2 = Shop::getSettingValue(\CONF_GLOBAL, 'routing_scheme');
+                if ($c1 === 'L' || $c2 === 'L') {
+                    $url .= $replacements['lang'] . '/';
+                }
+                $url .= $slug;
+            } else {
+                $url .= $slug;
+            }
             \http_response_code(301);
-            \header('Location: ' . Shop::getURL() . '/' . $slug);
+            \header('Location: ' . $url);
             exit();
         }
         if ($page > 0) {

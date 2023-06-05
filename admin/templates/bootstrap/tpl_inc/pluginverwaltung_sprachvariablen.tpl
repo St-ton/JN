@@ -20,51 +20,53 @@
                     <div class="subheading1">{__('pluginverwaltungLocales')}</div>
                     <hr class="mb-n3">
                 </div>
-                <div class="table-responsive card-body">
-                    <table class="list table min-w-lg">
-                        <thead>
-                        <tr>
-                            <th class="text-left">{__('pluginName')}</th>
-                            <th class="text-left">{__('description')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $plugin->getLocalization()->getLangVars() as $var}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="list table min-w-lg">
+                            <thead>
                             <tr>
-                                <td style="max-width:150px"><i>{$var->name}</i></td>
-                                <td>{__($var->description)}</td>
+                                <th class="text-left">{__('pluginName')}</th>
+                                <th class="text-left">{__('description')}</th>
                             </tr>
-                            {foreach $pluginLanguages as $lang}
+                            </thead>
+                            <tbody>
+                            {foreach $plugin->getLocalization()->getLangVars() as $var}
                                 <tr>
-                                    {assign var=cISOSprache value=strtoupper($lang->getIso())}
+                                    <td style="max-width:150px"><i>{$var->name}</i></td>
+                                    <td>{__($var->description)}</td>
+                                </tr>
+                                {foreach $pluginLanguages as $lang}
+                                    <tr>
+                                        {assign var=cISOSprache value=strtoupper($lang->getIso())}
+                                        <td>
+                                            <label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label>
+                                        </td>
+                                        <td>
+                                            {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
+                                                {$value = $var->values[$cISOSprache]|escape:'html'}
+                                            {else}
+                                                {$value = ''}
+                                            {/if}
+                                            {if $var->type === 'textarea'}
+                                                <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
+                                            {else}
+                                                <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
+                                            {/if}
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                <tr>
+                                    <td>&nbsp;</td>
                                     <td>
-                                        <label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label>
-                                    </td>
-                                    <td>
-                                        {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
-                                            {$value = $var->values[$cISOSprache]|escape:'html'}
-                                        {else}
-                                            {$value = ''}
-                                        {/if}
-                                        {if $var->type === 'textarea'}
-                                            <textarea id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}">{$value}</textarea>
-                                        {else}
-                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" name="{$var->id}_{$cISOSprache}" type="{$var->type}" value="{$value}" />
-                                        {/if}
+                                        <button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger">
+                                            <i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}
+                                        </button>
                                     </td>
                                 </tr>
                             {/foreach}
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td>
-                                    <button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger">
-                                        <i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}
-                                    </button>
-                                </td>
-                            </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">

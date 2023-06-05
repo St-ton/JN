@@ -853,17 +853,13 @@ function respTableSwipeIndicator(tables)
         } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
             table = tables[i].firstElementChild;
         }
-        if (typeof table !== 'undefined' && !table.getElementsByClassName('swipeIndicator').length) {
-            let swipeIndicator = document.createElement('div');
-            swipeIndicator.className = 'swipeIndicator';
-            for (let i = 0; i < 3; i++) {
-                swipeIndicator.appendChild(document.createElement('span'));
-            }
-            table.appendChild(swipeIndicator);
-            // Set position of swipeIndicator to appear in the first ROW of the table
-            let thead = $(table).find('thead');
+        if (typeof table !== 'undefined' && !table.getElementsByClassName('tableScrollRightArrow').length) {
+            let swipeIndicator = document.createElement('th');
+            swipeIndicator.className = 'tableScrollRightArrow';
+            swipeIndicator.innerHTML = '<span>➜</span>';
+            let thead = $(table).find('thead tr');
             if (thead.length) {
-                swipeIndicator.style.top = thead.height() + swipeIndicator.offsetHeight + 'px';
+                $(swipeIndicator).appendTo(thead);
             }
             table.addEventListener("scroll", () => {
                 swipeIndicator.remove();

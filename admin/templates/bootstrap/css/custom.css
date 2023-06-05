@@ -2658,41 +2658,27 @@ input[type=number] {
 .table-responsive {
   position: relative;
 }
-.swipeIndicator {
+.tableScrollRightArrow {
   position: absolute;
-  top: 88px;
-  right: 60px;
-  transform: translate(-50%, -50%) rotate(-90deg);
+  right: 0;
   z-index: 1;
+  margin: 0 !important;
+  height: 50.65px;
 }
-.swipeIndicator span {
-  display: block;
-  width: 1.5rem;
-  height: 1.5rem;
-  border-bottom: 5px solid #5cbcf6;
-  border-right: 5px solid #5cbcf6;
-  transform: rotate(45deg);
-  margin: -10px;
-  opacity: 0;
-  animation: 2s infinite swipeArrowAnimation;
+.tableScrollRightArrow > span {
+  vertical-align: top;
+  font-size: 1rem;
+  animation: 2s infinite rightArrowAnimation;
 }
-.swipeIndicator span:nth-child(2) {
-  animation-delay: -0.2s;
-}
-.swipeIndicator span:nth-child(3) {
-  animation-delay: -0.4s;
-}
-@keyframes swipeArrowAnimation {
+@keyframes rightArrowAnimation {
   0% {
-    opacity: 0;
-    transform: rotate(45deg) translate(-20px, -20px);
+    opacity: 0.5;
   }
   50% {
     opacity: 1;
   }
   100% {
-    opacity: 0;
-    transform: rotate(45deg) translate(20px, 20px);
+    opacity: 0.5;
   }
 }
 /*# sourceMappingURL=custom.css.map */

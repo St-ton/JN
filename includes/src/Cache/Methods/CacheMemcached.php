@@ -18,7 +18,7 @@ class CacheMemcached implements ICachingMethod
     use JTLCacheTrait;
 
     /**
-     * @var Memcached
+     * @var Memcached|null
      */
     private ?Memcached $memcached = null;
 
@@ -126,24 +126,33 @@ class CacheMemcached implements ICachingMethod
     }
 
     /**
-     * @todo: get the right array index, not just the first one
      * @inheritdoc
      */
     public function getStats(): array
     {
-        if (\method_exists($this->memcached, 'getStats')) {
-            $stats = $this->memcached->getStats();
-            if (\is_array($stats) && ($stat = first($stats)) !== null) {
-                return [
-                    'entries' => $stat['curr_items'],
-                    'hits'    => $stat['get_hits'],
-                    'misses'  => $stat['get_misses'],
-                    'inserts' => $stat['cmd_set'],
-                    'mem'     => $stat['bytes']
-                ];
-            }
+        if (!\method_exists($this->memcached, 'getStats')) {
+            return [];
+        }
+        $stats = $this->memcached->getStats();
+        if (!\is_array($stats) || \count($stats) === 0) {
+            return [];
+        }
+        $stat = null;
+        if (\count($stats) > 1) {
+            $options = $this->getOptions();
+            $stat    = $stats[$options['memcache_host'] . ':' . $options['memcache_port']] ?? null;
+        }
+        if ($stat === null) {
+            $stat = first($stats);
         }
 
-        return [];
+        return [
+            'entries' => $stat['curr_items'],
+            'hits'    => $stat['get_hits'],
+            'misses'  => $stat['get_misses'],
+            'inserts' => $stat['cmd_set'],
+            'mem'     => $stat['bytes'],
+            'max'     => $stat['limit_maxbytes']
+        ];
     }
 }

@@ -452,12 +452,12 @@ $(document).ready(function () {
     deleteConfirmation();
 
     // Responsive table swipe indicator
-    respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    tableRightArrow(document.getElementsByClassName("table-responsive"));
     $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+        tableRightArrow(document.getElementsByClassName("table-responsive"));
     });
     $('.collapse').on('shown.bs.collapse', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+        tableRightArrow(document.getElementsByClassName("table-responsive"));
     });
 });
 
@@ -843,26 +843,46 @@ $.fn.isOnScreen = function(){
  * @since 5.3.0
  * @param tables
  */
-function respTableSwipeIndicator(tables)
+function tableRightArrow(tables)
 {
     for (let i = 0; i < tables.length; i++) {
         let table;
-        // Check if the table itself is scrollable or if the first child is scrollable
+        // Check if the table itself or its first child is scrollable
         if (tables[i].scrollWidth > tables[i].offsetWidth) {
             table = tables[i];
         } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
             table = tables[i].firstElementChild;
         }
-        if (typeof table !== 'undefined' && !table.getElementsByClassName('tableScrollRightArrow').length) {
-            let swipeIndicator = document.createElement('th');
-            swipeIndicator.className = 'tableScrollRightArrow';
-            swipeIndicator.innerHTML = '<span>➜</span>';
-            let thead = $(table).find('thead tr');
-            if (thead.length) {
-                $(swipeIndicator).appendTo(thead);
-            }
-            table.addEventListener("scroll", () => {
-                swipeIndicator.remove();
+        if (typeof table !== 'undefined' && !$(table).find('.tableScrollRightArrow').length) {
+            let rightArrow = document.createElement('span'),
+                content = $(document.createElement('span'));
+            rightArrow.innerHTML = '➜';
+            rightArrow.className = 'rightArrow text-right';
+            let thContent;
+
+            $(table).find('thead tr th').each(function () {
+                let diff = ($(this).position().left + $(this).outerWidth()) - $(table).outerWidth();
+                // Check if the th is in the visible area
+                if (diff > -20) {
+                    thContent = $(this);
+                    let w = thContent.width();
+                    content.width(w - diff - 16);
+                    content.addClass('thContent');
+                    content.html(thContent.html());
+                    thContent.html('');
+                    content.appendTo(thContent);
+                    $(rightArrow).width(w - diff);
+                    thContent.addClass('tableScrollRightArrow');
+                    $(rightArrow).appendTo(thContent);
+                    return false;
+                }
+            });
+            table.addEventListener('scroll', () => {
+                // Remove the arrow if the table is scrolled
+                thContent.html(content.html());
+                thContent.removeClass('tableScrollRightArrow');
+                content.remove();
+                rightArrow.remove();
             });
         }
     }

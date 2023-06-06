@@ -2659,18 +2659,17 @@ input[type=number] {
   position: relative;
 }
 .tableScrollRightArrow {
-  position: absolute;
-  right: 0;
-  z-index: 1;
-  margin: 0 !important;
-  height: 50.65px;
+  text-align: left !important;
 }
-.tableScrollRightArrow > span {
-  vertical-align: top;
-  font-size: 1rem;
-  animation: 2s infinite rightArrowAnimation;
+.tableScrollRightArrow .thContent {
+  overflow-x: clip;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
-@keyframes rightArrowAnimation {
+.tableScrollRightArrow .rightArrow {
+  animation: 1s infinite tableScrollRightArrowAnimation;
+}
+@keyframes tableScrollRightArrowAnimation {
   0% {
     opacity: 0.5;
   }

@@ -84,7 +84,7 @@ class NewsController extends AbstractController
         }
         if ($name !== null) {
             $parser = new DefaultParser($this->db, $this->state);
-            $name   = $parser->parse($name);
+            $name   = $parser->parse($name, $args);
         }
         $seo = $id > 0
             ? $this->db->getSingleObject(
@@ -118,11 +118,11 @@ class NewsController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_NEWS . '/{id:\d+}', $this->getResponse(...))
+        $route->get('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_NEWS_BY_ID' . $dynName);
         $route->get('/' . \ROUTE_PREFIX_NEWS . '[/{' . $name . '}]', $this->getResponse(...))
             ->setName('ROUTE_NEWS_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_NEWS . '/{id:\d+}', $this->getResponse(...))
+        $route->post('/' . \ROUTE_PREFIX_NEWS . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_NEWS_BY_ID' . $dynName . 'POST');
         $route->post('/' . \ROUTE_PREFIX_NEWS . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_NEWS_BY_NAME' . $dynName . 'POST');

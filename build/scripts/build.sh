@@ -68,12 +68,6 @@ build_create()
     echo "Create delete files csv";
     build_create_deleted_files_csv;
 
-    echo "Move class files";
-    build_move_class_files;
-
-    echo "Set classes path";
-    build_set_classes_path;
-
     echo "Add old files";
     build_add_old_files;
 
@@ -141,28 +135,17 @@ build_create_deleted_files_csv()
 
     cd ${REPOSITORY_DIR};
     git pull >/dev/null 2>&1;
-    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION_BASE} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
+    git diff --name-only --diff-filter D tags/v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION_BASE} -- ${REPOSITORY_DIR} ':!includes/ext' ':!includes/plugins' ':!templates/Evo' > ${DELETE_FILES_CSV_FILENAME};
 
     echo "  Deleted files schema admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
 }
 
 build_move_class_files()
 {
-    # Move admin old classes
-    if [[ -d "${REPOSITORY_DIR}/admin/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/admin/classes/old/. ${REPOSITORY_DIR}/admin/classes;
-        rm -R ${REPOSITORY_DIR}/admin/classes/old;
-    fi
-    # Move old classes
-    if [[ -d "${REPOSITORY_DIR}/classes/old/" ]]; then
-        cp -a ${REPOSITORY_DIR}/classes/old/. ${REPOSITORY_DIR}/classes;
-        rm -R ${REPOSITORY_DIR}/classes/old;
-    fi
 }
 
 build_set_classes_path()
 {
-    sed -i "s/'PFAD_CLASSES', '.*'/'PFAD_CLASSES', 'classes\/'/g" ${REPOSITORY_DIR}/includes/defines.php
 }
 
 build_add_old_files()
@@ -384,8 +367,6 @@ build_add_files_to_patch_dir()
     rsync -R admin/includes/shopmd5files/dbstruct_${VERSION}.json ${PATCH_DIR};
     rsync -R admin/includes/shopmd5files/deleted_files_${VERSION}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
-    rsync -rR admin/classes/ ${PATCH_DIR};
-    rsync -rR classes/ ${PATCH_DIR};
     rsync -rR includes/ext/ ${PATCH_DIR};
     rsync -rR includes/vendor/ ${PATCH_DIR};
     rsync -rR templates/NOVA/checksums.csv ${PATCH_DIR};

@@ -9,6 +9,7 @@ use JTL\Checkbox\CheckboxDataTableObject;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageService;
 use JTL\Checkbox\CheckboxLanguage\CheckboxLanguageDataTableObject;
 use JTL\Checkbox\CheckboxService;
+use JTL\Checkbox\CheckboxValidationDataObject;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\GeneralObject;
@@ -33,6 +34,8 @@ use stdClass;
  */
 class CheckBox
 {
+    public const CHECKBOX_DOWNLOAD_ORDER_COMPLETE = 'RightOfWithdrawalOfDownloadItems';
+
     /**
      * @var int
      */
@@ -191,7 +194,7 @@ class CheckBox
     /**
      * @var int
      */
-    public int  $nInternal = 0;
+    public int $nInternal = 0;
 
     /**
      * @param int              $id
@@ -363,37 +366,18 @@ class CheckBox
                 $customerGroupID = CustomerGroup::getDefaultGroupID();
             }
         }
-        $sql = '';
-        if ($active) {
-            $sql .= ' AND nAktiv = 1';
-        }
-        if ($special) {
-            $sql .= ' AND kCheckBoxFunktion > 0';
-        }
-        if ($logging) {
-            $sql .= ' AND nLogging = 1';
-        }
-        $checkboxes = $this->db->getCollection(
-            "SELECT kCheckBox AS id
-                FROM tcheckbox
-                WHERE FIND_IN_SET('" . $location . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
-                    AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
-                    " . $sql . '
-                ORDER BY nSort'
-        )->map(function (stdClass $e): self {
-            return new self((int)$e->id, $this->db);
-        })->all();
-        \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
-            'oCheckBox_arr' => &$checkboxes,
-            'nAnzeigeOrt'   => $location,
-            'kKundengruppe' => $customerGroupID,
-            'bAktiv'        => $active,
-            'bSprache'      => $lang,
-            'bSpecial'      => $special,
-            'bLogging'      => $logging
-        ]);
+        $validationData = (new CheckboxValidationDataObject())->hydrate(
+            [
+                'customerGroupId' => $customerGroupID,
+                'location'        => $location,
+                'active'          => $active,
+                'logging'         => $logging,
+                'special'         => $special,
+                'language'        => $lang,
+            ]
+        );
 
-        return $checkboxes;
+        return $this->service->getCheckBoxValidationData($validationData);
     }
 
     /**

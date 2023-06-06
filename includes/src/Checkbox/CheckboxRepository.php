@@ -3,6 +3,7 @@
 namespace JTL\Checkbox;
 
 use JTL\Abstracts\AbstractRepository;
+use JTL\CheckBox;
 use stdClass;
 
 /**
@@ -51,9 +52,9 @@ class CheckboxRepository extends AbstractRepository
             return false;
         }
         $this->getDB()->query(
-            'UPDATE '. $this->getTableName()
+            'UPDATE ' . $this->getTableName()
             . ' SET nAktiv = 1'
-            . ' WHERE '. $this->getKeyName() . ' IN ('
+            . ' WHERE ' . $this->getKeyName() . ' IN ('
             . \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 
@@ -70,9 +71,9 @@ class CheckboxRepository extends AbstractRepository
             return false;
         }
         $this->getDB()->query(
-            'UPDATE '. $this->getTableName()
+            'UPDATE ' . $this->getTableName()
             . ' SET nAktiv = 0'
-            . ' WHERE '. $this->getKeyName() . ' IN (' .
+            . ' WHERE ' . $this->getKeyName() . ' IN (' .
             \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 
@@ -83,7 +84,7 @@ class CheckboxRepository extends AbstractRepository
      * @param array $values
      * @return bool
      */
-    public function delete(array $values) :bool
+    public function delete(array $values): bool
     {
         if (\count($values) === 0) {
             return false;
@@ -98,5 +99,36 @@ class CheckboxRepository extends AbstractRepository
         );
 
         return true;
+    }
+
+    /**
+     * Since Hook expects an array of CheckBox-objects....
+     * @param CheckboxValidationDataObject $data
+     * @return array
+     */
+    public function getCheckBoxValidationData(
+        CheckboxValidationDataObject $data
+    ): array {
+        $sql = '';
+        if ($data->getActive() === true) {
+            $sql .= ' AND nAktiv = 1';
+        }
+        if ($data->getSpecial() === true) {
+            $sql .= ' AND kCheckBoxFunktion > 0';
+        }
+        if ($data->getLogging() === true) {
+            $sql .= ' AND nLogging = 1';
+        }
+
+        return $this->db->getCollection(
+            "SELECT kCheckBox AS id
+                FROM tcheckbox
+                WHERE FIND_IN_SET('" . $data->getLocation() . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
+                    AND FIND_IN_SET('" . $data->getCustomerGroupId() . "', REPLACE(cKundengruppe, ';', ',')) > 0
+                    " . $sql . '
+                ORDER BY nSort'
+        )->map(function (stdClass $e): CheckBox {
+            return new CheckBox((int)$e->id, $this->db);
+        })->all();
     }
 }

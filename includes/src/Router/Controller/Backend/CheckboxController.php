@@ -27,7 +27,7 @@ class CheckboxController extends AbstractBackendController
      * @var array|array[]
      */
     private array $internalBoxDefaults = [
-        'RightOfWithdrawalOfDownloadItems' => [
+        CheckBox::CHECKBOX_DOWNLOAD_ORDER_COMPLETE => [
             'nInternal'         => true,
             'cAnzeigeOrt'       => ';2;',
             'nPflicht'          => true,

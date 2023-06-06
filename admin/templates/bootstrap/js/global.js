@@ -451,13 +451,27 @@ $(document).ready(function () {
     getSettingListeners();
     deleteConfirmation();
 
-    // Responsive table swipe indicator
-    tableRightArrow(document.getElementsByClassName("table-responsive"));
+    // Add top scrollbar to tables when they are scrollable.
+    $('.table-responsive').topScrollbar();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
-        tableRightArrow(document.getElementsByClassName("table-responsive"));
+        $(this).closest('.tabs').find('.tab-content .table-responsive').topScrollbar();
     });
     $('.collapse').on('shown.bs.collapse', function () {
-        tableRightArrow(document.getElementsByClassName("table-responsive"));
+        $(this).find('.table-responsive').topScrollbar();
+    });
+    $('img[loading="lazy"]').on('load',function(){
+        $(this).closest('.table-responsive').topScrollbar();
+    });
+    let windowResizeTimeout = null;
+    function windowResized() {
+        $('.table-responsive').topScrollbar();
+    }
+    $(window).on('resize', function () {
+        if (windowResizeTimeout) {
+            $('.jquery-top-scrollbar').remove();
+            clearTimeout(windowResizeTimeout);
+        }
+        windowResizeTimeout = setTimeout(windowResized, 500);
     });
 });
 
@@ -836,55 +850,3 @@ $.fn.isOnScreen = function(){
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };
-
-/**
- * Adds three arrows to inform the user about the scrollable content
- * @returns void
- * @since 5.3.0
- * @param tables
- */
-function tableRightArrow(tables)
-{
-    for (let i = 0; i < tables.length; i++) {
-        let table;
-        // Check if the table itself or its first child is scrollable
-        if (tables[i].scrollWidth > tables[i].offsetWidth) {
-            table = tables[i];
-        } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
-            table = tables[i].firstElementChild;
-        }
-        if (typeof table !== 'undefined' && !$(table).find('.tableScrollRightArrow').length) {
-            let rightArrow = document.createElement('span'),
-                content = $(document.createElement('span'));
-            rightArrow.innerHTML = '➜';
-            rightArrow.className = 'rightArrow text-right';
-            let thContent;
-
-            $(table).find('thead tr th').each(function () {
-                let diff = ($(this).position().left + $(this).outerWidth()) - $(table).outerWidth();
-                // Check if the th is in the visible area
-                if (diff > -20) {
-                    thContent = $(this);
-                    let w = thContent.width();
-                    content.width(w - diff - 16);
-                    content.addClass('thContent');
-                    content.html(thContent.html());
-                    thContent.html('');
-                    content.appendTo(thContent);
-                    $(rightArrow).width(w - diff);
-                    thContent.addClass('tableScrollRightArrow');
-                    $(rightArrow).appendTo(thContent);
-                    return false;
-                }
-            });
-            table.addEventListener('scroll', () => {
-                // Remove the arrow if the table is scrolled
-                thContent.html(content.html());
-                thContent.removeClass('tableScrollRightArrow');
-                content.remove();
-                rightArrow.remove();
-            });
-        }
-    }
-}
-

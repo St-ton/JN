@@ -54,6 +54,7 @@
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/moment-with-locales.js"/>
             <File Path="js/tempusdominus-bootstrap-4.min.js"/>
+            <File Path="js/jquery.top_scrollbar.js"/>
         </JS>
     </Minify>
 </Template>

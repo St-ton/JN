@@ -2655,29 +2655,4 @@ input[type=number] {
     max-width: 412px;
   }
 }
-.table-responsive {
-  position: relative;
-}
-.tableScrollRightArrow {
-  text-align: left !important;
-}
-.tableScrollRightArrow .thContent {
-  overflow-x: clip;
-  text-overflow: ellipsis;
-  display: inline-block;
-}
-.tableScrollRightArrow .rightArrow {
-  animation: 1s infinite tableScrollRightArrowAnimation;
-}
-@keyframes tableScrollRightArrowAnimation {
-  0% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.5;
-  }
-}
 /*# sourceMappingURL=custom.css.map */

@@ -248,11 +248,11 @@ class DataAttribute
     public static function create(
         string $name,
         string $dataType,
-               $default = null,
+        $default = null,
         bool   $nullable = true,
         bool   $isPrimaryKey = false,
         string $foreignKey = null,
-               $foreignKeyChild = null,
+        $foreignKeyChild = null,
         bool   $dynamic = false
     ): self {
         $item = new self();

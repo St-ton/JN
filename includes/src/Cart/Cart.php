@@ -294,10 +294,10 @@ class Cart
      */
     public function fuegeEin(
         int    $productID,
-               $qty,
+        $qty,
         array  $attributeValues,
         int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
-               $unique = false,
+        $unique = false,
         int    $configItemID = 0,
         bool   $setzePositionsPreise = true,
         string $responsibility = 'core'

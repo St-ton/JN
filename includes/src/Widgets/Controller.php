@@ -243,7 +243,7 @@ class Controller
         string $dataName,
         string $tpl,
         string $wrapperID,
-               $post = null
+        $post = null
     ): IOResponse {
         $this->getText->loadAdminLocale('widgets');
         $response    = new IOResponse();

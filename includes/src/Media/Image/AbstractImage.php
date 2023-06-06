@@ -147,8 +147,8 @@ abstract class AbstractImage implements IMedia
      */
     public static function getRequest(
         string $type,
-               $id,
-               $mixed,
+        $id,
+        $mixed,
         string $size,
         int    $number = 1,
         string $sourcePath = null

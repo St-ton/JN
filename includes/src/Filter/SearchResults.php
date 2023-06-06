@@ -700,8 +700,8 @@ class SearchResults implements SearchResultsInterface
      */
     public function setFilterOptions(
         ProductFilter $productFilter,
-                      $currentCategory = null,
-                      $selectionWizard = false
+        $currentCategory = null,
+        $selectionWizard = false
     ): SearchResultsInterface {
         if ($productFilter->isExtendedJTLSearch()) {
             return $this;

@@ -95,10 +95,10 @@ class PersistentCartItem
      */
     public function __construct(
         int    $productID,
-               $productName,
-               $qty,
+        $productName,
+        $qty,
         int    $cartItemID,
-               $unique = '',
+        $unique = '',
         int    $configItemID = 0,
         int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'

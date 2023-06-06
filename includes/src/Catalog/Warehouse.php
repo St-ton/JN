@@ -586,7 +586,7 @@ class Warehouse extends MainModel
     public static function getByProduct(
         int  $productID,
         int  $langID = null,
-             $config = null,
+        $config = null,
         bool $active = true
     ): array {
         $warehouses = [];

@@ -707,7 +707,7 @@ class ShippingMethod
         string $deliveryCountry,
         string $shippingClasses,
         int    $customerGroupID,
-               $product,
+        $product,
         bool   $checkProductDepedency = true
     ) {
         $favourableIDX   = 0;
@@ -830,7 +830,7 @@ class ShippingMethod
     public static function gibArtikelabhaengigeVersandkosten(
         string  $country,
         Artikel $product,
-                $amount,
+        $amount,
         bool    $checkDeliveryAddress = true
     ) {
         $taxRate    = null;

@@ -68,7 +68,7 @@ class Import
      */
     public function import(
         string  $id,
-                $target,
+        $target,
         array   $fields = [],
         ?string $delim = null,
         int     $importType = self::TYPE_INSERT_NEW

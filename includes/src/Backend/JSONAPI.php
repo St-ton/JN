@@ -324,8 +324,8 @@ class JSONAPI
         string  $table,
         array   $columns,
         ?string $addCacheTag = null,
-                $searchIn = null,
-                $searchFor = null,
+        $searchIn = null,
+        $searchFor = null,
         int     $limit = 0
     ): array {
         if ($this->validateTableName($table) === false || $this->validateColumnNames($table, $columns) === false) {

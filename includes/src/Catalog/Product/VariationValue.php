@@ -316,9 +316,9 @@ class VariationValue
      */
     public function addPrices(
         Artikel  $product,
-                 $taxRate,
+        $taxRate,
         Currency $currency,
-                 $mayViewPrices,
+        $mayViewPrices,
         int      $precision,
         string   $per
     ): void {

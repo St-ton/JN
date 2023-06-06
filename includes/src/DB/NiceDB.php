@@ -633,12 +633,12 @@ class NiceDB implements DbInterface
      */
     public function selectSingleRow(
         string $tableName,
-               $keyname,
-               $keyvalue,
-               $keyname1 = null,
-               $keyvalue1 = null,
-               $keyname2 = null,
-               $keyvalue2 = null,
+        $keyname,
+        $keyvalue,
+        $keyname1 = null,
+        $keyvalue1 = null,
+        $keyname2 = null,
+        $keyvalue2 = null,
         bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
@@ -700,12 +700,12 @@ class NiceDB implements DbInterface
      */
     public function select(
         string $tableName,
-               $keyname,
-               $keyvalue,
-               $keyname1 = null,
-               $keyvalue1 = null,
-               $keyname2 = null,
-               $keyvalue2 = null,
+        $keyname,
+        $keyvalue,
+        $keyname1 = null,
+        $keyvalue1 = null,
+        $keyname2 = null,
+        $keyvalue2 = null,
         bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
@@ -727,11 +727,11 @@ class NiceDB implements DbInterface
      */
     public function selectArray(
         string $tableName,
-               $keys,
-               $values,
+        $keys,
+        $values,
         string $select = '*',
         string $orderBy = '',
-               $limit = ''
+        $limit = ''
     ): array {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
@@ -775,11 +775,11 @@ class NiceDB implements DbInterface
      */
     public function selectAll(
         string $tableName,
-               $keys,
-               $values,
+        $keys,
+        $values,
         string $select = '*',
         string $orderBy = '',
-               $limit = ''
+        $limit = ''
     ): array {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }

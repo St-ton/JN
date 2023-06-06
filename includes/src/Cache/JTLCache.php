@@ -681,10 +681,10 @@ final class JTLCache implements JTLCacheInterface
      */
     public function getBaseID(
         bool $hash = false,
-             $customerID = false,
-             $customerGroup = true,
-             $languageID = true,
-             $currencyID = true,
+        $customerID = false,
+        $customerGroup = true,
+        $languageID = true,
+        $currencyID = true,
         bool $sslStatus = true
     ): string {
         $baseID = 'b';

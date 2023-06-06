@@ -37,11 +37,11 @@ class JobQueue
         public int  $nLimitN = 0,
         public int  $nLimitM = 0,
         public int  $nInArbeit = 0,
-        public      $cJobArt = '',
-        public      $cTabelle = '',
-        public      $cKey = '',
-        public      $dStartZeit = 'NOW()',
-        public      $dZuletztGelaufen = null
+        public $cJobArt = '',
+        public $cTabelle = '',
+        public $cKey = '',
+        public $dStartZeit = 'NOW()',
+        public $dZuletztGelaufen = null
     ) {
     }
 

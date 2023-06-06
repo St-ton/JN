@@ -454,9 +454,9 @@ class Bestellung
      */
     public function fuelleBestellung(
         bool $htmlCurrency = true,
-             $external = 0,
-             $initProduct = true,
-             $disableFactor = false
+        $external = 0,
+        $initProduct = true,
+        $disableFactor = false
     ): self {
         if (!($this->kWarenkorb > 0 || $external > 0)) {
             return $this;

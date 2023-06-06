@@ -101,8 +101,8 @@ class PersistentCart
         int     $productID,
         ?string $productName,
         array   $properties,
-                $qty,
-                $unique = '',
+        $qty,
+        $unique = '',
         int     $configItemID = 0,
         int     $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string  $responsibility = 'core'
@@ -499,9 +499,9 @@ class PersistentCart
      */
     public function check(
         int    $productID,
-               $amount,
+        $amount,
         array  $attributeValues,
-               $unique = false,
+        $unique = false,
         int    $configItemID = 0,
         int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
@@ -563,9 +563,9 @@ class PersistentCart
      */
     public static function addToCheck(
         int    $productID,
-               $amount,
+        $amount,
         array  $attributeValues,
-               $unique = false,
+        $unique = false,
         int    $configItemID = 0,
         int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'

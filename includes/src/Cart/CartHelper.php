@@ -1413,12 +1413,12 @@ class CartHelper
      */
     public static function addProductIDToCart(
         int    $productID,
-               $qty,
+        $qty,
         array  $attrValues = [],
-               $redirect = 0,
-               $unique = '',
+        $redirect = 0,
+        $unique = '',
         int    $configItemID = 0,
-               $options = null,
+        $options = null,
         bool   $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): bool {

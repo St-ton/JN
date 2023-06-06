@@ -504,7 +504,7 @@ class Router
      */
     private function getRouteName(string $type, ?array $replacements = null, bool $byName = true): string
     {
-        $name         = match ($type) {
+        $name = match ($type) {
             self::TYPE_CATEGORY             => 'ROUTE_CATEGORY_BY_',
             self::TYPE_CHARACTERISTIC_VALUE => 'ROUTE_CHARACTERISTIC_BY_',
             self::TYPE_MANUFACTURER         => 'ROUTE_MANUFACTURER_BY_',

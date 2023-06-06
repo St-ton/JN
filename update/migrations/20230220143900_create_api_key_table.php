@@ -18,9 +18,10 @@ class Migration_20230220143900 extends Migration implements IMigration
     {
         $this->execute(
             'CREATE TABLE IF NOT EXISTS `api_keys` (
-                `id`        INT          NOT NULL AUTO_INCREMENT,
-                `key`       VARCHAR(255) NOT NULL,
-                `created`   DATETIME     NOT NULL,
+                `id`           INT          NOT NULL AUTO_INCREMENT,
+                `key`          VARCHAR(255) NOT NULL,
+                `permissions`  INT          NOT NULL DEFAULT 0,
+                `created`      DATETIME     NOT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'
         );

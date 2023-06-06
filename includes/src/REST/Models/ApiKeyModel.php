@@ -16,6 +16,9 @@ use JTL\Plugin\Admin\InputType;
  * @property int      $id
  * @method int getId()
  * @method void setId(int $value)
+ * @property int      $permissions
+ * @method int getPermissions()
+ * @method void setPermissions(int $value)
  * @property string   $key
  * @method string getKey()
  * @method void setKey(string $value)
@@ -62,10 +65,11 @@ final class ApiKeyModel extends DataModel
      */
     public function getAttributes(): array
     {
-        $attributes            = [];
-        $attributes['id']      = DataAttribute::create('id', 'int', null, false, true);
-        $attributes['key']     = DataAttribute::create('key', 'varchar', null, false);
-        $attributes['created'] = DataAttribute::create('created', 'datetime', null, false);
+        $attributes                = [];
+        $attributes['id']          = DataAttribute::create('id', 'int', null, false, true);
+        $attributes['key']         = DataAttribute::create('key', 'varchar', null, false);
+        $attributes['permissions'] = DataAttribute::create('permissions', 'int', 0, false);
+        $attributes['created']     = DataAttribute::create('created', 'datetime', null, false);
         $attributes['created']->getInputConfig()->setInputType(InputType::DATE);
         $attributes['created']->getInputConfig()->setHidden(true);
 

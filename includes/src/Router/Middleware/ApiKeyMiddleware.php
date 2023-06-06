@@ -5,6 +5,7 @@ namespace JTL\Router\Middleware;
 use Exception;
 use JTL\DB\DbInterface;
 use JTL\REST\Models\ApiKeyModel;
+use JTL\REST\Permissions;
 use JTL\Shop;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -38,7 +39,7 @@ class ApiKeyMiddleware implements MiddlewareInterface
         try {
             $model = ApiKeyModel::loadByAttributes(['key' => $key], $this->db);
 
-            return true;
+            return (new Permissions($model->getPermissions()))->methodAllowed($request->getMethod());
         } catch (Exception) {
             return false;
         }

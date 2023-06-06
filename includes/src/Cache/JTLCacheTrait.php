@@ -66,6 +66,22 @@ trait JTLCacheTrait
     }
 
     /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [];
+    }
+
+    /**
      * @return string|null
      */
     public function getJournalID(): ?string

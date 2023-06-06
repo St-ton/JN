@@ -56,12 +56,12 @@
                                                                     <div class="custom-control custom-switch">
                                                                         <input type='checkbox'
                                                                                class='custom-control-input ra-switch'
-                                                                               id="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}"
+                                                                               id="switch-{$rArtikel->kLieferscheinPos}"
                                                                                name="returnItem"
                                                                                {if false}checked{/if}
                                                                                aria-label="Lorem ipsum">
                                                                         <label class="custom-control-label"
-                                                                               for="switch-{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}">
+                                                                               for="switch-{$rArtikel->kLieferscheinPos}">
                                                                         </label>
                                                                     </div>
                                                                 </div>
@@ -77,7 +77,7 @@
 
                                                         <div class="d-none retoureFormPositions flex-wrap mt-2 w-100">
                                                             <div class="qty-wrapper max-w-sm mr-2 mb-2">
-                                                                {inputgroup id="quantity-grp{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}" class="form-counter choose_quantity"}
+                                                                {inputgroup id="quantity-grp{$rArtikel->kLieferscheinPos}" class="form-counter choose_quantity"}
                                                                 {inputgroupprepend}
                                                                 {button variant="" class="btn-decrement"
                                                                 data=["count-down"=>""]
@@ -90,14 +90,13 @@
                                                                 step="{if $rArtikel->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}any{elseif $rArtikel->Artikel->fAbnahmeintervall > 0}{$rArtikel->Artikel->fAbnahmeintervall}{else}1{/if}"
                                                                 min="1"
                                                                 max="{$rArtikel->fAnzahl}"
-                                                                id="quantity[{$rArtikel->cBestellNr}-{$rArtikel->kArtikel}]" class="quantity" name="quantity[]"
+                                                                id="qty-{$rArtikel->kLieferscheinPos}" class="quantity" name="quantity[]"
                                                                 aria=["label"=>"{lang key='quantity'}"]
                                                                 value=$rArtikel->fAnzahl
                                                                 data=[
                                                                 "decimals" => {getDecimalLength quantity=$rArtikel->Artikel->fAbnahmeintervall},
                                                                 "product-id" => "{if isset($rArtikel->Artikel->kVariKindArtikel)}{$rArtikel->Artikel->kVariKindArtikel}{else}{$rArtikel->Artikel->kArtikel}{/if}",
-                                                                "bid" => {$rArtikel->cBestellNr},
-                                                                "aid" => {$rArtikel->kArtikel}
+                                                                "lid" => {$rArtikel->kLieferscheinPos}
                                                                 ]
                                                                 }
                                                                 {inputgroupappend}
@@ -114,8 +113,7 @@
                                                                 {select aria=["label"=>""]
                                                                 name="reason[]"
                                                                 data=[
-                                                                "bid" => "{$rArtikel->cBestellNr}",
-                                                                "aid" => "{$rArtikel->kArtikel}"
+                                                                "lid" => "{$rArtikel->kLieferscheinPos}"
                                                                 ]
                                                                 class="custom-select form-control"}
                                                                     <option value="-1" selected>Grund</option>
@@ -128,8 +126,7 @@
                                                             <div class="flex-grow-1 mr-2 mb-2">
                                                                 {textarea name="comment[]"
                                                                 data=[
-                                                                "bid" => "{$rArtikel->cBestellNr}",
-                                                                "aid" => "{$rArtikel->kArtikel}"
+                                                                "lid" => "{$rArtikel->kLieferscheinPos}"
                                                                 ]
                                                                 rows=1}{/textarea}
                                                             </div>
@@ -272,22 +269,17 @@
                         val += step;
                         if (val > max) {
                             val = max;
-
-                            let options = {
-                                message: 'Sie können nicht mehr Artikel retournieren als Sie bestellt haben.',
-                                title: 'Maximale Anzahl erreicht!'
-                            };
                             eModal.alert({
-                                message: html,
-                                title: title
+                                message: '{lang key='maxAnzahlText' section='rma'}',
+                                title: '{lang key='maxAnzahlTitle' section='rma'}',
+                                keyboard: true,
+                                tabindex: -1,
+                                buttons: false
                             });
                         }
                     } else {
                         val -= step;
-                        if (val < min) {
-                            val = min;
-                            alert('Minimale Anzahl erreicht!');
-                        }
+                        val = val < min ? min : val;
                     }
                     input.val(val);
                 });
@@ -297,13 +289,12 @@
                     let inputs = [];
                     table.rows().every(function () {
                         if ($(this.node()).find('input[name="returnItem"]').prop('checked')) {
-                            $(this.node()).find('[data-aid], [data-bid]').each(function () {
+                            $(this.node()).find('[data-lid]').each(function () {
                                 inputs.push(
                                     {
                                         name: $(this).attr('name'),
                                         value: {
-                                            aid: $(this).attr('data-aid'),
-                                            bid: $(this).attr('data-bid'),
+                                            lid: $(this).attr('data-lid'),
                                             val: $(this).val(),
                                         }
                                     }

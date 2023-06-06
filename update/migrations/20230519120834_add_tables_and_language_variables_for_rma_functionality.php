@@ -16,6 +16,71 @@ class Migration_20230519120834 extends Migration implements IMigration
 {
     protected $author = 'Tim Niko Tegtmeyer';
     protected $description = 'Add tables and language variables for RMA functionality';
+    
+    private function getLangData(): object
+    {
+        $newVars = new stdClass();
+        $newVars->rma = [
+            'statusRejected' =>
+                [
+                    'ger' => 'Abgelehnt',
+                    'eng' => 'Rejected'
+                ]
+            , 'statusOpen' =>
+                [
+                    'ger' => 'Offen',
+                    'eng' => 'Open'
+                ]
+            , 'statusAccepted' =>
+                [
+                    'ger' => 'Akzeptiert',
+                    'eng' => 'Accepted'
+                ]
+            , 'statusProcessing' =>
+                [
+                    'ger' => 'In Bearbeitung',
+                    'eng' => 'Processing'
+                ]
+            , 'statusCompleted' =>
+                [
+                    'ger' => 'Abgeschlossen',
+                    'eng' => 'Completed'
+                ]
+            , 'showPositions' =>
+                [
+                    'ger' => 'Positionen anzeigen',
+                    'eng' => 'Show positions'
+                ]
+            , 'createRetoure' =>
+                [
+                    'ger' => 'Retoure anlegen',
+                    'eng' => 'Request RMA'
+                ]
+            , 'maxAnzahlTitle' =>
+                [
+                    'ger' => 'Maximale Anzahl erreicht!',
+                    'eng' => 'Maximum quantity reached!'
+                ]
+            , 'maxAnzahlText' =>
+                [
+                    'ger' => 'Sie können nicht mehr Artikel retournieren, als Sie bestellt haben.',
+                    'eng' => 'You cannot return more items than you ordered.'
+                ]
+        ];
+        $newVars->datatables = [
+            'search' =>
+                [
+                    'ger' => 'Suche',
+                    'eng' => 'Search'
+                ]
+            , 'lengthMenu' =>
+                [
+                    'ger' => '_MENU_ Einträge anzeigen',
+                    'eng' => 'Show _MENU_ entries'
+                ]
+        ];
+        return $newVars;
+    }
 
     /**
      * @inheritdoc
@@ -64,57 +129,9 @@ class Migration_20230519120834 extends Migration implements IMigration
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
         ");
-
-        $newVars = new stdClass();
-        $newVars->rma = [
-            'statusRejected' =>
-                [
-                    'ger' => 'Abgelehnt',
-                    'eng' => 'Rejected'
-                ]
-            , 'statusOpen' =>
-                [
-                    'ger' => 'Offen',
-                    'eng' => 'Open'
-                ]
-            , 'statusAccepted' =>
-                [
-                    'ger' => 'Akzeptiert',
-                    'eng' => 'Accepted'
-                ]
-            , 'statusProcessing' =>
-                [
-                    'ger' => 'In Bearbeitung',
-                    'eng' => 'Processing'
-                ]
-            , 'statusCompleted' =>
-                [
-                    'ger' => 'Abgeschlossen',
-                    'eng' => 'Completed'
-                ]
-            , 'showPositions' =>
-                [
-                    'ger' => 'Positionen anzeigen',
-                    'eng' => 'Show positions'
-                ]
-            , 'createRetoure' =>
-                [
-                    'ger' => 'Retoure anlegen',
-                    'eng' => 'Request RMA'
-                ]
-        ];
-        $newVars->datatables = [
-            'search' =>
-                [
-                    'ger' => 'Suche',
-                    'eng' => 'Search'
-                ]
-            , 'lengthMenu' =>
-                [
-                    'ger' => '_MENU_ Einträge anzeigen',
-                    'eng' => 'Show _MENU_ entries'
-                ]
-        ];
+        
+        $newVars = $this->getLangData();
+        
         foreach ($newVars as $sprachsektion => $arr) {
             foreach ($arr as $key => $values) {
                 foreach ($values as $iso => $value) {
@@ -131,20 +148,16 @@ class Migration_20230519120834 extends Migration implements IMigration
     {
         $this->execute('DROP TABLE IF EXISTS tretourepos');
         $this->execute('DROP TABLE IF EXISTS tretoure');
-
-        $this->execute("DELETE FROM `tsprachwerte`
-                WHERE `kSprachsektion` = 30 
-                    AND cName IN (
-                        'statusRejected',
-                        'statusOpen',
-                        'statusAccepted',
-                        'statusProcessing',
-                        'statusCompleted',
-                        'showPositions'
-                    )
-                    AND bSystem = 1"
-        );
         
+        $newVars = $this->getLangData();
+        
+        foreach ($newVars as $sprachsektion => $arr) {
+            foreach ($arr as $key => $values) {
+                $this->removeLocalization($key, $sprachsektion);
+            }
+        }
+        
+        // These language variables already exists from a previous migration and need to be overwritten
         $newVars = [
             'search' =>
                 [

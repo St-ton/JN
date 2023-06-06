@@ -98,14 +98,14 @@ class PersistentCart
      * @return $this
      */
     public function fuegeEin(
-        int $productID,
+        int     $productID,
         ?string $productName,
-        array $properties,
-        $qty,
-        $unique = '',
-        int $configItemID = 0,
-        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
-        string $responsibility = 'core'
+        array   $properties,
+                $qty,
+                $unique = '',
+        int     $configItemID = 0,
+        int     $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        string  $responsibility = 'core'
     ): self {
         $exists = false;
         $idx    = 0;
@@ -276,7 +276,7 @@ class PersistentCart
     {
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
         $persCart = $this->db->select('twarenkorbpers', 'kKunde', $this->kKunde);
-        if (!isset($persCart->kWarenkorbPers) || $persCart->kWarenkorbPers < 1) {
+        if ($persCart === null || !isset($persCart->kWarenkorbPers) || $persCart->kWarenkorbPers < 1) {
             $this->dErstellt = 'NOW()';
             $this->schreibeDB();
         }
@@ -498,12 +498,12 @@ class PersistentCart
      * @param string      $responsibility
      */
     public function check(
-        int $productID,
-        $amount,
-        array $attributeValues,
-        $unique = false,
-        int $configItemID = 0,
-        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        int    $productID,
+               $amount,
+        array  $attributeValues,
+               $unique = false,
+        int    $configItemID = 0,
+        int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
     ): void {
         if (!Frontend::getCustomer()->isLoggedIn()) {
@@ -562,12 +562,12 @@ class PersistentCart
      * @deprecated since 5.2.0
      */
     public static function addToCheck(
-        int $productID,
-        $amount,
-        array $attributeValues,
-        $unique = false,
-        int $configItemID = 0,
-        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        int    $productID,
+               $amount,
+        array  $attributeValues,
+               $unique = false,
+        int    $configItemID = 0,
+        int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
     ): void {
         self::getInstance(Frontend::getCustomer()->getID())->check(

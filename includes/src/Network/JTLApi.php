@@ -30,7 +30,7 @@ final class JTLApi
      * @param array $session
      * @param Nice  $nice
      */
-    public function __construct(array &$session, private Nice $nice)
+    public function __construct(array &$session, private readonly Nice $nice)
     {
         $this->session = &$session;
     }

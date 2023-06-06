@@ -172,10 +172,8 @@ class ShippingSurcharge
             return false;
         }
         $zip = \str_replace(' ', '', $zip);
-        foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
-            if ($zip === $zipTMP) {
-                return true;
-            }
+        if (\in_array($zip, $this->getZIPCodes() ?? [], true)) {
+            return true;
         }
 
         foreach ($this->getZIPAreas() ?? [] as $zipArea) {
@@ -362,7 +360,6 @@ class ShippingSurcharge
 
         return $this;
     }
-
 
     /**
      * @param int|null $idx

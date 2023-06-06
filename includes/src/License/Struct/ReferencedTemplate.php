@@ -16,7 +16,7 @@ use stdClass;
 class ReferencedTemplate extends ReferencedItem
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws \Exception
      */
     public function initByExsID(DbInterface $db, stdClass $license, Releases $releases): void

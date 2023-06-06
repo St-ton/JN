@@ -17,7 +17,7 @@ class VisitorsOnline extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         (new Visitor($this->getDB(), Shop::Container()->getCache()))->archive();
         $this->setPermission('STATS_VISITOR_VIEW');
@@ -96,7 +96,7 @@ class VisitorsOnline extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         $visitors = $this->getVisitors();
 

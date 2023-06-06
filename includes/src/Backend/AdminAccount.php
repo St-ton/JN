@@ -52,12 +52,12 @@ class AdminAccount
      * @throws Exception
      */
     public function __construct(
-        private DbInterface $db,
-        private LoggerInterface $authLogger,
-        private AdminLoginStatusMessageMapper $messageMapper,
-        private AdminLoginStatusToLogLevel $levelMapper,
-        private GetText $getText,
-        private AlertServiceInterface $alertService
+        private readonly DbInterface                   $db,
+        private readonly LoggerInterface               $authLogger,
+        private readonly AdminLoginStatusMessageMapper $messageMapper,
+        private readonly AdminLoginStatusToLogLevel    $levelMapper,
+        private readonly GetText                       $getText,
+        private readonly AlertServiceInterface         $alertService
     ) {
         Backend::getInstance();
         Shop::setIsFrontend(false);
@@ -148,7 +148,12 @@ class AdminAccount
         $upd  = (object)['cResetPasswordHash' => $now . ':' . Shop::Container()->getPasswordService()->hash($hash)];
         $res  = $this->db->update('tadminlogin', 'cMail', $email, $upd);
         if ($res > 0) {
-            $user                   = $this->db->select('tadminlogin', 'cMail', $email);
+            $user = $this->db->select('tadminlogin', 'cMail', $email);
+            if ($user === null) {
+                $this->alertService->addError(\__('errorEmailNotFound'), 'errorEmailNotFound');
+
+                return false;
+            }
             $obj                    = new stdClass();
             $obj->passwordResetLink = Shop::getAdminURL() . '/' . Route::PASS . '?fpwh=' . $hash . '&mail=' . $email;
             $obj->cHash             = $hash;
@@ -210,7 +215,7 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if (!\is_object($admin)) {
+        if ($admin === null) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $login);
         }
         $admin->kAdminlogin       = (int)$admin->kAdminlogin;
@@ -576,7 +581,7 @@ class AdminAccount
             ['login' => $login]
         );
         $data   = $this->db->select('tadminlogin', 'cLogin', $login);
-        $locked = (int)$data->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS;
+        $locked = (int)($data->nLoginVersuch ?? 0) >= \MAX_LOGIN_ATTEMPTS;
         if ($locked === true && \array_key_exists('locked_at', (array)$data)) {
             $this->db->update('tadminlogin', 'cLogin', $login, (object)['locked_at' => 'NOW()']);
         }

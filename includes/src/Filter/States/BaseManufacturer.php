@@ -44,8 +44,8 @@ class BaseManufacturer extends AbstractFilter
         parent::__construct($productFilter);
         $this->setRouteType(Router::TYPE_MANUFACTURER);
         $this->setIsCustom(false)
-             ->setUrlParam('h')
-             ->setUrlParamSEO(\SEP_HST);
+            ->setUrlParam('h')
+            ->setUrlParamSEO(\SEP_HST);
     }
 
     /**
@@ -159,7 +159,7 @@ class BaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {
@@ -172,8 +172,8 @@ class BaseManufacturer extends AbstractFilter
         }
         $state = $this->productFilter->getCurrentStateData(
             $this->getType() === Type::OR
-            ? $this->getClassName()
-            : null
+                ? $this->getClassName()
+                : null
         );
         $sql   = (new StateSQL())->from($state);
         $sql->setSelect([

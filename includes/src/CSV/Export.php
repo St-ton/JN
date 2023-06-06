@@ -29,11 +29,11 @@ class Export
     public function export(
         string $id,
         string $fileName,
-        $source,
-        array $fields = [],
-        array $excluded = [],
+               $source,
+        array  $fields = [],
+        array  $excluded = [],
         string $delim = ',',
-        bool $head = true
+        bool   $head = true
     ) {
         if (\is_callable($source)) {
             $arr = $source();

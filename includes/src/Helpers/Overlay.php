@@ -18,7 +18,7 @@ class Overlay
      * Overlay constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
     }
 
@@ -101,10 +101,10 @@ class Overlay
      * @former speicherEinstellung()
      */
     public function saveConfig(
-        int $overlayID,
-        array $post,
-        array $files,
-        int $lang = null,
+        int    $overlayID,
+        array  $post,
+        array  $files,
+        int    $lang = null,
         string $template = null
     ): bool {
         $overlay = OverlayImage::getInstance(
@@ -223,8 +223,8 @@ class Overlay
      */
     public function createFixedOverlay(
         string $image,
-        int $size,
-        int $transparency,
+        int    $size,
+        int    $transparency,
         string $extension,
         string $path
     ): bool {

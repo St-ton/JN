@@ -36,7 +36,7 @@ class DBManager
         $list    = [];
         $columns = Shop::Container()->getDB()->getObjects(
             "SHOW FULL COLUMNS 
-                FROM `{$table}`"
+                FROM `$table`"
         );
         foreach ($columns as $column) {
             $column->Type_info    = self::parseType($column->Type);
@@ -58,7 +58,7 @@ class DBManager
         $list    = [];
         $indexes = Shop::Container()->getDB()->getObjects(
             "SHOW INDEX 
-                FROM `{$table}`"
+                FROM `$table`"
         );
         foreach ($indexes as $index) {
             $container = (object)[
@@ -98,7 +98,7 @@ class DBManager
         if ($table !== null) {
             return Shop::Container()->getDB()->getSingleObject(
                 "SHOW TABLE STATUS 
-                    FROM `{$database}` 
+                    FROM `$database` 
                     WHERE name = :tbl",
                 ['tbl' => $table]
             );
@@ -106,7 +106,7 @@ class DBManager
         $list   = [];
         $status = Shop::Container()->getDB()->getObjects(
             "SHOW TABLE STATUS 
-                FROM `{$database}`"
+                FROM `$database`"
         );
         foreach ($status as $s) {
             $list[$s->Name] = $s;

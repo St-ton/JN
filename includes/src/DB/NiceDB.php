@@ -207,9 +207,9 @@ class NiceDB implements DbInterface
      */
     private function analyzeQuery(
         string $stmt,
-        array $assigns = null,
-        array $named = null,
-        float $time = 0
+        array  $assigns = null,
+        array  $named = null,
+        float  $time = 0
     ): DbInterface {
         if ($this->debug !== true
             || \str_contains($stmt, 'tprofiler')
@@ -633,13 +633,13 @@ class NiceDB implements DbInterface
      */
     public function selectSingleRow(
         string $tableName,
-        $keyname,
-        $keyvalue,
-        $keyname1 = null,
-        $keyvalue1 = null,
-        $keyname2 = null,
-        $keyvalue2 = null,
-        bool $echo = false,
+               $keyname,
+               $keyvalue,
+               $keyname1 = null,
+               $keyvalue1 = null,
+               $keyname2 = null,
+               $keyvalue2 = null,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
         $start = \microtime(true);
@@ -700,13 +700,13 @@ class NiceDB implements DbInterface
      */
     public function select(
         string $tableName,
-        $keyname,
-        $keyvalue,
-        $keyname1 = null,
-        $keyvalue1 = null,
-        $keyname2 = null,
-        $keyvalue2 = null,
-        bool $echo = false,
+               $keyname,
+               $keyvalue,
+               $keyname1 = null,
+               $keyvalue1 = null,
+               $keyname2 = null,
+               $keyvalue2 = null,
+        bool   $echo = false,
         string $select = '*'
     ): ?stdClass {
         return $this->selectSingleRow(
@@ -727,11 +727,11 @@ class NiceDB implements DbInterface
      */
     public function selectArray(
         string $tableName,
-        $keys,
-        $values,
+               $keys,
+               $values,
         string $select = '*',
         string $orderBy = '',
-        $limit = ''
+               $limit = ''
     ): array {
         $this->validateEntityName($tableName);
         foreach ((array)$keys as $key) {
@@ -775,11 +775,11 @@ class NiceDB implements DbInterface
      */
     public function selectAll(
         string $tableName,
-        $keys,
-        $values,
+               $keys,
+               $values,
         string $select = '*',
         string $orderBy = '',
-        $limit = ''
+               $limit = ''
     ): array {
         return $this->selectArray($tableName, $keys, $values, $select, $orderBy, $limit);
     }
@@ -788,9 +788,9 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function executeQuery(
-        string $stmt,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(0, $stmt, [], $return, $echo, $fnInfo);
@@ -800,10 +800,10 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function executeQueryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
@@ -813,10 +813,10 @@ class NiceDB implements DbInterface
      * @inheritdoc
      */
     public function queryPrepared(
-        string $stmt,
-        array $params,
-        int $return = ReturnType::DEFAULT,
-        bool $echo = false,
+        string    $stmt,
+        array     $params,
+        int       $return = ReturnType::DEFAULT,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         return $this->_execute(1, $stmt, $params, $return, $echo, $fnInfo);
@@ -921,11 +921,11 @@ class NiceDB implements DbInterface
      * @throws InvalidArgumentException
      */
     protected function _execute(
-        int $type,
-        string $stmt,
-        array $params,
-        int $return,
-        bool $echo = false,
+        int       $type,
+        string    $stmt,
+        array     $params,
+        int       $return,
+        bool      $echo = false,
         ?callable $fnInfo = null
     ) {
         if (!\in_array($type, [0, 1], true)) {

@@ -272,7 +272,7 @@ class BaseSearchQuery extends AbstractFilter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {
@@ -405,7 +405,7 @@ class BaseSearchQuery extends AbstractFilter
                 $query
             );
             $querymapping    = $querymappingTMP;
-            while (!empty($querymappingTMP->cSucheNeu)) {
+            while ($querymappingTMP !== null && !empty($querymappingTMP->cSucheNeu)) {
                 $querymappingTMP = $this->productFilter->getDB()->select(
                     'tsuchanfragemapping',
                     'kSprache',
@@ -417,12 +417,12 @@ class BaseSearchQuery extends AbstractFilter
                     $querymapping = $querymappingTMP;
                 }
             }
-            if (!empty($querymapping->cSucheNeu)) {
+            if ($querymapping !== null && !empty($querymapping->cSucheNeu)) {
                 $query = $querymapping->cSucheNeu;
             }
         }
 
-        return $query ?? '';
+        return $query;
     }
 
     /**
@@ -950,10 +950,10 @@ class BaseSearchQuery extends AbstractFilter
      */
     private function editFullTextSearchCache(
         stdClass $searchCache,
-        array $searchCols,
-        array $searchQueries,
-        int $limit = 0,
-        string $fullText = 'Y'
+        array    $searchCols,
+        array    $searchQueries,
+        int      $limit = 0,
+        string   $fullText = 'Y'
     ): int {
         $searchCache->kSuchCache = (int)$searchCache->kSuchCache;
         if ($searchCache->kSuchCache <= 0) {

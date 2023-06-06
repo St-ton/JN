@@ -70,8 +70,8 @@ class ShippingMethod
     }
 
     /**
-     * @param int $minDelivery
-     * @param int $maxDelivery
+     * @param int    $minDelivery
+     * @param int    $maxDelivery
      * @param string $languageVar
      * @return string
      */
@@ -113,8 +113,8 @@ class ShippingMethod
 
     /**
      * @param array $prices
-     * @param int $cgroupID
-     * @param int $shippingClassID
+     * @param int   $cgroupID
+     * @param int   $shippingClassID
      * @return string
      */
     public function getFreeShippingCountries(array $prices, int $cgroupID, int $shippingClassID = 0): string
@@ -707,7 +707,7 @@ class ShippingMethod
         string $deliveryCountry,
         string $shippingClasses,
         int    $customerGroupID,
-        $product,
+               $product,
         bool   $checkProductDepedency = true
     ) {
         $favourableIDX   = 0;
@@ -830,7 +830,7 @@ class ShippingMethod
     public static function gibArtikelabhaengigeVersandkosten(
         string  $country,
         Artikel $product,
-        $amount,
+                $amount,
         bool    $checkDeliveryAddress = true
     ) {
         $taxRate    = null;
@@ -1323,7 +1323,7 @@ class ShippingMethod
                 'cISOSprache',
                 Shop::getLanguageCode()
             );
-            $name      = !empty($localized->cName)
+            $name      = $localized !== null && !empty($localized->cName)
                 ? $localized->cName
                 : $method->cName;
         }
@@ -1571,7 +1571,7 @@ class ShippingMethod
 
     /**
      * @param object[]|null $shippingMethods
-     * @param int $paymentMethodID
+     * @param int           $paymentMethodID
      * @return object|null
      */
     public static function getFirstShippingMethod(?array $shippingMethods = null, int $paymentMethodID = 0): ?object

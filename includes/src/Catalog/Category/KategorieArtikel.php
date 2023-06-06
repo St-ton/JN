@@ -45,7 +45,7 @@ class KategorieArtikel
      */
     public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $id);
+        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $id) ?? new \stdClass();
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = (int)$v;
         }

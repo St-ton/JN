@@ -94,13 +94,13 @@ class PersistentCartItem
      * @param string       $responsibility
      */
     public function __construct(
-        int $productID,
-        $productName,
-        $qty,
-        int $cartItemID,
-        $unique = '',
-        int $configItemID = 0,
-        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        int    $productID,
+               $productName,
+               $qty,
+        int    $cartItemID,
+               $unique = '',
+        int    $configItemID = 0,
+        int    $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
     ) {
         $this->kArtikel        = $productID;

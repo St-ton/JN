@@ -8,7 +8,6 @@ use JTL\DB\DbInterface;
 use JTL\Language\LanguageHelper;
 use JTL\Router\Router;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class JSONAPI
@@ -25,7 +24,7 @@ class JSONAPI
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    private function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    private function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
         self::$instance = $this;
     }
@@ -91,18 +90,18 @@ class JSONAPI
     }
 
     /**
-     * @param string|array|null $search
-     * @param int|string        $limit
-     * @param string            $keyName
-     * @param int               $linkGroupID
+     * @param string $search
+     * @param int    $limit
+     * @param string $keyName
+     * @param int    $linkGroupID
      * @return string
      * @throws JsonException
      * @since 5.2.3
      */
     public function getPagesByLinkGroup(
         string $search = '',
-        int $limit = 50,
-        int $linkGroupID = 0,
+        int    $limit = 50,
+        int    $linkGroupID = 0,
         string $keyName = 'kLink'
     ): string {
         if ($linkGroupID === 0) {
@@ -322,12 +321,12 @@ class JSONAPI
      * @todo: add URL hints for new URL scheme (like cSeo:/de/products/myproduct instead of cSeo:myproduct)
      */
     public function getItems(
-        string $table,
-        array $columns,
+        string  $table,
+        array   $columns,
         ?string $addCacheTag = null,
-        $searchIn = null,
-        $searchFor = null,
-        int $limit = 0
+                $searchIn = null,
+                $searchFor = null,
+        int     $limit = 0
     ): array {
         if ($this->validateTableName($table) === false || $this->validateColumnNames($table, $columns) === false) {
             return [];

@@ -21,7 +21,7 @@ class AuthMiddleware implements MiddlewareInterface
     /**
      * @param AdminAccount $account
      */
-    public function __construct(private AdminAccount $account)
+    public function __construct(private readonly AdminAccount $account)
     {
     }
 

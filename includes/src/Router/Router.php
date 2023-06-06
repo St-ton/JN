@@ -151,7 +151,7 @@ class Router
         protected JTLCacheInterface $cache,
         protected State $state,
         AlertServiceInterface $alert,
-        private array $config
+        private readonly array $config
     ) {
         $this->router            = new BaseRouter();
         $this->defaultController = new DefaultController($db, $cache, $state, $this->config, $alert);
@@ -291,7 +291,6 @@ class Router
             }
         }
 
-
         return $routes;
     }
 
@@ -398,8 +397,8 @@ class Router
     public function getURLByType(
         string $type,
         ?array $replacements = null,
-        bool $byName = true,
-        bool $forceDynamic = false
+        bool   $byName = true,
+        bool   $forceDynamic = false
     ): string {
         if (isset($replacements['name']) && $replacements['name'] === '') {
             unset($replacements['name']);
@@ -505,7 +504,7 @@ class Router
      */
     private function getRouteName(string $type, ?array $replacements = null, bool $byName = true): string
     {
-        $name = match ($type) {
+        $name         = match ($type) {
             self::TYPE_CATEGORY             => 'ROUTE_CATEGORY_BY_',
             self::TYPE_CHARACTERISTIC_VALUE => 'ROUTE_CHARACTERISTIC_BY_',
             self::TYPE_MANUFACTURER         => 'ROUTE_MANUFACTURER_BY_',

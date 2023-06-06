@@ -32,16 +32,16 @@ class JobQueue
      */
     public function __construct(
         public ?int $kJobQueue = null,
-        public int $kCron = 0,
-        public int $kKey = 0,
-        public int $nLimitN = 0,
-        public int $nLimitM = 0,
-        public int $nInArbeit = 0,
-        public $cJobArt = '',
-        public $cTabelle = '',
-        public $cKey = '',
-        public $dStartZeit = 'NOW()',
-        public $dZuletztGelaufen = null
+        public int  $kCron = 0,
+        public int  $kKey = 0,
+        public int  $nLimitN = 0,
+        public int  $nLimitM = 0,
+        public int  $nInArbeit = 0,
+        public      $cJobArt = '',
+        public      $cTabelle = '',
+        public      $cKey = '',
+        public      $dStartZeit = 'NOW()',
+        public      $dZuletztGelaufen = null
     ) {
     }
 

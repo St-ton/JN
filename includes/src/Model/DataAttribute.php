@@ -248,12 +248,12 @@ class DataAttribute
     public static function create(
         string $name,
         string $dataType,
-        $default = null,
-        bool $nullable = true,
-        bool $isPrimaryKey = false,
+               $default = null,
+        bool   $nullable = true,
+        bool   $isPrimaryKey = false,
         string $foreignKey = null,
-        $foreignKeyChild = null,
-        bool $dynamic = false
+               $foreignKeyChild = null,
+        bool   $dynamic = false
     ): self {
         $item = new self();
         $item->setName($name)

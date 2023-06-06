@@ -342,13 +342,11 @@ class Characteristic extends BaseCharacteristic
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
-                        /** @noinspection UnsupportedStringOffsetOperationsInspection */
                         $activeOrFilterIDs[] = $values;
                     }
                 } elseif (\is_array($values)) {
                     $activeAndFilterIDs = $values;
                 } else {
-                    /** @noinspection UnsupportedStringOffsetOperationsInspection */
                     $activeAndFilterIDs[] = $values;
                 }
             }
@@ -427,7 +425,7 @@ class Characteristic extends BaseCharacteristic
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {

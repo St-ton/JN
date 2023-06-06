@@ -94,7 +94,7 @@ class Metadata implements MetadataInterface
      * Metadata constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
         $this->conf = $productFilter->getFilterConfig()->getConfig();
     }
@@ -274,25 +274,28 @@ class Metadata implements MetadataInterface
      */
     public static function getGlobalMetaData(): array
     {
-        return Shop::Container()->getCache()->get('jtl_glob_meta', static function ($cache, $id, &$content, &$tags): bool {
-            $globalTmp = Shop::Container()->getDB()->getObjects(
-                'SELECT cName, kSprache, cWertName 
-                    FROM tglobalemetaangaben
-                    ORDER BY kSprache'
-            );
-            $content   = map(group($globalTmp, static function ($g) {
-                return (int)$g->kSprache;
-            }), static function ($item) {
-                return reduce_left($item, static function ($value, $index, $collection, $reduction) {
-                    $reduction->{$value->cName} = $value->cWertName;
+        return Shop::Container()->getCache()->get(
+            'jtl_glob_meta',
+            static function ($cache, $id, &$content, &$tags): bool {
+                $globalTmp = Shop::Container()->getDB()->getObjects(
+                    'SELECT cName, kSprache, cWertName 
+                        FROM tglobalemetaangaben
+                        ORDER BY kSprache'
+                );
+                $content   = map(group($globalTmp, static function ($g) {
+                    return (int)$g->kSprache;
+                }), static function ($item) {
+                    return reduce_left($item, static function ($value, $index, $collection, $reduction) {
+                        $reduction->{$value->cName} = $value->cWertName;
 
-                    return $reduction;
-                }, new stdClass());
-            });
-            $tags      = [\CACHING_GROUP_CORE];
+                        return $reduction;
+                    }, new stdClass());
+                });
+                $tags      = [\CACHING_GROUP_CORE];
 
-            return true;
-        });
+                return true;
+            }
+        );
     }
 
     /**
@@ -338,10 +341,10 @@ class Metadata implements MetadataInterface
      * @inheritdoc
      */
     public function generateMetaDescription(
-        array $products,
+        array                  $products,
         SearchResultsInterface $searchResults,
-        array $globalMeta,
-        $category = null
+        array                  $globalMeta,
+                               $category = null
     ): string {
         \executeHook(\HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         $maxLength = !empty($this->conf['metaangaben']['global_meta_maxlaenge_description'])
@@ -557,12 +560,12 @@ class Metadata implements MetadataInterface
         }
         $parts = $parts->merge(
             \collect($this->productFilter->getSearchFilter())
-            ->map(static function (FilterInterface $filter) {
-                return $filter->getName();
-            })
-            ->reject(static function ($name): bool {
-                return $name === null;
-            })
+                ->map(static function (FilterInterface $filter) {
+                    return $filter->getName();
+                })
+                ->reject(static function ($name): bool {
+                    return $name === null;
+                })
         );
         if ($this->productFilter->hasSearchSpecialFilter()) {
             switch ($this->productFilter->getSearchSpecialFilter()->getValue()) {
@@ -597,12 +600,12 @@ class Metadata implements MetadataInterface
         // MerkmalWertfilter
         $parts = $parts->merge(
             \collect($this->productFilter->getCharacteristicFilter())
-            ->map(static function (FilterInterface $filter) {
-                return $filter->getName();
-            })
-            ->reject(static function ($name): bool {
-                return $name === null;
-            })
+                ->map(static function (FilterInterface $filter) {
+                    return $filter->getName();
+                })
+                ->reject(static function ($name): bool {
+                    return $name === null;
+                })
         );
 
         return $parts->implode(' ');

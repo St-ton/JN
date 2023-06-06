@@ -60,10 +60,10 @@ class AccountController
      * @param JTLSmarty             $smarty
      */
     public function __construct(
-        private DbInterface           $db,
-        private AlertServiceInterface $alertService,
-        private LinkServiceInterface  $linkService,
-        private JTLSmarty             $smarty
+        private readonly DbInterface           $db,
+        private readonly AlertServiceInterface $alertService,
+        private readonly LinkServiceInterface  $linkService,
+        private readonly JTLSmarty             $smarty
     ) {
         $this->config = Shopsetting::getInstance()->getAll();
     }
@@ -915,7 +915,7 @@ class AccountController
                 false,
                 'cPasswort, cMail'
             );
-            if (isset($user->cPasswort, $user->cMail)) {
+            if ($user !== null && isset($user->cPasswort, $user->cMail)) {
                 $ok = $customer->checkCredentials($user->cMail, $_POST['altesPasswort'] ?? '');
                 if ($ok !== false) {
                     $customer->updatePassword($_POST['neuesPasswort1']);

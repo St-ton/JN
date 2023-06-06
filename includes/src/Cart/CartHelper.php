@@ -428,7 +428,7 @@ class CartHelper
     }
 
     /**
-     * @param int $productID
+     * @param int       $productID
      * @param int|float $count
      * @return bool
      * @throws CircularReferenceException
@@ -1244,9 +1244,9 @@ class CartHelper
 
     /**
      * @param array $variBoxCounts
-     * @param int $productID
-     * @param bool $isParent
-     * @param bool $isVariMatrix
+     * @param int   $productID
+     * @param bool  $isParent
+     * @param bool  $isVariMatrix
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      * @former fuegeVariBoxInWK()
@@ -1254,9 +1254,9 @@ class CartHelper
      */
     public static function addVariboxToCart(
         array $variBoxCounts,
-        int $productID,
-        bool $isParent,
-        bool $isVariMatrix = false
+        int   $productID,
+        bool  $isParent,
+        bool  $isVariMatrix = false
     ): void {
         if (\count($variBoxCounts) === 0) {
             return;
@@ -1412,14 +1412,14 @@ class CartHelper
      * @since 5.0.0
      */
     public static function addProductIDToCart(
-        int $productID,
-        $qty,
-        array $attrValues = [],
-        $redirect = 0,
-        $unique = '',
-        int $configItemID = 0,
-        $options = null,
-        bool $setzePositionsPreise = true,
+        int    $productID,
+               $qty,
+        array  $attrValues = [],
+               $redirect = 0,
+               $unique = '',
+        int    $configItemID = 0,
+               $options = null,
+        bool   $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): bool {
         if (!($qty > 0 && ($productID > 0 || ($productID === 0 && !empty($configItemID) && !empty($unique))))) {
@@ -1847,7 +1847,7 @@ class CartHelper
             'cArtNr',
             Text::htmlentities(Text::filterXSS($_POST['ean']))
         );
-        if (empty($productData->kArtikel)) {
+        if ($productData === null || empty($productData->kArtikel)) {
             $productData = $db->select(
                 'tartikel',
                 'cBarcode',
@@ -1879,15 +1879,15 @@ class CartHelper
     public static function deleteAllSpecialItems(bool $removeShippingCoupon = true): void
     {
         Frontend::getCart()
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
-                ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
-                ->checkIfCouponIsStillValid();
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZAHLUNGSART)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG)
+            ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERPACKUNG)
+            ->checkIfCouponIsStillValid();
         unset(
             $_SESSION['Versandart'],
             $_SESSION['Verpackung'],
@@ -1942,7 +1942,7 @@ class CartHelper
             'SELECT DISTINCT kXSellArtikel
                 FROM txsellkauf
                 WHERE kArtikel IN (' . $productIDs . ')
-                    AND kXSellArtikel NOT IN (' . $productIDs .')
+                    AND kXSellArtikel NOT IN (' . $productIDs . ')
                 ORDER BY nAnzahl DESC
                 LIMIT ' . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'],
             'kXSellArtikel'
@@ -2135,7 +2135,7 @@ class CartHelper
 
     /**
      * @param Kupon|object $coupon
-     * @param CartItem[] $items
+     * @param CartItem[]   $items
      * @return bool
      * @former warenkorbKuponFaehigKategorien()
      * @since 5.2.0
@@ -2173,7 +2173,7 @@ class CartHelper
      * liefert Gesamtsumme der Artikel im Warenkorb, welche dem Kupon zugeordnet werden können
      *
      * @param Kupon|object $coupon
-     * @param CartItem[] $cartItems
+     * @param CartItem[]   $cartItems
      * @return float
      * @former gibGesamtsummeKuponartikelImWarenkorb()
      * @since 5.2.0
@@ -2232,7 +2232,6 @@ class CartHelper
 
         return $valid;
     }
-
 
     /**
      * Prüft ob im WK ein Versandfrei Kupon eingegeben wurde und falls ja,

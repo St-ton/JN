@@ -295,7 +295,7 @@ interface SearchResultsInterface
      */
     public function setFilterOptions(
         ProductFilter $productFilter,
-        $currentCategory = null,
-        $selectionWizard = false
+                      $currentCategory = null,
+                      $selectionWizard = false
     ): SearchResultsInterface;
 }

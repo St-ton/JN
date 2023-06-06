@@ -19,7 +19,7 @@ class DeprecatedVariable
      * @param string $name
      * @param string $version
      */
-    public function __construct(private $value, private string $name, private string $version)
+    public function __construct(private $value, private readonly string $name, private readonly string $version)
     {
     }
 
@@ -39,7 +39,7 @@ class DeprecatedVariable
     {
         if ($name === 'value') {
             \trigger_error(
-                'Smarty variable ' . $this->name . ' is deprecated since JTL-Shop version '. $this->version . '.',
+                'Smarty variable ' . $this->name . ' is deprecated since JTL-Shop version ' . $this->version . '.',
                 \E_USER_DEPRECATED
             );
 

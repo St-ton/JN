@@ -454,9 +454,9 @@ class Bestellung
      */
     public function fuelleBestellung(
         bool $htmlCurrency = true,
-        $external = 0,
-        $initProduct = true,
-        $disableFactor = false
+             $external = 0,
+             $initProduct = true,
+             $disableFactor = false
     ): self {
         if (!($this->kWarenkorb > 0 || $external > 0)) {
             return $this;
@@ -1028,7 +1028,9 @@ class Bestellung
             'cBestellNr'
         );
 
-        return isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
+        return $data !== null && isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0
+            ? $data->cBestellNr
+            : false;
     }
 
     /**

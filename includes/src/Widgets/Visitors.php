@@ -16,7 +16,7 @@ class Visitors extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->setPermission('STATS_VISITOR_VIEW');
     }
@@ -70,7 +70,7 @@ class Visitors extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->assign('linechart', $this->getJSON())
             ->fetch('tpl_inc/widgets/visitors.tpl');

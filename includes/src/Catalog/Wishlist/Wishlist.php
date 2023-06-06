@@ -578,7 +578,7 @@ class Wishlist
                                 false,
                                 'kEigenschaftKombi'
                             );
-                            if (empty($attrValExists->kEigenschaftKombi)) {
+                            if ($attrValExists === null || empty($attrValExists->kEigenschaftKombi)) {
                                 $names[] = $wlPosition->getProductName();
                                 $notice .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                 $this->delWunschlistePosSess($wlPosition->getProductID());
@@ -787,7 +787,7 @@ class Wishlist
             ['kKunde', 'nStandard'],
             [Frontend::getCustomer()->getID(), 1]
         );
-        if (isset($data->kWunschliste)) {
+        if ($data !== null && isset($data->kWunschliste)) {
             $_SESSION['Wunschliste'] = new self((int)$data->kWunschliste);
             $_SESSION['Wunschliste']->ueberpruefePositionen();
         }
@@ -807,7 +807,7 @@ class Wishlist
         $db       = Shop::Container()->getDB();
         $data     = $db->select('twunschliste', 'kWunschliste', $id);
         $customer = Frontend::getCustomer();
-        if (isset($data->kKunde) && ((int)$data->kKunde === $customer->getID() || $force)) {
+        if ($data !== null && isset($data->kKunde) && ((int)$data->kKunde === $customer->getID() || $force)) {
             $items = $db->selectAll(
                 'twunschlistepos',
                 'kWunschliste',
@@ -1181,7 +1181,7 @@ class Wishlist
         $this->cURLID       = $record->cURLID;
         $this->dErstellt    = $record->dErstellt;
         $this->dErstellt_DE = $record->dErstellt_DE ?? DateTime::createFromFormat('Y-m-d H:i:s', $record->dErstellt)
-                ->format('d.m.Y H:i');
+            ->format('d.m.Y H:i');
         if ($this->kKunde > 0) {
             $this->oKunde            = new Customer($this->kKunde);
             $this->oKunde->cPasswort = null;

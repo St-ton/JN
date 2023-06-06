@@ -31,11 +31,11 @@ class Controller
      * @param AdminAccount      $account
      */
     public function __construct(
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private GetText $getText,
-        private JTLSmarty $smarty,
-        private AdminAccount $account
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly GetText           $getText,
+        private readonly JTLSmarty         $smarty,
+        private readonly AdminAccount      $account
     ) {
     }
 
@@ -150,7 +150,7 @@ class Controller
         $upd->nPos       = $pos;
 
         $current = $this->db->select('tadminwidgets', 'kWidget', $id);
-        if ($current->eContainer === $container) {
+        if ($current !== null && $current->eContainer === $container) {
             if ($current->nPos < $pos) {
                 $this->db->queryPrepared(
                     'UPDATE tadminwidgets
@@ -243,7 +243,7 @@ class Controller
         string $dataName,
         string $tpl,
         string $wrapperID,
-        $post = null
+               $post = null
     ): IOResponse {
         $this->getText->loadAdminLocale('widgets');
         $response    = new IOResponse();

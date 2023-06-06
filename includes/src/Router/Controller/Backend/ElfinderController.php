@@ -37,7 +37,7 @@ class ElfinderController extends AbstractBackendController
         if ($mediafilesType === 'video') {
             $mediafilesSubdir = \PFAD_MEDIA_VIDEO;
         }
-        $mediafilesBaseUrlPath = Shop::getURL() . $mediafilesSubdir;
+        $mediafilesBaseUrlPath = Shop::getURL() . '/' . $mediafilesSubdir;
         if (!empty(Request::verifyGPDataString('cmd'))) {
             $this->runConnector($mediafilesSubdir, $mediafilesBaseUrlPath);
         }

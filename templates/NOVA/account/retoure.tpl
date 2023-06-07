@@ -128,7 +128,8 @@
                                                                 data=[
                                                                 "lid" => "{$rArtikel->kLieferscheinPos}"
                                                                 ]
-                                                                rows=1}{/textarea}
+                                                                rows=1
+                                                                maxlength="255"}{/textarea}
                                                             </div>
                                                         </div>
                                                     </div>

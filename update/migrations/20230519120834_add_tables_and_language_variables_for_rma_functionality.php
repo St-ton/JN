@@ -88,47 +88,92 @@ class Migration_20230519120834 extends Migration implements IMigration
     public function up(): void
     {
         $this->execute(
-        "CREATE TABLE IF NOT EXISTS `tretoure` (
-                `kRetoure` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `cRetoureWawi` VARCHAR(255),
-                `kKunde` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `kLieferadresse` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `cStatus` CHAR(2),
-                `dErstellt` DATETIME NOT NULL,
-                PRIMARY KEY (`kRetoure`),
-                KEY `kArtikel` (`cRetoureWawi`,`kKunde`,`kLieferadresse`,`cStatus`)
+        "CREATE TABLE IF NOT EXISTS `rma` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `wawiId` VARCHAR(255),
+                `customerId` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `shippingAddressId` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `status` CHAR(2),
+                `createDate` DATETIME NOT NULL,
+                `lastModified` DATETIME,
+                PRIMARY KEY (`id`),
+                UNIQUE INDEX (`wawiId`),
+                INDEX (`customerId`),
+                INDEX (`shippingAddressId`)
             )
-            COMMENT='Retouren werden hier eingetragen'
+            COMMENT='RMA request created in shop or imported from WAWI.'
             DEFAULT CHARSET=utf8mb3
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
         ");
 
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `tretourepos` (
-                `kRetourePos` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `kRetoure` INT(10) UNSIGNED NOT NULL,
-                `kBestellPos` INT(10) UNSIGNED,
-                `kArtikel` INT(10) UNSIGNED,
-                `cName` VARCHAR(255) NOT NULL DEFAULT '',
-                `fPreisEinzelNetto` DOUBLE NOT NULL DEFAULT 0,
-                `nAnzahl` DOUBLE(10,4) NOT NULL DEFAULT 0,
-                `fMwSt` FLOAT(5,2),
-                `cEinheit` VARCHAR(255),
-                `fLagerbestandVorAbschluss` DOUBLE,
-                `nLongestMinDelivery` INT(11) NOT NULL DEFAULT 0,
-                `nLongestMaxDelivery` INT(1) NOT NULL DEFAULT 0,
-                `cHinweis` VARCHAR(255),
-                `cStatus` CHAR(2),
-                `dErstellt` DATETIME NOT NULL,
-                PRIMARY KEY (`kRetourePos`),
-                KEY `kArtikel` (`kRetourePos`,`kRetoure`,`kArtikel`)
+            "CREATE TABLE IF NOT EXISTS `rmapos` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `rmaId` INT(10) UNSIGNED NOT NULL,
+                `shippingNoteId` INT(10) UNSIGNED NOT NULL,
+                `shippingNotePosId` INT(10) NOT NULL,
+                `orderPosId` INT(10) UNSIGNED NOT NULL,
+                `productId` INT(10) UNSIGNED NOT NULL,
+                `name` VARCHAR(255) NOT NULL DEFAULT '',
+                `unitPriceNet` DOUBLE NOT NULL DEFAULT 0,
+                `quantity` DOUBLE(10,4) NOT NULL DEFAULT 0,
+                `vat` FLOAT(5,2),
+                `unit` VARCHAR(255),
+                `stockBeforePurchase` DOUBLE,
+                `longestMinDelivery` INT(11) NOT NULL DEFAULT 0,
+                `longestMaxDelivery` INT(1) NOT NULL DEFAULT 0,
+                `comment` VARCHAR(255),
+                `status` CHAR(2),
+                `history` MEDIUMTEXT COMMENT 'JSON encoded history of status changes',
+                `createDate` DATETIME NOT NULL,
+                PRIMARY KEY (`id`),
+                INDEX (`rmaId`),
+                INDEX (`shippingNoteId`),
+                UNIQUE INDEX (`shippingNotePosId`),
+                INDEX (`orderPosId`),
+                INDEX (`productId`),
+                INDEX (`status`),
+                CONSTRAINT `fk_rmaId`
+                    FOREIGN KEY (`rmaId`)
+                        REFERENCES `rma`(`id`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+                CONSTRAINT `fk_shippingNoteId`
+                    FOREIGN KEY (`shippingNoteId`)
+                        REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
             )
-            COMMENT='Retourenposition erstellt im Shop oder aus der WaWi übernommen.'
+            COMMENT='RMA positions created in shop user account or synced from WAWI.'
             DEFAULT CHARSET=utf8mb3
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
         ");
+        
+        $this->execute(
+            "CREATE TABLE IF NOT EXISTS `rmapos` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `rmaId` INT(10) UNSIGNED NOT NULL,
+                `createDate` DATETIME NOT NULL,
+                PRIMARY KEY (`id`),
+                INDEX (`rmaId`),
+                CONSTRAINT `fk_rmaId`
+                    FOREIGN KEY (`rmaId`)
+                        REFERENCES `rma`(`id`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+            )
+            COMMENT='RMA positions created in shop user account or synced from WAWI.'
+            DEFAULT CHARSET=utf8mb3
+            COLLATE='utf8mb3_unicode_ci'
+            ENGINE=InnoDB
+        ");
+        
+        $this->execute('DROP TABLE IF EXISTS trma');
+        $this->execute('DROP TABLE IF EXISTS trmaartikel');
+        $this->execute('DROP TABLE IF EXISTS trmagrund');
+        $this->execute('DROP TABLE IF EXISTS trmastatus');
         
         $newVars = $this->getLangData();
         
@@ -146,8 +191,8 @@ class Migration_20230519120834 extends Migration implements IMigration
      */
     public function down(): void
     {
-        $this->execute('DROP TABLE IF EXISTS tretourepos');
-        $this->execute('DROP TABLE IF EXISTS tretoure');
+        $this->execute('DROP TABLE IF EXISTS rmapos');
+        $this->execute('DROP TABLE IF EXISTS rma');
         
         $newVars = $this->getLangData();
         

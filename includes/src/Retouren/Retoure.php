@@ -34,6 +34,7 @@ class Retoure
 
     /**
      * @var string|null
+     * @values 'Angemeldet', 'Eingetroffen', 'Abgeschlossen'
      */
     public ?string $cStatus;
 

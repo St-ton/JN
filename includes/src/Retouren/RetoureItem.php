@@ -109,6 +109,11 @@ class RetoureItem
      * @var string|null
      */
     public ?string $cBestellNr;
+    
+    /**
+     * @var int|null
+     */
+    public ?int $daysSinceShipping;
 
     /**
      * @param int $id

@@ -176,6 +176,13 @@ class AccountController
             \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
             exit();
         }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($customerID, false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
+            \header('Location: ' . $this->linkService->getStaticRoute('jtl.php'), true, 303);
+            exit();
+        }
         if ($valid && Request::verifyGPCDataInt('wllo') > 0) {
             $step = 'mein Konto';
             $this->alertService->addNotice(Wishlist::delete(Request::verifyGPCDataInt('wllo')), 'wllo');
@@ -307,7 +314,7 @@ class AccountController
         $customer = new Customer();
         if (Form::validateToken() === false) {
             $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: ' . $_POST['login']);
+            Shop::Container()->getLogService()->warning('CSRF-Warnung für Login: {name}', ['name' => $_POST['login']]);
 
             return $customer;
         }
@@ -1065,7 +1072,10 @@ class AccountController
             exit;
         }
         $this->alertService->addNotice(Shop::Lang()->get('csrfValidationFailed'), 'csrfValidationFailed');
-        Shop::Container()->getLogService()->error('CSRF-Warnung fuer Account-Loeschung und kKunde ' . $customerID);
+        Shop::Container()->getLogService()->error(
+            'CSRF-Warnung für Accountlöschung und kKunde {id}',
+            ['id' => $customerID]
+        );
     }
 
     /**

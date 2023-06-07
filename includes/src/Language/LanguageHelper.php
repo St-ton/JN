@@ -979,7 +979,7 @@ class LanguageHelper
     private function mappedGetAllLanguages(int $returnType = 0, bool $force = false, bool $onlyActive = false): array
     {
         $languages = Frontend::getLanguages();
-        if ($force || \count($languages) === 0 || \get_class($languages[0]) === stdClass::class) {
+        if ($force || \count($languages) === 0 || \get_class(\array_values($languages)[0]) === stdClass::class) {
             $languages = $onlyActive === true
                 ? LanguageModel::loadAll($this->db, ['active'], [1])->toArray()
                 : LanguageModel::loadAll($this->db, [], [])->toArray();

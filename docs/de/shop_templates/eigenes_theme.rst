@@ -359,8 +359,7 @@ Eigenes Theme mit dem Theme-Editor kompilieren
 ----------------------------------------------
 
 Gehen Sie hierfür in das Backend von JTL-Shop.  |br|
-Falls noch nicht geschehen, aktivieren Sie das Plugin "*Evo Editor*" (Shop 4.x) bzw. das Plugin "**JTL Theme-Editor**"
-(ab Shop 5.0). |br|
+Falls noch nicht geschehen, aktivieren Sie das Plugin "**JTL Theme-Editor**". |br|
 Anschließend öffnen Sie das Plugin über seinen "Einstellungen"-Button in der Pluginverwaltung. |br|
 Wählen Sie nun in der Select-Box unter Theme Ihr Theme aus und klicken anschließend rechts auf den
 Button :guilabel:`Theme kompilieren`.

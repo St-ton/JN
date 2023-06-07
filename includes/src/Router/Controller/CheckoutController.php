@@ -110,6 +110,12 @@ class CheckoutController extends RegistrationController
 
             return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
         }
+        if (Request::verifyGPCDataInt('updatePersCart') === 1) {
+            $pers = PersistentCart::getInstance($this->customer->getID(), false, $this->db);
+            $pers->entferneAlles();
+            $pers->bauePersVonSession();
+            return new RedirectResponse($linkService->getStaticRoute('bestellvorgang.php') . '?wk=1');
+        }
         if ($this->cart->istBestellungMoeglich() !== 10) {
             return new RedirectResponse(
                 $linkService->getStaticRoute('warenkorb.php')
@@ -1446,9 +1452,14 @@ class CheckoutController extends RegistrationController
             $this->checkShippingSelection($shippingMethods[0]->kVersandart);
         } elseif (!\is_array($shippingMethods) || \count($shippingMethods) === 0) {
             Shop::Container()->getLogService()->error(
-                'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $deliveryCountry .
-                ', PLZ: ' . $poCode . ', Versandklasse: ' . ShippingMethod::getShippingClasses($this->cart) .
-                ', Kundengruppe: ' . $this->customerGroupID
+                'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: {cny}'
+                . ', PLZ: {zip}, Versandklasse: {sclass}, Kundengruppe: {cgid}',
+                [
+                    'cny'    => $deliveryCountry,
+                    'zip'    => $poCode,
+                    'sclass' => ShippingMethod::getShippingClasses($this->cart),
+                    'cgid'   => $this->customerGroupID
+                ]
             );
         }
         $this->smarty->assign('Kunde', $this->customer)
@@ -1496,8 +1507,9 @@ class CheckoutController extends RegistrationController
             $paymentMethods = $this->getPaymentMethods($shippingMethod, $this->customerGroupID);
             if (!\is_array($paymentMethods) || \count($paymentMethods) === 0) {
                 Shop::Container()->getLogService()->error(
-                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
-                    $shippingMethod . ', Kundengruppe: ' . $this->customerGroupID
+                    'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: {name},'
+                    . ' Kundengruppe: {cgid}',
+                    ['name' => $shippingMethod, 'cgid' => $this->customerGroupID]
                 );
                 $paymentMethod  = null;
                 $paymentMethods = [];

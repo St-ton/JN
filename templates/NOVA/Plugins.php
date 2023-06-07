@@ -562,6 +562,9 @@ class Plugins
      */
     public function getImageSize($image)
     {
+        if ($image === null) {
+            return null;
+        }
         $path = \str_starts_with($image, \PFAD_BILDER)
             ? PFAD_ROOT . $image
             : $image;
@@ -811,7 +814,10 @@ class Plugins
     {
         $currSep = Frontend::getCurrency()->getDecimalSeparator();
         $currTho = Frontend::getCurrency()->getThousandsSeparator();
+        $price   = html_entity_decode($price,\ENT_COMPAT,\JTL_CHARSET);
 
-        return \sprintf("%.2f", \str_replace($currSep, '.', \str_replace($currTho, '', ($price))));
+        \preg_match('/\d+(?:['.$currTho.']\d{3})*(?:['.$currSep.']\d+)?/', $price, $extractedPrice);
+
+        return \sprintf('%.2f', \str_replace($currSep, '.', \str_replace($currTho, '', ($extractedPrice[0]))));
     }
 }

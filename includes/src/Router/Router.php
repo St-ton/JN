@@ -383,11 +383,11 @@ class Router
                     $named = ($replacements['name'] ?? $replacements['id']);
                 }
 
-                return '/' . $named
+                return $this->path . '/' . $named
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
             if ($scheme === 'L') {
-                return '/' . $replacements['lang'] . '/'
+                return $this->path . '/' . $replacements['lang'] . '/'
                     . ($replacements['name'] ?? $replacements['id'] ?? '')
                     . (isset($replacements['currency']) ? '?curr=' . $replacements['currency'] : '');
             }
@@ -678,7 +678,7 @@ class Router
         } catch (NotFoundException) {
             $response = $this->defaultController->getResponse($request, [], $smarty);
         } catch (Exception $e) {
-            Shop::Container()->getLogService()->error('Routing error: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('Routing error: {err}', ['err' => $e->getMessage()]);
             $response = $this->defaultController->getResponse($request, [], $smarty);
         }
         CoreDispatcher::getInstance()->fire(Event::EMIT);
@@ -786,11 +786,11 @@ class Router
                 }
             }
         }
-        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'xF';
-        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'xF';
+        $defaultScheme = $this->config['global']['routing_default_language'] ?? 'F';
+        $otherSchemes  = $this->config['global']['routing_scheme'] ?? 'F';
         if (\ENABLE_EXPERIMENTAL_ROUTING_SCHEMES === false) {
-            $defaultScheme = 'xF';
-            $otherSchemes  = 'xF';
+            $defaultScheme = 'F';
+            $otherSchemes  = 'F';
         }
         if ($defaultScheme !== 'F' || $otherSchemes !== 'F') {
             if ($this->isMultiDomain === false && \count($locales) > 1) {

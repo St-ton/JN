@@ -643,32 +643,46 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
  *      returns a HTML string
  * @param onSelect
+ * @param spinnerElm
+ * @param delay
+ * @param args
+ * @param noDataAvailable
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm, delay = 0,
+                         args = [], noDataAvailable = '')
 {
     var pendingRequest = null;
+    var timeout;
+    var templates = noDataAvailable === '' ? {suggestion: suggestion} : {
+        suggestion: suggestion,
+        notFound: '<div class="tt-suggestion">' + noDataAvailable + '</div>'
+    }
 
     $(selector)
         .typeahead(
             {
                 highlight: true,
-                hint: true
+                hint: true,
+                minLength: 1
             },
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if (pendingRequest !== null) {
-                        pendingRequest.abort();
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
-                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
-                        pendingRequest = null;
-                        asyncResults(data);
-                    });
+                    timeout = setTimeout(function () {
+                        if (pendingRequest !== null) {
+                            pendingRequest.abort();
+                        }
+                        pendingRequest = ioCall(funcName, [query, 50].concat(args), function (data) {
+                            pendingRequest = null;
+                            asyncResults(data);
+                        });
+                    }, delay);
                 },
                 display: display,
-                templates: {
-                    suggestion: suggestion
-                }
+                templates: templates
             }
         )
         .on('typeahead:select', onSelect)

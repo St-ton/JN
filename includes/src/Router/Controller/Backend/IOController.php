@@ -98,6 +98,7 @@ class IOController extends AbstractBackendController
                     null,
                     'IMPORT_CUSTOMER_VIEW'
                 )
+                ->register('getPagesByLinkGroup', $jsonApi->getPagesByLinkGroup(...))
                 ->register('getPages', $jsonApi->getPages(...))
                 ->register('getCategories', $jsonApi->getCategories(...))
                 ->register('getProducts', $jsonApi->getProducts(...))

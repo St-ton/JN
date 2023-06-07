@@ -315,17 +315,19 @@ class BaseSearchQuery extends AbstractFilter
 
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $cacheID   = $this->getCacheID($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
-        $searchFilters  = $this->productFilter->getDB()->getObjects(
-            'SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, COUNT(*) AS nAnzahl
+        if (($searchFilters = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $searchFilters = $this->productFilter->getDB()->getObjects(
+                'SELECT ssMerkmal.kSuchanfrage AS id, ssMerkmal.cSuche, COUNT(*) AS cnt
                 FROM (' . $baseQuery . ') AS ssMerkmal
                     GROUP BY ssMerkmal.kSuchanfrage
                     ORDER BY ssMerkmal.cSuche' . $limit
-        );
+            );
+            foreach ($searchFilters as $searchFilter) {
+                $searchFilter->id  = (int)$searchFilter->id;
+                $searchFilter->cnt = (int)$searchFilter->cnt;
+            }
+            $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
+        }
         $searchQueryIDs = [];
         if ($this->productFilter->hasSearch()) {
             $searchQueryIDs[] = (int)$this->productFilter->getSearch()->getValue();
@@ -340,7 +342,7 @@ class BaseSearchQuery extends AbstractFilter
         // entferne bereits gesetzte Filter aus dem Ergebnis-Array
         foreach ($searchFilters as $j => $searchFilter) {
             foreach ($searchQueryIDs as $searchQuery) {
-                if ($searchFilter->kSuchanfrage === $searchQuery) {
+                if ($searchFilter->id === $searchQuery) {
                     unset($searchFilters[$j]);
                     break;
                 }
@@ -355,24 +357,24 @@ class BaseSearchQuery extends AbstractFilter
         $nPrioStep = 0;
         $nCount    = \count($searchFilters);
         if ($nCount > 0) {
-            $nPrioStep = ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9;
+            $nPrioStep = ($searchFilters[0]->cnt - $searchFilters[$nCount - 1]->cnt) / 9;
         }
         foreach ($searchFilters as $searchFilter) {
             $fo = new Option();
             $fo->setURL($this->productFilter->getFilterURL()->getURL(
-                $additionalFilter->init((int)$searchFilter->kSuchanfrage)
+                $additionalFilter->init($searchFilter->id)
             ))
                 ->setClass((string)\random_int(1, 10))
                 ->setParam($this->getUrlParam())
                 ->setType($this->getType())
                 ->setClassName($this->getClassName())
                 ->setName($searchFilter->cSuche)
-                ->setValue((int)$searchFilter->kSuchanfrage)
-                ->setCount((int)$searchFilter->nAnzahl);
+                ->setValue($searchFilter->id)
+                ->setCount($searchFilter->cnt);
             if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
                 $fo->setClass(
                     (string)(\round(
-                        ($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) /
+                        ($searchFilter->cnt - $searchFilters[$nCount - 1]->cnt) /
                             $nPrioStep
                     ) + 1)
                 );
@@ -380,7 +382,6 @@ class BaseSearchQuery extends AbstractFilter
             $options[] = $fo;
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

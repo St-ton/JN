@@ -89,6 +89,7 @@ I hereby acknowledge that the contract for digital products is valid before the 
      */
     public function down()
     {
+        $returnSingleAssocArray = 8;
         $result = $this->exec(
             "SELECT kCheckBox FROM `tcheckbox` WHERE cName = 'RightOfWithdrawalOfDownloadItems'",
             $returnSingleAssocArray

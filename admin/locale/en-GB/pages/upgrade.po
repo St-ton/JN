@@ -8,6 +8,9 @@ msgstr "System upgrade"
 msgid "Currently installed version:"
 msgstr "Currently installed version:"
 
+msgid "Dangerous channel selected"
+msgstr "Dangerous channel selected - only continue if you know what you are doing!"
+
 msgid "choose channel"
 msgstr "Choose channel"
 
@@ -22,3 +25,15 @@ msgstr "Previous upgrades"
 
 msgid "roll back"
 msgstr "Start rollback"
+
+msgid "STABLE"
+msgstr "Stable"
+
+msgid "BETA"
+msgstr "Beta"
+
+msgid "ALPHA"
+msgstr "Alpha"
+
+msgid "BLEEDINGEDGE"
+msgstr "Bleeding edge"

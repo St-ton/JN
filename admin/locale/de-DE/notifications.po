@@ -161,3 +161,9 @@ msgstr "Zeitdifferenz"
 
 msgid "mysqlTimeErrorMessage"
 msgstr "Die Zeit Ihres MySQL-Servers (%s) stimmt nicht mit der Zeit des Webservers (%s) überein. Prüfen Sie die Zeitzonen."
+
+msgid "hasShopVersionUpgradeMessage"
+msgstr "Eine neue Shopversion ist verfügbar."
+
+msgid "hasShopVersionUpgradeTitle"
+msgstr "Systemupdate"

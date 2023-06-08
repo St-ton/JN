@@ -18,7 +18,7 @@ class Migration_20181117133311 extends Migration implements IMigration
     protected $description = 'Add plugin store id';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20181117133311 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

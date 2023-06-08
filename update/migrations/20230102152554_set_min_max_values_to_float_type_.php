@@ -18,7 +18,7 @@ class Migration_20230102152554 extends Migration implements IMigration
     protected $description = 'Set min max values to float type.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -41,7 +41,7 @@ class Migration_20230102152554 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

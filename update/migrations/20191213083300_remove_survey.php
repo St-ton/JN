@@ -18,7 +18,7 @@ class Migration_20191213083300 extends Migration implements IMigration
     protected $description = 'Remove survey';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -31,7 +31,7 @@ class Migration_20191213083300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

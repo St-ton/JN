@@ -18,7 +18,7 @@ class Migration_20180706123620 extends Migration implements IMigration
     protected $description = 'New Message if email already exists.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20180706123620 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

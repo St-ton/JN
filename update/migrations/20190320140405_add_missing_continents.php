@@ -29,7 +29,7 @@ class Migration_20190320140405 extends Migration implements IMigration
     protected $description = 'Add missing continents';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -60,7 +60,7 @@ class Migration_20190320140405 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

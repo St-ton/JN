@@ -18,7 +18,7 @@ class Migration_20190207151543 extends Migration implements IMigration
     protected $description = 'Add lang rating range error';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20190207151543 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

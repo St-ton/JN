@@ -18,7 +18,7 @@ class Migration_20221017144635 extends Migration implements IMigration
     protected $description = 'Change default value of setting "bewertungserinnerung_nutzen" to "B"';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20221017144635 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

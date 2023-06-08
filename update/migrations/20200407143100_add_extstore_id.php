@@ -12,7 +12,7 @@ class Migration_20200407143100 extends Migration implements IMigration
     protected $description = 'Add extension store id to plugins';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20200407143100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

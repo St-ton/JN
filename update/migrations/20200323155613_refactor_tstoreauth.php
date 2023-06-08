@@ -18,7 +18,7 @@ class Migration_20200323155613 extends Migration implements IMigration
     protected $description = 'Refactor tstoreauth';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20200323155613 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

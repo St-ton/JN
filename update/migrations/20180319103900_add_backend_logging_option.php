@@ -17,7 +17,7 @@ class Migration_20180319103900 extends Migration implements IMigration
     protected $description = 'Add backend logging option, removed old options';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -82,7 +82,7 @@ class Migration_20180319103900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

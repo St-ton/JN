@@ -18,7 +18,7 @@ class Migration_20190807111000 extends Migration implements IMigration
     protected $description = 'Remove varkombi preview options';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20190807111000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

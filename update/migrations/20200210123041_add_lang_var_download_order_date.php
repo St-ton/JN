@@ -18,7 +18,7 @@ class Migration_20200210123041 extends Migration implements IMigration
     protected $description = 'Add lang var download order date';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20200210123041 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

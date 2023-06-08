@@ -18,7 +18,7 @@ class Migration_20181221105338 extends Migration implements IMigration
     protected $description = 'Add conf min stock for availability notifictaion';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20181221105338 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -80,7 +80,7 @@ final class ImageLink extends AbstractSync
     private function deleteImageItem(stdClass $item): void
     {
         $image = $this->db->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
-        if (!\is_object($image)) {
+        if ($image === null) {
             return;
         }
         // is last reference
@@ -136,7 +136,7 @@ final class ImageLink extends AbstractSync
             ];
             $imageID = (int)$child->attributes()->kBild;
             $image   = $this->db->select('tbild', 'kBild', $imageID);
-            if (\is_object($image)) {
+            if ($image !== null) {
                 $item->cPfad = $image->cPfad;
                 $items[]     = $item;
             } else {

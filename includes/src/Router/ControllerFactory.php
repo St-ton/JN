@@ -51,10 +51,10 @@ class ControllerFactory
      * @param JTLSmarty         $smarty
      */
     public function __construct(
-        private State             $state,
-        private DbInterface       $db,
-        private JTLCacheInterface $cache,
-        private JTLSmarty         $smarty
+        private readonly State             $state,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly JTLSmarty         $smarty
     ) {
     }
 

@@ -20,8 +20,11 @@ class Queue
      * @param LoggerInterface $logger
      * @param JobFactory      $factory
      */
-    public function __construct(private DbInterface $db, private LoggerInterface $logger, private JobFactory $factory)
-    {
+    public function __construct(
+        private readonly DbInterface     $db,
+        private readonly LoggerInterface $logger,
+        private readonly JobFactory      $factory
+    ) {
         Shop::Container()->getGetText()->loadAdminLocale('pages/cron');
     }
 

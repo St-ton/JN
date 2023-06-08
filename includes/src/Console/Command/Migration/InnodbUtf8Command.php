@@ -124,9 +124,9 @@ class InnodbUtf8Command extends Command
      */
     private function nextWithFailure(
         OutputInterface $output,
-        stdClass $table,
-        bool $releaseTable = true,
-        string $msg = 'failure!'
+        stdClass        $table,
+        bool            $releaseTable = true,
+        string          $msg = 'failure!'
     ): ?stdClass {
         $this->errCounter++;
         $output->writeln('<error>' . $msg . '</error>');

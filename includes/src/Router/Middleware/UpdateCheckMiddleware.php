@@ -24,7 +24,7 @@ class UpdateCheckMiddleware implements MiddlewareInterface
      * @param DbInterface  $db
      * @param AdminAccount $account
      */
-    public function __construct(private DbInterface $db, private AdminAccount $account)
+    public function __construct(private readonly DbInterface $db, private readonly AdminAccount $account)
     {
     }
 

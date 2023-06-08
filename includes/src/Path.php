@@ -104,7 +104,7 @@ class Path
      * @param bool   $trailingSlash
      * @return string
      */
-    public static function clean(string $path, bool $trailingSlash = false)
+    public static function clean(string $path, bool $trailingSlash = false): string
     {
         $parts    = [];
         $path     = \str_replace('\\', '/', $path);

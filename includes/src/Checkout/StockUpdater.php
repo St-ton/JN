@@ -30,8 +30,11 @@ class StockUpdater
      * @param Customer    $customer
      * @param Cart        $cart
      */
-    public function __construct(private DbInterface $db, private Customer $customer, private Cart $cart)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        private readonly Customer    $customer,
+        private readonly Cart        $cart
+    ) {
         $this->languageID = Shop::getLanguageID();
     }
 
@@ -328,13 +331,13 @@ class StockUpdater
             return;
         }
         $obj = $this->db->select('txsellkauf', 'kArtikel', $productID, 'kXSellArtikel', $xsellID);
-        if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
+        if ($obj !== null && $obj->nAnzahl > 0) {
             $this->db->queryPrepared(
                 'UPDATE txsellkauf
                      SET nAnzahl = nAnzahl + 1
                      WHERE kArtikel = :pid
                          AND kXSellArtikel = :xs',
-                ['pid' => $productID, 'xs'  => $xsellID]
+                ['pid' => $productID, 'xs' => $xsellID]
             );
         } else {
             $xs                = new stdClass();
@@ -357,7 +360,7 @@ class StockUpdater
             return;
         }
         $data = $this->db->select('tbestseller', 'kArtikel', $productID);
-        if (isset($data->kArtikel) && $data->kArtikel > 0) {
+        if ($data !== null && $data->kArtikel > 0) {
             $this->db->queryPrepared(
                 'UPDATE tbestseller SET fAnzahl = fAnzahl + :mnt WHERE kArtikel = :aid',
                 ['mnt' => $amount, 'aid' => $productID]

@@ -38,6 +38,7 @@ class SearchController extends AbstractBackendController
         return $this->smarty->assign('route', $this->route)
             ->getResponse('suche.tpl');
     }
+
     /**
      * Search for backend settings
      *

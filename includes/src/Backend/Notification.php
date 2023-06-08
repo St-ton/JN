@@ -39,7 +39,7 @@ class Notification implements IteratorAggregate, Countable
      * Notification constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         self::$instance = $this;
     }
@@ -61,8 +61,8 @@ class Notification implements IteratorAggregate, Countable
      * @param string|null $hash
      */
     public function add(
-        int $type,
-        string $title,
+        int     $type,
+        string  $title,
         ?string $description = null,
         ?string $url = null,
         ?string $hash = null
@@ -520,7 +520,6 @@ class Notification implements IteratorAggregate, Countable
 
         return $response;
     }
-
 
     /**
      * @return array

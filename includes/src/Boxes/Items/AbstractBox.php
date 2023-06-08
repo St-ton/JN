@@ -593,7 +593,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSort(?int $pageID = null): int
     {
@@ -601,7 +601,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSort(int $sort, ?int $pageID = null): void
     {
@@ -613,7 +613,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getItemCount(): int
     {
@@ -621,7 +621,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setItemCount(int $count): void
     {
@@ -629,7 +629,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function supportsRevisions(): bool
     {
@@ -637,7 +637,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSupportsRevisions(bool $supportsRevisions): void
     {
@@ -887,7 +887,7 @@ abstract class AbstractBox implements BoxInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(): void
     {

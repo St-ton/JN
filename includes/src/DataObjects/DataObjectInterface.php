@@ -47,7 +47,7 @@ interface DataObjectInterface
      * Shall use setter to insert property data.
      * Will use getMapping() if available
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      * @return void
      */
     public function __set(string $name, mixed $value): void;

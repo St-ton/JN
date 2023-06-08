@@ -29,7 +29,7 @@ class ResetCommand extends Command
             EmailTemplateController::resetTemplate((int)$template->kEmailVorlage, $this->db);
             $count++;
         }
-        $io->writeln('<info>' . $count. ' templates have been reset.</info>');
+        $io->writeln('<info>' . $count . ' templates have been reset.</info>');
 
         return Command::SUCCESS;
     }

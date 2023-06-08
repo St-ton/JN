@@ -23,7 +23,7 @@ class QuestionValidation
      * @param QuestionInterface $question
      * @param bool              $defaultValidation
      */
-    public function __construct(private QuestionInterface $question, bool $defaultValidation = true)
+    public function __construct(private readonly QuestionInterface $question, bool $defaultValidation = true)
     {
         if ($defaultValidation) {
             $this->defaultValidation();

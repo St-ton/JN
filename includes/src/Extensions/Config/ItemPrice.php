@@ -99,7 +99,7 @@ class ItemPrice
      * @param int $customerGroupID
      * @return $this
      */
-    public function setKundengruppe(int $customerGroupID):self
+    public function setKundengruppe(int $customerGroupID): self
     {
         $this->kKundengruppe = $customerGroupID;
 

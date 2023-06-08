@@ -299,7 +299,6 @@ class Updater
         if (!\file_exists($sqlFile)) {
             throw new Exception('SQL file in path "' . $sqlFile . '" not found');
         }
-
         $lines = \file($sqlFile) ?: [];
         foreach ($lines as $i => $line) {
             $line = \trim($line);

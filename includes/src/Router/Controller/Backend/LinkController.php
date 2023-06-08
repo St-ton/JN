@@ -171,9 +171,9 @@ class LinkController extends AbstractBackendController
      * @former build_navigation_subs_admin()
      */
     private function buildNavigation(
-        LinkGroupInterface $linkGroup,
+        LinkGroupInterface   $linkGroup,
         LinkServiceInterface $service,
-        int $parentID = 0
+        int                  $parentID = 0
     ): Collection {
         $news = new Collection();
         /** @var LinkInterface $link */

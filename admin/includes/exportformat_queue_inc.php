@@ -172,7 +172,7 @@ function baueENGDate($dateStart, $asTime = false): string
 
 /**
  * @param int $hours
- * @return stdClass[]|bool
+ * @return false
  * @deprecated since 5.2.0
  */
 function holeExportformatQueueBearbeitet(int $hours = 24)

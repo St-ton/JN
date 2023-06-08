@@ -25,8 +25,11 @@ class Helper
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private Manager $manager, private DbInterface $db, private JTLCacheInterface $cache)
-    {
+    public function __construct(
+        private readonly Manager           $manager,
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache
+    ) {
     }
 
     /**
@@ -43,10 +46,13 @@ class Helper
         if ($available === null) {
             throw new InvalidArgumentException('Could not find release for item with ID ' . $itemID);
         }
-        return match ($licenseData->getType()) {
-            ExsLicense::TYPE_PLUGIN, ExsLicense::TYPE_PORTLET => new PluginInstaller($this->db, $this->cache),
+        $type = $licenseData->getType();
+
+        return match ($type) {
+            ExsLicense::TYPE_PLUGIN,
+            ExsLicense::TYPE_PORTLET  => new PluginInstaller($this->db, $this->cache),
             ExsLicense::TYPE_TEMPLATE => new TemplateInstaller($this->db, $this->cache),
-            default => throw new InvalidArgumentException('Cannot update type ' . $licenseData->getType()),
+            default                   => throw new InvalidArgumentException('Cannot update type ' . $type),
         };
     }
 

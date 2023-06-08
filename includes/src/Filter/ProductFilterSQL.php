@@ -19,7 +19,7 @@ class ProductFilterSQL implements ProductFilterSQLInterface
      * ProductFilterSQL constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
         $this->conf = $productFilter->getFilterConfig()->getConfig();
     }

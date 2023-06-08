@@ -41,7 +41,7 @@ class Extractor
      * Extractor constructor.
      * @param XMLParser $parser
      */
-    public function __construct(private XMLParser $parser)
+    public function __construct(private readonly XMLParser $parser)
     {
         $jtlFS          = Shop::Container()->get(Filesystem::class);
         $this->response = new InstallationResponse();

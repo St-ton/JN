@@ -40,7 +40,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function createItems(array $itemIDs, bool $activeOnly = true): Collection
     {
@@ -118,7 +118,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getItems(): Collection
     {
@@ -168,7 +168,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setItems(Collection $items): void
     {
@@ -176,7 +176,7 @@ final class CommentList implements ItemListInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addItem($item): void
     {

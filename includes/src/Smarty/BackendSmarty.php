@@ -29,7 +29,7 @@ class BackendSmarty extends JTLSmarty
     /**
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         parent::__construct(false, ContextType::BACKEND);
     }
@@ -137,7 +137,7 @@ class BackendSmarty extends JTLSmarty
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null): void
     {

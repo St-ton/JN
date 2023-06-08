@@ -247,8 +247,8 @@ class ProductFilter
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        private ConfigInterface $filterConfig,
-        private DbInterface $db,
+        private ConfigInterface   $filterConfig,
+        private DbInterface       $db,
         private JTLCacheInterface $cache
     ) {
         $this->showChildProducts = \defined('SHOW_CHILD_PRODUCTS')
@@ -673,7 +673,7 @@ class ProductFilter
                 'kSuchanfrage',
                 $params['kSuchanfrage']
             );
-            if (isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
+            if ($queryData !== null && isset($queryData->cSuche) && \mb_strlen($queryData->cSuche) > 0) {
                 $this->search->setName($queryData->cSuche);
             }
             // Suchcache beachten / erstellen
@@ -874,8 +874,8 @@ class ProductFilter
             static function ($carry, $item) use ($filterClassName) {
                 /** @var FilterInterface $item */
                 return $carry ?? ($item->getClassName() === $filterClassName
-                        ? $item->getValue()
-                        : null);
+                    ? $item->getValue()
+                    : null);
             }
         );
     }
@@ -1584,12 +1584,8 @@ class ProductFilter
             if ($value === $filterValue) {
                 return true;
             }
-            if (\is_array($filterValue)) {
-                foreach ($filterValue as $val) {
-                    if ($val === $value) {
-                        return true;
-                    }
-                }
+            if (\is_array($filterValue) && \in_array($value, $filterValue, true)) {
+                return true;
             }
         }
 
@@ -1604,8 +1600,8 @@ class ProductFilter
      */
     public function generateSearchResults(
         Kategorie $category = null,
-        bool $fill = true,
-        int $limit = null
+        bool      $fill = true,
+        int       $limit = null
     ): SearchResultsInterface {
         $error = false;
         if ($this->searchResults === null) {

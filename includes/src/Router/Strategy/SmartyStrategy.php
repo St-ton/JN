@@ -23,8 +23,8 @@ class SmartyStrategy extends ApplicationStrategy
      */
     public function __construct(
         protected ResponseFactoryInterface $responseFactory,
-        protected JTLSmarty $smarty,
-        protected State $state
+        protected JTLSmarty                $smarty,
+        protected State                    $state
     ) {
     }
 

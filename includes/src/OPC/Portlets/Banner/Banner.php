@@ -35,7 +35,7 @@ class Banner extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'src' => [
+            'src'   => [
                 'type'  => InputType::IMAGE,
                 'label' => \__('Image'),
                 'thumb' => true,

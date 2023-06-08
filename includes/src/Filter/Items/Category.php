@@ -53,7 +53,7 @@ class Category extends BaseCategory
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setValue($value): FilterInterface
     {
@@ -90,7 +90,7 @@ class Category extends BaseCategory
         if (!\is_array($value)) {
             $value = [$value];
         }
-        $values = ' IN (' . \implode(', ', $value)  . ')';
+        $values = ' IN (' . \implode(', ', $value) . ')';
 
         if ($this->getIncludeSubCategories() === true) {
             $row = $this->getConfig('navigationsfilter')['kategoriefilter_anzeigen_als'] === 'HF'
@@ -129,11 +129,11 @@ class Category extends BaseCategory
                             ON tkategorie.lft BETWEEN oberkategorie.lft 
                             AND oberkategorie.rght
                     ) tkategorieartikelgesamt')
-                 ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
+                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
         }
 
         return $join->setTable('tkategorieartikel')
-                    ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
+            ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
     }
 
     /**
@@ -180,8 +180,8 @@ class Category extends BaseCategory
                         ON tkategorie.lft BETWEEN oberkategorie.lft
                         AND oberkategorie.rght
                     ) tkategorieartikelgesamt')
-                        ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
-                        ->setOrigin(__CLASS__ . '::getOptions'));
+                    ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
+                    ->setOrigin(__CLASS__ . '::getOptions'));
             }
             $sql->addJoin((new Join())
                 ->setComment('join2 from ' . __METHOD__)

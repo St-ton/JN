@@ -30,12 +30,12 @@ final class GeneralDataProtect extends Job
     /**
      * last ID for `CleanupGuestAccountsWithoutOrders`
      *
-     * @var integer
+     * @var int
      */
     protected int $lastProductID;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function saveProgress(QueueEntry $queueEntry): bool
     {
@@ -71,8 +71,8 @@ final class GeneralDataProtect extends Job
             $this->taskRepetitions,
             $this->lastProductID
         );
-        $queueEntry->tasksExecuted = $tableCleaner->getTaskRepetitions(); // save the max repetition count of this task
-        $queueEntry->lastProductID = $tableCleaner->getLastProductID(); // save last postion (CleanupGuestAccountsWithoutOrders)
+        $queueEntry->tasksExecuted = $tableCleaner->getTaskRepetitions();
+        $queueEntry->lastProductID = $tableCleaner->getLastProductID();
         if ($tableCleaner->getIsFinished()) {
             $this->setForeignKey((string)$this->taskIdx++);
         }

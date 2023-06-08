@@ -55,7 +55,7 @@ class OrderCompleteController extends CheckoutController
         $order      = null;
         if (isset($_GET['i'])) {
             $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
-            if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
+            if ($bestellid !== null && $bestellid->kBestellung > 0) {
                 $bestellid->kBestellung = (int)$bestellid->kBestellung;
                 $order                  = new Bestellung($bestellid->kBestellung);
                 $order->fuelleBestellung(false);
@@ -299,6 +299,7 @@ class OrderCompleteController extends CheckoutController
             && \count($_SESSION['cPlausi_arr']) === 0
         );
     }
+
     /**
      * @return int
      * @former gibFehlendeEingabe()

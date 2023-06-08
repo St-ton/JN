@@ -65,7 +65,7 @@ class ConsoleIO extends SymfonyStyle
     public function __construct(
         private readonly InputInterface  $input,
         private readonly OutputInterface $output,
-        private readonly ?HelperSet $helperSet = null
+        private readonly ?HelperSet      $helperSet = null
     ) {
         $formatter = null;
         if ($output->getFormatter() !== null) {
@@ -285,16 +285,17 @@ class ConsoleIO extends SymfonyStyle
      * @param string|null  $style The style to apply to the whole block
      * @param string       $prefix The prefix for the block
      * @param bool         $padding Whether to add vertical padding
+     * @param bool         $escape
      *
      * @return $this
      */
     public function block(
         string|array $messages,
-        ?string $type = null,
-        ?string $style = null,
-        string $prefix = ' ',
-        bool $padding = false,
-        bool $escape = true
+        ?string      $type = null,
+        ?string      $style = null,
+        string       $prefix = ' ',
+        bool         $padding = false,
+        bool         $escape = true
     ): self {
         $this->autoPrependBlock();
 

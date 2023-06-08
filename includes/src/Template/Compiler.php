@@ -103,7 +103,7 @@ class Compiler
         } else {
             $compiler->setSourceMap(BaseCompiler::SOURCE_MAP_FILE);
             $compiler->setSourceMapOptions([
-                'sourceMapURL' => \basename($target) . '.map',
+                'sourceMapURL'      => \basename($target) . '.map',
                 'sourceMapBasepath' => $directory,
             ]);
         }

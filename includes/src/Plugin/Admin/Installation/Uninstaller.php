@@ -47,9 +47,9 @@ final class Uninstaller
      * 3 = SQL-Fehler
      */
     public function uninstall(
-        int $pluginID,
+        int  $pluginID,
         bool $update = false,
-        int $newID = null,
+        int  $newID = null,
         bool $deleteData = true,
         bool $deleteFiles = false
     ): int {
@@ -93,7 +93,7 @@ final class Uninstaller
                     'root' => Shop::Container()->get(LocalFilesystem::class),
                     'plgn' => Shop::Container()->get(Filesystem::class)
                 ]);
-                $dirName = (int)$data->bExtension === 1
+                $dirName = (int)($data->bExtension ?? 0) === 1
                     ? (\PLUGIN_DIR . $dir)
                     : (\PFAD_PLUGIN . $dir);
                 try {

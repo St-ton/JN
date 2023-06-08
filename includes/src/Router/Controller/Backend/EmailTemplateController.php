@@ -474,7 +474,7 @@ class EmailTemplateController extends AbstractBackendController
     }
 
     /**
-     * @param int      $templateID
+     * @param int $templateID
      * @return Model|null
      */
     public function getTemplateByID(int $templateID): ?Model

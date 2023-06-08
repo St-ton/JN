@@ -67,11 +67,11 @@ abstract class AbstractBackendController implements ControllerInterface
      * @param GetText               $getText
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
         protected AlertServiceInterface $alertService,
-        protected AdminAccount $account,
-        protected GetText $getText
+        protected AdminAccount          $account,
+        protected GetText               $getText
     ) {
         $this->baseURL = Shop::getAdminURL(true);
         $this->setLanguage();
@@ -132,8 +132,8 @@ abstract class AbstractBackendController implements ControllerInterface
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         return $smarty->getResponse('404.tpl')->withStatus(404);
     }
@@ -394,8 +394,8 @@ abstract class AbstractBackendController implements ControllerInterface
      * @return array
      */
     public static function getCampaigns(
-        bool $getInternal = false,
-        bool $activeOnly = true,
+        bool         $getInternal = false,
+        bool         $activeOnly = true,
         ?DbInterface $db = null
     ): array {
         $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';

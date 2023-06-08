@@ -34,8 +34,11 @@ class Sitemap
      * @param JTLCacheInterface $cache
      * @param array             $conf
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache, private array $conf)
-    {
+    public function __construct(
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        private readonly array             $conf
+    ) {
         $this->langID          = Shop::getLanguageID();
         $this->customerGroupID = Frontend::getCustomerGroup()->getID();
     }

@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Backend\Upgrade\Channels;
-use JTL\Backend\Upgrade\Checker;
 use JTL\Backend\Upgrade\ReleaseDownloader;
 use JTL\Backend\Upgrade\Upgrader;
 use JTL\Filesystem\Filesystem;

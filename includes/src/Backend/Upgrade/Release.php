@@ -4,6 +4,7 @@ namespace JTL\Backend\Upgrade;
 
 use DateTime;
 use Exception;
+use JTL\Plugin\Admin\Markdown;
 use JTLShop\SemVer\Version;
 use stdClass;
 
@@ -30,9 +31,13 @@ class Release
 
     public int $id;
 
+    public string $changelog;
+
     public function __construct(stdClass $data)
     {
+        $md                = new Markdown();
         $this->channel     = $data->channel;
+        $this->changelog   = $md->text($data->changelog ?? '');
         $this->id          = $data->id;
         $this->downloadURL = $data->downloadUrl;
         $this->checksum    = $data->sha1;
@@ -44,6 +49,5 @@ class Release
             $this->version = Version::parse('0.0.0');
         }
         $this->isNewer = $this->version->greaterThan(Version::parse(\APPLICATION_VERSION));
-//        $this->isNewer = $this->version->greaterThan(Version::parse('5.1.0'));
     }
 }

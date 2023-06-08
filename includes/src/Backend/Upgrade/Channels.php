@@ -27,16 +27,17 @@ class Channels
     public static function getChannels(): array
     {
         $channels = [
-            (object)['id' => 1, 'name' => self::CHANNEL_STABLE, 'selected' => false, 'disabled' => false],
-            (object)['id' => 2, 'name' => self::CHANNEL_BETA, 'selected' => false, 'disabled' => false],
-            (object)['id' => 3, 'name' => self::CHANNEL_ALPHA, 'selected' => false, 'disabled' => false],
-            (object)['id' => 4, 'name' => self::CHANNEL_BLEEDING_EDGE, 'selected' => false, 'disabled' => true],
+            (object)['name' => self::CHANNEL_STABLE, 'disabled' => false],
+            (object)['name' => self::CHANNEL_BETA, 'disabled' => !\SHOW_UPGRADE_CHANNEL_BETA],
+            (object)['name' => self::CHANNEL_ALPHA, 'disabled' => !\SHOW_UPGRADE_CHANNEL_ALPHA],
+            (object)['name' => self::CHANNEL_BLEEDING_EDGE, 'disabled' => !\SHOW_UPGRADE_CHANNEL_BLEEDING_EDGE],
         ];
         $selected = self::getActiveChannel();
-        foreach ($channels as $channel) {
+        foreach ($channels as $i => $channel) {
+            $channel->selected = false;
+            $channel->id       = $i + 1;
             if ($channel->name === $selected) {
                 $channel->selected = true;
-                break;
             }
         }
 

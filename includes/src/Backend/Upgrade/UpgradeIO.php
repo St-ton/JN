@@ -39,7 +39,7 @@ class UpgradeIO
         return [
             'channels' => $this->smarty->fetch('tpl_inc/upgrade_channels.tpl'),
             'upgrades' => $this->smarty->fetch('tpl_inc/upgrade_upgrades.tpl'),
-            'filtered' => $filtered
+            'filtered' => $filtered->toArray()
         ];
     }
 }

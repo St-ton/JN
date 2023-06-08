@@ -451,13 +451,27 @@ $(document).ready(function () {
     getSettingListeners();
     deleteConfirmation();
 
-    // Responsive table swipe indicator
-    respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    // Add top scrollbar to tables when they are scrollable.
+    $('.table-responsive').topScrollbar();
     $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+        $(this).closest('.tabs').find('.tab-content .table-responsive').topScrollbar();
     });
     $('.collapse').on('shown.bs.collapse', function () {
-        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+        $(this).find('.table-responsive').topScrollbar();
+    });
+    $('img[loading="lazy"]').on('load',function(){
+        $(this).closest('.table-responsive').topScrollbar();
+    });
+    let windowResizeTimeout = null;
+    function windowResized() {
+        $('.table-responsive').topScrollbar();
+    }
+    $(window).on('resize', function () {
+        if (windowResizeTimeout) {
+            $('.jquery-top-scrollbar').remove();
+            clearTimeout(windowResizeTimeout);
+        }
+        windowResizeTimeout = setTimeout(windowResized, 500);
     });
 });
 
@@ -850,39 +864,3 @@ $.fn.isOnScreen = function(){
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };
-
-/**
- * Adds three arrows to inform the user about the scrollable content
- * @returns void
- * @since 5.3.0
- * @param tables
- */
-function respTableSwipeIndicator(tables)
-{
-    for (let i = 0; i < tables.length; i++) {
-        let table;
-        // Check if the table itself is scrollable or if the first child is scrollable
-        if (tables[i].scrollWidth > tables[i].offsetWidth) {
-            table = tables[i];
-        } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
-            table = tables[i].firstElementChild;
-        }
-        if (typeof table !== 'undefined' && !table.getElementsByClassName('swipeIndicator').length) {
-            let swipeIndicator = document.createElement('div');
-            swipeIndicator.className = 'swipeIndicator';
-            for (let i = 0; i < 3; i++) {
-                swipeIndicator.appendChild(document.createElement('span'));
-            }
-            table.appendChild(swipeIndicator);
-            // Set position of swipeIndicator to appear in the first ROW of the table
-            let thead = $(table).find('thead');
-            if (thead.length) {
-                swipeIndicator.style.top = thead.height() + swipeIndicator.offsetHeight + 'px';
-            }
-            table.addEventListener("scroll", () => {
-                swipeIndicator.remove();
-            });
-        }
-    }
-}
-

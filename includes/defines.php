@@ -305,6 +305,13 @@ const LOCK_TIME                           = 5;
 const SHIPPING_CLASS_MAX_VALIDATION_COUNT = 10;
 
 /**
+ * upgrader stuff
+ */
+ifndef('SHOW_UPGRADE_CHANNEL_ALPHA', false);
+ifndef('SHOW_UPGRADE_CHANNEL_BETA', false);
+ifndef('SHOW_UPGRADE_CHANNEL_BLEEDING_EDGE', false);
+
+/**
  * @param string $constant
  * @param mixed  $value
  */

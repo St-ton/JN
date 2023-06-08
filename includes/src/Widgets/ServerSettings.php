@@ -18,7 +18,7 @@ class ServerSettings extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->helper = PHPSettings::getInstance();
         $this->oSmarty->assign('maxExecutionTime', \ini_get('max_execution_time'))
@@ -37,7 +37,7 @@ class ServerSettings extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/serversettings.tpl');
     }

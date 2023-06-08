@@ -45,9 +45,9 @@ class VATCheckVatParserNonEU
     ];
 
     /**
-     * @var string
+     * @var string|int
      */
-    private string $errorInfo = '';
+    private string|int $errorInfo = '';
 
     /**
      * @var int
@@ -63,7 +63,7 @@ class VATCheckVatParserNonEU
      * VATCheckVatParserNonEU constructor.
      * @param string $vatID
      */
-    public function __construct(private string $vatID)
+    public function __construct(private readonly string $vatID)
     {
     }
 
@@ -146,9 +146,9 @@ class VATCheckVatParserNonEU
     }
 
     /**
-     * @return string
+     * @return string|int
      */
-    public function getErrorInfo(): string
+    public function getErrorInfo(): int|string
     {
         return $this->errorInfo;
     }

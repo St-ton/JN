@@ -43,7 +43,7 @@ class Migration implements JsonSerializable
     /**
      * Migration constructor.
      *
-     * @param DbInterface $db
+     * @param DbInterface   $db
      * @param null|string   $info
      * @param DateTime|null $executed
      */
@@ -57,7 +57,7 @@ class Migration implements JsonSerializable
     /**
      * @return string|null
      */
-    public function getId()
+    public function getId(): ?string
     {
         return MigrationHelper::mapClassNameToId($this->getName());
     }

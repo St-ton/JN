@@ -1028,7 +1028,9 @@ class Bestellung
             'cBestellNr'
         );
 
-        return isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0 ? $data->cBestellNr : false;
+        return $data !== null && isset($data->cBestellNr) && \mb_strlen($data->cBestellNr) > 0
+            ? $data->cBestellNr
+            : false;
     }
 
     /**

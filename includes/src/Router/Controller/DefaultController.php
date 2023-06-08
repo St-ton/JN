@@ -6,7 +6,6 @@ use JTL\Language\LanguageHelper;
 use JTL\Router\ControllerFactory;
 use JTL\Router\DefaultParser;
 use JTL\Router\Middleware\PhpFileCheckMiddleware;
-use JTL\Router\Router;
 use JTL\Router\State;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;

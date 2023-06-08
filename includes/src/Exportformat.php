@@ -1149,10 +1149,10 @@ class Exportformat
      */
     public function startExport(
         QueueEntry $queueObject,
-        bool $isAsync = false,
-        bool $back = false,
-        bool $isCron = false,
-        int $max = null
+        bool       $isAsync = false,
+        bool       $back = false,
+        bool       $isCron = false,
+        int        $max = null
     ): bool {
         $started = false;
         if (!$this->isOK()) {
@@ -1691,7 +1691,7 @@ class Exportformat
     }
 
     /**
-     * @return bool|string
+     * @return bool
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
     public function checkSyntax(): bool
@@ -1700,7 +1700,7 @@ class Exportformat
     }
 
     /**
-     * @return bool|string
+     * @return bool
      * @deprecated since 5.0.1 - do syntax check only with io-method because smarty syntax check can throw fatal error
      */
     public function doCheckSyntax(): bool

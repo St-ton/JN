@@ -77,7 +77,7 @@ class LegacyPluginLoader extends AbstractLoader
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function loadLicense(stdClass $data): License
     {

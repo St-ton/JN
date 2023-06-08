@@ -39,7 +39,7 @@ class Statusmail
      *
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         Shop::Container()->getGetText()->loadAdminLocale('pages/statusemail');
     }
@@ -430,7 +430,7 @@ class Statusmail
     /**
      * @return int
      */
-    private function getNewsletterOptOutCount():int
+    private function getNewsletterOptOutCount(): int
     {
         $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total
@@ -452,7 +452,7 @@ class Statusmail
     /**
      * @return int
      */
-    private function getNewsletterOptInCount():int
+    private function getNewsletterOptInCount(): int
     {
         $res = $this->db->getSingleObject(
             'SELECT COUNT(*) AS total

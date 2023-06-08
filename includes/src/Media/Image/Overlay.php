@@ -149,10 +149,10 @@ class Overlay
      * @return Overlay
      */
     public static function getInstance(
-        int $type,
-        int $language,
+        int    $type,
+        int    $language,
         string $template = null,
-        bool $setFallbackPath = true
+        bool   $setFallbackPath = true
     ): self {
         return self::$instance ?? (new self($type, $language, $template))->loadFromDB($setFallbackPath);
     }

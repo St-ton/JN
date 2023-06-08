@@ -60,7 +60,7 @@ class Jtllog
     private function loadFromDB(int $id): self
     {
         $data = Shop::Container()->getDB()->select('tjtllog', 'kLog', $id);
-        if (isset($data->kLog) && $data->kLog > 0) {
+        if ($data !== null && $data->kLog > 0) {
             foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }

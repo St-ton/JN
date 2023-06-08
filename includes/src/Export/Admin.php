@@ -26,8 +26,11 @@ class Admin
      * @param AlertServiceInterface $alertService
      * @param JTLSmarty             $smarty
      */
-    public function __construct(private DbInterface $db, AlertServiceInterface $alertService, private JTLSmarty $smarty)
-    {
+    public function __construct(
+        private readonly DbInterface $db,
+        AlertServiceInterface        $alertService,
+        private readonly JTLSmarty   $smarty
+    ) {
     }
 
     public function getAction(): void

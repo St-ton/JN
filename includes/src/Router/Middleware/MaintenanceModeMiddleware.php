@@ -17,7 +17,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
     /**
      * @param array $globalConfig
      */
-    public function __construct(private array $globalConfig)
+    public function __construct(private readonly array $globalConfig)
     {
     }
 

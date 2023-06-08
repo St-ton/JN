@@ -27,7 +27,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function open($path, $name): bool
     {
@@ -35,7 +35,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function close(): bool
     {
@@ -43,7 +43,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function read($id): string|false
     {
@@ -61,7 +61,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function write($id, $data): bool
     {
@@ -93,7 +93,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function destroy($id): bool
     {
@@ -102,7 +102,7 @@ class DB extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function gc($max_lifetime): int|false
     {

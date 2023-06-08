@@ -184,7 +184,7 @@ class SearchSpecial extends AbstractFilter
                         : 30;
 
                     $conditions[] = "tartikel.cNeu = 'Y' 
-                                AND DATE_SUB(NOW(),INTERVAL " . $days  . ' DAY) < tartikel.dErstellt';
+                                AND DATE_SUB(NOW(),INTERVAL " . $days . ' DAY) < tartikel.dErstellt';
                     break;
 
                 case \SEARCHSPECIALS_TOPOFFERS:
@@ -221,7 +221,7 @@ class SearchSpecial extends AbstractFilter
      * @inheritdoc
      * @return Join[]
      */
-    public function getSQLJoin()
+    public function getSQLJoin(): array
     {
         $joins     = [];
         $values    = $this->getValue();

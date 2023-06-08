@@ -103,12 +103,12 @@ class ArtikelListe
      * @return Artikel[]
      */
     public function getArtikelFromKategorie(
-        int $categoryID,
-        int $limitStart,
-        int $limitAnzahl,
+        int    $categoryID,
+        int    $limitStart,
+        int    $limitAnzahl,
         string $order,
-        int $customerGroupID = 0,
-        int $languageID = 0
+        int    $customerGroupID = 0,
+        int    $languageID = 0
     ): array {
         $this->elemente = [];
         if (!$categoryID || !Frontend::getCustomerGroup()->mayViewCategories()) {

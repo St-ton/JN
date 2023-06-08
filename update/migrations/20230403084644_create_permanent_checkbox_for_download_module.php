@@ -19,7 +19,7 @@ class Migration_20230403084644 extends Migration implements IMigration
     protected $description = 'Create permanent checkbox for download module';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -85,7 +85,7 @@ I hereby acknowledge that the contract for digital products is valid before the 
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

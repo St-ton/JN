@@ -11,7 +11,6 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
-use JTL\Language\LanguageModel;
 use JTL\Pagination\Pagination;
 use JTL\Smarty\JTLSmarty;
 use Psr\Http\Message\ResponseInterface;
@@ -92,7 +91,7 @@ class CheckboxController extends AbstractBackendController
                 if ($checkboxID > 0) {
                     $smarty->assign('kCheckBox', $checkboxID);
 
-                    $kKundengruppe = isset($post['kKundengruppe']) ? $post['kKundengruppe'] : ';;';
+                    $customerGroupID = $post['kKundengruppe'] ?? ';;';
                     if ((int)$post['nInternal'] === 1) {
                         $postBox = [
                             'nInternal'         => $post['nInternal'],
@@ -104,14 +103,13 @@ class CheckboxController extends AbstractBackendController
                             'nAktiv'            => $post['nAktiv'],
                             'nLogging'          => $post['nLogging'],
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
-                            'kKundengruppe'     => $kKundengruppe,
+                            'kKundengruppe'     => $customerGroupID,
                         ];
                     } else {
-                        $cAnzeigeOrt = isset($post['cAnzeigeOrt']) ? $post['cAnzeigeOrt'] : ';;';
-                        $postBox     = [
+                        $postBox = [
                             'nInternal'         => $post['nInternal'],
                             'kCheckBox'         => $checkboxID,
-                            'cAnzeigeOrt'       => $cAnzeigeOrt,
+                            'cAnzeigeOrt'       => $post['cAnzeigeOrt'] ?? ';;',
                             'cName'             => $post['cName'],
                             'nPflicht'          => $post['nPflicht'],
                             'nLink'             => $post['nLink'],
@@ -119,8 +117,8 @@ class CheckboxController extends AbstractBackendController
                             'nAktiv'            => $post['nAktiv'],
                             'nLogging'          => $post['nLogging'],
                             'kCheckBoxFunktion' => $post['kCheckBoxFunktion'],
-                            'kKundengruppe'     => $kKundengruppe,
-                            ];
+                            'kKundengruppe'     => $customerGroupID,
+                        ];
                     }
                     $smarty->assign('oCheckBox', (object)$postBox);
                 }
@@ -185,8 +183,8 @@ class CheckboxController extends AbstractBackendController
         if (\mb_strlen($checkboxDTO->getDisplayAt()) === 0) {
             $checks['cAnzeigeOrt'] = 1;
         } else {
-            foreach (explode(';', $checkboxDTO->getDisplayAt()) as $cAnzeigeOrt) {
-                if ((int)$cAnzeigeOrt === 3 && $checkboxDTO->getCheckboxFunctionID() === 1) {
+            foreach (\explode(';', $checkboxDTO->getDisplayAt()) as $item) {
+                if ((int)$item === 3 && $checkboxDTO->getCheckboxFunctionID() === 1) {
                     $checks['cAnzeigeOrt'] = 2;
                 }
             }

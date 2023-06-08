@@ -81,6 +81,9 @@ class CheckboxDataTableObject extends AbstractDataObject implements DataTableObj
      */
     private array $languages = [];
 
+    /**
+     * @var bool
+     */
     private bool $nLink = false;
 
     /**

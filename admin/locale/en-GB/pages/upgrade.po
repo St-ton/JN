@@ -24,7 +24,16 @@ msgid "Previous upgrades"
 msgstr "Previous upgrades"
 
 msgid "roll back"
-msgstr "Start rollback"
+msgstr "Roll back"
+
+msgid "start roll back"
+msgstr "Start roll back"
+
+msgid "OK, start roll back"
+msgstr "OK, start roll back"
+
+msgid "rollbackWarningMsg"
+msgstr "WARNING: Can lead to inconsitencies with WAWI!<br>Only continue if you know what you are doing!"
 
 msgid "STABLE"
 msgstr "Stable"

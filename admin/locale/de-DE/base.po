@@ -2200,3 +2200,6 @@ msgstr "Das Theme %s existiert nicht."
 
 msgid "Page not found."
 msgstr "Die Seite konnte nicht gefunden werden."
+
+msgid "please select"
+msgstr "Bitte auswählen"

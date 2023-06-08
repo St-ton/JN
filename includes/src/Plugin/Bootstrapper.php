@@ -38,8 +38,8 @@ abstract class Bootstrapper implements BootstrapperInterface
      * @param JTLCacheInterface $cache
      */
     final public function __construct(
-        private PluginInterface $plugin,
-        private DbInterface $db,
+        private PluginInterface   $plugin,
+        private DbInterface       $db,
         private JTLCacheInterface $cache
     ) {
         $this->pluginID = $plugin->getPluginID();
@@ -205,7 +205,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function licenseExpired(ExsLicense $license): void
     {

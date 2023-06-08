@@ -123,7 +123,7 @@ final class Mapper
             'nSortNr'
         ],
 
-        'mHerstellerSprache'    => [
+        'mHerstellerSprache' => [
             'cMetaTitle',
             'cMetaKeywords',
             'cMetaDescription',

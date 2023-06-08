@@ -42,7 +42,7 @@ class Service
      * @param GetText $getText
      * @throws Exception
      */
-    public function __construct(protected DB $db, private GetText $getText)
+    public function __construct(protected DB $db, private readonly GetText $getText)
     {
         $this->getText->setLanguage(Shop::getCurAdminLangTag())
             ->loadAdminLocale('pages/opc');

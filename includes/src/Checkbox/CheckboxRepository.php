@@ -51,9 +51,9 @@ class CheckboxRepository extends AbstractRepository
             return false;
         }
         $this->getDB()->query(
-            'UPDATE '. $this->getTableName()
+            'UPDATE ' . $this->getTableName()
             . ' SET nAktiv = 1'
-            . ' WHERE '. $this->getKeyName() . ' IN ('
+            . ' WHERE ' . $this->getKeyName() . ' IN ('
             . \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 
@@ -70,9 +70,9 @@ class CheckboxRepository extends AbstractRepository
             return false;
         }
         $this->getDB()->query(
-            'UPDATE '. $this->getTableName()
+            'UPDATE ' . $this->getTableName()
             . ' SET nAktiv = 0'
-            . ' WHERE '. $this->getKeyName() . ' IN (' .
+            . ' WHERE ' . $this->getKeyName() . ' IN (' .
             \implode(',', $this->ensureIntValuesInArray($checkboxIDs)) . ')'
         );
 

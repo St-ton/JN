@@ -115,7 +115,7 @@ final class LanguageModel extends DataModel
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onInstanciation(): void
     {

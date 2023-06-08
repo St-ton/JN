@@ -145,7 +145,7 @@ class SyncCronjob extends NetSyncHandler
         $languageID = (int)($_SESSION['kSprache'] ?? 0);
         if (!$languageID) {
             $tmp = $this->db->select('tsprache', 'cShopStandard', 'Y');
-            if (isset($tmp->kSprache) && $tmp->kSprache > 0) {
+            if ($tmp !== null && $tmp->kSprache > 0) {
                 $languageID = (int)$tmp->kSprache;
             } else {
                 return false;

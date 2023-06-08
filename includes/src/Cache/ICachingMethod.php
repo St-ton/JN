@@ -11,9 +11,9 @@ interface ICachingMethod
     /**
      * store value to cache
      *
-     * @param string|int   $cacheID - key to identify the value
-     * @param mixed    $content - the content to save
-     * @param int|null $expiration - expiration time in seconds
+     * @param string|int $cacheID - key to identify the value
+     * @param mixed      $content - the content to save
+     * @param int|null   $expiration - expiration time in seconds
      * @return bool - success
      */
     public function store($cacheID, $content, int $expiration = null): bool;

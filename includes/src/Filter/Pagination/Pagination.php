@@ -38,7 +38,7 @@ class Pagination
      * @param ProductFilter $productFilter
      * @param ItemFactory   $factory
      */
-    public function __construct(private ProductFilter $productFilter, private ItemFactory $factory)
+    public function __construct(private readonly ProductFilter $productFilter, private readonly ItemFactory $factory)
     {
         $this->prev = $this->factory->create();
         $this->next = $this->factory->create();

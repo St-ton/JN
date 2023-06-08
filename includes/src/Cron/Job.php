@@ -103,9 +103,9 @@ abstract class Job implements JobInterface
      * @inheritdoc
      */
     public function __construct(
-        protected DbInterface $db,
-        protected LoggerInterface $logger,
-        protected JobHydrator $hydrator,
+        protected DbInterface       $db,
+        protected LoggerInterface   $logger,
+        protected JobHydrator       $hydrator,
         protected JTLCacheInterface $cache
     ) {
     }

@@ -36,7 +36,7 @@ class SASSCommand extends Command
         $themeParam       = $this->getOption('theme');
         $templateDirParam = $this->getOption('templateDir');
         $templateDir      = $templateDirParam === null
-            ? \PFAD_TEMPLATES .'NOVA/themes/'
+            ? \PFAD_TEMPLATES . 'NOVA/themes/'
             : \PFAD_TEMPLATES . \rtrim($templateDirParam, '/') . '/themes/';
         $themeFolders     = Shop::Container()->get(LocalFilesystem::class)->listContents($templateDir, false);
         $compiler         = new Compiler();

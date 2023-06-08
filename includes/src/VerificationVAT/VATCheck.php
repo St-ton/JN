@@ -19,7 +19,7 @@ class VATCheck
      * VATCheck constructor.
      * @param string $ustID
      */
-    public function __construct(private string $ustID = '')
+    public function __construct(private readonly string $ustID = '')
     {
         $slots  = new VATCheckDownSlots();
         $logger = Shop::Container()->getLogService();
@@ -62,7 +62,7 @@ class VATCheck
      * @param string $pattern
      * @return bool
      */
-    public function startsWith(string $sourceString = '', string $pattern = '') : bool
+    public function startsWith(string $sourceString = '', string $pattern = ''): bool
     {
         if ($sourceString === '') {
             return false;

@@ -9,7 +9,6 @@ use JTL\DB\DbInterface;
 use JTL\L10n\GetText;
 use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
-use JTL\Shop;
 use JTL\Update\Updater;
 use stdClass;
 use function Functional\map;
@@ -32,9 +31,9 @@ class DB
      * @param GetText           $getText
      */
     public function __construct(
-        protected DbInterface $shopDB,
+        protected DbInterface       $shopDB,
         protected JTLCacheInterface $cache,
-        protected GetText $getText
+        protected GetText           $getText
     ) {
         $this->mapping = ($mapping = $this->cache->get('jtl_opc_mapping')) === false ? [] : $mapping;
     }
@@ -82,11 +81,9 @@ class DB
     public function loadBlueprint(Blueprint $blueprint): void
     {
         $blueprintDB = $this->shopDB->select('topcblueprint', 'kBlueprint', $blueprint->getId());
-
-        if (!\is_object($blueprintDB)) {
+        if ($blueprintDB === null) {
             throw new Exception('The OPC blueprint with the id \'' . $blueprint->getId() . '\' could not be found.');
         }
-
         $content = \json_decode($blueprintDB->cJson, true);
 
         $blueprint->setId((int)$blueprintDB->kBlueprint)

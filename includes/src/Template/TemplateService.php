@@ -45,7 +45,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setActiveTemplate(string $dir, string $type = 'standard'): bool
     {
@@ -107,7 +107,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function save(): void
     {
@@ -121,7 +121,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getActiveTemplate(bool $withLicense = true): Model
     {
@@ -173,7 +173,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function loadFull(array $attributes, bool $withLicense = true): Model
     {
@@ -232,10 +232,10 @@ class TemplateService implements TemplateServiceInterface
      * @throws Exception
      */
     private function mergeWithXML(
-        string $dir,
-        SimpleXMLElement $xml,
+        string              $dir,
+        SimpleXMLElement    $xml,
         ?DataModelInterface $template = null,
-        ?SimpleXMLElement $parentXML = null
+        ?SimpleXMLElement   $parentXML = null
     ): Model {
         $template = $template ?? Model::loadByAttributes(['cTemplate' => $dir], $this->db, Model::ON_NOTEXISTS_NEW);
         $template->setName(\trim((string)$xml->Name));
@@ -302,7 +302,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function reset(): void
     {
@@ -310,7 +310,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -318,7 +318,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -326,7 +326,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCache(): JTLCacheInterface
     {
@@ -334,7 +334,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCache(JTLCacheInterface $cache): void
     {
@@ -342,7 +342,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isLoaded(): bool
     {
@@ -350,7 +350,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLoaded(bool $loaded): void
     {
@@ -358,7 +358,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getCacheID(): string
     {
@@ -366,7 +366,7 @@ class TemplateService implements TemplateServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCacheID(string $cacheID): void
     {

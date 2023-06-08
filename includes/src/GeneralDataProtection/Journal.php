@@ -58,10 +58,10 @@ class Journal
      * @param stdClass|null $detail
      */
     public function addEntry(
-        string $issuerType,
-        int $issuerID,
-        string $action,
-        string $message = '',
+        string   $issuerType,
+        int      $issuerID,
+        string   $action,
+        string   $message = '',
         stdClass $detail = null
     ): void {
         Shop::Container()->getDB()->queryPrepared(

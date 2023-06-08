@@ -78,7 +78,7 @@ class KuponBestellung
             'kBestellung',
             $orderID
         );
-        if (isset($item->kKupon) && $item->kKupon > 0) {
+        if ($item !== null && $item->kKupon > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
             }

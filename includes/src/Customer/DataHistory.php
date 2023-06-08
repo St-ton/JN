@@ -175,7 +175,7 @@ class DataHistory extends MainModel
     public function load($id, $data = null, $option = null)
     {
         $history = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', $id);
-        if (isset($history->kKundendatenHistory) && $history->kKundendatenHistory > 0) {
+        if ($history !== null && $history->kKundendatenHistory > 0) {
             $this->loadObject($history);
         }
 

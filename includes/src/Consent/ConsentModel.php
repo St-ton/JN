@@ -54,7 +54,7 @@ final class ConsentModel extends DataModel
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function onRegisterHandlers(): void
     {
@@ -98,7 +98,7 @@ final class ConsentModel extends DataModel
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onInstanciation(): void
     {

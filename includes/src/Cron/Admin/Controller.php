@@ -31,10 +31,10 @@ final class Controller
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        private DbInterface $db,
-        private LoggerInterface $logger,
-        private JobHydrator $hydrator,
-        private JTLCacheInterface $cache
+        private readonly DbInterface       $db,
+        private readonly LoggerInterface   $logger,
+        private readonly JobHydrator       $hydrator,
+        private readonly JTLCacheInterface $cache
     ) {
     }
 

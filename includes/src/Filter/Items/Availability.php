@@ -102,7 +102,7 @@ class Availability extends AbstractFilter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {

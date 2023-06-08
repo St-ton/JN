@@ -268,6 +268,7 @@ class LinkController extends AbstractBackendController
                     ON tseo.cKey = 'kLink'
                     AND tseo.kKey = :lid
                 WHERE tlink.kLink = :lid
+                    OR tlink.kVaterLink = :lid
                     OR tlink.reference = :lid",
             ['lid' => $linkID]
         );

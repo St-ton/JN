@@ -3,6 +3,7 @@
 // Version
 const APPLICATION_VERSION         = '5.3.0-alpha';
 const APPLICATION_BUILD_SHA       = '#DEV#';
+const RELEASE_TYPE                = 'BETA';
 const JTL_MIN_WAWI_VERSION        = 100000;
 const JTL_MIN_SHOP_UPDATE_VERSION = '4.2.0';
 

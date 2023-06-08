@@ -4,6 +4,7 @@ namespace JTL\Router\Controller\Backend;
 
 use JTL\Backend\Permissions;
 use JTL\Backend\Upgrade\Channels;
+use JTL\Backend\Upgrade\Checker;
 use JTL\Backend\Upgrade\ReleaseDownloader;
 use JTL\Backend\Upgrade\Upgrader;
 use JTL\Filesystem\Filesystem;
@@ -53,7 +54,7 @@ class UpgradeController extends AbstractBackendController
 
     private function assignReleaseData(): void
     {
-        $activeChannel     = Channels::getActiveChannel();
+        $activeChannel     = Channels::getActiveChannel($this->db);
         $releaseDownloader = new ReleaseDownloader($this->db);
         $this->smarty->assign('channels', Channels::getChannels())
             ->assign('activeChannel', $activeChannel)

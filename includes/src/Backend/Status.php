@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Support\Collection;
 use JTL\Backend\LocalizationCheck\LocalizationCheckFactory;
 use JTL\Backend\LocalizationCheck\Result;
+use JTL\Backend\Upgrade\Checker;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Checkout\ZahlungsLog;
 use JTL\DB\DbInterface;
@@ -468,15 +469,10 @@ class Status
         if (\SAFE_MODE === true) {
             return false;
         }
-
         $data = $this->db->getObjects(
             'SELECT `kPlugin`, `nVersion`, `bExtension`
                 FROM `tplugin`'
         );
-        if (\count($data) === 0) {
-            return false; // there are no plugins installed
-        }
-
         foreach ($data as $item) {
             try {
                 $loader = Helper::getLoader((int)$item->bExtension === 1, $this->db, $this->cache);
@@ -661,5 +657,10 @@ class Status
         }
 
         return $extensions;
+    }
+
+    public function hasShopVersionUpgrade(): bool
+    {
+        return (new Checker($this->db))->hasUpgrade();
     }
 }

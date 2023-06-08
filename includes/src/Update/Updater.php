@@ -341,9 +341,9 @@ class Updater
         if ($tplXML !== null && !empty($tplXML->Parent)) {
             $parentFolder = (string)$tplXML->Parent;
         }
-        $config     = new Config($current->getPaths()->getBaseDirName(), $this->db);
-        $oldConfig  = $config->loadConfigFromDB();
-        $updates    = 0;
+        $config    = new Config($current->getPaths()->getBaseDirName(), $this->db);
+        $oldConfig = $config->loadConfigFromDB();
+        $updates   = 0;
         foreach ($config->getConfigXML($reader, $parentFolder) as $conf) {
             foreach ($conf->settings as $setting) {
                 if ($setting->cType === 'upload') {
@@ -406,38 +406,33 @@ class Updater
         } catch (PDOException $e) {
             $code  = (int)$e->errorInfo[1];
             $error = $this->db->escape($e->errorInfo[2]);
-
             if (!\in_array($code, [1062, 1060, 1267], true)) {
                 $this->db->rollback();
-
                 $errorCountForLine = 1;
                 $version           = $this->getVersion();
-
                 if ((int)$version->nZeileBis === $currentLine) {
                     $errorCountForLine = $version->nFehler + 1;
                 }
-
                 $this->db->queryPrepared(
                     'UPDATE tversion SET
                          nZeileVon = 1, 
                          nZeileBis = :rw, 
                          nFehler = :errcnt,
-                         nTyp = :type, 
+                         nTyp = :code, 
                          cFehlerSQL = :err, 
-                         dAktualisiert = NOW()',
+                         dAktualisiert = NOW(),
+                         releaseType = :rtype',
                     [
                         'rw'     => $currentLine,
                         'errcnt' => $errorCountForLine,
-                        'type'   => $code,
-                        'err'    => $error
-
+                        'code'   => $code,
+                        'err'    => $error,
+                        'rtype'  => \RELEASE_TYPE
                     ]
                 );
-
                 throw $e;
             }
         }
-
         $this->setVersion($targetVersion);
 
         return $targetVersion;
@@ -484,12 +479,13 @@ class Updater
     public function setVersion(Version $targetVersion): void
     {
         foreach ($this->db->getObjects('SHOW COLUMNS FROM `tversion`') as $column) {
-            if ($column->Field === 'nVersion') {
-                if ($column->Type !== 'varchar(20)') {
-                    $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
-                } else {
-                    $newVersion = $targetVersion->getOriginalVersion();
-                }
+            if ($column->Field !== 'nVersion') {
+                continue;
+            }
+            if ($column->Type !== 'varchar(20)') {
+                $newVersion = \sprintf('%d%02d', $targetVersion->getMajor(), $targetVersion->getMinor());
+            } else {
+                $newVersion = $targetVersion->getOriginalVersion();
             }
         }
 
@@ -504,9 +500,10 @@ class Updater
                 nZeileBis = 0, 
                 nFehler = 0, 
                 nTyp = 1, 
-                cFehlerSQL = '', 
-                dAktualisiert = NOW()",
-            ['ver' => $newVersion]
+                cFehlerSQL = '',
+                dAktualisiert = NOW(),
+                releaseType = :type",
+            ['ver' => $newVersion, 'type' => \RELEASE_TYPE]
         );
     }
 

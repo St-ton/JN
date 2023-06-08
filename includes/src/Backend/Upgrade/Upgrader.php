@@ -29,6 +29,8 @@ use League\Flysystem\MountManager;
 use Symfony\Component\Finder\Finder;
 
 /**
+ * Class Upgrader
+ * @package JTL\Backend\Upgrade
  * @since 5.3.0
  */
 class Upgrader

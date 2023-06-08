@@ -217,6 +217,15 @@ class Notification implements IteratorAggregate, Countable
             );
         }
 
+        if ($status->hasShopVersionUpgrade()) {
+            $this->add(
+                NotificationEntry::TYPE_INFO,
+                \__('hasShopVersionUpgradeTitle'),
+                \__('hasShopVersionUpgradeMessage'),
+                $adminURL . Route::UPGRADE
+            );
+        }
+
         if ($status->hasActiveProfiler()) {
             $this->add(
                 NotificationEntry::TYPE_WARNING,

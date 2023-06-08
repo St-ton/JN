@@ -8,6 +8,8 @@ use JTL\Smarty\JTLSmarty;
 use JTLShop\SemVer\Version;
 
 /**
+ * Class UpgradeIO
+ * @package JTL\Backend\Upgrade
  * @since 5.3.0
  */
 class UpgradeIO

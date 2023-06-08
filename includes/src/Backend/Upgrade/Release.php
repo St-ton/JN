@@ -7,6 +7,11 @@ use Exception;
 use JTLShop\SemVer\Version;
 use stdClass;
 
+/**
+ * Class Release
+ * @package JTL\Backend\Upgrade
+ * @since 5.3.0
+ */
 class Release
 {
     public Version $version;

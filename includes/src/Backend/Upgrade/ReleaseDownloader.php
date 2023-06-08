@@ -10,6 +10,8 @@ use JTL\DB\DbInterface;
 use stdClass;
 
 /**
+ * Class ReleaseDownloader
+ * @package JTL\Backend\Upgrade
  * @since 5.3.0
  */
 class ReleaseDownloader
@@ -22,20 +24,15 @@ class ReleaseDownloader
 
     private Collection $releases;
 
-    /**
-     * @var Client
-     */
-    private Client $client;
-
     public function __construct(private readonly DbInterface $db)
     {
-        $this->client   = new Client();
-        $this->releases = \collect($this->getReleaseData()->data ?? [])->mapInto(Release::class);
+        $this->update();
+        $this->releases = \collect($this->getReleaseData()->data ?? [])->mapInto(Release::class)
+            ->sort(static function (Release $a, Release $b) {
+                return $a->version->greaterThan($b->version) ? 1 : -1;
+            });
     }
 
-    /**
-     * @return bool - true if data should be updated
-     */
     private function checkUpdate(): bool
     {
         return ($lastItem = $this->getReleaseData()) === null
@@ -43,8 +40,6 @@ class ReleaseDownloader
     }
 
     /**
-     * @param bool $retry
-     * @return stdClass|null
      * @throws GuzzleException
      */
     private function getReleaseData(bool $retry = false): ?stdClass
@@ -76,8 +71,6 @@ class ReleaseDownloader
     }
 
     /**
-     * @param bool $force
-     * @return int
      * @throws GuzzleException
      */
     private function update(bool $force = false): int
@@ -85,7 +78,7 @@ class ReleaseDownloader
         if (!$force && !$this->checkUpdate()) {
             return 0;
         }
-        $res = $this->client->get(self::API_URL);
+        $res = (new Client())->get(self::API_URL);
         $this->housekeeping();
 
         return $this->db->insert('releases', (object)[
@@ -94,9 +87,6 @@ class ReleaseDownloader
         ]);
     }
 
-    /**
-     * @return int
-     */
     private function housekeeping(): int
     {
         return $this->db->getAffectedRows(
@@ -114,10 +104,10 @@ class ReleaseDownloader
 
     public function getReleases(?string $channel = null): Collection
     {
-        $channel = $channel ?? Channels::getActiveChannel();
+        $channel = \strtolower($channel ?? Channels::getActiveChannel($this->db));
 
         return $this->releases->filter(static function (Release $item) use ($channel) {
-            return $item->channel === $channel;
+            return \strtolower($item->channel) === $channel;
         });
     }
 

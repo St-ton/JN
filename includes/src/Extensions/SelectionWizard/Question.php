@@ -256,7 +256,7 @@ class Question
             $groupID
         );
 
-        return isset($question->kAuswahlAssistentFrage) && $question->kAuswahlAssistentFrage > 0;
+        return $question !== null && $question->kAuswahlAssistentFrage > 0;
     }
 
     /**

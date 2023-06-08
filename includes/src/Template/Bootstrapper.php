@@ -91,7 +91,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getSmarty(): ?JTLSmarty
     {
@@ -99,7 +99,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setSmarty(JTLSmarty $smarty): void
     {
@@ -139,7 +139,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function licenseExpired(ExsLicense $license): void
     {

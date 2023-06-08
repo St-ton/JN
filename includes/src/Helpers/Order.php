@@ -188,6 +188,7 @@ class Order extends CartHelper
 
         return $credit;
     }
+
     /**
      * @param array $post
      * @former plausiGuthaben()

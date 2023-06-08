@@ -28,8 +28,8 @@ class AvailabilityMessage extends AbstractRateLimiter
      */
     protected int $entryLimit = 1;
 
-     /**
-     * @inheritDoc
+    /**
+     * @return int
      */
     public function getCleanupMinutes(): int
     {
@@ -37,7 +37,7 @@ class AvailabilityMessage extends AbstractRateLimiter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setCleanupMinutes(int $minutes): void
     {
@@ -45,7 +45,7 @@ class AvailabilityMessage extends AbstractRateLimiter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFloodMinutes(): int
     {
@@ -53,7 +53,7 @@ class AvailabilityMessage extends AbstractRateLimiter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setFloodMinutes(int $minutes): void
     {

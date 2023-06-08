@@ -78,7 +78,7 @@ interface IMedia
         $id,
         $mixed,
         string $size,
-        int $number = 1,
+        int    $number = 1,
         string $sourcePath = null
     ): MediaImageRequest;
 

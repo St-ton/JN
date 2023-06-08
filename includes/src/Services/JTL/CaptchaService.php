@@ -12,12 +12,12 @@ class CaptchaService implements CaptchaServiceInterface
      * CaptchaService constructor.
      * @param CaptchaServiceInterface $fallbackCaptcha
      */
-    public function __construct(private CaptchaServiceInterface $fallbackCaptcha)
+    public function __construct(private readonly CaptchaServiceInterface $fallbackCaptcha)
     {
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isConfigured(): bool
     {
@@ -34,7 +34,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isEnabled(): bool
     {
@@ -42,7 +42,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getHeadMarkup($smarty): string
     {
@@ -64,7 +64,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getBodyMarkup($smarty): string
     {
@@ -86,7 +86,7 @@ class CaptchaService implements CaptchaServiceInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function validate(array $requestData): bool
     {

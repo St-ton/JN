@@ -215,7 +215,7 @@ class JTLSmarty extends BC
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isCached($template = null, $cacheID = null, $compileID = null, $parent = null): bool
     {
@@ -318,7 +318,7 @@ class JTLSmarty extends BC
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function display($template = null, $cacheID = null, $compileID = null, $parent = null): void
     {

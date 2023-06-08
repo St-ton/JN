@@ -118,9 +118,9 @@ final class Products extends AbstractSync
      * @return bool
      */
     private function checkStockLevelChanges(
-        int $productID,
-        array $xml,
-        array $newCategoryIDs,
+        int    $productID,
+        array  $xml,
+        array  $newCategoryIDs,
         string $stockFilter
     ): bool {
         $filter = $this->productVisibilityFilter;

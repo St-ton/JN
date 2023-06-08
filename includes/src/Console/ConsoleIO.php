@@ -65,7 +65,7 @@ class ConsoleIO extends OutputStyle
     public function __construct(
         private readonly InputInterface  $input,
         private readonly OutputInterface $output,
-        private readonly ?HelperSet $helperSet = null
+        private readonly ?HelperSet      $helperSet = null
     ) {
         $formatter = null;
         if ($output->getFormatter() !== null) {
@@ -290,10 +290,10 @@ class ConsoleIO extends OutputStyle
      */
     public function block(
         string|array $messages,
-        ?string $type = null,
-        ?string $style = null,
-        string $prefix = ' ',
-        bool $padding = false
+        ?string      $type = null,
+        ?string      $style = null,
+        string       $prefix = ' ',
+        bool         $padding = false
     ): self {
         $this->autoPrependBlock();
 

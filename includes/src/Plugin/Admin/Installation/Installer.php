@@ -513,7 +513,6 @@ final class Installer
         return \end($matches);
     }
 
-
     /**
      * Wenn ein Update erfolgreich mit neuer kPlugin in der Datenbank ist
      * wird der alte kPlugin auf die neue Version übertragen und
@@ -822,7 +821,10 @@ final class Installer
         $this->db->update('temailvorlage', 'kPlugin', $pluginID, (object)['kPlugin' => $oldPluginID]);
         $oldMailTpl = $this->db->select('temailvorlage', 'kPlugin', $oldPluginID);
         $newMailTpl = $this->db->select('temailvorlage', 'kPlugin', $pluginID);
-        if ($oldMailTpl !== null && $newMailTpl !== null && $oldMailTpl->kEmailvorlage > 0) {
+        if ($newMailTpl !== null
+            && $oldMailTpl !== null
+            && isset($newMailTpl->kEmailvorlage, $oldMailTpl->kEmailvorlage)
+        ) {
             $this->db->update(
                 'tpluginemailvorlageeinstellungen',
                 'kEmailvorlage',

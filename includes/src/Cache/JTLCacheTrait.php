@@ -66,6 +66,22 @@ trait JTLCacheTrait
     }
 
     /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [];
+    }
+
+    /**
      * @return string|null
      */
     public function getJournalID(): ?string
@@ -126,14 +142,14 @@ trait JTLCacheTrait
             case 'a':
             case 'O':
             case 's':
-                if (\preg_match("/^{$badions[1]}:\d+:.*[;}]\$/s", $data)) {
+                if (\preg_match("/^$badions[1]:\d+:.*[;}]\$/s", $data)) {
                     return true;
                 }
                 break;
             case 'b':
             case 'i':
             case 'd':
-                if (\preg_match("/^{$badions[1]}:[\d.E-]+;\$/", $data)) {
+                if (\preg_match("/^$badions[1]:[\d.E-]+;\$/", $data)) {
                     return true;
                 }
                 break;

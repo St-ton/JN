@@ -36,15 +36,18 @@ class Portlet implements \JsonSerializable
      * Portlet constructor.
      * @param string               $class
      * @param int                  $id
+     * @param DbInterface          $db
+     * @param JTLCacheInterface    $cache
+     * @param GetText              $getText
      * @param PluginInterface|null $plugin
      */
     final public function __construct(
-        protected string $class,
-        protected int $id,
-        protected DbInterface $db,
+        protected string            $class,
+        protected int               $id,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache,
-        protected GetText $getText,
-        protected ?PluginInterface $plugin = null
+        protected GetText           $getText,
+        protected ?PluginInterface  $plugin = null
     ) {
         if ($this->plugin === null) {
             $this->getText->loadAdminLocale('portlets/' . $this->class);

@@ -11,7 +11,7 @@ use JTL\Plugin\InstallCode;
 class PluginValidation
 {
     /**
-     * @param int     $code
+     * @param int         $code
      * @param string|null $pluginID
      * @return string
      */

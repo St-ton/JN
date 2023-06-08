@@ -650,7 +650,7 @@ class PortletInstance implements \JsonSerializable
      * @return $this
      * @throws \Exception
      */
-    public function deserialize($data)
+    public function deserialize($data): self
     {
         if (GeneralObject::isCountable('properties', $data)) {
             foreach ($data['properties'] as $name => $value) {

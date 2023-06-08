@@ -796,11 +796,11 @@ final class Images extends AbstractSync
      */
     private function getBrandingCoordinates(
         string $position,
-        int $imageWidth,
-        int $imageHeight,
-        int $brandingNewWidth,
-        int $brandingNewHeight,
-        int $margin
+        int    $imageWidth,
+        int    $imageHeight,
+        int    $brandingNewWidth,
+        int    $brandingNewHeight,
+        int    $margin
     ): array {
         switch ($position) {
             case 'top':
@@ -948,11 +948,11 @@ final class Images extends AbstractSync
      */
     private function createImage(
         string $source,
-        int $width = 0,
-        int $height = 0,
-        bool $branding = false,
-        int $containerWidth = null,
-        int $containerHeight = null
+        int    $width = 0,
+        int    $height = 0,
+        bool   $branding = false,
+        int    $containerWidth = null,
+        int    $containerHeight = null
     ) {
         $imgInfo = \getimagesize($source);
         $im      = match ($imgInfo[2]) {

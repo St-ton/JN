@@ -11,7 +11,7 @@ class News extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         $this->setPermission('DASHBOARD_ALL');
     }
@@ -19,7 +19,7 @@ class News extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->fetch('tpl_inc/widgets/news.tpl');
     }

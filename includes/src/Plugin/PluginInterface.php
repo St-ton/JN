@@ -239,8 +239,8 @@ interface PluginInterface
      * @return int
      */
     public function selfDestruct(
-        int $newState = State::DISABLED,
-        DbInterface $db = null,
+        int               $newState = State::DISABLED,
+        DbInterface       $db = null,
         JTLCacheInterface $cache = null
     ): int;
 }

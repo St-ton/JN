@@ -25,8 +25,8 @@ class ImagesController extends AbstractBackendController
      */
     public function getResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $this->getText->loadAdminLocale('pages/bilder');
         $this->smarty = $smarty;

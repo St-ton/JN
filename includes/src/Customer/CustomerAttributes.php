@@ -177,7 +177,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getIterator(): Traversable
     {
@@ -185,7 +185,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetExists($offset): bool
     {
@@ -193,7 +193,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
@@ -210,7 +210,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetSet($offset, $value): void
     {
@@ -226,7 +226,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function offsetUnset($offset): void
     {
@@ -234,7 +234,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function count(): int
     {

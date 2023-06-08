@@ -12,7 +12,7 @@ class Migration_20200820125600 extends Migration implements IMigration
     protected $description = 'Add direct advertising setting';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20200820125600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

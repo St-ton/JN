@@ -30,7 +30,7 @@ class Migration_20210312142136 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -52,7 +52,7 @@ class Migration_20210312142136 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

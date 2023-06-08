@@ -13,7 +13,7 @@ class Migration_20200421081600 extends Migration implements IMigration
     protected $description = 'Add vimeo consent item';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -50,7 +50,7 @@ class Migration_20200421081600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

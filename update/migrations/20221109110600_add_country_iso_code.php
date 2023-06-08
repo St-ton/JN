@@ -15,7 +15,7 @@ class Migration_20221109110600 extends Migration implements IMigration
     protected $description = 'add country iso codes';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up(): void
     {
@@ -31,7 +31,7 @@ class Migration_20221109110600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down(): void
     {

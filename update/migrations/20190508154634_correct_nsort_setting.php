@@ -18,7 +18,7 @@ class Migration_20190508154634 extends Migration implements IMigration
     protected $description = 'Correct nsort of artikel_lagerampel_keinlager';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20190508154634 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

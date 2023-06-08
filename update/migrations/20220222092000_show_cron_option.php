@@ -12,7 +12,7 @@ class Migration_20220222092000 extends Migration implements IMigration
     protected $description = 'Show cron option';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20220222092000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

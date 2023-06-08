@@ -13,7 +13,7 @@ class Migration_20190425100000 extends Migration implements IMigration
     protected $description = 'Add language variables for product ribbons';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20190425100000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

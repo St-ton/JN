@@ -18,7 +18,7 @@ class Migration_20170510145300 extends Migration implements IMigration
     protected $description = 'Add paymentNotNecessary language variable';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20170510145300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

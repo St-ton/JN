@@ -18,7 +18,7 @@ class Migration_20170424091958 extends Migration implements IMigration
     protected $description = 'Add new language variables for checkout';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -45,7 +45,7 @@ class Migration_20170424091958 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

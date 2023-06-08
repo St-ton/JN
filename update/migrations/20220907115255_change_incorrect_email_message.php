@@ -7,7 +7,7 @@ class Migration_20220907115255 extends Migration implements IMigration
 {
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws \Exception
      */
     public function up()
@@ -19,7 +19,7 @@ class Migration_20220907115255 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @throws \Exception
      */
     public function down()

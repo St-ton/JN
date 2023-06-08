@@ -13,7 +13,7 @@ class Migration_20200903121000 extends Migration implements IMigration
     protected $description = 'Add country manager';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -42,7 +42,7 @@ class Migration_20200903121000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

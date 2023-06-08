@@ -12,7 +12,7 @@ class Migration_20201026103700 extends Migration implements IMigration
     protected $description = 'Plugin migrations unique key';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20201026103700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

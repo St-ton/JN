@@ -18,7 +18,7 @@ class Migration_20190319092706 extends Migration implements IMigration
     protected $description = 'Add optional salutation';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -96,7 +96,7 @@ class Migration_20190319092706 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

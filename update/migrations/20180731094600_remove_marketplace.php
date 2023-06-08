@@ -15,7 +15,7 @@ class Migration_20180731094600 extends Migration implements IMigration
     protected $description = 'Remove marketplace admin menu entry and widget';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -24,7 +24,7 @@ class Migration_20180731094600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

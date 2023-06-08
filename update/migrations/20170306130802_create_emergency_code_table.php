@@ -18,7 +18,7 @@ class Migration_20170306130802 extends Migration implements IMigration
     protected $description = 'Create a new table to hold the emergency-codes for the 2FA.';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20170306130802 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

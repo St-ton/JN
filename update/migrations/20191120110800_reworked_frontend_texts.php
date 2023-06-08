@@ -19,7 +19,7 @@ class Migration_20191120110800 extends Migration implements IMigration
     protected $description = 'Reworked frontend texts';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -1267,7 +1267,7 @@ class Migration_20191120110800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

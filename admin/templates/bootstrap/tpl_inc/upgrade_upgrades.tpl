@@ -6,10 +6,11 @@
         class="onchangeSubmit custom-select"
         aria=["label"=>"{lang key='newerVersions' section='upgrade'}"]
     }
-    {foreach $availableVersions as $version}
-        <option value="{$version->id}"{if !$version->isNewer} disabled{/if}>
-            {(string)$version->version}
-        </option>
-    {/foreach}
+        <option value="">{__('please select')}</option>
+        {foreach $availableVersions as $version}
+            <option value="{$version->id}"{if !$version->isNewer} disabled{/if}>
+                {(string)$version->version}
+            </option>
+        {/foreach}
     {/select}
 </div>

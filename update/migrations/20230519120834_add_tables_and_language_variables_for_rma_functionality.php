@@ -102,14 +102,19 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `wawiID` VARCHAR(255),
                 `customerID` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `shippingAddressID` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `pickupAddressID` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `status` CHAR(2),
                 `createDate` DATETIME NOT NULL,
                 `lastModified` DATETIME,
                 PRIMARY KEY (`id`),
                 UNIQUE INDEX (`wawiID`),
                 INDEX (`customerID`),
-                INDEX (`shippingAddressID`)
+                INDEX (`pickupAddressID`),
+                CONSTRAINT `fk_customerID`
+                    FOREIGN KEY (`customerID`)
+                        REFERENCES `tkunde`(`kKunde`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
             )
             COMMENT='RMA request created in shop or imported from WAWI.'
             DEFAULT CHARSET=utf8mb3
@@ -152,6 +157,46 @@ class Migration_20230519120834 extends Migration implements IMigration
                 CONSTRAINT `fk_shippingNoteID`
                     FOREIGN KEY (`shippingNoteID`)
                         REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+            )
+            COMMENT='RMA positions created in shop user account or synced from WAWI.'
+            DEFAULT CHARSET=utf8mb3
+            COLLATE='utf8mb3_unicode_ci'
+            ENGINE=InnoDB
+        ");
+        
+        $this->execute(
+            "CREATE TABLE IF NOT EXISTS `pickupaddress` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `customerID` INT(10) UNSIGNED NOT NULL,
+                `salutation` VARCHAR(20) NOT NULL,
+                `firstName` VARCHAR(255) NOT NULL,
+                `lastName` VARCHAR(255) NOT NULL,
+                `academicTitle` VARCHAR(64) DEFAULT NULL,
+                `companyName` VARCHAR(255) DEFAULT NULL,
+                `companyAdditional` VARCHAR(255) DEFAULT NULL,
+                `street` VARCHAR(255) NOT NULL,
+                `houseNumber` VARCHAR(32) NOT NULL,
+                `addressAdditional` VARCHAR(255) DEFAULT NULL,
+                `postalCode` VARCHAR(20) NOT NULL,
+                `city` VARCHAR(255) NOT NULL,
+                `state` VARCHAR(255) NOT NULL,
+                `country` VARCHAR(255) NOT NULL,
+                `phone` VARCHAR(255) DEFAULT NULL,
+                `mobilePhone` VARCHAR(255) DEFAULT NULL,
+                `fax` VARCHAR(255) DEFAULT NULL,
+                `mail` VARCHAR(255) DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                INDEX (`customerID`),
+                CONSTRAINT `fk_customerID`
+                    FOREIGN KEY (`customerID`)
+                        REFERENCES `tkunde`(`kKunde`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+                CONSTRAINT `fk_pickupAddressID`
+                    FOREIGN KEY (`id`)
+                        REFERENCES `rma`(`pickupAddressID`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
             )

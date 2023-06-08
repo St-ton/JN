@@ -18,7 +18,7 @@ class Migration_20190611113700 extends Migration implements IMigration
     protected $description = 'Remove global attributes data';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -35,7 +35,7 @@ class Migration_20190611113700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

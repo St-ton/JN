@@ -4,7 +4,6 @@ namespace JTL\Router\Controller\Backend;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Backend\AdminAccount;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Status;
 use JTL\Exceptions\LoginException;

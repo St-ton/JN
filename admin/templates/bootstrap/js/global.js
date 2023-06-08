@@ -305,6 +305,16 @@ $(document).ready(function () {
 
     $('.accordion-toggle').on('click', function () {
         $(this).find('i').toggleClass('fa-minus fa-plus');
+        let parent = $(this).data("parent");
+        if (parent.length > 0) {
+            let clicked = $(this);
+            $(".accordion-toggle[data-parent='" + parent + "']").each(function() {
+                // Remove minus and add a plus sign for all accordion-toggles with same destination except the clicked one
+                if ($(this).attr("href") !== clicked.attr("href")) {
+                    $(this).find('i').removeClass('fa-minus').addClass('fa-plus');
+                }
+            });
+        }
     });
 
     $('.help').each(function () {
@@ -440,6 +450,15 @@ $(document).ready(function () {
     onChangeFormSubmit();
     getSettingListeners();
     deleteConfirmation();
+
+    // Responsive table swipe indicator
+    respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
+    $('.collapse').on('shown.bs.collapse', function () {
+        respTableSwipeIndicator(document.getElementsByClassName("table-responsive"));
+    });
 });
 
 $(window).on('load', () => {
@@ -624,32 +643,46 @@ function ioManagedCall(adminPath, funcname, params, callback)
  * @param suggestion (default: null) a callback function to customize the sugesstion entry. Takes the item object and
  *      returns a HTML string
  * @param onSelect
+ * @param spinnerElm
+ * @param delay
+ * @param args
+ * @param noDataAvailable
  */
-function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm)
+function enableTypeahead(selector, funcName, display, suggestion, onSelect, spinnerElm, delay = 0,
+                         args = [], noDataAvailable = '')
 {
     var pendingRequest = null;
+    var timeout;
+    var templates = noDataAvailable === '' ? {suggestion: suggestion} : {
+        suggestion: suggestion,
+        notFound: '<div class="tt-suggestion">' + noDataAvailable + '</div>'
+    }
 
     $(selector)
         .typeahead(
             {
                 highlight: true,
-                hint: true
+                hint: true,
+                minLength: 1
             },
             {
                 limit: 50,
                 source: function (query, syncResults, asyncResults) {
-                    if (pendingRequest !== null) {
-                        pendingRequest.abort();
+                    if (timeout) {
+                        clearTimeout(timeout);
                     }
-                    pendingRequest = ioCall(funcName, [query, 100], function (data) {
-                        pendingRequest = null;
-                        asyncResults(data);
-                    });
+                    timeout = setTimeout(function () {
+                        if (pendingRequest !== null) {
+                            pendingRequest.abort();
+                        }
+                        pendingRequest = ioCall(funcName, [query, 50].concat(args), function (data) {
+                            pendingRequest = null;
+                            asyncResults(data);
+                        });
+                    }, delay);
                 },
                 display: display,
-                templates: {
-                    suggestion: suggestion
-                }
+                templates: templates
             }
         )
         .on('typeahead:select', onSelect)
@@ -817,3 +850,39 @@ $.fn.isOnScreen = function(){
     return (!(viewport.right < bounds.left || viewport.left > bounds.right || viewport.bottom < bounds.top || viewport.top > bounds.bottom));
 
 };
+
+/**
+ * Adds three arrows to inform the user about the scrollable content
+ * @returns void
+ * @since 5.3.0
+ * @param tables
+ */
+function respTableSwipeIndicator(tables)
+{
+    for (let i = 0; i < tables.length; i++) {
+        let table;
+        // Check if the table itself is scrollable or if the first child is scrollable
+        if (tables[i].scrollWidth > tables[i].offsetWidth) {
+            table = tables[i];
+        } else if (tables[i].firstElementChild.scrollWidth > tables[i].firstElementChild.offsetWidth) {
+            table = tables[i].firstElementChild;
+        }
+        if (typeof table !== 'undefined' && !table.getElementsByClassName('swipeIndicator').length) {
+            let swipeIndicator = document.createElement('div');
+            swipeIndicator.className = 'swipeIndicator';
+            for (let i = 0; i < 3; i++) {
+                swipeIndicator.appendChild(document.createElement('span'));
+            }
+            table.appendChild(swipeIndicator);
+            // Set position of swipeIndicator to appear in the first ROW of the table
+            let thead = $(table).find('thead');
+            if (thead.length) {
+                swipeIndicator.style.top = thead.height() + swipeIndicator.offsetHeight + 'px';
+            }
+            table.addEventListener("scroll", () => {
+                swipeIndicator.remove();
+            });
+        }
+    }
+}
+

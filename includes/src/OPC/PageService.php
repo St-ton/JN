@@ -35,7 +35,7 @@ class PageService
      */
     public function __construct(protected Service $opc, protected PageDB $pageDB, protected Locker $locker)
     {
-        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
+        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', $this->renderMountPoint(...));
     }
 
     /**
@@ -243,9 +243,9 @@ class PageService
 
     /**
      * @param string $type
-     * @param $id
-     * @param int $langID
-     * @param null $params
+     * @param        $id
+     * @param int    $langID
+     * @param null   $params
      * @return string
      */
     public function createGenericPageId(string $type, $id, int $langID = 0, $params = null): string

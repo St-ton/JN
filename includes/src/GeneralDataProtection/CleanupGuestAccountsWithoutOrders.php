@@ -24,7 +24,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
     public $taskRepetitions = 5;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      * @return void
      */
     public function execute(): void

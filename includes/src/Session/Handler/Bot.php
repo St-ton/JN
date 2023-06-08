@@ -18,13 +18,13 @@ class Bot extends JTLDefault
     /**
      * @param bool $doSave - when true, session is saved, otherwise it will be discarded immediately
      */
-    public function __construct(private bool $doSave = false)
+    public function __construct(private readonly bool $doSave = false)
     {
         $this->sessionID = \session_id();
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function open($path, $name): bool
     {
@@ -32,7 +32,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function close(): bool
     {
@@ -40,7 +40,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function read($id): string|false
     {
@@ -55,7 +55,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function write($id, $data): bool
     {
@@ -67,7 +67,7 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function destroy($id): bool
     {
@@ -75,10 +75,10 @@ class Bot extends JTLDefault
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function gc($max_lifetime): int|false
     {
-        return true;
+        return 0;
     }
 }

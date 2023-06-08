@@ -72,7 +72,7 @@ final class LinkGroup implements LinkGroupInterface
      * LinkGroup constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         $this->links = new Collection();
     }

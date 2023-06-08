@@ -12,8 +12,8 @@ use SmartyException;
 class BC extends Smarty
 {
     /**
-     * @param string $tpl_var the template variable name
-     * @param mixed  &$value  the referenced value to assign
+     * @param string  $tpl_var the template variable name
+     * @param mixed  &$value the referenced value to assign
      */
     public function assign_by_ref($tpl_var, &$value): void
     {
@@ -22,9 +22,9 @@ class BC extends Smarty
     }
 
     /**
-     * @param string $tpl_var the template variable name
-     * @param mixed  &$value  the referenced value to append
-     * @param bool   $merge   flag if array elements shall be merged
+     * @param string  $tpl_var the template variable name
+     * @param mixed  &$value the referenced value to append
+     * @param bool    $merge flag if array elements shall be merged
      */
     public function append_by_ref($tpl_var, &$value, $merge = false): void
     {
@@ -42,8 +42,8 @@ class BC extends Smarty
     }
 
     /**
-     * @param string $function      the name of the template function
-     * @param string $function_impl the name of the PHP function to register
+     * @param string $function - the name of the template function
+     * @param string $function_impl - the name of the PHP function to register
      * @param bool   $cacheable
      * @param mixed  $cache_attrs
      * @throws SmartyException
@@ -93,8 +93,8 @@ class BC extends Smarty
     }
 
     /**
-     * @param string $block      name of template block
-     * @param string $block_impl PHP function to register
+     * @param string $block - name of template block
+     * @param string $block_impl - PHP function to register
      * @param bool   $cacheable
      * @param mixed  $cache_attrs
      * @throws SmartyException
@@ -157,8 +157,8 @@ class BC extends Smarty
     }
 
     /**
-     * @param string $type      name of resource
-     * @param array  $functions array of functions to handle resource
+     * @param string $type - name of resource
+     * @param array  $functions - array of functions to handle resource
      */
     public function register_resource($type, $functions): void
     {
@@ -244,10 +244,10 @@ class BC extends Smarty
     }
 
     /**
-     * @param string $tpl_file   name of template file
-     * @param string $cache_id   name of cache_id
-     * @param string $compile_id name of compile_id
-     * @param string $exp_time   expiration time
+     * @param string $tpl_file - name of template file
+     * @param string $cache_id - name of cache_id
+     * @param string $compile_id - name of compile_id
+     * @param string $exp_time - expiration time
      * @return int
      */
     public function clear_cache($tpl_file = null, $cache_id = null, $compile_id = null, $exp_time = null)

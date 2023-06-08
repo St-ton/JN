@@ -7,7 +7,6 @@ use Exception;
 use InvalidArgumentException;
 use JTL\Cron\QueueEntry;
 use JTL\Customer\CustomerGroup;
-use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
@@ -91,12 +90,12 @@ class FormatExporter extends AbstractExporter
      * @inheritdoc
      */
     public function startExport(
-        int $exportID,
+        int        $exportID,
         QueueEntry $queueEntry,
-        bool $isAsync = false,
-        bool $back = false,
-        bool $isCron = false,
-        int $max = null
+        bool       $isAsync = false,
+        bool       $back = false,
+        bool       $isCron = false,
+        int        $max = null
     ): bool {
         $this->init($exportID);
         $this->setQueue($queueEntry);

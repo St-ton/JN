@@ -35,7 +35,7 @@ class Manager
      * @param DbInterface $db
      * @param GetText     $getText
      */
-    public function __construct(private DbInterface $db, GetText $getText)
+    public function __construct(private readonly DbInterface $db, GetText $getText)
     {
         $getText->loadAdminLocale('pages/bilderverwaltung');
     }
@@ -93,7 +93,7 @@ class Manager
                 'type'  => Image::TYPE_CONFIGGROUP,
                 'stats' => (new ConfigGroup($this->db))->getStats($filesize)
             ],
-            Image::TYPE_OPC          => (object)[
+            Image::TYPE_OPC                  => (object)[
                 'name'  => \__('OPC'),
                 'type'  => Image::TYPE_OPC,
                 'stats' => (new OPC($this->db))->getStats($filesize)

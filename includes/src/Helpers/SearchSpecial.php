@@ -22,7 +22,7 @@ class SearchSpecial
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
@@ -225,18 +225,18 @@ class SearchSpecial
         if ($bestsellers === false || !\is_countable($bestsellers)) {
             $bestsellers = $this->db->getInts(
                 'SELECT tartikel.kArtikel, tbestseller.fAnzahl
-                    FROM tbestseller, tartikel
+                    FROM tbestseller
+                    JOIN tartikel ON tbestseller.kArtikel = tartikel.kArtikel
                     LEFT JOIN tartikelsichtbarkeit 
                         ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tbestseller.kArtikel = tartikel.kArtikel
-                        AND ROUND(tbestseller.fAnzahl) >= :mnt
+                        AND tbestseller.isBestseller = 1
                         ' . self::getParentSQL() . '
                         ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                     ORDER BY fAnzahl DESC',
                 'kArtikel',
-                ['cgid' => $customerGroupID, 'mnt' => $minAmount]
+                ['cgid' => $customerGroupID]
             );
             $this->cache->set($cacheID, $bestsellers, $this->getCacheTags($bestsellers));
         }

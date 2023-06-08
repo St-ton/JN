@@ -59,8 +59,8 @@ class CacheRedisCluster implements ICachingMethod
      */
     private function setRedisCluster(
         ?string $hosts = null,
-        bool $persist = false,
-        int $strategy = 0,
+        bool    $persist = false,
+        int     $strategy = 0,
         ?string $pass = null
     ): bool {
         try {
@@ -103,7 +103,7 @@ class CacheRedisCluster implements ICachingMethod
 
             return $this->redis->set($cacheID, $content, $cacheID !== $this->journalID && $exp > -1 ? $exp : null);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -124,7 +124,7 @@ class CacheRedisCluster implements ICachingMethod
 
             return $res;
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -138,7 +138,7 @@ class CacheRedisCluster implements ICachingMethod
         try {
             return $this->redis->get($cacheID);
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return false;
         }
@@ -214,7 +214,7 @@ class CacheRedisCluster implements ICachingMethod
         $tagged = \array_unique($this->getKeysByTag($tags));
         $tags   = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map([self::class, '_keyFromTagName'], $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
 
         return $this->flush(\array_merge($tags, $tagged)) ? \count($tags) : 0;
     }
@@ -238,7 +238,7 @@ class CacheRedisCluster implements ICachingMethod
     {
         $matchTags = \is_string($tags)
             ? [self::_keyFromTagName($tags)]
-            : \array_map([self::class, '_keyFromTagName'], $tags);
+            : \array_map(self::_keyFromTagName(...), $tags);
         $res       = \count($tags) === 1
             ? $this->redis->sMembers($matchTags[0])
             : $this->redis->sUnion($matchTags);
@@ -288,7 +288,7 @@ class CacheRedisCluster implements ICachingMethod
                     : [];
             }
         } catch (RedisClusterException $e) {
-            Shop::Container()->getLogService()->error('RedisClusterException: ' . $e->getMessage());
+            Shop::Container()->getLogService()->error('RedisClusterException: {exc}', ['exc' => $e->getMessage()]);
 
             return [];
         }
@@ -328,7 +328,7 @@ class CacheRedisCluster implements ICachingMethod
         return [
             'entries'  => \implode('/', $numEntries),
             'uptime'   => \implode('/', $uptimes), //uptime in seconds
-            'uptime_h' => \implode('/', \array_map([$this, 'secondsToTime'], $uptimes)), //human readable
+            'uptime_h' => \implode('/', \array_map($this->secondsToTime(...), $uptimes)), //human readable
             'hits'     => \implode('/', $hits), //cache hits
             'misses'   => \implode('/', $misses), //cache misses
             'hps'      => \implode('/', $hps), //hits per second

@@ -201,7 +201,7 @@ abstract class AbstractItem implements ItemInterface
 
     /**
      * @param LanguageModel[] $languages
-     * @param int   $currentLangID
+     * @param int             $currentLangID
      */
     public function setLanguageData(array $languages, int $currentLangID): void
     {

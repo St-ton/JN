@@ -25,9 +25,9 @@ class Controller
      * @param AlertServiceInterface|null $alertService
      */
     public function __construct(
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        protected ?AlertServiceInterface $alertService = null
+        private readonly DbInterface       $db,
+        private readonly JTLCacheInterface $cache,
+        protected ?AlertServiceInterface   $alertService = null
     ) {
     }
 

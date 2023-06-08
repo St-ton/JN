@@ -25,7 +25,7 @@ class Visitor
      * @param DbInterface       $db
      * @param JTLCacheInterface $cache
      */
-    public function __construct(private DbInterface $db, private JTLCacheInterface $cache)
+    public function __construct(private readonly DbInterface $db, private readonly JTLCacheInterface $cache)
     {
     }
 
@@ -256,8 +256,12 @@ class Visitor
         if (empty($_SERVER['HTTP_REFERER'])) {
             return '';
         }
+        $parts = \explode('/', $_SERVER['HTTP_REFERER']);
+        if (!isset($parts[2])) {
+            return '';
+        }
 
-        return Text::filterXSS(\mb_convert_case(\explode('/', $_SERVER['HTTP_REFERER'])[2], \MB_CASE_LOWER));
+        return Text::filterXSS(\mb_convert_case($parts[2], \MB_CASE_LOWER));
     }
 
     /**

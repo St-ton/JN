@@ -19,7 +19,7 @@ class Migration_20200612140816 extends Migration implements IMigration
     protected $description = 'Remove path from redirects';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -54,7 +54,7 @@ class Migration_20200612140816 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -18,7 +18,7 @@ class Migration_20170310153800 extends Migration implements IMigration
     protected $description = 'Remove partial https encryption option';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -38,7 +38,7 @@ class Migration_20170310153800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

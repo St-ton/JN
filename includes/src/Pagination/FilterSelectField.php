@@ -23,10 +23,10 @@ class FilterSelectField extends FilterField
     /**
      * FilterSelectField constructor.
      *
-     * @param Filter $filter
+     * @param Filter       $filter
      * @param string|array $title
-     * @param string $column
-     * @param int    $defaultOption
+     * @param string       $column
+     * @param int          $defaultOption
      */
     public function __construct($filter, $title, $column, $defaultOption = 0)
     {

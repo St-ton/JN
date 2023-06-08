@@ -171,17 +171,17 @@ class LinkController extends AbstractBackendController
      * @former build_navigation_subs_admin()
      */
     private function buildNavigation(
-        LinkGroupInterface $linkGroup,
+        LinkGroupInterface   $linkGroup,
         LinkServiceInterface $service,
-        int $parentID = 0
+        int                  $parentID = 0
     ): Collection {
         $news = new Collection();
+        /** @var LinkInterface $link */
         foreach ($linkGroup->getLinks() as $link) {
-            $link->setLevel(\count($service->getParentIDs($link->getID())));
-            /** @var LinkInterface $link */
             if ($link->getParent() !== $parentID) {
                 continue;
             }
+            $link->setLevel(\count($service->getParentIDs($link->getID())));
             $link->setChildLinks($this->buildNavigation($linkGroup, $service, $link->getID()));
             $news->push($link);
         }

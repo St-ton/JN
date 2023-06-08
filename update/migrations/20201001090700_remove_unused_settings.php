@@ -12,7 +12,7 @@ class Migration_20201001090700 extends Migration implements IMigration
     protected $description = 'Remove unused skalieren settings';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -33,7 +33,7 @@ class Migration_20201001090700 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

@@ -67,11 +67,11 @@ class Import
      * @throws InvalidArgumentException
      */
     public function import(
-        string $id,
+        string  $id,
         $target,
-        array $fields = [],
+        array   $fields = [],
         ?string $delim = null,
-        int $importType = self::TYPE_INSERT_NEW
+        int     $importType = self::TYPE_INSERT_NEW
     ): bool {
         if (!\is_string($target) && !\is_callable($target)) {
             throw new TypeError('Argument $target must be either a string or a callable');
@@ -292,7 +292,6 @@ class Import
             $data->productName = $item->cName;
         }
     }
-
 
     /**
      * @param string $filename

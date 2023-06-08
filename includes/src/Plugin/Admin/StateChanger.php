@@ -28,10 +28,10 @@ class StateChanger
      * @param ValidatorInterface|null $pluginValidator
      */
     public function __construct(
-        private DbInterface $db,
-        private JTLCacheInterface $cache,
-        private ?ValidatorInterface $legacyValidator = null,
-        private ?ValidatorInterface $pluginValidator = null
+        private readonly DbInterface         $db,
+        private readonly JTLCacheInterface   $cache,
+        private readonly ?ValidatorInterface $legacyValidator = null,
+        private readonly ?ValidatorInterface $pluginValidator = null
     ) {
     }
 
@@ -46,7 +46,7 @@ class StateChanger
             return InstallCode::WRONG_PARAM;
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if (empty($pluginData->kPlugin)) {
+        if ($pluginData === null || empty($pluginData->kPlugin)) {
             return InstallCode::NO_PLUGIN_FOUND;
         }
         if ((int)$pluginData->bExtension === 1) {
@@ -97,7 +97,7 @@ class StateChanger
         }
         $pluginData = $this->db->select('tplugin', 'kPlugin', $pluginID);
         if (!\SAFE_MODE) {
-            $loader = (int)$pluginData->bExtension === 1
+            $loader = (int)($pluginData->bExtension ?? 0) === 1
                 ? new PluginLoader($this->db, $this->cache)
                 : new LegacyPluginLoader($this->db, $this->cache);
             if (($p = Helper::bootstrap($pluginID, $loader)) !== null) {
@@ -117,7 +117,6 @@ class StateChanger
 
         return InstallCode::OK;
     }
-
 
     /**
      * @param PluginInterface $plugin

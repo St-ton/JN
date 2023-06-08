@@ -18,7 +18,7 @@ class Migration_20180801124135 extends Migration implements IMigration
     protected $description = 'Enable semantic versioning for templates';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -43,7 +43,7 @@ class Migration_20180801124135 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

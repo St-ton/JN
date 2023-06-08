@@ -38,8 +38,8 @@ class BaseSearchSpecial extends AbstractFilter
         parent::__construct($productFilter);
         $this->setRouteType(Router::TYPE_SEARCH_SPECIAL);
         $this->setIsCustom(false)
-             ->setUrlParam('q')
-             ->setUrlParamSEO(null);
+            ->setUrlParam('q')
+            ->setUrlParamSEO(null);
     }
 
     /**
@@ -135,11 +135,7 @@ class BaseSearchSpecial extends AbstractFilter
     {
         switch ($this->value) {
             case \SEARCHSPECIALS_BESTSELLER:
-                $count = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
-                    ? (int)$min
-                    : 100;
-
-                return 'ROUND(tbestseller.fAnzahl) >= ' . $count;
+                return 'tbestseller.isBestseller = 1';
 
             case \SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';

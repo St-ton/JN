@@ -91,7 +91,6 @@ Die Installation von Plugins besteht aus zwei Schritten. Sie können diese im la
 vornehmen.
 
 1. Laden Sie das Plugin hoch: |br|
-   **ab Shop Version 4.x** in das Verzeichnis ``includes/plugins/``, |br|
    **ab Shop Version 5.x** in das Verzeichnis ``plugins/`` |br|
    (Der Upload erfolgt in "ausgepackter" Form. Dateiarchive, wie z. B. ``*.zip`` oder ``*.tgz``,
    werden *nicht unterstützt*.)

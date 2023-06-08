@@ -12,7 +12,7 @@ class Migration_20210129122800 extends Migration implements IMigration
     protected $description = 'Fix video lang tag';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -23,7 +23,7 @@ class Migration_20210129122800 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

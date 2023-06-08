@@ -15,7 +15,7 @@ class Migration_20180222084900 extends Migration implements IMigration
     protected $description = 'Add language variables for product rating';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20180222084900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

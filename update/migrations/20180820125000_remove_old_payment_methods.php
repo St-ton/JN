@@ -18,7 +18,7 @@ class Migration_20180820125000 extends Migration implements IMigration
     protected $description = 'Remove old payment methods';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -91,7 +91,7 @@ class Migration_20180820125000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

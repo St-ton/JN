@@ -36,7 +36,7 @@ class Newsletter
      * @param DbInterface $db
      * @param array       $config
      */
-    public function __construct(private DbInterface $db, private array $config)
+    public function __construct(private readonly DbInterface $db, private readonly array $config)
     {
     }
 
@@ -107,7 +107,7 @@ class Newsletter
             return new stdClass();
         }
         $data     = $this->db->select('tnewsletter', 'kNewsletter', $newsletterID);
-        $groupIDs = Text::parseSSKint($data->cKundengruppe);
+        $groupIDs = Text::parseSSKint($data->cKundengruppe ?? '');
         $cSQL     = '';
         if (\count($groupIDs) > 0) {
             $noGroup = \in_array(0, $groupIDs, true);
@@ -392,8 +392,13 @@ class Newsletter
             $product->fuelleArtikel($id, $defaultOptions, $customerGroupID, $langID);
             if ($product->kArtikel <= 0) {
                 Shop::Container()->getLogService()->notice(
-                    'Newsletter Cron konnte den Artikel ' . $id . ' für Kundengruppe ' .
-                    $customerGroupID . ' und Sprache ' . $langID . ' nicht laden (Sichtbarkeit?)'
+                    'Newsletter Cron konnte den Artikel {pid} für Kundengruppe {cgid}'
+                    . ' und Sprache {lid} nicht laden (Sichtbarkeit?)',
+                    [
+                        'pid'  => $id,
+                        'cgid' => $customerGroupID,
+                        'lid'  => $langID
+                    ]
                 );
                 continue;
             }

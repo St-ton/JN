@@ -215,11 +215,8 @@ final class Characteristics extends AbstractSync
                 $loc->kSprache = (int)$loc->kSprache;
                 if (!\in_array($loc->kSprache, $allowedLanguageIDs, true)) {
                     $this->logger->warning(
-                        \sprintf(
-                            'Language id %d is not available for characteristic value %d',
-                            $loc->kSprache,
-                            $loc->kMerkmalWert,
-                        )
+                        'Language id {id} is not available for characteristic value {cv}',
+                        ['id' => $loc->kSprache, 'cv' => $loc->kMerkmalWert]
                     );
                     continue;
                 }
@@ -239,11 +236,8 @@ final class Characteristics extends AbstractSync
 
                 if ($loc->cSeo === '') {
                     $this->logger->warning(
-                        \sprintf(
-                            'Empty SEO string for characteristic value %d in language %d',
-                            $loc->kMerkmalWert,
-                            $loc->kSprache,
-                        )
+                        'Empty SEO string for characteristic value {cv} in language {id}',
+                        ['cv' => $loc->kMerkmalWert, 'id' => $loc->kSprache]
                     );
                     continue;
                 }

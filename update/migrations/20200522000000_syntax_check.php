@@ -29,7 +29,7 @@ class Migration_20200522000000 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

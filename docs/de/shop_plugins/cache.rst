@@ -9,8 +9,7 @@ Cache
 in ``<Shop-Root>/classes/CachingMethods/`` bzw. ``<Shop-Root>/includes/src/Cache/Methods/`` wird seit JTL-Shop 4 ein
 Objektcache bereitgestellt, welcher auch in Plugins genutzt werden kann.
 
-Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Wartung -> Cache*" (bis JTL-Shop 4.x) und
-"*System -> Cache*" (ab JTL-Shop 5.x).
+Die Konfiguration erfolgt im Backend über den Menüpunkt "*System -> Cache*" (ab JTL-Shop 5.x).
 
 Standardmäßig unterstützt JTL-Shop die folgenden Caching-Methoden:
 
@@ -21,7 +20,7 @@ Standardmäßig unterstützt JTL-Shop die folgenden Caching-Methoden:
 * Dateien (erweitert)
 * XCache
 
-Darüber hinaus erfolgt eine Gruppierung von Cache-Einträgen über Gruppen und Tags (seit JTL-Shop 4).
+Darüber hinaus erfolgt eine Gruppierung von Cache-Einträgen über Gruppen und Tags.
 
 Cache-Group-Tags
 ----------------
@@ -312,13 +311,11 @@ deutlich beschleunigt werden.
 Dateien(erweitert)-Cache
 """"""""""""""""""""""""
 
-Die seit JTL-Shop 4.05 enthaltene Methode *Dateien (erweitert)* versucht, diese Nachteile durch
+Die Methode *Dateien (erweitert)* versucht, diese Nachteile durch
 `Symlinks <https://de.wikipedia.org/wiki/Symbolische_Verkn%C3%BCpfung>`_ zu umgehen. |br|
 Hierbei werden im Ordner ``templates_c/filecache/`` für jeden Tag Unterordner angelegt, die Symlinks zu den
 einzelnen Cache-Einträgen enthalten. Hierdurch kann eine bessere Parallelität beim Schreiben von neuen Einträgen
 erreicht werden. |br|
-Unter bislang ungeklärten Umständen kann es jedoch vorkommen, dass fehlerhafte Links erstellt werden, sodass der
-Cache-Ordner nicht mehr geleert werden kann. Dies wird aktuell (Stand: Februar 2020) noch untersucht.
 
 APC-Cache
 """""""""

@@ -288,7 +288,7 @@ class URL
      *
      * @see https://datatracker.ietf.org/doc/html/rfc3986#section-2.3
      * @param string $string
-     * @return mixed
+     * @return string|null
      */
     public function urlDecodeUnreservedChars(string $string): ?string
     {

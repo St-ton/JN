@@ -8,7 +8,6 @@ use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
 use JTL\MagicCompatibilityTrait;
-use JTL\Shop;
 
 /**
  * Class BaseCategory
@@ -22,7 +21,6 @@ class BaseCategory extends AbstractFilter
      * @var array
      */
     protected array $slugs = [];
-
 
     /**
      * @var array
@@ -46,8 +44,8 @@ class BaseCategory extends AbstractFilter
     {
         parent::__construct($productFilter);
         $this->setIsCustom(false)
-             ->setUrlParam('k')
-             ->setUrlParamSEO(\SEP_KAT);
+            ->setUrlParam('k')
+            ->setUrlParamSEO(\SEP_KAT);
     }
 
     /**
@@ -101,9 +99,8 @@ class BaseCategory extends AbstractFilter
                 $this->slugs[$id] = $seo->getSlug($id);
             }
         }
-        foreach ($seoData as $item) {
-            $this->setName($item->getName($currentLanguageID));
-            break;
+        if (\count($seoData) > 0) {
+            $this->setName($seoData[0]->getName($currentLanguageID));
         }
 
         return $this;

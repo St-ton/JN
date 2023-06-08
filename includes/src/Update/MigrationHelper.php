@@ -77,7 +77,7 @@ class MigrationHelper
      * @param string $fileName
      * @return string|null
      */
-    public static function getInfoFromFileName(string $fileName): ? string
+    public static function getInfoFromFileName(string $fileName): ?string
     {
         $matches = [];
         if (\preg_match(static::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
@@ -193,9 +193,9 @@ class MigrationHelper
      */
     public static function createIndex(
         string $idxTable,
-        array $idxColumns,
+        array  $idxColumns,
         string $idxName = null,
-        bool $idxUnique = false
+        bool   $idxUnique = false
     ): bool {
         if (empty($idxName)) {
             $idxName = \implode('_', $idxColumns) . '_' . ($idxUnique ? 'UQ' : 'IDX');
@@ -205,7 +205,7 @@ class MigrationHelper
                 . ' INDEX `' . $idxName . '` ON `' . $idxTable . '` '
                 . '(`' . \implode('`, `', $idxColumns) . '`)';
 
-            return Shop::Container()->getDB()->query($ddl,ReturnType::SINGLE_OBJECT) !== null;
+            return Shop::Container()->getDB()->query($ddl, ReturnType::SINGLE_OBJECT) !== null;
         }
 
         return false;

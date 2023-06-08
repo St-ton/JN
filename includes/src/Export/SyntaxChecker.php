@@ -5,7 +5,6 @@ namespace JTL\Export;
 use Exception;
 use InvalidArgumentException;
 use JTL\Backend\AdminIO;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Cron\QueueEntry;
 use JTL\DB\DbInterface;
 use JTL\Session\Frontend;
@@ -38,7 +37,7 @@ class SyntaxChecker
      * @param int         $id
      * @param DbInterface $db
      */
-    public function __construct(private int $id, private DbInterface $db)
+    public function __construct(private readonly int $id, private readonly DbInterface $db)
     {
     }
 
@@ -194,11 +193,16 @@ class SyntaxChecker
         $this->initSmarty();
         $product   = null;
         $productID = $this->db->getSingleInt(
-            "SELECT kArtikel 
-                FROM tartikel 
-                WHERE kVaterArtikel = 0 
-                AND (cLagerBeachten = 'N' OR fLagerbestand > 0) LIMIT 1",
-            'kArtikel'
+            "SELECT tartikel.kArtikel
+                FROM tartikel
+                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe != :groupID
+                WHERE tartikel.kVaterArtikel = 0
+                    AND (tartikel.cLagerBeachten = 'N' OR tartikel.fLagerbestand > 0)
+                    AND tartikelsichtbarkeit.kArtikel IS NULL
+                    LIMIT 1",
+            'kArtikel',
+            ['groupID' => $_SESSION['Kundengruppe']->getID()]
         );
         if ($productID > 0) {
             $confData = $this->db->selectAll(

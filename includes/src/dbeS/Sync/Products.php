@@ -118,9 +118,9 @@ final class Products extends AbstractSync
      * @return bool
      */
     private function checkStockLevelChanges(
-        int $productID,
-        array $xml,
-        array $newCategoryIDs,
+        int    $productID,
+        array  $xml,
+        array  $newCategoryIDs,
         string $stockFilter
     ): bool {
         $filter = $this->productVisibilityFilter;
@@ -318,13 +318,14 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param array $xml
-     * @param array $products
-     * @param int   $productID
+     * @param array      $xml
+     * @param array      $products
+     * @param int        $productID
+     * @param array|null $oldSeoData
      */
-    private function addProductLocalizations(array $xml, array $products, int $productID): void
+    private function addProductLocalizations(array $xml, array $products, int $productID, ?array $oldSeoData): void
     {
-        $seoData      = $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
+        $seoData      = $oldSeoData ?? $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
         $localized    = $this->mapper->mapArray(
             $xml['tartikel'],
             'tartikelsprache',
@@ -878,19 +879,20 @@ final class Products extends AbstractSync
         if (!\is_array($product)) {
             return $res;
         }
-        $products = $this->mapper->mapArray($xml, 'tartikel', 'mArtikel');
-        $oldSeo   = $this->db->getSingleObject(
+        $products   = $this->mapper->mapArray($xml, 'tartikel', 'mArtikel');
+        $oldSeo     = $this->db->getSingleObject(
             'SELECT cSeo 
                 FROM tartikel 
                 WHERE kArtikel = :pid',
             ['pid' => $productID]
         )->cSeo ?? null;
+        $oldSeoData = $this->getSeoFromDB($productID, 'kArtikel', null, 'kSprache');
         $this->checkCategoryCache($xml, $productID);
         $downloadKeys = $this->getDownloadIDs($productID);
         $this->deleteProduct($productID);
         $products = $this->addProduct($products);
         $this->addSeo($oldSeo, $products[0]->cSeo, $productID);
-        $this->addProductLocalizations($xml, $products, $productID);
+        $this->addProductLocalizations($xml, $products, $productID, $oldSeoData);
         $this->addAttributes($xml);
         $this->addMediaFiles($xml);
         $this->addDownloads($xml, $downloadKeys, $productID);

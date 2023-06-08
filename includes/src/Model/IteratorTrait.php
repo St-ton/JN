@@ -67,7 +67,7 @@ trait IteratorTrait
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function rewind(): void
     {

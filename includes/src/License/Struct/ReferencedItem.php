@@ -10,6 +10,12 @@ use JTLShop\SemVer\Version;
  */
 abstract class ReferencedItem implements ReferencedItemInterface
 {
+    public const PHP_VERSION_OK = 0;
+
+    public const PHP_VERSION_LOW = -1;
+
+    public const PHP_VERSION_HIGH = 1;
+
     /**
      * @var string
      */
@@ -41,6 +47,16 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $canBeUpdated = true;
 
     /**
+     * @var int - 0: OK, -1: too low, 1: too high
+     */
+    private int $phpVersionOK = self::PHP_VERSION_OK;
+
+    /**
+     * @var bool
+     */
+    private bool $shopVersionOK = true;
+
+    /**
      * @var bool
      */
     private bool $active = false;
@@ -66,7 +82,12 @@ abstract class ReferencedItem implements ReferencedItemInterface
     private bool $filesMissing = false;
 
     /**
-     * @inheritDoc
+     * @var bool
+     */
+    private bool $releaseAvailable = false;
+
+    /**
+     * @inheritdoc
      */
     public function getID(): string
     {
@@ -74,7 +95,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID(string $id): void
     {
@@ -82,7 +103,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isInstalled(): bool
     {
@@ -90,7 +111,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInstalled(bool $installed): void
     {
@@ -98,7 +119,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getInstalledVersion(): ?Version
     {
@@ -106,7 +127,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInstalledVersion(?Version $installedVersion): void
     {
@@ -114,7 +135,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getMaxInstallableVersion(): ?Version
     {
@@ -122,7 +143,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setMaxInstallableVersion(?Version $maxInstallableVersion): void
     {
@@ -130,7 +151,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function hasUpdate(): bool
     {
@@ -138,7 +159,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setHasUpdate(bool $hasUpdate): void
     {
@@ -150,7 +171,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
      */
     public function canBeUpdated(): bool
     {
-        return $this->canBeUpdated;
+        return $this->canBeUpdated && $this->getPhpVersionOK() === self::PHP_VERSION_OK;
     }
 
     /**
@@ -162,7 +183,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isActive(): bool
     {
@@ -170,7 +191,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setActive(bool $active): void
     {
@@ -178,7 +199,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getInternalID(): int
     {
@@ -186,7 +207,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInternalID(int $internalID): void
     {
@@ -194,7 +215,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDateInstalled(): ?string
     {
@@ -202,7 +223,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDateInstalled(?string $dateInstalled): void
     {
@@ -210,7 +231,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isInitialized(): bool
     {
@@ -218,7 +239,7 @@ abstract class ReferencedItem implements ReferencedItemInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setInitialized(bool $initialized): void
     {
@@ -239,5 +260,66 @@ abstract class ReferencedItem implements ReferencedItemInterface
     public function setFilesMissing(bool $filesMissing): void
     {
         $this->filesMissing = $filesMissing;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPhpVersionOK(): int
+    {
+        return $this->phpVersionOK;
+    }
+
+    /**
+     * @param int $phpVersionOK
+     */
+    public function setPhpVersionOK(int $phpVersionOK): void
+    {
+        $this->phpVersionOK = $phpVersionOK;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShopVersionOK(): bool
+    {
+        return $this->shopVersionOK;
+    }
+
+    /**
+     * @param bool $shopVersionOK
+     */
+    public function setShopVersionOK(bool $shopVersionOK): void
+    {
+        $this->shopVersionOK = $shopVersionOK;
+    }
+
+    /**
+     * @return Version
+     */
+    public function getCurrentPhpVersion(): Version
+    {
+        $php     = Version::parse(\PHP_VERSION);
+        $version = new Version();
+        $version->setMajor($php->getMajor());
+        $version->setMinor($php->getMinor());
+
+        return $version;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReleaseAvailable(): bool
+    {
+        return $this->releaseAvailable;
+    }
+
+    /**
+     * @param bool $releaseAvailable
+     */
+    public function setReleaseAvailable(bool $releaseAvailable): void
+    {
+        $this->releaseAvailable = $releaseAvailable;
     }
 }

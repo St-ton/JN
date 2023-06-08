@@ -18,7 +18,7 @@ class Migration_20180828131100 extends Migration implements IMigration
     protected $description = 'Fix datetime defaults';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -69,7 +69,7 @@ class Migration_20180828131100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

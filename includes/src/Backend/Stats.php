@@ -28,7 +28,6 @@ class Stats
         return $colors[$number] ?? $colors[0];
     }
 
-
     /**
      * @param int $type
      * @param int $from
@@ -75,7 +74,6 @@ class Stats
 
         return $axis;
     }
-
 
     /**
      * @param array  $series

@@ -309,9 +309,9 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param string $direction
-     * @param string $state
-     * @param string $message
+     * @param string     $direction
+     * @param string     $state
+     * @param string     $message
      * @throws Exception
      */
     public function log(IMigration $migration, string $direction, $state, $message): void

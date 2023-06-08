@@ -22,9 +22,9 @@ class GenericAdmin
      * @deprecated since 5.2.0
      */
     public function __construct(
-        DataModelInterface $model,
-        string $adminBaseFile,
-        DbInterface $db,
+        DataModelInterface    $model,
+        string                $adminBaseFile,
+        DbInterface           $db,
         AlertServiceInterface $alertService
     ) {
         \trigger_error(__CLASS__ . ' is deprecated and should not be used anymore.', \E_USER_DEPRECATED);

@@ -18,7 +18,7 @@ class Migration_20170314110100 extends Migration implements IMigration
     protected $description = 'Change "Amazon Payments" to "Amazon Pay"';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20170314110100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

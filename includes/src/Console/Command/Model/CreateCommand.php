@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CreateCommand extends Command
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -33,7 +33,7 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
@@ -50,7 +50,7 @@ class CreateCommand extends Command
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -99,7 +99,7 @@ class CreateCommand extends Command
                 'name'         => $attrib['Field'],
                 'dataType'     => $dataType,
                 'phpType'      => \array_reduce($typeMap, static function ($carry, $item) use ($dataType) {
-                    if (!isset($carry) && \preg_match("/{$item}/", $dataType)) {
+                    if (!isset($carry) && \preg_match("/$item/", $dataType)) {
                         $carry = \explode('|', $item, 2)[0];
                     }
 

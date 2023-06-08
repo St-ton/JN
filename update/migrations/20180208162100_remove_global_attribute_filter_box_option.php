@@ -18,7 +18,7 @@ class Migration_20180208162100 extends Migration implements IMigration
     protected $description = 'Remove global attribute filter box option';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {
@@ -40,7 +40,7 @@ class Migration_20180208162100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {

@@ -6,6 +6,8 @@ use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\CheckBox;
+use JTL\Checkbox\CheckboxService;
+use JTL\Checkbox\CheckboxValidationDataObject;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\OrderHandler;
 use JTL\Helpers\Request;
@@ -28,11 +30,18 @@ use Psr\Http\Message\ServerRequestInterface;
 class OrderCompleteController extends CheckoutController
 {
     /**
+     * @var CheckboxService $checkboxService
+     */
+    protected CheckboxService $checkboxService;
+
+    /**
      * @inheritdoc
      */
     public function init(): bool
     {
         parent::init();
+
+        $this->checkboxService = new CheckboxService();
 
         return true;
     }
@@ -55,7 +64,7 @@ class OrderCompleteController extends CheckoutController
         $order      = null;
         if (isset($_GET['i'])) {
             $bestellid = $this->db->select('tbestellid', 'cId', $_GET['i']);
-            if (isset($bestellid->kBestellung) && $bestellid->kBestellung > 0) {
+            if ($bestellid !== null && $bestellid->kBestellung > 0) {
                 $bestellid->kBestellung = (int)$bestellid->kBestellung;
                 $order                  = new Bestellung($bestellid->kBestellung);
                 $order->fuelleBestellung(false);
@@ -140,7 +149,8 @@ class OrderCompleteController extends CheckoutController
                     ->assign('plugin', $plugin);
             } catch (InvalidArgumentException) {
                 Shop::Container()->getLogService()->error(
-                    'Associated plugin for payment method ' . $order->Zahlungsart->cModulId . ' not found'
+                    'Associated plugin for payment method {mid} not found',
+                    ['mid' => $order->Zahlungsart->cModulId]
                 );
             }
         }
@@ -281,13 +291,16 @@ class OrderCompleteController extends CheckoutController
      */
     public function isOrderComplete(): bool
     {
-        $_SESSION['cPlausi_arr'] = (new CheckBox(0, $this->db))->validateCheckBox(
-            \CHECKBOX_ORT_BESTELLABSCHLUSS,
-            $this->customerGroupID,
-            $_POST,
-            true
+        $validationData          = (new CheckboxValidationDataObject())->hydrate(
+            [
+                'customerGroupId' => $this->customerGroupID,
+                'location'        => \CHECKBOX_ORT_BESTELLABSCHLUSS,
+                'active'          => true,
+            ]
         );
-        $_SESSION['cPost_arr']   = $_POST;
+        $_SESSION['cPlausi_arr'] = $this->checkboxService->validateCheckBox($validationData, $_POST);
+
+        $_SESSION['cPost_arr'] = $_POST;
 
         return (isset($_SESSION['Kunde'], $_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart'])
             && $_SESSION['Kunde']
@@ -298,6 +311,7 @@ class OrderCompleteController extends CheckoutController
             && \count($_SESSION['cPlausi_arr']) === 0
         );
     }
+
     /**
      * @return int
      * @former gibFehlendeEingabe()

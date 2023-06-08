@@ -52,8 +52,8 @@ class PageController extends AbstractController
      */
     public function notFoundResponse(
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $this->smarty = $smarty;
         if ($this->state->languageID === 0) {
@@ -109,13 +109,13 @@ class PageController extends AbstractController
     public function register(RouteGroup $route, string $dynName): void
     {
         $name = \SLUG_ALLOW_SLASHES ? 'name:.+' : 'name';
-        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{id:\d+}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PAGE_BY_ID' . $dynName);
-        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->get('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PAGE_BY_NAME' . $dynName);
-        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{id:\d+}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/id/{id:\d+}', $this->getResponse(...))
             ->setName('ROUTE_PAGE_BY_ID' . $dynName . 'POST');
-        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', [$this, 'getResponse'])
+        $route->post('/' . \ROUTE_PREFIX_PAGES . '/{' . $name . '}', $this->getResponse(...))
             ->setName('ROUTE_PAGE_BY_NAME' . $dynName . 'POST');
     }
 
@@ -288,10 +288,10 @@ class PageController extends AbstractController
      * @return ResponseInterface
      */
     protected function delegateResponse(
-        string $class,
+        string                 $class,
         ServerRequestInterface $request,
-        array $args,
-        JTLSmarty $smarty
+        array                  $args,
+        JTLSmarty              $smarty
     ): ResponseInterface {
         $controller = new $class(
             $this->db,

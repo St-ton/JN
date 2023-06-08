@@ -49,14 +49,14 @@ class Bewertung
      * @param bool   $allLanguages
      */
     public function __construct(
-        int $productID,
-        int $languageID,
-        int $pageOffset = -1,
-        int $page = 1,
-        int $stars = 0,
+        int    $productID,
+        int    $languageID,
+        int    $pageOffset = -1,
+        int    $page = 1,
+        int    $stars = 0,
         string $activate = 'N',
-        int $option = 0,
-        bool $allLanguages = false
+        int    $option = 0,
+        bool   $allLanguages = false
     ) {
         if (!$languageID) {
             $languageID = Shop::getLanguageID();
@@ -78,8 +78,8 @@ class Bewertung
     }
 
     /**
-     * @param int $productID
-     * @param int $languageID
+     * @param int  $productID
+     * @param int  $languageID
      * @param bool $allLanguages
      * @return Bewertung
      */
@@ -164,14 +164,14 @@ class Bewertung
      * @return $this
      */
     public function holeProduktBewertungen(
-        int $productID,
-        int $languageID,
-        int $pageOffset,
-        int $page = 1,
-        int $stars = 0,
+        int    $productID,
+        int    $languageID,
+        int    $pageOffset,
+        int    $page = 1,
+        int    $stars = 0,
         string $activate = 'N',
-        int $option = 0,
-        bool $allLanguages = false
+        int    $option = 0,
+        bool   $allLanguages = false
     ): self {
         $this->oBewertung_arr = [];
         if ($productID <= 0 || $languageID <= 0) {
@@ -226,7 +226,7 @@ class Bewertung
                     ORDER BY' . $orderSQL . $limitSQL,
                 ['customerID' => Frontend::getCustomer()->getID(), 'pid' => $productID]
             );
-            each($this->oBewertung_arr, [$this, 'sanitizeRatingData']);
+            each($this->oBewertung_arr, $this->sanitizeRatingData(...));
         }
         $total = $db->getSingleObject(
             'SELECT COUNT(*) AS nAnzahl, tartikelext.fDurchschnittsBewertung AS fDurchschnitt

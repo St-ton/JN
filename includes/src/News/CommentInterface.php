@@ -132,8 +132,9 @@ interface CommentInterface
     public function setNewsTitle(string $newsTitle): void;
 
     /**
-    * @param int $isAdmin
-    */
+     * @param int $isAdmin
+     * @return void
+     */
     public function setIsAdmin(int $isAdmin): void;
 
     /**

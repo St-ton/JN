@@ -22,7 +22,7 @@ final class LinkList implements LinkListInterface
      * LinkList constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         $this->links = new Collection();
     }

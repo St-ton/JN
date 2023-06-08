@@ -12,7 +12,7 @@ class Migration_20200909150300 extends Migration implements IMigration
     protected $description = 'Add license widget';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -23,7 +23,7 @@ class Migration_20200909150300 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

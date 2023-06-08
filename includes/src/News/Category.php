@@ -136,7 +136,7 @@ class Category implements CategoryInterface, RoutableInterface
      * Category constructor.
      * @param DbInterface $db
      */
-    public function __construct(private DbInterface $db)
+    public function __construct(private readonly DbInterface $db)
     {
         $this->items            = new Collection();
         $this->children         = new Collection();

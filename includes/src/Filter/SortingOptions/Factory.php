@@ -46,7 +46,7 @@ class Factory
      * Factory constructor.
      * @param ProductFilter $productFilter
      */
-    public function __construct(private ProductFilter $productFilter)
+    public function __construct(private readonly ProductFilter $productFilter)
     {
         \executeHook(\HOOK_PRODUCTFILTER_REGISTER_SEARCH_OPTION, [
             'factory'       => $this,

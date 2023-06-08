@@ -53,7 +53,7 @@ class IOMethods
      * @param IO               $io
      * @param DbInterface|null $db
      */
-    public function __construct(private IO $io, private ?DbInterface $db = null)
+    public function __construct(private readonly IO $io, private ?DbInterface $db = null)
     {
         $this->db = $db ?? Shop::Container()->getDB();
     }

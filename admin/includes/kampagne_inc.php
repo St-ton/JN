@@ -175,7 +175,7 @@ function setzeDetailZeitraum(DateTimeImmutable $date): void
 }
 
 /**
- * @return false|string
+ * @return false
  * @deprecated since 5.2.0
  */
 function checkGesamtStatZeitParam()

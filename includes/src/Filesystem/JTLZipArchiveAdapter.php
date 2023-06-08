@@ -53,10 +53,10 @@ final class JTLZipArchiveAdapter implements FilesystemAdapter
      * @param VisibilityConverter|null $visibility
      */
     public function __construct(
-        private ZipArchiveProvider $zipArchiveProvider,
-        string $root = '',
-        ?MimeTypeDetector $mimeTypeDetector = null,
-        ?VisibilityConverter $visibility = null
+        private readonly ZipArchiveProvider $zipArchiveProvider,
+        string                              $root = '',
+        ?MimeTypeDetector                   $mimeTypeDetector = null,
+        ?VisibilityConverter                $visibility = null
     ) {
         $this->pathPrefixer     = new PathPrefixer($root);
         $this->mimeTypeDetector = $mimeTypeDetector ?? new FinfoMimeTypeDetector();

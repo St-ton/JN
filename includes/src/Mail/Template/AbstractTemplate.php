@@ -344,7 +344,7 @@ abstract class AbstractTemplate implements TemplateInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLanguageID(): int
     {
@@ -352,7 +352,7 @@ abstract class AbstractTemplate implements TemplateInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setLanguageID(int $languageID): void
     {

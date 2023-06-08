@@ -531,7 +531,7 @@ class Item implements JsonSerializable
     /**
      * @param bool $forceNet
      * @param bool $convertCurrency
-     * @param int $totalAmount
+     * @param int  $totalAmount
      * @return float|int
      */
     public function getFullPrice(bool $forceNet = false, bool $convertCurrency = false, $totalAmount = 1)

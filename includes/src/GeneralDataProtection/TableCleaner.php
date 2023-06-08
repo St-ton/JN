@@ -35,9 +35,9 @@ class TableCleaner
     private DbInterface $db;
 
     /**
-     * @var boolean
+     * @var bool
      */
-    private $isFinished = true;
+    private bool $isFinished = true;
 
     /**
      * @var int
@@ -95,7 +95,7 @@ class TableCleaner
     /**
      * tells upper processes "this task is unfinished"
      *
-     * @return boolean
+     * @return bool
      */
     public function getIsFinished(): bool
     {

@@ -44,8 +44,8 @@ class BaseManufacturer extends AbstractFilter
         parent::__construct($productFilter);
         $this->setRouteType(Router::TYPE_MANUFACTURER);
         $this->setIsCustom(false)
-             ->setUrlParam('h')
-             ->setUrlParamSEO(\SEP_HST);
+            ->setUrlParam('h')
+            ->setUrlParamSEO(\SEP_HST);
     }
 
     /**
@@ -159,7 +159,7 @@ class BaseManufacturer extends AbstractFilter
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getOptions($mixed = null): array
     {
@@ -172,8 +172,8 @@ class BaseManufacturer extends AbstractFilter
         }
         $state = $this->productFilter->getCurrentStateData(
             $this->getType() === Type::OR
-            ? $this->getClassName()
-            : null
+                ? $this->getClassName()
+                : null
         );
         $sql   = (new StateSQL())->from($state);
         $sql->setSelect([
@@ -194,18 +194,10 @@ class BaseManufacturer extends AbstractFilter
             ->setOrigin(__CLASS__));
         $baseQuery = $this->productFilter->getFilterSQL()->getBaseQuery($sql);
         $cacheID   = $this->getCacheID($baseQuery);
-        if (($cached = $this->productFilter->getCache()->get($cacheID)) !== false) {
-            $this->options = $cached;
-
-            return $this->options;
-        }
-        $manufacturers    = $this->productFilter->getDB()->getObjects(
-            'SELECT tseo.cSeo,
-                ssMerkmal.kHersteller,
-                ssMerkmal.cName,
-                ssMerkmal.nSortNr,
-                ssMerkmal.cBildPfad,
-                COUNT(*) AS nAnzahl
+        if (($manufacturers = $this->productFilter->getCache()->get($cacheID)) === false) {
+            $manufacturers = $this->productFilter->getDB()->getObjects(
+                'SELECT tseo.cSeo, ssMerkmal.kHersteller AS id, ssMerkmal.cName AS name,
+                ssMerkmal.nSortNr AS sort, ssMerkmal.cBildPfad, COUNT(*) AS cnt
                 FROM (' . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
@@ -213,39 +205,42 @@ class BaseManufacturer extends AbstractFilter
                         AND tseo.kSprache = :lid
                     GROUP BY ssMerkmal.kHersteller
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName",
-            ['lid' => $this->getLanguageID()]
-        );
+                ['lid' => $this->getLanguageID()]
+            );
+            foreach ($manufacturers as $manufacturer) {
+                $manufacturer->id   = (int)$manufacturer->id;
+                $manufacturer->cnt  = (int)$manufacturer->cnt;
+                $manufacturer->sort = (int)$manufacturer->sort;
+            }
+            $this->productFilter->getCache()->set($cacheID, $manufacturers, [\CACHING_GROUP_FILTER]);
+        }
         $additionalFilter = new Manufacturer($this->productFilter);
         foreach ($manufacturers as $manufacturer) {
             // attributes for old filter templates
-            $manufacturer->kHersteller = (int)$manufacturer->kHersteller;
-            $manufacturer->nAnzahl     = (int)$manufacturer->nAnzahl;
-            $manufacturer->nSortNr     = (int)$manufacturer->nSortNr;
-            $manufacturer->cURL        = $this->productFilter->getFilterURL()->getURL(
-                $additionalFilter->init($manufacturer->kHersteller)
+            $manufacturer->url = $this->productFilter->getFilterURL()->getURL(
+                $additionalFilter->init($manufacturer->id)
             );
-            $manufacturerData          = new Hersteller($manufacturer->kHersteller, $this->getLanguageID());
+            $manufacturerData  = new Hersteller($manufacturer->id, $this->getLanguageID());
 
             $options[] = (new Option())
-                ->setURL($manufacturer->cURL)
+                ->setURL($manufacturer->url)
                 ->setIsActive(
                     $this->productFilter->filterOptionIsActive(
                         $this->getClassName(),
-                        $manufacturer->kHersteller
+                        $manufacturer->id
                     )
                 )
                 ->setType($this->getType())
-                ->setFrontendName($manufacturer->cName)
+                ->setFrontendName($manufacturer->name)
                 ->setClassName($this->getClassName())
                 ->setParam($this->getUrlParam())
-                ->setName($manufacturer->cName)
-                ->setValue($manufacturer->kHersteller)
-                ->setCount($manufacturer->nAnzahl)
-                ->setSort($manufacturer->nSortNr)
+                ->setName($manufacturer->name)
+                ->setValue($manufacturer->id)
+                ->setCount($manufacturer->cnt)
+                ->setSort($manufacturer->sort)
                 ->setData('cBildpfadKlein', $manufacturerData->getImage(Image::SIZE_XS));
         }
         $this->options = $options;
-        $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);
 
         return $options;
     }

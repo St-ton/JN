@@ -27,13 +27,12 @@ class HandleExceptions
     /**
      * Convert PHP errors to ErrorException instances.
      *
-     * @param  int    $level
-     * @param  string $message
-     * @param  string $file
-     * @param  int    $line
-     * @param  array  $context
+     * @param int    $level
+     * @param string $message
+     * @param string $file
+     * @param int    $line
+     * @param array  $context
      * @return void
-     *
      * @throws ErrorException
      */
     public function handleError($level, $message, $file = '', $line = 0, $context = []): void
@@ -78,8 +77,8 @@ class HandleExceptions
     /**
      * Create a new fatal exception instance from an error array.
      *
-     * @param  array    $error
-     * @param  int|null $traceOffset
+     * @param array    $error
+     * @param int|null $traceOffset
      * @return FatalErrorException
      */
     protected function fatalExceptionFromError(array $error, $traceOffset = null): FatalErrorException

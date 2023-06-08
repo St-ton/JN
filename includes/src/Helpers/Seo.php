@@ -58,7 +58,7 @@ class Seo
 
     /**
      * @param string $str
-     * @param bool $keepUnderscore
+     * @param bool   $keepUnderscore
      * @return string
      */
     public static function sanitizeSeoSlug(string $str, bool $keepUnderscore = false): string

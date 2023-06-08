@@ -204,8 +204,8 @@ class CheckboxController extends AbstractBackendController
      * @return CheckboxDataTableObject
      */
     private function addTranslationsToDTO(
-        array $languages,
-        array $post,
+        array                   $languages,
+        array                   $post,
         CheckboxDataTableObject $checkboxDTO
     ): CheckboxDataTableObject {
         $texts = [];
@@ -223,7 +223,7 @@ class CheckboxController extends AbstractBackendController
             $checkboxDTO->addLanguage(
                 $code,
                 language: [
-                    'text' => $texts[$code],
+                    'text'  => $texts[$code],
                     'descr' => $descr[$code]
                 ]
             );

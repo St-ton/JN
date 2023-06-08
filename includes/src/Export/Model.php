@@ -130,7 +130,7 @@ final class Model extends DataModel
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function onInstanciation(): void
     {

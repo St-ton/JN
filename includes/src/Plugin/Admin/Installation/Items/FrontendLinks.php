@@ -129,9 +129,9 @@ class FrontendLinks extends AbstractItem
     /**
      * Sind noch Sprachen im Shop die das Plugin nicht berücksichtigt?
      *
-     * @param array     $languages
+     * @param array    $languages
      * @param stdClass $defaultLang
-     * @param int       $linkID
+     * @param int      $linkID
      */
     private function addMissingTranslations(array $languages, stdClass $defaultLang, int $linkID): void
     {

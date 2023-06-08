@@ -284,13 +284,13 @@ class Category
                     ON atr.kKategorie = node.kKategorie
                     AND atr.cName = \'bildname\'';
         $nameSelect  = $isDefaultLang === true
-                ? ', node.cName'
-                : ', node.cName, tkategoriesprache.cName AS cName_spr';
+            ? ', node.cName'
+            : ', node.cName, tkategoriesprache.cName AS cName_spr';
         $langJoin    = $isDefaultLang === true
-                ? ''
-                : ' LEFT JOIN tkategoriesprache
-                        ON tkategoriesprache.kKategorie = node.kKategorie
-                            AND tkategoriesprache.kSprache = :langID ';
+            ? ''
+            : ' LEFT JOIN tkategoriesprache
+                    ON tkategoriesprache.kKategorie = node.kKategorie
+                        AND tkategoriesprache.kSprache = :langID ';
         $seoJoin     = " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
@@ -858,10 +858,9 @@ class Category
         return $category?->getChildren() ?? [];
     }
 
-
     /**
      * @param MenuItem[] $nodes
-     * @param  array $fullCats
+     * @param array      $fullCats
      * @return array
      */
     private function setOrphanedCategories(array $nodes, array $fullCats): array

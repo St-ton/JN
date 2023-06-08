@@ -31,33 +31,33 @@ class Container extends Portlet
                 'default' => 300,
                 'width'   => 50,
             ],
-            'boxed' => [
-                'type'  => InputType::CHECKBOX,
+            'boxed'           => [
+                'type'    => InputType::CHECKBOX,
                 'default' => false,
-                'label' => \__('boxedContainer'),
-                'width' => 50,
-                'desc'  => \__('boxedContainerDesc')
+                'label'   => \__('boxedContainer'),
+                'width'   => 50,
+                'desc'    => \__('boxedContainerDesc')
             ],
             'background-flag' => [
-                'type'    => InputType::RADIO,
-                'label'   => \__('background'),
-                'options' => [
+                'type'        => InputType::RADIO,
+                'label'       => \__('background'),
+                'options'     => [
                     'still' => \__('image'),
                     'image' => \__('imageParallax'),
                     'video' => \__('backgroundVideo'),
                     'false' => \__('noBackground'),
                 ],
-                'default' => 'false',
-                'width'   => 50,
+                'default'     => 'false',
+                'width'       => 50,
                 'childrenFor' => [
                     'still' => [
-                        'still-src'  => [
+                        'still-src' => [
                             'label' => \__('backgroundImage'),
                             'type'  => InputType::IMAGE,
                         ],
                     ],
                     'image' => [
-                        'src'  => [
+                        'src'           => [
                             'label' => \__('backgroundImage'),
                             'type'  => InputType::IMAGE,
                         ],
@@ -68,7 +68,7 @@ class Container extends Portlet
                         ]
                     ],
                     'video' => [
-                        'video-src' => [
+                        'video-src'    => [
                             'type'  => InputType::VIDEO,
                             'label' => \__('video'),
                             'width' => 50,

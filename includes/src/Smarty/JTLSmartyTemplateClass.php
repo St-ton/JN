@@ -19,7 +19,7 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
     public bool $noOutputFilter = true;
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function _subTemplateRender(
         $template,
@@ -48,7 +48,7 @@ class JTLSmartyTemplateClass extends \Smarty_Internal_Template
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function render($no_output_filter = true, $display = null)
     {

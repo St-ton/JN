@@ -66,6 +66,16 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Sie können nicht mehr Artikel retournieren, als Sie bestellt haben.',
                     'eng' => 'You cannot return more items than you ordered.'
                 ]
+            , 'noItemsSelectedTitle' =>
+                [
+                    'ger' => 'Keine Artikel ausgewählt!',
+                    'eng' => 'No products selected!'
+                ]
+            , 'noItemsSelectedText' =>
+                [
+                    'ger' => 'Sie müssen mindestens einen Artikel zum retournieren auswählen und einen Grund angeben.',
+                    'eng' => 'You must select at least one product to return and provide a reason.'
+                ]
         ];
         $newVars->datatables = [
             'search' =>
@@ -90,16 +100,16 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
         "CREATE TABLE IF NOT EXISTS `rma` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `wawiId` VARCHAR(255),
-                `customerId` INT(10) UNSIGNED NOT NULL DEFAULT 0,
-                `shippingAddressId` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `wawiID` VARCHAR(255),
+                `customerID` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+                `shippingAddressID` INT(10) UNSIGNED NOT NULL DEFAULT 0,
                 `status` CHAR(2),
                 `createDate` DATETIME NOT NULL,
                 `lastModified` DATETIME,
                 PRIMARY KEY (`id`),
-                UNIQUE INDEX (`wawiId`),
-                INDEX (`customerId`),
-                INDEX (`shippingAddressId`)
+                UNIQUE INDEX (`wawiID`),
+                INDEX (`customerID`),
+                INDEX (`shippingAddressID`)
             )
             COMMENT='RMA request created in shop or imported from WAWI.'
             DEFAULT CHARSET=utf8mb3
@@ -110,11 +120,11 @@ class Migration_20230519120834 extends Migration implements IMigration
         $this->execute(
             "CREATE TABLE IF NOT EXISTS `rmapos` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `rmaId` INT(10) UNSIGNED NOT NULL,
-                `shippingNoteId` INT(10) UNSIGNED NOT NULL,
-                `shippingNotePosId` INT(10) NOT NULL,
-                `orderPosId` INT(10) UNSIGNED NOT NULL,
-                `productId` INT(10) UNSIGNED NOT NULL,
+                `rmaID` INT(10) UNSIGNED NOT NULL,
+                `shippingNoteID` INT(10) UNSIGNED NOT NULL,
+                `shippingNotePosID` INT(10) NOT NULL,
+                `orderPosID` INT(10) UNSIGNED NOT NULL,
+                `productID` INT(10) UNSIGNED NOT NULL,
                 `name` VARCHAR(255) NOT NULL DEFAULT '',
                 `unitPriceNet` DOUBLE NOT NULL DEFAULT 0,
                 `quantity` DOUBLE(10,4) NOT NULL DEFAULT 0,
@@ -128,19 +138,19 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `history` MEDIUMTEXT COMMENT 'JSON encoded history of status changes',
                 `createDate` DATETIME NOT NULL,
                 PRIMARY KEY (`id`),
-                INDEX (`rmaId`),
-                INDEX (`shippingNoteId`),
-                UNIQUE INDEX (`shippingNotePosId`),
-                INDEX (`orderPosId`),
-                INDEX (`productId`),
+                INDEX (`rmaID`),
+                INDEX (`shippingNoteID`),
+                UNIQUE INDEX (`shippingNotePosID`),
+                INDEX (`orderPosID`),
+                INDEX (`productID`),
                 INDEX (`status`),
-                CONSTRAINT `fk_rmaId`
-                    FOREIGN KEY (`rmaId`)
+                CONSTRAINT `fk_rmaID`
+                    FOREIGN KEY (`rmaID`)
                         REFERENCES `rma`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_shippingNoteId`
-                    FOREIGN KEY (`shippingNoteId`)
+                CONSTRAINT `fk_shippingNoteID`
+                    FOREIGN KEY (`shippingNoteID`)
                         REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
@@ -152,19 +162,39 @@ class Migration_20230519120834 extends Migration implements IMigration
         ");
         
         $this->execute(
-            "CREATE TABLE IF NOT EXISTS `rmapos` (
+            "CREATE TABLE IF NOT EXISTS `rmareasons` (
                 `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                `rmaId` INT(10) UNSIGNED NOT NULL,
-                `createDate` DATETIME NOT NULL,
+                `wawiID` INT(10) UNSIGNED NOT NULL,
                 PRIMARY KEY (`id`),
-                INDEX (`rmaId`),
-                CONSTRAINT `fk_rmaId`
-                    FOREIGN KEY (`rmaId`)
-                        REFERENCES `rma`(`id`)
+                INDEX (`wawiID`)
+            )
+            COMMENT='RMA reasons synced from WAWI.'
+            DEFAULT CHARSET=utf8mb3
+            COLLATE='utf8mb3_unicode_ci'
+            ENGINE=InnoDB
+        ");
+        
+        $this->execute(
+            "CREATE TABLE IF NOT EXISTS `rmareasonslang` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `reasonID` INT(10) UNSIGNED NOT NULL,
+                `langID` INT(10) UNSIGNED NOT NULL,
+                `title` VARCHAR(255),
+                PRIMARY KEY (`id`),
+                INDEX (`reasonID`),
+                INDEX (`langID`),
+                CONSTRAINT `fk_reasonID`
+                    FOREIGN KEY (`reasonID`)
+                        REFERENCES `rmareasons`(`id`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE,
+                CONSTRAINT `fk_langID`
+                    FOREIGN KEY (`langID`)
+                        REFERENCES `tsprache`(`kSprache`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
             )
-            COMMENT='RMA positions created in shop user account or synced from WAWI.'
+            COMMENT='Localized RMA reasons synced from WAWI.'
             DEFAULT CHARSET=utf8mb3
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
@@ -192,6 +222,8 @@ class Migration_20230519120834 extends Migration implements IMigration
     public function down(): void
     {
         $this->execute('DROP TABLE IF EXISTS rmapos');
+        $this->execute('DROP TABLE IF EXISTS rmareasonslang');
+        $this->execute('DROP TABLE IF EXISTS rmareasons');
         $this->execute('DROP TABLE IF EXISTS rma');
         
         $newVars = $this->getLangData();

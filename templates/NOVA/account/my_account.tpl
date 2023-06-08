@@ -255,62 +255,64 @@
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            {link class='text-decoration-none-util' href="$cCanonicalURL?retouren=1"}
+                                            {link class='text-decoration-none-util' href="$cCanonicalURL?rmas=1"}
                                                 Meine Retouren
                                             {/link}
                                         </span>
                                     {/col}
                                     {col class="col-auto font-size-sm"}
-                                        {link href="$cCanonicalURL?retouren=1"}
+                                        {link href="$cCanonicalURL?rmas=1"}
                                             Retouren verwalten
                                         {/link}
                                     {/col}
                                 {/row}
                             {/block}
                         {/cardheader}
-                        {block name='account-my-account-comparelist-body'}
-                            {if $Retouren|count > 0}
-                                <div class="table-responsive">
-                                    <table class="table table-vertical-middle table-hover">
-                                        <tbody>
-                                            {foreach $Retouren as $rma}
-                                                {$rma->fuelleRetoure()}
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-block font-weight-bold">
-                                                            <span class="far fa-calendar mr-2"></span>{$rma->ErstelltDatum}
-                                                        </div>
-                                                        <small class="text-muted-util d-block font-weight-bold">
-                                                            Artikel
-                                                            <span class="badge badge-light">
-                                                                {$rma->PositionenArr|count|default:0}
-                                                            </span>
-                                                        </small>
-                                                        {if isset($rma->Lieferadresse)}
-                                                            <small class="text-muted-util d-block">
-                                                                {if $rma->Lieferadresse->cFirma}{$rma->Lieferadresse->cFirma}<br />{/if}
-                                                                {$rma->Lieferadresse->cStrasse} {$rma->Lieferadresse->cHausnummer}<br />
-                                                                {$rma->Lieferadresse->cPLZ} {$rma->Lieferadresse->cOrt}
+                        {cardbody}
+                            {block name='account-my-account-comparelist-body'}
+                                {if $Retouren|count > 0}
+                                    <div class="table-responsive">
+                                        <table class="table table-vertical-middle table-hover">
+                                            <tbody>
+                                                {foreach $Retouren as $rma}
+                                                    {$rma->fuelleRetoure()}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-block font-weight-bold">
+                                                                <span class="far fa-calendar mr-2"></span>{$rma->ErstelltDatum}
+                                                            </div>
+                                                            <small class="text-muted-util d-block font-weight-bold">
+                                                                Artikel
+                                                                <span class="badge badge-light">
+                                                                    {$rma->PositionenArr|count|default:0}
+                                                                </span>
                                                             </small>
-                                                        {/if}
-                                                    </td>
-                                                    <td class="text-right-util">
-                                                        {link class='float-right' href="$cCanonicalURL?retoure={$rma->kRetoure}"
-                                                        aria=["label"=>"Retoure bearbeiten"]}
-                                                            <span class="fas fa-pencil-alt"></span>
-                                                        {/link}
-                                                    </td>
-                                                </tr>
-                                            {/foreach}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            {else}
-                                <p>
-                                    Sie haben noch keine Warenrücksendungen.
-                                </p>
-                            {/if}
-                        {/block}
+                                                            {if isset($rma->Lieferadresse)}
+                                                                <small class="text-muted-util d-block">
+                                                                    {if $rma->Lieferadresse->cFirma}{$rma->Lieferadresse->cFirma}<br />{/if}
+                                                                    {$rma->Lieferadresse->cStrasse} {$rma->Lieferadresse->cHausnummer}<br />
+                                                                    {$rma->Lieferadresse->cPLZ} {$rma->Lieferadresse->cOrt}
+                                                                </small>
+                                                            {/if}
+                                                        </td>
+                                                        <td class="text-right-util">
+                                                            {link class='float-right' href="$cCanonicalURL?rma={$rma->kRetoure}"
+                                                            aria=["label"=>"Retoure bearbeiten"]}
+                                                                <span class="fas fa-pencil-alt"></span>
+                                                            {/link}
+                                                        </td>
+                                                    </tr>
+                                                {/foreach}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {else}
+                                    <p>
+                                        Sie haben noch keine Warenrücksendungen.
+                                    </p>
+                                {/if}
+                            {/block}
+                        {/cardbody}
                     {/card}
                 {/block}
             {/col}

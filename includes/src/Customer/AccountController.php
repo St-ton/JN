@@ -32,7 +32,7 @@ use JTL\Language\LanguageHelper;
 use JTL\License\Collection;
 use JTL\Link\SpecialPageNotFoundException;
 use JTL\Pagination\Pagination;
-use JTL\Retouren\Retoure;
+use JTL\RMA\RMAService;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
@@ -211,12 +211,12 @@ class AccountController
         if (Request::verifyGPCDataInt('editLieferadresse') > 0 || Request::getInt('editAddress') > 0) {
             $step = 'lieferadressen';
         }
-        $retoureID = Request::verifyGPCDataInt('retoure');
-        if ($retoureID > 0) {
-            $step = $this->returnOrder($retoureID);
+        $rmaID = Request::verifyGPCDataInt('rma');
+        if ($rmaID > 0) {
+            $step = $this->rmaOrder($rmaID);
         }
-        if (Request::verifyGPCDataInt('retouren') > 0) {
-            $step = $this->returnOrders($customerID);
+        if (Request::verifyGPCDataInt('rmas') > 0) {
+            $step = $this->rmaOrders($customerID);
         }
         if (Request::verifyGPCDataInt('editLieferadresse') > 0
             && Request::verifyGPDataString('editAddress') === 'neu'
@@ -263,7 +263,7 @@ class AccountController
             $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
-            $this->smarty->assign('Retouren', Retoure::getRetouren($customerID));
+            $this->smarty->assign('rmas', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
             $deliveryAddresses = $this->getDeliveryAddresses();
             \executeHook(\HOOK_JTL_PAGE_MEINKKONTO, ['deliveryAddresses' => &$deliveryAddresses]);
             $this->smarty->assign('compareList', new ComparisonList());
@@ -974,19 +974,20 @@ class AccountController
 
 
     /**
-     * @param int $retoureID
+     * @param int $rmaID
      * @return string
      * @since 5.3.0
      */
-    private function returnOrder(int $retoureID): string
+    private function rmaOrder(int $rmaID): string
     {
-        $this->getDeliveryAddresses();
-        $retournierbareArtikel = Retoure::getReturnableProducts();
-        $this->smarty->assign('Retoure', new Retoure($retoureID))
-            ->assign('retournierbareArtikel', $retournierbareArtikel)
-            ->assign('retournierbareBestellungen', Retoure::getBestellnummern($retournierbareArtikel));
+        $this->getDeliveryAddresses(['shippingAddresses', 'shippingCountries']);
+        $rmaService = new RMAService();
+        $retournierbareArtikel = $rmaService->getReturnableProducts();
+        $this->smarty->assign('rma', $rmaService->get($rmaID))
+            ->assign('returnableProducts', $retournierbareArtikel)
+            ->assign('returnableOrders', $rmaService->getOrderIDs($retournierbareArtikel));
         
-        return 'retoure';
+        return 'rma';
     }
 
     /**
@@ -994,10 +995,10 @@ class AccountController
      * @return string
      * @since 5.3.0
      */
-    private function returnOrders(int $customerID): string
+    private function rmaOrders(int $customerID): string
     {
-        $this->smarty->assign('Retouren', Retoure::getRetouren($customerID));
-        return 'retouren';
+        $this->smarty->assign('rmas', (new RMAService)->getRepository()->getList(['customerID' => $customerID]));
+        return 'rmas';
     }
 
     /**
@@ -1106,8 +1107,11 @@ class AccountController
     /**
      * @return \Illuminate\Support\Collection
      */
-    private function getDeliveryAddresses(): \Illuminate\Support\Collection
+    private function getDeliveryAddresses(array $smartyAssign=[]): \Illuminate\Support\Collection
     {
+        if (count($smartyAssign) !== 2) {
+            $smartyAssign = ['Lieferadressen', 'LieferLaender'];
+        }
         $customer   = Frontend::getCustomer();
         $customerID = $customer->getID();
         if ($customerID < 1) {
@@ -1115,8 +1119,8 @@ class AccountController
         }
         $addresses = DeliveryAddressTemplate::getAll($customerID);
 
-        $this->smarty->assign('Lieferadressen', $addresses)
-            ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
+        $this->smarty->assign($smartyAssign[0], $addresses)
+            ->assign($smartyAssign[1], ShippingMethod::getPossibleShippingCountries($customer->getGroupID()));
         
         return $addresses;
     }

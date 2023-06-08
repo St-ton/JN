@@ -1,11 +1,11 @@
-{block name='account-retouren-form'}
-    {block name='account-retoure-form-form'}
+{block name='account-rmas-form'}
+    {block name='account-rma-form-form'}
         {row}
-            {col cols=12 md=12 class='retouren-wrapper'}
-                {block name='account-retoure-form-form-retoure-wrapper'}
-                    {card no-body=true class="account-retoure-shipping-addresses"}
+            {col cols=12 md=12 class='rmas-wrapper'}
+                {block name='account-rma-form-form-rma-wrapper'}
+                    {card no-body=true class="account-rma-shipping-addresses"}
                         {cardheader}
-                            {block name='account-retoure-shipping-addresses-header'}
+                            {block name='account-rma-shipping-addresses-header'}
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
@@ -16,8 +16,8 @@
                             {/block}
                         {/cardheader}
                         {cardbody}
-                            {block name='account-retoure-shipping-addresses-body'}
-                                <table id="retouren-liste" class="table display compact stripe">
+                            {block name='account-rma-shipping-addresses-body'}
+                                <table id="rmas-liste" class="table display compact stripe">
                                     <thead>
                                     <tr>
                                         <th>&nbsp;</th>
@@ -26,7 +26,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {block name='account-retouren-form-form-retoure'}
+                                    {block name='account-rmas-form-form-rma'}
                                         {foreach $Retouren as $rma}
                                             {$rma->fuelleRetoure()}
                                             <tr>
@@ -40,19 +40,19 @@
                                                         {$rma->Lieferadresse->cStrasse} {$rma->Lieferadresse->cHausnummer}<br />
                                                         {$rma->Lieferadresse->cPLZ} {$rma->Lieferadresse->cOrt}
                                                     {/if}
-                                                    <div id="retoureAdditional{$rma->kRetoure}" class="collapse mt-3">
-                                                        {block name='account-retoure-include-inc-positions'}
+                                                    <div id="rmaAdditional{$rma->kRetoure}" class="collapse mt-3">
+                                                        {block name='account-rma-include-inc-positions'}
                                                             {if $rma->PositionenArr|count > 0}
-                                                                {block name='account-retoure-include-inc-positions-table'}
+                                                                {block name='account-rma-include-inc-positions-table'}
                                                                     <table class="table dropdown-cart-items">
                                                                         <tbody>
-                                                                        {block name='account-retoure-include-inc-positions-table-item'}
+                                                                        {block name='account-rma-include-inc-positions-table-item'}
                                                                             {foreach $rma->PositionenArr as $oPosition}
                                                                                 {$oPosition->fuelleArtikel()}
                                                                                 <tr>
                                                                                     <td>
                                                                                         {formrow}
-                                                                                            {block name='account-retoure-include-inc-positions-table-item-image'}
+                                                                                            {block name='account-rma-include-inc-positions-table-item-image'}
                                                                                                 {if isset($oPosition->Artikel)}
                                                                                                     {col class="col-auto"}
                                                                                                     {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans|escape:'html'}
@@ -67,7 +67,7 @@
                                                                                                     {/col}
                                                                                                 {/if}
                                                                                             {/block}
-                                                                                            {block name='account-retoure-include-inc-positions-table-item-desc'}
+                                                                                            {block name='account-rma-include-inc-positions-table-item-desc'}
                                                                                                 {col class="col-auto"}
                                                                                                     {$oPosition->nAnzahl|replace_delim}x
                                                                                                 {/col}
@@ -86,7 +86,7 @@
                                                                                             {/block}
                                                                                         {/formrow}
                                                                                     </td>
-                                                                                    {block name='account-retoure-include-inc-positions-table-item-price'}
+                                                                                    {block name='account-rma-include-inc-positions-table-item-price'}
                                                                                         <td class="text-right-util text-nowrap-util">
                                                                                             {$oPosition->Preis}
                                                                                         </td>
@@ -103,7 +103,7 @@
                                                         {/block}
                                                     </div>
                                                     {button variant="link" class="btn-show-more"
-                                                    data=["toggle"=> "collapse", "target"=>"#retoureAdditional{$rma->kRetoure}"]}
+                                                    data=["toggle"=> "collapse", "target"=>"#rmaAdditional{$rma->kRetoure}"]}
                                                     {lang key='showPositions' section='rma'}
                                                     {/button}
                                                 </td>
@@ -126,7 +126,7 @@
             {/col}
         {/row}
     {/block}
-    {block name='account-retouren-form-script'}
+    {block name='account-rmas-form-script'}
         {inline_script}<script>
             function initDataTable(table, rows = 5) {
                 table.DataTable( {
@@ -164,7 +164,7 @@
             }
 
             $(document).ready(function () {
-                initDataTable($('#retouren-liste'));
+                initDataTable($('#rmas-liste'));
             });
         </script>{/inline_script}
     {/block}

@@ -22332,13 +22332,13 @@ div.dataTables_wrapper div.dataTables_filter input[type=search] {
 .shipping-address-standard-active tr:first-child {
   background-color: #fafafa;
 }
-/* retouren */
+/* RMA */
 .rma-img {
   width: 100%;
   height: auto;
 }
 .product-thumbnail {
-  max-width: 80px;
+  max-width: 100px;
 }
 /* basket */
 /* cart-dropdown */

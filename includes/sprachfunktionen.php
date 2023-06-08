@@ -145,7 +145,7 @@ function lang_bestellstatus(int $state): string
  * @param int $state
  * @return string
  */
-function lang_retourestatus(int $state): string
+function langRMAStatus(int $state): string
 {
     return match ($state) {
         RETOURE_STATUS_ABGELEHNT      => Shop::Lang()->get('statusRejected', 'rma'),

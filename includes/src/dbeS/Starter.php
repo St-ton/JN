@@ -297,6 +297,10 @@ class Starter
             $post['userID']  = $post['uID'];
             $post['userPWD'] = $post['uPWD'];
         }
+        if (Shop::getSettingValue(\CONF_GLOBAL, 'wartungsmodus_aktiviert') === 'Y') {
+            echo 'Maintenance';
+            exit();
+        }
         $this->setVersionByUserAgent();
         $this->handleSpecialCases($handledFile, $post);
         $this->executeNetSync($handledFile);
@@ -369,11 +373,8 @@ class Starter
         }
         $this->files     = $this->getFiles($files);
         $this->unzipPath = $this->fileHandler->getUnzipPath();
-        if ($this->files === null) {
-            return self::ERROR_UNZIP;
-        }
 
-        return self::OK;
+        return $this->files === null ? self::ERROR_UNZIP : self::OK;
     }
 
     /**

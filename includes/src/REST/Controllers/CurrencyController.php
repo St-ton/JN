@@ -5,36 +5,36 @@ namespace JTL\REST\Controllers;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
-use JTL\REST\Models\CartModel;
+use JTL\REST\Models\CurrencyModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class CartController
+ * Class CurrencyController
  * @package JTL\REST\Controllers
  */
-class CartController extends AbstractController
+class CurrencyController extends AbstractController
 {
     /**
-     * CartController constructor.
+     * CurrencyController constructor.
      * @inheritdoc
      */
     public function __construct(Manager $fractal, protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        parent::__construct(CartModel::class, $fractal, $this->db, $this->cache);
+        parent::__construct(CurrencyModel::class, $fractal, $this->db, $this->cache);
     }
 
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     summary="Get cart by ID",
+     *     path="/currency/{currencyId}",
+     *     tags={"currency"},
+     *     summary="Get currency by ID",
      *     @OA\Parameter(
-     *         description="ID of cart that needs to be fetched",
+     *         description="ID of currency that needs to be fetched",
      *         in="path",
-     *         name="cartId",
+     *         name="currencyId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -44,7 +44,7 @@ class CartController extends AbstractController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel"),
+     *         @OA\JsonContent(ref="#/components/schemas/CurrencyModel"),
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -52,17 +52,17 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found"
+     *         description="Currency not found"
      *     )
      * )
      * @OA\Get(
-     *   path="/cart",
-     *   tags={"cart"},
-     *   summary="List carts",
-     *   description="List all carts",
+     *   path="/currency",
+     *   tags={"currency"},
+     *   summary="List currencies",
+     *   description="List all currencies",
      *   @OA\Response(
      *     response=200,
-     *     description="A list with carts"
+     *     description="A list of currencies"
      *   ),
      *   @OA\Response(
      *     response="default",
@@ -70,15 +70,15 @@ class CartController extends AbstractController
      *   )
      * )
      * @OA\Delete(
-     *     path="/cart/{cartId}",
-     *     description="Deletes a single cart based on the ID supplied",
-     *     summary="Delete a single cart",
-     *     operationId="deleteCart",
-     *     tags={"cart"},
+     *     path="/currency/{currencyId}",
+     *     description="Deletes a single currency based on the ID supplied",
+     *     summary="Delete a single currency",
+     *     operationId="deleteCurrency",
+     *     tags={"currency"},
      *     @OA\Parameter(
-     *         description="ID of cart to delete",
+     *         description="ID of currency to delete",
      *         in="path",
-     *         name="cartId",
+     *         name="currencyId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -87,7 +87,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Cart deleted"
+     *         description="Currency deleted"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -95,15 +95,15 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     operationId="updateCart",
-     *     summary="Update an existing cart",
+     *     path="/currency/{currencyId}",
+     *     tags={"currency"},
+     *     operationId="updateCurrency",
+     *     summary="Update an existing currency",
      *     description="",
      *     @OA\Parameter(
-     *         description="ID of cart to update",
+     *         description="ID of currency to update",
      *         in="path",
-     *         name="cartId",
+     *         name="currencyId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -112,8 +112,8 @@ class CartController extends AbstractController
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be modified",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Currency object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/CurrencyModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -121,7 +121,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found",
+     *         description="Currency not found",
      *     ),
      *     @OA\Response(
      *         response=405,
@@ -129,20 +129,20 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Post(
-     *     path="/cart",
-     *     tags={"cart"},
-     *     operationId="createCart",
-     *     summary="Create a new cart",
+     *     path="/currency",
+     *     tags={"currency"},
+     *     operationId="createCurrency",
+     *     summary="Create a new currency",
      *     description="",
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be created",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Currency object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/CurrencyModel")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/CurrencyModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -158,19 +158,19 @@ class CartController extends AbstractController
      *          ),
      *     ),
      *     @OA\RequestBody(
-     *         description="Create cart object",
+     *         description="Create currency object",
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/CurrencyModel")
      *     )
      * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/cart', $this->index(...));
-        $routeGroup->get('/cart/{id}', $this->show(...));
-        $routeGroup->put('/cart/{id}', $this->update(...));
-        $routeGroup->post('/cart', $this->create(...));
-        $routeGroup->delete('/cart/{id}', $this->delete(...));
+        $routeGroup->get('/currency', $this->index(...));
+        $routeGroup->get('/currency/{id}', $this->show(...));
+        $routeGroup->put('/currency/{id}', $this->update(...));
+        $routeGroup->post('/currency', $this->create(...));
+        $routeGroup->delete('/currency/{id}', $this->delete(...));
     }
 
     /**
@@ -187,11 +187,10 @@ class CartController extends AbstractController
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                => 'integer',
-            'cartID'            => 'integer',
-            'customerID'        => 'integer',
-            'deliveryAddressID' => 'integer',
-            'paymentInfoID'     => 'integer',
+            'id'     => 'integer',
+            'code'   => 'string',
+            'name'   => 'string',
+            'factor' => 'float'
         ];
     }
 
@@ -201,14 +200,14 @@ class CartController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                 => 'required|integer',
-            'shippingMethodName' => 'max:255',
-            'paymentMethodName'  => 'max:255',
-            'orderNO'            => 'max:255',
-            'shippingInfo'       => 'max:255',
-            'trackingID'         => 'max:255',
-            'logistics'          => 'max:255',
-            'trackingURL'        => 'max:255',
+            'id'               => 'required|integer',
+            'code'             => 'max:5',
+            'name'             => 'max:255',
+            'nameHTML'         => 'max:255',
+            'default'          => 'max:1',
+            'positionBefore'   => 'max:1',
+            'dividerDecimal'   => 'max:1',
+            'dividerThausands' => 'max:1',
         ];
     }
 }

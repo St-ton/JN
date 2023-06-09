@@ -63,7 +63,7 @@ trait ResponseTrait
      */
     public function sendCustomResponse(int $status, string $message): JsonResponse
     {
-        return new JsonResponse(['status' => $status, 'message' => $message], $status);
+        return new JsonResponse(\compact('status', 'message'), $status);
     }
 
     /**
@@ -129,7 +129,7 @@ trait ResponseTrait
             $message = 'The requested resource was not found';
         }
 
-        return (new Response($message))->withStatus(404);
+        return new Response($message, 404);
     }
 
     /**
@@ -183,10 +183,10 @@ trait ResponseTrait
      * @return JsonResponse
      */
     protected function respondWithCollection(
-        Collection $collection,
+        Collection          $collection,
         TransformerAbstract $transformer,
-        array $headers = [],
-        CursorInterface $cursor = null
+        array               $headers = [],
+        CursorInterface     $cursor = null
     ): JsonResponse {
         $resource = new ResourceCollection($collection, $transformer);
         if ($cursor !== null) {

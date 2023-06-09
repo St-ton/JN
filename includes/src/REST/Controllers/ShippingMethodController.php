@@ -6,35 +6,36 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
 use JTL\REST\Models\CartModel;
+use JTL\REST\Models\ShippingMethodModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class CartController
+ * Class ShippingMethodController
  * @package JTL\REST\Controllers
  */
-class CartController extends AbstractController
+class ShippingMethodController extends AbstractController
 {
     /**
-     * CartController constructor.
+     * ShippingMethodController constructor.
      * @inheritdoc
      */
     public function __construct(Manager $fractal, protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        parent::__construct(CartModel::class, $fractal, $this->db, $this->cache);
+        parent::__construct(ShippingMethodModel::class, $fractal, $this->db, $this->cache);
     }
 
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     summary="Get cart by ID",
+     *     path="/shippingmethod/{shippingmethodId}",
+     *     tags={"shippingmethod"},
+     *     summary="Get shipping method by ID",
      *     @OA\Parameter(
-     *         description="ID of cart that needs to be fetched",
+     *         description="ID of shipping method that needs to be fetched",
      *         in="path",
-     *         name="cartId",
+     *         name="shippingmethodId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -44,7 +45,7 @@ class CartController extends AbstractController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel"),
+     *         @OA\JsonContent(ref="#/components/schemas/ShippingMethodModel"),
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -52,17 +53,17 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found"
+     *         description="Shipping method not found"
      *     )
      * )
      * @OA\Get(
-     *   path="/cart",
-     *   tags={"cart"},
-     *   summary="List carts",
-     *   description="List all carts",
+     *   path="/shippingmethod",
+     *   tags={"shippingmethod"},
+     *   summary="List shippingmethods",
+     *   description="List all shippingmethods",
      *   @OA\Response(
      *     response=200,
-     *     description="A list with carts"
+     *     description="A list with shippingmethods"
      *   ),
      *   @OA\Response(
      *     response="default",
@@ -70,15 +71,15 @@ class CartController extends AbstractController
      *   )
      * )
      * @OA\Delete(
-     *     path="/cart/{cartId}",
-     *     description="Deletes a single cart based on the ID supplied",
-     *     summary="Delete a single cart",
-     *     operationId="deleteCart",
-     *     tags={"cart"},
+     *     path="/shippingmethod/{shippingmethodId}",
+     *     description="Deletes a single shippingmethod based on the ID supplied",
+     *     summary="Delete a single shippingmethod",
+     *     operationId="deleteShippingMethod",
+     *     tags={"shippingmethod"},
      *     @OA\Parameter(
-     *         description="ID of cart to delete",
+     *         description="ID of shippingmethod to delete",
      *         in="path",
-     *         name="cartId",
+     *         name="shippingmethodId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -87,7 +88,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Cart deleted"
+     *         description="Shipping method deleted"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -95,15 +96,15 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     operationId="updateCart",
-     *     summary="Update an existing cart",
+     *     path="/shippingmethod/{shippingmethodId}",
+     *     tags={"shippingmethod"},
+     *     operationId="updateShippingMethod",
+     *     summary="Update an existing shippingmethod",
      *     description="",
      *     @OA\Parameter(
-     *         description="ID of cart to update",
+     *         description="ID of shippingmethod to update",
      *         in="path",
-     *         name="cartId",
+     *         name="shippingmethodId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -112,8 +113,8 @@ class CartController extends AbstractController
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be modified",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Shipping method object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/ShippingMethodModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -121,7 +122,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found",
+     *         description="Shipping method not found",
      *     ),
      *     @OA\Response(
      *         response=405,
@@ -129,20 +130,20 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Post(
-     *     path="/cart",
-     *     tags={"cart"},
-     *     operationId="createCart",
-     *     summary="Create a new cart",
+     *     path="/shippingmethod",
+     *     tags={"shippingmethod"},
+     *     operationId="createShippingMethod",
+     *     summary="Create a new shippingmethod",
      *     description="",
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be created",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Shipping method object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/ShippingMethodModel")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/ShippingMethodModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -158,19 +159,19 @@ class CartController extends AbstractController
      *          ),
      *     ),
      *     @OA\RequestBody(
-     *         description="Create cart object",
+     *         description="Create shippingmethod object",
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/ShippingMethodModel")
      *     )
      * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/cart', $this->index(...));
-        $routeGroup->get('/cart/{id}', $this->show(...));
-        $routeGroup->put('/cart/{id}', $this->update(...));
-        $routeGroup->post('/cart', $this->create(...));
-        $routeGroup->delete('/cart/{id}', $this->delete(...));
+        $routeGroup->get('/shippingmethod', $this->index(...));
+        $routeGroup->get('/shippingmethod/{id}', $this->show(...));
+        $routeGroup->put('/shippingmethod/{id}', $this->update(...));
+        $routeGroup->post('/shippingmethod', $this->create(...));
+        $routeGroup->delete('/shippingmethod/{id}', $this->delete(...));
     }
 
     /**
@@ -187,11 +188,7 @@ class CartController extends AbstractController
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                => 'integer',
-            'cartID'            => 'integer',
-            'customerID'        => 'integer',
-            'deliveryAddressID' => 'integer',
-            'paymentInfoID'     => 'integer',
+            'id' => 'integer'
         ];
     }
 
@@ -201,14 +198,8 @@ class CartController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                 => 'required|integer',
-            'shippingMethodName' => 'max:255',
-            'paymentMethodName'  => 'max:255',
-            'orderNO'            => 'max:255',
-            'shippingInfo'       => 'max:255',
-            'trackingID'         => 'max:255',
-            'logistics'          => 'max:255',
-            'trackingURL'        => 'max:255',
+            'id'   => 'required|integer',
+            'name' => 'max:255'
         ];
     }
 }

@@ -5,36 +5,36 @@ namespace JTL\REST\Controllers;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Model\DataModelInterface;
-use JTL\REST\Models\CartModel;
+use JTL\REST\Models\MeasurementUnitModel;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class CartController
+ * Class MeasurementUnitController
  * @package JTL\REST\Controllers
  */
-class CartController extends AbstractController
+class MeasurementUnitController extends AbstractController
 {
     /**
-     * CartController constructor.
+     * MeasurementUnitController constructor.
      * @inheritdoc
      */
     public function __construct(Manager $fractal, protected DbInterface $db, protected JTLCacheInterface $cache)
     {
-        parent::__construct(CartModel::class, $fractal, $this->db, $this->cache);
+        parent::__construct(MeasurementUnitModel::class, $fractal, $this->db, $this->cache);
     }
 
     /**
      * @inheritdoc
      * @OA\Get(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     summary="Get cart by ID",
+     *     path="/measurementunit/{measurementunitId}",
+     *     tags={"measurementunit"},
+     *     summary="Get measurement unit by ID",
      *     @OA\Parameter(
-     *         description="ID of cart that needs to be fetched",
+     *         description="ID of measurement unit that needs to be fetched",
      *         in="path",
-     *         name="cartId",
+     *         name="measurementunitId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -44,7 +44,7 @@ class CartController extends AbstractController
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel"),
+     *         @OA\JsonContent(ref="#/components/schemas/MeasurementUnitModel"),
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -52,17 +52,17 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found"
+     *         description="Measurement unit not found"
      *     )
      * )
      * @OA\Get(
-     *   path="/cart",
-     *   tags={"cart"},
-     *   summary="List carts",
-     *   description="List all carts",
+     *   path="/measurementunit",
+     *   tags={"measurementunit"},
+     *   summary="List measurementunits",
+     *   description="List all measurementunits",
      *   @OA\Response(
      *     response=200,
-     *     description="A list with carts"
+     *     description="A list with measurementunits"
      *   ),
      *   @OA\Response(
      *     response="default",
@@ -70,15 +70,15 @@ class CartController extends AbstractController
      *   )
      * )
      * @OA\Delete(
-     *     path="/cart/{cartId}",
-     *     description="Deletes a single cart based on the ID supplied",
-     *     summary="Delete a single cart",
-     *     operationId="deleteCart",
-     *     tags={"cart"},
+     *     path="/measurementunit/{measurementunitId}",
+     *     description="Deletes a single measurementunit based on the ID supplied",
+     *     summary="Delete a single measurementunit",
+     *     operationId="deleteMeasurementUnit",
+     *     tags={"measurementunit"},
      *     @OA\Parameter(
-     *         description="ID of cart to delete",
+     *         description="ID of measurementunit to delete",
      *         in="path",
-     *         name="cartId",
+     *         name="measurementunitId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -87,7 +87,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=204,
-     *         description="Cart deleted"
+     *         description="Measurement unit deleted"
      *     ),
      *     @OA\Response(
      *         response=404,
@@ -95,15 +95,15 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Put(
-     *     path="/cart/{cartId}",
-     *     tags={"cart"},
-     *     operationId="updateCart",
-     *     summary="Update an existing cart",
+     *     path="/measurementunit/{measurementunitId}",
+     *     tags={"measurementunit"},
+     *     operationId="updateMeasurementUnit",
+     *     summary="Update an existing measurementunit",
      *     description="",
      *     @OA\Parameter(
-     *         description="ID of cart to update",
+     *         description="ID of measurementunit to update",
      *         in="path",
-     *         name="cartId",
+     *         name="measurementunitId",
      *         required=true,
      *         @OA\Schema(
      *             format="int64",
@@ -112,8 +112,8 @@ class CartController extends AbstractController
      *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be modified",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Measurement unit object that needs to be modified",
+     *         @OA\JsonContent(ref="#/components/schemas/MeasurementUnitModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -121,7 +121,7 @@ class CartController extends AbstractController
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Cart not found",
+     *         description="Measurement unit not found",
      *     ),
      *     @OA\Response(
      *         response=405,
@@ -129,20 +129,20 @@ class CartController extends AbstractController
      *     )
      * )
      * @OA\Post(
-     *     path="/cart",
-     *     tags={"cart"},
-     *     operationId="createCart",
-     *     summary="Create a new cart",
+     *     path="/measurementunit",
+     *     tags={"measurementunit"},
+     *     operationId="createMeasurementUnit",
+     *     summary="Create a new measurementunit",
      *     description="",
      *     @OA\RequestBody(
      *         required=true,
-     *         description="Cart object that needs to be created",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         description="Measurement unit object that needs to be created",
+     *         @OA\JsonContent(ref="#/components/schemas/MeasurementUnitModel")
      *     ),
      *     @OA\Response(
      *         response=200,
      *         description="successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/MeasurementUnitModel")
      *     ),
      *     @OA\Response(
      *         response=400,
@@ -158,19 +158,19 @@ class CartController extends AbstractController
      *          ),
      *     ),
      *     @OA\RequestBody(
-     *         description="Create cart object",
+     *         description="Create measurementunit object",
      *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CartModel")
+     *         @OA\JsonContent(ref="#/components/schemas/MeasurementUnitModel")
      *     )
      * )
      */
     public function registerRoutes(RouteGroup $routeGroup): void
     {
-        $routeGroup->get('/cart', $this->index(...));
-        $routeGroup->get('/cart/{id}', $this->show(...));
-        $routeGroup->put('/cart/{id}', $this->update(...));
-        $routeGroup->post('/cart', $this->create(...));
-        $routeGroup->delete('/cart/{id}', $this->delete(...));
+        $routeGroup->get('/measurementunit', $this->index(...));
+        $routeGroup->get('/measurementunit/{id}', $this->show(...));
+        $routeGroup->put('/measurementunit/{id}', $this->update(...));
+        $routeGroup->post('/measurementunit', $this->create(...));
+        $routeGroup->delete('/measurementunit/{id}', $this->delete(...));
     }
 
     /**
@@ -187,11 +187,7 @@ class CartController extends AbstractController
     protected function createRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                => 'integer',
-            'cartID'            => 'integer',
-            'customerID'        => 'integer',
-            'deliveryAddressID' => 'integer',
-            'paymentInfoID'     => 'integer',
+            'id' => 'integer'
         ];
     }
 
@@ -201,14 +197,8 @@ class CartController extends AbstractController
     protected function updateRequestValidationRules(ServerRequestInterface $request): array
     {
         return [
-            'id'                 => 'required|integer',
-            'shippingMethodName' => 'max:255',
-            'paymentMethodName'  => 'max:255',
-            'orderNO'            => 'max:255',
-            'shippingInfo'       => 'max:255',
-            'trackingID'         => 'max:255',
-            'logistics'          => 'max:255',
-            'trackingURL'        => 'max:255',
+            'id'   => 'required|integer',
+            'name' => 'max:255'
         ];
     }
 }

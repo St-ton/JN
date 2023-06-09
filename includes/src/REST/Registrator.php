@@ -13,21 +13,23 @@ use JTL\REST\Controllers\CategoryAttributeController;
 use JTL\REST\Controllers\CategoryController;
 use JTL\REST\Controllers\CharacteristicController;
 use JTL\REST\Controllers\CharacteristicValueController;
+use JTL\REST\Controllers\CurrencyController;
 use JTL\REST\Controllers\CustomerController;
 use JTL\REST\Controllers\CustomerGroupController;
 use JTL\REST\Controllers\ImageController;
 use JTL\REST\Controllers\LanguageController;
 use JTL\REST\Controllers\ManufacturerController;
+use JTL\REST\Controllers\MeasurementUnitController;
 use JTL\REST\Controllers\OrderController;
 use JTL\REST\Controllers\PriceController;
 use JTL\REST\Controllers\ProductAttributeController;
 use JTL\REST\Controllers\ProductController;
 use JTL\REST\Controllers\SeoController;
+use JTL\REST\Controllers\ShippingMethodController;
 use JTL\REST\Controllers\StockController;
 use JTL\REST\Controllers\TaxClassController;
 use JTL\REST\Controllers\TaxRateController;
 use JTL\REST\Controllers\TaxZoneController;
-use JTL\REST\Middleware\AuthMiddleware;
 use League\Fractal\Manager;
 use League\Route\RouteGroup;
 
@@ -86,6 +88,9 @@ final class Registrator
         PriceController::class,
         CustomerGroupController::class,
         ImageController::class,
+        ShippingMethodController::class,
+        CurrencyController::class,
+        MeasurementUnitController::class,
     ];
 
     /**
@@ -94,8 +99,8 @@ final class Registrator
      * @param JTLCacheInterface $cache
      */
     public function __construct(
-        protected Manager $manager,
-        protected DbInterface $db,
+        protected Manager           $manager,
+        protected DbInterface       $db,
         protected JTLCacheInterface $cache
     ) {
     }

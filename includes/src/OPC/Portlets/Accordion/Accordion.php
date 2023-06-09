@@ -17,13 +17,13 @@ class Accordion extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'groups' => [
-                'type' => InputType::TEXT_LIST,
-                'label' => \__('groupName'),
+            'groups'   => [
+                'type'    => InputType::TEXT_LIST,
+                'label'   => \__('groupName'),
                 'default' => [\__('groupName')]
             ],
             'expanded' => [
-                'type' => InputType::CHECKBOX,
+                'type'  => InputType::CHECKBOX,
                 'label' => \__('unfoldFirstGroup')
             ]
         ];

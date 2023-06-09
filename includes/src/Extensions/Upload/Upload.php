@@ -58,7 +58,7 @@ final class Upload
     }
 
     /**
-     * @param  int $productID
+     * @param int $productID
      * @return int
      */
     public static function deleteArtikelUploads(int $productID): int

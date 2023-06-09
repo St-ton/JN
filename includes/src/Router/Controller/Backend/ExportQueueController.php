@@ -70,8 +70,8 @@ class ExportQueueController extends AbstractBackendController
         $result = $this->exportformatQueueFinalize($step, $smarty, $messages);
 
         return $result ?? $smarty->assign('step', $step)
-                ->assign('route', $this->route)
-                ->getResponse('exportformat_queue.tpl');
+            ->assign('route', $this->route)
+            ->getResponse('exportformat_queue.tpl');
     }
 
     /**

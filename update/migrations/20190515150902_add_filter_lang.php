@@ -18,7 +18,7 @@ class Migration_20190515150902 extends Migration implements IMigration
     protected $description = 'Add filter lang';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -27,7 +27,7 @@ class Migration_20190515150902 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

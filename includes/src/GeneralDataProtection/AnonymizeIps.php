@@ -81,7 +81,7 @@ class AnonymizeIps extends Method implements MethodInterface
             'ColCreated' => 'dDate',
             'ColType'    => 'DATETIME'
         ],
-        'tfloodprotect'                  => [
+        'tfloodprotect'                    => [
             'ColKey'     => 'kFloodProtect',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dErstellt',
@@ -125,18 +125,18 @@ class AnonymizeIps extends Method implements MethodInterface
                     {$tableName}
                 WHERE
                     NOT INSTR(cIP, '.*') > 0
-                    AND NOT INSTR(cIP, '{$ipMaskV4}') > 0
-                    AND NOT INSTR(cIP, '{$ipMaskV6}') > 0";
+                    AND NOT INSTR(cIP, '$ipMaskV4') > 0
+                    AND NOT INSTR(cIP, '$ipMaskV6') > 0";
 
             if ($colData['ColType'] !== 'TIMESTAMP') {
-                $sql .= " AND {$colData['ColCreated']} <= '{$dtNow}' - INTERVAL {$this->interval} DAY";
+                $sql .= " AND {$colData['ColCreated']} <= '$dtNow' - INTERVAL $this->interval DAY";
             } else {
                 $sql .= " AND FROM_UNIXTIME({$colData['ColCreated']}) <=
-                 '{$dtNow}' - INTERVAL {$this->interval} DAY";
+                 '$dtNow' - INTERVAL $this->interval DAY";
             }
 
             $sql .= " ORDER BY {$colData['ColCreated']} ASC
-                LIMIT {$this->workLimit}";
+                LIMIT $this->workLimit";
 
             foreach ($this->db->getObjects($sql) as $row) {
                 try {

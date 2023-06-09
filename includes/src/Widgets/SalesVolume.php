@@ -18,7 +18,7 @@ class SalesVolume extends AbstractWidget
     /**
      *
      */
-    public function init()
+    public function init(): void
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'statistik_inc.php';
         $this->setPermission('STATS_EXCHANGE_VIEW');
@@ -77,7 +77,7 @@ class SalesVolume extends AbstractWidget
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->oSmarty->assign('linechart', $this->getJSON())
             ->fetch('tpl_inc/widgets/sales_volume.tpl');

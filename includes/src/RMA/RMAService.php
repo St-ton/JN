@@ -6,6 +6,7 @@ use JTL\Abstracts\AbstractService;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Interfaces\RepositoryInterface;
+use JTL\RMA\PickupAddress\PickupAddressRepository;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -18,9 +19,9 @@ use stdClass;
 class RMAService extends AbstractService
 {
     /**
-     * @var RMARepository
+     * @var RepositoryInterface[]
      */
-    protected RepositoryInterface $repository;
+    protected array $repositories;
     
     /**
      * @param int $id
@@ -41,11 +42,35 @@ class RMAService extends AbstractService
     }
     
     /**
-     * @return RMARepository
+     * @param string $name
+     * @return RepositoryInterface
      */
-    public function getRepository(): RMARepository
+    public function getRepository(string $name = ''): RepositoryInterface
     {
-        return $this->repository;
+        $name = $name === '' ? 'RMARepository' : $name;
+        if (!\in_array($name, $this->repositories)) {
+            switch ($name) {
+                case 'RMARepository':
+                    $this->repositories[$name] = new RMARepository();
+                    break;
+                case 'RMAHistoryRepository':
+                    $this->repositories[$name] = new RMAHistoryRepository();
+                    break;
+                case 'RMAPosRepository':
+                    $this->repositories[$name] = new RMAPosRepository();
+                    break;
+                case 'RMAReasonsRepository':
+                    $this->repositories[$name] = new RMAReasonsRepository();
+                    break;
+                case 'RMAReasonsLangRepository':
+                    $this->repositories[$name] = new RMAReasonsLangRepository();
+                    break;
+                case 'PickupAddressRepository':
+                    $this->repositories[$name] = new PickupAddressRepository();
+                    break;
+            }
+        }
+        return $this->repositories[$name];
     }
     
     /**
@@ -53,7 +78,15 @@ class RMAService extends AbstractService
      */
     protected function initRepository(): void
     {
-        $this->repository = new RMARepository();
+        $this->repositories['RMARepository'] = new RMARepository();
+    }
+    
+    /**
+     * @return void
+     */
+    protected function initDependencies(): void
+    {
+        $this->initRepository();
     }
     
     /**

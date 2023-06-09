@@ -19,7 +19,7 @@ class Updater
      * @param DbInterface $db
      * @param Installer   $installer
      */
-    public function __construct(private DbInterface $db, private Installer $installer)
+    public function __construct(private readonly DbInterface $db, private readonly Installer $installer)
     {
     }
 

@@ -25,13 +25,13 @@ class LegacyCron
      * @param string|null $dLetzterStart
      */
     public function __construct(
-        public int    $kCron = 0,
-        public int    $kKey = 0,
-        public int    $nAlleXStd = 0,
-        public string $cName = '',
-        public string $cJobArt = '',
-        public string $cTabelle = '',
-        public string $cKey = '',
+        public int     $kCron = 0,
+        public int     $kKey = 0,
+        public int     $nAlleXStd = 0,
+        public string  $cName = '',
+        public string  $cJobArt = '',
+        public string  $cTabelle = '',
+        public string  $cKey = '',
         public ?string $dStart = null,
         public ?string $dStartZeit = null,
         public ?string $dLetzterStart = null

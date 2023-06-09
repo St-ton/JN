@@ -12,7 +12,7 @@ class Migration_20210823135200 extends Migration implements IMigration
     protected $description = 'Add AdminName to log table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -30,7 +30,7 @@ class Migration_20210823135200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

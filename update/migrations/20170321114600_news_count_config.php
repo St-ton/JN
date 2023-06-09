@@ -18,7 +18,7 @@ class Migration_20170321114600 extends Migration implements IMigration
     protected $description = 'Add news count config in news overview';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -37,7 +37,7 @@ class Migration_20170321114600 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

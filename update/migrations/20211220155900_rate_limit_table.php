@@ -12,7 +12,7 @@ class Migration_20211220155900 extends Migration implements IMigration
     protected $description = 'Create rate limit table';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -20,7 +20,7 @@ class Migration_20211220155900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

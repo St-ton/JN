@@ -18,7 +18,7 @@ class Migration_20200416120900 extends Migration implements IMigration
     protected $description = 'Remove sorting by availability';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -28,7 +28,7 @@ class Migration_20200416120900 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

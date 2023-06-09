@@ -13,7 +13,7 @@ use JTL\Cart\Cart;
 class FallbackMethod extends Method
 {
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function init(int $nAgainCheckout = 0)
     {
@@ -23,7 +23,7 @@ class FallbackMethod extends Method
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isValid(object $customer, Cart $cart): bool
     {
@@ -32,7 +32,7 @@ class FallbackMethod extends Method
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function isSelectable(): bool
     {

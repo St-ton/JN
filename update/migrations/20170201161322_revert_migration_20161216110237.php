@@ -18,7 +18,7 @@ class Migration_20170201161322 extends Migration implements IMigration
     protected $description = 'Revert Migration_20161216110237';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -36,7 +36,7 @@ class Migration_20170201161322 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

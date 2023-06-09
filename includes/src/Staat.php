@@ -171,7 +171,7 @@ class Staat
             $val2 = $countryISO;
         }
         $data = Shop::Container()->getDB()->select('tstaat', 'cCode', $code, $key2, $val2);
-        if (($data->kStaat ?? 0) <= 0) {
+        if ($data === null || $data->kStaat <= 0) {
             return null;
         }
         $options = [
@@ -191,7 +191,7 @@ class Staat
     public static function getRegionByName(string $name): ?Staat
     {
         $data = Shop::Container()->getDB()->select('tstaat', 'cName', $name);
-        if (($data->kStaat ?? 0) <= 0) {
+        if ($data === null || $data->kStaat <= 0) {
             return null;
         }
         $options = [

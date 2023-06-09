@@ -19,7 +19,7 @@ class Migration_20221017082222 extends Migration implements IMigration
     protected $description = 'Fix typo in subject of english version of mail template for delete customer account';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -51,7 +51,7 @@ class Migration_20221017082222 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

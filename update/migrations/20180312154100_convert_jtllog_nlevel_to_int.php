@@ -18,7 +18,7 @@ class Migration_20180312154100 extends Migration implements IMigration
     protected $description = 'Update tjtllog.nLevel to INT';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -26,7 +26,7 @@ class Migration_20180312154100 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

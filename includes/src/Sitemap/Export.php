@@ -81,11 +81,11 @@ final class Export
      * @param array                   $config
      */
     public function __construct(
-        private DbInterface $db,
-        private LoggerInterface $logger,
-        private RendererInterface $renderer,
+        private DbInterface             $db,
+        private LoggerInterface         $logger,
+        private RendererInterface       $renderer,
         private SchemaRendererInterface $schemaRenderer,
-        private array $config
+        private array                   $config
     ) {
         $this->baseImageURL = Shop::getImageBaseURL();
         $this->baseURL      = Shop::getURL() . '/';

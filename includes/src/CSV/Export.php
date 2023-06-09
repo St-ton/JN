@@ -30,10 +30,10 @@ class Export
         string $id,
         string $fileName,
         $source,
-        array $fields = [],
-        array $excluded = [],
+        array  $fields = [],
+        array  $excluded = [],
         string $delim = ',',
-        bool $head = true
+        bool   $head = true
     ) {
         if (\is_callable($source)) {
             $arr = $source();

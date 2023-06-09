@@ -63,7 +63,7 @@ class Categories extends AbstractLocalizationCheck
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getLocation(): string
     {

@@ -18,7 +18,7 @@ class Migration_20180920151703 extends Migration implements IMigration
     protected $description = 'Remove Priceradar';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -36,7 +36,7 @@ class Migration_20180920151703 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

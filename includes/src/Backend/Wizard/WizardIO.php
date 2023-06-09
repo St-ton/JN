@@ -21,16 +21,16 @@ class WizardIO
 
     /**
      * WizardIO constructor.
-     * @param DbInterface $db
-     * @param JTLCacheInterface $cache
+     * @param DbInterface           $db
+     * @param JTLCacheInterface     $cache
      * @param AlertServiceInterface $alertService
-     * @param GetText $getText
+     * @param GetText               $getText
      */
     public function __construct(
-        protected DbInterface $db,
-        protected JTLCacheInterface $cache,
+        protected DbInterface           $db,
+        protected JTLCacheInterface     $cache,
         protected AlertServiceInterface $alertService,
-        protected GetText $getText
+        protected GetText               $getText
     ) {
     }
 

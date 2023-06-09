@@ -50,7 +50,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getTitle(): string
     {
@@ -58,7 +58,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setTitle(string $title): void
     {
@@ -66,7 +66,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getDescription(): string
     {
@@ -74,7 +74,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setDescription(string $description): void
     {
@@ -82,7 +82,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getID(): int
     {
@@ -90,7 +90,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setID(int $id): void
     {
@@ -98,7 +98,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function setQuestions(Collection $questions): void
     {
@@ -106,7 +106,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function addQuestion(QuestionInterface $question): void
     {
@@ -114,7 +114,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getQuestions(): Collection
     {
@@ -122,7 +122,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function answerQuestionByID(int $questionID, $value): QuestionInterface
     {
@@ -135,7 +135,7 @@ abstract class AbstractStep implements StepInterface
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function getFilteredQuestions(): array
     {

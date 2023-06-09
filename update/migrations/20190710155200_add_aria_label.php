@@ -18,7 +18,7 @@ class Migration_20190710155200 extends Migration implements IMigration
     protected $description = 'Add aria labels';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function up()
     {
@@ -39,7 +39,7 @@ class Migration_20190710155200 extends Migration implements IMigration
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
     public function down()
     {

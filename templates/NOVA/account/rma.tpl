@@ -9,7 +9,7 @@
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            Positionen hinzufügen
+                                            {lang key='addPositions' section='rma'}
                                         </span>
                                     {/col}
                                 {/row}
@@ -21,7 +21,7 @@
                                     <label>
                                         {select name="orders" aria=["label"=>"Bestellnummer"]
                                         class="custom-select custom-select-sm form-control form-control-sm"}
-                                            <option value="" selected>Alle Bestellungen</option>
+                                            <option value="" selected>{lang key='allOrders' section='rma'}</option>
                                             {foreach $returnableOrders as $order}
                                                 <option value="{$order}">{$order}</option>
                                             {/foreach}
@@ -66,8 +66,8 @@
                                                                     </div>
                                                                 </div>
                                                                 <small class="text-muted-util d-block">
-                                                                    Bestellnummer: {$product->orderID}<br>
-                                                                    Referenz: {link href=$product->orderID}
+                                                                    {lang key='orderNo' section='login'}: {$product->orderID}<br>
+                                                                    {lang key='productNo'}: {link href=$product->orderID}
                                                                         {$product->productNR}
                                                                     {/link}<br>
                                                                     {$product->quantity} {$product->unit|default:''} x {$product->unitPriceNet}
@@ -116,7 +116,7 @@
                                                                 "snposid" => "{$product->shippingNotePosID}"
                                                                 ]
                                                                 class="custom-select form-control"}
-                                                                    <option value="-1" selected>Grund</option>
+                                                                    <option value="-1" selected>{lang key='rma_comment_choose' section='rma'}</option>
                                                                     <option value="0">Artikel defekt</option>
                                                                     <option value="1">Artikel nicht geliefert</option>
                                                                     <option value="2">Sonstiges</option>
@@ -129,7 +129,8 @@
                                                                 "snposid" => "{$product->shippingNotePosID}"
                                                                 ]
                                                                 rows=1
-                                                                maxlength="255"}{/textarea}
+                                                                maxlength="255"
+                                                                placeholder="{lang key='comment' section='productDetails'}"}{/textarea}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -151,7 +152,7 @@
                                 {formrow}
                                     {col cols=12}
                                         {block name='checkout-customer-shipping-address-country'}
-                                            {formgroup label="Abholadrese" label-for="shippingAdress"}
+                                            {formgroup label="{lang key='pickupAddress' section='rma'}" label-for="shippingAdress"}
                                                 {select name="shippingAdress" id="shippingAdress" class="custom-select"
                                                 autocomplete="shipping Adress"}
                                                     {foreach $shippingAddresses as $sa}
@@ -173,7 +174,7 @@
                         {row class='btn-row'}
                             {col md=12 xl=12 class="checkout-button-row-submit mb-3"}
                                 {button type="submit" value="1" block=true variant="primary"}
-                                    {lang key='createRetoure' section='rma'}
+                                    {lang key='continueOrder' section='account data'}
                                 {/button}
                             {/col}
                         {/row}

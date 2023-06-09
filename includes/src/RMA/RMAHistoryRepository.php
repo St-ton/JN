@@ -2,21 +2,24 @@
 
 namespace JTL\RMA;
 
+use Illuminate\Support\Collection;
 use JTL\Abstracts\AbstractRepository;
+use JTL\Catalog\Product\Preise;
+use JTL\Shop;
 use stdClass;
 
 /**
- * Class RMAReasonsRepository
+ * Class RMAHistoryRepository
  * @package JTL\RMA
  */
-class RMAReasonsRepository extends AbstractRepository
+class RMAHistoryRepository extends AbstractRepository
 {
     /**
      * @return string
      */
     public function getTableName(): string
     {
-        return 'rmareasons';
+        return 'rmahistory';
     }
     
     /**

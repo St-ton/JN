@@ -100,11 +100,6 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
     /**
      * @var string
      */
-    private string $history = '';
-    
-    /**
-     * @var string
-     */
     private string $createDate = '';
     
     /**
@@ -127,7 +122,6 @@ class RMAPosDataTableObject extends AbstractDataObject implements DataTableObjec
         'longestMaxDelivery'  => 'longestMaxDelivery',
         'comment'             => 'comment',
         'status'              => 'status',
-        'history'             => 'history',
         'createDate'          => 'createDate'
     ];
     

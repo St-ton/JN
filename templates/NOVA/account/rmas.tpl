@@ -9,7 +9,7 @@
                                 {row class="align-items-center-util"}
                                     {col}
                                         <span class="h3">
-                                            Meine Retouren
+                                            {lang key='myReturns' section='rma'}
                                         </span>
                                     {/col}
                                 {/row}
@@ -80,7 +80,7 @@
                                                                                                         {$oPosition->cName|trans}
                                                                                                     {/if}
                                                                                                     <small class="text-muted-util d-block">
-                                                                                                        Bestellnummer: {$oPosition->cBestellNr}
+                                                                                                        {lang key='orderNo' section='login'}: {$oPosition->cBestellNr}
                                                                                                     </small>
                                                                                                 {/col}
                                                                                             {/block}

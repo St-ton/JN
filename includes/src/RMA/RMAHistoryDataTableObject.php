@@ -6,11 +6,11 @@ use JTL\DataObjects\AbstractDataObject;
 use JTL\DataObjects\DataTableObjectInterface;
 
 /**
- * Class RMADataTableObject
+ * Class RMAHistoryDataTableObject
  * @package JTL\RMA
- * @description RMA request created in shop or imported from WAWI
+ * @description Store changes to RMA positions
  */
-class RMADataTableObject extends AbstractDataObject implements DataTableObjectInterface
+class RMAHistoryDataTableObject extends AbstractDataObject implements DataTableObjectInterface
 {
     /**
      * @var string
@@ -25,44 +25,39 @@ class RMADataTableObject extends AbstractDataObject implements DataTableObjectIn
     /**
      * @var int
      */
-    private int $wawiID = 0;
-    
-    /**
-     * @var int
-     */
-    private int $customerID = 0;
-    
-    /**
-     * @var int
-     */
-    private int $pickupAddressID = 0;
+    private int $rmaPosID = 0;
     
     /**
      * @var string
      */
-    private string $status = '';
+    private string $keyName = '';
+    
+    /**
+     * @var string|null
+     */
+    private ?string $oldValue;
     
     /**
      * @var string
      */
-    private string $createDate = '';
+    private string $newValue = '';
     
     /**
      * @var string
      */
     private string $lastModified = '';
     
+    
     /**
      * @var string[]
      */
     private array $columnMapping = [
-        'id'                => 'id',
-        'wawiID'            => 'wawiID',
-        'customerID'        => 'customerID',
-        'pickupAddressID' => 'pickupAddressID',
-        'status'            => 'status',
-        'createDate'        => 'createDate',
-        'lastModified'      => 'lastModified'
+        'id'           => 'id',
+        'rmaPosID'     => 'rmaPosID',
+        'keyName'      => 'keyName',
+        'oldValue'     => 'oldValue',
+        'newValue'     => 'newValue',
+        'lastModified' => 'lastModified'
     ];
     
     /**

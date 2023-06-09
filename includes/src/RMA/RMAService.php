@@ -5,8 +5,6 @@ namespace JTL\RMA;
 use JTL\Abstracts\AbstractService;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Interfaces\RepositoryInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;

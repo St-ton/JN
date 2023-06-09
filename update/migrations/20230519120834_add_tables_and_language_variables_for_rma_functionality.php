@@ -76,6 +76,26 @@ class Migration_20230519120834 extends Migration implements IMigration
                     'ger' => 'Sie müssen mindestens einen Artikel zum retournieren auswählen und einen Grund angeben.',
                     'eng' => 'You must select at least one product to return and provide a reason.'
                 ]
+            , 'myReturns' =>
+                [
+                    'ger' => 'Meine Retouren.',
+                    'eng' => 'My returns.'
+                ]
+            , 'allOrders' =>
+                [
+                    'ger' => 'Alle Bestellungen',
+                    'eng' => 'All orders'
+                ]
+            , 'addPositions' =>
+                [
+                    'ger' => 'Positionen hinzufügen',
+                    'eng' => 'Add positions'
+                ]
+            , 'pickupAddress' =>
+                [
+                    'ger' => 'Abholadresse',
+                    'eng' => 'Pickup address'
+                ]
         ];
         $newVars->datatables = [
             'search' =>
@@ -110,7 +130,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 UNIQUE INDEX (`wawiID`),
                 INDEX (`customerID`),
                 INDEX (`pickupAddressID`),
-                CONSTRAINT `fk_customerID`
+                CONSTRAINT `fk_rma_customerID`
                     FOREIGN KEY (`customerID`)
                         REFERENCES `tkunde`(`kKunde`)
                         ON DELETE CASCADE
@@ -130,6 +150,7 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `shippingNotePosID` INT(10) NOT NULL,
                 `orderPosID` INT(10) UNSIGNED NOT NULL,
                 `productID` INT(10) UNSIGNED NOT NULL,
+                `historyID` INT(10) UNSIGNED,
                 `name` VARCHAR(255) NOT NULL DEFAULT '',
                 `unitPriceNet` DOUBLE NOT NULL DEFAULT 0,
                 `quantity` DOUBLE(10,4) NOT NULL DEFAULT 0,
@@ -140,7 +161,6 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `longestMaxDelivery` INT(1) NOT NULL DEFAULT 0,
                 `comment` VARCHAR(255),
                 `status` CHAR(2),
-                `history` MEDIUMTEXT COMMENT 'JSON encoded history of status changes',
                 `createDate` DATETIME NOT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`rmaID`),
@@ -149,18 +169,41 @@ class Migration_20230519120834 extends Migration implements IMigration
                 INDEX (`orderPosID`),
                 INDEX (`productID`),
                 INDEX (`status`),
-                CONSTRAINT `fk_rmaID`
+                CONSTRAINT `fk_rmapos_rmaID`
                     FOREIGN KEY (`rmaID`)
                         REFERENCES `rma`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_shippingNoteID`
+                CONSTRAINT `fk_rmapos_shippingNoteID`
                     FOREIGN KEY (`shippingNoteID`)
                         REFERENCES `tlieferscheinpos`(`kLieferscheinPos`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
             )
             COMMENT='RMA positions created in shop user account or synced from WAWI.'
+            DEFAULT CHARSET=utf8mb3
+            COLLATE='utf8mb3_unicode_ci'
+            ENGINE=InnoDB
+        ");
+        
+        $this->execute(
+            "CREATE TABLE IF NOT EXISTS `rmahistory` (
+                `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `rmaPosID` INT(10) UNSIGNED NOT NULL,
+                `keyName` VARCHAR(255) NOT NULL,
+                `oldValue` VARCHAR(255),
+                `newValue` VARCHAR(255) NOT NULL,
+                `lastModified` DATETIME NOT NULL,
+                PRIMARY KEY (`id`),
+                INDEX (`rmaPosID`),
+                INDEX (`keyName`),
+                CONSTRAINT `fk_rmahistory_rmaPosID`
+                    FOREIGN KEY (`rmaPosID`)
+                        REFERENCES `rmapos`(`id`)
+                        ON DELETE CASCADE
+                        ON UPDATE CASCADE
+            )
+            COMMENT='Store changes to RMA positions.'
             DEFAULT CHARSET=utf8mb3
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
@@ -189,18 +232,17 @@ class Migration_20230519120834 extends Migration implements IMigration
                 `mail` VARCHAR(255) DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 INDEX (`customerID`),
-                CONSTRAINT `fk_customerID`
+                CONSTRAINT `fk_pickupaddress_customerID`
                     FOREIGN KEY (`customerID`)
                         REFERENCES `tkunde`(`kKunde`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_pickupAddressID`
+                CONSTRAINT `fk_pickupaddress_pickupAddressID`
                     FOREIGN KEY (`id`)
                         REFERENCES `rma`(`pickupAddressID`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE
             )
-            COMMENT='RMA positions created in shop user account or synced from WAWI.'
             DEFAULT CHARSET=utf8mb3
             COLLATE='utf8mb3_unicode_ci'
             ENGINE=InnoDB
@@ -228,12 +270,12 @@ class Migration_20230519120834 extends Migration implements IMigration
                 PRIMARY KEY (`id`),
                 INDEX (`reasonID`),
                 INDEX (`langID`),
-                CONSTRAINT `fk_reasonID`
+                CONSTRAINT `fk_rmareasonslang_reasonID`
                     FOREIGN KEY (`reasonID`)
                         REFERENCES `rmareasons`(`id`)
                         ON DELETE CASCADE
                         ON UPDATE CASCADE,
-                CONSTRAINT `fk_langID`
+                CONSTRAINT `fk_rmareasonslang_langID`
                     FOREIGN KEY (`langID`)
                         REFERENCES `tsprache`(`kSprache`)
                         ON DELETE CASCADE
@@ -267,6 +309,8 @@ class Migration_20230519120834 extends Migration implements IMigration
     public function down(): void
     {
         $this->execute('DROP TABLE IF EXISTS rmapos');
+        $this->execute('DROP TABLE IF EXISTS rmahistory');
+        $this->execute('DROP TABLE IF EXISTS pickupaddress');
         $this->execute('DROP TABLE IF EXISTS rmareasonslang');
         $this->execute('DROP TABLE IF EXISTS rmareasons');
         $this->execute('DROP TABLE IF EXISTS rma');

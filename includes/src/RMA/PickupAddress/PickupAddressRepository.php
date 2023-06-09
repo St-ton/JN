@@ -1,22 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace JTL\RMA;
+namespace JTL\RMA\PickupAddress;
 
 use JTL\Abstracts\AbstractRepository;
-use stdClass;
 
 /**
- * Class RMAReasonsRepository
+ * Class PickupAddressRepository
  * @package JTL\RMA
  */
-class RMAReasonsRepository extends AbstractRepository
+class PickupAddressRepository extends AbstractRepository
 {
     /**
      * @return string
      */
     public function getTableName(): string
     {
-        return 'rmareasons';
+        return 'pickupaddress';
     }
     
     /**

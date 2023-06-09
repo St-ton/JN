@@ -9,25 +9,11 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class RMARepository
+ * Class RMAPosRepository
  * @package JTL\RMA
  */
 class RMAPosRepository extends AbstractRepository
 {
-    /**
-     * @param int $id
-     * @return stdClass|null
-     */
-    public function get(int $id): ?stdClass
-    {
-        return $this->getDB()->getSingleObject(
-            "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE"
-            . ' FROM ' . $this->getTableName()
-            . ' WHERE ' . $this->getKeyName() . ' = :cbid',
-            ['cbid' => $id]
-        );
-    }
-    
     /**
      * @param array $filters
      * @return array

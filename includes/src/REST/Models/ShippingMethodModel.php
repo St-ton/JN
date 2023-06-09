@@ -130,8 +130,8 @@ final class ShippingMethodModel extends DataModel
             false
         );
         $attributes['cap']                    = DataAttribute::create(
-            'fDeckelung'
-            , 'double',
+            'fDeckelung',
+            'double',
             self::cast('0.00', 'double'),
             false
         );

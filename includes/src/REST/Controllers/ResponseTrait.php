@@ -3,12 +3,13 @@
 namespace JTL\REST\Controllers;
 
 use Illuminate\Support\Collection;
-use League\Fractal\Resource\Collection as ResourceCollection;
 use JTL\Model\DataModelInterface;
 use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Response\TextResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use League\Fractal\Manager;
 use League\Fractal\Pagination\CursorInterface;
+use League\Fractal\Resource\Collection as ResourceCollection;
 use League\Fractal\Resource\Item;
 use League\Fractal\TransformerAbstract;
 use Psr\Http\Message\ResponseInterface;
@@ -129,7 +130,7 @@ trait ResponseTrait
             $message = 'The requested resource was not found';
         }
 
-        return new Response($message, 404);
+        return new TextResponse($message, 404);
     }
 
     /**
